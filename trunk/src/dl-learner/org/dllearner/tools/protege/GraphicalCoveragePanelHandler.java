@@ -47,12 +47,12 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	private final EvaluatedDescription description;
 	private final DLLearnerModel model;
 	private final JPopupMenu popup;
-
+	
 	/**
 	 * This is the constructor for the handler.
-	 * 
-	 * @param p
-	 *            GraphicalCoveragePanel
+	 * @param p GraphicalCoveragePanel
+	 * @param eval EvaluatedDescription
+	 * @param m DLLearnerModel
 	 */
 	public GraphicalCoveragePanelHandler(GraphicalCoveragePanel p,
 			EvaluatedDescription eval, DLLearnerModel m) {

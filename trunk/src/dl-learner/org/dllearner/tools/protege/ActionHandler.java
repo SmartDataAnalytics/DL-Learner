@@ -141,12 +141,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 				view.setExamplePanelVisible(toggled);
 			}
 		}
-		if (z.getActionCommand().equals("Why")) {
-			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
-					evaluatedDescription);
-			view.setGraphicalPanel();
-			view.getMoreDetailForSuggestedConceptsPanel().repaint();
-		}
 	}
 
 	/**

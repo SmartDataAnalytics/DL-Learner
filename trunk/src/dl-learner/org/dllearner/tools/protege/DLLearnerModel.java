@@ -184,8 +184,8 @@ public class DLLearnerModel implements Runnable{
 		sources = new HashSet<KnowledgeSource>();
 	}
 	
-	public void setID(String id) {
-		this.id = id;
+	public void setID(String d) {
+		this.id = d;
 	}
 	/**
 	 * This method initializes the SimpleSuggestionLearningAlgorithm and adds
@@ -520,6 +520,10 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public void setInstancesCount(int i) {
 		instancesCount = i;
+	}
+	
+	public String getID() {
+		return id;
 	}
 }
 

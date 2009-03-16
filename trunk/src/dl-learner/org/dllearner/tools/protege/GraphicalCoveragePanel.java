@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
@@ -49,7 +50,8 @@ public class GraphicalCoveragePanel extends JPanel {
 	private static final int ELLIPSE_Y_AXIS = 5;
 	private static final int MAX_NUMBER_OF_INDIVIDUAL_POINTS = 20;
 	private static final int PLUS_SIZE = 5;
-	private static final int GAP = 20;
+	private static final String EQUI_STRING = "equivalent class";
+	private final String id;
 	private int shiftXAxis;
 	private int distortionOld;
 	private final Ellipse2D oldConcept;
@@ -60,6 +62,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private final String conceptNew;
 	private final Vector<IndividualPoint> posCovIndVector;
 	private final Vector<IndividualPoint> posNotCovIndVector;
+	private final Vector<IndividualPoint> additionalIndividuals;
 	private final Vector<IndividualPoint> points;
 	private final GraphicalCoveragePanelHandler handler;
 	private int adjustment;
@@ -75,6 +78,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private int y2;
 	private int centerX;
 	private int centerY;
+	private final Random random;
 	private final MoreDetailForSuggestedConceptsPanel panel;
 
 	/**
@@ -99,9 +103,12 @@ public class GraphicalCoveragePanel extends JPanel {
 		eval = desc;
 		model = m;
 		panel = p;
+		id = model.getID();
+		random = new Random();
 		conceptNew = concept;
 		posCovIndVector = new Vector<IndividualPoint>();
 		posNotCovIndVector = new Vector<IndividualPoint>();
+		additionalIndividuals = new Vector<IndividualPoint>();
 		points = new Vector<IndividualPoint>();
 		this.computeGraphics();
 		handler = new GraphicalCoveragePanelHandler(this, desc, model);
@@ -255,6 +262,13 @@ public class GraphicalCoveragePanel extends JPanel {
 						posNotCovIndVector.get(i).getXAxis(),
 						posNotCovIndVector.get(i).getYAxis());
 			}
+
+			for (int i = 0; i < additionalIndividuals.size(); i++) {
+				g2D.setColor(Color.BLACK);
+				g2D.drawString(additionalIndividuals.get(i).getPoint(),
+						additionalIndividuals.get(i).getXAxis(),
+						additionalIndividuals.get(i).getYAxis());
+			}
 			this.setVisible(true);
 			panel.repaint();
 		}
@@ -292,22 +306,22 @@ public class GraphicalCoveragePanel extends JPanel {
 		if (eval != null) {
 			coveredIndividualSize = ((EvaluatedDescriptionClass) eval)
 					.getCoveredInstances().size();
-			double newConcept = ((EvaluatedDescriptionClass) eval)
+			double newConcepts = ((EvaluatedDescriptionClass) eval)
 					.getAddition();
-			double oldConcept = ((EvaluatedDescriptionClass) eval)
+			double oldConcepts = ((EvaluatedDescriptionClass) eval)
 					.getCoverage();
 			shiftNewConcept = 0;
 			shiftOldConcept = 0;
 			shiftNewConceptX = 0;
 			shiftCovered = 0;
 			if (coveredIndividualSize == 0) {
-				shiftNewConcept = (int) Math.round((WIDTH / 2.0) * newConcept);
+				shiftNewConcept = (int) Math.round((WIDTH / 2.0) * newConcepts);
 			} else if (additionalIndividualSize != coveredIndividualSize) {
 				shiftNewConcept = (int) Math.round((WIDTH / 2.0)
-						* (newConcept + (1 - oldConcept)));
-				shiftOldConcept = (int) Math.round((WIDTH / 2.0) * oldConcept);
+						* (newConcepts + (1 - oldConcepts)));
+				shiftOldConcept = (int) Math.round((WIDTH / 2.0) * oldConcepts);
 				shiftCovered = (int) Math.round((WIDTH / 2.0)
-						* (1 - oldConcept));
+						* (1 - oldConcepts));
 			}
 			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0) {
 				shiftCovered = (int) Math.round((WIDTH / 2.0) * 0.625);
@@ -322,46 +336,33 @@ public class GraphicalCoveragePanel extends JPanel {
 			Set<Individual> posInd = ((EvaluatedDescriptionClass) eval)
 					.getCoveredInstances();
 			int i = 0;
-			double x = 100;
-			double y = 100;
+			double x = random.nextInt(300);
+			double y = random.nextInt(300);
 			boolean flag = true;
 			for (Individual ind : posInd) {
 				flag = true;
 				if (i < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (x >= oldConcept.getMaxX()) {
-							x = (int) oldConcept.getMinX();
-							y = y + GAP;
-						}
+						if (newConcept.contains(x, y)
+								&& oldConcept.contains(x, y)
+								&& !(x >= this.getX1() + this.getShiftCovered()-5
+										&& x <= this.getX2()
+												+ this.getShiftCovered()+5
+										&& y >= this.getY1()-5 && y <= this
+										.getY2()+5)) {
+							posCovIndVector.add(new IndividualPoint("*",
+									(int) x, (int) y, ind.toString()));
+							i++;
+							flag = false;
 
-						if (y >= oldConcept.getMaxY()) {
-							y = (int) oldConcept.getMinY();
-						}
-
-						if (x >= newConcept.getMaxX()) {
-							x = (int) newConcept.getMinX();
-							y = y + GAP;
-						}
-
-						if (y >= newConcept.getMaxY()) {
-							y = (int) newConcept.getMinY();
+							x = random.nextInt(300);
+							y = random.nextInt(300);
 							break;
+						} else {
+							x = random.nextInt(300);
+							y = random.nextInt(300);
 						}
 
-						while (x < newConcept.getMaxX()) {
-
-							if (newConcept.contains(x, y)
-									&& oldConcept.contains(x, y)) {
-								posCovIndVector.add(new IndividualPoint("*",
-										(int) x, (int) y, ind.toString()));
-								i++;
-								flag = false;
-								x = x + GAP;
-								break;
-							} else {
-								x = x + GAP;
-							}
-						}
 					}
 				}
 			}
@@ -369,36 +370,44 @@ public class GraphicalCoveragePanel extends JPanel {
 			Set<Individual> posNotCovInd = ((EvaluatedDescriptionClass) eval)
 					.getAdditionalInstances();
 			int j = 0;
-			x = 100;
-			y = 100;
+			x = random.nextInt(300);
+			y = random.nextInt(300);
 			for (Individual ind : posNotCovInd) {
 				flag = true;
 				if (j < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (x >= newConcept.getMaxX()) {
-							x = (int) oldConcept.getMinX();
-							y = y + GAP;
-						}
-
-						if (y >= newConcept.getMaxY()) {
-							y = (int) oldConcept.getMinY();
-							break;
-						}
-
-						while (x < newConcept.getMaxX()) {
-
-							if (!oldConcept.contains(x, y)
-									&& newConcept.contains(x, y)) {
+						if (!oldConcept.contains(x, y)
+								&& newConcept.contains(x, y)
+								&& !(x >= this.getX1()
+										+ this.getShiftNewConcept()-5
+										&& x <= this.getX2()
+												+ this.getShiftNewConcept()+5
+										&& y >= this.getY1()-5 && y <= this
+										.getY2()+5) && !(x >= this.getX1()
+										+ this.getShiftNewConceptX()-5
+										&& x <= this.getX2()
+												+ this.getShiftNewConceptX()+5
+										&& y >= this.getY1()
+												+ this.getShiftNewConcept()-5 && y <= this
+										.getY2()+5
+										+ this.getShiftNewConcept())) {
+							if (id.equals(EQUI_STRING)) {
 								posNotCovIndVector.add(new IndividualPoint("*",
 										(int) x, (int) y, ind.toString()));
-								j++;
-								flag = false;
-								x = x + GAP;
-								break;
 							} else {
-								x = x + GAP;
+								additionalIndividuals.add(new IndividualPoint(
+										"*", (int) x, (int) y, ind.toString()));
 							}
+							j++;
+							flag = false;
+							x = random.nextInt(300);
+							y = random.nextInt(300);
+							break;
+						} else {
+							x = random.nextInt(300);
+							y = random.nextInt(300);
 						}
+
 					}
 				}
 			}
@@ -407,41 +416,38 @@ public class GraphicalCoveragePanel extends JPanel {
 					model.getCurrentConcept());
 			notCovInd.removeAll(posInd);
 			int k = 0;
-			x = 100;
-			y = 100;
+			x = random.nextInt(300);
+			y = random.nextInt(300);
 			for (Individual ind : notCovInd) {
 				flag = true;
 				if (k < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (x >= oldConcept.getMaxX()) {
-							x = (int) oldConcept.getMinX();
-							y = y + GAP;
-						}
-
-						if (y >= oldConcept.getMaxY()) {
-							y = (int) oldConcept.getMinY();
+						if (oldConcept.contains(x, y)
+								&& !newConcept.contains(x, y)
+								&& !(x >= this.getX1()-5
+										- this.getShiftOldConcept()
+										&& x <= this.getX2()+5
+												- this.getShiftOldConcept()
+										&& y >= this.getY1()-5 && y <= this
+										.getY2()+5)) {
+							posNotCovIndVector.add(new IndividualPoint("*",
+									(int) x, (int) y, ind.toString()));
+							k++;
+							flag = false;
+							x = random.nextInt(300);
+							y = random.nextInt(300);
 							break;
+						} else {
+							x = random.nextInt(300);
+							y = random.nextInt(300);
 						}
 
-						while (x < oldConcept.getMaxX()) {
-
-							if (oldConcept.contains(x, y)
-									&& !newConcept.contains(x, y)) {
-								posNotCovIndVector.add(new IndividualPoint("*",
-										(int) x, (int) y, ind.toString()));
-								k++;
-								flag = false;
-								x = x + GAP;
-								break;
-							} else {
-								x = x + GAP;
-							}
-						}
 					}
 				}
 			}
 			points.addAll(posCovIndVector);
 			points.addAll(posNotCovIndVector);
+			points.addAll(additionalIndividuals);
 		}
 	}
 
@@ -473,43 +479,87 @@ public class GraphicalCoveragePanel extends JPanel {
 		return panel;
 	}
 
+	/**
+	 * Returns the min. x value of the plus.
+	 * 
+	 * @return int min X Value
+	 */
 	public int getX1() {
 		return x1;
 	}
 
+	/**
+	 * Returns the max. x value of the plus.
+	 * 
+	 * @return int max X Value
+	 */
 	public int getX2() {
 		return x2;
 	}
 
+	/**
+	 * Returns the min. y value of the plus.
+	 * 
+	 * @return int min Y Value
+	 */
 	public int getY1() {
 		return y1;
 	}
 
+	/**
+	 * Returns the max. y value of the plus.
+	 * 
+	 * @return int max Y Value
+	 */
 	public int getY2() {
 		return y2;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getShiftOldConcept() {
 		return shiftOldConcept;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getShiftCovered() {
 		return shiftCovered;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getShiftNewConcept() {
 		return shiftNewConcept;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getShiftNewConceptX() {
 		return shiftNewConceptX;
 	}
 
+	/**
+	 * Unsets the panel after plugin is closed.
+	 */
 	public void unsetPanel() {
 		this.removeAll();
 		eval = null;
 	}
-	
+
+	/**
+	 * Returns the currently selected evaluated description.
+	 * 
+	 * @return EvaluatedDescription
+	 */
 	public EvaluatedDescription getEvaluateddescription() {
 		return eval;
 	}
