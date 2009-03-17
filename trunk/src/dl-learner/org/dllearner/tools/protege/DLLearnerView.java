@@ -123,7 +123,7 @@ public class DLLearnerView {
 		sugPanel = new SuggestClassPanel();
 		learnerPanel = new JPanel();
 		learnerPanel.setLayout(new BorderLayout());
-		learnerPanel.setPreferredSize(new Dimension(600, 400));
+		learnerPanel.setPreferredSize(new Dimension(585, 350));
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		action = new ActionHandler(model, this, label);
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
@@ -146,7 +146,7 @@ public class DLLearnerView {
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(null);
-		accept.setPreferredSize(new Dimension(290, 50));
+		accept.setPreferredSize(new Dimension(260, 50));
 		advanced.setName("Advanced");
 		learnerScroll.setPreferredSize(new Dimension(600, 400));
 		posPanel = new PosAndNegSelectPanel(model, action);
@@ -196,7 +196,7 @@ public class DLLearnerView {
 		sugPanel.setBounds(10, 35, 490, 110);
 		adv.setBounds(40, 195, 200, 20);
 		wikiPane.setBounds(220, 0, 350, 30);
-		addButtonPanel.setBounds(510, 40, 80, 110);
+		addButtonPanel.setBounds(510, 40, 80, 70);
 		run.setBounds(10, 0, 200, 30);
 		advanced.setBounds(10, 195, 20, 20);
 		detail.setBounds(10, 195, 600, 300);
@@ -204,7 +204,7 @@ public class DLLearnerView {
 		sugPanel.setVisible(true);
 		posPanel.setVisible(false);
 		posPanel.setBounds(10, 225, 490, 250);
-		accept.setBounds(510, 40, 80, 110);
+		accept.setBounds(510, 40, 80, 80);
 		hint.setBounds(10, 150, 490, 35);
 		errorMessage.setBounds(510, 100, 490, 50);
 		learner.add(run);
@@ -248,6 +248,7 @@ public class DLLearnerView {
 		learner.add(advanced);
 		learner.add(posPanel);
 		learner.add(detail);
+		learnerPanel.setPreferredSize(new Dimension(600, 660));
 		learnerPanel.removeAll();
 		learnerPanel.add(learner);
 		learnerScroll.setViewportView(learnerPanel);

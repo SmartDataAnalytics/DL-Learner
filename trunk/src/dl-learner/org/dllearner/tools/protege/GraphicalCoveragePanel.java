@@ -59,11 +59,12 @@ public class GraphicalCoveragePanel extends JPanel {
 
 	private EvaluatedDescription eval;
 	private final DLLearnerModel model;
-	private final String conceptNew;
+	private String conceptNew;
 	private final Vector<IndividualPoint> posCovIndVector;
 	private final Vector<IndividualPoint> posNotCovIndVector;
 	private final Vector<IndividualPoint> additionalIndividuals;
 	private final Vector<IndividualPoint> points;
+	private final Vector<String> conceptVector;
 	private final GraphicalCoveragePanelHandler handler;
 	private int adjustment;
 	private int shiftOldConcept;
@@ -102,10 +103,11 @@ public class GraphicalCoveragePanel extends JPanel {
 		this.repaint();
 		eval = desc;
 		model = m;
-		panel = p;
+		panel = p;;
 		id = model.getID();
 		random = new Random();
 		conceptNew = concept;
+		conceptVector = new Vector<String>();
 		posCovIndVector = new Vector<IndividualPoint>();
 		posNotCovIndVector = new Vector<IndividualPoint>();
 		additionalIndividuals = new Vector<IndividualPoint>();
@@ -134,7 +136,11 @@ public class GraphicalCoveragePanel extends JPanel {
 			g2D.fill(oldConcept);
 			g2D.drawString(model.getOldConceptOWLAPI().toString(), 310, 10);
 			g2D.setColor(Color.ORANGE);
-			g2D.drawString(conceptNew, 310, 30);
+			int p = 30;
+			for (int i = 0; i < conceptVector.size(); i++) {
+				g2D.drawString(conceptVector.get(i), 310, p);
+				p = p + 20;
+			}
 			g2D.setComposite(ac);
 			g2D.fill(newConcept);
 			g2D.setColor(Color.BLACK);
@@ -328,6 +334,19 @@ public class GraphicalCoveragePanel extends JPanel {
 				shiftNewConceptX = shiftCovered;
 				shiftNewConcept = 2 * shiftNewConceptX;
 			}
+		}
+		
+		int i = conceptNew.length();
+		int z = 0;
+		while(i > 0) {
+			if(i >= 39 ) {
+				z = 39;
+			} else {
+				z = conceptNew.length();
+			}
+			conceptVector.add(conceptNew.substring(0, z));
+			conceptNew = conceptNew.replace(conceptNew.substring(0, z), "");
+			i = conceptNew.length();
 		}
 	}
 
