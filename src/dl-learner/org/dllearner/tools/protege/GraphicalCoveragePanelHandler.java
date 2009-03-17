@@ -27,8 +27,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.JComboBox;
+import javax.swing.plaf.basic.BasicComboPopup;
 
 import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
@@ -46,7 +46,9 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	private final GraphicalCoveragePanel panel;
 	private final EvaluatedDescription description;
 	private final DLLearnerModel model;
-	private final JPopupMenu popup;
+	private BasicComboPopup scrollPopup;
+	private final Vector<String> individualComboBox;
+	private JComboBox indiBox;
 	
 	/**
 	 * This is the constructor for the handler.
@@ -59,7 +61,8 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		this.panel = p;
 		description = eval;
 		model = m;
-		popup = new JPopupMenu();
+		individualComboBox = new Vector<String>();
+		
 	}
 
 	@Override
@@ -89,6 +92,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		} else {
 			panel.getGraphicalCoveragePanel().setToolTipText(null);
 		}
+		
 		Vector<IndividualPoint> v = panel.getIndividualVector();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
@@ -114,15 +118,19 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getX() <= panel.getX2() + panel.getShiftCovered()
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
-				popup.removeAll();
-				panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				individualComboBox.clear();
+				
 				Set<Individual> covInd = ((EvaluatedDescriptionClass) description)
 						.getCoveredInstances();
 				for (Individual ind : covInd) {
-					popup.add(new JMenuItem(ind.toString()));
+					individualComboBox.add(ind.toString());
 				}
-				popup.show(panel, arg0.getX(), arg0.getY());
-				panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				indiBox = new JComboBox(individualComboBox);
+				scrollPopup = new BasicComboPopup(indiBox);
+				scrollPopup.setAutoscrolls(true);
+				scrollPopup.show(panel, arg0.getX(), arg0.getY());
+				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 			}
 
 			if (arg0.getX() >= panel.getX1() + panel.getShiftNewConcept()
@@ -138,15 +146,19 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							+ panel.getShiftNewConcept()
 					&& arg0.getY() <= panel.getY2()
 							+ panel.getShiftNewConcept()) {
-				popup.removeAll();
-				panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				individualComboBox.clear();
 				Set<Individual> addInd = ((EvaluatedDescriptionClass) description)
 						.getAdditionalInstances();
+				
 				for (Individual ind : addInd) {
-					popup.add(new JMenuItem(ind.toString()));
+					individualComboBox.add(ind.toString());
 				}
-				popup.show(panel, arg0.getX(), arg0.getY());
-				panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				indiBox = new JComboBox(individualComboBox);
+				scrollPopup = new BasicComboPopup(indiBox);
+				scrollPopup.setAutoscrolls(true);
+				scrollPopup.show(panel, arg0.getX(), arg0.getY());
+				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 			}
 
 			if (arg0.getX() >= panel.getX1() - panel.getShiftOldConcept()
@@ -154,17 +166,20 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							- panel.getShiftOldConcept()
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
-				popup.removeAll();
-				panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				individualComboBox.clear();
 				Set<Individual> notCovInd = model.getReasoner().getIndividuals(
 						model.getCurrentConcept());
 				notCovInd.removeAll(((EvaluatedDescriptionClass) description)
 						.getCoveredInstances());
 				for (Individual ind : notCovInd) {
-					popup.add(new JMenuItem(ind.toString()));
+					individualComboBox.add(ind.toString());
 				}
-				popup.show(panel, arg0.getX(), arg0.getY());
-				panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+				indiBox = new JComboBox(individualComboBox);
+				scrollPopup = new BasicComboPopup(indiBox);
+				scrollPopup.setAutoscrolls(true);
+				scrollPopup.show(panel, arg0.getX(), arg0.getY());
+				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 			}
 		}
 	}
