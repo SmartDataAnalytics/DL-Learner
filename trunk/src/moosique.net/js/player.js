@@ -39,6 +39,7 @@ var ympPlayerConfig = function() {
       'html': 'X',
       'events': {
         'click': function() {
+          console.log('Deleted Song from PLaylist');
           this.getParent().destroy();
           // and refresh the playlist if clicked
           y.addTracks($('playlist'), '', true);
@@ -164,86 +165,95 @@ var moosiquePlayer = new Class({
    * adding functionality for the player-GUI and the play, next etc. buttons
    */
   addEventsToButtons: function() {
+    
+    var that = this;
       
     // the Play-Pause Button
-    this.playPause.addEvent('click', function() {
+    that.playPause.addEvent('click', function() {
+      console.log('Clicked Play/Pause');
       // STOPPED: 0, PAUSED: 1, PLAYING: 2,BUFFERING: 5, ENDED: 7
-      if (this.y.getPlayerState() == 0 ||
-          this.y.getPlayerState() == 1 ||
-          this.y.getPlayerState() == 7) {
-        this.y.play();
+      if (that.y.getPlayerState() == 0 ||
+          that.y.getPlayerState() == 1 ||
+          that.y.getPlayerState() == 7) {
+        that.y.play();
       } else {
-        this.y.pause();
+        that.y.pause();
       }
-    }.bind(this));
+    });
     
     // the previous-Track Button
-    this.prev.addEvent('click', function() {
-      this.y.previous();
-    }.bind(this));
+    that.prev.addEvent('click', function() {
+      console.log('Clicked Prev Button');
+      that.y.previous();
+    });
     
     // the next-Track Button
-    this.next.addEvent('click', function() {
-      this.y.next();
-    }.bind(this));
+    that.next.addEvent('click', function() {
+      console.log('Clicked Next Button');
+      that.y.next();
+    });
     
     // the Stop-Playing Button
-    this.stop.addEvent('click', function() {
-      this.playPause.setStyle('background-image', 'url(img/play.png)');
-      this.nowPlayingHeader.set('text', 'Player stopped');
-      this.nowPlayingTrack.set('text', '...');
-      this.nowPlayingTime.set('text', '0:00 / 0:00');
-      this.y.stop();
-    }.bind(this));
+    that.stop.addEvent('click', function() {
+      console.log('Clicked Stop Button');
+      that.playPause.setStyle('background-image', 'url(img/play.png)');
+      that.nowPlayingHeader.set('text', 'Player stopped');
+      that.nowPlayingTrack.set('text', '...');
+      that.nowPlayingTime.set('text', '0:00 / 0:00');
+      that.y.stop();
+    });
     
     // Mute-Toggle-Switch
-    this.toggleMute.addEvent('click', function() {
-      if (this.y.getVolume() > 0) {
-        this.y.setVolume(0);
-        this.toggleMute.setStyle('text-decoration', 'line-through');
+    that.toggleMute.addEvent('click', function() {
+      console.log('Clicked Mute Switch');
+      if (that.y.getVolume() > 0) {
+        that.y.setVolume(0);
+        that.toggleMute.setStyle('text-decoration', 'line-through');
       } else {
-        this.y.setVolume(1);
-        this.toggleMute.setStyle('text-decoration', 'none');
+        that.y.setVolume(1);
+        that.toggleMute.setStyle('text-decoration', 'none');
       }
-    }.bind(this));
+    });
   },
   
   /**
    * Playlist related functions
    */
   initPlaylist: function() {
-    this.togglePlaylist.addEvent('click', function() {
-      if (this.playlistContainer.getStyle('display') == 'none') {
-        this.playlistContainer.setStyle('display', 'block');
-        this.togglePlaylist.setStyle('text-decoration', 'line-through');
+    var that = this;
+    
+    that.togglePlaylist.addEvent('click', function() {
+      if (that.playlistContainer.getStyle('display') == 'none') {
+        that.playlistContainer.setStyle('display', 'block');
+        that.togglePlaylist.setStyle('text-decoration', 'line-through');
       } else {
-        this.playlistContainer.setStyle('display', 'none');
-        this.togglePlaylist.setStyle('text-decoration', 'none');
+        that.playlistContainer.setStyle('display', 'none');
+        that.togglePlaylist.setStyle('text-decoration', 'none');
       }
-    }.bind(this));
+    });
     // same for the closePlaylist-Button
-    this.closePlaylist.addEvent('click', function() {
-      this.playlistContainer.setStyle('display', 'none');
-      this.togglePlaylist.setStyle('text-decoration', 'none');
-    }.bind(this));
+    that.closePlaylist.addEvent('click', function() {
+      that.playlistContainer.setStyle('display', 'none');
+      that.togglePlaylist.setStyle('text-decoration', 'none');
+    });
     
     // nifty UI-Stuff, draggable and resizable
-    this.playlistContainer.makeDraggable({
+    that.playlistContainer.makeDraggable({
       handle: $('playlistHeader')
     });
-    this.playlistContainer.makeResizable({
+    that.playlistContainer.makeResizable({
       handle: $('playlistFooter'),
       limit: {x: [300, 600], y: [150, 1000]}
     });
 
     // opacity and intial hide    
-    this.playlistContainer.setStyle('opacity', 0.9); // easier than css hacks
+    that.playlistContainer.setStyle('opacity', 0.9); // easier than css hacks
     // this.playlistContainer.setStyle('display', 'none');
     
     // Make the playlist, samples and recommendations sortable
-    this.makeSortableLists($$('#playlist, #samples, #recommendations'));
+    that.makeSortableLists($$('#playlist, #samples, #recommendations'));
     // make links unclickable for recommendations and samples
-    this.makeLinksUnclickable($$('#recommendations li a, #samples li a'));
+    that.makeLinksUnclickable($$('#recommendations li a, #samples li a'));
     
   },
   
@@ -267,6 +277,9 @@ var moosiquePlayer = new Class({
    * @param {Object} lists An Element-Collection of lists (ol, ul)
    */
   makeSortableLists: function(lists) {
+    
+    var that = this;
+    
     new Sortables(lists, {
       // indicate moving state by adding styles
       onStart: function(li) {
@@ -280,9 +293,10 @@ var moosiquePlayer = new Class({
         if (li.getParent().get('id') == 'playlist') {
           li.getFirst('a').set('class', 'htrack');
           // reload playlist
-          this.y.addTracks(this.playlist, '', true);
+          that.y.addTracks(that.playlist, '', true);
+          console.log('Updated Playlist');
         }
-      }.bind(this)
+      }
     });
   }
   
