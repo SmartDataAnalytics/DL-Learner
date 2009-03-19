@@ -122,8 +122,6 @@ public class CELOE extends LearningAlgorithm {
 	public CELOE(ClassLearningProblem problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
 		configurator = new CELOEConfigurator(this);
-		classToDescribe = problem.getClassToDescribe();
-		isEquivalenceProblem = problem.isEquivalenceProblem();
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -157,6 +155,10 @@ public class CELOE extends LearningAlgorithm {
 	
 	@Override
 	public void init() throws ComponentInitException {
+		ClassLearningProblem problem = (ClassLearningProblem) learningProblem;
+		classToDescribe = problem.getClassToDescribe();
+		isEquivalenceProblem = problem.isEquivalenceProblem();		
+		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
@@ -175,8 +177,7 @@ public class CELOE extends LearningAlgorithm {
 				startClass = new Intersection(new LinkedList<Description>(superClasses));
 			} else {
 				startClass = (Description) superClasses.toArray()[0];
-			}
-			
+			}	
 		} else {
 			startClass = Thing.instance;
 		}		
@@ -186,7 +187,7 @@ public class CELOE extends LearningAlgorithm {
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 		
-		 bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
+		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
 			
 		// we put important parameters in class variables
 		minAcc = configurator.getNoisePercentage()/100d;

@@ -73,8 +73,8 @@ public class ClassLearningProblem extends LearningProblem {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("classToDescribe", "class of which a description should be learned", null, true, false));
-		StringConfigOption type = new StringConfigOption("type", "Whether to learn an equivalence class or super class axiom.","equivalence");
-		type.setAllowedValues(new String[] {"equivalence", "superClass"});
+		StringConfigOption type = new StringConfigOption("type", "Whether to learn an equivalence class or super class axiom or domain/range of a property.","equivalence");
+		type.setAllowedValues(new String[] {"equivalence", "superClass", "domain", "range"});
 		options.add(type);		
 		return options;
 	}
@@ -148,9 +148,10 @@ public class ClassLearningProblem extends LearningProblem {
 		Set<Individual> additionalInstances = Helper.difference(retrieval, coveredInstances);		
 		
 		double coverage = instancesCovered/(double)classInstances.size();
-		double protusion = instancesCovered/(double)retrieval.size();
+		double protusion = retrieval.size() == 0 ? 0 : instancesCovered/(double)retrieval.size();
+//		double accuracy = coverage + Math.sqrt(protusion);
 		
-		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion);
+		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion));
 	}	
 	
 	public boolean isEquivalenceProblem() {
@@ -172,9 +173,12 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 		
 		double coverage = instancesCovered/(double)classInstances.size();
-		double protusion = instancesCovered/(double)retrieval.size();
+//		double protusion = instancesCovered/(double)retrieval.size();
+		double protusion = retrieval.size() == 0 ? 0 : instancesCovered/(double)retrieval.size();
+//				
 		
-		return (coverageFactor * coverage + protusion) / (coverageFactor + 1);
+//		return (coverageFactor * coverage + protusion) / (coverageFactor + 1);
+		return getAccuracy(coverage, protusion);
 	}
 
 	@Override
@@ -243,16 +247,19 @@ public class ClassLearningProblem extends LearningProblem {
 		// since we measured/estimated accuracy only on instances outside A (superClassInstances
 		// does not include instances of A), we need to add it in the denominator
 		double protusion = instancesCovered/(double)(instancesDescription+instancesCovered);
+		if(instancesCovered + instancesDescription == 0) {
+			protusion = 0;
+		}
 		
 //		System.out.println(description);
 //		System.out.println(instancesDescription);
 //		System.out.println("prot: " + protusion);
 		
-		double acc = (coverageFactor * coverage + protusion) / (coverageFactor + 1);
+//		double acc = (coverageFactor * coverage + protusion) / (coverageFactor + 1);
 		
 //		System.out.println("acc: " + acc);
 		
-		return acc;
+		return getAccuracy(coverage, protusion);
 	}	
 	
 	/* (non-Javadoc)
@@ -269,6 +276,10 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 	}
 
+	private double getAccuracy(double coverage, double protusion) {
+		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
+	}
+	
 	/**
 	 * @return the classToDescribe
 	 */
