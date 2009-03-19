@@ -37,12 +37,14 @@ public class ClassScore extends Score {
 	
 	private double coverage;
 	private double addition;
+	private double accuracy;
 	
-	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion) {
+	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
 		this.coveredInstances = coveredInstances;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
 		this.addition = protusion;
+		this.accuracy = accuracy;
 	}
 	
 	/**
@@ -67,7 +69,8 @@ public class ClassScore extends Score {
 	 */
 	@Override
 	public double getAccuracy() {
-		return 0.5 * (coverage + addition);
+//		return 0.5 * (coverage + addition);
+		return accuracy;
 	}
 
 	/**
