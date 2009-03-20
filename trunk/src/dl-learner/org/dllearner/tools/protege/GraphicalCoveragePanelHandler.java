@@ -49,12 +49,16 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	private BasicComboPopup scrollPopup;
 	private final Vector<String> individualComboBox;
 	private JComboBox indiBox;
-	
+
 	/**
 	 * This is the constructor for the handler.
-	 * @param p GraphicalCoveragePanel
-	 * @param eval EvaluatedDescription
-	 * @param m DLLearnerModel
+	 * 
+	 * @param p
+	 *            GraphicalCoveragePanel
+	 * @param eval
+	 *            EvaluatedDescription
+	 * @param m
+	 *            DLLearnerModel
 	 */
 	public GraphicalCoveragePanelHandler(GraphicalCoveragePanel p,
 			EvaluatedDescription eval, DLLearnerModel m) {
@@ -62,7 +66,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		description = eval;
 		model = m;
 		individualComboBox = new Vector<String>();
-		
+
 	}
 
 	@Override
@@ -92,7 +96,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		} else {
 			panel.getGraphicalCoveragePanel().setToolTipText(null);
 		}
-		
+
 		Vector<IndividualPoint> v = panel.getIndividualVector();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
@@ -118,19 +122,23 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getX() <= panel.getX2() + panel.getShiftCovered()
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
-				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+
+				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
-				
+
 				Set<Individual> covInd = ((EvaluatedDescriptionClass) description)
 						.getCoveredInstances();
-				for (Individual ind : covInd) {
-					individualComboBox.add(ind.toString());
+				int i = covInd.size();
+				if (i > 0) {
+					for (Individual ind : covInd) {
+						individualComboBox.add(ind.toString());
+					}
+					indiBox = new JComboBox(individualComboBox);
+					scrollPopup = new BasicComboPopup(indiBox);
+					scrollPopup.setAutoscrolls(true);
+					scrollPopup.show(panel, arg0.getX(), arg0.getY());
+					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
-				indiBox = new JComboBox(individualComboBox);
-				scrollPopup = new BasicComboPopup(indiBox);
-				scrollPopup.setAutoscrolls(true);
-				scrollPopup.show(panel, arg0.getX(), arg0.getY());
-				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 			}
 
 			if (arg0.getX() >= panel.getX1() + panel.getShiftNewConcept()
@@ -146,19 +154,22 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							+ panel.getShiftNewConcept()
 					&& arg0.getY() <= panel.getY2()
 							+ panel.getShiftNewConcept()) {
-				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+
+				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 				Set<Individual> addInd = ((EvaluatedDescriptionClass) description)
 						.getAdditionalInstances();
-				
-				for (Individual ind : addInd) {
-					individualComboBox.add(ind.toString());
+				int i = addInd.size();
+				if (i > 0) {
+					for (Individual ind : addInd) {
+						individualComboBox.add(ind.toString());
+					}
+					indiBox = new JComboBox(individualComboBox);
+					scrollPopup = new BasicComboPopup(indiBox);
+					scrollPopup.setAutoscrolls(true);
+					scrollPopup.show(panel, arg0.getX(), arg0.getY());
+					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
-				indiBox = new JComboBox(individualComboBox);
-				scrollPopup = new BasicComboPopup(indiBox);
-				scrollPopup.setAutoscrolls(true);
-				scrollPopup.show(panel, arg0.getX(), arg0.getY());
-				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 			}
 
 			if (arg0.getX() >= panel.getX1() - panel.getShiftOldConcept()
@@ -166,20 +177,24 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							- panel.getShiftOldConcept()
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
-				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+
+				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 				Set<Individual> notCovInd = model.getReasoner().getIndividuals(
 						model.getCurrentConcept());
 				notCovInd.removeAll(((EvaluatedDescriptionClass) description)
 						.getCoveredInstances());
-				for (Individual ind : notCovInd) {
-					individualComboBox.add(ind.toString());
+				int i = notCovInd.size();
+				if (i > 0) {
+					for (Individual ind : notCovInd) {
+						individualComboBox.add(ind.toString());
+					}
+					indiBox = new JComboBox(individualComboBox);
+					scrollPopup = new BasicComboPopup(indiBox);
+					scrollPopup.setAutoscrolls(true);
+					scrollPopup.show(panel, arg0.getX(), arg0.getY());
+					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
-				indiBox = new JComboBox(individualComboBox);
-				scrollPopup = new BasicComboPopup(indiBox);
-				scrollPopup.setAutoscrolls(true);
-				scrollPopup.show(panel, arg0.getX(), arg0.getY());
-				//panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 			}
 		}
 	}

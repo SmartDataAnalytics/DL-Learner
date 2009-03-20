@@ -61,7 +61,7 @@ public class OptionPanel extends JPanel {
 		minAccuracy.setBounds(160, 0, 200, 40);
 
 		
-		maxExecutionTime = new JSlider(2, 20, 5);
+		maxExecutionTime = new JSlider(2, 20, 8);
 		maxExecutionTime.setPaintTicks(true);
 		maxExecutionTime.setMajorTickSpacing(5);
 		maxExecutionTime.setMinorTickSpacing(1);

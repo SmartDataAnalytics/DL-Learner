@@ -115,7 +115,6 @@ public class ReadingOntologyThread extends Thread {
 					}
 				}
 			} else {
-				System.out.println("hier");
 				if (reasoner.getIndividuals().size() > 0) {
 					hasIndividuals = true;
 				
@@ -172,11 +171,15 @@ public class ReadingOntologyThread extends Thread {
 			this.setPositiveConcept();
 			if (this.hasIndividuals()) {
 				view.getRunButton().setEnabled(true);
+				view.getHintPanel().setForeground(Color.BLACK);
+				view.setHintMessage("To get suggestions for class descriptions, please click the button above.");
+				
 			} else {
 				view.getRunButton().setEnabled(false);
-				view.getHintPanel().setVisible(false);
-				String message ="There are no Instances for  available. Please insert some Instances.";
-				view.renderErrorMessage(message);
+				view.getHintPanel().setVisible(true);
+				String message ="There are no Instances for " + current + " available. Please insert some Instances.";
+				view.getHintPanel().setForeground(Color.RED);
+				view.setHintMessage(message);
 			}
 		} else {
 			view.getHintPanel().setForeground(Color.RED);

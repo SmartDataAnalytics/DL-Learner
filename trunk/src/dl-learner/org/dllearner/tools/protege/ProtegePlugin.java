@@ -41,7 +41,6 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	
 	@Override
 	public JComponent getComponent() {
-		//super.getOWLEditorKit().getOWLWorkspace().getOWLComponentFactory().getOWLClassDescriptionEditor(null).getEditorComponent().setSize(new Dimension(1024, 768));
 		return view.getLearnerView();
 	}
 

@@ -124,7 +124,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//this.add(conceptPanel);
 		this.add(p);
 		this.addPropertyChangeListener(handler);
-		conceptPanel.addPropertyChangeListener(handler);
+		//conceptPanel.addPropertyChangeListener(handler);
 		this.repaint();
 	}
 

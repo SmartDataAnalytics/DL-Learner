@@ -123,7 +123,6 @@ public class DLLearnerView {
 		sugPanel = new SuggestClassPanel();
 		learnerPanel = new JPanel();
 		learnerPanel.setLayout(new BorderLayout());
-		learnerPanel.setPreferredSize(new Dimension(585, 350));
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		action = new ActionHandler(model, this, label);
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
@@ -178,10 +177,10 @@ public class DLLearnerView {
 	public void makeView() {
 		learner.remove(detail);
 		run.setEnabled(false);
-		System.out.println("hier");
 		detail.unsetPanel();
+		learnerPanel.setPreferredSize(new Dimension(575, 350));
 		detail.setVisible(false);
-		hint.setText("To get suggestions for class descriptions, please click the button above.");
+		hint.setText("");
 		isInconsistent = false;
 		readThread = new ReadingOntologyThread(editorKit, this, model);
 		readThread.start();
@@ -193,10 +192,10 @@ public class DLLearnerView {
 		sugPanel.setSuggestList(new DefaultListModel());
 		sugPanel = sugPanel.updateSuggestClassList();
 		advanced.setSelected(false);
-		sugPanel.setBounds(10, 35, 490, 110);
+		sugPanel.setBounds(10, 35, 470, 110);
 		adv.setBounds(40, 195, 200, 20);
 		wikiPane.setBounds(220, 0, 350, 30);
-		addButtonPanel.setBounds(510, 40, 80, 70);
+		addButtonPanel.setBounds(485, 40, 80, 70);
 		run.setBounds(10, 0, 200, 30);
 		advanced.setBounds(10, 195, 20, 20);
 		detail.setBounds(10, 195, 600, 300);
@@ -206,7 +205,7 @@ public class DLLearnerView {
 		posPanel.setBounds(10, 225, 490, 250);
 		accept.setBounds(510, 40, 80, 80);
 		hint.setBounds(10, 150, 490, 35);
-		errorMessage.setBounds(510, 100, 490, 50);
+		errorMessage.setBounds(485, 110, 80, 80);
 		learner.add(run);
 		learner.add(wikiPane);
 		learner.add(adv);
@@ -239,16 +238,16 @@ public class DLLearnerView {
 		learner.remove(advanced);
 		learner.remove(adv);
 		learner.repaint();
-		posPanel.setBounds(10, 535, 490, 250);
-		adv.setBounds(40, 505, 200, 20);
-		advanced.setBounds(10, 505, 20, 20);
-		detail.setBounds(10, 195, 600, 300);
+		posPanel.setBounds(10, 435, 490, 250);
+		adv.setBounds(40, 405, 200, 20);
+		advanced.setBounds(10, 405, 20, 20);
+		detail.setBounds(10, 195, 590, 200);
 		detail.setVisible(true);
 		learner.add(adv);
 		learner.add(advanced);
 		learner.add(posPanel);
 		learner.add(detail);
-		learnerPanel.setPreferredSize(new Dimension(600, 660));
+		learnerPanel.setPreferredSize(new Dimension(575, 560));
 		learnerPanel.removeAll();
 		learnerPanel.add(learner);
 		learnerScroll.setViewportView(learnerPanel);
