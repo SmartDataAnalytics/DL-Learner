@@ -231,8 +231,8 @@ public class ClassLearningProblem extends LearningProblem {
 					// (worst case is to accept a few inaccurate descriptions)
 					if(mean > minAccuracy || (upperBorderA > mean && size < 0.03)) {
 						instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
-						upperEstimateA = (int) upperBorderA * classInstances.size();
-						lowerEstimateA = (int) lowerBorderA * classInstances.size();
+						upperEstimateA = (int) (upperBorderA * classInstances.size());
+						lowerEstimateA = (int) (lowerBorderA * classInstances.size());
 						estimatedA = true;
 						break;
 					}
@@ -248,8 +248,8 @@ public class ClassLearningProblem extends LearningProblem {
 		
 		double coverage = instancesCovered/(double)classInstances.size();
 		
-		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
-		MonitorFactory.add("aInstances","count", total);
+//		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
+//		MonitorFactory.add("aInstances","count", total);
 		
 		// we know that a definition candidate is always subclass of the
 		// intersection of all super classes, so we test only the relevant instances
@@ -260,7 +260,7 @@ public class ClassLearningProblem extends LearningProblem {
 
 		int testsPerformed = 0;
 		int instancesDescription = 0;
-		boolean estimatedB = false;
+//		boolean estimatedB = false;
 		
 		for(Individual ind : superClassInstances) {
 
@@ -277,20 +277,24 @@ public class ClassLearningProblem extends LearningProblem {
 				double p2 = p3(p1, testsPerformed);
 				double lowerBorder = Math.max(0, p1 - p2);
 				double upperBorder = Math.min(1, p1 + p2);
-				int lowerEstimate = (int) lowerBorder * superClassInstances.size();
-				int upperEstimate = (int) upperBorder * superClassInstances.size();
+				int lowerEstimate = (int) (lowerBorder * superClassInstances.size());
+				int upperEstimate = (int) (upperBorder * superClassInstances.size());
 				
 				double size;
 				if(estimatedA) {
 //					size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-					size = getAccuracy(upperBorderA, upperEstimateA/(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(lowerEstimateA+upperEstimate));					
+					size = getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
 				} else {
 //					size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-					size = getAccuracy(coverage, instancesCovered/(instancesCovered+lowerEstimate)) - getAccuracy(coverage, instancesCovered/(instancesCovered+upperEstimate));
+					size = getAccuracy(coverage, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(coverage, instancesCovered/(double)(instancesCovered+upperEstimate));
 				}
 				
 				if(size < 0.1) {
-					estimatedB = true;
+//					System.out.println(instancesDescription + " of " + testsPerformed);
+//					System.out.println("interval from " + lowerEstimate + " to " + upperEstimate);
+//					System.out.println("size: " + size);
+					
+//					estimatedB = true;
 					// calculate total number of instances
 					instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
 					break;
@@ -305,8 +309,8 @@ public class ClassLearningProblem extends LearningProblem {
 			protusion = 0;
 		}
 		
-		MonitorFactory.add("estimatedB","count", estimatedB ? 1 : 0);
-		MonitorFactory.add("bInstances","count", testsPerformed);		
+//		MonitorFactory.add("estimatedB","count", estimatedB ? 1 : 0);
+//		MonitorFactory.add("bInstances","count", testsPerformed);		
 	
 		return getAccuracy(coverage, protusion);
 	}	
