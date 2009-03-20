@@ -223,7 +223,7 @@ public class GraphicalCoveragePanel extends JPanel {
 						+ shiftNewConcept, y2 + 1);
 			}
 
-			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0) {
+			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0 && ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0) {
 				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
 						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y1 - 1
 						+ shiftNewConcept);

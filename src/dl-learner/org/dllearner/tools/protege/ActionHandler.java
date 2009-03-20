@@ -116,7 +116,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 		}
 
 		if (z.getActionCommand().equals("ADD")) {
-			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 			if (evaluatedDescription != null) {
 				model
 						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
@@ -127,7 +126,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "class description added";
+			String message = "class description\nadded";
 			view.renderErrorMessage(message);
 		}
 		if (z.getActionCommand().equals("")) {

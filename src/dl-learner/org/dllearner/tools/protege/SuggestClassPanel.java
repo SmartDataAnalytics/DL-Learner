@@ -61,7 +61,7 @@ public class SuggestClassPanel extends JPanel {
 		suggestPanel = new JPanel();
 		descriptions.setVisible(true);
 		suggestPanel.add(descriptions);
-		suggestScroll.setPreferredSize(new Dimension(490, 108));
+		suggestScroll.setPreferredSize(new Dimension(460, 108));
 		suggestScroll.setViewportView(descriptions);
 		descriptions.setCellRenderer(new SuggestListCellRenderer());
 		add(suggestScroll);

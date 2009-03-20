@@ -261,7 +261,6 @@ public class DLLearnerModel implements Runnable{
 	public void setLearningProblem() {
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		cm.applyConfigEntry(lp, "classToDescribe", currentConcept.toString());
-		System.out.println("lern: " + currentConcept);
 		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
