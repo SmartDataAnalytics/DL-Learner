@@ -40,6 +40,8 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.utilities.Helper;
 
+import com.jamonapi.MonitorFactory;
+
 /**
  * The problem of learning the description of an existing class
  * in an OWL ontology.
@@ -190,59 +192,111 @@ public class ClassLearningProblem extends LearningProblem {
 		int maxNotCovered = (int) Math.ceil(minAccuracy*classInstances.size());
 		int instancesCovered = 0;
 		int instancesNotCovered = 0;
+		int total = 0;
+		boolean estimatedA = false;
+		
+		double lowerBorderA = 0;
+		int lowerEstimateA = 0;
+		double upperBorderA = 1;
+		int upperEstimateA = classInstances.size();
 		
 		for(Individual ind : classInstances) {
 			if(reasoner.hasType(description, ind)) {
 				instancesCovered++;
-//				System.out.println("covered");
 			} else {
-//				System.out.println(ind + " not covered.");
 				instancesNotCovered ++;
 				if(instancesNotCovered > maxNotCovered) {
 					return -1;
 				}
 			}
+			
+			// approximation step (starting after 10 tests)
+			total = instancesCovered + instancesNotCovered;
+			if(total > 10) {
+				// compute confidence interval
+				double p1 = p1(instancesCovered, total);
+				double p2 = p3(p1, total);
+				lowerBorderA = Math.max(0, p1 - p2);
+				upperBorderA = Math.min(1, p1 + p2);
+				double size = upperBorderA - lowerBorderA;
+				// if the interval has a size smaller than 10%, we can be confident
+				if(size < 0.1) {
+					// we have to distinguish the cases that the accuracy limit is
+					// below, within, or above the limit and that the mean is below
+					// or above the limit
+					double mean = instancesCovered/(double)total;
+					
+					// if the mean is greater than the required minimum, we can accept;
+					// we also accept if the interval is small and close to the minimum
+					// (worst case is to accept a few inaccurate descriptions)
+					if(mean > minAccuracy || (upperBorderA > mean && size < 0.03)) {
+						instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
+						upperEstimateA = (int) upperBorderA * classInstances.size();
+						lowerEstimateA = (int) lowerBorderA * classInstances.size();
+						estimatedA = true;
+						break;
+					}
+					
+					// reject only if the upper border is far away (we are very
+					// certain not to lose a potential solution)
+					if(upperBorderA + 0.1 < minAccuracy) {
+						return -1;
+					}
+				}				
+			}
 		}	
 		
 		double coverage = instancesCovered/(double)classInstances.size();
 		
+		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
+		MonitorFactory.add("aInstances","count", total);
+		
 		// we know that a definition candidate is always subclass of the
-		// intersection of all super classes, so we test only the relevent instances
+		// intersection of all super classes, so we test only the relevant instances
 		// (leads to undesired effects for descriptions not following this rule,
 		// but improves performance a lot);
 		// for learning a superclass of a defined class, similar observations apply;
 
-		// we only test 10 * instances covered; while this is only an
-		// approximation, it is unlikely that further tests will have any
-		// significant impact on the overall accuracy
-		int maxTests = 10 * instancesCovered;
-//		int tests = Math.min(maxTests, superClassInstances.size());
+
 		int testsPerformed = 0;
 		int instancesDescription = 0;
+		boolean estimatedB = false;
 		
 		for(Individual ind : superClassInstances) {
-			
-//			System.out.println(ind);
-			
+
 			if(reasoner.hasType(description, ind)) {
-//				System.out.println("ind: " + ind);
 				instancesDescription++;
 			}
 			
 			testsPerformed++;
 			
-			if(testsPerformed > maxTests) {
-//				System.out.println(testsPerformed);
-//				System.out.println("estimating accuracy by random sampling");
-				// estimate for the number of instances of the description
-				instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
-				break;
+			if(testsPerformed > 10) {
+				
+				// compute confidence interval
+				double p1 = p1(instancesDescription, testsPerformed);
+				double p2 = p3(p1, testsPerformed);
+				double lowerBorder = Math.max(0, p1 - p2);
+				double upperBorder = Math.min(1, p1 + p2);
+				int lowerEstimate = (int) lowerBorder * superClassInstances.size();
+				int upperEstimate = (int) upperBorder * superClassInstances.size();
+				
+				double size;
+				if(estimatedA) {
+//					size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
+					size = getAccuracy(upperBorderA, upperEstimateA/(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(lowerEstimateA+upperEstimate));					
+				} else {
+//					size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
+					size = getAccuracy(coverage, instancesCovered/(instancesCovered+lowerEstimate)) - getAccuracy(coverage, instancesCovered/(instancesCovered+upperEstimate));
+				}
+				
+				if(size < 0.1) {
+					estimatedB = true;
+					// calculate total number of instances
+					instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
+					break;
+				}
 			}
 		}
-		
-//		System.out.println(description);
-//		System.out.println("A and C: " + instancesCovered);
-//		System.out.println("instances description: " + instancesDescription);
 		
 		// since we measured/estimated accuracy only on instances outside A (superClassInstances
 		// does not include instances of A), we need to add it in the denominator
@@ -251,14 +305,9 @@ public class ClassLearningProblem extends LearningProblem {
 			protusion = 0;
 		}
 		
-//		System.out.println(description);
-//		System.out.println(instancesDescription);
-//		System.out.println("prot: " + protusion);
-		
-//		double acc = (coverageFactor * coverage + protusion) / (coverageFactor + 1);
-		
-//		System.out.println("acc: " + acc);
-		
+		MonitorFactory.add("estimatedB","count", estimatedB ? 1 : 0);
+		MonitorFactory.add("bInstances","count", testsPerformed);		
+	
 		return getAccuracy(coverage, protusion);
 	}	
 	
@@ -275,9 +324,27 @@ public class ClassLearningProblem extends LearningProblem {
 			return -1;
 		}
 	}
-
+	
+	// computes accuracy from coverage and protusion (changing this function may
+	// make it necessary to change the appoximation too)
 	private double getAccuracy(double coverage, double protusion) {
 		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
+	}
+	
+	// see paper: expression used in confidence interval estimation
+	private static double p3(double p1, int total) {
+		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
+	}		
+	
+	// see paper: expression used in confidence interval estimation
+//	private static double p2(int success, int total) {
+//		double p1 = p1(success, total);
+//		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
+//	}	
+	
+	// see paper: p'
+	private static double p1(int success, int total) {
+		return (success+2)/(double)(total+4);
 	}
 	
 	/**
