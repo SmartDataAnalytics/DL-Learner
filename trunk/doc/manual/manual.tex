@@ -182,7 +182,19 @@ The implemented algorithms vary from very simple (and usually inappropriate) alg
  \item[Class Expression Learning for Ontology Engineering (CELOE)] \todo{This algorithm is under construction.}
 \end{description}
 
-Please note that while components are interchangeable, it is not possible to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require it to be able to solve each learning problem. In later versions of this manual, we may include a compatibility matrix. In the meantime, you can easily verify whether a combination works by testing it in a conf file.
+Please note that while components are interchangeable, it is not possible to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require it to be able to solve each learning problem. Table \ref{tab:la_lp_comp} provides a compatibility matrix. Note that this can change in future releases, because algorithms may be extended to support new learning problems or drop support for them.
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{c|cccccc}
+learning problem & BF & RG & GP & Ref & Ref II & CELOE \\\hline
+pos only & x & x & & & & x \\
+pos neg & x & x & x & x & x & x \\
+class learning & x & x & & & & x
+\end{tabular}
+\caption{Learning problem - learning algorithm compatibility matrix in DL-Learner. Legend: BF = brute force, RG = random guesser, Ref = Refinement}
+\label{tab:la_lp_comp}
+\end{table}
 
 \section{DL-Learner Interfaces}
 

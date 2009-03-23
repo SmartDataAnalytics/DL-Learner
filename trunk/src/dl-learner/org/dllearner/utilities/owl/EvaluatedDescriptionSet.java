@@ -25,10 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 
 /**
  * A set of evaluated descriptions, which is bound by a maximum

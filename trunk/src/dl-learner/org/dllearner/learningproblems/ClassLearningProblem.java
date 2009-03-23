@@ -27,9 +27,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
@@ -38,9 +36,6 @@ import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.utilities.Helper;
-
-import com.jamonapi.MonitorFactory;
 
 /**
  * The problem of learning the description of an existing class
@@ -52,9 +47,11 @@ import com.jamonapi.MonitorFactory;
 public class ClassLearningProblem extends LearningProblem {
 
 	private NamedClass classToDescribe;
-	private Set<Individual> classInstances;
+	private List<Individual> classInstances;
 	private boolean equivalence = true;
 	private ClassLearningProblemConfigurator configurator;
+	// approximation of accuracy +- 0.05 %
+	private static final double approx = 0.05;
 	
 	// factor for higher weight on coverage (needed for subclass learning)
 	private double coverageFactor;
@@ -92,7 +89,7 @@ public class ClassLearningProblem extends LearningProblem {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
 		}
 		
-		classInstances = reasoner.getIndividuals(classToDescribe);
+		classInstances = new LinkedList<Individual>(reasoner.getIndividuals(classToDescribe));
 		equivalence = (configurator.getType().equals("equivalence"));
 		
 		if(equivalence) {
@@ -113,6 +110,7 @@ public class ClassLearningProblem extends LearningProblem {
 		// any bias through URI names, so we shuffle the list once pseudo-randomly
 		superClassInstances = new LinkedList<Individual>(superClassInstancesTmp);
 		Random rand = new Random(1);
+		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 	}
 	
@@ -134,24 +132,24 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	@Override
 	public ClassScore computeScore(Description description) {
-		Set<Individual> retrieval = reasoner.getIndividuals(description);
+		// overhang
+		Set<Individual> additionalInstances = new TreeSet<Individual>();
+		for(Individual ind : superClassInstances) {
+			if(reasoner.hasType(description, ind)) {
+				additionalInstances.add(ind);
+			}
+		}
 		
+		// coverage
 		Set<Individual> coveredInstances = new TreeSet<Individual>();
-		
-		int instancesCovered = 0;
-		
 		for(Individual ind : classInstances) {
-			if(retrieval.contains(ind)) {
-				instancesCovered++;
+			if(reasoner.hasType(description, ind)) {
 				coveredInstances.add(ind);
 			}
 		}
 		
-		Set<Individual> additionalInstances = Helper.difference(retrieval, coveredInstances);		
-		
-		double coverage = instancesCovered/(double)classInstances.size();
-		double protusion = retrieval.size() == 0 ? 0 : instancesCovered/(double)retrieval.size();
-//		double accuracy = coverage + Math.sqrt(protusion);
+		double coverage = coveredInstances.size()/(double)classInstances.size();
+		double protusion = additionalInstances.size() == 0 ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
 		
 		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion));
 	}	
@@ -165,31 +163,36 @@ public class ClassLearningProblem extends LearningProblem {
 	 */
 	@Override
 	public double getAccuracy(Description description) {
-		Set<Individual> retrieval = reasoner.getIndividuals(description);
-		int instancesCovered = 0;
 		
-		for(Individual ind : classInstances) {
-			if(retrieval.contains(ind)) {
-				instancesCovered++;
+		// overhang
+		int additionalInstances = 0;
+		for(Individual ind : superClassInstances) {
+			if(reasoner.hasType(description, ind)) {
+				additionalInstances++;
 			}
 		}
 		
-		double coverage = instancesCovered/(double)classInstances.size();
-//		double protusion = instancesCovered/(double)retrieval.size();
-		double protusion = retrieval.size() == 0 ? 0 : instancesCovered/(double)retrieval.size();
-//				
+		// coverage
+		int coveredInstances = 0;
+		for(Individual ind : classInstances) {
+			if(reasoner.hasType(description, ind)) {
+				coveredInstances++;
+			}
+		}
 		
-//		return (coverageFactor * coverage + protusion) / (coverageFactor + 1);
+		double coverage = coveredInstances/(double)classInstances.size();
+		double protusion = additionalInstances == 0 ? 0 : coveredInstances/(double)(coveredInstances+additionalInstances);
+		
 		return getAccuracy(coverage, protusion);
 	}
 
 	@Override
-	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+	public double getAccuracyOrTooWeak(Description description, double noise) {
 		// instead of using the standard operation, we use optimisation
 		// and approximation here
 		
 		// we abort when there are too many uncovered positives
-		int maxNotCovered = (int) Math.ceil(minAccuracy*classInstances.size());
+		int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
 		int instancesCovered = 0;
 		int instancesNotCovered = 0;
 		int total = 0;
@@ -220,7 +223,7 @@ public class ClassLearningProblem extends LearningProblem {
 				upperBorderA = Math.min(1, p1 + p2);
 				double size = upperBorderA - lowerBorderA;
 				// if the interval has a size smaller than 10%, we can be confident
-				if(size < 0.1) {
+				if(size < 2 * approx) {
 					// we have to distinguish the cases that the accuracy limit is
 					// below, within, or above the limit and that the mean is below
 					// or above the limit
@@ -229,7 +232,7 @@ public class ClassLearningProblem extends LearningProblem {
 					// if the mean is greater than the required minimum, we can accept;
 					// we also accept if the interval is small and close to the minimum
 					// (worst case is to accept a few inaccurate descriptions)
-					if(mean > minAccuracy || (upperBorderA > mean && size < 0.03)) {
+					if(mean > noise || (upperBorderA > mean && size < 0.03)) {
 						instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
 						upperEstimateA = (int) (upperBorderA * classInstances.size());
 						lowerEstimateA = (int) (lowerBorderA * classInstances.size());
@@ -239,7 +242,7 @@ public class ClassLearningProblem extends LearningProblem {
 					
 					// reject only if the upper border is far away (we are very
 					// certain not to lose a potential solution)
-					if(upperBorderA + 0.1 < minAccuracy) {
+					if(upperBorderA + 0.1 < noise) {
 						return -1;
 					}
 				}				
@@ -315,9 +318,7 @@ public class ClassLearningProblem extends LearningProblem {
 		return getAccuracy(coverage, protusion);
 	}	
 	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
-	 */
+	@Deprecated
 	public double getAccuracyOrTooWeakStandard(Description description, double minAccuracy) {
 		// since we have to perform a retrieval operation anyway, we cannot easily
 		// get a benefit from the accuracy limit
@@ -362,7 +363,7 @@ public class ClassLearningProblem extends LearningProblem {
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescription evaluate(Description description) {
+	public EvaluatedDescriptionClass evaluate(Description description) {
 		ClassScore score = computeScore(description);
 		return new EvaluatedDescriptionClass(description, score);
 	}

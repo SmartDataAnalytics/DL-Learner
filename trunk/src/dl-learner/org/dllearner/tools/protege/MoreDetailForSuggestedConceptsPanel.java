@@ -25,8 +25,8 @@ import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 
 

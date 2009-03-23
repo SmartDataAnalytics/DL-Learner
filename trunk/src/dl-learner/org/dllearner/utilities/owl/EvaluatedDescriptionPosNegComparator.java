@@ -21,7 +21,7 @@ package org.dllearner.utilities.owl;
 
 import java.util.Comparator;
 
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 
 /**
  * Comparator for evaluated descriptions, which orders them by

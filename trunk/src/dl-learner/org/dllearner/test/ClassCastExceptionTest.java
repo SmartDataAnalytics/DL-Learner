@@ -3,7 +3,6 @@ package org.dllearner.test;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -15,6 +14,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.reasoning.FastInstanceChecker;
 
 public class ClassCastExceptionTest {

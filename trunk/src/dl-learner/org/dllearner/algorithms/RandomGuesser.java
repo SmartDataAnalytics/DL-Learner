@@ -34,6 +34,7 @@ import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.ScorePosNeg;
 
 public class RandomGuesser extends LearningAlgorithm {

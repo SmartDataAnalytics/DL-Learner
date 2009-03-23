@@ -33,7 +33,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ROLComponent2Configurator;
@@ -42,8 +41,8 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -72,9 +71,7 @@ public class ROLearner2 {
 	// often the learning problems needn't be accessed directly; instead
 	// use the example sets below and the posonly variable
 	private PosNegLP learningProblem;
-	private PosOnlyLP posOnlyLearningProblem;
 	private Description startDescription;
-	private boolean posOnly = false;
 	private int nrOfExamples;
 	private int nrOfPositiveExamples;
 	private Set<Individual> positiveExamples;
@@ -238,10 +235,9 @@ public class ROLearner2 {
 			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
 			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease) {
 
-		if (learningProblem instanceof PosNegLP) {
+		
 			PosNegLP lp = (PosNegLP) learningProblem;
 			this.learningProblem = lp;
-			posOnly = false;
 			positiveExamples = lp.getPositiveExamples();
 			negativeExamples = lp.getNegativeExamples();
 			nrOfPositiveExamples = positiveExamples.size();
@@ -251,16 +247,6 @@ public class ROLearner2 {
 			// System.out.println(nrOfNegativeExamples);
 			// System.exit(0);
 
-		} else if (learningProblem instanceof PosOnlyLP) {
-			PosOnlyLP lp = (PosOnlyLP) learningProblem;
-			this.posOnlyLearningProblem = lp;
-			posOnly = true;
-			positiveExamples = lp.getPositiveExamples();
-			negativeExamples = new TreeSet<Individual>();
-			nrOfPositiveExamples = lp.getPositiveExamples().size();
-			// nrOfNegativeExamples = lp.getPseudoNegatives().size();
-			nrOfNegativeExamples = 0;
-		}
 		this.configurator = configurator;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
@@ -482,7 +468,9 @@ public class ROLearner2 {
 			// special situation for positive only learning: the expanded node
 			// can become a solution (see explanations
 			// for maxPosOnlyExpansion above)
-			if (posOnly
+			
+			// DEPRECATED CODE
+			if (false
 					&& bestNode.isPosOnlyCandidate()
 					&& (bestNode.getHorizontalExpansion() - bestNode.getConcept().getLength() >= maxPosOnlyExpansion)) {
 
@@ -855,7 +843,7 @@ public class ROLearner2 {
 					tooWeakList.add(refinement);
 				} else {
 					// Lösung gefunden
-					if (quality >= 0 && quality <= allowedMisclassifications && !posOnly) {
+					if (quality >= 0 && quality <= allowedMisclassifications) {
 						solutions.add(newNode);
 					}
 
@@ -1300,17 +1288,11 @@ public class ROLearner2 {
 	}
 
 	public ScorePosNeg getSolutionScore() {
-		if (posOnly)
-			return (ScorePosNeg) posOnlyLearningProblem.computeScore(getBestSolution());
-		else
-			return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
+		return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
 	}
 
 	private ScorePosNeg getScore(Description d) {
-		if (posOnly)
-			return (ScorePosNeg) posOnlyLearningProblem.computeScore(d);
-		else
-			return (ScorePosNeg) learningProblem.computeScore(d);
+		return (ScorePosNeg) learningProblem.computeScore(d);
 	}
 
 	public ExampleBasedNode getStartNode() {

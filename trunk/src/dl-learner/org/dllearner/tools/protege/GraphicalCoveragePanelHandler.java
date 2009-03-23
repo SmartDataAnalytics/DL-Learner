@@ -30,9 +30,9 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.plaf.basic.BasicComboPopup;
 
-import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.

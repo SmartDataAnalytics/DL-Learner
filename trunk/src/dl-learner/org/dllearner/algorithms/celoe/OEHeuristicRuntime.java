@@ -19,6 +19,8 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import java.util.Comparator;
+
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
@@ -29,7 +31,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
-public class OEHeuristicRuntime implements OEHeuristic {
+public class OEHeuristicRuntime implements Comparator<OENode>{
 	
 	// strong penalty for long descriptions
 	private double expansionPenaltyFactor = 0.1;

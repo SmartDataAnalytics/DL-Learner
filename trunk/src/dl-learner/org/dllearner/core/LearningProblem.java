@@ -109,5 +109,5 @@ public abstract class LearningProblem extends Component {
 	 * @return A value between 0 and 1 indicating the quality (of a class description)
 	 * or -1 as described above.
 	 */	
-	public abstract double getAccuracyOrTooWeak(Description description, double minAccuracy);		
+	public abstract double getAccuracyOrTooWeak(Description description, double noise);		
 }
