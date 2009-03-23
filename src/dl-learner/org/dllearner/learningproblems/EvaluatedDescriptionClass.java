@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.algorithms;
+package org.dllearner.learningproblems;
 
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.learningproblems.ClassScore;
 
 /**
  * An evaluated description for learning classes in ontologies.

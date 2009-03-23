@@ -31,9 +31,9 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 /**
  * This class draws the graphical coverage of a learned concept.

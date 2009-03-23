@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
@@ -33,8 +32,8 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.RhoDown;
 import org.dllearner.utilities.Files;
@@ -111,8 +110,6 @@ public class ROLearner extends LearningAlgorithm {
 	DecimalFormat df = new DecimalFormat();	
 	
 	private PosNegLP learningProblem;
-	private PosOnlyLP posOnlyLearningProblem;
-	private boolean posOnly = false;
 	
 	// Menge von Kandidaten für Refinement
 	// (wird für Direktzugriff auf Baumknoten verwendet)
@@ -198,23 +195,13 @@ public class ROLearner extends LearningAlgorithm {
 		super(learningProblem, reasoningService);
 		this.learningProblem = learningProblem;
 		this.configurator =  new ROLearnerConfigurator(this);
-		posOnly=false;
 		baseURI = reasoningService.getBaseURI();
 		
-	}
-	
-	public ROLearner(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
-		super(learningProblem, reasoningService);
-		this.posOnlyLearningProblem = learningProblem;
-		this.configurator =  new ROLearnerConfigurator(this);
-		posOnly=true;
-		baseURI = reasoningService.getBaseURI();
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(PosNegLP.class);
-		problems.add(PosOnlyLP.class);
 		return problems;
 	}
 	
@@ -334,12 +321,9 @@ public class ROLearner extends LearningAlgorithm {
 			Files.clearFile(searchTreeFile);
 		
 		// adjust heuristic
-		if(heuristic == Heuristic.LEXICOGRAPHIC)
+		if(heuristic == Heuristic.LEXICOGRAPHIC) {
 			nodeComparator = new NodeComparator();
-		else {
-			if(posOnly) {
-				throw new RuntimeException("does not work with positive examples only yet");
-			}
+		} else {
 			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());
 		}
 		
@@ -383,17 +367,11 @@ public class ROLearner extends LearningAlgorithm {
 	}
 	
 	private int coveredNegativesOrTooWeak(Description concept) {
-		if(posOnly)
-			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
-		else
-			return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
+		return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
 	}
 	
 	private int getNumberOfNegatives() {
-		if(posOnly)
-			return posOnlyLearningProblem.getPseudoNegatives().size();
-		else
-			return learningProblem.getNegativeExamples().size();
+		return learningProblem.getNegativeExamples().size();
 	}
 	
 	// Kernalgorithmus
@@ -1101,18 +1079,12 @@ public class ROLearner extends LearningAlgorithm {
 	
 //	@Override
 	public ScorePosNeg getSolutionScore() {
-		if(posOnly)
-			return (ScorePosNeg) posOnlyLearningProblem.computeScore(getCurrentlyBestDescription());
-		else
-			return (ScorePosNeg) learningProblem.computeScore(getCurrentlyBestDescription());
+		return (ScorePosNeg) learningProblem.computeScore(getCurrentlyBestDescription());
 	}
 	
 	
 	public ScorePosNeg getSolutionScore(Description d) {
-		if(posOnly)
-			return (ScorePosNeg) posOnlyLearningProblem.computeScore(d);
-		else
-			return (ScorePosNeg) learningProblem.computeScore(d);
+		return (ScorePosNeg) learningProblem.computeScore(d);
 	}
 
 	@Override

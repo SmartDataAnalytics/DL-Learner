@@ -17,21 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.algorithms.celoe;
+package org.dllearner.learningproblems;
+
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
+import org.dllearner.core.owl.Description;
 
 /**
  * @author Jens Lehmann
  *
  */
-public class OEHeuristicStable implements OEHeuristic {
+public class EvaluatedDescriptionPosOnly extends EvaluatedDescription {
 
-	/* (non-Javadoc)
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public int compare(OENode o1, OENode o2) {
-		// TODO Auto-generated method stub
-		return 0;
+	public EvaluatedDescriptionPosOnly(Description description, Score score) {
+		super(description, score);
 	}
 
 }

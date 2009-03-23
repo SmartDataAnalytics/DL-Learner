@@ -46,8 +46,9 @@ import org.dllearner.utilities.Helper;
  * 
  */
 public class PosNegLPStandard extends PosNegLP {
-
+	
 	private PosNegLPStandardConfigurator configurator;
+	
 	@Override
 	public PosNegLPStandardConfigurator getConfigurator() {
 		return configurator;
@@ -209,13 +210,12 @@ public class PosNegLPStandard extends PosNegLP {
 				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
 						negAsNeg);
 			} else {
-				System.out.println("TEST");
 				
 				for (Individual example : positiveExamples) {
 					if (reasoner.hasType(concept, example)) {
 						posAsPos.add(example);
 					} else {
-						posAsNeg.add(example); System.out.println(concept + " " + example);
+						posAsNeg.add(example);
 					}
 				}
 				for (Individual example : negativeExamples) {
@@ -235,17 +235,50 @@ public class PosNegLPStandard extends PosNegLP {
 	 */
 	@Override
 	public double getAccuracy(Description description) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		int coveredPos = 0;
+		int coveredNeg = 0;
+		
+		for (Individual example : positiveExamples) {
+			if (reasoner.hasType(description, example)) {
+				coveredPos++;
+			} 
+		}
+		for (Individual example : negativeExamples) {
+			if (reasoner.hasType(description, example)) {
+				coveredNeg++;
+			}
+		}
+		
+		return coveredPos + negativeExamples.size() - coveredNeg / (double) allExamples.size();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	@Override
-	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getAccuracyOrTooWeak(Description description, double noise) {
+		
+		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
+		
+		int notCoveredPos = 0;
+		int notCoveredNeg = 0;
+		
+		for (Individual example : positiveExamples) {
+			if (!reasoner.hasType(description, example)) {
+				notCoveredPos++;
+				if(notCoveredPos >= maxNotCovered) {
+					return -1;
+				}
+			} 
+		}
+		for (Individual example : negativeExamples) {
+			if (!reasoner.hasType(description, example)) {
+				notCoveredNeg++;
+			}
+		}
+		
+		return positiveExamples.size() - notCoveredPos + notCoveredNeg / (double) allExamples.size();
 	}
 
 	/* (non-Javadoc)
@@ -253,8 +286,8 @@ public class PosNegLPStandard extends PosNegLP {
 	 */
 	@Override
 	public EvaluatedDescription evaluate(Description description) {
-		// TODO Auto-generated method stub
-		return null;
+		ScorePosNeg score = computeScore(description);
+		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 
 }

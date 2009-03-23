@@ -47,8 +47,11 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
@@ -94,13 +97,19 @@ public class CELOE extends LearningAlgorithm {
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
 	
 	private NamedClass classToDescribe;
-	private Set<Individual> classInstances;
+	// examples are either 1.) instances of the class to describe 2.) positive examples
+	// 3.) union of pos.+neg. examples depending on the learning problem at hand
+	private Set<Individual> examples;
+	
+	// CELOE was originally created for learning classes in ontologies, but also
+	// works for other learning problem types
+	private boolean isClassLearningProblem;
 	private boolean isEquivalenceProblem;
 	
 	private long nanoStartTime;
 	
 	// important parameters
-	private double minAcc;
+	private double noise;
 	private double maxDepth;
 	
 	// utility variables
@@ -119,14 +128,14 @@ public class CELOE extends LearningAlgorithm {
 		return configurator;
 	}
 	
-	public CELOE(ClassLearningProblem problem, ReasonerComponent reasoner) {
+	public CELOE(LearningProblem problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
 		configurator = new CELOEConfigurator(this);
 	}
-	
+
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(ClassLearningProblem.class);
+		problems.add(LearningProblem.class);
 		return problems;
 	}	
 	
@@ -155,43 +164,51 @@ public class CELOE extends LearningAlgorithm {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		ClassLearningProblem problem = (ClassLearningProblem) learningProblem;
-		classToDescribe = problem.getClassToDescribe();
-		isEquivalenceProblem = problem.isEquivalenceProblem();		
-		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
-		classHierarchy.thinOutSubsumptionHierarchy();		
-		
-		classInstances = reasoner.getIndividuals(classToDescribe);
+		classHierarchy.thinOutSubsumptionHierarchy();
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
-		// start class: intersection of super classes for definitions (since it needs to
-		// capture all instances), but owl:Thing for learning subclasses (since it is
-		// superfluous to add super classes in this case)
-		if(isEquivalenceProblem) {
-			Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
-			if(superClasses.size() > 1) {
-				startClass = new Intersection(new LinkedList<Description>(superClasses));
-			} else {
-				startClass = (Description) superClasses.toArray()[0];
-			}	
-		} else {
-			startClass = Thing.instance;
-		}		
+		startClass = Thing.instance;
 		
 		// create refinement operator
 		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();
+		prefixes = reasoner.getPrefixes();		
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
-			
+		
 		// we put important parameters in class variables
-		minAcc = configurator.getNoisePercentage()/100d;
-		maxDepth = configurator.getMaxDepth();
+		noise = configurator.getNoisePercentage()/100d;
+		maxDepth = configurator.getMaxDepth();		
+		
+		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
+		// actions specific to ontology engineering
+		if(isClassLearningProblem) {
+			ClassLearningProblem problem = (ClassLearningProblem) learningProblem;
+			classToDescribe = problem.getClassToDescribe();
+			isEquivalenceProblem = problem.isEquivalenceProblem();
+			
+			examples = reasoner.getIndividuals(classToDescribe);
+			
+			// start class: intersection of super classes for definitions (since it needs to
+			// capture all instances), but owl:Thing for learning subclasses (since it is
+			// superfluous to add super classes in this case)
+			if(isEquivalenceProblem) {
+				Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+				if(superClasses.size() > 1) {
+					startClass = new Intersection(new LinkedList<Description>(superClasses));
+				} else {
+					startClass = (Description) superClasses.toArray()[0];
+				}	
+			}				
+		} else if(learningProblem instanceof PosOnlyLP) {
+			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
+		} else if(learningProblem instanceof PosNegLP) {
+			examples = Helper.union(((PosNegLP)learningProblem).getPositiveExamples(),((PosNegLP)learningProblem).getNegativeExamples());
+		}
 	}
 
 	@Override
@@ -221,21 +238,6 @@ public class CELOE extends LearningAlgorithm {
 		reset();
 		nanoStartTime = System.nanoTime();
 		
-		// test
-//		Description testD = null;
-//		try {
-////			testD = KBParser.parseConcept("(\"EPC\" AND EXISTS hasModelElements.(\"Function\" AND ALL previousObjects.BOTTOM))", "http://localhost/aris/sap_model.owl#");
-//			testD = KBParser.parseConcept("(\"EPC\" AND EXISTS hasModelElements.(\"Function\" AND ALL nextObject.BOTTOM))", "http://localhost/aris/sap_model.owl#");
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		double val = learningProblem.getAccuracyOrTooWeak(testD, minAcc);
-//		System.out.println(testD);
-//		System.out.println(val);
-//		System.out.println(testD.getDepth());
-//		System.exit(0);
-		
 		// highest accuracy so far
 		double highestAccuracy = 0.0;
 		OENode nextNode;
@@ -244,8 +246,6 @@ public class CELOE extends LearningAlgorithm {
 		
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
-
-//			System.out.println(startNode.toTreeString(baseURI));
 			
 			if(bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBest().getAccuracy();
@@ -271,7 +271,6 @@ public class CELOE extends LearningAlgorithm {
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
 					
 					Monitor mon2 = MonitorFactory.start("addNode");
-//					boolean added = 
 					addNode(refinement, nextNode);
 					mon2.stop();
 
@@ -281,7 +280,6 @@ public class CELOE extends LearningAlgorithm {
 			
 			updateMinMaxHorizExp(nextNode);
 			
-			// Anzahl Schleifendurchläufe
 			loop++;
 		}
 
@@ -292,7 +290,6 @@ public class CELOE extends LearningAlgorithm {
 		}
 		
 		// print solution(s)
-//		logger.info("solution : " + bestDescriptionToString());
 		logger.info("solutions:\n" + getSolutionString());
 		
 //		System.out.println(startNode.toTreeString(baseURI));
@@ -302,7 +299,7 @@ public class CELOE extends LearningAlgorithm {
 
 	private OENode getNextNodeToExpand() {
 		// we expand the best node of those, which have not achieved 100% accuracy
-		// already and have a horizontal expansion equalling their length
+		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = nodes.descendingIterator();
 		while(it.hasNext()) {
@@ -321,7 +318,7 @@ public class CELOE extends LearningAlgorithm {
 	private TreeSet<Description> refineNode(OENode node) {
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
-		// otherwise you may see rarely occuring but critical false ordering in the nodes set)
+		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
@@ -348,7 +345,7 @@ public class CELOE extends LearningAlgorithm {
 		}
 		
 		// quality of description (return if too weak)
-		double accuracy = learningProblem.getAccuracyOrTooWeak(description, minAcc);
+		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		descriptionTests++;
 //		System.out.println(description + " " + accuracy);
 		if(accuracy == -1) {
@@ -402,23 +399,25 @@ public class CELOE extends LearningAlgorithm {
 	
 	// checks whether the description is allowed
 	private boolean isDescriptionAllowed(Description description, OENode parentNode) {
-		if(isEquivalenceProblem) {
-			// the class to learn must not appear on the outermost property level
-			if(occursOnFirstLevel(description, classToDescribe)) {
-				return false;
-			}
-		} else {
-			// none of the superclasses of the class to learn must appear on the
-			// outermost property level
-			TreeSet<Description> toTest = new TreeSet<Description>();
-			toTest.add(classToDescribe);
-			while(!toTest.isEmpty()) {
-				Description d = toTest.pollFirst();
-				if(occursOnFirstLevel(description, d)) {
+		if(isClassLearningProblem) {
+			if(isEquivalenceProblem) {
+				// the class to learn must not appear on the outermost property level
+				if(occursOnFirstLevel(description, classToDescribe)) {
 					return false;
 				}
-				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
-			}
+			} else {
+				// none of the superclasses of the class to learn must appear on the
+				// outermost property level
+				TreeSet<Description> toTest = new TreeSet<Description>();
+				toTest.add(classToDescribe);
+				while(!toTest.isEmpty()) {
+					Description d = toTest.pollFirst();
+					if(occursOnFirstLevel(description, d)) {
+						return false;
+					}
+					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
+				}
+			}			
 		}
 		
 		// perform forall sanity tests
@@ -437,7 +436,7 @@ public class CELOE extends LearningAlgorithm {
 				// transform [r,s] to \exists r.\exists s.\top
 				Description existentialContext = context.toExistentialContext();
 				boolean fillerFound = false;
-				for(Individual instance : classInstances) {
+				for(Individual instance : examples) {
 					if(reasoner.hasType(existentialContext, instance)) {
 //						System.out.println(instance + "  " + existentialContext);
 						fillerFound = true;

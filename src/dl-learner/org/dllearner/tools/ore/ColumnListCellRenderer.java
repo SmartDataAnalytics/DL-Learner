@@ -32,7 +32,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 
 /**
  * List cell renderer for 2 columns.
