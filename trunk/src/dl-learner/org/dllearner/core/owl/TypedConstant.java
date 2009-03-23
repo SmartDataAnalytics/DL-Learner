@@ -55,6 +55,14 @@ public class TypedConstant extends Constant implements Comparable<TypedConstant>
 		return literal;
 //		return literal + "^^" + datatype;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return literal;
+	}
 
 	/**
 	 * @return the datatype
@@ -87,5 +95,7 @@ public class TypedConstant extends Constant implements Comparable<TypedConstant>
 	public String toString() {
 		return literal + "^^" + datatype;
 	}
+
+
 
 }

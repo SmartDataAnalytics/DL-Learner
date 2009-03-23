@@ -73,6 +73,15 @@ public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 	 */
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 
 }
