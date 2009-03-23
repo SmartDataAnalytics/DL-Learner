@@ -26,5 +26,8 @@ public interface KBElement {
     
     public String toKBSyntaxString(String baseURI, Map<String,String> prefixes);
     
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes);
+        
     public void accept(KBElementVisitor visitor);
+
 }

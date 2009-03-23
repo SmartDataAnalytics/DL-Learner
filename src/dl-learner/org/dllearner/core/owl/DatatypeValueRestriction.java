@@ -40,8 +40,7 @@ public abstract class DatatypeValueRestriction extends ValueRestriction {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toManchesterSyntaxString(baseURI, prefixes);
 	}
 
 	/* (non-Javadoc)
@@ -66,7 +65,7 @@ public abstract class DatatypeValueRestriction extends ValueRestriction {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + " = " + value.toString(baseURI, prefixes);
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toString(baseURI, prefixes);
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {

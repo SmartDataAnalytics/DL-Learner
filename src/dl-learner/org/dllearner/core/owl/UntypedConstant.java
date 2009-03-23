@@ -69,6 +69,17 @@ public class UntypedConstant extends Constant {
 			return literal;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		if(hasLang)
+			return literal + "@" + lang;
+		else
+			return literal;		
+	}		
+	
 	/**
 	 * @return the lang
 	 */
@@ -97,5 +108,7 @@ public class UntypedConstant extends Constant {
 		} else {
 			return literal;
 		}
-	}	
+	}
+
+
 }
