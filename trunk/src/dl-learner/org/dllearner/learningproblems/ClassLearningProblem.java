@@ -149,7 +149,7 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 		
 		double coverage = coveredInstances.size()/(double)classInstances.size();
-		double protusion = additionalInstances.size() == 0 ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
+		double protusion = (additionalInstances.size() + coveredInstances.size() == 0) ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
 		
 		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion));
 	}	
