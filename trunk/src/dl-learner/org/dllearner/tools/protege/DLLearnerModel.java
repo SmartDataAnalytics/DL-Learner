@@ -290,7 +290,7 @@ public class DLLearnerModel implements Runnable{
 			e.printStackTrace();
 		}
 		cm.applyConfigEntry(la, "useNegation", false);
-		cm.applyConfigEntry(la, "noisePercentage", 5.0);
+		cm.applyConfigEntry(la, "noisePercentage", view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy());
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
 				.getPosAndNegSelectPanel().getOptionPanel()
 				.getMaxExecutionTime());

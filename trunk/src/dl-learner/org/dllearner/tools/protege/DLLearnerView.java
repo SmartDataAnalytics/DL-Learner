@@ -108,6 +108,7 @@ public class DLLearnerView {
 	private final OWLEditorKit editorKit;
 	private final JPanel learnerPanel;
 	private final JScrollPane learnerScroll;
+	private static  final int SCROLL_SPPED = 10;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -133,7 +134,7 @@ public class DLLearnerView {
 		adv = new JLabel("Advanced Settings");
 		advanced = new JToggleButton(icon);
 		advanced.setVisible(true);
-		run = new JButton("Suggest " + label + " description");
+		run = new JButton("suggest class expression");
 		accept = new JButton("ADD");
 		addButtonPanel = new JPanel(new BorderLayout());
 		sugPanel.addSuggestPanelMouseListener(action);
@@ -141,13 +142,14 @@ public class DLLearnerView {
 		errorMessage.setEditable(false);
 		hint = new JTextArea();
 		hint.setEditable(false);
-		hint.setText("To get suggestions for class descriptions, please click the button above.");
+		hint.setText("To get suggestions for class expression, please click the button above.");
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(null);
 		accept.setPreferredSize(new Dimension(260, 50));
 		advanced.setName("Advanced");
 		learnerScroll.setPreferredSize(new Dimension(600, 400));
+		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPPED);
 		posPanel = new PosAndNegSelectPanel(model, action);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
 		this.addAcceptButtonListener(this.action);
@@ -388,9 +390,9 @@ public class DLLearnerView {
 		String error = "learning\nsuccessful";
 		String message = "";
 		if(isInconsistent) {
-			message = "Class descriptions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
+			message = "Class expressions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
 		} else {
-			message = "To view details about why a class description was suggested, please click on it.";
+			message = "To view details about why a class expression was suggested, please click on it.";
 		}
 		run.setEnabled(true);
 		// start the algorithm and print the best concept found
