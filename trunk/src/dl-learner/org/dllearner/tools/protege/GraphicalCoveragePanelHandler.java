@@ -93,8 +93,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				&& m.getY() >= panel.getY1() && m.getY() <= panel.getY2()) {
 			panel.getGraphicalCoveragePanel().setToolTipText(
 					"To view all Individuals please click on the plus");
-		} else {
-			panel.getGraphicalCoveragePanel().setToolTipText(null);
 		}
 
 		Vector<IndividualPoint> v = panel.getIndividualVector();
@@ -131,7 +129,12 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				int i = covInd.size();
 				if (i > 0) {
 					for (Individual ind : covInd) {
-						individualComboBox.add(ind.toString());
+						Set<String> uriString = model.getOntologyURIString();
+						for(String uri : uriString) {
+							if(ind.toString().contains(uri)) {
+								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
+							}
+						}
 					}
 					indiBox = new JComboBox(individualComboBox);
 					scrollPopup = new BasicComboPopup(indiBox);
@@ -162,7 +165,12 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				int i = addInd.size();
 				if (i > 0) {
 					for (Individual ind : addInd) {
-						individualComboBox.add(ind.toString());
+						Set<String> uriString = model.getOntologyURIString();
+						for(String uri : uriString) {
+							if(ind.toString().contains(uri)) {
+								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
+							}
+						}
 					}
 					indiBox = new JComboBox(individualComboBox);
 					scrollPopup = new BasicComboPopup(indiBox);
@@ -187,7 +195,12 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				int i = notCovInd.size();
 				if (i > 0) {
 					for (Individual ind : notCovInd) {
-						individualComboBox.add(ind.toString());
+						Set<String> uriString = model.getOntologyURIString();
+						for(String uri : uriString) {
+							if(ind.toString().contains(uri)) {
+								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
+							}
+						}
 					}
 					indiBox = new JComboBox(individualComboBox);
 					scrollPopup = new BasicComboPopup(indiBox);

@@ -57,7 +57,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private int shiftXAxis;
 	private int distortionOld;
 	private final Ellipse2D oldConcept;
-	private Ellipse2D newConcept;
+	private final Ellipse2D newConcept;
 
 	private EvaluatedDescription eval;
 	private final DLLearnerModel model;
@@ -120,9 +120,9 @@ public class GraphicalCoveragePanel extends JPanel {
 		points = new Vector<IndividualPoint>();
 		this.computeGraphics();
 		handler = new GraphicalCoveragePanelHandler(this, desc, model);
-		oldConcept = new Ellipse2D.Float(ELLIPSE_X_AXIS + (2 * adjustment),
+		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment),
 				ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
-		newConcept = new Ellipse2D.Float(ELLIPSE_X_AXIS + shiftXAxis
+		newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
 				+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
 				+ distortionOld);
 		this.computeIndividualPoints();
@@ -148,7 +148,15 @@ public class GraphicalCoveragePanel extends JPanel {
 				g2D.drawString(conceptVector.get(i), 320, p);
 				p = p + 20;
 			}
-
+			g2D.setColor(darkGreen);
+			g2D.drawString("*", 310, p+3);
+			g2D.setColor(Color.BLACK);
+			g2D.drawString("positive Example", 320, p);
+			p = p + 20;
+			g2D.setColor(darkRed);
+			g2D.drawString("*", 310, p+3);
+			g2D.setColor(Color.BLACK);
+			g2D.drawString("negative Example", 320, p);
 			g2D.setColor(Color.YELLOW);
 			g2D.fill(oldConcept);
 			g2D.fillOval(310, 0, 9, 9);
@@ -301,7 +309,7 @@ public class GraphicalCoveragePanel extends JPanel {
 					.getAdditionalInstances().size();
 			distortionOld = 0;
 			adjustment = 0;
-			Ellipse2D old = new Ellipse2D.Float(ELLIPSE_X_AXIS, ELLIPSE_Y_AXIS,
+			Ellipse2D old = new Ellipse2D.Double(ELLIPSE_X_AXIS, ELLIPSE_Y_AXIS,
 					WIDTH, HEIGHT);
 			x1 = (int) old.getCenterX() - PLUS_SIZE;
 			x2 = (int) old.getCenterX() + PLUS_SIZE;
@@ -313,9 +321,9 @@ public class GraphicalCoveragePanel extends JPanel {
 			shiftXAxis = (int) Math.round(WIDTH * (1 - coverage));
 			if (additionalIndividualSize != 0) {
 				distortionOld = (int) Math.round(WIDTH * 0.3);
-				newConcept = new Ellipse2D.Float(ELLIPSE_X_AXIS + shiftXAxis,
+				Ellipse2D newer = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis,
 						ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
-				adjustment = (int) Math.round(newConcept.getCenterY() / 4);
+				adjustment = (int) Math.round(newer.getCenterY() / 4);
 			}
 			this.renderPlus();
 		}
@@ -353,24 +361,27 @@ public class GraphicalCoveragePanel extends JPanel {
 		while (i > 0) {
 			int sub = conceptNew.indexOf(" ");
 			String subString = conceptNew.substring(0, sub) + " ";
-			conceptNew = conceptNew.replace(conceptNew.substring(0, sub+1), "");
-			while(sub < SUBSTRING_SIZE) {
-				if(conceptNew.length() > 0 && conceptNew.contains(" ")) {
-				sub = conceptNew.indexOf(" ");
-				if(subString.length() + sub < SUBSTRING_SIZE) {
-				subString = subString +  conceptNew.substring(0, sub) + " ";
-				conceptNew = conceptNew.replace(conceptNew.substring(0, sub+1), "");
-				System.out.println("string: " + subString + " lenght: " + subString.length());
-				sub = subString.length();
+			conceptNew = conceptNew.replace(conceptNew.substring(0, sub + 1),
+					"");
+			while (sub < SUBSTRING_SIZE) {
+				if (conceptNew.length() > 0 && conceptNew.contains(" ")) {
+					sub = conceptNew.indexOf(" ");
+					if (subString.length() + sub < SUBSTRING_SIZE) {
+						subString = subString + conceptNew.substring(0, sub)
+								+ " ";
+						conceptNew = conceptNew.replace(conceptNew.substring(0,
+								sub + 1), "");
+						sub = subString.length();
+					} else {
+						break;
+					}
 				} else {
-					break;
-				}
-				} else {
-					if(subString.length() + conceptNew.length() > SUBSTRING_SIZE + SPACE_SIZE) {
-					conceptVector.add(subString);
-					subString = conceptNew;
-					conceptNew = "";
-					break;
+					if (subString.length() + conceptNew.length() > SUBSTRING_SIZE
+							+ SPACE_SIZE) {
+						conceptVector.add(subString);
+						subString = conceptNew;
+						conceptNew = "";
+						break;
 					} else {
 						subString = subString + conceptNew;
 						conceptNew = "";
@@ -395,16 +406,20 @@ public class GraphicalCoveragePanel extends JPanel {
 				flag = true;
 				if (i < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (this.isInCircle(x, y, newConcept)
-								&& this.isInCircle(x, y, oldConcept)
+						if (newConcept.contains(x, y)
+								&& oldConcept.contains(x, y)
 								&& !(x >= this.getX1() + this.getShiftCovered()
-										- 5
 										&& x <= this.getX2()
-												+ this.getShiftCovered() + 5
-										&& y >= this.getY1() - 5 && y <= this
-										.getY2() + 5)) {
-							posCovIndVector.add(new IndividualPoint("*",
-									(int) x, (int) y, ind.toString()));
+												+ this.getShiftCovered()
+										&& y >= this.getY1() && y <= this
+										.getY2())) {
+							Set<String> uriString = model.getOntologyURIString();
+							for(String uri : uriString) {
+								if(ind.toString().contains(uri)) {
+									posCovIndVector.add(new IndividualPoint("*",
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+								}
+							}
 							i++;
 							flag = false;
 
@@ -429,29 +444,38 @@ public class GraphicalCoveragePanel extends JPanel {
 				flag = true;
 				if (j < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (!this.isInCircle(x, y, oldConcept)
-								&& this.isInCircle(x, y, newConcept)
+						if (!oldConcept.contains(x, y)
+								&& newConcept.contains(x, y)
 								&& !(x >= this.getX1()
-										+ this.getShiftNewConcept() - 5
+										+ this.getShiftNewConcept()
 										&& x <= this.getX2()
-												+ this.getShiftNewConcept() + 5
-										&& y >= this.getY1() - 5 && y <= this
-										.getY2() + 5)
+												+ this.getShiftNewConcept()
+										&& y >= this.getY1() && y <= this
+										.getY2())
 								&& !(x >= this.getX1()
-										+ this.getShiftNewConceptX() - 5
+										+ this.getShiftNewConceptX()
 										&& x <= this.getX2()
 												+ this.getShiftNewConceptX()
-												+ 5
 										&& y >= this.getY1()
-												+ this.getShiftNewConcept() - 5 && y <= this
+												+ this.getShiftNewConcept() && y <= this
 										.getY2()
-										+ 5 + this.getShiftNewConcept())) {
+										+ this.getShiftNewConcept())) {
 							if (id.equals(EQUI_STRING)) {
-								posNotCovIndVector.add(new IndividualPoint("*",
-										(int) x, (int) y, ind.toString()));
+								Set<String> uriString = model.getOntologyURIString();
+								for(String uri : uriString) {
+									if(ind.toString().contains(uri)) {
+										posNotCovIndVector.add(new IndividualPoint("*",
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+									}
+								}
 							} else {
-								additionalIndividuals.add(new IndividualPoint(
-										"*", (int) x, (int) y, ind.toString()));
+								Set<String> uriString = model.getOntologyURIString();
+								for(String uri : uriString) {
+									if(ind.toString().contains(uri)) {
+										additionalIndividuals.add(new IndividualPoint("*",
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+									}
+								}
 							}
 							j++;
 							flag = false;
@@ -477,16 +501,21 @@ public class GraphicalCoveragePanel extends JPanel {
 				flag = true;
 				if (k < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (this.isInCircle(x, y, oldConcept)
-								&& !this.isInCircle(x, y, newConcept)
-								&& !(x >= this.getX1() - 5
+						if (oldConcept.contains(x, y)
+								&& !newConcept.contains(x, y)
+								&& !(x >= this.getX1()
 										- this.getShiftOldConcept()
-										&& x <= this.getX2() + 5
+										&& x <= this.getX2()
 												- this.getShiftOldConcept()
-										&& y >= this.getY1() - 5 && y <= this
-										.getY2() + 5)) {
-							posNotCovIndVector.add(new IndividualPoint("*",
-									(int) x, (int) y, ind.toString()));
+										&& y >= this.getY1() && y <= this
+										.getY2())) {
+							Set<String> uriString = model.getOntologyURIString();
+							for(String uri : uriString) {
+								if(ind.toString().contains(uri)) {
+									posNotCovIndVector.add(new IndividualPoint("*",
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+								}
+							}
 							k++;
 							flag = false;
 							x = random.nextInt(300);
@@ -622,7 +651,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	public boolean isInCircle(double x, double y, Ellipse2D ell) {
 		int r = (WIDTH / 2) * (WIDTH / 2);
 		int n = (int) ((x - ell.getCenterX()) * (x - ell.getCenterX()))
-				+ (int) ((y - ell.getCenterY()) * (y - ell.getCenterY()));
+				+ (int) ((y - ell.getCenterY()-5) * (y - ell.getCenterY()-5));
 		if (n <= r) {
 			return true;
 		} else {
