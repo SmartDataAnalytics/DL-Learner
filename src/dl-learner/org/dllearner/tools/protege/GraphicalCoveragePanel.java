@@ -50,6 +50,8 @@ public class GraphicalCoveragePanel extends JPanel {
 	private static final int ELLIPSE_Y_AXIS = 5;
 	private static final int MAX_NUMBER_OF_INDIVIDUAL_POINTS = 20;
 	private static final int PLUS_SIZE = 5;
+	private static final int SUBSTRING_SIZE = 25;
+	private static final int SPACE_SIZE = 7;
 	private static final String EQUI_STRING = "equivalent class";
 	private final String id;
 	private int shiftXAxis;
@@ -80,6 +82,8 @@ public class GraphicalCoveragePanel extends JPanel {
 	private int centerX;
 	private int centerY;
 	private final Random random;
+	private final Color darkGreen;
+	private final Color darkRed;
 	private final MoreDetailForSuggestedConceptsPanel panel;
 
 	/**
@@ -103,8 +107,10 @@ public class GraphicalCoveragePanel extends JPanel {
 		this.repaint();
 		eval = desc;
 		model = m;
-		panel = p;;
+		panel = p;
 		id = model.getID();
+		darkGreen = new Color(0, 100, 0);
+		darkRed = new Color(205, 0, 0);
 		random = new Random();
 		conceptNew = concept;
 		conceptVector = new Vector<String>();
@@ -132,15 +138,21 @@ public class GraphicalCoveragePanel extends JPanel {
 
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
-			g2D.setColor(Color.YELLOW);
-			g2D.fill(oldConcept);
-			g2D.drawString(model.getOldConceptOWLAPI().toString(), 310, 10);
+			g2D.setColor(Color.BLACK);
+			g2D.drawString(model.getOldConceptOWLAPI().toString(), 320, 10);
 			g2D.setColor(Color.ORANGE);
+			g2D.fillOval(310, 20, 9, 9);
+			g2D.setColor(Color.black);
 			int p = 30;
 			for (int i = 0; i < conceptVector.size(); i++) {
-				g2D.drawString(conceptVector.get(i), 310, p);
+				g2D.drawString(conceptVector.get(i), 320, p);
 				p = p + 20;
 			}
+
+			g2D.setColor(Color.YELLOW);
+			g2D.fill(oldConcept);
+			g2D.fillOval(310, 0, 9, 9);
+			g2D.setColor(Color.ORANGE);
 			g2D.setComposite(ac);
 			g2D.fill(newConcept);
 			g2D.setColor(Color.BLACK);
@@ -223,7 +235,8 @@ public class GraphicalCoveragePanel extends JPanel {
 						+ shiftNewConcept, y2 + 1);
 			}
 
-			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0 && ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0) {
+			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0
+					&& ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0) {
 				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
 						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y1 - 1
 						+ shiftNewConcept);
@@ -256,14 +269,14 @@ public class GraphicalCoveragePanel extends JPanel {
 			}
 
 			for (int i = 0; i < posCovIndVector.size(); i++) {
-				g2D.setColor(Color.GREEN);
+				g2D.setColor(darkGreen);
 				g2D.drawString(posCovIndVector.get(i).getPoint(),
 						posCovIndVector.get(i).getXAxis(), posCovIndVector.get(
 								i).getYAxis());
 			}
 
 			for (int i = 0; i < posNotCovIndVector.size(); i++) {
-				g2D.setColor(Color.RED);
+				g2D.setColor(darkRed);
 				g2D.drawString(posNotCovIndVector.get(i).getPoint(),
 						posNotCovIndVector.get(i).getXAxis(),
 						posNotCovIndVector.get(i).getYAxis());
@@ -335,17 +348,37 @@ public class GraphicalCoveragePanel extends JPanel {
 				shiftNewConcept = 2 * shiftNewConceptX;
 			}
 		}
-		
+
 		int i = conceptNew.length();
-		int z = 0;
-		while(i > 0) {
-			if(i >= 39 ) {
-				z = 39;
-			} else {
-				z = conceptNew.length();
+		while (i > 0) {
+			int sub = conceptNew.indexOf(" ");
+			String subString = conceptNew.substring(0, sub) + " ";
+			conceptNew = conceptNew.replace(conceptNew.substring(0, sub+1), "");
+			while(sub < SUBSTRING_SIZE) {
+				if(conceptNew.length() > 0 && conceptNew.contains(" ")) {
+				sub = conceptNew.indexOf(" ");
+				if(subString.length() + sub < SUBSTRING_SIZE) {
+				subString = subString +  conceptNew.substring(0, sub) + " ";
+				conceptNew = conceptNew.replace(conceptNew.substring(0, sub+1), "");
+				System.out.println("string: " + subString + " lenght: " + subString.length());
+				sub = subString.length();
+				} else {
+					break;
+				}
+				} else {
+					if(subString.length() + conceptNew.length() > SUBSTRING_SIZE + SPACE_SIZE) {
+					conceptVector.add(subString);
+					subString = conceptNew;
+					conceptNew = "";
+					break;
+					} else {
+						subString = subString + conceptNew;
+						conceptNew = "";
+						break;
+					}
+				}
 			}
-			conceptVector.add(conceptNew.substring(0, z));
-			conceptNew = conceptNew.replace(conceptNew.substring(0, z), "");
+			conceptVector.add(subString);
 			i = conceptNew.length();
 		}
 	}
@@ -362,13 +395,14 @@ public class GraphicalCoveragePanel extends JPanel {
 				flag = true;
 				if (i < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (newConcept.contains(x, y)
-								&& oldConcept.contains(x, y)
-								&& !(x >= this.getX1() + this.getShiftCovered()-5
+						if (this.isInCircle(x, y, newConcept)
+								&& this.isInCircle(x, y, oldConcept)
+								&& !(x >= this.getX1() + this.getShiftCovered()
+										- 5
 										&& x <= this.getX2()
-												+ this.getShiftCovered()+5
-										&& y >= this.getY1()-5 && y <= this
-										.getY2()+5)) {
+												+ this.getShiftCovered() + 5
+										&& y >= this.getY1() - 5 && y <= this
+										.getY2() + 5)) {
 							posCovIndVector.add(new IndividualPoint("*",
 									(int) x, (int) y, ind.toString()));
 							i++;
@@ -395,21 +429,23 @@ public class GraphicalCoveragePanel extends JPanel {
 				flag = true;
 				if (j < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (!oldConcept.contains(x, y)
-								&& newConcept.contains(x, y)
+						if (!this.isInCircle(x, y, oldConcept)
+								&& this.isInCircle(x, y, newConcept)
 								&& !(x >= this.getX1()
-										+ this.getShiftNewConcept()-5
+										+ this.getShiftNewConcept() - 5
 										&& x <= this.getX2()
-												+ this.getShiftNewConcept()+5
-										&& y >= this.getY1()-5 && y <= this
-										.getY2()+5) && !(x >= this.getX1()
-										+ this.getShiftNewConceptX()-5
+												+ this.getShiftNewConcept() + 5
+										&& y >= this.getY1() - 5 && y <= this
+										.getY2() + 5)
+								&& !(x >= this.getX1()
+										+ this.getShiftNewConceptX() - 5
 										&& x <= this.getX2()
-												+ this.getShiftNewConceptX()+5
+												+ this.getShiftNewConceptX()
+												+ 5
 										&& y >= this.getY1()
-												+ this.getShiftNewConcept()-5 && y <= this
-										.getY2()+5
-										+ this.getShiftNewConcept())) {
+												+ this.getShiftNewConcept() - 5 && y <= this
+										.getY2()
+										+ 5 + this.getShiftNewConcept())) {
 							if (id.equals(EQUI_STRING)) {
 								posNotCovIndVector.add(new IndividualPoint("*",
 										(int) x, (int) y, ind.toString()));
@@ -441,14 +477,14 @@ public class GraphicalCoveragePanel extends JPanel {
 				flag = true;
 				if (k < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
-						if (oldConcept.contains(x, y)
-								&& !newConcept.contains(x, y)
-								&& !(x >= this.getX1()-5
+						if (this.isInCircle(x, y, oldConcept)
+								&& !this.isInCircle(x, y, newConcept)
+								&& !(x >= this.getX1() - 5
 										- this.getShiftOldConcept()
-										&& x <= this.getX2()+5
+										&& x <= this.getX2() + 5
 												- this.getShiftOldConcept()
-										&& y >= this.getY1()-5 && y <= this
-										.getY2()+5)) {
+										&& y >= this.getY1() - 5 && y <= this
+										.getY2() + 5)) {
 							posNotCovIndVector.add(new IndividualPoint("*",
 									(int) x, (int) y, ind.toString()));
 							k++;
@@ -581,5 +617,16 @@ public class GraphicalCoveragePanel extends JPanel {
 	 */
 	public EvaluatedDescription getEvaluateddescription() {
 		return eval;
+	}
+
+	public boolean isInCircle(double x, double y, Ellipse2D ell) {
+		int r = (WIDTH / 2) * (WIDTH / 2);
+		int n = (int) ((x - ell.getCenterX()) * (x - ell.getCenterX()))
+				+ (int) ((y - ell.getCenterY()) * (y - ell.getCenterY()));
+		if (n <= r) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

@@ -53,12 +53,12 @@ public class OptionPanel extends JPanel {
 		nrOfConceptsLabel = new JLabel("maximum number of results");
 		nrOfConceptsLabel.setBounds(5, 80, 150, 40);
 		
-		minAccuracy = new JSlider(50, 100, 90);
+		minAccuracy = new JSlider(0, 50, 5);
 		minAccuracy.setPaintTicks(true);
 		minAccuracy.setMajorTickSpacing(10);
 		minAccuracy.setMinorTickSpacing(1);
 		minAccuracy.setPaintLabels(true);
-		minAccuracy.setBounds(160, 0, 200, 40);
+		minAccuracy.setBounds(200, 0, 200, 40);
 
 		
 		maxExecutionTime = new JSlider(2, 20, 8);
@@ -66,7 +66,7 @@ public class OptionPanel extends JPanel {
 		maxExecutionTime.setMajorTickSpacing(5);
 		maxExecutionTime.setMinorTickSpacing(1);
 		maxExecutionTime.setPaintLabels(true);
-		maxExecutionTime.setBounds(160, 40, 200, 40);
+		maxExecutionTime.setBounds(200, 40, 200, 40);
 
 		
 		nrOfConcepts = new JSlider(2, 20, 10);
@@ -74,7 +74,7 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMajorTickSpacing(2);
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
-		nrOfConcepts.setBounds(160, 80, 200, 40);
+		nrOfConcepts.setBounds(200, 80, 200, 40);
 
 		add(minAccuracyLabel);
 		add(minAccuracy);
@@ -89,7 +89,7 @@ public class OptionPanel extends JPanel {
 	 * @return double minAccuracy
 	 */
 	public double getMinAccuracy() {
-		int acc = minAccuracy.getValue();
+		double acc = minAccuracy.getValue();
 		accuracy = (acc/100.0);
 		return accuracy;
 	}

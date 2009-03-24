@@ -102,7 +102,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals("Suggest " + id +" description")) {
+		if (z.getActionCommand().equals("suggest class expression")) {
 			model.setKnowledgeSource();
 			model.setReasoner();
 			model.setLearningProblem();
@@ -126,7 +126,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "class description\nadded";
+			String message = "class expression\nadded";
 			view.renderErrorMessage(message);
 		}
 		if (z.getActionCommand().equals("")) {
