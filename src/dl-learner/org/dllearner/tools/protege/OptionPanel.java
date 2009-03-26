@@ -44,14 +44,14 @@ public class OptionPanel extends JPanel {
 	 * Constructor for the Option Panel. 
 	 */
 	public OptionPanel() {
-		setPreferredSize(new Dimension(490, 100));
+		setPreferredSize(new Dimension(490, 150));
 		setLayout(null);
 		minAccuracyLabel = new JLabel("noise in %");
 		minAccuracyLabel.setBounds(5, 0, 150, 40);
 		maxExecutionTimeLabel = new JLabel("maximum execution time");
-		maxExecutionTimeLabel.setBounds(5, 40, 150, 40);
+		maxExecutionTimeLabel.setBounds(5, 60, 150, 40);
 		nrOfConceptsLabel = new JLabel("max. number of results");
-		nrOfConceptsLabel.setBounds(5, 80, 150, 40);
+		nrOfConceptsLabel.setBounds(5, 120, 150, 40);
 		
 		minAccuracy = new JSlider(0, 50, 5);
 		minAccuracy.setPaintTicks(true);
@@ -66,7 +66,7 @@ public class OptionPanel extends JPanel {
 		maxExecutionTime.setMajorTickSpacing(10);
 		maxExecutionTime.setMinorTickSpacing(1);
 		maxExecutionTime.setPaintLabels(true);
-		maxExecutionTime.setBounds(200, 40, 200, 40);
+		maxExecutionTime.setBounds(200, 60, 200, 40);
 
 		
 		nrOfConcepts = new JSlider(2, 20, 10);
@@ -74,7 +74,7 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMajorTickSpacing(2);
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
-		nrOfConcepts.setBounds(200, 80, 200, 40);
+		nrOfConcepts.setBounds(200, 120, 200, 40);
 
 		add(minAccuracyLabel);
 		add(minAccuracy);

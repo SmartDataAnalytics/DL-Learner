@@ -229,9 +229,11 @@ public class DLLearnerView {
 	public void setIconToggled(boolean toggled) {
 		if (toggled) {
 			advanced.setIcon(toggledIcon);
+			learnerPanel.setPreferredSize(new Dimension(575, 400));
 		}
 		if (!toggled) {
 			advanced.setIcon(icon);
+			learnerPanel.setPreferredSize(new Dimension(575, 350));
 		}
 	}
 	
@@ -249,7 +251,7 @@ public class DLLearnerView {
 		learner.add(advanced);
 		learner.add(posPanel);
 		learner.add(detail);
-		learnerPanel.setPreferredSize(new Dimension(575, 560));
+		learnerPanel.setPreferredSize(new Dimension(575, 620));
 		learnerPanel.removeAll();
 		learnerPanel.add(learner);
 		learnerScroll.setViewportView(learnerPanel);
