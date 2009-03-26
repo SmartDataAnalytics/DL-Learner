@@ -151,12 +151,14 @@ public class GraphicalCoveragePanel extends JPanel {
 			g2D.setColor(darkGreen);
 			g2D.drawString("*", 310, p+3);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString("positive Example", 320, p);
+			g2D.drawString("individuals covered by the new", 320, p);
+			p = p + 20;
+			g2D.drawString("class expression", 320, p);
 			p = p + 20;
 			g2D.setColor(darkRed);
 			g2D.drawString("*", 310, p+3);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString("negative Example", 320, p);
+			g2D.drawString("additional or not covered individuals", 320, p);
 			g2D.setColor(Color.YELLOW);
 			g2D.fill(oldConcept);
 			g2D.fillOval(310, 0, 9, 9);
@@ -278,23 +280,17 @@ public class GraphicalCoveragePanel extends JPanel {
 
 			for (int i = 0; i < posCovIndVector.size(); i++) {
 				g2D.setColor(darkGreen);
-				g2D.drawString(posCovIndVector.get(i).getPoint(),
-						posCovIndVector.get(i).getXAxis(), posCovIndVector.get(
-								i).getYAxis());
+				g2D.draw(posCovIndVector.get(i).getIndividualPoint());
 			}
 
 			for (int i = 0; i < posNotCovIndVector.size(); i++) {
 				g2D.setColor(darkRed);
-				g2D.drawString(posNotCovIndVector.get(i).getPoint(),
-						posNotCovIndVector.get(i).getXAxis(),
-						posNotCovIndVector.get(i).getYAxis());
+				g2D.draw(posNotCovIndVector.get(i).getIndividualPoint());
 			}
 
 			for (int i = 0; i < additionalIndividuals.size(); i++) {
 				g2D.setColor(Color.BLACK);
-				g2D.drawString(additionalIndividuals.get(i).getPoint(),
-						additionalIndividuals.get(i).getXAxis(),
-						additionalIndividuals.get(i).getYAxis());
+				g2D.draw(additionalIndividuals.get(i).getIndividualPoint());
 			}
 			this.setVisible(true);
 			panel.repaint();
@@ -319,7 +315,8 @@ public class GraphicalCoveragePanel extends JPanel {
 			centerY = (int) old.getCenterY();
 			double coverage = ((EvaluatedDescriptionClass) eval).getCoverage();
 			shiftXAxis = (int) Math.round(WIDTH * (1 - coverage));
-			if (additionalIndividualSize != 0) {
+			
+			if (additionalIndividualSize != 0 && ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0 && ((EvaluatedDescriptionClass) eval).getAddition() < 1.0) {
 				distortionOld = (int) Math.round(WIDTH * 0.3);
 				Ellipse2D newer = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis,
 						ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
@@ -345,12 +342,13 @@ public class GraphicalCoveragePanel extends JPanel {
 				shiftNewConcept = (int) Math.round((WIDTH / 2.0) * newConcepts);
 			} else if (additionalIndividualSize != coveredIndividualSize) {
 				shiftNewConcept = (int) Math.round((WIDTH / 2.0)
-						* (newConcepts + (1 - oldConcepts)));
+						* (1.0 + (1.0 - oldConcepts)));
 				shiftOldConcept = (int) Math.round((WIDTH / 2.0) * oldConcepts);
 				shiftCovered = (int) Math.round((WIDTH / 2.0)
 						* (1 - oldConcepts));
 			}
-			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0) {
+			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0 && ((EvaluatedDescriptionClass) eval)
+					.getCoverage() == 1.0) {
 				shiftCovered = (int) Math.round((WIDTH / 2.0) * 0.625);
 				shiftNewConceptX = shiftCovered;
 				shiftNewConcept = 2 * shiftNewConceptX;
@@ -646,16 +644,5 @@ public class GraphicalCoveragePanel extends JPanel {
 	 */
 	public EvaluatedDescription getEvaluateddescription() {
 		return eval;
-	}
-
-	public boolean isInCircle(double x, double y, Ellipse2D ell) {
-		int r = (WIDTH / 2) * (WIDTH / 2);
-		int n = (int) ((x - ell.getCenterX()) * (x - ell.getCenterX()))
-				+ (int) ((y - ell.getCenterY()-5) * (y - ell.getCenterY()-5));
-		if (n <= r) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 }

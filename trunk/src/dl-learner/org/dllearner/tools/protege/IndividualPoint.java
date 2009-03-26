@@ -19,6 +19,8 @@
  */
 package org.dllearner.tools.protege;
 
+import java.awt.geom.Ellipse2D;
+
 /**
  * This class is a datastructure for one individual shown in
  * the GraphicalCoveragePanel.
@@ -31,6 +33,7 @@ public class IndividualPoint {
 	private int xAxis;
 	private int yAxis;
 	private final String individual;
+	private final Ellipse2D circlePoint;
 	
 	/**
 	 * Constructor of the class.
@@ -43,6 +46,7 @@ public class IndividualPoint {
 		this.point = p;
 		this.xAxis = x;
 		this.yAxis = y;
+		this.circlePoint = new Ellipse2D.Double(x - 1, y - 1, 3, 3);
 		this.individual = ind;
 	}
 
@@ -101,5 +105,8 @@ public class IndividualPoint {
 	public String getIndividualName() {
 		return individual;
 	}
-
+	
+	public Ellipse2D getIndividualPoint() {
+		return circlePoint;
+	}
 }
