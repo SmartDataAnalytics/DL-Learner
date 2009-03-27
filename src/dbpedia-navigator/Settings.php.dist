@@ -1,4 +1,10 @@
 <?php
+
+//
+// TODO: 
+// - move configuration for settings.ini
+// - ignoredConcepts and ignoredRoles are not working yet
+
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -59,11 +65,11 @@ class Settings{
 	public $ignoredConcepts=array();
 	public $ignoredRoles=array();
 
-	public $classSystem="YAGO";
-	//public $classSystem="DBpedia";
+	//public $classSystem="YAGO";
+	public $classSystem="DBpedia";
 	//the name of the used database
-	public $database_name='navigator_db';
-	//public $database_name='navigator_db_new';
+	//public $database_name='navigator_db';
+	public $database_name='navigator_db_new';
 
 	//the type of database server
 	public $database_type='mysql';

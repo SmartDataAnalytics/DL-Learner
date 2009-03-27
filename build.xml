@@ -304,7 +304,7 @@ public class Info {
     </target>	
 	
 	<!-- copy all necessary files in a folder to build the jar or a release bundle -->
-	<target name="protege">
+	<target name="buildProtegePlugin">
 		<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
 		<property name="temp" value="${source}/temp" />
 		<property name="release" value="${source}/release" />
@@ -349,7 +349,7 @@ public class Info {
 	</target>
 	
 	<!--Copy the DL-Learner-Protege-plugin jar file into the Protege plugin folder -->
-	<target name="copyProtegePluginToProtegeDir" depends="protege">
+	<target name="copyProtegePluginToProtegeDir" depends="buildProtegePlugin">
 		<copy toDir="${protege_dir}" >
 						<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
 					</copy>
@@ -358,7 +358,7 @@ public class Info {
 		</target>
 	
 	<!--Builds the Releasebundle -->
-	<target name="buildProtegePlugin" depends="protege">
+	<target name="buildProtegePluginRelease" depends="buildProtegePlugin">
 		<copy file="LICENSE" toDir="${release}" />
 				<copy toDir="${release}" >
 								<fileset dir="${source}" includes="INSTALL,README" excludes="**/*.java,**/*.gif" />
