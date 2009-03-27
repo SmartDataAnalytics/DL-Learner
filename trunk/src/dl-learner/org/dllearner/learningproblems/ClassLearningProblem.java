@@ -33,9 +33,12 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.SubClassAxiom;
 
 /**
  * The problem of learning the description of an existing class
@@ -150,8 +153,9 @@ public class ClassLearningProblem extends LearningProblem {
 		
 		double coverage = coveredInstances.size()/(double)classInstances.size();
 		double protusion = (additionalInstances.size() + coveredInstances.size() == 0) ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
+		boolean isConsistent = isConsistent(description);
 		
-		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion));
+		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion), isConsistent);
 	}	
 	
 	public boolean isEquivalenceProblem() {
@@ -366,5 +370,18 @@ public class ClassLearningProblem extends LearningProblem {
 	public EvaluatedDescriptionClass evaluate(Description description) {
 		ClassScore score = computeScore(description);
 		return new EvaluatedDescriptionClass(description, score);
+	}
+
+	/**
+	 * @return the isConsistent
+	 */
+	public boolean isConsistent(Description description) {
+		Axiom axiom;
+		if(equivalence) {
+			axiom = new EquivalentClassesAxiom(classToDescribe, description);
+		} else {
+			axiom = new SubClassAxiom(classToDescribe, description);
+		}
+		return reasoner.remainsSatisfiable(axiom);
 	}
 }

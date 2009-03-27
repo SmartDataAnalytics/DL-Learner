@@ -43,6 +43,7 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
@@ -1000,6 +1001,14 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	protected Set<NamedClass> getTypesImpl(Individual individual) {
 		return rc.getTypesImpl(individual);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#remainsSatisfiable(org.dllearner.core.owl.Axiom)
+	 */
+	@Override
+	public boolean remainsSatisfiableImpl(Axiom axiom) {
+		return rc.remainsSatisfiableImpl(axiom);
 	}
 
 }

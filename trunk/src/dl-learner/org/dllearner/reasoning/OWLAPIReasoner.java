@@ -47,6 +47,7 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -72,6 +73,7 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLAnnotation;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -1010,6 +1012,17 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			annotations.add(OWLAPIConverter.convertConstant(c));
 		}
 		return annotations;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#remainsSatisfiable(org.dllearner.core.owl.Axiom)
+	 */
+	@Override
+	public boolean remainsSatisfiableImpl(Axiom axiom) {
+		OWLAxiom axiomOWLAPI = OWLAPIAxiomConvertVisitor.convertAxiom(axiom);
+		
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	
