@@ -72,6 +72,7 @@ import org.dllearner.utilities.owl.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
@@ -87,12 +88,14 @@ import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLNamedObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.OWLTypedConstant;
 import org.semanticweb.owl.model.OWLUntypedConstant;
+import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.SimpleURIMapper;
 import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
@@ -119,6 +122,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	private OWLReasoner reasoner;
+	private OWLOntologyManager manager;
+	private OWLOntology ontology;
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
 	// static factory
@@ -188,7 +193,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		individuals = new TreeSet<Individual>();	
 				
 		// create OWL API ontology manager
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		manager = OWLManager.createOWLOntologyManager();
 		
 		// it is a bit cumbersome to obtain all classes, because there
 		// are no reasoner queries to obtain them => hence we query them
@@ -216,7 +221,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				}
 
 				try {
-					OWLOntology ontology;
+					
 					if(source instanceof OWLAPIOntology) {
 						ontology = ((OWLAPIOntology)source).getOWLOntolgy();
 					} else if (source instanceof SparqlKnowledgeSource) { 
@@ -996,7 +1001,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			return reasoner.getInconsistentClasses();
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
-			throw new Error("Inconsistens classes check error in OWL API.");
+			throw new Error("Inconsistent classes check error in OWL API.");
 		}
 		
 	}
@@ -1019,10 +1024,22 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 */
 	@Override
 	public boolean remainsSatisfiableImpl(Axiom axiom) {
+		boolean consistent = true;
 		OWLAxiom axiomOWLAPI = OWLAPIAxiomConvertVisitor.convertAxiom(axiom);
+		try {
+			manager.applyChange(new AddAxiom(ontology, axiomOWLAPI));
+			consistent = reasoner.isConsistent(ontology);
+			manager.applyChange(new RemoveAxiom(ontology, axiomOWLAPI));
+			
+		} catch (OWLOntologyChangeException e) {
+			
+			e.printStackTrace();
+		} catch (OWLReasonerException e) {
+			
+			e.printStackTrace();
+		}
 		
-		// TODO Auto-generated method stub
-		return false;
+		return consistent;
 	}
 	
 	
