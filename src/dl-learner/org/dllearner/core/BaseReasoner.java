@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Entity;
@@ -49,6 +50,13 @@ public interface BaseReasoner {
 	 * @return True if the knowledge base is consistent and false otherwise.
 	 */
 	public boolean isSatisfiable();
+	
+	/**
+	 * Checks whether adding the specified axiom leads to an inconsistency.
+	 * @param axiom The axiom to be added to the knowledge base.
+	 * @return True of the knowledge base including the axiom is satisfiable. False otherwise.
+	 */
+	public boolean remainsSatisfiable(Axiom axiom);
 	
 	/**
 	 * Gets all named classes in the knowledge base, e.g. Person, City, Car.

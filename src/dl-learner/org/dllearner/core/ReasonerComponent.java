@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -397,6 +398,26 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
+	@Override
+	public final boolean remainsSatisfiable(Axiom axiom) {
+		reasoningStartTimeTmp = System.nanoTime();
+		boolean result;
+		try {
+			result = remainsSatisfiableImpl(axiom);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return false;
+		}
+		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
+		otherReasoningTimeNs += reasoningDurationTmp;
+		overallReasoningTimeNs += reasoningDurationTmp;
+		return result;
+	}
+
+	protected boolean remainsSatisfiableImpl(Axiom axiom) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	@Override
 	public final Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationships(Individual individual) {
 		try {

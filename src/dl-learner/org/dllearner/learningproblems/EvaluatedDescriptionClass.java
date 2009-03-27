@@ -78,5 +78,13 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 	public Set<Individual> getCoveredInstances() {
 		return classScore.getCoveredInstances();
 	}
+
+	/**
+	 * 
+	 * @return True if adding the axiom to the knowledge base leads to an inconsistent knowledge base. False otherwise.
+	 */
+	public boolean isConsistent() {
+		return classScore.isConsistent();
+	}
 	
 }

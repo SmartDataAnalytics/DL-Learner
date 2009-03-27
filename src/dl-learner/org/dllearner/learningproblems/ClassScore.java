@@ -39,12 +39,15 @@ public class ClassScore extends Score {
 	private double addition;
 	private double accuracy;
 	
-	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
+	private boolean isConsistent;
+	
+	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent) {
 		this.coveredInstances = coveredInstances;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
 		this.addition = protusion;
 		this.accuracy = accuracy;
+		this.isConsistent = isConsistent;
 	}
 	
 	/**
@@ -85,6 +88,13 @@ public class ClassScore extends Score {
 	 */
 	public Set<Individual> getAdditionalInstances() {
 		return additionalInstances;
+	}
+
+	/**
+	 * @return the isConsistent
+	 */
+	public boolean isConsistent() {
+		return isConsistent;
 	}		
 
 }
