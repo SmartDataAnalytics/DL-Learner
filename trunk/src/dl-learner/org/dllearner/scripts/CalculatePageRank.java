@@ -340,11 +340,11 @@ public class CalculatePageRank {
 
 		con = DriverManager.getConnection(
                                  url, dbUser, dbPass);
-		//cal.calculateLinks();
-		//cal.addLabels();
+		cal.calculateLinks();
+		cal.addLabels();
 		//cal.calculateCategories();
 		cal.calculateCategoriesNewOntology();
-		//cal.copyNumbers();
+		cal.copyNumbers();
 		
 		con.close();
 	}
