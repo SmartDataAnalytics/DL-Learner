@@ -153,7 +153,9 @@ public class ClassLearningProblem extends LearningProblem {
 		
 		double coverage = coveredInstances.size()/(double)classInstances.size();
 		double protusion = (additionalInstances.size() + coveredInstances.size() == 0) ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
-		boolean isConsistent = isConsistent(description);
+		// for each description with less than 100% coverage, we check whether it is
+		// leads to an inconsistent knowledge base
+		boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
 		
 		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion), isConsistent);
 	}	
