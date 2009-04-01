@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
