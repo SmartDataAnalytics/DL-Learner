@@ -35,13 +35,13 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.Monitor;
 
 /**
  * Represents one SPARQL query. It includes support for stopping the SPARQL
- * query (which may be necessary if a timeout is reached).
+ * query (which may be necessary if a timeout is reached) and is designed to be
+ * able to run a query in a separate thread.
  * 
  * @author Jens Lehmann
  * @author Sebastian Hellmann
@@ -50,11 +50,16 @@ import com.jamonapi.Monitor;
 public class SparqlQuery {
 
 	private static boolean logDeletedOnStart = false;
-	
-	private static Logger logger = Logger.getLogger(SparqlQuery.class);
 
+	private static Logger logger = Logger.getLogger(SparqlQuery.class);
+	
+	// additional file for logging SPARQL queries etc.
+	private static String sparqlLog = "log/sparql.txt";
+
+	// whether the query is currently running
 	private boolean isRunning = false;
 
+	// whether the query has been executed
 	private boolean wasExecuted = false;
 
 	private String sparqlQueryString;
@@ -63,13 +68,15 @@ public class SparqlQuery {
 
 	private SparqlEndpoint sparqlEndpoint;
 
-	private String json = null;
+	private ResultSetRewindable rs;
 
 	/**
 	 * Standard constructor.
 	 * 
-	 * @param sparqlQueryString A SPARQL query string
-	 * @param sparqlEndpoint An Endpoint object
+	 * @param sparqlQueryString
+	 *            A SPARQL query string
+	 * @param sparqlEndpoint
+	 *            An Endpoint object
 	 */
 	public SparqlQuery(String sparqlQueryString, SparqlEndpoint sparqlEndpoint) {
 		// QUALITY there seems to be a bug in ontowiki
@@ -78,81 +85,63 @@ public class SparqlQuery {
 	}
 
 	/**
-	 * Sends a SPARQL query using the Jena library. main format is JSON, use
-	 * method getasjson
+	 * Sends a SPARQL query using the Jena library.
 	 * 
 	 */
-	public void send(){
-		wasExecuted = true;
-		// isRunning = true;
-		
-		ResultSet rs;
+	public ResultSetRewindable send() {
+		isRunning = true;
+
 		String service = sparqlEndpoint.getURL().toString();
-		
+
 		writeToSparqlLog("***********\nNew Query:");
-		SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+sparqlEndpoint.getHTTPRequest());
+		SparqlQuery.writeToSparqlLog("wget -S -O - '\n" + sparqlEndpoint.getHTTPRequest());
 		writeToSparqlLog(sparqlQueryString);
-		
-		logger.trace("making queryExecution Object");
-		// Jena access to SPARQL endpoint
+
 		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
-		//System.out.println(sparqlEndpoint.getDefaultGraphURIs());
-		
-		
+
+		// add default and named graphs
 		for (String dgu : sparqlEndpoint.getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}
 		for (String ngu : sparqlEndpoint.getNamedGraphURIs()) {
 			queryExecution.addNamedGraph(ngu);
 		}
-		// TODO remove after overnext Jena release
-		HttpQuery.urlLimit = 3 * 1024;
-		Monitor httpTime = JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
-		
-		//TODO correct Bug: when there is a & in the result like in the
-		//URL: http://www.discusmedia.com/catalog.php?catID=5.2.2&profile=map
-		//the XML Parser throws an error, because he thinks &profile is an html entitie
-		//but it doesn't end with an ;
-		//the & must be masked to an &amp; but I am not sure at the moment how to do that
-		try{
-			
+
+		Monitor httpTime = JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "sparql query time").start();
+
+		try {
 			logger.debug("sending query: length: " + sparqlQueryString.length() + " | ENDPOINT: "
 					+ sparqlEndpoint.getURL().toString());
-			rs = queryExecution.execSelect();
-					
-			logger.trace("query executed, converting to json");
 
-			json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
-			logger.trace(json);
-			//writeToSparqlLog("JSON: " + json);
-		//}catch (ResultSetException e) {
+			// we execute the query and store the result in a rewindable result set
+			ResultSet tmp = queryExecution.execSelect();
+			rs = ResultSetFactory.makeRewindable(tmp);
 		} catch (HTTPException e) {
-			logger.debug("HTTPException in SparqlQuery\n"+ e.toString());
-			logger.debug("query was "+ sparqlQueryString);
-			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
+			logger.debug("HTTPException in SparqlQuery\n" + e.toString());
+			logger.debug("query was " + sparqlQueryString);
+			writeToSparqlLog("ERROR: HTTPException occured" + e.toString());
 			isRunning = false;
 			throw e;
-			
-		}catch (RuntimeException e) {
-		
-			if(logger.isDebugEnabled()) {
-				logger.debug("RuntimeException in SparqlQuery (see /log/sparql.txt): "+ e.toString());
-				int length = Math.min(sparqlQueryString.length(), 300); 
-				logger.debug("query was (max. 300 chars displayed) "+ sparqlQueryString.substring(0,length-1).replaceAll("\n", " "));
+		// TODO: RuntimeException is very general; is it possible to catch more specific exceptions?
+		} catch (RuntimeException e) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("RuntimeException in SparqlQuery (see /log/sparql.txt): "
+						+ e.toString());
+				int length = Math.min(sparqlQueryString.length(), 300);
+				logger.debug("query was (max. 300 chars displayed) "
+						+ sparqlQueryString.substring(0, length - 1).replaceAll("\n", " "));
 			}
-			writeToSparqlLog("ERROR: HTTPException occured: "+ e.toString());
+			writeToSparqlLog("ERROR: HTTPException occured: " + e.toString());
 			isRunning = false;
 			throw e;
 		}
-		
-		// there is a minor issue here: Jamon now also measures ResultsetConversion
-		// the code would need a second try catch block to handle it correctly
+
 		httpTime.stop();
-		isRunning = false;	
+		isRunning = false;
+		wasExecuted = true;
+		return rs;
 	}
 
-	
-	
 	/**
 	 * Stops the execution of the query.
 	 */
@@ -163,6 +152,7 @@ public class SparqlQuery {
 
 	/**
 	 * Gets the String representation of the SPARQL query.
+	 * 
 	 * @return sparqlQueryString
 	 */
 	public String getSparqlQueryString() {
@@ -185,111 +175,59 @@ public class SparqlQuery {
 	}
 
 	/**
-	 * @return the Jena QueryEngineHTTP
-	 */
-	// ANY NEED TO GET THIS FROM OUTSIDE?
-	@Deprecated
-	public QueryEngineHTTP getExecution() {
-		return queryExecution;
-	}
-
-	/**
-	 * insert a result, e.g. from the cache
-	 * @param json a jsonString
-	 */
-	// LOOKS LIKE A HACK
-	@Deprecated
-	public void setJson(String json) {
-		this.wasExecuted = true;
-		this.json = json;
-	}
-
-	/**
-	 * @param running s.e.
-	 */
-	// SHOULD NOT BE SET FROM OUTSIDE
-	@Deprecated
-	public void setRunning(boolean running) {
-		this.isRunning = running;
-	}
-
-	/**
-	 * returns the Result of the query as JSON string executes the query if it
-	 * wasn't executed before.
+	 * Return the result in JSON format.
 	 * 
-	 * @return a JSON string
+	 * @return A JSON string converted from the result set or null 
+	 * if the query has not been executed.
 	 */
-	// WHY NOT EXECUTE SEND() AND THEN CALL THIS METHOD?
-	// returning null seems safer instead of executing the query (again)
-	@Deprecated
 	public String getJson() {
-		if (!wasExecuted) {
-			this.send();
+		if(wasExecuted) {
+			return convertResultSetToJSON(rs);
+		} else {
+			return null;
 		}
-		return json;
 	}
 
 	/**
-	 * makes a ResultSet from the Json String, depends on getJSON.
-	 * 
-	 * @return a Jena ResultSet
-	 */
-	// SHOULD BE A SIMPLE GETTER SINCE RESULTSET IS MAIN JENA STRUCTURE
-	public ResultSet getResultSet() {
-		return (getJson() == null) ? null : convertJSONtoResultSet(json);
-	}
-
-	/**
-	 * makes an XML String from the Json String, depends on getJSON.
+	 * Converts the result set to an XML string.
 	 * 
 	 * @return An XML String
 	 */
-	// SHOULD CONVERT FROM RESULTSET
 	public String getXMLString() {
-		return (getJson() == null) ? null : convertJSONtoXML(json);
+		if(wasExecuted) {
+			return convertResultSetToXMLString(rs);
+		} else {
+			return null;
+		}		
 	}
 
 	/**
-	 * Special log for debugging SPARQL query execution.
-	 * It lives here: "log/sparql.txt"
-	 * if the directory doesn't exist, there could be an error.
-	 * @param s the String to log
+	 * Special log for debugging SPARQL query execution. It lives here:
+	 * "log/sparql.txt" if the directory doesn't exist, there could be an error.
+	 * 
+	 * @param s
+	 *            the String to log
 	 */
-	public static void writeToSparqlLog(String s) {
-		
-		if(!logDeletedOnStart){
-			Files.createFile(new File("log/sparql.txt"),s+"\n");
+	private static void writeToSparqlLog(String s) {
+		if (!logDeletedOnStart) {
+			Files.createFile(new File(sparqlLog), s + "\n");
 			logDeletedOnStart = true;
-		}else{
-			Files.appendFile(new File("log/sparql.txt"), s+"\n");
+		} else {
+			Files.appendFile(new File(sparqlLog), s + "\n");
 		}
-		
-		/*try {
-			
-			FileWriter fw = new FileWriter("log/sparql.txt", logDeletedOnStart);
-			logDeletedOnStart = true;
-			fw.write(s + "\n");
-			fw.flush();
-			fw.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			// make the e object more special FileNotFound??
-			//new File("log").mkdir();
-			//writeToSparqlLog(s);
-		}*/
 	}
 
-
 	/**
-	 * Converts Jena result set to XML.
-	 * To make a ResultSet rewindable use:
-	 * ResultSetRewindable rsRewind = ResultSetFactory.makeRewindable(resultSet);
-	 * @param resultSet  The result set to transform, must be rewindable to prevent errors.
+	 * Converts Jena result set to XML. To make a ResultSet rewindable use:
+	 * ResultSetRewindable rsRewind =
+	 * ResultSetFactory.makeRewindable(resultSet);
+	 * 
+	 * @param resultSet
+	 *            The result set to transform, must be rewindable to prevent
+	 *            errors.
 	 * @return String xml
 	 */
 	public static String convertResultSetToXMLString(ResultSetRewindable resultSet) {
-		// if (rs == null)
-		// this.send();
 		String retVal = ResultSetFormatter.asXMLString(resultSet);
 		resultSet.reset();
 		return retVal;
@@ -297,11 +235,10 @@ public class SparqlQuery {
 
 	/**
 	 * Converts Jena result set to JSON.
-	 * To make a ResultSet rewindable use:
-	 * ResultSetRewindable rsRewind = ResultSetFactory.makeRewindable(resultSet);
 	 * 
 	 * @param resultSet
-	 *            The result set to transform, must be rewindable to prevent errors.
+	 *            The result set to transform, must be rewindable to prevent
+	 *            errors.
 	 * @return JSON representation of the result set.
 	 */
 	public static String convertResultSetToJSON(ResultSetRewindable resultSet) {
@@ -340,5 +277,5 @@ public class SparqlQuery {
 	public static String convertJSONtoXML(String json) {
 		return convertResultSetToXMLString(convertJSONtoResultSet(json));
 	}
-	
+
 }

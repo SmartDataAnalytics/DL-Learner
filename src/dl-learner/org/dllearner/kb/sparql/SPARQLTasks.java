@@ -479,14 +479,8 @@ public class SPARQLTasks {
 	 * @return jena ResultSet
 	 */
 	public ResultSetRewindable queryAsResultSet(String sparqlQueryString) {
-		return SparqlQuery.convertJSONtoResultSet(query(sparqlQueryString));
-
-	}
-
-	public ResultSet queryAsResultSet2(String sparqlQueryString) {
 		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
-		sq.send();
-		return sq.getResultSet();
+		return sq.send();
 	}
 	
 	/**

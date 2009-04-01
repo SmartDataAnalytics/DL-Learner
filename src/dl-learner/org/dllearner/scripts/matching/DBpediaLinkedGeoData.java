@@ -23,7 +23,6 @@ import java.net.URI;
 
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -54,7 +53,7 @@ public class DBpediaLinkedGeoData {
 		query += "<" + dbpediaURI + "> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long . } LIMIT 1";
 		
 		// perform query and read lat and long from results
-		ResultSet results = st.queryAsResultSet2(query);
+		ResultSet results = st.queryAsResultSet(query);
 		QuerySolution qs = results.nextSolution();
 		String geoLat = qs.getLiteral("lat").getString();
 		String geoLong = qs.getLiteral("long").getString();

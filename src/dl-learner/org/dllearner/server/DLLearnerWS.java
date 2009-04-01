@@ -828,15 +828,11 @@ public class DLLearnerWS {
 			@Override
 			public void run() {
 				if (ks.isUseCache()){
-					state.getQuery(id).setRunning(true);
 					Cache cache=new Cache(ks.getCacheDir());
 					cache.executeSparqlQuery(state.getQuery(id));
-					state.getQuery(id).setRunning(false);
 				}
 				else{
-					state.getQuery(id).setRunning(true);
 					state.getQuery(id).send();
-					state.getQuery(id).setRunning(false);
 				}
 			}
 		};
