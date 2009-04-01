@@ -187,6 +187,8 @@ public class SparqlQuery {
 	/**
 	 * @return the Jena QueryEngineHTTP
 	 */
+	// ANY NEED TO GET THIS FROM OUTSIDE?
+	@Deprecated
 	public QueryEngineHTTP getExecution() {
 		return queryExecution;
 	}
@@ -195,6 +197,8 @@ public class SparqlQuery {
 	 * insert a result, e.g. from the cache
 	 * @param json a jsonString
 	 */
+	// LOOKS LIKE A HACK
+	@Deprecated
 	public void setJson(String json) {
 		this.wasExecuted = true;
 		this.json = json;
@@ -203,6 +207,8 @@ public class SparqlQuery {
 	/**
 	 * @param running s.e.
 	 */
+	// SHOULD NOT BE SET FROM OUTSIDE
+	@Deprecated
 	public void setRunning(boolean running) {
 		this.isRunning = running;
 	}
@@ -213,6 +219,9 @@ public class SparqlQuery {
 	 * 
 	 * @return a JSON string
 	 */
+	// WHY NOT EXECUTE SEND() AND THEN CALL THIS METHOD?
+	// returning null seems safer instead of executing the query (again)
+	@Deprecated
 	public String getJson() {
 		if (!wasExecuted) {
 			this.send();
@@ -225,6 +234,7 @@ public class SparqlQuery {
 	 * 
 	 * @return a Jena ResultSet
 	 */
+	// SHOULD BE A SIMPLE GETTER SINCE RESULTSET IS MAIN JENA STRUCTURE
 	public ResultSet getResultSet() {
 		return (getJson() == null) ? null : convertJSONtoResultSet(json);
 	}
@@ -234,6 +244,7 @@ public class SparqlQuery {
 	 * 
 	 * @return An XML String
 	 */
+	// SHOULD CONVERT FROM RESULTSET
 	public String getXMLString() {
 		return (getJson() == null) ? null : convertJSONtoXML(json);
 	}
@@ -329,72 +340,5 @@ public class SparqlQuery {
 	public static String convertJSONtoXML(String json) {
 		return convertResultSetToXMLString(convertJSONtoResultSet(json));
 	}
-	
-	
-	/***
-	 public static String sendGetRequest(String urlStr)
-	{
-		String result = null;
-		
-
-		try
-		{
-			StringBuffer data = new StringBuffer();
-
-			//String urlStr = endpoint;
-		//	if (requestParameters != null && requestParameters.length () > 0)
-			//{
-				//urlStr += "?" + requestParameters;
-			//}
-			//urlStr = "http://www.klappstuhlclub.de";
-			URL url = new URL(urlStr);
-			System.out.println(urlStr);
-			URLConnection conn = url.openConnection ();
-
-			//	 Get the response
-			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			StringBuffer sb = new StringBuffer();
-			String line="";
-			System.out.println("aa"+line);
-			while ((line = rd.readLine()) != null)
-			{
-				System.out.println("aa"+line);
-				sb.append(line);
-			}
-			rd.close();
-			result = sb.toString();
-			} catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-	
-		return result;
-	}
-	
-	public String fallback(){
-		System.out.println("TEST");		
-		try{
-		String urlStr = (sparqlEndpoint.getURL().toString()+"?query="+sparqlQueryString);
-		//URLConnection con = url.openConnection();
-		System.out.println(sendGetRequest(urlStr));
-		System.out.println("f");
-		//System.out.println(con.getContentLength());
-		//con.connect();
-		System.out.println("sdf");
-		String a = "12345";
-		byte[] b = a.getBytes();
-		//con.getInputStream().read(b);
-		System.out.println(new String (b));
-		//Object o = con.getContent();
-		//System.out.println(o+o.getClass().getCanonicalName());
-		}catch (Exception ea) {
-			// TODO: handle exception
-		}
-		return "";
-	}
-	 
-	 
-	 
-	 */
 	
 }

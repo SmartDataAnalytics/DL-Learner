@@ -138,7 +138,8 @@ public class SparqlEndpoint {
 	public static SparqlEndpoint getEndpointDBpedia() {
 		URL u = null;
 		try { 
-			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
+			u = new URL("http://dbpedia.org/sparql");
+//			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

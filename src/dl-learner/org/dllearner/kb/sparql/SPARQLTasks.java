@@ -472,6 +472,7 @@ public class SPARQLTasks {
 
 	/**
 	 * low level, executes query returns ResultSet.
+	 * TODO: Why convert from result set to JSON and back? See method below.
 	 * 
 	 * @param sparqlQueryString
 	 *            The query
@@ -482,6 +483,12 @@ public class SPARQLTasks {
 
 	}
 
+	public ResultSet queryAsResultSet2(String sparqlQueryString) {
+		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
+		sq.send();
+		return sq.getResultSet();
+	}
+	
 	/**
 	 * low level, executes query returns JSON.
 	 * 
