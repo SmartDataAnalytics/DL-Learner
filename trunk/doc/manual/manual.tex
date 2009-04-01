@@ -23,7 +23,7 @@
 \urldef{\owlapi}{\url}{http://owlapi.sourceforge.net}
 \urldef{\dig}{\url}{http://dl.kr.org/dig/}
 
-\title{DL-Learner Manual [Draft]}
+\title{DL-Learner Manual}
 \author{Jens Lehmann}
 
 \pagestyle{scrheadings}
@@ -81,7 +81,7 @@ starting top down refinement with: Thing (50% accuracy)
 more accurate (83,33%) class expression found: male
 solutions (at most 20 are shown):
 1: (male and hasChild some Thing) (accuracy 100%, length 5, depth 3)
-Algorithm terminated succesfully.
+Algorithm terminated successfully.
 
 number of retrievals: 4
 retrieval reasoning time: 0ms (0ms per retrieval)
@@ -151,12 +151,12 @@ Several reasoner components are implemented, which can be interfaces to concrete
 
 \subsection{Learning Problems}
 
-In the introductory Sections \ref{sec:whatis} and \ref{sec:start}, we described a specific learning problem where positive and negative examples are given. In practice different variations of similar problems occur. You can switch between the different problems using \verb|problem=$value;|, where \verb|$value| is one of \verb|posNegDefinitionLP|, \verb|posOnlyDefinitionLP|, \verb|classLearning|. The default is \verb|posNegDefinitionLP|. \todo{Names may change in next release.}
+In the introductory Sections \ref{sec:whatis} and \ref{sec:start}, we described a specific learning problem where positive and negative examples are given. In practice different variations of similar problems occur. You can switch between the different problems using \verb|problem=$value;|, where \verb|$value| is one of \verb|posNegLPStandard|, \verb|posOnlyLP|, \verb|classLearning|. The default is \verb|posNegLPStandard|.
 
 \begin{description}
- \item[Positive and Negative Examples] Let the name of the background ontology be $\mathcal{O}$. The goal in this learning problem is to find an OWL class expression $C$ such that all/many positive examples are instances of $C$ w.r.t.~$\mathcal{O}$ and none/few negative examples are instances of $C$ w.r.t.~$\mathcal{O}$. As explained previously, $C$ should be learned such that it generalises to unseen individuals and is readable. The important configuration options of this component are obviously the positive and negative examples, which are often indicated with \verb|+| and \verb|-| signs in conf files as an optional shortcut to using e.g.~\verb|posNegDefinitionLP.positiveExamples = {...}|.
+ \item[Positive and Negative Examples] Let the name of the background ontology be $\mathcal{O}$. The goal in this learning problem is to find an OWL class expression $C$ such that all/many positive examples are instances of $C$ w.r.t.~$\mathcal{O}$ and none/few negative examples are instances of $C$ w.r.t.~$\mathcal{O}$. As explained previously, $C$ should be learned such that it generalises to unseen individuals and is readable. The important configuration options of this component are obviously the positive and negative examples, which are often indicated with \verb|+| and \verb|-| signs in conf files as an optional shortcut to using e.g.~\verb|posNegLPStandard.positiveExamples = {...}|.
  \item[Positive Examples] This learning problem is similar to the one before, but without negative examples. In this case, it is desirable to find a class expression which closely fits the positive examples while still generalising sufficiently well. For instance, you usually do not want to have \verb|owl:Thing| as a solution for this problem, but neither do you want to have an enumeration of all examples.
- \item[Class Learning] In class learning, you are given an existing class $A$ within your ontology $\mathcal{O}$ and want to describe it. It is similar to the previous problem in that you can use the instances of the class as positive examples. However, there are some differences, e.g.~you do not want to have $A$ itself as a proposed solution of the problem, and since this is an ontology engineering task, the focus on short and readable class expressions is stronger than for the two problems mentioned before. \todo{This learning problem is under construction, but will be implemented soon.}
+ \item[Class Learning] In class learning, you are given an existing class $A$ within your ontology $\mathcal{O}$ and want to describe it. It is similar to the previous problem in that you can use the instances of the class as positive examples. However, there are some differences, e.g.~you do not want to have $A$ itself as a proposed solution of the problem, and since this is an ontology engineering task, the focus on short and readable class expressions is stronger than for the two problems mentioned before. The learner can also take advantage of existing knowledge about the class to describe.
 \end{description}
 
 \subsection{Learning Algorithms}
@@ -178,8 +178,8 @@ The implemented algorithms vary from very simple (and usually inappropriate) alg
   \item maximum execution time: If there is no perfect solution of a given problem, the algorithm can potentially run forever (in practice it will run out of memory). It is therefore often interesting to limit the execution time. You can use e.g.~\verb|refinement.maxExecutionTimeInSeconds = 100| to say that the algorithm should run for at most 100 seconds. Often, it will run slightly longer than the maximum execution time since it waits for the next internal loop of the algorithm to stop gracefully.
  \end{itemize}
   The algorithm supports a range of further options. For instance, one can specify which classes and properties must not occur in resulting class expressions.
- \item[Refinement II] The previous algorithm has been extended to make more sophisticated use of background knowledge and therefore run more efficiently on many problems. It also supports double datatypes and hasValue restrictions (which again can be turned on or off as desired). It also includes explicit noise handling through the \verb|noisePercentage| option. This is currently the default and recommend algorithm for learning from positive and negative examples. More than 30 options can be set to control its behaviour. However, apart from the target language the most important setting is noise, which should be optimised for the given problem. \todo{noisePercentage will be renamed to to minAccuracy which describes it better}
- \item[Class Expression Learning for Ontology Engineering (CELOE)] \todo{This algorithm is under construction.}
+ \item[Refinement II] The previous algorithm has been extended to make more sophisticated use of background knowledge and therefore run more efficiently on many problems. It also supports double datatypes and hasValue restrictions (which again can be turned on or off as desired). It also includes explicit noise handling through the \verb|noisePercentage| option. This is currently the default and recommend algorithm for learning from positive and negative examples. More than 30 options can be set to control its behaviour. However, apart from the target language the most important setting is noise, which should be optimised for the given problem.
+ \item[Class Expression Learning for Ontology Engineering (CELOE)] Currently CELOE is the best class learning algorithm available within DL-Learner. It uses the same refinement operator as Refinement II, but a completely different heuristics. Furthermore, it guarantees that the returned class expressions are minimal in the sense that one cannot remove parts of them without getting an inequivalent expression. Furthermore, it makes use of existing background knowledge in coverage checks. Statistical methods are used to improve the efficiency of the algorithm such that it scales to large knowledge bases. While it was originally designed for ontology engineering, it can also be used for other learning problems and might even be superior to the other algorithms in many cases (not well-tested yet). Note that many configuration options of Refinement II were dropped for the sake of simplicity, but might be introduced if needed.
 \end{description}
 
 Please note that while components are interchangeable, it is not possible to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require it to be able to solve each learning problem. Table \ref{tab:la_lp_comp} provides a compatibility matrix. Note that this can change in future releases, because algorithms may be extended to support new learning problems or drop support for them.
@@ -209,7 +209,7 @@ One interface you have already used in Section \ref{sec:start} is the command li
 
 Apart from the command line, there is also a prototypical graphical interface. You can use \verb|gui| (or \verb|gui.bat|) to start it. Optionally, a conf file can be passed as argument. The main GUI window has four tabs corresponding to the four different types of components and a run tab to execute the learning algorithm. Using the GUI, you can assemble the desired combination of components and options. The \verb|File| menu allows you to load a conf file or save the current configuration to a conf file. The GUI implementation is currently prototypical, so please report any bugs or feature requests you have (see Section \ref{sec:contact}). Since the GUI uses the component manager, it will automatically evolve when new components and options are added.
 
-A third interface through which DL-Learner can be accessed programmatically is a web service. You can execute \verb|ws| (or \verb|ws.bat|) to start the web service. It is based on the Java API for XML Web Services (JAX-WS), which is included in Java 6 or higher. Executing the command will start a web server on port 8181 of your local machine. The WSDL can be accessed via \url{http://localhost:8181/services?wsdl}. You can use a WSDL viewer to see the supported operations or view the JavaDoc of the corresponding Java file\footnote{viewable online at \wsjavadoc}. Some examples for calling the web service from PHP can be found in the DL-Learner subversion repository\footnote{in the directory src/php-examples/:\\ \wsphpexamples}.\todo{Javadoc of web service needs to be improved}
+A third interface through which DL-Learner can be accessed programmatically is a web service. You can execute \verb|ws| (or \verb|ws.bat|) to start the web service. It is based on the Java API for XML Web Services (JAX-WS), which is included in Java 6 or higher. Executing the command will start a web server on port 8181 of your local machine. The WSDL can be accessed via \url{http://localhost:8181/services?wsdl}. You can use a WSDL viewer to see the supported operations or view the JavaDoc of the corresponding Java file\footnote{viewable online at \wsjavadoc}. Some examples for calling the web service from PHP can be found in the DL-Learner subversion repository\footnote{in the directory src/php-examples/:\\ \wsphpexamples}.
 
 Another means to access DL-Learner, in particular for ontology engineering, is to use the OntoWiki and Protégé plugins. The OntoWiki plugin is not officially released yet, but can be used in the SVN version of OntoWiki. The Protégé 4 plugin can be installed either by downloading it from the DL-Learner download page or directly within Protégé 4 by clicking on ``File'', ``Preferences'', ``Plugins'', ``Check for Downloads'' now and selecting the DL-Learner plugin. For more information and a screencast see the Protégé plugin wiki page \footnote{\wikiprotplugin}.
 
@@ -246,8 +246,8 @@ Currently, the following configuration option types exist (new ones can be imple
  \item boolean, e.g. \verb|useCache|
  \item string (a set of allowed strings can be specified), e.g. \verb|cacheDir|
  \item URL, e.g. \verb|reasonerURL|
- \item int (min and max value can be specifified), e.g. \verb|maxDepth|
- \item double (min and max value can be specifified), e.g. \verb|noisePercentage|
+ \item int (min and max value can be specified), e.g. \verb|maxDepth|
+ \item double (min and max value can be specified), e.g. \verb|noisePercentage|
  \item set of strings, e.g. \verb|positiveExamples|
  \item list of string tuples, e.g. \verb|replaceObject|
 \end{itemize}
