@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.BruteForceLearner;
@@ -53,6 +54,10 @@ import org.dllearner.reasoning.OWLAPIReasoner;
  * Developer please edit the buildMappings() function to add new 
  * CLI mappings.
  * 
+ * TODO: For the web service, it may be interesting to hide some components
+ * and/or configuration options or even limit the maximum value of certain
+ * options.
+ * 
  * @author Jens Lehmann
  *
  */
@@ -69,6 +74,9 @@ public class ConfMapper {
 	// component types
 	private static Map<String,Class<? extends Component>> componentTypeMapping = new TreeMap<String,Class<? extends Component>>();
 	private static Map<Class<? extends Component>, String> inverseTypeMapping = new HashMap<Class<? extends Component>,String>();	
+	
+	// set of available components
+	private static Set<String> components = new TreeSet<String>();
 	
 	public ConfMapper() {
 		buildMappings();
@@ -107,6 +115,8 @@ public class ConfMapper {
 		for(Entry<String, Class<? extends Component>> entry : componentMapping.entrySet()) {
 			inverseMapping.put(entry.getValue(), entry.getKey());
 		}		
+		
+		components = componentTypeMapping.keySet();
 	}
 	
 	private static void buildKeys() {
@@ -172,7 +182,7 @@ public class ConfMapper {
 	}	
 	
 	public Set<String> getComponents() {
-		return componentMapping.keySet();
+		return components;
 	}	
 	
 }

@@ -51,7 +51,7 @@ $posExamples = array('http://example.com/father#stefan',
 $negExamples = array('http://example.com/father#heinz',
                      'http://example.com/father#anna',
                      'http://example.com/father#michelle');
-$client->setLearningProblem($id, "posNegDefinition");
+$client->setLearningProblem($id, "posNegLPStandard");
 $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
