@@ -536,7 +536,7 @@ public class ROLearner2 {
 		if (stop) {
 			logger.info("Algorithm stopped ("+conceptTests+" descriptions tested).\n");
 		} else {
-			logger.info("Algorithm terminated succesfully ("+conceptTests+" descriptions tested).\n");
+			logger.info("Algorithm terminated successfully ("+conceptTests+" descriptions tested).\n");
 		}		
 
 		totalLearningTime.stop();
