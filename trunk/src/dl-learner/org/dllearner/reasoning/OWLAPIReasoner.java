@@ -634,7 +634,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			Set<Set<OWLDescription>> set = reasoner.getDomains(prop);
 			if(set.size()==0)
 				return new Thing();
-			OWLClass oc = (OWLClass) set.iterator().next();
+			OWLClass oc = (OWLClass) set.iterator().next().iterator().next();
 			return new NamedClass(oc.getURI().toString());
 		} catch (OWLReasonerException e) {
 			throw new Error(e);
@@ -653,7 +653,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			Set<Set<OWLDescription>> set = reasoner.getDomains(prop);
 			if(set.size()==0)
 				return new Thing();
-			OWLClass oc = (OWLClass) set.iterator().next();
+			OWLClass oc = (OWLClass) set.iterator().next().iterator().next();
 			return new NamedClass(oc.getURI().toString());
 		} catch (OWLReasonerException e) {
 			throw new Error(e);
