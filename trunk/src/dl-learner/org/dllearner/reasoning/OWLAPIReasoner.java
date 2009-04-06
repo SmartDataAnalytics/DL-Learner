@@ -638,7 +638,12 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			if(set.size()==0)
 				return new Thing();
 			OWLClass oc = (OWLClass) set.iterator().next().iterator().next();
-			return new NamedClass(oc.getURI().toString());
+			String str = oc.getURI().toString();
+			if(str.equals("http://www.w3.org/2002/07/owl#Thing")) {
+				return new Thing();
+			} else {
+				return new NamedClass(str);
+			}
 		} catch (OWLReasonerException e) {
 			throw new Error(e);
 		}
@@ -657,7 +662,12 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			if(set.size()==0)
 				return new Thing();
 			OWLClass oc = (OWLClass) set.iterator().next().iterator().next();
-			return new NamedClass(oc.getURI().toString());
+			String str = oc.getURI().toString();
+			if(str.equals("http://www.w3.org/2002/07/owl#Thing")) {
+				return new Thing();
+			} else {
+				return new NamedClass(str);
+			}			
 		} catch (OWLReasonerException e) {
 			throw new Error(e);
 		}		

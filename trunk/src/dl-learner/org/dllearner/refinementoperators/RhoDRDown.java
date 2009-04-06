@@ -393,8 +393,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					computeTopRefinements(maxLength);
 				refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();
 			} else {
-				if(maxLength>topARefinementsLength.get(currDomain))
+				if(maxLength>topARefinementsLength.get(currDomain)) {
 					computeTopRefinements(maxLength, (NamedClass) currDomain);
+				}
 				refinements = (TreeSet<Description>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
 			
