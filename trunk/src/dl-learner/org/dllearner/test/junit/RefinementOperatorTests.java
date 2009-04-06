@@ -102,13 +102,13 @@ public class RefinementOperatorTests {
 		
 		RhoDRDown op = new RhoDRDown(reasoner);
 		Description concept = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".\"http://localhost/aris/sap_model.owl#Object\")");
-		Set<Description> results = op.refine(concept, 6);
+		Set<Description> results = op.refine(concept,10);
 
 		for(Description result : results) {
-			System.out.println(result);
+			System.out.println(result.toString("http://localhost/aris/sap_model.owl#",null));
 		}
 			
-		int desiredResultSize = 141;
+		int desiredResultSize = 116;
 		if(results.size() != desiredResultSize) {
 			System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 		}

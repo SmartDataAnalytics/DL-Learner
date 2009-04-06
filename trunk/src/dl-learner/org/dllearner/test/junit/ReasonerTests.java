@@ -39,8 +39,8 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
+import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 
 /**
@@ -78,8 +78,13 @@ public class ReasonerTests {
 	 * Performs an instance checks on all reasoner components to verify that
 	 * they all return the correct result.
 	 */
-//	@Test
+	@Test
 	public void instanceCheckTest() {
+		
+		// DIG can be excluded from test since it requires a separate DIG reasoner and is no
+		// longer the default reasoning mechanism
+		boolean excludeDIG = true;
+		
 		try {
 			ComponentManager cm = ComponentManager.getInstance();
 			KB kb = getSimpleKnowledgeBase();
@@ -91,6 +96,9 @@ public class ReasonerTests {
 			Individual i = new Individual(KBParser.getInternalURI("stephen"));
 			List<Class<? extends ReasonerComponent>> reasonerClasses = cm.getReasonerComponents();
 			for (Class<? extends ReasonerComponent> reasonerClass : reasonerClasses) {
+				if(excludeDIG && reasonerClass.equals(DIGReasoner.class)) {
+					continue;
+				}
 				ReasonerComponent reasoner = cm.reasoner(reasonerClass, ks);
 				reasoner.init();
 //				long startTime = System.nanoTime();
@@ -116,7 +124,7 @@ public class ReasonerTests {
 	 * @throws ComponentInitException 
 	 * @throws ParseException 
 	 */
-//	@Test
+	@Test
 	public void fastInstanceCheckTest() throws ComponentInitException, ParseException {
 		String file = "examples/carcinogenesis/carcinogenesis.owl";
 		ComponentManager cm = ComponentManager.getInstance();
@@ -128,7 +136,7 @@ public class ReasonerTests {
 			e.printStackTrace();
 		}
 		ks.init();
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
 		reasoner.init();
 		baseURI = reasoner.getBaseURI();
 		
@@ -137,7 +145,7 @@ public class ReasonerTests {
 		List<List<Individual>> negIndividuals = new LinkedList<List<Individual>>();
 		
 		// TODO manually verify that the results are indeed correct 
-		testDescriptions.add(KBParser.parseConcept("\"http://dl-learner.org/carcinogenesis#Compound\" AND (\"http://dl-learner.org/carcinogenesis#amesTestPositive\" = true OR >= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\" \"http://dl-learner.org/carcinogenesis#Ar_halide\"))"));
+		testDescriptions.add(KBParser.parseConcept("(\"http://dl-learner.org/carcinogenesis#Compound\" AND ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) OR >= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\"))"));
 		posIndividuals.add(getIndSet("d113","d133","d171","d262","d265","d294","d68","d77","d79"));
 		negIndividuals.add(getIndSet("d139","d199","d202","d203","d283","d42"));
 
@@ -150,16 +158,18 @@ public class ReasonerTests {
 			List<Individual> neg = negIndividuals.get(i);
 			
 			for(Individual ind : pos) {
+				System.out.println("description: " + description.toString(baseURI, null) + " individual: " + ind.toString(baseURI, null));
 				assertTrue(reasoner.hasType(description, ind));
 			}
 			
 			for(Individual ind : neg) {
+				System.out.println("description: " + description.toString(baseURI, null) + " individual: " + ind.toString(baseURI, null));
 				assertTrue(!reasoner.hasType(description, ind));
 			}			
 		}
 	}
 
-//	@Test
+	@Test
 	public void fastInstanceCheck2() throws ComponentInitException, ParseException {
 		String file = "examples/epc/sap_epc.owl";
 		ComponentManager cm = ComponentManager.getInstance();
@@ -217,7 +227,8 @@ public class ReasonerTests {
 	}
 	
 	private String uri(String name) {
-		return "\""+baseURI+name+"\"";
+//		return "\""+baseURI+name+"\"";
+		return baseURI+name;
 	}	
 	
 }

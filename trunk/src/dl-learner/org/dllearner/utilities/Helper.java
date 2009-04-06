@@ -556,18 +556,22 @@ public class Helper {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		for (NamedClass atomicConcept : rs.getNamedClasses()) {
-			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
-					.getIndividuals(atomicConcept)));
-			Negation negatedAtomicConcept = new Negation(atomicConcept);
-			aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
-					.getIndividuals(negatedAtomicConcept)));
-			aBox.concepts.add(atomicConcept.getName());
+		if(!rs.getNamedClasses().isEmpty()) {
+			for (NamedClass atomicConcept : rs.getNamedClasses()) {
+				aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
+						.getIndividuals(atomicConcept)));
+				Negation negatedAtomicConcept = new Negation(atomicConcept);
+				aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
+						.getIndividuals(negatedAtomicConcept)));
+				aBox.concepts.add(atomicConcept.getName());
+			}			
 		}
 
-		for (ObjectProperty atomicRole : rs.getObjectProperties()) {
-			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
-			aBox.roles.add(atomicRole.getName());
+		if(!rs.getObjectProperties().isEmpty()) {
+			for (ObjectProperty atomicRole : rs.getObjectProperties()) {
+				aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
+				aBox.roles.add(atomicRole.getName());
+			}			
 		}
 
 		aBox.domain = getStringSet(rs.getIndividuals());

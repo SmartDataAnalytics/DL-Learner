@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2009, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.reasoning;
 
 import java.util.HashSet;
@@ -22,6 +41,13 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
+/**
+ * 
+ * Reasoner for fast retrieval inference (other tasks redirected to OWL API reasoner). Not actively used anymore.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class FastRetrievalReasoner extends ReasonerComponent {
 
 	private FastRetrievalReasonerConfigurator configurator;
@@ -36,16 +62,13 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 	
-	ReasonerComponent rs;
 	ReasonerComponent rc;
-	
-
 	
 	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		
-		rc = ComponentFactory.getDIGReasoner(sources);
+		rc = ComponentFactory.getOWLAPIReasoner(sources);
 		try {
 			rc.init();
 		} catch (ComponentInitException e1) {
@@ -57,7 +80,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		individuals = rc.getIndividuals();
 //		rs = new ReasonerComponent(rc);
 		try {
-			abox = Helper.createFlatABox(rs);
+			abox = Helper.createFlatABox(rc);
 		} catch (ReasoningMethodUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,7 +153,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 //		Negation neg = new Negation(subConcept);
 //		Intersection c = new Intersection(neg,superConcept);
 //		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rs.isSuperClassOf(superConcept, subConcept);
+		return rc.isSuperClassOf(superConcept, subConcept);
 	}
 	
 //	@Override
@@ -154,7 +177,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	
 	@Override
 	public boolean isSatisfiableImpl() {
-		return rs.isSatisfiable();
+		return rc.isSatisfiable();
 	}
 	
 	@Override
