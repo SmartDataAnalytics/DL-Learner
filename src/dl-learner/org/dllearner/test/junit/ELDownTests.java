@@ -284,6 +284,7 @@ public class ELDownTests {
 		}		
 	}	
 	
+	// not part of the regular test suite, since Galen 2 is required
 //	@Test
 	public void test4() throws ComponentInitException, ParseException, IOException {
 		
@@ -312,6 +313,7 @@ public class ELDownTests {
 		
 	}
 
+	//	 not part of the regular test suite, since Galen 2 is required
 //	@Test
 	public void asTest() throws ComponentInitException, MalformedURLException {
 		

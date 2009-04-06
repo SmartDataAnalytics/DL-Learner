@@ -122,10 +122,10 @@ public final class TestOntologies {
 			KnowledgeSource source;
 			
 			// parse KB string if one has been specified
-			if(!kbString.isEmpty()) {
+			if(!kbString.isEmpty() || ont.equals(TestOntology.EMPTY)) {
 				KB kb = KBParser.parseKBFile(kbString);
 				source = new KBFile(kb);
-			// parse OWL file otherwise
+			// do nothing for empty ontology
 			} else {
 				source = cm.knowledgeSource(OWLFile.class);
 				try {

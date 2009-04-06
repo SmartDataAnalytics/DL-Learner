@@ -266,7 +266,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public boolean hasTypeImpl(Description description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 
-//		 System.out.println(description + " " + individual);
+//		 System.out.println("FIC: " + description + " " + individual);
 
 		if (description instanceof NamedClass) {
 			return classInstancesPos.get((NamedClass) description).contains(individual);

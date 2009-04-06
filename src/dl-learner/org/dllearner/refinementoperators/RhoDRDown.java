@@ -185,6 +185,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	public RhoDRDown(ReasonerComponent reasoningService) {
 //		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
 		this.rs = reasoningService;
+		this.subHierarchy = rs.getClassHierarchy();
+		init();
 	}
 	
 	public RhoDRDown(ReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
