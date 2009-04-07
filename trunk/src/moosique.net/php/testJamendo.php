@@ -6,23 +6,37 @@ include('DllearnerConnection.php');
 
 $connection = new DllearnerConnection($conf);
 
-$query = '
-SELECT ?artist ?album
-WHERE
-{ ?a 
-     a mo:MusicArtist; 
-     foaf:name ?artist;
-     foaf:made ?album.
-  ?album tags:taggedWithTag <http://dbtune.org/jamendo/tag/stonerrock>.
- }
+$queryWorking = '
+select ?artist ?album where { 
+
+?artistLink rdf:type mo:MusicArtist ; 
+            foaf:name ?artist ; 
+            foaf:made ?album ; 
+
+} LIMIT 10
 ';
+
+
+$queryNOTworking = '
+select ?artist ?album where { 
+
+?artistLink rdf:type mo:MusicArtist ; 
+            foaf:name ?artist ; 
+            foaf:made ?album ; 
+
+FILTER (regex(str(?artist), "vin", "i")) . 
+
+} LIMIT 10
+';
+
 
 /* TODO
 $spargel = new SparqlQueryBuilder($conf, 'Low Earth Orbit', 'artist', array('artist', 'title', 'image'));
 $query = $spargel->getQuery();
 */
 
-$json = $connection->sparqlQuery($query);
+$json = $connection->sparqlQuery($queryWorking);
+// $json = $connection->sparqlQuery($queryNOTworking);
 $result = json_decode($json);
 $bindings = $result->results->bindings;
 
@@ -31,3 +45,4 @@ print_r($bindings);
 echo '</pre>';
 
 ?>
+

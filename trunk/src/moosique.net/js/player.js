@@ -66,7 +66,7 @@ var ympPlayerConfig = function() {
    */
   var trackPause = function() {
     $$('#now h2').set('text', 'Player Paused');
-    $('playPause').setStyle('background-image', 'url(img/play.png)');
+    $('playPause').setStyle('background-position', '0px 0px');
   }
   
   /**
@@ -76,14 +76,14 @@ var ympPlayerConfig = function() {
   var trackStart = function() {
     $$('#now h2').set('text', 'You are listening to:');
     $$('#now h3').set('text', y.getMetaData().title);
-    $('playPause').setStyle('background-image', 'url(img/pause.png)');
+    $('playPause').setStyle('background-position', '0px -40px');
   }
   
   /**
    * trackComplete: we change the Pause-Button to a Play-Button
    */
   var trackComplete = function() {
-    $('playPause').setStyle('background-image', 'url(img/play.png)');
+    $('playPause').setStyle('background-position', '0px 0px');
     /* TODO
      * Nice, someone listened a track until the end, this is a good thing,
      * we can assume our recommendation was not that bad... 
@@ -196,7 +196,7 @@ var moosiquePlayer = new Class({
     // the Stop-Playing Button
     that.stop.addEvent('click', function() {
       console.log('Clicked Stop Button');
-      that.playPause.setStyle('background-image', 'url(img/play.png)');
+      that.playPause.setStyle('background-position', '0px 0px');
       that.nowPlayingHeader.set('text', 'Player stopped');
       that.nowPlayingTrack.set('text', '...');
       that.nowPlayingTime.set('text', '0:00 / 0:00');
@@ -251,9 +251,9 @@ var moosiquePlayer = new Class({
     // this.playlistContainer.setStyle('display', 'none');
     
     // Make the playlist, samples and recommendations sortable
-    that.makeSortableLists($$('#playlist, #samples, #recommendations'));
+    that.makeSortableLists($$('#playlist, #recommendations ol'));
     // make links unclickable for recommendations and samples
-    that.makeLinksUnclickable($$('#recommendations li a, #samples li a'));
+    that.makeLinksUnclickable($$('#recommendations li a'));
     
   },
   
