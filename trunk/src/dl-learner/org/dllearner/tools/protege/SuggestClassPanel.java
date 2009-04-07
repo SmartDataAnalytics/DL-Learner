@@ -48,6 +48,8 @@ public class SuggestClassPanel extends JPanel {
 	 //Scroll panel if the suggestions are longer than the Panel itself
 
 	private final JScrollPane suggestScroll;
+	private static final int WIDTH = 460;
+	private static final int HEIGHT = 108;
 	/**
 	 * This is the constructor for the suggest panel.
 	 * It creates a new Scroll panel and puts the Suggest List in it. 
@@ -61,7 +63,7 @@ public class SuggestClassPanel extends JPanel {
 		suggestPanel = new JPanel();
 		descriptions.setVisible(true);
 		suggestPanel.add(descriptions);
-		suggestScroll.setPreferredSize(new Dimension(460, 108));
+		suggestScroll.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		suggestScroll.setViewportView(descriptions);
 		descriptions.setCellRenderer(new SuggestListCellRenderer());
 		add(suggestScroll);
@@ -100,6 +102,12 @@ public class SuggestClassPanel extends JPanel {
 	public void addSuggestPanelMouseListener(ActionHandler action) {
 		descriptions.addMouseListener(action);
 		
+	}
+	
+	public void resizePanel(int w, int h) {
+		suggestScroll.setPreferredSize(new Dimension(WIDTH + w, HEIGHT + h));
+		suggestScroll.setViewportView(descriptions);
+		add(suggestScroll);
 	}
 	
 

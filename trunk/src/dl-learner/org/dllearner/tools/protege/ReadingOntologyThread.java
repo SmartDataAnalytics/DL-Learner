@@ -98,7 +98,6 @@ public class ReadingOntologyThread extends Thread {
 									currentConcept = concept;
 									if (reasoner.getIndividuals(concept) != null) {
 										if (reasoner.getIndividuals(concept).size() > 0) {
-											model.setInstancesCount(reasoner.getIndividuals(concept).size());
 											hasIndividuals = true;
 										}
 										individual = reasoner.getIndividuals(concept);

@@ -22,6 +22,8 @@ package org.dllearner.tools.protege;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Set;
@@ -108,7 +110,13 @@ public class DLLearnerView {
 	private final OWLEditorKit editorKit;
 	private final JPanel learnerPanel;
 	private final JScrollPane learnerScroll;
-	private static  final int SCROLL_SPPED = 10;
+	private static  final int SCROLL_SPEED = 10;
+	private static final int WIDTH = 575;
+	private static final int HEIGHT = 350;
+	private static final int OPTION_HEIGHT = 400;
+	private static final int SCROLL_WIDTH = 600;
+	private static final int SCROLL_HEIGHT = 400;
+	private boolean toogled = false;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -117,15 +125,14 @@ public class DLLearnerView {
 	 * @param editor OWLEditorKit
 	 * @param label String
 	 */
-	public DLLearnerView(String label, OWLEditorKit editor) {
+	public DLLearnerView(OWLEditorKit editor) {
 		editorKit = editor;
 		model = new DLLearnerModel(editorKit, this);
-		model.setID(label);
 		sugPanel = new SuggestClassPanel();
 		learnerPanel = new JPanel();
 		learnerPanel.setLayout(new BorderLayout());
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		action = new ActionHandler(model, this, label);
+		action = new ActionHandler(model, this);
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
@@ -134,7 +141,9 @@ public class DLLearnerView {
 		adv = new JLabel("Advanced Settings");
 		advanced = new JToggleButton(icon);
 		advanced.setVisible(true);
+		
 		run = new JButton("suggest class expression");
+
 		accept = new JButton("ADD");
 		addButtonPanel = new JPanel(new BorderLayout());
 		sugPanel.addSuggestPanelMouseListener(action);
@@ -145,18 +154,19 @@ public class DLLearnerView {
 		hint.setText("To get suggestions for class expression, please click the button above.");
 		learner = new JPanel();
 		advanced.setSize(20, 20);
-		learner.setLayout(null);
-		accept.setPreferredSize(new Dimension(260, 50));
+		learner.setLayout(new GridBagLayout());
+		accept.setPreferredSize(new Dimension(90, 50));
+		run.setPreferredSize(new Dimension(130, 30));
 		advanced.setName("Advanced");
-		learnerScroll.setPreferredSize(new Dimension(600, 400));
-		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPPED);
+		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
+		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
 		posPanel = new PosAndNegSelectPanel(model, action);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
 		this.addAcceptButtonListener(this.action);
 		this.addRunButtonListener(this.action);
-		this.addAdvancedButtonListener(this.action);
-		
+		this.addAdvancedButtonListener(this.action);	
 	}
+	
 	
 	/**
 	 * This method returns the SuggestClassPanel.
@@ -176,88 +186,132 @@ public class DLLearnerView {
 	/**
 	 * This Method renders the view of the plugin.
 	 */
-	public void makeView() {
+	public void makeView(String label) {
+		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(detail);
+		model.setID(label);
+		
 		run.setEnabled(false);
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		learner.add(run, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		learner.add(wikiPane, c);
+		
+		sugPanel.setSuggestList(new DefaultListModel());
+		sugPanel = sugPanel.updateSuggestClassList();
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.fill = GridBagConstraints.NONE;
+		learner.add(sugPanel, c);
+		
+		accept.setEnabled(false);
+		addButtonPanel.add("North", accept);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		learner.add(addButtonPanel, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.ipady = 20;
+		learner.add(hint, c);
+		
+		
+		advanced.setIcon(icon);
+		advanced.setSelected(false);
+		c.ipady = 0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		learner.add(advanced, c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.ipady = 20;
+		learner.add(adv, c);
+		
+		posPanel.setVisible(false);
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.gridx = 0;
+		c.gridy = 4;
+		c.gridwidth = 3;
+		c.ipady = 80;
+		learner.add(posPanel, c);
+		
+		
 		detail.unsetPanel();
-		learnerPanel.setPreferredSize(new Dimension(575, 350));
+		learnerPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		detail.setVisible(false);
 		hint.setText("");
 		isInconsistent = false;
 		readThread = new ReadingOntologyThread(editorKit, this, model);
 		readThread.start();
 		hint.setVisible(true);
-		advanced.setIcon(icon);
-		accept.setEnabled(false);
 		action.resetToggled();
-		addButtonPanel.add("North", accept);
-		sugPanel.setSuggestList(new DefaultListModel());
-		sugPanel = sugPanel.updateSuggestClassList();
-		advanced.setSelected(false);
-		sugPanel.setBounds(10, 35, 470, 110);
-		adv.setBounds(40, 195, 200, 20);
-		wikiPane.setBounds(220, 0, 350, 30);
 		addButtonPanel.setBounds(485, 40, 80, 70);
-		run.setBounds(10, 0, 200, 30);
-		advanced.setBounds(10, 195, 20, 20);
 		detail.setBounds(10, 195, 600, 300);
 		detail.setVisible(true);
 		sugPanel.setVisible(true);
-		posPanel.setVisible(false);
-		posPanel.setBounds(10, 225, 490, 250);
-		accept.setBounds(510, 40, 80, 80);
-		hint.setBounds(10, 150, 490, 35);
-		errorMessage.setBounds(485, 110, 80, 80);
-		learner.add(run);
-		learner.add(wikiPane);
-		learner.add(adv);
-		learner.add(advanced);
-		learner.add(sugPanel);
-		learner.add(addButtonPanel);
-		learner.add(hint);
-		learner.add(errorMessage);
-		learner.add(posPanel);
-		learnerPanel.add(learner);
-		learnerScroll.setViewportView(learnerPanel);
+		learnerScroll.setViewportView(learner);
 		this.renderErrorMessage("");
 			
 	}
+	
 	/**
 	 * This method sets the right icon for the advanced Panel.
 	 * @param toggled boolean
 	 */
 	public void setIconToggled(boolean toggled) {
-		if (toggled) {
+		this.toogled = toggled;
+		if (this.toogled) {
 			advanced.setIcon(toggledIcon);
-			learnerPanel.setPreferredSize(new Dimension(575, 400));
+			learnerPanel.setPreferredSize(new Dimension(WIDTH, OPTION_HEIGHT));
+			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		}
-		if (!toggled) {
+		if (!this.toogled) {
 			advanced.setIcon(icon);
-			learnerPanel.setPreferredSize(new Dimension(575, 350));
+			learnerPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		}
 	}
 	
 	public void setGraphicalPanel() {
+		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(posPanel);
 		learner.remove(advanced);
 		learner.remove(adv);
 		learner.repaint();
-		posPanel.setBounds(10, 435, 490, 250);
-		adv.setBounds(40, 405, 200, 20);
-		advanced.setBounds(10, 405, 20, 20);
-		detail.setBounds(10, 195, 590, 200);
 		detail.setVisible(true);
-		learner.add(adv);
-		learner.add(advanced);
-		learner.add(posPanel);
-		learner.add(detail);
-		learnerPanel.setPreferredSize(new Dimension(575, 620));
-		learnerPanel.removeAll();
-		learnerPanel.add(learner);
-		learnerScroll.setViewportView(learnerPanel);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 0;
+		c.gridy = 3;
+		c.gridwidth = 3;
+		c.ipady = 80;
+		learner.add(detail, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 4;
+		c.gridwidth = 1;
+		learner.add(advanced, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 4;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		learner.add(adv, c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 0;
+		c.gridy = 5;
+		c.gridwidth = 3;
+		c.ipady = 80;
+		learner.add(posPanel, c);
+		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
+		learnerScroll.setViewportView(learner);
 		learnerScroll.repaint();
-		
-		
 	}
 	/**
 	 * This Method changes the hint message. 
