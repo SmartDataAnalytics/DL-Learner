@@ -6,11 +6,11 @@
     include_once('arc/ARC2.php');
     $rdfParser = ARC2::getRDFParser();
     
-    if (isset($_POST['search']) && !empty($_POST['search'])) {
+    if (isset($_POST['searchValue']) && !empty($_POST['searchValue'])) {
       
       if ($_POST['typeOfSearch'] === 'lastfm') {
         $lastfmContent = '';
-        $lastfmResource = 'http://dbtune.org/last-fm/' . urlencode($_POST['search']);
+        $lastfmResource = 'http://dbtune.org/last-fm/' . urlencode($_POST['searchValue']);
         
         $rdfParser->parse($lastfmResource);
         

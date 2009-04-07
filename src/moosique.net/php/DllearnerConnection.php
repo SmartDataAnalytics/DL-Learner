@@ -5,28 +5,41 @@
  */
 class dllearnerConnection {		
 	
-  private $conf;
+  private $config;
   private $client;
   private $endpoint;
 
-	function __construct($conf) {
-    $this->conf = $conf;
+  /**
+   * 
+   * @return 
+   * @param object $config
+   */
+	function __construct($config) {
+    $this->config = $config;
     // we use jamendo as the default sparql-endpoint
-    $this->setEndpoint($this->conf->getUrl('jamendo'));
+    $this->setEndpoint($this->config->getUrl('jamendo'));
     $this->connect();
 	}
   
+  /**
+   * 
+   * @return 
+   */
   private function connect() {
 		// connect to DL-Learner-Web-Service
-		$this->client = new SoapClient(
-      $this->conf->getUrl('wsdlLocal')
-    );
+		$this->client = new SoapClient($this->config->getUrl('wsdlLocal'));
 	}
   
+  /**
+   * 
+   * @return 
+   * @param object $endpoint
+   */
   public function setEndpoint($endpoint) {
     $this->endpoint = $endpoint;
   }
 
+  
   public function getEndpoint() {
     return $this->endpoint;
   }

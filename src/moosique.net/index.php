@@ -13,8 +13,7 @@
 <!--[if lte IE 6]><body class="ie6"><![endif]-->
 <!--[if !IE]><!--><body><!-- <![endif]-->
 
-  <div id="container">
-    
+  <div id="headerContainer">
     <div id="header">
       <h1><a href="index.php">moosique.net</a></h1>
       <div id="now">
@@ -38,22 +37,28 @@
         <a href="#" id="togglePlaylist" title="Show/Hide Playlist">Playlist</a>
       </div>
     </div>
+  </div>
 
-  
-    <div id="playlistContainer">
-      <div id="playlistHeader">
-        Playlist
-        <a href="#" id="closePlaylist" title="Close Playlist Window">X</a>
-      </div>
-      <ol id="playlist">
-        <li><a href="mp3/moosique.mp3" class="htrack">Welcome to moosique</a></li>
-      </ol>
-      <div id="playlistFooter"> &nbsp; </div>
-    </div>
+  <div id="container">
     
     <div id="mainContainer">
+      <div id="mainMenu">
+        <ul class="clearfix">
+          <li class="active"><a href="#" class="search">Search</a></li>
+          <li><a href="#" class="recommendations">Recommendations</a></li>
+          <li><a href="#" class="information">Information</a></li>
+        </ul>
+      </div>
       <div id="content">
-        <div id="searchContainer">
+        
+        
+        <div id="search">
+          <h2>Welcome to moosique.net!</h2>
+          <p>
+            Want to listen to some good free music? Just enter an artist or song 
+            name, search for tags or enter your last.fm username and let the moogic
+            happen...
+          </p>
           <form id="searchForm" method="post" action="php/ajaxer.php">
             <div>
               <select name="typeOfSearch" id="typeOfSearch">
@@ -62,58 +67,63 @@
                 <option value="tag">Tag</option>
                 <option value="lastfm">Last.fm-User</option>
               </select>
-              <input id="search" name="search" type="text" />
+              <input id="searchValue" name="searchValue" type="text" />
               <input id="searchSubmit" name="searchSubmit" value="Search" title="Search" type="submit" />
             </div>
           </form>
+          <div id="results">
+            
+          </div>
         </div>
 
-        <div id="info">
-          <h2>Welcome to moosique.net!</h2>
-          <p>
-            Want to listen to some good free music? Just enter an artist or song 
-            name, search for tags or enter your last.fm username and let the moogic
-            happen...
-          </p>
-          <p>
-            Or fill your Playlist with these Samples...<br />
-            (Drag them to the Playlist)
-          </p>
-          <ol id="samples">
+        <div id="recommendations">
+          <h2>Try dragging these samples to the playlist</h2>
+          <ol>
             <li><a href="http://stream6-3.jamendo.com/8654/mp31/01%20-%20Low%20Earth%20Orbit%20-%20My%20Mistakes.mp3">Low Earth Orbit - My Mistakes</a></li>
             <li><a href="http://stream6-3.jamendo.com/8654/mp31/02%20-%20Low%20Earth%20Orbit%20-%20Like%20Mud.mp3">Low Earth Orbit - Like Mud</a></li>
             <li><a href="http://stream6-3.jamendo.com/8654/mp31/03%20-%20Low%20Earth%20Orbit%20-%20Defend.mp3">Low Earth Orbit - Defend</a></li>
             <li><a href="http://stream6-3.jamendo.com/8654/mp31/04%20-%20Low%20Earth%20Orbit%20-%20What%20Can%20I%20Say.mp3">Low Earth Orbit - What Can I Say</a></li>
           </ol>
+          
+        </div>
+
+        <div id="information">
+          <div id="sidebar">
+            <div id="moreInfo">
+              <h2>About the Artist</h2>
+              <img src="http://imgjam.com/albums/8654/covers/1.200.jpg" alt="Cover" />
+              <p>
+                Iusto odio dignissim qui blandit praesent. Nisl ut aliquip ex ea commodo, consequat 
+                duis autem vel eum. Nam liber tempor cum soluta nobis eleifend option congue nihil 
+                imperdiet doming id. In hendrerit eu feugiat nulla luptatum zzril delenit augue duis 
+                dolore te feugait. Quod ii legunt saepius claritas est etiam processus dynamicus 
+                qui nobis videntur parum.
+              </p>
+            </div>
+          </div>
         </div>
 
       </div>
-      
-      
-      <div id="sidebar">
-        <div id="moreInfo">
-          <h2>About the Artist</h2>
-          <img src="http://imgjam.com/albums/8654/covers/1.200.jpg" alt="Cover" />
-          <p>
-            Iusto odio dignissim qui blandit praesent. Nisl ut aliquip ex ea commodo, consequat 
-            duis autem vel eum. Nam liber tempor cum soluta nobis eleifend option congue nihil 
-            imperdiet doming id. In hendrerit eu feugiat nulla luptatum zzril delenit augue duis 
-            dolore te feugait. Quod ii legunt saepius claritas est etiam processus dynamicus 
-            qui nobis videntur parum.
-          </p>
-        </div>
 
+      <div id="playlistContainer">
+        <div id="playlistHeader">
+          Playlist
+          <a href="#" id="closePlaylist" title="Close Playlist Window">Close Window</a>
+        </div>
+        <ol id="playlist">
+          <li><a href="mp3/moosique.mp3" class="htrack">Welcome to moosique</a></li>
+        </ol>
+        <div id="playlistFooter"> &nbsp; </div>
       </div>
         
       <div id="footer">
         <a href="http://mediaplayer.yahoo.com/">Yahoo! Media Player</a> | 
         <a href="http://aksw.org/Projects/DLLearner">Powered by DL-Learner</a>      
       </div>
-
-
     </div>
-    
   </div>
+  
+
   
   <!-- JS at the bottom, faster loading pages -->
   <script type="text/javascript" src="js/mootools-core.js"></script>
@@ -121,7 +131,7 @@
   <script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
 
   <script type="text/javascript" src="js/player.js"></script>
+  <script type="text/javascript" src="js/interface.js"></script>
   <script type="text/javascript" src="js/ajax.js"></script>
-  <!--[if lte IE 6]><script type="text/javascript" src="js/ie6fixes.js"></script><![endif]-->
 </body>
 </html>

@@ -5,7 +5,7 @@ var responseObject = '';
 // handle search requests
 $('searchForm').addEvent('submit', function(e) {
   
-  var info = $('info');
+  var results = $('results');
   var submit = $('searchSubmit');
   
   e.stop(); // prevent form submitting the non-ajax way
@@ -13,18 +13,18 @@ $('searchForm').addEvent('submit', function(e) {
     
     onRequest: function(response) {
       submit.set('disabled', 'disabled'); // disable submit button until request complete
-      info.set('html', '<h2>Processing your search request...</h2>');
+      results.set('html', '<h2>Processing your search request...</h2>');
     },
     
     onFailure: function(response) {
-      info.set('html', '<h2>Unable to process your search. Try again.</h2>');      
+      results.set('html', '<h2>Unable to process your search. Try again.</h2>');      
     },
      
     onSuccess: function(response) {
       submit.erase('disabled'); // reenable submitbutton
       responseObject = JSON.decode(response);
       // info.set('text', response);
-      info.set('html', '<h2>Done.</h2>');
+      results.set('html', '<h2>Done.</h2>');
       // Firebug needed
       console.log(responseObject);
   

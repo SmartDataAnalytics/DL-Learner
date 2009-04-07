@@ -3,15 +3,11 @@
 
 /* moosique.net 
  *
- * Overall width: 955px -- golden ratio: 590px & 365px 
- * 
  * Semiblack:   #131313
  * Dark Grey:   #383838
  * Light Grey:  #545454
  * White:       #fff
  * Yellowish:   #ffbc00
- * Border:      #272727
- * 
  * 
  */
 
@@ -27,15 +23,10 @@
 }
 
 body {
-  background: url(../img/bg_body.png) top left repeat-x #383838;
-}
-
-a {
-  text-decoration: none;
+  background: #333;
 }
 
 a:hover {
-  text-decoration: underline; 
   color: #ffbc00;
 }
 
@@ -46,39 +37,30 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 
 /* Default Container Positioning */
 /* =================================================================== */
-
 #container, #header, #mainContainer, #content {
   position: relative;
 }
 
-#container {
-  width: 955px;
-  margin: 0 auto;
+#headerContainer {
+  height: 140px;
+  background: #131313;
+  border-top: 1px solid #999;
+  border-bottom: 10px solid #ffbc00;
 }
 
 #header {
-  height: 132px;
+  width: 960px;
+  margin: 0 auto;
 }
 
-#content {
-  /* width: 590px; */
-  top: 4px;
-  width: 557px;
-  padding: 30px 30px 30px 0;
-  border-right: 3px solid #272727;
-  min-height: 300px;
-  height: auto !important;
-  height: 300px;
+#container {
+  border-top: 1px solid #1a1a1a;
 }
 
-#sidebar {
-  /* width: 365px; */
-  width: 335px;
-  position: absolute;
-  right: 0;
-  top: 4px;
-  padding: 30px 0 30px 30px;
-  
+#mainContainer {
+  width: 960px;
+  margin: 0 auto;
+  padding: 30px 0;
 }
 
 #footer {
@@ -86,19 +68,18 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   text-align: center;
 }
 
-
-/* Header Area */
+/* header Area */
 /* =================================================================== */
 #header h1 a {
   font-size: 36px;
-  line-height: 120px;
+  line-height: 90px;
   font-family: Georgia, "Times New Roman", Times, serif;
   text-decoration: none;
 }
 
 #now {
   position: absolute;
-  top: 30px;
+  top: 20px;
   left: 280px;
   width: 410px;
   height: 37px;
@@ -131,7 +112,7 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 
 #status {
   position: absolute;
-  top: 93px;
+  top: 83px;
   left: 300px;
   width: 410px;
   font-size: 11px;  
@@ -141,7 +122,7 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   position: absolute;
   width: 116px;
   height: 37px;
-  top: 30px;
+  top: 20px;
   right: 0;
   padding: 10px 20px;
   background: #545454;
@@ -159,6 +140,10 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   margin-right: 10px;
 }
 
+#playPause {
+  width: 26px;
+}
+
 #next {
   margin-right: 0;
 }
@@ -170,26 +155,16 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 }
 
 #prev {
-  
-}
-
-#playPause {
-  width: 26px;
-}
-  
-/* TODO Sprites */
-#prev {
-  background: url(../img/prev.png) center center no-repeat;
+  background: url(../img/controls.png) 0px -160px no-repeat;
 }
 #next {
-  background: url(../img/next.png) center center no-repeat;
+  background: url(../img/controls.png) 0px -120px no-repeat;
 }
-/* Will be changed by JavaScript onclick */
 #playPause {
-  background: url(../img/play.png) center center no-repeat;
+  background: url(../img/controls.png) 0px 0px no-repeat;
 }
 #stop {
-  background: url(../img/stop.png) center center no-repeat;
+  background: url(../img/controls.png) 0px -80px no-repeat;
 }
 
 #toggles {
@@ -211,20 +186,19 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 }
 
 
-
 /* Playlist Area */
 /* =================================================================== */
 
 #playlistContainer {
   position: absolute;
   width: 368px;
-  /* top: 132px; */
-  top: 450px;
+  top: 30px;
   right: 0;
   background: #000;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   z-index: 100;
+  display: none;
 }
 
 #playlistHeader {
@@ -253,12 +227,12 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 
 #closePlaylist {
   position: absolute;
-  width: 20px;
+  width: 100px;
   height: 20px;
   top: 5px;
   right: 10px;
   text-align: right;
-  font-weight: bold;
+  font-size: 10px;
 }
 
 #playlist {
@@ -287,27 +261,52 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   width: 14px;
   height: 14px;
   line-height: 14px;
-  color: #131313;
-  background: #fff;
-  font-weight: bold;
-  text-align: center;
   margin-right: -19px;
   z-index: 1000;
+  text-indent: -99999999px;
+  background: url(../img/controls.png) 0px -200px no-repeat;
 }
 
-/* Samples */
-#samples li {
-  cursor: move;
-  padding: 3px;
-}
-
-
-/* Content Area */
+/* mainMenu */
 /* =================================================================== */
-#searchContainer * {
+
+#mainMenu ul {
+  position: absolute;
+  top: -46px;
+  left: 0;  
+}
+
+#mainMenu ul li {
+  float: left;
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  -webkit-border-top-left-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  padding: 0 15px;
+  background: #545454;
+  margin: 5px 5px 0 0;
+  height: 30px;
+  line-height: 30px;
+}
+
+#mainMenu ul li a {
   color: #131313;
 }
 
+#mainMenu ul li.active {
+  height: 35px;
+  line-height: 35px;
+  margin-top: 0;
+  background: #ffbc00;
+}
+
+#mainMenu ul li.active a {
+  font-weight: bold;
+}
+
+
+/* Content Area Default Styles */
+/* =================================================================== */
 
 #mainContainer h2 {
   font-size: 20px;
@@ -321,30 +320,55 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   font-family: "Courier New", Courier, monospace;
 }
 
-/* Recommendations and Samples */
-#content ol {
-  list-style: decimal;
-  margin-left: 24px;
+
+/* search */
+/* =================================================================== */
+#searchForm * {
+  color: #131313;
 }
 
-#content ol li a {
+
+/* Recommendations */
+/* =================================================================== */
+#recommendations { 
+  display: none; /* Initial Hide */
+}
+
+#recommendations ol {
+  list-style: decimal;
+  margin-left: 24px;
+  width: 50%;
+}
+
+#recommendations ol li a {
   cursor: move;
   text-decoration: none;
 }
 
-#content ol li a:hover {
+#recommendations ol li a:hover {
   text-decoration: none;
   color: #fff; 
 }
 
+#recommendations li:hover {
+  border: 1px solid #ffbc00;
+}
+
 
 /* Draggable li-Items */
-#playlist li.moving, #samples li.moving, #recommendations li.moving {
+#playlist li.moving, #recommendations li.moving {
   background: #666;
   border: 3px solid #ffbc00;
   color: #000;
   font-weight: bold;
 } 
+
+/* information */
+/* =================================================================== */
+#information {
+  display: none; /* Initial Hide */
+}
+
 
 
 /* Sidebar Area */
@@ -356,24 +380,6 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 /* =================================================================== */
 #footer a {
   font-size: 11px;
-}
-
-
-
-
-/* =================================================================== */
-/* ======================== IE 7 Styles ============================== */
-/* =================================================================== */
-.ie7 .class {
-  
-}
-
-
-/* =================================================================== */
-/* ================= IE 6  (and below) Styles ======================== */
-/* =================================================================== */
-.ie6 .class {
-  
 }
 
 

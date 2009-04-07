@@ -29,8 +29,8 @@ class SparqlQueryBuilder {
   
   private function sparqlPrefixes() {
     $prefixes = '';
-    foreach($this->config->getPrefixes() as $prefix => $resource) {
-      $prefixes .= 'PREFIX ' . $prefix . ': ' . $resource . "\n";
+    foreach($this->config->getAllPrefixes() as $prefix => $resource) {
+      $prefixes .= 'PREFIX ' . $prefix . ': <' . $resource . '>' . "\n";
     }
     return $prefixes;
   }
