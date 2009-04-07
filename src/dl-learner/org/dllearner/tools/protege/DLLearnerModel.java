@@ -39,7 +39,6 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
@@ -79,7 +78,7 @@ public class DLLearnerModel implements Runnable{
 	private final ComponentManager cm;
 
 	private static final String EQUIVALENT_CLASS_AXIOM_STRING = "equivalent class";
-	private static final String SUPER_CLASS_AXIOM_STRING = "Suggest super class";
+	private static final String SUPER_CLASS_AXIOM_STRING = "super class";
 	private static final String EQUIVALENT_CLASS_LEARNING = "equivalence";
 	private static final String SUPER_CLASS_LEARNING = "superClass";
 
@@ -137,8 +136,6 @@ public class DLLearnerModel implements Runnable{
 	// The Individuals of the Ontology
 
 	private Set<Individual> individual;
-	private int instancesCount;
-
 	// The error message which is rendered when an error occured
 
 
@@ -174,7 +171,6 @@ public class DLLearnerModel implements Runnable{
 		
 		this.view = view;
 		ontologyConsistent = true;
-		instancesCount = 0;
 		owlDescription = new HashSet<OWLDescription>();
 		ComponentManager.setComponentClasses(componenten);
 		cm = ComponentManager.getInstance();
@@ -454,24 +450,6 @@ public class DLLearnerModel implements Runnable{
 	}
 
 	/**
-	 * This Method checks if after inserting of this concept the ontology is
-	 * still consistent.
-	 * 
-	 * @param eDescription
-	 *            EvauatedDescription
-	 * @return isConsistent boolean
-	 */
-	public boolean isConsistent(EvaluatedDescription eDescription) {
-		boolean isConsistent = false;
-		if (((EvaluatedDescriptionClass) eDescription).getCoveredInstances().size() < instancesCount) {
-			isConsistent = false;
-		} else {
-			isConsistent = true;
-		}
-		return isConsistent;
-	}
-
-	/**
 	 * This method sets the suggestion list.
 	 * 
 	 * @param list
@@ -511,14 +489,6 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public Set<Individual> getIndividual() {
 		return individual;
-	}
-	
-	/**
-	 * This method sets the number of instances.
-	 * @param i number of instances
-	 */
-	public void setInstancesCount(int i) {
-		instancesCount = i;
 	}
 	
 	public String getID() {

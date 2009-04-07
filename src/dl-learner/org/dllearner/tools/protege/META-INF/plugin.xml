@@ -3,7 +3,9 @@
   <extension id="org.dllearner.tools.protege.ProtegePlugin"
               point="org.protege.editor.owl.ui.editor.description">
        <label value="DL-Learner"/>
+       <axiomTypes value="Equivalent classes axiom,SubClass axiom"/>
        <class value="org.dllearner.tools.protege.ProtegePlugin"/>
+       <index value="E"/>
    </extension>
 
   </plugin>

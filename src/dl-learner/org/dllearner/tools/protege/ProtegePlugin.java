@@ -37,6 +37,8 @@ import org.semanticweb.owl.model.OWLDescription;
 public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	private static final long serialVersionUID = 728362819273927L;
 	private DLLearnerView view;
+	private static final String EQUIVALENT_CLASS_STRING = "Equivalent classes axiom";
+	private static final String SUPERCLASS_STRING = "SubClass axiom";
 
 	
 	@Override
@@ -51,7 +53,11 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 
 	@Override
 	public boolean isValidInput() {
-		view.makeView();
+		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
+			view.makeView("equivalent class");
+		} else if(this.getAxiomType().toString().equals(SUPERCLASS_STRING)) {
+			view.makeView("super class");
+		}
 		view.getMoreDetailForSuggestedConceptsPanel().unsetPanel();
 		return true;
 	}
@@ -63,8 +69,12 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 
 	@Override
 	public void initialise() throws Exception {
-		view = new DLLearnerView("equivalent class", super.getOWLEditorKit());
-		view.makeView();
+		view = new DLLearnerView(super.getOWLEditorKit());
+		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
+			view.makeView("equivalent class");
+		} else if(this.getAxiomType().toString().equals(SUPERCLASS_STRING)) {
+			view.makeView("super class");
+		}
 	}
 
 	@Override

@@ -60,7 +60,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
-	private final String id;
 	// this is a boolean that checked if the advanced button was pressed or not.
 	private boolean toggled;
 	// This is the Tread of the DL-Learner
@@ -86,9 +85,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            id if it is a subclass or an equivalent class
 	 * 
 	 */
-	public ActionHandler(DLLearnerModel m, DLLearnerView view, String i) {
+	public ActionHandler(DLLearnerModel m, DLLearnerView view) {
 		this.view = view;
-		this.id = i;
 		this.model = m;
 		toggled = false;
 
@@ -142,13 +140,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 		}
 	}
 
-	/**
-	 * 
-	 * @return id StringID if it is a Subclass or an equivalent class.
-	 */
-	public String getID() {
-		return id;
-	}
 
 	/**
 	 * select/deselect the Check boxes.
@@ -385,7 +376,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 								// (ontology, null),
 								// ((EvaluatedDescriptionClass)
 								// eval).getAccuracy()*100));
-								if (model.isConsistent(eval)) {
+								if (((EvaluatedDescriptionClass) eval).isConsistent()) {
 									dm.add(i, new SuggestListItem(colorGreen,
 											eval.getDescription()
 													.toManchesterSyntaxString(

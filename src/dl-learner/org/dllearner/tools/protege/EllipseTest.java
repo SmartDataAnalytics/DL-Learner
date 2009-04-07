@@ -13,8 +13,8 @@ import javax.swing.JPanel;
 public class EllipseTest extends JPanel {
 
 	private static final long serialVersionUID = -5676466024192284648L;
-	private Ellipse2D te;
-	private Random random;
+	private final Ellipse2D te;
+	private final Random random;
 
 	public EllipseTest() {
 		te = new Ellipse2D.Double(0, 0, 150, 150);
