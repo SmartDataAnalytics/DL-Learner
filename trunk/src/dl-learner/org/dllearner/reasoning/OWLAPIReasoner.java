@@ -48,6 +48,7 @@ import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -100,6 +101,8 @@ import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.SimpleURIMapper;
 import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
+
+import uk.ac.manchester.cs.owl.OWLPropertyAxiomImpl;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently 
@@ -266,7 +269,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 //				System.out.println(kb.toString(null,null));
 				
 				URI ontologyURI = URI.create("http://example.com");
-				OWLOntology ontology = null;
+				ontology = null;
 				try {
 					ontology = manager.createOntology(ontologyURI);
 				} catch (OWLOntologyCreationException e) {
@@ -635,9 +638,33 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// of descriptions (?))
 			// Answer: this function is just horribly broken in OWL API
 			Set<Set<OWLDescription>> set = reasoner.getDomains(prop);
+
+			
 			if(set.size()==0)
 				return new Thing();
-			OWLClass oc = (OWLClass) set.iterator().next().iterator().next();
+						
+			Set<OWLDescription> union = new HashSet<OWLDescription>();
+			Set<OWLDescription> domains = new HashSet<OWLDescription>();
+			
+			for(Set<OWLDescription> descs : set){
+				for(OWLDescription desc : descs){
+					union.add(desc);
+				}
+			}
+			for(OWLDescription desc : union){
+				boolean isSuperClass = false;
+				for(Description d : getClassHierarchy().getSubClasses(OWLAPIConverter.convertClass(desc.asOWLClass()))){
+					if(union.contains(OWLAPIConverter.getOWLAPIDescription(d))){
+						isSuperClass = true;
+						break;
+					}
+				}
+				if(!isSuperClass){
+					domains.add(desc);
+				}
+			}
+			
+			OWLClass oc = (OWLClass) domains.iterator().next();
 			String str = oc.getURI().toString();
 			if(str.equals("http://www.w3.org/2002/07/owl#Thing")) {
 				return new Thing();
@@ -661,7 +688,29 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			Set<Set<OWLDescription>> set = reasoner.getDomains(prop);
 			if(set.size()==0)
 				return new Thing();
-			OWLClass oc = (OWLClass) set.iterator().next().iterator().next();
+			
+			Set<OWLDescription> union = new HashSet<OWLDescription>();
+			Set<OWLDescription> domains = new HashSet<OWLDescription>();
+			
+			for(Set<OWLDescription> descs : set){
+				for(OWLDescription desc : descs){
+					union.add(desc);
+				}
+			}
+			for(OWLDescription desc : union){
+				boolean isSuperClass = false;
+				for(Description d : getClassHierarchy().getSubClasses(OWLAPIConverter.convertClass(desc.asOWLClass()))){
+					if(union.contains(OWLAPIConverter.getOWLAPIDescription(d))){
+						isSuperClass = true;
+						break;
+					}
+				}
+				if(!isSuperClass){
+					domains.add(desc);
+				}
+			}
+			
+			OWLClass oc = (OWLClass) domains.iterator().next();
 			String str = oc.getURI().toString();
 			if(str.equals("http://www.w3.org/2002/07/owl#Thing")) {
 				return new Thing();
