@@ -224,6 +224,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
+		if(startClass != null) {
+			this.startClass = startClass;
+		}
 		init();
 	}
 		
@@ -337,8 +340,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		System.exit(0);
 		*/
 		 
-//		if(startClass != null)
-//			this.startClass = startClass;
 	}
 	
 	/* (non-Javadoc)
