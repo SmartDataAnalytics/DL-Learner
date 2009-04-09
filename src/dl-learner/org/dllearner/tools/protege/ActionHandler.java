@@ -100,7 +100,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals("suggest class expression")) {
+		if (z.getActionCommand().equals("suggest equivalent class expression") || z.getActionCommand().equals("suggest super class expression")) {
 			model.setKnowledgeSource();
 			model.setReasoner();
 			model.setLearningProblem();
