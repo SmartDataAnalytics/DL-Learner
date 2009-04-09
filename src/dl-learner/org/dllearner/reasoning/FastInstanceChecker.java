@@ -496,8 +496,30 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
+	public SortedSet<Individual> getIndividualsImpl(Description concept) throws ReasoningMethodUnsupportedException {
+		return getIndividualsImplFast(concept);
+	}
+	
+	public SortedSet<Individual> getIndividualsImplStandard(Description concept)
+		throws ReasoningMethodUnsupportedException {
+		if (concept instanceof NamedClass) {
+	 		return classInstancesPos.get((NamedClass) concept);
+	 	} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
+	 		return classInstancesNeg.get((NamedClass) concept.getChild(0));
+	 	}
+	 
+	 	// return rs.retrieval(concept);
+	 	SortedSet<Individual> inds = new TreeSet<Individual>();
+	 	for (Individual i : individuals) {
+	 		if (hasType(concept, i)) {
+	 			inds.add(i);
+	 		}
+	 	}
+		return inds;
+	}
+	
 	@SuppressWarnings("unchecked")
-	public SortedSet<Individual> getIndividualsImpl(Description description)
+	public SortedSet<Individual> getIndividualsImplFast(Description description)
 			throws ReasoningMethodUnsupportedException {
 		// policy: returned sets are clones, i.e. can be modified
 		// (of course we only have to clone the leafs of a class description tree)
