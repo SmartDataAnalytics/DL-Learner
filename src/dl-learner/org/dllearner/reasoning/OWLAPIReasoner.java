@@ -495,6 +495,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	@Override
 	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
 		try {
+//			System.out.println("super: " + superConcept + "; sub: " + subConcept);
 			return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
