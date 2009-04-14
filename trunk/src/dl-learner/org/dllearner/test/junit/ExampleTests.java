@@ -84,7 +84,7 @@ public class ExampleTests {
 		ignore.add("./examples/semantic_bible/sparqlbible.conf"); // requires local Joseki
 		
 		// temporarily not working (have a look at those before next release) 
-		ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working/supported
+		// ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working/supported
 		
 		// ignored due to errors (should be fixed; in case of long running problems or
 		// our of memory, it is better to increase the noise parameter and add comments
@@ -99,7 +99,7 @@ public class ExampleTests {
 		//also working fine ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
 		// ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		// ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)  => disallowing ALL helps (TODO find out details)
-		// ignore.add("./examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // Out of Memory Error
+		ignore.add("./examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // Out of Memory Error
 
 		int failedCounter = 0;
 		for (String path : confFiles.keySet()) {
