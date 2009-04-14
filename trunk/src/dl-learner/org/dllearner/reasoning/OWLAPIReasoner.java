@@ -1059,7 +1059,12 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		try {
-			consistent = reasoner.isConsistent(ontology);
+			// workaround due to a bug in Pellet 2.0RC (see PelletBug.java und PelletBug2.java)
+			if(configurator.getReasonerType().equals("pellet")) {
+				consistent = ((org.mindswap.pellet.owlapi.Reasoner)reasoner).isConsistent();
+			} else {
+				consistent = reasoner.isConsistent(ontology);
+			}
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 		}
