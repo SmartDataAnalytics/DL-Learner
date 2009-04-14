@@ -116,7 +116,7 @@ public class CELOE extends LearningAlgorithm {
 	private String baseURI;
 	private Map<String, String> prefixes;
 	private DecimalFormat dfPercent = new DecimalFormat("0.00%");
-//	private ConceptComparator descriptionComparator = new ConceptComparator();
+	private ConceptComparator descriptionComparator = new ConceptComparator();
 	
 	// statistical variables
 	private int descriptionTests = 0;
@@ -377,6 +377,8 @@ public class CELOE extends LearningAlgorithm {
 		
 		if(isCandidate) {
 			Description niceDescription = rewriteNode(node);
+			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
+//			Description niceDescription = node.getDescription();
 			
 			// another test: none of the other suggested descriptions should be 
 			// a subdescription of this one unless accuracy is different
