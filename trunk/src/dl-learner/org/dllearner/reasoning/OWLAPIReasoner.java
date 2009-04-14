@@ -1051,16 +1051,22 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public boolean remainsSatisfiableImpl(Axiom axiom) {
 		boolean consistent = true;
 		OWLAxiom axiomOWLAPI = OWLAPIAxiomConvertVisitor.convertAxiom(axiom);
+		
 		try {
 			manager.applyChange(new AddAxiom(ontology, axiomOWLAPI));
+		} catch (OWLOntologyChangeException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
 			consistent = reasoner.isConsistent(ontology);
-			manager.applyChange(new RemoveAxiom(ontology, axiomOWLAPI));
-			
-		} catch (OWLOntologyChangeException e) {
-			
-			e.printStackTrace();
 		} catch (OWLReasonerException e) {
-			
+			e.printStackTrace();
+		}
+		
+		try {
+			manager.applyChange(new RemoveAxiom(ontology, axiomOWLAPI));
+		} catch (OWLOntologyChangeException e) {
 			e.printStackTrace();
 		}
 		
