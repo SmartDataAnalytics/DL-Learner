@@ -61,20 +61,20 @@ public abstract class BaseDescriptionGenerator
 
     public Set<OWLDescription> computeTau(OWLDescription desc)
     {
-        TauGenerator gen = new TauGenerator(factory);
+        Tau gen = new Tau(factory);
         return desc.accept(gen);
     }
 
     public Set<OWLDescription> computeBeta(OWLDescription desc)
     {
-        BetaGenerator gen = new BetaGenerator(factory);
+        Beta gen = new Beta(factory);
         return (Set<OWLDescription>)desc.accept(gen);
     }
 
     private Set<Set<OWLDescription>> computeReplacements(Set<OWLDescription> operands)
-    {System.out.println("Eingabe : " + operands);
+    {
         Set<List<OWLDescription>> ps = new HashSet<List<OWLDescription>>();
-        ps.add(new ArrayList());
+        ps.add(new ArrayList<OWLDescription>());
 
         for(OWLDescription op : operands)
         {
@@ -95,7 +95,7 @@ public abstract class BaseDescriptionGenerator
         
         for(List<OWLDescription> desc : ps ){
         	result.add(new HashSet<OWLDescription>(desc));
-        }System.out.println("Ergebnis : " + result);
+        }
         return result;
     }
 

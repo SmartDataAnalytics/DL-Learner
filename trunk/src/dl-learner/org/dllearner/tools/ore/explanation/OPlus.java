@@ -329,7 +329,7 @@ public class OPlus
 	}
 
 	@Override
-	public Set<OWLAxiom> visit(OWLObjectSubPropertyAxiom axiom) {System.out.println("jo" + axiom);
+	public Set<OWLAxiom> visit(OWLObjectSubPropertyAxiom axiom) {
 		 return archive(axiom);
 	}
 
@@ -435,7 +435,7 @@ public class OPlus
 
 	@Override
 	public Set<OWLAxiom> visit(OWLInverseObjectPropertiesAxiom axiom) {
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();System.out.println(axiom);
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 	    axioms.add(dataFactory.getOWLSubObjectPropertyAxiom(axiom.getFirstProperty(), dataFactory.getOWLObjectPropertyInverse(axiom.getSecondProperty())));
 	    axioms.add(dataFactory.getOWLSubObjectPropertyAxiom(axiom.getSecondProperty(), dataFactory.getOWLObjectPropertyInverse(axiom.getFirstProperty())));
 	    return archive(axiom, axioms);
