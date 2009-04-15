@@ -22,8 +22,13 @@ package org.dllearner.test.junit;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -57,6 +62,12 @@ public class ExampleTests {
 	 */
 	@Test
 	public void testAllConfFiles() throws ComponentInitException {
+		
+		// if true, then examples are executed in random order (avoids the problem
+		// that the same examples are tested first on several runs); otherwise
+		// it runs the examples in alphabetical order
+		boolean randomize = true;
+		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -71,6 +82,20 @@ public class ExampleTests {
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
 
+		// put all examples in a flat list
+		List<String> examples = new LinkedList<String>();
+		for(Map.Entry<String,ArrayList<String>> entry : confFiles.entrySet()) {
+			for(String file : entry.getValue()) {
+				examples.add(entry.getKey() + file + ".conf");
+			}
+		}
+		
+		if(randomize) {
+			Collections.shuffle(examples, new Random());
+		} else {
+			Collections.sort(examples);
+		}
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
 		// ignore list (examples which are temporarily not working due
@@ -99,41 +124,50 @@ public class ExampleTests {
 		//also working fine ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
 		// ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		// ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)  => disallowing ALL helps (TODO find out details)
-		ignore.add("./examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // Out of Memory Error
+		ignore.add("examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // stack overflow
+		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
+		ignore.add("examples/krk/"); // too many stack overflows
 
 		int failedCounter = 0;
-		for (String path : confFiles.keySet()) {
-			for (String file : confFiles.get(path)) {
-				String conf = path + file + ".conf";
-				if(ignore.contains(conf)) {
-					System.out.println("Skipping " + conf + " (is on ignore list).");
-				} else {
-					System.out.println("Testing " + conf + " (time: " + sdf.format(new Date()) + ").");
-					long startTime = System.nanoTime();
-					boolean success = false;
-					try {
-						// start example
-						Start start = new Start(new File(conf));
-						start.start(false);
-						// test is successful if a concept was learned
-						assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
-						start.getReasonerComponent().releaseKB();
-						success = true;
-					} catch (Exception e) {
-						// unit test not succesful (exceptions are caught explicitly to find 
-						assert ( false );
-						e.printStackTrace();
-						failedCounter++;
-					}
-					long timeNeeded = System.nanoTime() - startTime;
-					ComponentManager.getInstance().freeAllComponents();
-					if(!success) {
-						System.out.println("TEST FAILED.");
-					}
-					System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+		int counter = 1;
+		int total = examples.size();
+		for(String conf : examples) {
+			if(ignore.contains(conf)) {
+				System.out.println("Skipping " + conf + " (is on ignore list).");
+			} else {
+				System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
+				long startTime = System.nanoTime();
+				boolean success = false;
+				try {
+					// start example
+					Start start = new Start(new File(conf));
+					start.start(false);
+					// test is successful if a concept was learned
+					assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+					start.getReasonerComponent().releaseKB();
+					success = true;
+				} catch (Exception e) {
+					// unit test not succesful (exceptions are caught explicitly to find 
+					assert ( false );
+					e.printStackTrace();
+					failedCounter++;
 				}
-			}
+				long timeNeeded = System.nanoTime() - startTime;
+				ComponentManager.getInstance().freeAllComponents();
+				if(!success) {
+					System.out.println("TEST FAILED.");
+				}
+				System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+			}	
+			counter++;
 		}
+		
+//		for (String path : confFiles.keySet()) {
+//			for (String file : confFiles.get(path)) {
+//				String conf = path + file + ".conf";
+//				
+//			}
+//		}
 		System.out.println("Finished. " + failedCounter + " tests failed.");
 
 	}
