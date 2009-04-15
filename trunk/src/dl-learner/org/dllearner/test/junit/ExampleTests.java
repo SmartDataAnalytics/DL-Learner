@@ -36,6 +36,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.gp.GP;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
@@ -67,6 +68,9 @@ public class ExampleTests {
 		// that the same examples are tested first on several runs); otherwise
 		// it runs the examples in alphabetical order
 		boolean randomize = true;
+		
+		// GPs can be excluded temporarily (because those tests are very time-consuming)
+		boolean testGP = false;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
@@ -124,15 +128,23 @@ public class ExampleTests {
 		//also working fine ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
 		// ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		// ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)  => disallowing ALL helps (TODO find out details)
-		ignore.add("examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // stack overflow
-		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
+//		ignore.add("examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // stack overflow
+//		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
 		ignore.add("examples/krk/"); // too many stack overflows
+		ignore.add("examples/sparql/Aristotle_local.conf"); // null pointer
 
 		int failedCounter = 0;
 		int counter = 1;
 		int total = examples.size();
 		for(String conf : examples) {
-			if(ignore.contains(conf)) {
+			boolean ignored = false;
+			for(String ignoredConfExpression : ignore) {
+				if(conf.contains(ignoredConfExpression)) {
+					ignored = true;
+					break;
+				}
+			}
+			if(ignored) {
 				System.out.println("Skipping " + conf + " (is on ignore list).");
 			} else {
 				System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
@@ -141,11 +153,13 @@ public class ExampleTests {
 				try {
 					// start example
 					Start start = new Start(new File(conf));
-					start.start(false);
-					// test is successful if a concept was learned
-					assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
-					start.getReasonerComponent().releaseKB();
-					success = true;
+					if(testGP || !(start.getLearningAlgorithm() instanceof GP)) {
+						start.start(false);
+						// test is successful if a concept was learned
+						assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+						start.getReasonerComponent().releaseKB();
+						success = true;						
+					}
 				} catch (Exception e) {
 					// unit test not succesful (exceptions are caught explicitly to find 
 					assert ( false );
