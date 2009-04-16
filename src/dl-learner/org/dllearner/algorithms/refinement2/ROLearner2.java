@@ -44,6 +44,8 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.parser.KBParser;
+import org.dllearner.parser.ParseException;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
@@ -894,6 +896,26 @@ public class ROLearner2 {
 //				System.out.println("node " + node);
 //				System.out.println("refinement " + refinement);
 				
+				/*
+				try {
+					Description c = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".\"http://www.test.de/test#WRook\"");
+					if(conceptComparator.compare(c, node.getConcept()) == 0) {
+						System.out.println("TEST");
+						Set<Description> refs = operator.refine(c, 8, null);
+						for(Description d : refs) {
+							System.out.println("  " + d);
+						}
+						System.out.println();
+						System.exit(0);
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				*/
+				
+				
+				
 				extendNodeProper(node, refinement, maxLength, recDepth + 1);
 			}
 			
@@ -905,6 +927,8 @@ public class ROLearner2 {
 		}
 	}
 
+	
+	
 	private void printStatistics(boolean finalStats) {
 		// TODO: viele Tests haben ergeben, dass man nie 100% mit der
 		// Zeitmessung abdecken
