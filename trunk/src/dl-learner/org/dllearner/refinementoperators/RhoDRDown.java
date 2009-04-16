@@ -372,7 +372,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements, Description currDomain) {
 		
-//		logger.trace(description + " " + currDomain + " " + maxLength);
+//		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
 		
 		// actions needing to be performed if this is the first time the
 		// current domain is used
@@ -399,7 +399,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				}
 				refinements = (TreeSet<Description>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
-			
 //			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
 		} else if(description instanceof Nothing) {
 			// cannot be further refined
@@ -881,7 +880,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		if(useNegation) {
 			Set<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			for(Description c : m2tmp) {
-				m2.add(new Negation(c));
+				if(!(c instanceof Thing)) {
+					m2.add(new Negation(c));	
+				}
 			}
 		}
 		
@@ -968,9 +969,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			SortedSet<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			
 			for(Description c : m2tmp) {
-				if(c instanceof Thing)
-					m2.add(c);
-				else {
+//				if(c instanceof Thing)
+//					m2.add(c);
+//				else {
+				// we obviously do not add \top (\top refines \top does not make sense)
+				if(!(c instanceof Thing)) {
 					NamedClass a = (NamedClass) c;
 					if(!isNotADisjoint(a, nc) && isNotAMeaningful(a, nc))
 						m2.add(new Negation(a));

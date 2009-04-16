@@ -39,6 +39,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.ConfigOption;
@@ -65,6 +66,7 @@ public final class ConfigJavaGenerator {
 	private static final SortedSet<String> EXTENDSREFINEMENTOPERATOR = 
 		new TreeSet<String>(Arrays.asList(new String[]{
 				ROLearnerConfigurator.class.getSimpleName(),
+				ROLComponent2Configurator.class.getSimpleName(),
 				CELOEConfigurator.class.getSimpleName(),
 				}));
 	

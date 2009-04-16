@@ -205,8 +205,6 @@ public class ROLComponent2 extends LearningAlgorithm {
 		options.add(CommonConfigOptions.maxClassDescriptionTests());
 		options.add(CommonConfigOptions.getLogLevel());
 		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault));
-		options.add(new IntegerConfigOption("maxPosOnlyExpansion", "specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is" +
-				" considered as solution candidate",maxPosOnlyExpansionDefault));
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(CommonConfigOptions.getTerminateOnNoiseReached());
 		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
@@ -365,6 +363,9 @@ public class ROLComponent2 extends LearningAlgorithm {
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		if(improveSubsumptionHierarchy)
 			classHierarchy.thinOutSubsumptionHierarchy();
+		
+//		System.out.println(classHierarchy);
+//		System.exit(0);
 		
 //		reasoner.prepareRoleHierarchy(usedRoles);
 		// prepare datatype hierarchy only if necessary
