@@ -59,8 +59,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private final  JTextArea concept;
 	private Set<String> ontologiesStrings;
 	private final  JTextArea conceptText;
-	private static final int HEIGHT = 350;
-	private static final int WIDTH = 600;
+	private static final int HEIGHT = 220;
+	private static final int WIDTH = 485;
 	private GraphicalCoveragePanel p;
 	private final MoreDetailForSuggestedConceptsPanelHandler handler;
 

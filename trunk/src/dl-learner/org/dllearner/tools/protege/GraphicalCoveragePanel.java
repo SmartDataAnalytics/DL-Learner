@@ -101,7 +101,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	 */
 	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m,
 			String concept, MoreDetailForSuggestedConceptsPanel p) {
-		this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 100));
+		this.setPreferredSize(new Dimension(600, 220));
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
 		this.repaint();
@@ -120,11 +120,23 @@ public class GraphicalCoveragePanel extends JPanel {
 		points = new Vector<IndividualPoint>();
 		this.computeGraphics(0, 0);
 		handler = new GraphicalCoveragePanelHandler(this, desc, model);
-		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment),
-				ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
+		if(shiftXAxis == 0) {
+		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment)+3,
+				ELLIPSE_Y_AXIS+3, WIDTH, HEIGHT);
+		} else {
+			oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment),
+					ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
+		}
+		
+		if(shiftXAxis == 0){
 		newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
-				+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
-				+ distortionOld);
+				+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld+6, HEIGHT
+				+ distortionOld+6);
+		} else {
+			newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
+					+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
+					+ distortionOld);
+		}
 		this.computeIndividualPoints(300);
 		this.addMouseMotionListener(handler);
 		this.addMouseListener(handler);
@@ -152,16 +164,18 @@ public class GraphicalCoveragePanel extends JPanel {
 			Ellipse2D circlePoint = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
 			g2D.draw(circlePoint);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString("individuals covered by the new", 320, p);
+			g2D.drawString("individuals covered by the", 320, p);
 			p = p + 20;
-			g2D.drawString("class expression", 320, p);
+			g2D.drawString("new class expression", 320, p);
 			p = p + 20;
 			if(id.equals(EQUI_STRING)) {
 				g2D.setColor(darkRed);
 				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
 				g2D.draw(circlePoint2);
 				g2D.setColor(Color.BLACK);
-				g2D.drawString("additional or not covered individuals", 320, p);
+				g2D.drawString("additional or not covered", 320, p);
+				p = p + 20;
+				g2D.drawString("individuals", 320, p);
 			} else {
 				g2D.setColor(darkRed);
 				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);

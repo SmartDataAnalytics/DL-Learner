@@ -155,6 +155,7 @@ public class DLLearnerView {
 		hint = new JTextArea();
 		hint.setEditable(false);
 		hint.setText("To get suggestions for class expression, please click the button above.");
+		hint.setPreferredSize(new Dimension(485, 30));
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(new GridBagLayout());
@@ -197,25 +198,23 @@ public class DLLearnerView {
 		runPanel.add(BorderLayout.WEST, run);
 		runPanel.add(BorderLayout.EAST, wikiPane);
 		run.setEnabled(false);
+		
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridy = 0;
 		c.gridwidth = 3;
-		c.ipady = 0;
 		learner.add(runPanel, c);
 		
 		sugPanel.setSuggestList(new DefaultListModel());
-		sugPanel = sugPanel.updateSuggestClassList();
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.fill = GridBagConstraints.BOTH;
+		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.gridwidth = 2;
-		c.ipady = 0;
+		sugPanel.setSuggestList(model.getSuggestModel());
 		learner.add(sugPanel, c);
 		
 		accept.setEnabled(false);
@@ -224,44 +223,39 @@ public class DLLearnerView {
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridwidth = 1;
-		c.ipady = 0;
 		addButtonPanel.add("North", accept);
-		c.gridwidth = GridBagConstraints.REMAINDER;
+		//c.gridwidth = GridBagConstraints.REMAINDER;
 		learner.add(addButtonPanel, c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.ipady = 20;
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridy = 2;
-		c.gridwidth = 3;
 		learner.add(hint, c);
 		
 		advancedPanel.add(advanced);
 		advancedPanel.add(adv);
 		advanced.setIcon(icon);
 		advanced.setSelected(false);
-		c.ipady = 5;
 		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridy = 3;
-		c.gridwidth = 3;
 		learner.add(advancedPanel, c);
 		
 		posPanel.setVisible(false);
 		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.gridheight = GridBagConstraints.RELATIVE;
 		c.gridx = 0;
 		c.gridy = 4;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
 		c.gridwidth = 3;
-		c.ipady = 65;
 		learner.add(posPanel, c);
 		
 		
@@ -274,8 +268,6 @@ public class DLLearnerView {
 		readThread.start();
 		hint.setVisible(true);
 		action.resetToggled();
-		addButtonPanel.setBounds(485, 40, 80, 70);
-		detail.setBounds(10, 195, 600, 300);
 		detail.setVisible(true);
 		sugPanel.setVisible(true);
 		learnerScroll.setViewportView(learner);
@@ -305,35 +297,32 @@ public class DLLearnerView {
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(posPanel);
 		learner.remove(advancedPanel);
-		learner.repaint();
+		//learner.removeAll();
 		detail.setVisible(true);
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 3;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		c.gridwidth = 3;
-		c.ipady = 60;
-		learner.add(detail, c);
 		
-		c.ipady = 5;
 		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.gridx = 0;
+		c.gridy = 3;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
+		learner.add(detail, c);
+		
+
+		c.fill = GridBagConstraints.NONE;
+		c.anchor = GridBagConstraints.LINE_START;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.gridx = 0;
 		c.gridy = 4;
-		c.gridwidth = 3;
 		learner.add(advancedPanel, c);
 		
 		c.fill = GridBagConstraints.NONE;
+		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 0;
 		c.gridy = 5;
-		c.gridwidth = 3;
-		c.ipady = 70;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
+		c.gridwidth = GridBagConstraints.REMAINDER;
 		learner.add(posPanel, c);
+		
 		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		learnerScroll.setViewportView(learner);
 		learnerScroll.repaint();
