@@ -44,8 +44,6 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.parser.KBParser;
-import org.dllearner.parser.ParseException;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
@@ -84,15 +82,6 @@ public class ROLearner2 {
 	// algorithm terminates
 	private double noise = 0.0;
 	private int allowedMisclassifications = 0;
-
-	// positive only learning options:
-	// if no negatives are given, then one possible strategy is to find a very
-	// special concept still entailing all positive examples;
-	// this is realised by changing the termination criterion: a concept is a
-	// solution if it has been expanded x times (x is
-	// configurable) but no more special concept is found (all are either
-	// equivalent or too weak)
-	private int maxPosOnlyExpansion;
 
 	// search tree options
 	private boolean writeSearchTree;
@@ -266,7 +255,6 @@ public class ROLearner2 {
 		this.usePropernessChecks = usePropernessChecks;
 		baseURI = rs.getBaseURI();
 		prefixes = rs.getPrefixes();
-		this.maxPosOnlyExpansion = maxPosOnlyExpansion;
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
@@ -467,38 +455,6 @@ public class ROLearner2 {
 					Files.appendFile(searchTreeFile, treeString);
 			}
 
-			// special situation for positive only learning: the expanded node
-			// can become a solution (see explanations
-			// for maxPosOnlyExpansion above)
-			
-			// DEPRECATED CODE
-			if (false
-					&& bestNode.isPosOnlyCandidate()
-					&& (bestNode.getHorizontalExpansion() - bestNode.getConcept().getLength() >= maxPosOnlyExpansion)) {
-
-				boolean solution = checkSubtreePosOnly(bestNode);
-
-				if (solution) {
-					solutions.add(bestNode);
-					ExampleBasedNode bestChild = bestNode.getChildren().last();
-					System.out.println("solution: " + bestNode.getConcept());
-					System.out.println("maxPosOnlyExpansion: " + maxPosOnlyExpansion);
-					System.out.println("best child of this node: " + bestChild);
-					if(bestNode.getChildConcepts().size()<100) {
-						System.out.println(bestNode.getChildConcepts());
-					}
-					System.out.println("TODO: needs to be integrated with other stopping criteria");
-					System.out
-							.println("You tried to use this algorithm for positive only learning, which is not recommended (yet).");
-					// System.out.println("Exiting.");
-					// System.exit(0);
-				} else {
-					// tag as non-candidate so we do not need to search again
-					bestNode.setPosOnlyCandidate(false);
-				}
-
-			}
-
 			// Anzahl Schleifendurchläufe
 			loop++;
 		}// end while
@@ -571,6 +527,7 @@ public class ROLearner2 {
 
 //		System.out.println("node: " + node);
 //		System.out.println("concept: " + concept);
+//		System.out.println("max length: " + maxLength);
 		
 		// do not execute methods if algorithm has been stopped (this means that
 		// the algorithm
@@ -895,26 +852,6 @@ public class ROLearner2 {
 			if (!redundant) {
 //				System.out.println("node " + node);
 //				System.out.println("refinement " + refinement);
-				
-				/*
-				try {
-					Description c = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".\"http://www.test.de/test#WRook\"");
-					if(conceptComparator.compare(c, node.getConcept()) == 0) {
-						System.out.println("TEST");
-						Set<Description> refs = operator.refine(c, 8, null);
-						for(Description d : refs) {
-							System.out.println("  " + d);
-						}
-						System.out.println();
-						System.exit(0);
-					}
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				*/
-				
-				
 				
 				extendNodeProper(node, refinement, maxLength, recDepth + 1);
 			}
@@ -1322,45 +1259,9 @@ public class ROLearner2 {
 	public ExampleBasedNode getStartNode() {
 		return startNode;
 	}
-
-	// returns true if there is any meaningful node in the subtree
-	private boolean checkSubtreePosOnly(ExampleBasedNode node) {
-		for (ExampleBasedNode refinement : node.getChildren()) {
-
-			if (!node.isTooWeak()) {
-				// refinement meaningful
-				if (isPosOnlyRefinementMeaningful(node, refinement))
-					return true;
-
-				// subtree with refinement as root contains a meaningful node
-				if (checkSubtreePosOnly(refinement))
-					return true;
-			}
-
-		}
-		return false;
-	}
-
-	// returns whether the refinement is "meaningful", i.e. the refinement
-	// actually represents a different concept
-	// than its parent; this is needed to determine when a positive only
-	// learning algorithm should stop (when a node
-	// has been expaned x times without yielding any meaningful refinements, it
-	// is considered a possible solution)
-	private boolean isPosOnlyRefinementMeaningful(ExampleBasedNode node, ExampleBasedNode refinement) {
-		Description d1 = node.getConcept();
-		Description d2 = refinement.getConcept();
-		// check whether d2 can be shortened, e.g. male AND male => male
-		Description shortConcept = ConceptTransformation.getShortConcept(d2, conceptComparator);
-		if (conceptComparator.compare(d1, shortConcept) != 0)
-			return false;
-		return true;
-	}
-
-	
 	
 	/**
-	 * In this function it is calculated if the algorithm should stop.
+	 * In this function it is calculated whether the algorithm should stop.
 	 * This is not always depends whether an actual solution was found
 	 * The algorithm stops if:
 	 * 1. the object attribute stop is set to true (possibly by an outside source)
