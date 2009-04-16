@@ -56,6 +56,7 @@ public class SuggestClassPanel extends JPanel {
 	 */
 	public SuggestClassPanel() {
 		super();
+		this.setPreferredSize(new Dimension(470, 120));
 		//renders scroll bars if necessary
 		suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		descriptions = new JList();
