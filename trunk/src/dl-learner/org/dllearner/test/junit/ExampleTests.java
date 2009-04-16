@@ -131,7 +131,6 @@ public class ExampleTests {
 //		ignore.add("examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // stack overflow
 //		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
 		ignore.add("examples/krk/"); // too many stack overflows
-		ignore.add("examples/sparql/Aristotle_local.conf"); // null pointer
 
 		int failedCounter = 0;
 		int counter = 1;
