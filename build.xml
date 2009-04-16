@@ -4,7 +4,7 @@
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
-	<property name="protege_dir" value="/home/jl/programme/Protege_4.0_beta/plugins" />
+	<property name="protege_dir" value="C:\Program Files\Protege_4.0_beta\plugins" />
 	<property name="class_dir" value="classes" />
 	
 	<property name="php_client_dir" value="src/php-client" />
@@ -326,7 +326,7 @@ public class Info {
 					    		<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
 					</copy>
 			<copy toDir="${temp}/lib/pellet" >
-								    	<fileset dir="${lib_dir}/pellet" includes="pellet.jar,aterm-java-1.6.jar,relaxngDatatype.jar,xsdlib.jar" />	
+								    	<fileset dir="${lib_dir}/pellet" includes="**/*.jar" />	
 						</copy>
 			<copy toDir="${temp}/lib/jena" >
 								    	<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar" />	
