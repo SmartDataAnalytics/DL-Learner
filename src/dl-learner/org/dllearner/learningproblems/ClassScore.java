@@ -40,14 +40,16 @@ public class ClassScore extends Score {
 	private double accuracy;
 	
 	private boolean isConsistent;
+	private boolean followsFromKB;
 	
-	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent) {
+	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
 		this.coveredInstances = coveredInstances;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
 		this.addition = protusion;
 		this.accuracy = accuracy;
 		this.isConsistent = isConsistent;
+		this.followsFromKB = followsFromKB;
 	}
 	
 	/**
@@ -95,6 +97,13 @@ public class ClassScore extends Score {
 	 */
 	public boolean isConsistent() {
 		return isConsistent;
+	}
+
+	/**
+	 * @return the followsFromKB
+	 */
+	public boolean followsFromKB() {
+		return followsFromKB;
 	}		
 
 }

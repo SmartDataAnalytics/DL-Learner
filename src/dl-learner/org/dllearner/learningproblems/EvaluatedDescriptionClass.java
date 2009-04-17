@@ -87,4 +87,12 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 		return classScore.isConsistent();
 	}
 	
+	/**
+	 * 
+	 * @return True if adding the axiom to the knowledge base does not logically change the knowledge base (i.e. the axiom already follows from it). False otherwise.
+	 */
+	public boolean followsFromKB() {
+		return classScore.followsFromKB();
+	}	
+	
 }
