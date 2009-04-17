@@ -149,8 +149,9 @@ public class Info {
 		<!-- copy documentation excluding developer documentation -->
 		<copy toDir="${release_tmp_dir}/doc">
 			<fileset dir="doc">
-				<exclude name="eclipse/" />
-				<exclude name="javadoc/" />
+				<!-- <exclude name="eclipse/" />
+				<exclude name="javadoc/" /> -->
+				<exclude name="manual/" />
 			</fileset>
 		</copy>
 		
@@ -181,13 +182,18 @@ public class Info {
 			<fileset dir="${source_dir}" includes="**/*.java,**/*.html,**/*.gif,**/*.jjt,build.xml"/>
 		</copy>
 		
+		<!-- copy manual -->
+		<copy toFile="${release_tmp_dir}/doc/manual.pdf" file="doc/manual/manual.pdf" />
+		
 		<!-- create copy developer documentation -->
+		<!--
 		<copy todir="${release_tmp_dir}/doc/eclipse/">
 		    <fileset dir="doc/eclipse/"/>
 		</copy>		
 		<copy todir="${release_tmp_dir}/doc/javadoc/">
 		    <fileset dir="doc/javadoc/"/>
-		</copy>				
+		</copy>
+		-->				
 		
 		<!-- create backup (= standard build + source code + developer documentation) -->
 		<tar longfile="gnu" destfile="dllearner-${today}.tar.gz" compression="gzip">
