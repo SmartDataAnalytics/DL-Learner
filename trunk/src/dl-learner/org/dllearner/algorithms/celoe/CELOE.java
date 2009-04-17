@@ -410,7 +410,7 @@ public class CELOE extends LearningAlgorithm {
 			} else {
 				// none of the superclasses of the class to learn must appear on the
 				// outermost property level
-				TreeSet<Description> toTest = new TreeSet<Description>();
+				TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
 				toTest.add(classToDescribe);
 				while(!toTest.isEmpty()) {
 					Description d = toTest.pollFirst();
