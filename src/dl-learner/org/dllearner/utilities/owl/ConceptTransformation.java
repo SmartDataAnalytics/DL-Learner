@@ -39,6 +39,7 @@ import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
@@ -572,6 +573,11 @@ public class ConceptTransformation {
 		}
 	}
 	
+	/**
+	 * Counts occurrences of \forall in description.
+	 * @param description A description.
+	 * @return Number of \forall occurrences.
+	 */
 	public static int getForallOccurences(Description description) {
 		int count = 0;
 		if(description instanceof ObjectAllRestriction) {
@@ -583,6 +589,13 @@ public class ConceptTransformation {
 		return count;
 	}
 	
+	/**
+	 * Gets the "contexts" of all \forall occurrences in a description. A context
+	 * is a set of properties, i.e. in \exists hasChild.\exists hasBrother.\forall hasChild.male,
+	 * the context of the only \forall occurrence is [hasChild, hasBrother, hasChild]. 
+	 * @param description A description.
+	 * @return Set of property contexts.
+	 */
 	public static SortedSet<PropertyContext> getForallContexts(Description description) {
 		return getForallContexts(description, new PropertyContext());
 	}
@@ -590,17 +603,23 @@ public class ConceptTransformation {
 	private static SortedSet<PropertyContext> getForallContexts(Description description, PropertyContext currentContext) {
 		// the context changes if we have a restriction
 		if(description instanceof Restriction) {
-			ObjectProperty op = (ObjectProperty) ((Restriction)description).getRestrictedPropertyExpression();
-			currentContext.add(op);
-			// if we have an all-restriction, we return it; otherwise we only change the context
-			// and call the method on the child
-			if(description instanceof ObjectAllRestriction) {
-				TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
-				contexts.add(currentContext);
-				contexts.addAll(getForallContexts(description.getChild(0), currentContext));
-				return contexts;
+			Property op = (Property) ((Restriction)description).getRestrictedPropertyExpression();
+			// object restrictions
+			if(op instanceof ObjectProperty) {
+				currentContext.add((ObjectProperty)op);
+				// if we have an all-restriction, we return it; otherwise we only change the context
+				// and call the method on the child
+				if(description instanceof ObjectAllRestriction) {
+					TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
+					contexts.add(currentContext);
+					contexts.addAll(getForallContexts(description.getChild(0), currentContext));
+					return contexts;
+				} else {
+					return getForallContexts(description.getChild(0), currentContext);
+				}
+			// we have a data restriction => no \forall can occur in those
 			} else {
-				return getForallContexts(description.getChild(0), currentContext);
+				return new TreeSet<PropertyContext>();
 			}
 		// for non-restrictions, we collect contexts over all children
 		} else {
