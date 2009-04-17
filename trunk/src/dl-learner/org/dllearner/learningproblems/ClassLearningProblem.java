@@ -157,7 +157,10 @@ public class ClassLearningProblem extends LearningProblem {
 		// leads to an inconsistent knowledge base
 		boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
 		
-		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion), isConsistent);
+		// we check whether the axiom already follows from the knowledge base
+		boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);
+		
+		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion), isConsistent, followsFromKB);
 	}	
 	
 	public boolean isEquivalenceProblem() {
