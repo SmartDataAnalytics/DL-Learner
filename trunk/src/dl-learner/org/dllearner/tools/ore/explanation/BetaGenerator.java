@@ -67,6 +67,7 @@ public class BetaGenerator extends BaseDescriptionGenerator
         return result;
     }
 
+    @Override
     public Set<OWLDescription> visit(OWLObjectExactCardinalityRestriction desc)
     {
         Set<OWLDescription> fillers = computeBeta((OWLDescription)desc.getFiller());
@@ -79,6 +80,7 @@ public class BetaGenerator extends BaseDescriptionGenerator
         return result;
     }
 
+    @Override
     public Set<OWLDescription> visit(OWLObjectUnionOf desc)
     {
         return super.visit(desc);
@@ -96,16 +98,19 @@ public class BetaGenerator extends BaseDescriptionGenerator
         return result;
     }
 
+    @Override
     protected OWLClass getLimit()
     {
         return getDataFactory().getOWLNothing();
     }
 
+    @Override
     protected OWLDataRange getDataLimit()
     {
         return getDataFactory().getOWLDataComplementOf(getDataFactory().getTopDataType());
     }
 
+    @Override
     public Set<OWLDescription> visit(OWLDataValueRestriction desc)
     {
         return Collections.singleton((OWLDescription)desc);

@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -456,7 +456,7 @@ public class ROLComponent2 extends LearningAlgorithm {
 	}
 	
 	@Override
-	public synchronized SortedSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
+	public synchronized TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		return algorithm.getCurrentlyBestEvaluatedDescriptions();
 	}
 

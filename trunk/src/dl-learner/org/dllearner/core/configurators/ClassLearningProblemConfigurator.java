@@ -63,7 +63,7 @@ public String getClassToDescribe() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "classToDescribe") ;
 }
 /**
-* type Whether to learn an equivalence class or super class axiom..
+* type Whether to learn an equivalence class or super class axiom or domain/range of a property..
 * mandatory: false| reinit necessary: true
 * default value: equivalence
 * @return String 
@@ -81,7 +81,7 @@ public void setClassToDescribe(String classToDescribe) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "classToDescribe", classToDescribe);
 }
 /**
-* @param type Whether to learn an equivalence class or super class axiom..
+* @param type Whether to learn an equivalence class or super class axiom or domain/range of a property..
 * mandatory: false| reinit necessary: true
 * default value: equivalence
 **/

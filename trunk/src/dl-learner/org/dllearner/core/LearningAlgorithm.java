@@ -22,7 +22,6 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
@@ -204,10 +203,10 @@ public abstract class LearningAlgorithm extends Component {
 	/**
 	 * Returns a sorted set of the best descriptions found so far. We
 	 * assume that they are ordered such that the best ones come in
-	 * first.
+	 * last. (In Java, iterators traverse a SortedSet in ascending order.)
 	 * @return Best class descriptions found so far.
 	 */
-	public SortedSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		TreeSet<EvaluatedDescription> ds = new TreeSet<EvaluatedDescription>();
 		ds.add(getCurrentlyBestEvaluatedDescription());
 		return ds;
@@ -232,9 +231,9 @@ public abstract class LearningAlgorithm extends Component {
 	 * @return A list of currently best class descriptions.
 	 */
 	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
-		SortedSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
+		TreeSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
-		for(EvaluatedDescription ed : currentlyBest) {
+		for(EvaluatedDescription ed : currentlyBest.descendingSet()) {
 			// once we hit a description with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list

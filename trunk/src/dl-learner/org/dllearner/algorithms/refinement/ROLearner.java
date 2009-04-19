@@ -1037,10 +1037,10 @@ public class ROLearner extends LearningAlgorithm {
 	}
 	
 	@Override
-	public SortedSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		int count = 0;
 		SortedSet<Node> rev = candidatesStable.descendingSet();
-		SortedSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
+		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
 		for(Node eb : rev) {
 			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getSolutionScore(eb.getConcept())));
 			// return a maximum of 200 elements (we need a maximum, because the

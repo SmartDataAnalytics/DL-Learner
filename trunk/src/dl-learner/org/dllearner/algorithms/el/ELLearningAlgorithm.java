@@ -22,7 +22,6 @@ package org.dllearner.algorithms.el;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -217,7 +216,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public SortedSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}		
 	

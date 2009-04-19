@@ -1198,10 +1198,10 @@ public class ROLearner2 {
 		return best;
 	}
 	
-	public SortedSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
 		int count = 0;
-		SortedSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
+		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
 		while(it.hasNext()) {
 			ExampleBasedNode eb = it.next();
 			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getScore(eb.getConcept())));
@@ -1280,7 +1280,7 @@ public class ROLearner2 {
 		if(this.stop){
 			return true;
 		}
-		System.out.println("ssssss");
+//		System.out.println("ssssss");
 		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
