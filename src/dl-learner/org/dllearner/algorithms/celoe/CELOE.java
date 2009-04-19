@@ -227,7 +227,7 @@ public class CELOE extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public SortedSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}	
 	

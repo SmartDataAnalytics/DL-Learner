@@ -68,11 +68,13 @@ public class Tau extends BaseDescriptionGenerator
         return result;
     }
 
+    @Override
     protected OWLClass getLimit()
     {
         return getDataFactory().getOWLThing();
     }
 
+    @Override
     protected OWLDataRange getDataLimit()
     {
         return getDataFactory().getTopDataType();

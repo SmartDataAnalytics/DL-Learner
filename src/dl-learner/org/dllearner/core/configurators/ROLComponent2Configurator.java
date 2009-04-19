@@ -26,12 +26,14 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class ROLComponent2Configurator extends RefinementOperatorConfigurator implements Configurator {
+@SuppressWarnings("all")
+public  class ROLComponent2Configurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -329,15 +331,6 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(rOLComponent
 **/
 public boolean getUsePropernessChecks() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "usePropernessChecks") ;
-}
-/**
-* maxPosOnlyExpansion specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate.
-* mandatory: false| reinit necessary: true
-* default value: 4
-* @return int 
-**/
-public int getMaxPosOnlyExpansion() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "maxPosOnlyExpansion") ;
 }
 /**
 * noisePercentage the (approximated) percentage of noise within the examples.
@@ -680,15 +673,6 @@ reinitNecessary = true;
 **/
 public void setUsePropernessChecks(boolean usePropernessChecks) {
 ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "usePropernessChecks", usePropernessChecks);
-reinitNecessary = true;
-}
-/**
-* @param maxPosOnlyExpansion specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate.
-* mandatory: false| reinit necessary: true
-* default value: 4
-**/
-public void setMaxPosOnlyExpansion(int maxPosOnlyExpansion) {
-ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "maxPosOnlyExpansion", maxPosOnlyExpansion);
 reinitNecessary = true;
 }
 /**
