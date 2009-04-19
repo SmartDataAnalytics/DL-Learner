@@ -159,7 +159,7 @@ public class DLLearnerView {
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(new GridBagLayout());
-		accept.setPreferredSize(new Dimension(90, 50));
+		accept.setPreferredSize(new Dimension(70, 40));
 		run.setPreferredSize(new Dimension(220, 50));
 		advanced.setName("Advanced");
 		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
@@ -192,6 +192,7 @@ public class DLLearnerView {
 	 */
 	public void makeView(String label) {
 		run.setText("suggest " + label + " expression");
+		run.setPreferredSize(new Dimension(200, 40));
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(detail);
 		model.setID(label);
@@ -208,7 +209,7 @@ public class DLLearnerView {
 		learner.add(runPanel, c);
 		
 		sugPanel.setSuggestList(new DefaultListModel());
-		c.fill = GridBagConstraints.NONE;
+		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weightx = 1.0;
@@ -230,8 +231,6 @@ public class DLLearnerView {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
 		c.gridy = 2;
 		learner.add(hint, c);
 		
@@ -248,7 +247,7 @@ public class DLLearnerView {
 		learner.add(advancedPanel, c);
 		
 		posPanel.setVisible(false);
-		c.fill = GridBagConstraints.NONE;
+		c.fill = GridBagConstraints.BOTH;
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.gridheight = GridBagConstraints.RELATIVE;
 		c.gridx = 0;
@@ -301,7 +300,8 @@ public class DLLearnerView {
 		detail.setVisible(true);
 		
 		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 0;
 		c.gridy = 3;
 		c.weightx = 0.0;

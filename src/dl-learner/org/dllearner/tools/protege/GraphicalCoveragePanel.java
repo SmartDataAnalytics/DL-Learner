@@ -21,6 +21,7 @@ package org.dllearner.tools.protege;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -101,13 +102,13 @@ public class GraphicalCoveragePanel extends JPanel {
 	 */
 	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m,
 			String concept, MoreDetailForSuggestedConceptsPanel p) {
-		this.setPreferredSize(new Dimension(600, 220));
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
-		this.repaint();
+		this.setPreferredSize(new Dimension(500, 230));
 		eval = desc;
 		model = m;
 		panel = p;
+		this.repaint();
 		id = model.getID();
 		darkGreen = new Color(0, 100, 0);
 		darkRed = new Color(205, 0, 0);
@@ -147,7 +148,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		if (eval != null) {
 			Graphics2D g2D;
 			g2D = (Graphics2D) g;
-
+			Composite original = g2D.getComposite();
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
@@ -162,32 +163,47 @@ public class GraphicalCoveragePanel extends JPanel {
 			}
 			g2D.setColor(darkGreen);
 			Ellipse2D circlePoint = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
-			g2D.draw(circlePoint);
+			g2D.fill(circlePoint);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString("individuals covered by the", 320, p);
-			p = p + 20;
-			g2D.drawString("new class expression", 320, p);
+			g2D.drawString("individuals covered by", 320, p);
+			g2D.setColor(Color.ORANGE);
+			g2D.fillOval(445, p - 9, 9, 9);
+			g2D.setColor(Color.BLACK);
+			g2D.drawString("and", 460, p);
+			g2D.setColor(Color.YELLOW);
+			g2D.fillOval(490, p - 9, 9, 9);
 			p = p + 20;
 			if(id.equals(EQUI_STRING)) {
 				g2D.setColor(darkRed);
 				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
-				g2D.draw(circlePoint2);
+				g2D.fill(circlePoint2);
 				g2D.setColor(Color.BLACK);
-				g2D.drawString("additional or not covered", 320, p);
+				g2D.drawString("individuals covered by", 320, p);
+				g2D.setColor(Color.ORANGE);
+				g2D.fillOval(445, p - 9, 9, 9);
 				p = p + 20;
-				g2D.drawString("individuals", 320, p);
-			} else {
 				g2D.setColor(darkRed);
-				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
-				g2D.draw(circlePoint2);
-				g2D.setColor(Color.BLACK);
-				g2D.drawString("not covered individuals", 320, p);
-				p = p + 20;
-				g2D.setColor(Color.BLACK);
 				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
-				g2D.draw(circlePoint3);
+				g2D.fill(circlePoint3);
 				g2D.setColor(Color.BLACK);
-				g2D.drawString("additional individuals", 320, p);
+				g2D.drawString("individuals covered by", 320, p);
+				g2D.setColor(Color.YELLOW);
+				g2D.fillOval(445, p - 9, 9, 9);
+			} else {
+				g2D.setColor(Color.BLACK);
+				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+				g2D.fill(circlePoint2);
+				g2D.drawString("individuals covered by", 320, p);
+				g2D.setColor(Color.ORANGE);
+				g2D.fillOval(445, p - 9, 9, 9);
+				p = p + 20;
+				g2D.setColor(darkRed);
+				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+				g2D.fill(circlePoint3);
+				g2D.setColor(Color.BLACK);
+				g2D.drawString("individuals covered by", 320, p);
+				g2D.setColor(Color.YELLOW);
+				g2D.fillOval(445, p - 9, 9, 9);
 			}
 			
 			g2D.setColor(Color.YELLOW);
@@ -311,17 +327,22 @@ public class GraphicalCoveragePanel extends JPanel {
 
 			for (int i = 0; i < posCovIndVector.size(); i++) {
 				g2D.setColor(darkGreen);
-				g2D.draw(posCovIndVector.get(i).getIndividualPoint());
+				g2D.fill(posCovIndVector.get(i).getIndividualPoint());
 			}
 
 			for (int i = 0; i < posNotCovIndVector.size(); i++) {
 				g2D.setColor(darkRed);
-				g2D.draw(posNotCovIndVector.get(i).getIndividualPoint());
+				g2D.fill(posNotCovIndVector.get(i).getIndividualPoint());
 			}
 
 			for (int i = 0; i < additionalIndividuals.size(); i++) {
 				g2D.setColor(Color.BLACK);
-				g2D.draw(additionalIndividuals.get(i).getIndividualPoint());
+				g2D.fill(additionalIndividuals.get(i).getIndividualPoint());
+			}
+			if(!((EvaluatedDescriptionClass) eval).isConsistent()) {
+				g2D.setComposite(original);
+				g2D.setColor(darkRed);
+				g2D.drawString("Adding this class expression may lead to an inconsistent ontology.", 0, 220);
 			}
 			this.setVisible(true);
 			panel.repaint();

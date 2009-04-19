@@ -19,7 +19,7 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -48,26 +48,25 @@ public class SuggestClassPanel extends JPanel {
 	 //Scroll panel if the suggestions are longer than the Panel itself
 
 	private final JScrollPane suggestScroll;
-	private static final int WIDTH = 460;
-	private static final int HEIGHT = 108;
 	/**
 	 * This is the constructor for the suggest panel.
 	 * It creates a new Scroll panel and puts the Suggest List in it. 
 	 */
 	public SuggestClassPanel() {
 		super();
-		this.setPreferredSize(new Dimension(470, 120));
+		this.setLayout(new BorderLayout());
 		//renders scroll bars if necessary
 		suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		descriptions = new JList();
 		descriptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		suggestPanel = new JPanel();
 		descriptions.setVisible(true);
+		descriptions.setVisibleRowCount(6);
+		descriptions.getPreferredScrollableViewportSize();
 		suggestPanel.add(descriptions);
-		suggestScroll.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		suggestScroll.setViewportView(descriptions);
 		descriptions.setCellRenderer(new SuggestListCellRenderer());
-		add(suggestScroll);
+		add(BorderLayout.CENTER, suggestScroll);
 	}
 	
 	/**
@@ -86,6 +85,7 @@ public class SuggestClassPanel extends JPanel {
 	 */
 	public void setSuggestList(DefaultListModel desc) {
 		descriptions.setModel(desc);
+		descriptions.repaint();
 		repaint();
 	}
 	/**
@@ -104,12 +104,5 @@ public class SuggestClassPanel extends JPanel {
 		descriptions.addMouseListener(action);
 		
 	}
-	
-	public void resizePanel(int w, int h) {
-		suggestScroll.setPreferredSize(new Dimension(WIDTH + w, HEIGHT + h));
-		suggestScroll.setViewportView(descriptions);
-		add(suggestScroll);
-	}
-	
 
 }
