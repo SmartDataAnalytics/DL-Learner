@@ -398,6 +398,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 						}
 					}
 					view.getSuggestClassPanel().setSuggestList(dm);
+					view.getLearnerView().repaint();
 				}
 			};
 			SwingUtilities.invokeLater(doUpdateList);

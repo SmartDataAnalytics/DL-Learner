@@ -19,7 +19,8 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,26 +40,27 @@ public class OptionPanel extends JPanel {
 	private final JSlider minAccuracy;
 	private final JSlider maxExecutionTime;
 	private final JSlider nrOfConcepts;
+	private JPanel labelPanel;
+	private JPanel sliderPanel;
 	private double accuracy;
 	/**
 	 * Constructor for the Option Panel. 
 	 */
 	public OptionPanel() {
-		setPreferredSize(new Dimension(490, 150));
-		setLayout(null);
-		minAccuracyLabel = new JLabel("noise in %");
-		minAccuracyLabel.setBounds(5, 0, 150, 40);
-		maxExecutionTimeLabel = new JLabel("maximum execution time");
-		maxExecutionTimeLabel.setBounds(5, 60, 150, 40);
-		nrOfConceptsLabel = new JLabel("max. number of results");
-		nrOfConceptsLabel.setBounds(5, 120, 150, 40);
+		setLayout(new BorderLayout());
+		labelPanel = new JPanel();
+		labelPanel.setLayout(new GridLayout(0,1));
+		sliderPanel = new JPanel();
+		sliderPanel.setLayout(new GridLayout(0,1));
+		minAccuracyLabel = new JLabel("noise in %:    ");
+		maxExecutionTimeLabel = new JLabel("maximum execution time:    ");
+		nrOfConceptsLabel = new JLabel("max. number of results:    ");
 		
 		minAccuracy = new JSlider(0, 50, 5);
 		minAccuracy.setPaintTicks(true);
 		minAccuracy.setMajorTickSpacing(10);
 		minAccuracy.setMinorTickSpacing(1);
 		minAccuracy.setPaintLabels(true);
-		minAccuracy.setBounds(200, 0, 200, 40);
 
 		
 		maxExecutionTime = new JSlider(0, 40, 8);
@@ -66,7 +68,6 @@ public class OptionPanel extends JPanel {
 		maxExecutionTime.setMajorTickSpacing(10);
 		maxExecutionTime.setMinorTickSpacing(1);
 		maxExecutionTime.setPaintLabels(true);
-		maxExecutionTime.setBounds(200, 60, 200, 40);
 
 		
 		nrOfConcepts = new JSlider(2, 20, 10);
@@ -74,14 +75,16 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMajorTickSpacing(2);
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
-		nrOfConcepts.setBounds(200, 120, 200, 40);
 
-		add(minAccuracyLabel);
-		add(minAccuracy);
-		add(maxExecutionTimeLabel);
-		add(maxExecutionTime);
-		add(nrOfConceptsLabel);
-		add(nrOfConcepts);
+		labelPanel.add(minAccuracyLabel);
+		labelPanel.add(maxExecutionTimeLabel);
+		labelPanel.add(nrOfConceptsLabel);
+		
+		sliderPanel.add(minAccuracy);
+		sliderPanel.add(maxExecutionTime);
+		sliderPanel.add(nrOfConcepts);
+		add(BorderLayout.WEST, labelPanel);
+		add(BorderLayout.CENTER, sliderPanel);
 	}
 	
 	/**
