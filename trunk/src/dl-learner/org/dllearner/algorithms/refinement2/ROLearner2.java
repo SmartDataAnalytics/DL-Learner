@@ -1280,6 +1280,7 @@ public class ROLearner2 {
 		if(this.stop){
 			return true;
 		}
+		System.out.println("ssssss");
 		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
@@ -1333,6 +1334,8 @@ public class ROLearner2 {
 			}
 			minExecutionTimeAlreadyReached = true;
 			result = result && true;
+		}else {
+			result = false;
 		} 
 		
 		return result;
