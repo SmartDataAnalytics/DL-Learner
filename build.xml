@@ -28,7 +28,7 @@
 	</path>
 	
 	<!-- build target -->
-	<target name="full_release" depends="javadoc,build" description="full release, javadoc, scripts">
+	<target name="full_release" depends="manual,javadoc,build" description="full release, javadoc, scripts">
 	</target>
 	
 	<!-- build target -->
@@ -280,6 +280,31 @@ public class Info {
 		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
 		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
 	</target>
+	
+	<!-- generate manual -->
+	<taskdef name="latex" classname="de.dokutransdata.antlatex.LaTeX"  
+	    classpath="lib/ant_latex.jar"/> 	
+	<target name="manual">  
+		
+		<!-- automatically adds correct build number in manual -->
+		<replaceregexp file="doc/manual/manual.tex"
+		                         match="DL-Learner (.*) command line interface"
+		                         replace="DL-Learner ${today} command line interface"
+		                         byline="true"/>
+		
+		<!-- run pdflatex and bibtex over doc/manual/ -->	
+	      <latex  
+	       latexfile="manual.tex"  
+	       verbose="off"  
+	       clean="on"  
+	       pdftex="on"
+	       workingDir="doc/manual">  
+	         <bibtex  
+	          run="on"  
+	          workingDir="doc/manual/"  
+	          />  
+	      </latex>  
+	 </target> 	
 	
 	<!-- generate Javadoc -->
     <target name="javadoc">
