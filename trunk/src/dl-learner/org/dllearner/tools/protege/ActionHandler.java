@@ -102,7 +102,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		if (z.getActionCommand().equals("suggest equivalent class expression") || z.getActionCommand().equals("suggest super class expression")) {
 			model.setKnowledgeSource();
-			model.setReasoner();
+			//model.setReasoner();
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
@@ -383,6 +383,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 															ontology, null),
 											((EvaluatedDescriptionClass) eval)
 													.getAccuracy() * 100));
+									i++;
 									break;
 								} else {
 									dm.add(i, new SuggestListItem(colorRed,
@@ -392,6 +393,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 											((EvaluatedDescriptionClass) eval)
 													.getAccuracy() * 100));
 									view.setIsInconsistent(true);
+									i++;
 									break;
 								}
 							}

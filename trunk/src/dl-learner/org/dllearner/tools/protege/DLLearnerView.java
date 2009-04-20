@@ -160,8 +160,9 @@ public class DLLearnerView {
 		advanced.setSize(20, 20);
 		learner.setLayout(new GridBagLayout());
 		accept.setPreferredSize(new Dimension(70, 40));
-		run.setPreferredSize(new Dimension(220, 50));
+		run.setPreferredSize(new Dimension(260, 30));
 		advanced.setName("Advanced");
+		model.initReasoner();
 		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
 		posPanel = new PosAndNegSelectPanel(model, action);
@@ -192,7 +193,6 @@ public class DLLearnerView {
 	 */
 	public void makeView(String label) {
 		run.setText("suggest " + label + " expression");
-		run.setPreferredSize(new Dimension(200, 40));
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(detail);
 		model.setID(label);

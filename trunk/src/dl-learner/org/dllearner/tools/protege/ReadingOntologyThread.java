@@ -161,7 +161,7 @@ public class ReadingOntologyThread extends Thread {
 	@Override
 	public void run() {
 		model.getSuggestModel().removeAllElements();
-		model.initReasoner();
+		//model.initReasoner();
 		reasoner = model.getReasoner();
 		isInconsistent = false;
 		if(!isInconsistent) {

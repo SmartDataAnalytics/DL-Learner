@@ -46,7 +46,7 @@ public class IndividualPoint {
 		this.point = p;
 		this.xAxis = x;
 		this.yAxis = y;
-		this.circlePoint = new Ellipse2D.Double(x - 1, y - 1, 3, 3);
+		this.circlePoint = new Ellipse2D.Double(x - 1, y - 1, 4, 4);
 		this.individual = ind;
 	}
 
