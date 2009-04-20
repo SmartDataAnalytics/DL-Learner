@@ -41,7 +41,9 @@ import org.dllearner.core.options.ConfigOption;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.parser.ParseException;
 
 /**
@@ -546,6 +548,16 @@ public class Config {
 							.size() == 0
 					|| ((Set<String>) cm.getConfigOptionValue(component, "negativeExamples"))
 							.size() == 0) {
+				return false;
+			}
+		} else if (component instanceof PosOnlyLP) {
+			if (cm.getConfigOptionValue(component, "positiveExamples") == null
+					|| ((Set<String>) cm.getConfigOptionValue(component, "positiveExamples"))
+							.size() == 0) {
+				return false;
+			}
+		} else if (component instanceof ClassLearningProblem) {
+			if (cm.getConfigOptionValue(component, "classToDescribe") == null) {
 				return false;
 			}
 		} else if (component instanceof SparqlKnowledgeSource) {

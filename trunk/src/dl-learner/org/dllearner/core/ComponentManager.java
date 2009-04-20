@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.cli.ConfMapper;
@@ -48,6 +49,7 @@ import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.datastructures.Maps;
 
 /**
  * Central manager class for DL-Learner. There are currently four types of
@@ -85,7 +87,8 @@ public final class ComponentManager {
 	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
 	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
-
+	private static Map<Class<? extends LearningProblem>, Collection<Class<? extends LearningAlgorithm>>> problemAlgorithmsMapping;
+	
 	private ConfMapper confMapper = new ConfMapper();
 	
 	// list of default values of config options
@@ -116,7 +119,7 @@ public final class ComponentManager {
 		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithm>>(classComparator);
 		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>>(
-				classComparator);
+				classComparator);		
 
 		// create classes from strings
 		for (String componentString : componentsString) {
@@ -143,13 +146,14 @@ public final class ComponentManager {
 				e.printStackTrace();
 			}
 		}
+		problemAlgorithmsMapping = Maps.revertCollectionMap(algorithmProblemsMapping);
 
 		componentNames = new HashMap<Class<? extends Component>, String>();
 		// read in all configuration options
 		componentOptions = new HashMap<Class<? extends Component>, List<ConfigOption<?>>>();
 		componentOptionsByName = new HashMap<Class<? extends Component>, Map<String, ConfigOption<?>>>();
 //		configOptionDefaults = new HashMap<ConfigOption<?>,Object>();
-		
+				
 		for (Class<? extends Component> component : components) {
 
 			String name = (String) invokeStaticMethod(component, "getName");
@@ -169,8 +173,6 @@ public final class ComponentManager {
 			
 		}
 
-		// System.out.println(components);
-		// System.out.println(learningProblems);
 	}
 
 	/**
@@ -682,6 +684,23 @@ public final class ComponentManager {
 		return new LinkedList<Class<? extends LearningProblem>>(learningProblems);
 	}
 
+	/**
+	 * Returns the set of learning algorithms, which support the given learning problem type.
+	 * @param learningProblem A learning problem type.
+	 * @return The set of learning algorithms applicable for this learning problem.
+	 */
+	public List<Class<? extends LearningAlgorithm>> getApplicableLearningAlgorithms(Class<? extends LearningProblem> learningProblem) {
+		List<Class<? extends LearningAlgorithm>> algorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
+		for(Entry<Class<? extends LearningProblem>,Collection<Class<? extends LearningAlgorithm>>> entry : problemAlgorithmsMapping.entrySet()) {
+			Class<? extends LearningProblem> prob = entry.getKey();
+			if(prob.isAssignableFrom(learningProblem)) {
+				algorithms.addAll(entry.getValue());
+			}
+		}
+//		System.out.println(learningProblem + ": " + algorithms);
+		return algorithms;
+	}
+	
 	/**
 	 * Returns a list of all available learning algorithms in this instance
 	 * of <code>ComponentManager</code>.

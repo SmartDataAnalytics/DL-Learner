@@ -29,12 +29,15 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.PosOnlyLP;
 
 /**
  * Class displaying a component (and its options).
@@ -107,7 +110,8 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		} else if (panelClass == LearningProblem.class) {
 			selectableComponents.addAll(config.getComponentManager().getLearningProblems());
 		} else if (panelClass == LearningAlgorithm.class) {
-			selectableComponents.addAll(config.getComponentManager().getLearningAlgorithms());
+//			selectableComponents.addAll(config.getComponentManager().getLearningAlgorithms());
+			selectableComponents.addAll(config.getComponentManager().getApplicableLearningAlgorithms(config.getLearningProblem().getClass()));
 		}
 
 		// set default component class (move it to first position)
@@ -151,6 +155,16 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			// change component and update option panel
 			Class<? extends Component> c = selectableComponents.get(comboBox.getSelectedIndex());
 			currentComponent = changeInstance(c);
+			// we may have to change the learning algorithm depending on the learning problem
+			if(c.equals(ClassLearningProblem.class) || c.equals(PosOnlyLP.class)) {
+				try {
+					config.changeLearningAlgorithm(CELOE.class);
+				} catch (LearningProblemUnsupportedException e1) {
+					// cannot happend since CELOE supports class learning problem
+					e1.printStackTrace();
+				}
+			}
+						
 			updateOptionPanel();
 			// if the component does not have mandatory values, we can
 			// enable the following tabs
@@ -201,6 +215,21 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	 */
 	public void panelActivated() {
 		// hook method, which does nothing yet
+		if(panelClass.equals(LearningAlgorithm.class)) {
+			// update selectable components
+			selectableComponents.clear();
+			selectableComponents.addAll(config.getComponentManager().getApplicableLearningAlgorithms(config.getLearningProblem().getClass()));
+			// clear combo box and add selectable items to it
+			comboBox.removeActionListener(this);
+			comboBox.removeAllItems();
+			// recreate combo box
+			for (int i = 0; i < selectableComponents.size(); i++) {
+				comboBox.addItem(config.getComponentManager().getComponentName(
+						selectableComponents.get(i)));
+			}			
+			comboBox.addActionListener(this);
+			update();
+		}
 	}
 
 	// creates an instance of the specified component class
