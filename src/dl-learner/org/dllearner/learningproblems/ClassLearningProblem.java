@@ -76,7 +76,7 @@ public class ClassLearningProblem extends LearningProblem {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("classToDescribe", "class of which a description should be learned", null, true, false));
 		StringConfigOption type = new StringConfigOption("type", "Whether to learn an equivalence class or super class axiom or domain/range of a property.","equivalence");
-		type.setAllowedValues(new String[] {"equivalence", "superClass", "domain", "range"});
+		type.setAllowedValues(new String[] {"equivalence", "superClass"}); // , "domain", "range"});
 		options.add(type);		
 		return options;
 	}

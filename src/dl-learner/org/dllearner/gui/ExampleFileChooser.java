@@ -34,20 +34,36 @@ public class ExampleFileChooser extends JFileChooser {
 
 	private static final long serialVersionUID = 1566010391199697892L;
 
-	public ExampleFileChooser(final String fileEnding) {
+	private final String description;
+	
+	// public ExampleFileChooser(final String fileEnding) {
+	public ExampleFileChooser(final String ... fileEndings) {
 		super(new File("examples/"));
+		
+		String display = "";
+		for(String fileEnding : fileEndings) {
+			display += "*."+ fileEnding + " ";
+		}
+		display += "files";
+		description = display;
 		
 		FileFilter filter = new FileFilter() {
 			@Override
 			public boolean accept(File f) {
-				if (f.isDirectory())
+				if (f.isDirectory()) {
 					return true;
-				return f.getName().toLowerCase().endsWith("." + fileEnding);
+				}
+				for(String fileEnding : fileEndings) {
+					if(f.getName().toLowerCase().endsWith("." + fileEnding)) {
+						return true;
+					}
+				}
+				return false;
 			}
 
 			@Override
 			public String getDescription() {
-				return fileEnding + " files"; // name for filter
+				return description;
 			}
 		};
 		

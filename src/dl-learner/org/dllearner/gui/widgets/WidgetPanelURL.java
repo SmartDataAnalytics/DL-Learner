@@ -70,7 +70,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 		if (e.getSource() == chooseLocalButton) {
 			JFileChooser fc;
 			if (component instanceof OWLFile) {
-				fc = new ExampleFileChooser("owl");
+				fc = new ExampleFileChooser("owl","rdf","nt");
 			} else {
 				fc = new ExampleFileChooser("kb");
 			}
