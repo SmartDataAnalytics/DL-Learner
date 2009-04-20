@@ -85,6 +85,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private final Random random;
 	private final Color darkGreen;
 	private final Color darkRed;
+	private int notCoveredInd;
 	private final MoreDetailForSuggestedConceptsPanel panel;
 
 	/**
@@ -104,7 +105,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			String concept, MoreDetailForSuggestedConceptsPanel p) {
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
-		this.setPreferredSize(new Dimension(500, 230));
+		this.setPreferredSize(new Dimension(540, 230));
 		eval = desc;
 		model = m;
 		panel = p;
@@ -162,48 +163,63 @@ public class GraphicalCoveragePanel extends JPanel {
 				p = p + 20;
 			}
 			g2D.setColor(darkGreen);
-			Ellipse2D circlePoint = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+			Ellipse2D circlePoint = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
 			g2D.fill(circlePoint);
 			g2D.setColor(Color.BLACK);
 			g2D.drawString("individuals covered by", 320, p);
 			g2D.setColor(Color.ORANGE);
-			g2D.fillOval(445, p - 9, 9, 9);
+			g2D.fillOval(455, p - 9, 9, 9);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString("and", 460, p);
+			g2D.drawString("and", 485, p);
 			g2D.setColor(Color.YELLOW);
-			g2D.fillOval(490, p - 9, 9, 9);
+			g2D.fillOval(525, p - 9, 9, 9);
+			g2D.setColor(Color.BLACK);
+			p = p + 20;
+			g2D.drawString("(OK)", 320, p);
 			p = p + 20;
 			if(id.equals(EQUI_STRING)) {
 				g2D.setColor(darkRed);
-				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
 				g2D.fill(circlePoint2);
 				g2D.setColor(Color.BLACK);
 				g2D.drawString("individuals covered by", 320, p);
 				g2D.setColor(Color.ORANGE);
-				g2D.fillOval(445, p - 9, 9, 9);
+				g2D.fillOval(455, p - 9, 9, 9);
+				g2D.setColor(Color.BLACK);
+				p = p + 20;
+				g2D.drawString("(potential problem)", 320, p);
 				p = p + 20;
 				g2D.setColor(darkRed);
-				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
 				g2D.fill(circlePoint3);
 				g2D.setColor(Color.BLACK);
 				g2D.drawString("individuals covered by", 320, p);
 				g2D.setColor(Color.YELLOW);
-				g2D.fillOval(445, p - 9, 9, 9);
+				g2D.fillOval(455, p - 9, 9, 9);
+				g2D.setColor(Color.BLACK);
+				p = p + 20;
+				g2D.drawString("(potential problem)", 320, p);
 			} else {
 				g2D.setColor(Color.BLACK);
-				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
 				g2D.fill(circlePoint2);
 				g2D.drawString("individuals covered by", 320, p);
 				g2D.setColor(Color.ORANGE);
-				g2D.fillOval(445, p - 9, 9, 9);
+				g2D.fillOval(455, p - 9, 9, 9);
+				g2D.setColor(Color.BLACK);
+				p = p + 20;
+				g2D.drawString("(no problem)", 320, p);
 				p = p + 20;
 				g2D.setColor(darkRed);
-				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 3, 3);
+				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
 				g2D.fill(circlePoint3);
 				g2D.setColor(Color.BLACK);
 				g2D.drawString("individuals covered by", 320, p);
 				g2D.setColor(Color.YELLOW);
-				g2D.fillOval(445, p - 9, 9, 9);
+				g2D.fillOval(455, p - 9, 9, 9);
+				g2D.setColor(Color.BLACK);
+				p = p + 20;
+				g2D.drawString("(potential problem)", 320, p);
 			}
 			
 			g2D.setColor(Color.YELLOW);
@@ -217,7 +233,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			// Plus 1
 			if (coveredIndividualSize != model.getReasoner().getIndividuals(
 					model.getCurrentConcept()).size()
-					&& coveredIndividualSize != 0) {
+					&& notCoveredInd != 0) {
 				g2D.drawLine(x1 - 1 - shiftOldConcept, y1 - 1, x2 + 1
 						- shiftOldConcept, y1 - 1);
 				g2D.drawLine(x1 - shiftOldConcept, centerY - 1, x2
@@ -268,7 +284,7 @@ public class GraphicalCoveragePanel extends JPanel {
 
 			// Plus 3
 			if (coveredIndividualSize != model.getReasoner().getIndividuals(
-					model.getCurrentConcept()).size()) {
+					model.getCurrentConcept()).size() && ((EvaluatedDescriptionClass) eval).getAdditionalInstances().size() != 0) {
 				g2D.drawLine(x1 - 1 + shiftNewConcept, y1 - 1, x2 + 1
 						+ shiftNewConcept, y1 - 1);
 				g2D.drawLine(x1 + shiftNewConcept, centerY - 1, x2
@@ -291,7 +307,7 @@ public class GraphicalCoveragePanel extends JPanel {
 				g2D.drawLine(x2 + 1 + shiftNewConcept, y1 - 1, x2 + 1
 						+ shiftNewConcept, y2 + 1);
 			}
-
+			//Plus 4
 			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0
 					&& ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0) {
 				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
@@ -343,6 +359,17 @@ public class GraphicalCoveragePanel extends JPanel {
 				g2D.setComposite(original);
 				g2D.setColor(darkRed);
 				g2D.drawString("Adding this class expression may lead to an inconsistent ontology.", 0, 220);
+			}
+			if(eval.getAccuracy() == 1.0) {
+				g2D.setComposite(original);
+				g2D.setColor(Color.ORANGE);
+				g2D.fillOval(0, 211, 9, 9);
+				g2D.setColor(darkRed);
+				g2D.drawString("and", 25, 220);
+				g2D.setColor(Color.YELLOW);
+				g2D.fillOval(65, 211, 9, 9);
+				g2D.setColor(darkRed);
+				g2D.drawString("covers the same instances.", 95, 220);
 			}
 			this.setVisible(true);
 			panel.repaint();
@@ -409,10 +436,17 @@ public class GraphicalCoveragePanel extends JPanel {
 
 		int i = conceptNew.length();
 		while (i > 0) {
-			int sub = conceptNew.indexOf(" ");
-			String subString = conceptNew.substring(0, sub) + " ";
+			int sub = 0;
+			String subString = "";
+			if(conceptNew.contains(" ")) {
+			sub = conceptNew.indexOf(" ");
+			subString = conceptNew.substring(0, sub) + " ";
 			conceptNew = conceptNew.replace(conceptNew.substring(0, sub + 1),
 					"");
+			} else {
+				subString = conceptNew;
+				conceptNew = "";
+			}
 			while (sub < SUBSTRING_SIZE) {
 				if (conceptNew.length() > 0 && conceptNew.contains(" ")) {
 					sub = conceptNew.indexOf(" ");
@@ -544,6 +578,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			Set<Individual> notCovInd = model.getReasoner().getIndividuals(
 					model.getCurrentConcept());
 			notCovInd.removeAll(posInd);
+			notCoveredInd = notCovInd.size();
 			int k = 0;
 			x = random.nextInt(n);
 			y = random.nextInt(n);
