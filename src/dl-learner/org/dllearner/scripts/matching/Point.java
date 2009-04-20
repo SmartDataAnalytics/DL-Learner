@@ -19,38 +19,29 @@
  */
 package org.dllearner.scripts.matching;
 
-import java.net.URI;
-
 /**
- * A geo location in DBpedia.
+ * A geo location.
  * 
  * @author Jens Lehmann
  *
  */
-public class DBpediaPoint extends Point {
+public class Point {
 
-	private URI uri;
+	private double geoLat;
 	
-	private String label;
-
-	public DBpediaPoint(URI uri, String label, double geoLat, double geoLong) {
-		super(geoLat,geoLong);
-		this.uri = uri;
-		this.label = label;
-	}
+	private double geoLong;
 	
-	/**
-	 * @return the uri
-	 */
-	public URI getUri() {
-		return uri;
+	public Point(double geoLat, double geoLong) {
+		this.geoLat = geoLat;
+		this.geoLong = geoLong;
 	}
 
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
+	public double getGeoLat() {
+		return geoLat;
+	}
+
+	public double getGeoLong() {
+		return geoLong;
 	}
 	
 }
