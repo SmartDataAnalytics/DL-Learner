@@ -20,6 +20,8 @@
 package org.dllearner.scripts.matching;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -28,6 +30,7 @@ import java.net.URLConnection;
 
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -41,7 +44,23 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class DBpediaLinkedGeoData {
 
+	private static File dbpediaFile =  new File("log/DBpedia_POIs.nt");
+	private static boolean regenerateFile = false;
+	
+	private static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
+	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
+	
 	public static void main(String[] args) throws IOException {
+		
+		// download all objects having geo-coordinates from DBpedia if necessary
+		if(!dbpediaFile.exists() || regenerateFile) {
+			createDBpediaFile();
+		}
+		
+		// read file point by point
+		// for each point: call match method
+		
+		System.exit(0);
 		
 		// we start from the DBpedia URI and try to find the corresponding 
 		// OSM URI (assuming that each location having coordinates in Wikipedia also
@@ -90,4 +109,58 @@ public class DBpediaLinkedGeoData {
 		
 	}
 	
+	// downloads information about DBpedia into a separate file
+	private static void createDBpediaFile() throws IOException {
+		
+		// use this to set the "chunk size" for getting DBpedia points
+		int limit = 1000;
+		int offset = 0;
+		
+		int counter = 0;
+		FileOutputStream fos = new FileOutputStream(dbpediaFile, true);
+		
+		do {
+			counter = 0;
+			
+			// query DBpedia for all objects having geo-coordinates
+			String queryStr = "SELECT ?object, ?lat, ?long, ?label  WHERE {"; 
+			queryStr += "?object <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .";
+			queryStr += "?object <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .";
+			queryStr += "?object rdfs:label ?label . }";
+			queryStr += "LIMIT " + limit + " OFFSET " + offset;
+			
+			SparqlQuery query = new SparqlQuery(queryStr, dbpediaEndpoint);
+			ResultSet rs = query.send();
+				
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.nextSolution();
+				
+				String object = qs.get("object").toString();
+				String geoLat = qs.getLiteral("lat").getString();
+				String geoLong = qs.getLiteral("long").getString();
+				String label = qs.getLiteral("label").getString();
+				
+				String content = "<" + object + ">" + " <http://www.w3.org/2000/01/rdf-schema#label> \"" + label + "\" .\n";
+				content += "<" + object + ">" + " <http://www.w3.org/2003/01/geo/wgs84_pos#lat> \"" + geoLat + "\"^^<http://www.w3.org/2001/XMLSchema#float> .\n";
+				content += "<" + object + ">" + " <http://www.w3.org/2003/01/geo/wgs84_pos#long> \"" + geoLong + "\"^^<http://www.w3.org/2001/XMLSchema#float> .\n";
+				
+				fos.write(content.getBytes());
+			
+				counter++;
+			}
+			
+			offset += limit;
+			System.out.println(offset + " points queried.");
+			
+		} while(counter == limit);
+			
+		
+		fos.close();		
+		
+	}
+	
+	private static URI findLinkedGeoDataMatch(DBpediaPoint dbpediaPoint) {
+		
+		return null;
+	}
 }

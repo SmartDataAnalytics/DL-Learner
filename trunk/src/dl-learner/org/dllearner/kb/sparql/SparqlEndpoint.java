@@ -172,6 +172,18 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}	
 	
+	public static SparqlEndpoint getEndpointLOCALGeoData() {
+		URL u = null;
+		try { 
+			u = new URL("http://139.18.2.37:8890/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://linkedgeodata.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}		
+	
 	public static SparqlEndpoint getEndpointlocalJoseki() {
 		URL u = null;
 		try { 
