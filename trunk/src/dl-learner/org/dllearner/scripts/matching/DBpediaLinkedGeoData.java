@@ -296,9 +296,6 @@ public class DBpediaLinkedGeoData {
 			return null;
 		// use Tripliy spatial extension
 		} else {
-			if(dbpediaPoint.getGeoLat() < 0 || dbpediaPoint.getGeoLong() < 0) {
-				return null;
-			}
 			
 			if(!quiet)
 				System.out.println(dbpediaPoint.getLabel());
