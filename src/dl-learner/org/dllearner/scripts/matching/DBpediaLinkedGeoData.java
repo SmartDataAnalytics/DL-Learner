@@ -93,8 +93,8 @@ public class DBpediaLinkedGeoData {
 		String label = null;
 		String[] classes = null;
 		int decimalCount = 0;
-		double geoLat = 0;
-		double geoLong = 0;
+		Double geoLat = null;
+		Double geoLong = null;
 		
 		while ((line = br.readLine()) != null) {
 			
@@ -124,14 +124,22 @@ public class DBpediaLinkedGeoData {
 				case 1 : label = line; break;
 				case 2 : classes = line.substring(1, line.length()).split(","); break;
 				case 3 : 
-					geoLat = new Double(line); 
+					geoLat = new Double(line);
+					// we avoid "computerized scientific notation" e.g. 9.722222457639873E-4
+					// since it causes problems in the REST interface
+					if(geoLat.toString().contains("E")) {
+						geoLat = 0.0;
+					}
 					decimalCount = 0; 
 					String[] tmp = line.split(".");
 					if(tmp.length == 2) {
 						decimalCount = tmp[1].length();
 					}
 					break;
-				case 4: geoLong = new Double(line);
+				case 4: geoLong = new Double(line); 
+				if(geoLong.toString().contains("E")) {
+					geoLong = 0.0;
+				}
 				}
 							
 				itemCount++;
@@ -295,7 +303,7 @@ public class DBpediaLinkedGeoData {
 			if(!quiet)
 				System.out.println(dbpediaPoint.getLabel());
 			
-			URL linkedGeoDataURL = new URL("http://linkedgeodata.org/triplify/near/"+dbpediaPoint.getGeoLat()+","+dbpediaPoint.getGeoLong()+"/"+distanceThresholdMeters);
+			URL linkedGeoDataURL = new URL("http://linkedgeodata.org/triplify/nearhacked/"+dbpediaPoint.getGeoLat()+","+dbpediaPoint.getGeoLong()+"/"+distanceThresholdMeters);
 			
 			double highestScore = 0;
 			String bestURI = null;
