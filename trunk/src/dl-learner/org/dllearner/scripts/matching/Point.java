@@ -27,9 +27,9 @@ package org.dllearner.scripts.matching;
  */
 public class Point {
 
-	private double geoLat;
+	protected double geoLat;
 	
-	private double geoLong;
+	protected double geoLong;
 	
 	public Point(double geoLat, double geoLong) {
 		this.geoLat = geoLat;

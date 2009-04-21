@@ -32,11 +32,19 @@ public class DBpediaPoint extends Point {
 	private URI uri;
 	
 	private String label;
+	
+	private String[] classes;
 
-	public DBpediaPoint(URI uri, String label, double geoLat, double geoLong) {
+	// decimal count in latitude value => indicator for size of object (no or low
+	// number of decimals indicates a large object)
+	private int decimalCount;
+	
+	public DBpediaPoint(URI uri, String label, String[] classes, double geoLat, double geoLong, int decimalCount) {
 		super(geoLat,geoLong);
 		this.uri = uri;
 		this.label = label;
+		this.classes = classes;
+		this.decimalCount = decimalCount;
 	}
 	
 	/**
@@ -53,4 +61,23 @@ public class DBpediaPoint extends Point {
 		return label;
 	}
 	
+	public String[] getClasses() {
+		return classes;
+	}
+
+	/**
+	 * @return the decimalCount
+	 */
+	public int getDecimalCount() {
+		return decimalCount;
+	}	
+	
+	@Override
+	public String toString() {
+		String str = uri + ", \"" + label + "\", " + geoLat + ", " + geoLong + " (classes: ";
+		for(String clazz : classes) {
+			str += clazz + " ";
+		}
+		return str + ")";
+	}
 }
