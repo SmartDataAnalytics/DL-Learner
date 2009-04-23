@@ -155,6 +155,7 @@ public class DLLearnerModel implements Runnable{
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
 	private List<? extends EvaluatedDescription> evalDescriptions;
+	private boolean isReasonerSet;
 
 	/**
 	 * This is the constructor for DL-Learner model.
@@ -168,7 +169,7 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public DLLearnerModel(OWLEditorKit editorKit, DLLearnerView view) {
 		editor = editorKit;
-		
+		isReasonerSet = false;
 		this.view = view;
 		ontologyConsistent = true;
 		owlDescription = new HashSet<OWLDescription>();
@@ -191,7 +192,6 @@ public class DLLearnerModel implements Runnable{
 		alreadyLearned = false;
 		setKnowledgeSource();
 		setReasoner();
-
 	}
 
 	/**
@@ -225,6 +225,7 @@ public class DLLearnerModel implements Runnable{
 			reasoner.init();
 			reasoner.isSatisfiable();
 			view.setIsInconsistent(false);
+			isReasonerSet = true;
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			System.out.println("fehler!!!!!!!!!");	
@@ -493,6 +494,10 @@ public class DLLearnerModel implements Runnable{
 	
 	public String getID() {
 		return id;
+	}
+	
+	public boolean isReasonerSet() {
+		return isReasonerSet;
 	}
 }
 

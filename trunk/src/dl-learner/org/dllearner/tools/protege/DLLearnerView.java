@@ -120,6 +120,7 @@ public class DLLearnerView {
 	private static final int SCROLL_WIDTH = 600;
 	private static final int SCROLL_HEIGHT = 400;
 	private boolean toogled = false;
+	private String labels;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -130,6 +131,7 @@ public class DLLearnerView {
 	 */
 	public DLLearnerView(OWLEditorKit editor) {
 		editorKit = editor;
+		labels = "";
 		model = new DLLearnerModel(editorKit, this);
 		sugPanel = new SuggestClassPanel();
 		learnerPanel = new JPanel();
@@ -162,7 +164,6 @@ public class DLLearnerView {
 		accept.setPreferredSize(new Dimension(70, 40));
 		run.setPreferredSize(new Dimension(260, 30));
 		advanced.setName("Advanced");
-		model.initReasoner();
 		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
 		posPanel = new PosAndNegSelectPanel(model, action);
@@ -192,13 +193,25 @@ public class DLLearnerView {
 	 * This Method renders the view of the plugin.
 	 */
 	public void makeView(String label) {
+		run.setEnabled(false);
+		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
+		if(!labels.equals(currentConcept)) {
+			readThread = new ReadingOntologyThread(editorKit, this, model);
+		}
+		if(!readThread.isAlive() && !labels.equals(currentConcept)) {
+			readThread.start();
+		}
+		if(readThread.hasIndividuals()) {
+			run.setEnabled(true);
+		}
+		labels = currentConcept;
 		run.setText("suggest " + label + " expression");
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(detail);
 		model.setID(label);
 		runPanel.add(BorderLayout.WEST, run);
 		runPanel.add(BorderLayout.EAST, wikiPane);
-		run.setEnabled(false);
+		
 		
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
@@ -261,10 +274,8 @@ public class DLLearnerView {
 		detail.unsetPanel();
 		learnerPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		detail.setVisible(false);
-		hint.setText("");
 		isInconsistent = false;
-		readThread = new ReadingOntologyThread(editorKit, this, model);
-		readThread.start();
+
 		hint.setVisible(true);
 		action.resetToggled();
 		detail.setVisible(true);

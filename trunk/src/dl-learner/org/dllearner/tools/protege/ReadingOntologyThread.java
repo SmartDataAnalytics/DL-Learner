@@ -96,6 +96,7 @@ public class ReadingOntologyThread extends Thread {
 									// individuals of
 									// the concept
 									currentConcept = concept;
+
 									if (reasoner.getIndividuals(concept) != null) {
 										if (reasoner.getIndividuals(concept).size() > 0) {
 											hasIndividuals = true;
@@ -160,12 +161,16 @@ public class ReadingOntologyThread extends Thread {
 	
 	@Override
 	public void run() {
-		model.getSuggestModel().removeAllElements();
-		//model.initReasoner();
+		String loading ="loading instances...";
+		view.getHintPanel().setForeground(Color.RED);
+		view.setHintMessage(loading);
+		if(!model.isReasonerSet()) {
+			model.setKnowledgeSource();
+			model.setReasoner();
+		}
 		reasoner = model.getReasoner();
 		isInconsistent = false;
 		if(!isInconsistent) {
-			
 			this.checkURI();
 			this.setPositiveConcept();
 			if (this.hasIndividuals()) {

@@ -70,11 +70,6 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public void initialise() throws Exception {
 		view = new DLLearnerView(super.getOWLEditorKit());
-		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
-			view.makeView("equivalent class");
-		} else if(this.getAxiomType().toString().equals(SUPERCLASS_STRING)) {
-			view.makeView("super class");
-		}
 	}
 
 	@Override
