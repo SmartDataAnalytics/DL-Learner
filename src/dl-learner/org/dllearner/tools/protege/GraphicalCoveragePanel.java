@@ -369,7 +369,7 @@ public class GraphicalCoveragePanel extends JPanel {
 				g2D.setColor(Color.YELLOW);
 				g2D.fillOval(65, 211, 9, 9);
 				g2D.setColor(darkRed);
-				g2D.drawString("covers the same instances.", 95, 220);
+				g2D.drawString("cover the same instances.", 95, 220);
 			}
 			this.setVisible(true);
 			panel.repaint();
