@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -114,7 +115,7 @@ public class DBpediaLinkedGeoData {
 				counter++;
 				
 				if(counter % 1000 == 0) {
-					System.out.println(counter + " points processed. " + matches + " matches found.");
+					System.out.println(new Date().toString() + ": " + counter + " points processed. " + matches + " matches found.");
 				}				
 				
 				itemCount = 0;
