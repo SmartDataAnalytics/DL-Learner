@@ -468,16 +468,20 @@ public class DLLearnerView {
 	 * This method sets the run button enable after learning.
 	 */
 	public void algorithmTerminated() {
-		String error = "learning\nsuccessful";
+		String error = "learning successful\n";
+		hint.setForeground(Color.RED);
+		setHintMessage(error);
 		String message = "";
 		if(isInconsistent) {
-			message = "Class expressions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
+			message ="Class expressions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
 		} else {
-			message = "To view details about why a class expression was suggested, please click on it.";
+			message ="To view details about why a class expression was suggested, please click on it.";
 		}
 		run.setEnabled(true);
 		// start the algorithm and print the best concept found
-		renderErrorMessage(error);
+		//renderErrorMessage(error);
+		hint.setForeground(Color.BLACK);
+		hint.append(message);
 		setHintMessage(message);
 	}
 	

@@ -106,7 +106,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
-			view.renderErrorMessage("learning\nstarted");
+			view.getHintPanel().setForeground(Color.RED);
+			view.setHintMessage("learning started");
 			retriever = new SuggestionRetriever();
 			retriever.execute();
 			// model.setCurrentConcept(null);
