@@ -22,7 +22,6 @@ package org.dllearner.tools.ore;
 
 import javax.swing.event.ListSelectionEvent;
 
-
 import org.dllearner.core.owl.NamedClass;
 
 

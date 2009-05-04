@@ -25,13 +25,18 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
+import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.error.ErrorInfo;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 /**
@@ -92,13 +97,24 @@ public class WizardController implements ActionListener {
       
         if(nextPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
 //        	model.getOre().getOwlReasoner().isSatisfiable()
-        	
+        	if(!ore.consistentOntology()){
+        		Exception e = new Exception("ff");
+        		ErrorInfo info = new ErrorInfo("Inconsistent ontology", "2", "3", null, e, Level.ALL, null);
+        		JXErrorPane error = new JXErrorPane();
+        		Icon icon = UIManager.getIcon("JOptionPane.errorIcon");
+        		error.setErrorInfo(info);
+        		error.setIcon(icon);System.out.println(icon);
+        		JXErrorPane.showDialog(wizard.getDialog(), error);
+        		
+        		
+        	}
         	((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
        
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
         	ore.init();
+//        	ore.get
         	LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
         	learnDescriptor.setPanelDefaults();
         	        	
@@ -266,6 +282,7 @@ public class WizardController implements ActionListener {
     class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass> {
 		private Object nextPanelID;
 		private ClassPanelOWL owlClassPanel;
+		private Set<NamedClass> unsatClasses;
 		
 		public ConceptRetriever(Object nextPanelDescriptor) {
 
@@ -278,14 +295,14 @@ public class WizardController implements ActionListener {
 
 			owlClassPanel.getStatusLabel().setText("Loading atomic classes");
 			owlClassPanel.getLoadingLabel().setBusy(true);
-			owlClassPanel.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
+//			owlClassPanel.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
 
 			wizard.getModel().getOre().initReasoners();
 
-			Set<NamedClass> ind = wizard.getModel().getOre().getOwlReasoner().getNamedClasses();
-					
+			Set<NamedClass> classes = wizard.getModel().getOre().getOwlReasoner().getNamedClasses();
+			unsatClasses = wizard.getModel().getOre().getOwlReasoner().getInconsistentClasses();
 
-			return ind;
+			return classes;
 		}
 
 		@Override
@@ -306,6 +323,7 @@ public class WizardController implements ActionListener {
 			if(ind != null){
 				for (NamedClass cl : ind) {
 					dm.addElement(cl);
+					
 					
 					//nextPanel.panel3.getModel().addElement(cl);
 					

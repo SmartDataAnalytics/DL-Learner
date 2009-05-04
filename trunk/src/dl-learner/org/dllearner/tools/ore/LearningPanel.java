@@ -87,7 +87,7 @@ public class LearningPanel extends JPanel{
 		JPanel statusPanel = new JPanel();
 		statusLabel = new JLabel();
 		loadingLabel = new JXBusyLabel(new Dimension(15, 15));
-		BusyPainter<Object> painter = new BusyPainter<Object>(
+		BusyPainter painter = new BusyPainter(
 		new RoundRectangle2D.Float(0, 0, 6.0f, 2.6f, 10.0f, 10.0f),
 		new Ellipse2D.Float(2.0f, 2.0f, 11.0f, 11.0f));
 		painter.setTrailLength(2);

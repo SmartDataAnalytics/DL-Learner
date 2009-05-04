@@ -33,6 +33,12 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.swingx.JXBusyLabel;
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.decorator.ColorHighlighter;
+import org.jdesktop.swingx.decorator.FilterPipeline;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.decorator.ShuttleSorter;
 import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
@@ -45,7 +51,7 @@ public class ClassPanelOWL extends JPanel{
 
 	private static final long serialVersionUID = 3026319637264844550L;
 
-	private javax.swing.JList conceptList;
+	private JXList conceptList;
 	
 	private JPanel contentPanel;
 	
@@ -94,8 +100,17 @@ public class ClassPanelOWL extends JPanel{
 		JPanel contentPanel1 = new JPanel();
 		JScrollPane scroll = new JScrollPane();
 		
-			
-		conceptList = new JList(model);
+		
+		
+		conceptList = new JXList(model);
+		conceptList.setFilterEnabled(true);
+		conceptList.setFilters(new FilterPipeline(new ShuttleSorter(0, true)));
+		conceptList.setHighlighters(HighlighterFactory.createSimpleStriping(HighlighterFactory.CLASSIC_LINE_PRINTER));
+		conceptList.addHighlighter(new ColorHighlighter( HighlightPredicate.ROLLOVER_ROW));
+		conceptList.setRolloverEnabled(true);
+//		conceptList.setSearchable(new ListsSearchPredicate.MATCH_ALL);
+//		conceptList.setHighlighters(HighlighterFactory.createAlternateStriping());
+
 		scroll.setPreferredSize(new Dimension(400, 400));
 		scroll.setViewportView(conceptList);
 		contentPanel1.add(scroll);

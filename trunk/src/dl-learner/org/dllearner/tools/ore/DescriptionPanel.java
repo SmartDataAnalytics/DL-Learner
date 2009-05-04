@@ -97,7 +97,7 @@ public class DescriptionPanel extends JPanel{
 				remove(c);
 			}
 		}
-		ore.updateReasoner();
+//		ore.updateReasoner();
 		correct = true;
 		if (mode.equals("neg")) {
 			for (JLabel jL : ore.descriptionToJLabelNeg(ind, newClassDescription)) {
