@@ -416,10 +416,13 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public void changeDLLearnerDescriptionsToOWLDescriptions(
 			Description descript) {
+		ds.clear();
+		owlDescription.clear();
 		setNewConceptOWLAPI(descript);
 		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
 				.getOWLDescription(currentConcept);
 		ds.add(oldConceptOWLAPI);
+		System.out.println("Test: " + ds);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 		OWLDataFactory factory = manager.getOWLDataFactory();
