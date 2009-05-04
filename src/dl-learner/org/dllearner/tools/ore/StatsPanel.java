@@ -206,7 +206,7 @@ public class StatsPanel extends JPanel{
 				for(String i : value){
 					actionPane.add(new JLabel("<html><strike>" + i + "</strike></html>"));
 				}
-				actionPane.setExpanded(false);
+				actionPane.setCollapsed(false);
 				propertyPane.add(actionPane);
 			} else if(newPropMap.keySet().contains(key)){
 				JXTaskPane actionPane = new JXTaskPane();

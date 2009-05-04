@@ -103,6 +103,10 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     	}
     
     }
+    
+    private void connect2Sparql(){
+    	
+    }
    
 
 	public void changedUpdate(DocumentEvent e) {

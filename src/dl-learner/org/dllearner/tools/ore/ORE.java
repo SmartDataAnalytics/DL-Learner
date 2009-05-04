@@ -33,11 +33,12 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
@@ -48,10 +49,17 @@ import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.mindswap.pellet.exceptions.InconsistentOntologyException;
+import org.mindswap.pellet.owlapi.PelletReasonerFactory;
+import org.mindswap.pellet.owlapi.Reasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
 
 /**
  * This class contains init methods, and is used as broker between wizard and OWL-API. 
@@ -63,7 +71,7 @@ public class ORE {
 	private LearningAlgorithm la;
 	private ReasonerComponent rs;
 	private KnowledgeSource ks; 
-	private PosNegLPStandard lp;
+	private LearningProblem lp;
 	private ComponentManager cm;
 	
 	private ReasonerComponent fastReasoner;
@@ -73,7 +81,7 @@ public class ORE {
 	private SortedSet<Individual> negExamples;
 	
 	private NamedClass classToLearn;
-	private EvaluatedDescriptionPosNeg newClassDescription;
+	private EvaluatedDescriptionClass newClassDescription;
 
 	
 	private OntologyModifier modifier;
@@ -82,6 +90,8 @@ public class ORE {
 	private Map<String, String> prefixes;
 	
 	private double noise = 0.0;
+	
+	private File owlFile;
 	
 	
 	public ORE() {
@@ -96,6 +106,7 @@ public class ORE {
 	 * Applying knowledge source.
 	 */
 	public void setKnowledgeSource(File f) {
+		this.owlFile = f;
 
 		ks = cm.knowledgeSource(OWLFile.class);
 
@@ -113,6 +124,23 @@ public class ORE {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public boolean consistentOntology() throws InconsistentOntologyException{
+		boolean consistent = true;
+		try {
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			OWLOntology ont = manager.loadOntology(owlFile.toURI());
+			Reasoner reasoner = new PelletReasonerFactory().createReasoner(manager);
+			reasoner.loadOntology(ont);
+			
+			consistent = reasoner.isConsistent();
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return consistent;
 	}
 	
 	
@@ -144,14 +172,7 @@ public class ORE {
 		
 	}
 	
-	/**
-	 * Returns the reasoningservice.
-	 * @return reasoning service
-	 */
-	public ReasonerComponent getReasonerComponent(){
-		return rs;
-	}
-	
+		
 	
 	
 	public void setPosNegExamples(){
@@ -170,7 +191,7 @@ public class ORE {
 	}
 
 
-	public EvaluatedDescriptionPosNeg getNewClassDescription() {
+	public EvaluatedDescriptionClass getNewClassDescription() {
 		return newClassDescription;
 	}
 
@@ -192,17 +213,32 @@ public class ORE {
 	}
 
 	public void setLearningProblem(){
-		lp = new PosNegLPStandard(owlReasoner, posExamples, negExamples);
-		lp.init();
+		lp = cm.learningProblem(ClassLearningProblem.class, fastReasoner);
+		cm.applyConfigEntry(lp, "classToDescribe", classToLearn.toString());
+		try {
+			lp.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setNoise(double noise){
+		System.out.println("setze noise auf" + noise);
+		cm.applyConfigEntry(la, "noisePercentage", noise);
+		try {
+			la.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.noise = noise;
 	}
 	
 	public void setLearningAlgorithm(){
 		try {
-			la = cm.learningAlgorithm(ROLComponent2.class, lp, owlReasoner);
+			la = cm.learningAlgorithm(CELOE.class, lp, fastReasoner);
+			cm.applyConfigEntry(la, "useNegation", false);
 		} catch (LearningProblemUnsupportedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -212,8 +248,8 @@ public class ORE {
 		
 		
 		t.add(classToLearn.getName());
-		cm.applyConfigEntry(la, "ignoredConcepts", t);
-		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 10);
+//		cm.applyConfigEntry(la, "ignoredConcepts", t);
+//		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 10);
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -232,13 +268,13 @@ public class ORE {
 	}
 	
 	public void init(){
-		try {
-			owlReasoner.init();
-			fastReasoner.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			owlReasoner.init();
+//			fastReasoner.init();
+//		} catch (ComponentInitException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		this.setPosNegExamples();
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
@@ -251,9 +287,9 @@ public class ORE {
 	 */
 	public void start(){
 		Set<String> t = new TreeSet<String>();
-		t.add(classToLearn.getName());
-		cm.applyConfigEntry(la, "ignoredConcepts", t);
-		cm.applyConfigEntry(la, "noisePercentage", noise);
+//		t.add(classToLearn.getName());
+//		cm.applyConfigEntry(la, "ignoredConcepts", t);
+//		cm.applyConfigEntry(la, "noisePercentage", noise);
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -265,7 +301,7 @@ public class ORE {
 		
 	}
 		
-	public void setNewClassDescription(EvaluatedDescriptionPosNeg newClassDescription) {
+	public void setNewClassDescription(EvaluatedDescriptionClass newClassDescription) {
 		this.newClassDescription = newClassDescription;
 	}
 
@@ -517,7 +553,7 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		rs = cm.reasoningService(owlReasoner);
+
 		setLearningAlgorithm();
 	}
 	
@@ -538,7 +574,7 @@ public class ORE {
 				}
 			}
 		}
-//		System.out.println("Disjunkt sind: " + complements);
+		System.out.println("Disjunkt sind: " + complements);
 		
 		return complements;
 	}
@@ -546,29 +582,55 @@ public class ORE {
 	
 
 	public static void main(String[] args){
-		final ORE test = new ORE();
+		try{
+		ComponentManager cm = ComponentManager.getInstance();
 		
-		File owlFile1 = new File("examples/ore/people+pets.owl");
-		File owlFile2 = new File("examples/ore/inconsistent.owl");
-		File owlFile3 = new File("examples/ore/incohaerent.owl");
+		// create knowledge source
+		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		String example = "examples/ore/inconsistent.owl";
+		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
+		source.init();
 		
-		test.setKnowledgeSource(owlFile1);
-		test.initReasoners();
-		System.out.println(test.owlReasoner.isSatisfiable());
+		// create OWL API reasoning service with standard settings
+		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		reasoner.init();
 		
-		test.setKnowledgeSource(owlFile2);
-		test.initReasoners();
-		System.out.println(test.owlReasoner.isSatisfiable());
+		// create a learning problem and set positive and negative examples
+		LearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+//		cm.applyConfigEntry(lp, "type", "superClass");
+		cm.applyConfigEntry(lp, "classToDescribe", "http://cohse.semanticweb.org/ontologies/people#mad+cow");
+		lp.init();
 		
-		test.setKnowledgeSource(owlFile3);
-		test.initReasoners();
-		System.out.println(test.owlReasoner.isSatisfiable());
-		
-		
-		
-		
+		// create the learning algorithm
+		LearningAlgorithm la = null;
+		try {
+			la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+			la.init();
+		} catch (LearningProblemUnsupportedException e) {
+			e.printStackTrace();
+		}
+	
+		// start the algorithm and print the best concept found
+		la.start();
+	
+		System.out.println(la.getCurrentlyBestEvaluatedDescriptions(10, 0.8, true));
+	} catch (MalformedURLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ComponentInitException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
 }
+		
+		
+		
+		
+		
+	
+}
+
+
 	
 //	public static void main(String[] args){
 //		

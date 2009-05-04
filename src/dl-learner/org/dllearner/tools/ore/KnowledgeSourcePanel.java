@@ -165,6 +165,7 @@ public class KnowledgeSourcePanel extends JPanel{
 		browseButton.addActionListener(l);
 		fileURL.addActionListener(l);
 		sparqlURL.addActionListener(l);
+		connectButton.addActionListener(l);
 		owl.addActionListener(l);
 		sparql.addActionListener(l);
 		fileURL.getDocument().addDocumentListener(d);

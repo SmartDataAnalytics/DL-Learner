@@ -35,7 +35,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 
 
@@ -99,7 +99,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //		Description de = new NamedClass("http://example.com/father#male");
 		
 		if (!e.getValueIsAdjusting()){
-			getWizardModel().getOre().setNewClassDescription(((EvaluatedDescriptionPosNeg) (learnPanel.getResultList().getSelectedValue()))); 					
+			getWizardModel().getOre().setNewClassDescription(((EvaluatedDescriptionClass) (learnPanel.getResultList().getSelectedValue()))); 					
 		}
 		
 	}
@@ -113,6 +113,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			learnPanel.getListModel().clear();
 			learnPanel.getStartButton().setEnabled(false);
 	        learnPanel.getStopButton().setEnabled(true);
+	        
 	        worker = new LearnSwingWorker();
 	        worker.execute();
 		} else{
@@ -248,9 +249,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 		@Override
 		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {
-			
-//			panel4.getModel().clear();
-			
+					
 			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
