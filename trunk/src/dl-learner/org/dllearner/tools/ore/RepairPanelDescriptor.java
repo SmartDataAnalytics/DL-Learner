@@ -93,13 +93,15 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     	
     	DefaultListModel negModel = repairPanel.getNegFailureModel();
     	negModel.clear();
-    	for(Individual ind : ore.getNewClassDescription().getCoveredNegatives()){
+    	for(Individual ind : ore.getNewClassDescription().getAdditionalInstances()){
     		negModel.addElement(ind);
     	}
     	
     	DefaultListModel posModel = repairPanel.getPosFailureModel();
-    	posModel.clear();
-    	for(Individual ind : ore.getNewClassDescription().getNotCoveredPositives()){
+    	posModel.clear();System.out.println(ore.getNewClassDescription().getCoveredInstances());
+    	Set<Individual> posNotCovered = ore.getOwlReasoner().getIndividuals(ore.getIgnoredConcept());
+    	posNotCovered.removeAll(ore.getNewClassDescription().getCoveredInstances());
+    	for(Individual ind : posNotCovered){
     		posModel.addElement(ind);
     	}
     	
