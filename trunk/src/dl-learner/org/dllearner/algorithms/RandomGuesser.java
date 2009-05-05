@@ -24,19 +24,30 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.GPUtilities;
-import org.dllearner.algorithms.gp.Program;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.Score;
 import org.dllearner.core.configurators.RandomGuesserConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.ScorePosNeg;
 
+/**
+ * This learning algorithm provides a random guessing technique to solve
+ * learning problems in description logics/OWL. Solutions of such problems
+ * are concepts, which can be viewed as trees. The algorithm takes as input
+ * the number of guesses (how many concepts to generate) and the maximum depth
+ * of the concepts/trees. Using this, it randomly creates trees by calling the
+ * "grow" method of a genetic programming algorithm. The target language is
+ * currently ALC.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class RandomGuesser extends LearningAlgorithm {
 
 	private RandomGuesserConfigurator configurator;
@@ -46,13 +57,15 @@ public class RandomGuesser extends LearningAlgorithm {
 	}
 	
     private Description bestDefinition = null;
-    private ScorePosNeg bestScore;
+    private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
+    private boolean isRunning = false;
 
+    private double lengthPenalty = 0.02;
 	private int numberOfTrees = 100;
 	private int maxDepth = 5;
     
-	private static Logger logger = Logger.getLogger(RandomGuesser.class);		
+	private static Logger logger = Logger.getLogger(RandomGuesser.class);
 	
 	public RandomGuesser(LearningProblem learningProblem, ReasonerComponent rs) {
 	   	super(learningProblem, rs);
@@ -71,7 +84,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees", 100));
+		options.add(new IntegerConfigOption("numberOfGuesses", "number of randomly generated concepts/trees", 100));
 		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees", 5));
 		return options;
 	}
@@ -82,10 +95,11 @@ public class RandomGuesser extends LearningAlgorithm {
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		String name = entry.getOptionName();
-		if (name.equals("numberOfTrees"))
+		if (name.equals("numberOfGuesses")) {
 			numberOfTrees = (Integer) entry.getValue();
-		else if(name.equals("maxDepth"))
+		} else if(name.equals("maxDepth")) {
 			maxDepth = (Integer) entry.getValue();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -93,35 +107,38 @@ public class RandomGuesser extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+
 	}	
     	
 	@Override
 	public void start() {
-		// this.learningProblem = learningProblem;
+		isRunning = true;
 		
-		// indem man die Klasse GP.Program verwendet, kann man auch
-		// alle Features z.B. ADC, Type-Guessing verwenden
-		Program p;
+		Description d;
 		
 		for(int i=0; i<numberOfTrees; i++) {
-			// p = GPUtilities.createGrowRandomProgram(learningProblem, maxDepth);
-			p = GPUtilities.createGrowRandomProgram(learningProblem, reasoner, maxDepth, false);
-			if(p.getFitness()>bestFitness) {
-				bestFitness = p.getFitness();
-				bestScore = p.getScore();
-				bestDefinition = p.getTree();
+//			p = GPUtilities.createGrowRandomProgram(learningProblem, reasoner, maxDepth, false);
+			d = GPUtilities.createGrowRandomTree(learningProblem, reasoner, maxDepth, false);
+			
+			double acc = learningProblem.getAccuracy(d);
+			double fitness = acc - lengthPenalty * d.getLength();
+			
+			if(fitness>bestFitness) {
+				bestFitness = fitness;
+				bestScore = learningProblem.computeScore(d);
+				bestDefinition = d; // p.getTree();
 			}
 		}
 		
 		logger.info("Random-Guesser (" + numberOfTrees + " trials, maximum depth " + maxDepth + ")");
 		logger.info("best solution: " + bestDefinition);
 		logger.info("fitness: " + bestFitness);
+		
+		isRunning = false;
 	}
 
 //	@Override
-	public ScorePosNeg getSolutionScore() {
+	public Score getSolutionScore() {
 		return bestScore;
 	}
 
@@ -131,13 +148,13 @@ public class RandomGuesser extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescriptionPosNeg(bestDefinition,bestScore);
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return learningProblem.evaluate(bestDefinition);
+//		return new EvaluatedDescriptionPosNeg(bestDefinition,bestScore);
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -146,8 +163,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	 */
 	@Override
 	public boolean isRunning() {
-		// TODO Auto-generated method stub
-		return false;
+		return isRunning;
 	}
 
 }

@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,7 +35,6 @@ import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.gui.Config;

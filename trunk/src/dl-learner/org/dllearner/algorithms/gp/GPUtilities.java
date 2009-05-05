@@ -690,7 +690,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem, rs, depth,false));    	
     }
 
-    private static Description createGrowRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    public static Description createGrowRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
     	/*
         private static Concept pickAlphabetSymbol(boolean useADC) {
             FlatABox abox = FlatABox.getInstance();
