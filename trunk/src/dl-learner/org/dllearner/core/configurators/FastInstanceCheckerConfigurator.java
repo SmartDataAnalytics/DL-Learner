@@ -70,15 +70,6 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(fastInstance
 public boolean getDefaultNegation() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "defaultNegation") ;
 }
-/**
-* forallRetrievalSemantics This option controls how to interpret the all quantifier in orall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C..
-* mandatory: false| reinit necessary: true
-* default value: standard
-* @return String 
-**/
-public String getForallRetrievalSemantics() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "forallRetrievalSemantics") ;
-}
 
 /**
 * @param reasonerType FaCT++ or Pellet to dematerialize.
@@ -96,15 +87,6 @@ reinitNecessary = true;
 **/
 public void setDefaultNegation(boolean defaultNegation) {
 ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "defaultNegation", defaultNegation);
-reinitNecessary = true;
-}
-/**
-* @param forallRetrievalSemantics This option controls how to interpret the all quantifier in orall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C..
-* mandatory: false| reinit necessary: true
-* default value: standard
-**/
-public void setForallRetrievalSemantics(String forallRetrievalSemantics) {
-ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "forallRetrievalSemantics", forallRetrievalSemantics);
 reinitNecessary = true;
 }
 

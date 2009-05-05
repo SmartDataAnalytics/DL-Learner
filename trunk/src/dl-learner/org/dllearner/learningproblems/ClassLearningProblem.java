@@ -33,6 +33,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -74,8 +75,10 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("classToDescribe", "class of which a description should be learned", null, true, false));
-		StringConfigOption type = new StringConfigOption("type", "Whether to learn an equivalence class or super class axiom or domain/range of a property.","equivalence");
+		URLConfigOption classToDescribeOption = new URLConfigOption("classToDescribe", "class of which a description should be learned", null, true, false);
+		classToDescribeOption.setRefersToOWLClass(true);
+		options.add(classToDescribeOption);
+		StringConfigOption type = new StringConfigOption("type", "whether to learn an equivalence class or super class axiom","equivalence"); //  or domain/range of a property.
 		type.setAllowedValues(new String[] {"equivalence", "superClass"}); // , "domain", "range"});
 		options.add(type);		
 		return options;
@@ -87,7 +90,8 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		classToDescribe = new NamedClass(configurator.getClassToDescribe());
+		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
+		
 		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
 		}

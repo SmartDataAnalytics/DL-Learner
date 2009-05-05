@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -38,6 +39,10 @@ public class NamedClass extends Description implements Entity, NamedKBElement, C
         this.name = name;
     }    
     
+	public NamedClass(URI uri) {
+        this.name = uri.toString();
+    }
+	
     public String getName() {
 		return name;
 	}

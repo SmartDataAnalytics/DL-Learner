@@ -42,7 +42,7 @@ public class TutorialWindow extends JFrame {
 		setTitle("Quick Tutorial");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationByPlatform(true);
-		setSize(300, 600);
+		setSize(525, 600);
 		setVisible(true);		
 
 		getContentPane().setLayout(new BorderLayout());

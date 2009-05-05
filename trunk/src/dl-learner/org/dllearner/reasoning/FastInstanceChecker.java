@@ -162,7 +162,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		forallSemantics.setAllowedValues(new String[] { "standard", "domain", "forallExists" });
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
-		options.add(forallSemantics);		
+//		options.add(forallSemantics);		
 		return options;
 	}
 
@@ -586,9 +586,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// \forall restrictions are difficult to handle; assume we want to check
 			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
 			// this is satisfied trivially (all of their non-existing children are male)
-			if(!configurator.getForallRetrievalSemantics().equals("standard")) {
-				throw new Error("Only forallExists semantics currently implemented.");
-			}
+//			if(!configurator.getForallRetrievalSemantics().equals("standard")) {
+//				throw new Error("Only forallExists semantics currently implemented.");
+//			}
 			
 			// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
 			// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists

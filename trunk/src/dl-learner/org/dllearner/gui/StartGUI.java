@@ -46,6 +46,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
@@ -55,7 +56,9 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegLPStrict;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.FastRetrievalReasoner;
 
 /**
  * This class builds the basic GUI elements and is used to start the DL-Learner
@@ -127,9 +130,15 @@ public class StartGUI extends JFrame implements ActionListener {
 		List<Class<? extends Component>> ignoredKnowledgeSources = new LinkedList<Class<? extends Component>>();
 		ignoredKnowledgeSources.add(OWLAPIOntology.class);
 		panels[0] = new ComponentPanel(config, this, KnowledgeSource.class, OWLFile.class, ignoredKnowledgeSources);
-		panels[1] = new ComponentPanel(config, this, ReasonerComponent.class, FastInstanceChecker.class);
-		panels[2] = new ComponentPanel(config, this, LearningProblem.class, PosNegLPStandard.class);
-		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ROLComponent2.class);
+		List<Class<? extends Component>> ignoredReasoners = new LinkedList<Class<? extends Component>>();
+		ignoredReasoners.add(FastRetrievalReasoner.class);
+		panels[1] = new ComponentPanel(config, this, ReasonerComponent.class, FastInstanceChecker.class, ignoredReasoners);
+		List<Class<? extends Component>> ignoredLearningProblems = new LinkedList<Class<? extends Component>>();
+		ignoredLearningProblems.add(PosNegLPStrict.class);
+		panels[2] = new ComponentPanel(config, this, LearningProblem.class, PosNegLPStandard.class, ignoredLearningProblems);
+		List<Class<? extends Component>> ignoredAlgorithms = new LinkedList<Class<? extends Component>>();
+		ignoredAlgorithms.add(ELLearningAlgorithm.class);
+		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ROLComponent2.class, ignoredAlgorithms);
 		runPanel = new RunPanel(config, this);		
 		
 		// add tabs for panels

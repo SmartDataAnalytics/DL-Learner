@@ -33,6 +33,8 @@ public class URLConfigOption extends ConfigOption<URL> {
 
 	private boolean refersToFile = false;
 	
+	private boolean refersToOWLClass = false;
+	
 	public URLConfigOption(String name, String description) {
 		super(name, description);
 	}	
@@ -63,6 +65,23 @@ public class URLConfigOption extends ConfigOption<URL> {
 	public void setRefersToFile(boolean refersToFile) {
 		this.refersToFile = refersToFile;
 	}
+	
+	/**
+	 * Returns whether the URI can refer to a class in a loaded 
+	 * ontology. This can be used in user interfaces for this component.
+	 * @return the refersToOWLClass Whether it refers to an OWL class.
+	 */
+	public boolean refersToOWLClass() {
+		return refersToOWLClass;
+	}
+
+	/**
+	 * @param refersToFile Set whether this option refers to an OWL class in the 
+	 * loaded ontology.
+	 */
+	public void setRefersToOWLClass(boolean refersToOWLClass) {
+		this.refersToOWLClass = refersToOWLClass;
+	}	
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.config.ConfigOption#checkType(java.lang.Object)
