@@ -122,7 +122,7 @@ return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization ClassLearningProblem
 **/
-public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, String classToDescribe)  {
+public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, URL classToDescribe)  {
 return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService, classToDescribe);
 }
 

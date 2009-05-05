@@ -23,6 +23,27 @@ configure all four types of components. The run tab plays a
 special role: It is used to start the learning algorithm 
 and display statistical information.
 </p><br />
+			
+<p>
+<i>Example:</i><br />
+Suppose you want to learn the definition of a class in an existing ontology. In this case,
+you can proceed as follows:<br />
+1. In the tab "Knowledge Source", choose an OWL file containing your ontology.<br />
+2. Click on the tab "Reasoner". We recommend to the defaults unchanged here, but you
+   are free to modify the settings and choose the reasoner you like.<br />
+3. Click on the tab "Learning Problem". This may take a while, since the reasoner will now 
+   read the ontology you specified in step 1. Since you want to learn the definition of a class,
+   use the drop down box and select "Class Learning Problem". After this, set the value of 
+   the option "classToDescribe" to the desired class.<br />
+4. Click on the "Learning Algorithm" tab. Here, you can select a learning algorithm and 
+   modify its settings. If you are unsure what to do, just stick with the default values.<br />
+5. Click on the "Run" tab and press the "Start" button. The algorithm is now running
+   and the currently best solutions found are displayed in the panel below (using Manchester
+   OWL Syntax) along with some reasoning statistics. Depending on the learning algorithm
+   and settings, the run may not terminate (in reasonable time). In such a case you can use
+   the "Stop" button to gracefully stop the algorithm.<br />
+For explanations of components in each step, please consult the DL-Learner manual.
+</p><br />			
 				
 <p>
 <i>Tab heads explanation:</i><br />
@@ -33,6 +54,7 @@ black = component has been initialised
 				
 <p><i>Further references:</i><br />
 Homepage: <a href="http://dl-learner.org">http://dl-learner.org</a><br />
+DL-Learner Manual: <a href="http://dl-learner.org/files/dl-learner-manual.pdf">http://dl-learner.org/files/dl-learner-manual.pdf</a><br />
 DL-Learner Architecture: <a href="http://dl-learner.org/wiki/Architecture">http://dl-learner.org/wiki/Architecture</a>
 </p><br />
 

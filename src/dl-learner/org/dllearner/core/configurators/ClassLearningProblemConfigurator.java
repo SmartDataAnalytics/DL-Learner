@@ -20,6 +20,7 @@
 
 package org.dllearner.core.configurators;
 
+import java.net.URL;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -47,7 +48,7 @@ this.classLearningProblem = classLearningProblem;
 * @param classToDescribe class of which a description should be learned
 * @return ClassLearningProblem
 **/
-public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, String classToDescribe) {
+public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, URL classToDescribe) {
 ClassLearningProblem component = ComponentManager.getInstance().learningProblem(ClassLearningProblem.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "classToDescribe", classToDescribe);
 return component;
@@ -57,13 +58,13 @@ return component;
 * classToDescribe class of which a description should be learned.
 * mandatory: true| reinit necessary: false
 * default value: null
-* @return String 
+* @return URL 
 **/
-public String getClassToDescribe() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "classToDescribe") ;
+public URL getClassToDescribe() {
+return (URL) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "classToDescribe") ;
 }
 /**
-* type Whether to learn an equivalence class or super class axiom or domain/range of a property..
+* type whether to learn an equivalence class or super class axiom.
 * mandatory: false| reinit necessary: true
 * default value: equivalence
 * @return String 
@@ -77,11 +78,11 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(classLearnin
 * mandatory: true| reinit necessary: false
 * default value: null
 **/
-public void setClassToDescribe(String classToDescribe) {
+public void setClassToDescribe(URL classToDescribe) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "classToDescribe", classToDescribe);
 }
 /**
-* @param type Whether to learn an equivalence class or super class axiom or domain/range of a property..
+* @param type whether to learn an equivalence class or super class axiom.
 * mandatory: false| reinit necessary: true
 * default value: equivalence
 **/
