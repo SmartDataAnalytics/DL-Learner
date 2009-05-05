@@ -49,8 +49,8 @@ public class RandomGuesser extends LearningAlgorithm {
     private ScorePosNeg bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
 
-	private int numberOfTrees;
-	private int maxDepth;
+	private int numberOfTrees = 100;
+	private int maxDepth = 5;
     
 	private static Logger logger = Logger.getLogger(RandomGuesser.class);		
 	
@@ -71,7 +71,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees", 5));
+		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees", 100));
 		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees", 5));
 		return options;
 	}
