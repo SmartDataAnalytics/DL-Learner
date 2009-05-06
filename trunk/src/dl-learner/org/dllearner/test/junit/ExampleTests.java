@@ -70,7 +70,7 @@ public class ExampleTests {
 		boolean randomize = true;
 		
 		// GPs can be excluded temporarily (because those tests are very time-consuming)
-		boolean testGP = false;
+		boolean testGP = true;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
@@ -130,7 +130,7 @@ public class ExampleTests {
 		// ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)  => disallowing ALL helps (TODO find out details)
 //		ignore.add("examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // stack overflow
 //		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
-		ignore.add("examples/krk/"); // too many stack overflows
+//		ignore.add("examples/krk/"); // too many stack overflows
 
 		int failedCounter = 0;
 		int counter = 1;
