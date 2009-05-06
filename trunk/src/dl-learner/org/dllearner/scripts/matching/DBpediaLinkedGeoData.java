@@ -312,7 +312,7 @@ public class DBpediaLinkedGeoData {
 			String line="";
 			while ((line = rd.readLine()) != null)
 			{	
-				if(line.contains("<http://linkedgeodata.org/vocabulary#name>") || line.contains("<http://linkedgeodata.org/vocabulary/#name%25en>")) {
+				if(line.contains("<http://linkedgeodata.org/vocabulary#name>") || line.contains("<http://linkedgeodata.org/vocabulary/#name%25en>") || line.contains("<http://linkedgeodata.org/vocabulary/#int_name>")) {
 					int first = line.indexOf("\"") + 1;
 					int last = line.lastIndexOf("\"");
 					String label = line.substring(first, last);
