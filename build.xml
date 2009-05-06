@@ -17,7 +17,7 @@
 	
 	<!-- other settings -->
 	<!-- maximum amount of allocated memory in startup scripts -->
-	<property name ="max_memory" value="512" />
+	<property name ="max_memory" value="1024" />
 	
 	<!-- set up classpath -->
 	<path id="classpath">

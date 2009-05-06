@@ -293,6 +293,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		} else {
 			// instantiate Pellet reasoner
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
+			// we register Pellet as ontology change listener, otherwise Pellet
+			// will not refresh when the ontology is modified
+			manager.addOntologyChangeListener((org.mindswap.pellet.owlapi.Reasoner)reasoner);
 			
 			//set classification output to "none", while default is "console"
 			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.valueOf("NONE");
@@ -301,7 +304,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 			pelletLogger.setLevel(Level.WARN);
 		}
-		
+
 		/*
 		Set<OWLOntology> importsClosure = manager.getImportsClosure(ontology);
 		System.out.println("imports closure : " + importsClosure);
@@ -1060,11 +1063,11 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		
 		try {
 			// workaround due to a bug in Pellet 2.0RC (see PelletBug.java und PelletBug2.java)
-			if(configurator.getReasonerType().equals("pellet")) {
-				consistent = ((org.mindswap.pellet.owlapi.Reasoner)reasoner).isConsistent();
-			} else {
+//			if(configurator.getReasonerType().equals("pellet")) {
+//				consistent = ((org.mindswap.pellet.owlapi.Reasoner)reasoner).isConsistent();
+//			} else {
 				consistent = reasoner.isConsistent(ontology);
-			}
+//			}
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 		}
