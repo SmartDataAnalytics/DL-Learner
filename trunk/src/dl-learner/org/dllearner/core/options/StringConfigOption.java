@@ -120,7 +120,7 @@ public class StringConfigOption extends ConfigOption<String> {
 	@Override
 	public String getValueFormatting(String value) {
 		if (value != null)
-			return value.toString() + ";";
+			return "\"" + value.toString() + "\";";
 		else
 			return null;
 	}

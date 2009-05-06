@@ -96,7 +96,7 @@ public class URLConfigOption extends ConfigOption<URL> {
 	 */
 	@Override
 	public String getValueFormatting(URL value) {
-		return value.toString();
+		return "\"" + value.toString() + "\";";
 	}
 
 	/* (non-Javadoc)
