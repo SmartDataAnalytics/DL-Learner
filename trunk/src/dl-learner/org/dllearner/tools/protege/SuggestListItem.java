@@ -28,8 +28,8 @@ import java.awt.Color;
 public class SuggestListItem {
 	
 	private final Color color;
-    private final String value;
-    private final double accuracy;
+    private String value;
+    private double accuracy;
     /**
      * Constructor for the SuggestListItem.
      * @param c Color Color in which the text is painted.

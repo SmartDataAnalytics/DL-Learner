@@ -53,6 +53,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private static final int PLUS_SIZE = 5;
 	private static final int SUBSTRING_SIZE = 25;
 	private static final int SPACE_SIZE = 7;
+	private static final int MAX_RANDOM_NUMBER = 300;
 	private static final String EQUI_STRING = "equivalent class";
 	private final String id;
 	private int shiftXAxis;
@@ -120,7 +121,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		posNotCovIndVector = new Vector<IndividualPoint>();
 		additionalIndividuals = new Vector<IndividualPoint>();
 		points = new Vector<IndividualPoint>();
-		this.computeGraphics(0, 0);
+		this.computeGraphics();
 		handler = new GraphicalCoveragePanelHandler(this, desc, model);
 		if(shiftXAxis == 0) {
 		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment)+3,
@@ -139,7 +140,7 @@ public class GraphicalCoveragePanel extends JPanel {
 					+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
 					+ distortionOld);
 		}
-		this.computeIndividualPoints(300);
+		this.computeIndividualPoints();
 		this.addMouseMotionListener(handler);
 		this.addMouseListener(handler);
 	}
@@ -376,7 +377,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		}
 	}
 
-	private void computeGraphics(int w, int h) {
+	private void computeGraphics() {
 		if (eval != null) {
 			this.setVisible(true);
 			panel.repaint();
@@ -385,7 +386,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			distortionOld = 0;
 			adjustment = 0;
 			Ellipse2D old = new Ellipse2D.Double(ELLIPSE_X_AXIS, ELLIPSE_Y_AXIS,
-					WIDTH + w, HEIGHT + h);
+					WIDTH, HEIGHT);
 			x1 = (int) old.getCenterX() - PLUS_SIZE;
 			x2 = (int) old.getCenterX() + PLUS_SIZE;
 			y1 = (int) old.getCenterY() - PLUS_SIZE;
@@ -393,19 +394,19 @@ public class GraphicalCoveragePanel extends JPanel {
 			centerX = (int) old.getCenterX();
 			centerY = (int) old.getCenterY();
 			double coverage = ((EvaluatedDescriptionClass) eval).getCoverage();
-			shiftXAxis = (int) Math.round((WIDTH + w) * (1 - coverage));
+			shiftXAxis = (int) Math.round((WIDTH) * (1 - coverage));
 			
 			if (additionalIndividualSize != 0 && ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0 && ((EvaluatedDescriptionClass) eval).getAddition() < 1.0) {
-				distortionOld = (int) Math.round((WIDTH + w) * 0.3);
+				distortionOld = (int) Math.round((WIDTH) * 0.3);
 				Ellipse2D newer = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis,
-						ELLIPSE_Y_AXIS, (WIDTH + w), HEIGHT + h);
+						ELLIPSE_Y_AXIS, (WIDTH), HEIGHT);
 				adjustment = (int) Math.round(newer.getCenterY() / 4);
 			}
-			this.renderPlus(w);
+			this.renderPlus();
 		}
 	}
 
-	private void renderPlus(int w) {
+	private void renderPlus() {
 		if (eval != null) {
 			coveredIndividualSize = ((EvaluatedDescriptionClass) eval)
 					.getCoveredInstances().size();
@@ -418,17 +419,17 @@ public class GraphicalCoveragePanel extends JPanel {
 			shiftNewConceptX = 0;
 			shiftCovered = 0;
 			if (coveredIndividualSize == 0) {
-				shiftNewConcept = (int) Math.round(((WIDTH + w) / 2.0) * newConcepts);
+				shiftNewConcept = (int) Math.round(((WIDTH) / 2.0) * newConcepts);
 			} else if (additionalIndividualSize != coveredIndividualSize) {
-				shiftNewConcept = (int) Math.round(((WIDTH + w) / 2.0)
+				shiftNewConcept = (int) Math.round(((WIDTH) / 2.0)
 						* (1.0 + (1.0 - oldConcepts)));
-				shiftOldConcept = (int) Math.round(((WIDTH + w) / 2.0) * oldConcepts);
-				shiftCovered = (int) Math.round(((WIDTH + w) / 2.0)
+				shiftOldConcept = (int) Math.round(((WIDTH) / 2.0) * oldConcepts);
+				shiftCovered = (int) Math.round(((WIDTH) / 2.0)
 						* (1 - oldConcepts));
 			}
 			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0 && ((EvaluatedDescriptionClass) eval)
 					.getCoverage() == 1.0) {
-				shiftCovered = (int) Math.round(((WIDTH + w) / 2.0) * 0.625);
+				shiftCovered = (int) Math.round(((WIDTH) / 2.0) * 0.625);
 				shiftNewConceptX = shiftCovered;
 				shiftNewConcept = 2 * shiftNewConceptX;
 			}
@@ -478,13 +479,13 @@ public class GraphicalCoveragePanel extends JPanel {
 		}
 	}
 
-	private void computeIndividualPoints(int n) {
+	private void computeIndividualPoints() {
 		if (eval != null) {
 			Set<Individual> posInd = ((EvaluatedDescriptionClass) eval)
 					.getCoveredInstances();
 			int i = 0;
-			double x = random.nextInt(n);
-			double y = random.nextInt(n);
+			double x = random.nextInt(MAX_RANDOM_NUMBER);
+			double y = random.nextInt(MAX_RANDOM_NUMBER);
 			boolean flag = true;
 			for (Individual ind : posInd) {
 				flag = true;
@@ -507,12 +508,12 @@ public class GraphicalCoveragePanel extends JPanel {
 							i++;
 							flag = false;
 
-							x = random.nextInt(n);
-							y = random.nextInt(n);
+							x = random.nextInt(MAX_RANDOM_NUMBER);
+							y = random.nextInt(MAX_RANDOM_NUMBER);
 							break;
 						} else {
-							x = random.nextInt(n);
-							y = random.nextInt(n);
+							x = random.nextInt(MAX_RANDOM_NUMBER);
+							y = random.nextInt(MAX_RANDOM_NUMBER);
 						}
 
 					}
@@ -522,8 +523,8 @@ public class GraphicalCoveragePanel extends JPanel {
 			Set<Individual> posNotCovInd = ((EvaluatedDescriptionClass) eval)
 					.getAdditionalInstances();
 			int j = 0;
-			x = random.nextInt(n);
-			y = random.nextInt(n);
+			x = random.nextInt(MAX_RANDOM_NUMBER);
+			y = random.nextInt(MAX_RANDOM_NUMBER);
 			for (Individual ind : posNotCovInd) {
 				flag = true;
 				if (j < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
@@ -563,12 +564,12 @@ public class GraphicalCoveragePanel extends JPanel {
 							}
 							j++;
 							flag = false;
-							x = random.nextInt(n);
-							y = random.nextInt(n);
+							x = random.nextInt(MAX_RANDOM_NUMBER);
+							y = random.nextInt(MAX_RANDOM_NUMBER);
 							break;
 						} else {
-							x = random.nextInt(n);
-							y = random.nextInt(n);
+							x = random.nextInt(MAX_RANDOM_NUMBER);
+							y = random.nextInt(MAX_RANDOM_NUMBER);
 						}
 
 					}
@@ -580,8 +581,8 @@ public class GraphicalCoveragePanel extends JPanel {
 			notCovInd.removeAll(posInd);
 			notCoveredInd = notCovInd.size();
 			int k = 0;
-			x = random.nextInt(n);
-			y = random.nextInt(n);
+			x = random.nextInt(MAX_RANDOM_NUMBER);
+			y = random.nextInt(MAX_RANDOM_NUMBER);
 			for (Individual ind : notCovInd) {
 				flag = true;
 				if (k < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
@@ -603,12 +604,12 @@ public class GraphicalCoveragePanel extends JPanel {
 							}
 							k++;
 							flag = false;
-							x = random.nextInt(n);
-							y = random.nextInt(n);
+							x = random.nextInt(MAX_RANDOM_NUMBER);
+							y = random.nextInt(MAX_RANDOM_NUMBER);
 							break;
 						} else {
-							x = random.nextInt(n);
-							y = random.nextInt(n);
+							x = random.nextInt(MAX_RANDOM_NUMBER);
+							y = random.nextInt(MAX_RANDOM_NUMBER);
 						}
 
 					}
@@ -685,32 +686,32 @@ public class GraphicalCoveragePanel extends JPanel {
 	}
 
 	/**
-	 * 
-	 * @return
+	  * This method returns how much the old concept must be shifted. 
+	 * @return shift of the old concept
 	 */
 	public int getShiftOldConcept() {
 		return shiftOldConcept;
 	}
 
 	/**
-	 * 
-	 * @return
+	  * This method returns how much the plus in the middle must be shifted. 
+	 * @return shift of the middle plus
 	 */
 	public int getShiftCovered() {
 		return shiftCovered;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This method returns how much the new concept must be shifted. 
+	 * @return shift of the new concept
 	 */
 	public int getShiftNewConcept() {
 		return shiftNewConcept;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This method returns how much the new concept must be shifted. 
+	 * @return shift of the new concept
 	 */
 	public int getShiftNewConceptX() {
 		return shiftNewConceptX;
@@ -731,18 +732,5 @@ public class GraphicalCoveragePanel extends JPanel {
 	 */
 	public EvaluatedDescription getEvaluateddescription() {
 		return eval;
-	}
-	
-	public void resizePanel(int w, int h) {
-		this.setPreferredSize(new Dimension(WIDTH + w, HEIGHT + 100 + h));
-		this.computeGraphics(w, h);
-		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment),
-				ELLIPSE_Y_AXIS, WIDTH + w, HEIGHT + h);
-		newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
-				+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld + w, HEIGHT
-				+ distortionOld + h);
-		this.computeIndividualPoints(300 + w + h);
-		this.repaint();
-
 	}
 }

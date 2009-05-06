@@ -127,13 +127,12 @@ public class DLLearnerView {
 	 * editor.
 	 * 
 	 * @param editor OWLEditorKit
-	 * @param label String
 	 */
 	public DLLearnerView(OWLEditorKit editor) {
 		editorKit = editor;
 		labels = "";
 		model = new DLLearnerModel(editorKit, this);
-		sugPanel = new SuggestClassPanel();
+		sugPanel = new SuggestClassPanel(model, this);
 		learnerPanel = new JPanel();
 		learnerPanel.setLayout(new BorderLayout());
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -191,6 +190,7 @@ public class DLLearnerView {
 	
 	/**
 	 * This Method renders the view of the plugin.
+	 * @param label label if it is an equivalent or superclass
 	 */
 	public void makeView(String label) {
 		run.setEnabled(false);
@@ -282,6 +282,8 @@ public class DLLearnerView {
 		sugPanel.setVisible(true);
 		learnerScroll.setViewportView(learner);
 		this.renderErrorMessage("");
+		this.getSuggestClassPanel().getSuggestModel().clear();
+		this.getSuggestClassPanel().repaint();
 			
 	}
 	
@@ -303,6 +305,10 @@ public class DLLearnerView {
 		}
 	}
 	
+	/**
+	 * This method enables the GraphicalCoveragePanel after a class expression is
+	 * selected from the list.
+	 */
 	public void setGraphicalPanel() {
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(posPanel);
@@ -380,6 +386,9 @@ public class DLLearnerView {
 		return model.getNewOWLDescription();
 	}
 	
+	/**
+	 * This method unsets all results after closing the plugin.
+	 */
 	public void dispose() {
 		this.unsetEverything();
 		sugPanel.getSuggestList().removeAll();
@@ -485,14 +494,26 @@ public class DLLearnerView {
 		setHintMessage(message);
 	}
 	
+	/**
+	 * This method returns the view of the plugin.
+	 * @return Plugin view
+	 */
 	public JComponent getLearnerView() {
 		return learnerScroll;
 	}
 	
+	/**
+	 * This method returns the model of the DL-Learner plugin.
+	 * @return model of the plugin
+	 */
 	public DLLearnerModel getDLLearnerModel() {
 		return model;
 	}
 	
+	/**
+	 * This method returns the thread for initializing the reasoner and reading the ontology.
+	 * @return thread that initializes the reasoner
+	 */
 	public ReadingOntologyThread getReadingOntologyThread() {
 		return readThread;
 	}

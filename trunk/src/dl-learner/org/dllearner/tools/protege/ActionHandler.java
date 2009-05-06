@@ -74,15 +74,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	/**
 	 * This is the constructor for the action handler.
-	 * 
-	 * @param a
-	 *            ActionHandler
 	 * @param m
 	 *            DLLearnerModel
 	 * @param view
 	 *            DLlearner tab
-	 * @param i
-	 *            id if it is a subclass or an equivalent class
 	 * 
 	 */
 	public ActionHandler(DLLearnerModel m, DLLearnerView view) {
@@ -102,7 +97,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		if (z.getActionCommand().equals("suggest equivalent class expression") || z.getActionCommand().equals("suggest super class expression")) {
 			model.setKnowledgeSource();
-			//model.setReasoner();
+			view.getSuggestClassPanel().getSuggestModel().clear();
+			view.getSuggestClassPanel().repaint();
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);

@@ -106,6 +106,10 @@ public class IndividualPoint {
 		return individual;
 	}
 	
+	/**
+	 * This method returns an ellipse of the individual for the GraphicalCoveragePanel.
+	 * @return individual point of the individual
+	 */
 	public Ellipse2D getIndividualPoint() {
 		return circlePoint;
 	}
