@@ -62,6 +62,7 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.options.StringTupleListConfigOption;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -387,6 +388,19 @@ public class Start {
 					ConfigEntry<String> entry = new ConfigEntry<String>(
 							(StringConfigOption) configOption, option.getStringValue());
 					cm.applyConfigEntry(component, entry);
+
+				} else if (configOption instanceof URLConfigOption && option.isStringOption()) {
+
+						ConfigEntry<URL> entry = null;
+						try {
+							entry = new ConfigEntry<URL>(
+									(URLConfigOption) configOption, new URL(option.getStringValue()));
+						} catch (MalformedURLException e) {
+							handleError("The type of conf file entry \"" + option.getFullName()
+									+ "\" is not correct: value \"" + option.getValue()
+									+ "\" not valid a URL!");							
+						}
+						cm.applyConfigEntry(component, entry);
 
 				} else if (configOption instanceof IntegerConfigOption && option.isIntegerOption()) {
 

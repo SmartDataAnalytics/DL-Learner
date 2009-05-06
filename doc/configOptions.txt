@@ -196,12 +196,6 @@ allowed values: boolean
 default value: true
 conf file usage: fastInstanceChecker.defaultNegation = true;
 
-option name: forallRetrievalSemantics
-description: This option controls how to interpret the all quantifier in orall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C.
-allowed values: String [domain, forallExists, standard] 
-default value: forallExists
-conf file usage: fastInstanceChecker.forallRetrievalSemantics = forallExists;
-
 
 component: fast retrieval reasoner (org.dllearner.reasoning.FastRetrievalReasoner)
 ==================================================================================
@@ -225,160 +219,124 @@ conf file usage: owlAPIReasoner.reasonerType = pellet;
 * Learning Problems *
 *********************
 
-component: unnamed component (org.dllearner.learningproblems.ClassLearningProblem)
-==================================================================================
+component: class learning problem (org.dllearner.learningproblems.ClassLearningProblem)
+=======================================================================================
 
 conf file usage: problem = classLearning;
 
 option name: classToDescribe
 description: class of which a description should be learned
-allowed values: String [] 
+allowed values: URL
 default value: not set (mandatory)
 conf file usage: classLearning.classToDescribe = ;
 
 option name: type
-description: Whether to learn an equivalence class or super class axiom.
+description: whether to learn an equivalence class or super class axiom
 allowed values: String [equivalence, superClass] 
 default value: equivalence
 conf file usage: classLearning.type = equivalence;
 
 
-component: two valued inclusion learning problem (org.dllearner.learningproblems.PosNegInclusionLP)
-===================================================================================================
+component: pos neg learning problem (org.dllearner.learningproblems.PosNegLPStandard)
+=====================================================================================
 
-conf file usage: problem = posNegInclusionLP;
-
-option name: positiveExamples
-description: positive examples
-allowed values: Set<String>
-default value: not set (mandatory)
-conf file usage: posNegInclusionLP.positiveExamples = ;
-
-option name: negativeExamples
-description: negative examples
-allowed values: Set<String>
-default value: not set (mandatory)
-conf file usage: posNegInclusionLP.negativeExamples = ;
-
-option name: useRetrievalForClassficiation
-description: Specifies whether to use retrieval or instance checks for testing a concept.
-allowed values: boolean
-default value: false
-conf file usage: posNegInclusionLP.useRetrievalForClassficiation = false;
-
-option name: percentPerLenghtUnit
-description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
-allowed values: double  min 0.0 max 1.0
-default value: 0.05
-conf file usage: posNegInclusionLP.percentPerLenghtUnit = 0.05;
-
-option name: useMultiInstanceChecks
-description: See UseMultiInstanceChecks enum.
-allowed values: String [never, oneCheck, twoChecks] 
-default value: twoChecks
-conf file usage: posNegInclusionLP.useMultiInstanceChecks = twoChecks;
-
-
-component: two valued definition learning problem (org.dllearner.learningproblems.PosNegLPStandard)
-===================================================================================================
-
-conf file usage: problem = posNegDefinitionLP;
+conf file usage: problem = posNegLPStandard;
 
 option name: positiveExamples
 description: positive examples
 allowed values: Set<String>
 default value: not set (mandatory)
-conf file usage: posNegDefinitionLP.positiveExamples = ;
+conf file usage: posNegLPStandard.positiveExamples = ;
 
 option name: negativeExamples
 description: negative examples
 allowed values: Set<String>
 default value: not set (mandatory)
-conf file usage: posNegDefinitionLP.negativeExamples = ;
+conf file usage: posNegLPStandard.negativeExamples = ;
 
 option name: useRetrievalForClassficiation
 description: Specifies whether to use retrieval or instance checks for testing a concept.
 allowed values: boolean
 default value: false
-conf file usage: posNegDefinitionLP.useRetrievalForClassficiation = false;
+conf file usage: posNegLPStandard.useRetrievalForClassficiation = false;
 
 option name: percentPerLenghtUnit
 description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
 allowed values: double  min 0.0 max 1.0
 default value: 0.05
-conf file usage: posNegDefinitionLP.percentPerLenghtUnit = 0.05;
+conf file usage: posNegLPStandard.percentPerLenghtUnit = 0.05;
 
 option name: useMultiInstanceChecks
 description: See UseMultiInstanceChecks enum.
 allowed values: String [never, oneCheck, twoChecks] 
 default value: twoChecks
-conf file usage: posNegDefinitionLP.useMultiInstanceChecks = twoChecks;
+conf file usage: posNegLPStandard.useMultiInstanceChecks = twoChecks;
 
 
 component: three valued definition learning problem (org.dllearner.learningproblems.PosNegLPStrict)
 ===================================================================================================
 
-conf file usage: problem = posNegDefinitionLPStrict;
+conf file usage: problem = posNegLPStrict;
 
 option name: positiveExamples
 description: positive examples
 allowed values: Set<String>
 default value: not set (mandatory)
-conf file usage: posNegDefinitionLPStrict.positiveExamples = ;
+conf file usage: posNegLPStrict.positiveExamples = ;
 
 option name: negativeExamples
 description: negative examples
 allowed values: Set<String>
 default value: not set (mandatory)
-conf file usage: posNegDefinitionLPStrict.negativeExamples = ;
+conf file usage: posNegLPStrict.negativeExamples = ;
 
 option name: useRetrievalForClassficiation
 description: Specifies whether to use retrieval or instance checks for testing a concept.
 allowed values: boolean
 default value: false
-conf file usage: posNegDefinitionLPStrict.useRetrievalForClassficiation = false;
+conf file usage: posNegLPStrict.useRetrievalForClassficiation = false;
 
 option name: percentPerLenghtUnit
 description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
 allowed values: double  min 0.0 max 1.0
 default value: 0.05
-conf file usage: posNegDefinitionLPStrict.percentPerLenghtUnit = 0.05;
+conf file usage: posNegLPStrict.percentPerLenghtUnit = 0.05;
 
 option name: useMultiInstanceChecks
 description: See UseMultiInstanceChecks enum.
 allowed values: String [never, oneCheck, twoChecks] 
 default value: twoChecks
-conf file usage: posNegDefinitionLPStrict.useMultiInstanceChecks = twoChecks;
+conf file usage: posNegLPStrict.useMultiInstanceChecks = twoChecks;
 
 option name: penaliseNeutralExamples
 description: if set to true neutral examples are penalised
 allowed values: boolean
 default value: not set
-conf file usage: posNegDefinitionLPStrict.penaliseNeutralExamples = ;
+conf file usage: posNegLPStrict.penaliseNeutralExamples = ;
 
 option name: accuracyPenalty
 description: penalty for pos/neg examples which are classified as neutral
 allowed values: double 
 default value: 1.0
-conf file usage: posNegDefinitionLPStrict.accuracyPenalty = 1.0;
+conf file usage: posNegLPStrict.accuracyPenalty = 1.0;
 
 option name: errorPenalty
 description: penalty for pos. examples classified as negative or vice versa
 allowed values: double 
 default value: 3.0
-conf file usage: posNegDefinitionLPStrict.errorPenalty = 3.0;
+conf file usage: posNegLPStrict.errorPenalty = 3.0;
 
 
-component: positive only definition learning problem (org.dllearner.learningproblems.PosOnlyLP)
-===============================================================================================
+component: pos only learning problem (org.dllearner.learningproblems.PosOnlyLP)
+===============================================================================
 
-conf file usage: problem = null;
+conf file usage: problem = posOnlyLP;
 
 option name: positiveExamples
 description: positive examples
 allowed values: Set<String>
 default value: not set (mandatory)
-conf file usage: null.positiveExamples = ;
+conf file usage: posOnlyLP.positiveExamples = ;
 
 
 ***********************
@@ -408,11 +366,11 @@ component: random guesser learning algorithm (org.dllearner.algorithms.RandomGue
 
 conf file usage: algorithm = random;
 
-option name: numberOfTrees
+option name: numberOfGuesses
 description: number of randomly generated concepts/trees
 allowed values: int 
-default value: 5
-conf file usage: random.numberOfTrees = 5;
+default value: 100
+conf file usage: random.numberOfGuesses = 100;
 
 option name: maxDepth
 description: maximum depth of generated concepts/trees
@@ -465,8 +423,8 @@ conf file usage: celoe.cardinalityLimit = 5;
 option name: useNegation
 description: specifies whether negation is used in the learning algorothm
 allowed values: boolean
-default value: true
-conf file usage: celoe.useNegation = true;
+default value: false
+conf file usage: celoe.useNegation = false;
 
 option name: useBooleanDatatypes
 description: specifies whether boolean datatypes are used in the learning algorothm
@@ -495,8 +453,14 @@ conf file usage: celoe.noisePercentage = 0.0;
 option name: maxDepth
 description: maximum depth of description
 allowed values: int 
-default value: 4
-conf file usage: celoe.maxDepth = 4;
+default value: 7
+conf file usage: celoe.maxDepth = 7;
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
+allowed values: int  min 1 max 100
+default value: 10
+conf file usage: celoe.maxNrOfResults = 10;
 
 
 component: standard EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithm)
@@ -953,12 +917,6 @@ description: specifies whether to check for equivalence (i.e. discard equivalent
 allowed values: boolean
 default value: false
 conf file usage: refexamples.usePropernessChecks = false;
-
-option name: maxPosOnlyExpansion
-description: specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate
-allowed values: int 
-default value: 4
-conf file usage: refexamples.maxPosOnlyExpansion = 4;
 
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
