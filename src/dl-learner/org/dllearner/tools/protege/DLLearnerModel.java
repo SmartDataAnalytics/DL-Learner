@@ -162,8 +162,6 @@ public class DLLearnerModel implements Runnable{
 	 * 
 	 * @param editorKit
 	 *            Editor Kit to get the currently loaded Ontology
-	 * @param id
-	 *            String if it learns a subclass or a superclass.
 	 * @param view
 	 *            current view of the DL-Learner tab
 	 */
@@ -181,6 +179,10 @@ public class DLLearnerModel implements Runnable{
 		sources = new HashSet<KnowledgeSource>();
 	}
 	
+	/**
+	 * Sets the ID if an equivalent or a superclass must be suggested.
+	 * @param d ID if it is an equivalent or a superclass
+	 */
 	public void setID(String d) {
 		this.id = d;
 	}
@@ -495,12 +497,29 @@ public class DLLearnerModel implements Runnable{
 		return individual;
 	}
 	
+	/**
+	 * This method returns if the ID is an equivalent or a superclass.
+	 * @return id if it is an equivalent or superclass
+	 */
 	public String getID() {
 		return id;
 	}
 	
+	/**
+	 * Returns boolean if reasoner is allready set.
+	 * @return isReasonerSet
+	 */
 	public boolean isReasonerSet() {
 		return isReasonerSet;
+	}
+	
+	/**
+	 * This method returns the currently selected class description as an evaluated description.
+	 * @param index which class descriptions is selected
+	 * @return selected class description
+	 */
+	public EvaluatedDescription getCurrentlySelectedClassDescription(int index) {
+		return evalDescriptions.get(index);
 	}
 }
 

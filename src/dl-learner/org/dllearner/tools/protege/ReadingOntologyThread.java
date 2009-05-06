@@ -54,7 +54,6 @@ public class ReadingOntologyThread extends Thread {
 	/**
 	 * This is the constructor of the ReadingOntologyThread.
 	 * @param editorKit OWLEditorKit
-	 * @param frame OWLFrame
 	 * @param v DL-Learner view
 	 * @param m DL-Learner model
 	 */
@@ -64,10 +63,18 @@ public class ReadingOntologyThread extends Thread {
 		this.model = m;
 	}
 	
+	/**
+	 * This method sets the view of the DL-Learner plugin.
+	 * @param v DLLearnerView
+	 */
 	public void setDLLearnerView(DLLearnerView v) {
 		this.view = v;
 	}
 	
+	/**
+	 * This method sets the model of the DL-Learner plugin.
+	 * @param m DLLearnerModel
+	 */
 	public void setDLLearnerModel(DLLearnerModel m) {
 		this.model = m;
 	}
@@ -104,7 +111,6 @@ public class ReadingOntologyThread extends Thread {
 										individual = reasoner.getIndividuals(concept);
 										model.setIndividuals(individual);
 										model.setHasIndividuals(hasIndividuals);
-										System.out.println("current: " + currentConcept);
 										model.setCurrentConcept(currentConcept);
 										view.getRunButton().setEnabled(true);
 										break;
@@ -192,6 +198,10 @@ public class ReadingOntologyThread extends Thread {
 		}
 	}
 	
+	/**
+	 * This method returns the NamedClass for the currently selected class.
+	 * @return NamedClass of the currently selected class
+	 */
 	public NamedClass getCurrentConcept() {
 		return currentConcept;
 	}

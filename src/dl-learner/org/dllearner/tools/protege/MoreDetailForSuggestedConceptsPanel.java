@@ -156,12 +156,25 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		}
 
 
+	/**
+	 * Returns the graphical coverage panel.
+	 * @return graphical coverage panel
+	 */
 	public GraphicalCoveragePanel getGraphicalCoveragePanel() {
 		return p;
 	}
+	
+	/**
+	 * Returns the concept panel.
+	 * @return concept panel
+	 */
 	public JPanel getConceptPanel() {
 		return conceptPanel;
 	}
+	
+	/**
+	 * Unsets the panel after plugin is closed.
+	 */
 	public void unsetPanel() {
 		unsetEverything();
 		conceptPanel.removeAll();
@@ -181,5 +194,4 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 
 		repaint();
 	}
-	
 }

@@ -49,9 +49,9 @@ public class OptionPanel extends JPanel {
 	public OptionPanel() {
 		setLayout(new BorderLayout());
 		labelPanel = new JPanel();
-		labelPanel.setLayout(new GridLayout(0,1));
+		labelPanel.setLayout(new GridLayout(0, 1));
 		sliderPanel = new JPanel();
-		sliderPanel.setLayout(new GridLayout(0,1));
+		sliderPanel.setLayout(new GridLayout(0, 1));
 		minAccuracyLabel = new JLabel("noise in %:    ");
 		maxExecutionTimeLabel = new JLabel("maximum execution time:    ");
 		nrOfConceptsLabel = new JLabel("max. number of results:    ");
