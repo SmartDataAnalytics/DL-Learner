@@ -21,6 +21,11 @@ package org.dllearner.scripts.matching;
 
 import java.net.URI;
 
+import org.dllearner.kb.sparql.SparqlQuery;
+
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+
 /**
  * A geo location in DBpedia.
  * 
@@ -38,6 +43,40 @@ public class DBpediaPoint extends Point {
 	// decimal count in latitude value => indicator for size of object (no or low
 	// number of decimals indicates a large object)
 	private int decimalCount;
+	
+	
+	/**
+	 * Constructs a DBpedia point using SPARQL.
+	 * @param uri URI of DBpedia resource.
+	 */
+	public DBpediaPoint(URI uri) {
+		super(0,0);
+		this.uri = uri;
+		
+		// construct DBpedia query
+		String queryStr = "SELECT ?lat, ?long, ?label, ?type  WHERE {"; 
+		queryStr += "<"+uri+"> <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .";
+		queryStr += "<"+uri+"> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .";
+		queryStr += "?object rdfs:label ?label . ";
+		queryStr += "OPTIONAL { <"+uri+" rdf:type ?type . ";
+		queryStr += "FILTER (!(?type LIKE <http://dbpedia.org/ontology/Resource>)) .";
+		queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%>) .";
+		queryStr += "} }";
+		
+		SparqlQuery query = new SparqlQuery(queryStr, DBpediaLinkedGeoData.dbpediaEndpoint);
+		ResultSet rs = query.send();
+		classes = new String[] { };
+		int count = 0;
+		
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.nextSolution();
+			geoLat = qs.getLiteral("lat").getDouble();
+			geoLong = qs.getLiteral("long").getDouble();
+			label = qs.getLiteral("label").getString();
+			classes[count] = qs.get("type").toString();
+			count++;
+		}
+	}
 	
 	public DBpediaPoint(URI uri, String label, String[] classes, double geoLat, double geoLong, int decimalCount) {
 		super(geoLat,geoLong);
