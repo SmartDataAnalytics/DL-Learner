@@ -52,7 +52,7 @@ public class DBpediaLinkedGeoData {
 
 	// chose between nt and dat
 	private static String dbpediaFileFormat = "dat";
-	private static File dbpediaFile =  new File("log/DBpedia_POIs." + dbpediaFileFormat);	
+	static File dbpediaFile =  new File("log/DBpedia_POIs." + dbpediaFileFormat);	
 	private static boolean regenerateFile = false;
 	
 	private static File matchingFile = new File("log/DBpedia_GeoData_Links.nt");
@@ -60,7 +60,7 @@ public class DBpediaLinkedGeoData {
 	private static double scoreThreshold = 0.8;
 	private static StringDistance distance = new Jaro();
 	
-	private static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
+	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
 	
 	// read in DBpedia ontology such that we perform taxonomy reasoning
@@ -257,7 +257,7 @@ public class DBpediaLinkedGeoData {
 		fos.close();		
 	}
 	
-	private static URI findGeoDataMatch(DBpediaPoint dbpediaPoint) throws IOException {
+	public static URI findGeoDataMatch(DBpediaPoint dbpediaPoint) throws IOException {
 		
 		// 1 degree is about 111 km (depending on the specific point)
 		int distanceThresholdMeters = 1000;
