@@ -60,6 +60,7 @@ public class DBpediaLinkedGeoData {
 	private static double scoreThreshold = 0.8;
 	private static StringDistance distance = new Jaro();
 	
+//	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointDBpedia();
 	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
 	
@@ -319,6 +320,8 @@ public class DBpediaLinkedGeoData {
 					
 					// perform string similarity
 					// (we can use a variety of string matching heuristics)
+//					System.out.println(label);
+//					System.out.println(dbpediaPoint);
 					double score = distance.score(label, dbpediaPoint.getLabel());
 					if(score > highestScore) {
 						highestScore = score;
