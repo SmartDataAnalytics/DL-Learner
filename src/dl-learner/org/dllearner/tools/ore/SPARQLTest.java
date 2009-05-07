@@ -22,12 +22,21 @@ package org.dllearner.tools.ore;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
-import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
 
 /**
  * Test class for SPARQL mode.
@@ -38,6 +47,7 @@ public class SPARQLTest{
 	
 	@SuppressWarnings("unused")
 	public static void main(String[] args){
+		ComponentManager cm = ComponentManager.getInstance();
 	
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
 		
@@ -49,26 +59,33 @@ public class SPARQLTest{
 		
 		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(posExamples, task, new TreeSet<String>());
 		SortedSet<String> negExamples = neg.getNegativeExamples(20);
+		System.out.println(negExamples);
 		
-		LearnSPARQLConfiguration conf = new LearnSPARQLConfiguration();
 		
-		// TODO Please update class to either use ComponentManager or 
-		// add a convenience constructor to org.dllearner.utilities.components.ComponentCombo 
 		
-//		LearnSparql learn = new LearnSparql(conf);
 		
-		LearningAlgorithm la = null;
-		
-//			try {
-		//la = learn.learn(posExamples, negExamples, OWLAPIReasoner.class);
-//			} catch (ComponentInitException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (LearningProblemUnsupportedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-		
-		la.start();
+		try {
+			String example = "http://dbpedia.org/resource/Angela_Merkel";
+			
+			
+			
+			KnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
+			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
+			ks.init();
+			ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+			reasoner.init();
+			LearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+			lp.init();
+			LearningAlgorithm la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+			la.init();
+					
+			la.start();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
