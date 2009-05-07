@@ -333,11 +333,9 @@ public class RootFinder implements OWLDescriptionVisitor{
 			OWLReasonerFactory factory = new PelletReasonerFactory();
 			OWLReasoner reasoner = factory.createReasoner(manager);
 			reasoner.loadOntologies(Collections.singleton(ontology));
-			UnsatRootClassesFinder strReasoner = new UnsatRootClassesFinder(manager, reasoner, factory);
-			System.out.println(strReasoner.getRootUnsatisfiableClasses());
+			RootFinder strReasoner = new RootFinder(manager, reasoner, factory);
+			System.out.println(strReasoner.getRootClasses());
 		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		} catch (ExplanationException e) {
 			e.printStackTrace();
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
