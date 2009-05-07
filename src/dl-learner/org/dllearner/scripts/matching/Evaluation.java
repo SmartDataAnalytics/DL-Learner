@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 /**
  * Performs an evaluation of a matching method method by analising it 
  * on a test set. 
@@ -44,6 +47,8 @@ public class Evaluation {
 	private double precision;
 	private double recall;
 
+	private static Logger logger = Logger.getLogger(Evaluation.class);
+	
 	// map from DBpedia to LinkedGeoData
 	public Evaluation(Map<URI,URI> testMatches) throws IOException {
 		
@@ -63,7 +68,15 @@ public class Evaluation {
 			// memory to efficiently evaluate a lot of parameter settings without
 			// requiring to perform slow HTTP or SPARQL requests
 			
-			DBpediaPoint dbpediaPoint = new DBpediaPoint(match.getKey());
+			logger.trace("searching match for " + match.getKey() + "...");
+			
+			DBpediaPoint dbpediaPoint = null;
+			try {
+				dbpediaPoint = new DBpediaPoint(match.getKey());
+			} catch (Exception e) {
+				logger.debug(e.getMessage());
+				continue;
+			}
 			URI matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
 			
 			URI testURI = match.getValue();
@@ -71,12 +84,15 @@ public class Evaluation {
 			// no match found
 			if(matchedURI == null) {
 				noMatchCount++;
+				logger.trace("  ... no match found");
 			// correct match found
 			} else if(matchedURI.equals(testURI)) {
 				correctMatchCount++;
+				logger.trace("  ... " + testURI + " correctly detected");
 			// incorrect match found
 			} else {
 				incorrectMatchCount++;
+				logger.trace("  ... " + matchedURI + " detected, but " + testURI + " is correct");
 			}
 			
 			tests++;
@@ -118,6 +134,8 @@ public class Evaluation {
 	}
 
 	public static void main(String args[]) throws IOException {
+		
+		Logger.getRootLogger().setLevel(Level.TRACE);
 		// test file
 		String testFile = "log/geodata/owlsameas_en.dat";
 		// map for collecting matches
@@ -126,8 +144,13 @@ public class Evaluation {
 		BufferedReader br = new BufferedReader(new FileReader(testFile));
 		String line;
 		while ((line = br.readLine()) != null) {
-			String[] tmp = line.split(" ");
-			matches.put(URI.create(tmp[1]), URI.create(tmp[0]));
+			String[] tmp = line.split("\t");
+//			System.out.println(line);
+//			for(String test : tmp) {
+//				System.out.println(test);
+//			}
+			
+			matches.put(URI.create(tmp[1]), URI.create(tmp[0] + "#id"));
 		}
 		// perform evaluation and print results
 		Evaluation eval = new Evaluation(matches);

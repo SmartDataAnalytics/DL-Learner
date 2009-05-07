@@ -20,6 +20,8 @@
 package org.dllearner.scripts.matching;
 
 import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.dllearner.kb.sparql.SparqlQuery;
 
@@ -49,7 +51,7 @@ public class DBpediaPoint extends Point {
 	 * Constructs a DBpedia point using SPARQL.
 	 * @param uri URI of DBpedia resource.
 	 */
-	public DBpediaPoint(URI uri) {
+	public DBpediaPoint(URI uri) throws Exception {
 		super(0,0);
 		this.uri = uri;
 		
@@ -57,8 +59,8 @@ public class DBpediaPoint extends Point {
 		String queryStr = "SELECT ?lat, ?long, ?label, ?type  WHERE {"; 
 		queryStr += "<"+uri+"> <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .";
 		queryStr += "<"+uri+"> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .";
-		queryStr += "?object rdfs:label ?label . ";
-		queryStr += "OPTIONAL { <"+uri+" rdf:type ?type . ";
+		queryStr += "<"+uri+"> rdfs:label ?label . ";
+		queryStr += "OPTIONAL { <"+uri+"> rdf:type ?type . ";
 		queryStr += "FILTER (!(?type LIKE <http://dbpedia.org/ontology/Resource>)) .";
 		queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%>) .";
 		queryStr += "} }";
@@ -66,16 +68,23 @@ public class DBpediaPoint extends Point {
 		SparqlQuery query = new SparqlQuery(queryStr, DBpediaLinkedGeoData.dbpediaEndpoint);
 		ResultSet rs = query.send();
 		classes = new String[] { };
-		int count = 0;
+		List<String> classList = new LinkedList<String>();
+		
+		if(!rs.hasNext()) {
+			throw new Exception("cannot construct point for " + uri + " (latitude/longitude missing?)");
+		}
 		
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.nextSolution();
 			geoLat = qs.getLiteral("lat").getDouble();
 			geoLong = qs.getLiteral("long").getDouble();
 			label = qs.getLiteral("label").getString();
-			classes[count] = qs.get("type").toString();
-			count++;
+			if(qs.contains("type")) {
+				classList.add(qs.get("type").toString());
+			}
 		}
+		
+		classes = classList.toArray(classes);
 	}
 	
 	public DBpediaPoint(URI uri, String label, String[] classes, double geoLat, double geoLong, int decimalCount) {
