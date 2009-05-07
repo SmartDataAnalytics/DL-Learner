@@ -77,7 +77,13 @@ public class DBpediaPoint extends Point {
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.nextSolution();
 			geoLat = qs.getLiteral("lat").getDouble();
+			if(((Double)geoLat).toString().contains("E")) {
+				geoLat = 0.0;
+			}
 			geoLong = qs.getLiteral("long").getDouble();
+			if(((Double)geoLong).toString().contains("E")) {
+				geoLong = 0.0;
+			}	
 			label = qs.getLiteral("label").getString();
 			if(qs.contains("type")) {
 				classList.add(qs.get("type").toString());
