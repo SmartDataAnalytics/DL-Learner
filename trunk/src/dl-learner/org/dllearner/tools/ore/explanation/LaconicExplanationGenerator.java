@@ -119,14 +119,14 @@ public class LaconicExplanationGenerator
 	    	System.out.println("\t ***** No change in ontology. Early termination.");
 	    	break;
 	    }
-	   
+//	    man2.saveOntology(extendedOnt, URI.create("file:/home/lorenz/neu.owl"));
 	    axiomsInPreviousOntology.clear();
 	    axiomsInPreviousOntology.addAll(extendedOnt.getLogicalAxioms());
 	    Set<Set<OWLAxiom>> allPrevJustsCopy = new HashSet<Set<OWLAxiom>>(allPreviouslyFoundJustifications);
 	   
-	    
+	   
 	    Set<OWLOntology> ont2 = new HashSet<OWLOntology>();
-	    ont2.add(extendedOnt);
+	    ont2.add(extendedOnt); 
 	    PelletExplanation expGen = new PelletExplanation(man2, ont2);
 	    Set<Set<OWLAxiom>> currentJustifications = expGen.getEntailmentExplanations((OWLAxiom)entailment);
 	    
