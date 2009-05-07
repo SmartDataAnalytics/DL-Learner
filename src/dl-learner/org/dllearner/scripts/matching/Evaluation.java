@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 public class Evaluation {
 
 	private int tests;
+	private int discarded;
 	private int noMatchCount;
 	private int correctMatchCount;
 	private int incorrectMatchCount;
@@ -53,6 +54,7 @@ public class Evaluation {
 	public Evaluation(Map<URI,URI> testMatches) throws IOException {
 		
 		tests = 0;
+		discarded = 0;
 		noMatchCount = 0;
 		correctMatchCount = 0;
 		incorrectMatchCount = 0;
@@ -75,6 +77,7 @@ public class Evaluation {
 				dbpediaPoint = new DBpediaPoint(match.getKey());
 			} catch (Exception e) {
 				logger.debug(e.getMessage());
+				discarded++;
 				continue;
 			}
 			URI matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
@@ -133,6 +136,10 @@ public class Evaluation {
 		return tests;
 	}
 
+	public int getDiscarded() {
+		return discarded;
+	}	
+	
 	public static void main(String args[]) throws IOException {
 		
 		Logger.getRootLogger().setLevel(Level.TRACE);
@@ -154,6 +161,7 @@ public class Evaluation {
 		}
 		// perform evaluation and print results
 		Evaluation eval = new Evaluation(matches);
+		System.out.println(eval.getTests() + " points tested (" + eval.getDiscarded() + " discarded)");
 		System.out.println("precision: " + eval.getPrecision());
 		System.out.println("recall: " + eval.getRecall());
 	}
