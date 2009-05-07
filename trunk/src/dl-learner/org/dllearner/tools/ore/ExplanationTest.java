@@ -15,19 +15,23 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
+import com.clarkparsia.explanation.PelletExplanation;
+import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
+
 
 @SuppressWarnings("unused")
 public class ExplanationTest {
 
 //	private static final String	file	= "file:examples/ore/inconsistent.owl";
-	private static final String	file	= "file:examples/ore/buggyPolicy.owl";
+	private static final String	file	= "file:examples/ore/koala.owl";
 	private static final String	NS		= "http://cohse.semanticweb.org/ontologies/people#";
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		/*
+		
+		
 			try {
 				PelletExplanation.setup();
 				
@@ -94,8 +98,8 @@ public class ExplanationTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			*/
-		}
+			
+	}
 		
 }
 
