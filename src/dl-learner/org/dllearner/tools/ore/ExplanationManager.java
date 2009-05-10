@@ -18,7 +18,10 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
@@ -29,7 +32,7 @@ import uk.ac.manchester.cs.owl.explanation.ordering.ExplanationTree;
 
 import com.clarkparsia.explanation.PelletExplanation;
 
-public class ExplanationManager {
+public class ExplanationManager implements OWLOntologyChangeListener{
 
 	private static ExplanationManager instance;
 	
@@ -43,6 +46,9 @@ public class ExplanationManager {
 	private RootFinder rootFinder;
 	private Map<OWLClass, Set<Set<OWLAxiom>>> regularExplanationCache;
 	private Map<OWLClass, Set<Set<OWLAxiom>>> laconicExplanationCache;
+	private Set<OWLClass> unsatClasses;
+	private Set<OWLClass> rootClasses;
+	boolean ontologyChanged = true;
 	
 	
 	private ExplanationManager(String ontPath){
@@ -51,16 +57,21 @@ public class ExplanationManager {
 		
 		try {
 			manager = OWLManager.createOWLOntologyManager();
+			manager.addOntologyChangeListener(this);
 			dataFactory = manager.getOWLDataFactory();
 			ontology = manager.loadOntology(URI.create(ontPath));
 			reasonerFactory = new PelletReasonerFactory();
 			reasoner = reasonerFactory.createReasoner(manager);
 			reasoner.loadOntology(ontology);
 			reasoner.classify();
+			
 			rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
 			
 			regularExpGen = new PelletExplanation(manager, Collections.singleton(ontology));
 			laconicExpGen = new LaconicExplanationGenerator(manager, reasonerFactory, Collections.singleton(ontology));
+			
+			rootClasses = new HashSet<OWLClass>();
+			unsatClasses = new HashSet<OWLClass>();
 		} catch (OWLOntologyCreationException e) {
 			
 			e.printStackTrace();
@@ -74,13 +85,27 @@ public class ExplanationManager {
 		return instance;
 	}
 	
+	
 	public Set<OWLClass> getUnsatisfiableClasses(){
-		return reasoner.getInconsistentClasses();
+		computeRootUnsatisfiableClasses();
+		return unsatClasses;
+	}
+	
+	public Set<OWLClass> getRootUnsatisfiableClasses(){
+		computeRootUnsatisfiableClasses();
+		return rootClasses;
 	}
 	
 		
-	public Set<OWLClass> getRootUnsatisfiableClasses(){
-		return rootFinder.getRootClasses();
+	public void computeRootUnsatisfiableClasses(){
+		if(ontologyChanged){
+			rootClasses.clear();
+			unsatClasses.clear();
+			unsatClasses.addAll(reasoner.getInconsistentClasses());
+			rootClasses.addAll(rootFinder.getRootClasses());
+			ontologyChanged = false;
+		}
+		
 	}
 	
 	public Set<Set<OWLAxiom>> getUnsatisfiableExplanations(OWLClass unsat){
@@ -148,5 +173,12 @@ public class ExplanationManager {
 			orderedExplanations.add(ordering);
 		}
 		return orderedExplanations;
+	}
+
+	@Override
+	public void ontologiesChanged(List<? extends OWLOntologyChange> arg0)
+			throws OWLException {
+		ontologyChanged = true;
+		
 	}
 }

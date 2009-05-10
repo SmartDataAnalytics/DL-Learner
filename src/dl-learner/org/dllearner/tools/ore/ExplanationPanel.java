@@ -1,17 +1,23 @@
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,7 +34,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 	private JSplitPane splitPane;
 	private JScrollPane listScrollPane;
 	private JScrollPane explanationsScrollPane;
-	private JPanel explanationsPanel;
+	private JComponent explanationsPanel;
 	private JPanel buttonExplanationsPanel;
 	private JPanel buttonPanel;
 	private ButtonGroup explanationType;
@@ -49,6 +55,8 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 		
 		this.manager = manager;
 		
+		setLayout(new BorderLayout());
+		
 		Dimension minimumSize = new Dimension(400, 400);
 		
 		tableRenderer = new OWLSyntaxTableCellRenderer();
@@ -56,16 +64,36 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 		
 		
 		
-		unsatList = new JXList(manager.getUnsatisfiableClasses().toArray());
+
+		DefaultListModel model = new DefaultListModel();
+		for(OWLClass root : manager.getRootUnsatisfiableClasses()){
+			model.addElement(root);
+		}
+		for(OWLClass unsat : manager.getUnsatisfiableClasses()){
+			if(!model.contains(unsat)){
+				model.addElement(unsat);
+			}
+		}
+		
+		unsatList = new JXList(model);
+		
 		unsatList.addListSelectionListener(this);
 		unsatList.setCellRenderer(listRenderer);
 		listScrollPane = new JScrollPane(unsatList);
 		listScrollPane.setPreferredSize(minimumSize);
 				
-		explanationsPanel = new JPanel();
-		explanationsPanel.setLayout(new GridLayout(0,1));
-		explanationsScrollPane = new JScrollPane(explanationsPanel);
+		explanationsPanel = new Box(1);
+		
+		
+		JPanel pan = new JPanel(new BorderLayout());
+		pan.add(explanationsPanel, BorderLayout.NORTH);
+		explanationsScrollPane = new JScrollPane(pan);
 		explanationsScrollPane.setPreferredSize(minimumSize);
+		explanationsScrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		explanationsScrollPane.getViewport().setOpaque(false);
+        explanationsScrollPane.getViewport().setBackground(null);
+        explanationsScrollPane.setOpaque(false);
+		
 		
 		regularButton = new JRadioButton("regular", true);
 		regularButton.setActionCommand("regular");
@@ -88,10 +116,12 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollPane, buttonExplanationsPanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
+		splitPane.setBorder(null);
 		
 		
 		add(splitPane);
 	}
+	
 	
 	private void addExplanationTable(List<OWLAxiom> explanation, int number){
 		
@@ -128,7 +158,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 //		tablePanel.setPreferredSize(new Dimension(300, 300));
 //		tablePanel.setBorder(BorderFactory.createTitledBorder("explanation " + number));
 		
-		explanationsPanel.add(new JScrollPane(expTable));
+		explanationsPanel.add(new ExplanationTablePanel(expTable, number));
 		
 	}
 	
@@ -143,6 +173,9 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 			addExplanationTable(explanation, counter);
 			counter++;
 		}
+		explanationsPanel.add(Box.createVerticalStrut(10));
+		explanationsPanel.add(new JSeparator());
+		explanationsPanel.add(Box.createVerticalStrut(10));
 		this.updateUI();
 	}
 	
@@ -153,6 +186,9 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 			addExplanationTable(explanation, counter);
 			counter++;
 		}
+		explanationsPanel.add(Box.createVerticalStrut(10));
+		explanationsPanel.add(new JSeparator());
+		explanationsPanel.add(Box.createVerticalStrut(10));
 		this.updateUI();
 	}
 	
@@ -185,7 +221,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener, A
 	
 	public static void main(String[] args){
 		
-		String file = "file:examples/ore/tambis.owl";
+		String file = "file:examples/ore/miniEconomy.owl";
 		
 		ExplanationManager manager = ExplanationManager.getExplanationManager(file);
 		ExplanationPanel panel = new ExplanationPanel(manager);
