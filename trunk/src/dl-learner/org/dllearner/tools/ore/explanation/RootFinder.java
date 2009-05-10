@@ -91,7 +91,7 @@ public class RootFinder implements OWLDescriptionVisitor{
 //        		get(par, parent2Childs).add(child);
 //        	}
 //        }
-		return rootClasses;
+		return Collections.unmodifiableSet(rootClasses);
 	}
 	
 	private void computePossibleRoots(){
