@@ -175,7 +175,7 @@ public class ReadingOntologyThread extends Thread {
 			model.setReasoner();
 		}
 		reasoner = model.getReasoner();
-		isInconsistent = false;
+		isInconsistent = view.getIsInconsistent();
 		if(!isInconsistent) {
 			this.checkURI();
 			this.setPositiveConcept();
