@@ -228,13 +228,14 @@ public class DLLearnerModel implements Runnable{
 			reasoner.isSatisfiable();
 			view.setIsInconsistent(false);
 			isReasonerSet = true;
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			System.out.println("fehler!!!!!!!!!");	
-			e.printStackTrace();
-		} catch (InconsistentOntologyException incon) {
+		}catch (ComponentInitException e) {
+			System.out.println("testen");
 			view.setIsInconsistent(true);
-		}
+			//e.printStackTrace();
+		} catch (InconsistentOntologyException incon) {
+			System.out.println("test");
+			view.setIsInconsistent(true);
+		} 
 	}
 	
 	/**

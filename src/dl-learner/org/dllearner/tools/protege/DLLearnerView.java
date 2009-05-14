@@ -204,6 +204,9 @@ public class DLLearnerView {
 		if(readThread.hasIndividuals()) {
 			run.setEnabled(true);
 		}
+		//if(labels.equals(currentConcept)) {
+		//model.getReasoner().setUpdated();
+		//}
 		labels = currentConcept;
 		run.setText("suggest " + label + " expression");
 		GridBagConstraints c = new GridBagConstraints();
@@ -238,13 +241,14 @@ public class DLLearnerView {
 		c.weighty = 0.0;
 		c.gridwidth = 1;
 		addButtonPanel.add("North", accept);
-		//c.gridwidth = GridBagConstraints.REMAINDER;
 		learner.add(addButtonPanel, c);
 		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 2;
+		hint.setPreferredSize(new Dimension(490, 60));
 		learner.add(hint, c);
 		
 		advancedPanel.add(advanced);
@@ -252,7 +256,6 @@ public class DLLearnerView {
 		advanced.setIcon(icon);
 		advanced.setSelected(false);
 		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
@@ -261,8 +264,6 @@ public class DLLearnerView {
 		
 		posPanel.setVisible(false);
 		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.gridheight = GridBagConstraints.RELATIVE;
 		c.gridx = 0;
 		c.gridy = 4;
 		c.weightx = 0.0;
@@ -447,6 +448,10 @@ public class DLLearnerView {
 	 */
 	public void setIsInconsistent(boolean isIncon) {
 		this.isInconsistent = isIncon;
+	}
+	
+	public boolean getIsInconsistent() {
+		return isInconsistent;
 	}
 	
 	/**
