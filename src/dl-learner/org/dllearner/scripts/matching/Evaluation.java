@@ -20,12 +20,14 @@
 package org.dllearner.scripts.matching;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.DataFormatException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -140,25 +142,13 @@ public class Evaluation {
 		return discarded;
 	}	
 	
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws IOException, DataFormatException {
 		
 		Logger.getRootLogger().setLevel(Level.TRACE);
 		// test file
-		String testFile = "log/geodata/owlsameas_en.dat";
+		File testFile = new File("log/geodata/owlsameas_en.dat");
 		// map for collecting matches
-		Map<URI,URI> matches = new HashMap<URI,URI>();
-		// read file line by line to collect matches
-		BufferedReader br = new BufferedReader(new FileReader(testFile));
-		String line;
-		while ((line = br.readLine()) != null) {
-			String[] tmp = line.split("\t");
-//			System.out.println(line);
-//			for(String test : tmp) {
-//				System.out.println(test);
-//			}
-			
-			matches.put(URI.create(tmp[1]), URI.create(tmp[0] + "#id"));
-		}
+		Map<URI,URI> matches = Utility.getMatches(testFile);
 		// perform evaluation and print results
 		Evaluation eval = new Evaluation(matches);
 		System.out.println(eval.getTests() + " points tested (" + eval.getDiscarded() + " discarded)");
