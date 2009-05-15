@@ -41,7 +41,7 @@ import com.jamonapi.Monitor;
 /**
  * Represents one SPARQL query. It includes support for stopping the SPARQL
  * query (which may be necessary if a timeout is reached) and is designed to be
- * able to run a query in a separate thread.
+ * able to run a query in a separate thread. 
  * 
  * @author Jens Lehmann
  * @author Sebastian Hellmann
@@ -142,6 +142,15 @@ public class SparqlQuery {
 		return rs;
 	}
 
+	public boolean sendAsk() {
+		isRunning = true;
+		String service = sparqlEndpoint.getURL().toString();
+		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
+		boolean result = queryExecution.execAsk();
+		isRunning = false;
+		return result;
+	}
+	
 	/**
 	 * Stops the execution of the query.
 	 */
