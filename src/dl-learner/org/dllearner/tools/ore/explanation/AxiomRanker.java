@@ -1,6 +1,9 @@
 package org.dllearner.tools.ore.explanation;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,6 +14,11 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owl.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owl.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
@@ -20,10 +28,11 @@ import org.semanticweb.owl.model.RemoveAxiom;
 
 public class AxiomRanker {
 	
-	Map axiomSOSMap;
-	OWLOntology ontology;
-	Reasoner reasoner;
-	OWLDataFactory factory;
+	private Map axiomSOSMap;
+	private OWLOntology ontology;
+	private Reasoner reasoner;
+	private OWLDataFactory factory;
+	boolean enableImpactUnsat;
 	
 	public AxiomRanker(OWLOntology ont, Reasoner reasoner, OWLDataFactory fact){
 		this.ontology = ont;
@@ -31,10 +40,117 @@ public class AxiomRanker {
 		this.factory = fact;
 	}
 
-	private void computeImpactSOS(OWLAxiom ax) {
-		
-		
+	public Set<OWLAxiom> computeImpactSOS(OWLAxiom axiom) {
+		Set<OWLAxiom> result = new HashSet<OWLAxiom>();
+		if (axiom instanceof OWLSubClassAxiom) {
+			OWLSubClassAxiom subAx = (OWLSubClassAxiom) axiom;
+			if (subAx.getSubClass() instanceof OWLClass && subAx.getSuperClass() instanceof OWLClass) {
+				OWLClass sub = (OWLClass) subAx.getSubClass();
+				OWLClass sup = (OWLClass) subAx.getSuperClass();
+				
+				for (OWLClass desc : SetUtils.union(reasoner.getDescendantClasses(sub))) {
+					
+					for (OWLClass anc : SetUtils.union(reasoner.getAncestorClasses(sup))) {	
+						
+						if (!anc.equals(factory.getOWLThing()) && !desc.equals(factory.getOWLNothing())) {
+							OWLSubClassAxiom ax = factory.getOWLSubClassAxiom(desc, anc);
+							result.add(ax);
+						}
+					}
+				}
+			}						
+		}else if (axiom instanceof OWLDisjointClassesAxiom) {
+			Set<OWLDescription> disjointClasses = ((OWLDisjointClassesAxiom) axiom).getDescriptions();
+			boolean complex = false;
+			for (OWLDescription dis : disjointClasses) {
+				if (dis.isAnonymous()) {
+					complex = true;
+					break;
+				}
+			}
+			if (!complex) {
+				
+				List<OWLDescription> disjoints = new ArrayList<OWLDescription>(disjointClasses);
+				
+					
+					
+				for (OWLDescription dis : new ArrayList<OWLDescription>(disjoints)) {
+					if (!dis.equals(factory.getOWLNothing())) {
+						disjoints.remove(dis);
+						Set<? extends OWLDescription> descendants = SetUtils.union(reasoner.getDescendantClasses(dis.asOWLClass()));
+						descendants.removeAll(reasoner.getEquivalentClasses(factory.getOWLNothing()));
+//						if (enableImpactUnsat) {
+//							descendants.addAll(((OWLClass) dis).getSubClasses(ontology));
+//						}
+						for (OWLDescription desc1 : descendants) {
+							
+							if (!desc1.equals(factory.getOWLNothing())) {
+								if (enableImpactUnsat || !reasoner.getEquivalentClasses((desc1)).contains(factory.getOWLNothing())) {
+									for (OWLDescription desc2 : disjoints) {								
+										
+										if (!desc2.equals(desc1)) {
+											Set<OWLDescription> newDis = new HashSet<OWLDescription>();
+											newDis.add(desc1);
+											newDis.add(desc2);
+											OWLDisjointClassesAxiom ax = factory.getOWLDisjointClassesAxiom(newDis);
+											result.add(ax);
+										}
+									}
+								}
+							}
+						}
+						
+							disjoints.add(dis);
+						
+						
+					}							
+				}
+				return result;
+			}
+		}
+		else if (axiom instanceof OWLObjectPropertyDomainAxiom) {
+			OWLObjectPropertyDomainAxiom pd = (OWLObjectPropertyDomainAxiom) axiom;
+			
+			if (pd.getDomain() instanceof OWLClass) {
+				OWLClass dom = (OWLClass) pd.getDomain();
+				Set<OWLClass> superClasses = SetUtils.union(reasoner.getSuperClasses(dom));
+				for (OWLClass sup : superClasses) {
+					
+					OWLObjectPropertyDomainAxiom ax = factory.getOWLObjectPropertyDomainAxiom( pd.getProperty(), sup);
+					result.add(ax);
+				}
+			}
+		}
+		else if (axiom instanceof OWLDataPropertyDomainAxiom) {
+			OWLDataPropertyDomainAxiom pd = (OWLDataPropertyDomainAxiom) axiom;
+			
+			if (pd.getDomain() instanceof OWLClass) {
+				OWLClass dom = (OWLClass) pd.getDomain();
+				Set<OWLClass> superClasses = SetUtils.union(reasoner.getSuperClasses(dom));
+				for (OWLClass sup : superClasses) {
+					
+					OWLDataPropertyDomainAxiom ax = factory.getOWLDataPropertyDomainAxiom( pd.getProperty(), sup);
+					result.add(ax);
+				}
+			}
+		}
+		else if (axiom instanceof OWLObjectPropertyRangeAxiom) {
+			OWLObjectPropertyRangeAxiom pd = (OWLObjectPropertyRangeAxiom) axiom;
+			
+			if (pd.getRange() instanceof OWLClass) {
+				OWLClass ran = (OWLClass) pd.getRange();
+				Set<OWLClass> superClasses = SetUtils.union(reasoner.getSuperClasses(ran));
+				for (OWLClass sup : superClasses) {
+					
+					OWLObjectPropertyRangeAxiom ax = factory.getOWLObjectPropertyRangeAxiom(pd.getProperty(), sup);
+					result.add(ax);
+				}
+			}
+		}
+		return result;
 	}
+	
+
 	
 
 	
