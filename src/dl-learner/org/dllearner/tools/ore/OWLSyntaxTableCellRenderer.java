@@ -22,10 +22,12 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 	private StringWriter buffer;
 	private TextBlockWriter writer;
 	private ManchesterSyntaxObjectRenderer renderer;
+	private ImpactManager impMan;
 //	private List<String> oldAxioms;
 	
-	public OWLSyntaxTableCellRenderer(){
+	public OWLSyntaxTableCellRenderer(ImpactManager impMan){
 		super();
+		this.impMan = impMan;
 		buffer = new StringWriter();
 		writer = new TextBlockWriter(buffer);
 		renderer = new ManchesterSyntaxObjectRenderer(writer);
@@ -34,12 +36,24 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 //		oldAxioms = new ArrayList<String>();
 		
 	}
+	
+	public OWLSyntaxTableCellRenderer(){
+		super();
+		buffer = new StringWriter();
+		writer = new TextBlockWriter(buffer);
+		renderer = new ManchesterSyntaxObjectRenderer(writer);
+		renderer.setWrapLines( false );
+		renderer.setSmartIndent( true );
+	}
+	
 	@Override
 	protected void setValue(Object value) {
 			
 			if(value instanceof OWLAxiom){
-				
-				
+				boolean striked = false;
+				if(impMan != null && impMan.isSelected((OWLAxiom)value)){
+					striked = true;
+				}
 				((OWLAxiom)value).accept(renderer);
 				
 				writer.flush();
@@ -71,6 +85,10 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 			
 				StringBuffer bf = new StringBuffer();
 				bf.append("<html>");
+				if(striked){
+					bf.append("<strike>");
+				}
+					
 				String token;
 				while(st.hasMoreTokens()){
 					token = st.nextToken();
@@ -88,8 +106,12 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 						bf.append(" " + token + " ");
 					}
 				}
+				if(striked){
+					bf.append("</strike>");
+				}
 				bf.append("</html>");
 				newAxiom = bf.toString();
+				
 				setText(newAxiom);
 //				oldAxioms.add(buffer.toString());
 				buffer.getBuffer().delete(0, buffer.toString().length());

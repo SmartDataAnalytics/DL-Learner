@@ -23,6 +23,7 @@ public class ExplanationTablePanel extends JPanel{
 		this.explanationTable = explanationTable;
 		this.explanationNumber = explanationNumber;
 		createGUI();
+		
 	}
 	
 	private void createGUI(){

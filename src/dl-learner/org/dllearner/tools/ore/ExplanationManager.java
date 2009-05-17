@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import org.dllearner.tools.ore.explanation.LaconicExplanationGenerator;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -22,7 +20,6 @@ import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeListener;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 
@@ -51,40 +48,44 @@ public class ExplanationManager implements OWLOntologyChangeListener{
 	boolean ontologyChanged = true;
 	
 	
-	private ExplanationManager(String ontPath){
+	
+	private ExplanationManager(OWLOntologyManager manager, Reasoner reasoner,
+			OWLOntology ontology) {
 		regularExplanationCache = new HashMap<OWLClass, Set<Set<OWLAxiom>>>();
 		laconicExplanationCache = new HashMap<OWLClass, Set<Set<OWLAxiom>>>();
-		
-		try {
-			manager = OWLManager.createOWLOntologyManager();
-			manager.addOntologyChangeListener(this);
-			dataFactory = manager.getOWLDataFactory();
-			ontology = manager.loadOntology(URI.create(ontPath));
-			reasonerFactory = new PelletReasonerFactory();
-			reasoner = reasonerFactory.createReasoner(manager);
-			reasoner.loadOntology(ontology);
-			reasoner.classify();
-			
-			rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
-			
-			regularExpGen = new PelletExplanation(manager, Collections.singleton(ontology));
-			laconicExpGen = new LaconicExplanationGenerator(manager, reasonerFactory, Collections.singleton(ontology));
-			
-			rootClasses = new HashSet<OWLClass>();
-			unsatClasses = new HashSet<OWLClass>();
-		} catch (OWLOntologyCreationException e) {
-			
-			e.printStackTrace();
-		}
+
+		this.manager = manager;
+		this.reasoner = reasoner;
+		this.ontology = ontology;
+		manager.addOntologyChangeListener(this);
+		dataFactory = manager.getOWLDataFactory();
+
+		reasonerFactory = new PelletReasonerFactory();
+
+		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
+
+		regularExpGen = new PelletExplanation(manager, Collections
+				.singleton(ontology));
+		laconicExpGen = new LaconicExplanationGenerator(manager,
+				reasonerFactory, Collections.singleton(ontology));
+
+		rootClasses = new HashSet<OWLClass>();
+		unsatClasses = new HashSet<OWLClass>();
+
 	}
 	
-	public static synchronized ExplanationManager getExplanationManager(String ontPath){
-		if(instance == null){
-			instance = new ExplanationManager(ontPath);
+	public static synchronized ExplanationManager getExplanationManager(
+			OWLOntologyManager manager, Reasoner reasoner, OWLOntology ontology) {
+		if (instance == null) {
+			instance = new ExplanationManager(manager, reasoner, ontology);
 		}
 		return instance;
 	}
 	
+	public static synchronized ExplanationManager getExplanationManager(){
+	
+		return instance;
+	}
 	
 	public Set<OWLClass> getUnsatisfiableClasses(){
 		computeRootUnsatisfiableClasses();
@@ -181,4 +182,21 @@ public class ExplanationManager implements OWLOntologyChangeListener{
 		ontologyChanged = true;
 		
 	}
+	
+	public int getArity(OWLClass cl, OWLAxiom ax) {
+		int arity = 0;
+		Set<Set<OWLAxiom>> explanations = regularExplanationCache.get(cl);
+		
+		if(explanations != null){
+			
+			for (Set<OWLAxiom> explanation : explanations) {
+				if (explanation.contains(ax)) {
+					arity++;
+				}
+			}
+		}
+		return arity;
+	}
+	
+	
 }
