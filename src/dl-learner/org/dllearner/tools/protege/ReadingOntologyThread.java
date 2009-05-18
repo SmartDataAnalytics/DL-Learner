@@ -103,7 +103,6 @@ public class ReadingOntologyThread extends Thread {
 									// individuals of
 									// the concept
 									currentConcept = concept;
-
 									if (reasoner.getIndividuals(concept) != null) {
 										if (reasoner.getIndividuals(concept).size() > 0) {
 											hasIndividuals = true;
@@ -170,7 +169,7 @@ public class ReadingOntologyThread extends Thread {
 		String loading ="loading instances...";
 		view.getHintPanel().setForeground(Color.RED);
 		view.setHintMessage(loading);
-		if(!model.isReasonerSet()) {
+		if(!model.isReasonerSet() || model.getIsKnowledgeSourceIsUpdated() == true) {
 			model.setKnowledgeSource();
 			model.setReasoner();
 		}
