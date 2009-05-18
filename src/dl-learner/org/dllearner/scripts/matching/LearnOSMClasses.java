@@ -29,12 +29,14 @@ import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 
@@ -51,11 +53,11 @@ public class LearnOSMClasses {
 	private static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();	
 	
-	public static void main(String args[]) throws IOException, DataFormatException, LearningProblemUnsupportedException {
+	public static void main(String args[]) throws IOException, DataFormatException, LearningProblemUnsupportedException, ComponentInitException {
 		File matchesFile = new File("log/geodata/owlsameas_en.dat");
 		Map<URI,URI> matches = Utility.getMatches(matchesFile);
 		
-//		SPARQLTasks st = new SPARQLTasks(dbpediaEndpoint);
+		SPARQLTasks dbpedia = new SPARQLTasks(new Cache("cache/matching"),dbpediaEndpoint);
 		Set<String> positives = new TreeSet<String>();
 		Set<String> negatives = new TreeSet<String>();
 		
@@ -65,8 +67,8 @@ public class LearnOSMClasses {
 			URI lgdURI = match.getValue();
 			// test whether the dbpediaURI is a city
 			String query = "ASK {<"+dbpediaURI+"> a <http://dbpedia.org/ontology/City>}";
-			SparqlQuery sq = new SparqlQuery(query, dbpediaEndpoint);
-			boolean isCity = sq.sendAsk();
+			boolean isCity = dbpedia.ask(query);
+//			System.out.println(isCity + " " + lgdURI);
 			if(isCity) {
 				positives.add(lgdURI.toString());
 			} else {
@@ -78,18 +80,31 @@ public class LearnOSMClasses {
 		instances.addAll(positives);
 		instances.addAll(negatives);
 		
+		System.out.println(instances.size() + " instances - " + positives.size() + " positive examples");
+		
 		// plug together DL-Learner components
 		ComponentManager cm = ComponentManager.getInstance();
+		
 		SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
 		ks.getConfigurator().setInstances(instances);
 		ks.getConfigurator().setPredefinedEndpoint("LOCALGEODATA");
+		ks.getConfigurator().setSaveExtractedFragment(true);
+		ks.init();
+		
 		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		reasoner.init();
+		
 		PosOnlyLP lp = cm.learningProblem(PosOnlyLP.class, reasoner);
 		lp.getConfigurator().setPositiveExamples(positives);
-		CELOE algorithm = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+		lp.init();
+		
+		CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+		celoe.getConfigurator().setUseHasValueConstructor(true);
+		celoe.getConfigurator().setValueFrequencyThreshold(3);
+		celoe.init();
 		
 		// execute algorithm
-		algorithm.start();
+		celoe.start();
 //		Set<EvaluatedDescriptionPosOnly> solutions = (Set<EvaluatedDescriptionPosOnly>) algorithm.getCurrentlyBestEvaluatedDescriptions();
 	}
 	
