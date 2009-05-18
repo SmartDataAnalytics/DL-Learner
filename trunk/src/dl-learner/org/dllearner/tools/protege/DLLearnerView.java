@@ -121,6 +121,7 @@ public class DLLearnerView {
 	private static final int SCROLL_HEIGHT = 400;
 	private boolean toogled = false;
 	private String labels;
+	private int individualSize;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -131,6 +132,7 @@ public class DLLearnerView {
 	public DLLearnerView(OWLEditorKit editor) {
 		editorKit = editor;
 		labels = "";
+		individualSize = 0;
 		model = new DLLearnerModel(editorKit, this);
 		sugPanel = new SuggestClassPanel(model, this);
 		learnerPanel = new JPanel();
@@ -195,18 +197,21 @@ public class DLLearnerView {
 	public void makeView(String label) {
 		run.setEnabled(false);
 		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
-		if(!labels.equals(currentConcept)) {
+		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
+			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
+				model.setKnowledgeSourceIsUpdated(true);
+			} else {
+				model.setKnowledgeSourceIsUpdated(false);
+			}
 			readThread = new ReadingOntologyThread(editorKit, this, model);
 		}
-		if(!readThread.isAlive() && !labels.equals(currentConcept)) {
+		if(!readThread.isAlive() && !labels.equals(currentConcept)|| individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
 			readThread.start();
 		}
 		if(readThread.hasIndividuals()) {
 			run.setEnabled(true);
 		}
-		//if(labels.equals(currentConcept)) {
-		//model.getReasoner().setUpdated();
-		//}
+		individualSize = editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size();
 		labels = currentConcept;
 		run.setText("suggest " + label + " expression");
 		GridBagConstraints c = new GridBagConstraints();
