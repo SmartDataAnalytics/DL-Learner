@@ -31,6 +31,7 @@ import java.util.TreeSet;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.configurators.PosNegLPStandardConfigurator;
 import org.dllearner.core.configurators.PosOnlyLPConfigurator;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.ConfigEntry;
@@ -66,6 +67,7 @@ public class PosOnlyLP extends LearningProblem {
 	
 	public PosOnlyLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
+		configurator = new PosOnlyLPConfigurator(this);
 	}
 
 	/*

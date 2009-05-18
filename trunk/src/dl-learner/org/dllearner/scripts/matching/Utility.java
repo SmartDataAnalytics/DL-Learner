@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
+import org.apache.log4j.Logger;
+
 /**
  * Utility methods for creating/optimising matches between knowledge bases.
  * 
@@ -35,6 +37,8 @@ import java.util.zip.DataFormatException;
  *
  */
 public final class Utility {
+	
+	private static Logger logger = Logger.getLogger(Utility.class);
 	
 	/**
 	 * Reads in a file containing known matches between knowledge bases.
@@ -59,9 +63,13 @@ public final class Utility {
 			if(tmp.length != 2) {
 				throw new DataFormatException("Line " + lineCount + " incorrectly formatted.");
 			}
+//			if(matches.containsKey(URI.create(tmp[1]))) {
+//				logger.warn("multiple key " + tmp[1] + " ... ignoring all but one value");
+//			}
 			matches.put(URI.create(tmp[1]), URI.create(tmp[0] + "#id"));
 			lineCount++;
 		}	
+		logger.info("read " + lineCount + " lines");
 		return matches;
 	}
 	

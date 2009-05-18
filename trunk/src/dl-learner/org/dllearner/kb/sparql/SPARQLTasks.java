@@ -507,6 +507,15 @@ public class SPARQLTasks {
 		return jsonString;
 	}
 
+	public boolean ask(String askQueryString) {
+		if(cache == null) {
+			SparqlQuery sq = new SparqlQuery(askQueryString, sparqlEndpoint);
+			return sq.sendAsk();
+		} else {
+			return cache.executeSparqlAskQuery(new SparqlQuery(askQueryString, sparqlEndpoint));
+		}
+	}
+	
 	/**
 	 * a String Helper which constructs the limit clause of a sparql query. if
 	 * sparqlResultLimit is zero, returns nothing

@@ -36,7 +36,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
-import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -124,7 +123,7 @@ public class CELOE extends LearningAlgorithm {
 	private int maxHorizExp = 0;
 	
 	@Override
-	public Configurator getConfigurator() {
+	public CELOEConfigurator getConfigurator() {
 		return configurator;
 	}
 	

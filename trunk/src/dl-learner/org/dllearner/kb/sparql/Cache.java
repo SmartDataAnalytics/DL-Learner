@@ -312,6 +312,19 @@ public class Cache implements Serializable {
 		return result;
 	}
 	
+	public boolean executeSparqlAskQuery(SparqlQuery query) {
+		String str = getCacheEntry(query.getSparqlQueryString());
+		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
+		if(str != null) {
+			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
+			return Boolean.parseBoolean(str);
+		} else {
+			Boolean result = query.sendAsk();
+			addToCache(query.getSparqlQueryString(), result.toString());
+			return result;
+		}
+	}
+	
 	/**
 	 * deletes all Files in the cacheDir, does not delete the cacheDir itself, 
 	 * and can thus still be used without creating a new Cache Object
