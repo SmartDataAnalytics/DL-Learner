@@ -33,6 +33,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.StringToResource;
 import org.dllearner.kb.manipulator.Rule.Months;
 import org.dllearner.kb.sparql.Cache;
@@ -91,7 +92,9 @@ public class LearnOSMClasses {
 		ks.getConfigurator().setInstances(instances);
 		ks.getConfigurator().setPredefinedEndpoint("LOCALGEODATA");
 		ks.getConfigurator().setSaveExtractedFragment(true);
-		ks.getManipulator().addRule(new StringToResource(Months.DECEMBER,"http://linkedgeodata.org/vocabulary", 40));
+		Manipulator m = Manipulator.getDefaultManipulator();
+		m.addRule(new StringToResource(Months.DECEMBER,"http://linkedgeodata.org/vocabulary", 40));
+		ks.setManipulator(m);
 		ks.init();
 		
 		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
