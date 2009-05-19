@@ -48,7 +48,7 @@ public class StringToResource extends Rule{
 			slash="/";
 		}
 		
-		this.namespace = slash+resourceNamespace;
+		this.namespace = resourceNamespace+slash;
 		this.limit = limit;
 	}
 	
@@ -57,19 +57,25 @@ public class StringToResource extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
 		for (RDFNodeTuple tuple : tuples) {
+			
 			// do nothing if the object contains http://
-			if(!tuple.b.isResource()){
+			if(!tuple.b.isURIResource()){
 				boolean replace = true;
+				
 				//check for numbers 
-				if(((Literal) tuple.b).getDatatypeURI().contains("decimal")){
+				if(((Literal) tuple.b).getDatatypeURI()!= null){
 						replace = false; 
 							
 				}
-				
 				// do nothing if limit is exceeded
 				if(limit != 0 && tuple.b.toString().length()>limit){
 					replace = false;
 				}
+				
+				if(tuple.b.toString().startsWith("http://")){
+					replace= false;
+				}
+				
 				
 				if (replace){
 				
@@ -78,7 +84,8 @@ public class StringToResource extends Rule{
 						//encode
 					tmp = URLEncoder.encode(tmp, "UTF-8");
 					}catch (Exception e) {
-						// TODO: handle exception
+						e.printStackTrace();
+						System.exit(0);
 					}
 					
 					tuple.b = new ResourceImpl(namespace+tmp);

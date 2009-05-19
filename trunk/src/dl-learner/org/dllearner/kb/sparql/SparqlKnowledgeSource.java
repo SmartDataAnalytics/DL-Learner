@@ -111,6 +111,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	private OWLOntology fragment;
 	
+	private Manipulator manipulator = null;
+	
 	
 
 	// received ontology as array, used if format=Array(an element of the
@@ -435,6 +437,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 
 	public Manipulator getManipulator() {
+		
+		if(this.manipulator!=null){
+			return this.manipulator;
+		}
+		
 		// get Options for Filters
 		if (configurator.getPredefinedManipulator() != null) {
 			return Manipulator.getManipulatorByName(configurator
@@ -451,6 +458,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			return m;
 		}
 
+	}
+	
+	public void setManipulator(Manipulator m ){
+		this.manipulator = m;
+		
 	}
 
 	public TupleAquisitor getTupleAquisitor() {
