@@ -80,7 +80,7 @@ public class Manipulator {
 		} else if(predefinedManipulator.equalsIgnoreCase("DEFAULT")
 				||predefinedManipulator.equalsIgnoreCase("STANDARD")){
 			return getDefaultManipulator();
-		}
+		} 
 		else {
 			//QUALITY maybe not the best, 
 			return getDefaultManipulator();
