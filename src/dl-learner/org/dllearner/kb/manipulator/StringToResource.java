@@ -61,7 +61,7 @@ public class StringToResource extends Rule{
 				boolean replace = true;
 				
 				//check for numbers 
-				for (int i = 0; i < 9; i++) {
+				for (int i = 0; i <= 9; i++) {
 					if(tuple.bPartContains(i+"")){
 						replace = false; 
 						
