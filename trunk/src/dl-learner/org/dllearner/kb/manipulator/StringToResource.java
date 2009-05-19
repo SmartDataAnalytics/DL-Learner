@@ -27,6 +27,7 @@ import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
 public class StringToResource extends Rule{
@@ -57,15 +58,12 @@ public class StringToResource extends Rule{
 		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
 		for (RDFNodeTuple tuple : tuples) {
 			// do nothing if the object contains http://
-			if(!tuple.bPartContains("http://")){
+			if(!tuple.b.isResource()){
 				boolean replace = true;
-				
 				//check for numbers 
-				for (int i = 0; i <= 9; i++) {
-					if(tuple.bPartContains(i+"")){
+				if(((Literal) tuple.b).getDatatypeURI().contains("decimal")){
 						replace = false; 
-						
-					}
+							
 				}
 				
 				// do nothing if limit is exceeded
