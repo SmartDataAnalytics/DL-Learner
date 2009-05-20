@@ -19,50 +19,20 @@
  */
 package org.dllearner.scripts.matching;
 
+import java.net.URI;
+
 /**
+ * A LinkedGeoData point.
+ * 
  * @author Jens Lehmann
  *
  */
-public class OSMPoint {
+public class LGDPoint extends Point {
 
-	private long id;
-	
-	private double geoLat;
-	
-	private double geoLong;
-	
 	private double name;
 	
-	public OSMPoint(long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the geoLat
-	 */
-	public double getGeoLat() {
-		return geoLat;
-	}
-
-	/**
-	 * @param geoLat the geoLat to set
-	 */
-	public void setGeoLat(double geoLat) {
-		this.geoLat = geoLat;
-	}
-
-	/**
-	 * @return the geoLong
-	 */
-	public double getGeoLong() {
-		return geoLong;
-	}
-
-	/**
-	 * @param geoLong the geoLong to set
-	 */
-	public void setGeoLong(double geoLong) {
-		this.geoLong = geoLong;
+	public LGDPoint(URI uri, double geoLat, double geoLong) {
+		super(uri, null, geoLat, geoLong);
 	}
 
 	/**
@@ -78,19 +48,11 @@ public class OSMPoint {
 	public void setName(double name) {
 		this.name = name;
 	}
-
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
 	
+	public static String getSPARQLRestriction(POIClass poiClass, String variable) {
+		switch(poiClass) {
+		case CITY : return variable + " <http://linkedgeodata.org/vocabulary#amenity> \"city\" .";
+		default: throw new Error("Cannot restrict.");
+		}
+	}
 }
