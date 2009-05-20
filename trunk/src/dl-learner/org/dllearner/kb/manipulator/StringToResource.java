@@ -73,6 +73,16 @@ public class StringToResource extends Rule{
 				}
 				
 				if(tuple.b.toString().startsWith("http://")){
+					//System.out.println(tuple.b.toString());
+					if(
+						tuple.b.toString().startsWith("http://ru.wikipedia.org/wiki/Ð¡ÐµÑ") ||
+						tuple.bPartContains(" ")
+							
+					){
+						continue;
+						
+					}
+					tuple.b = new ResourceImpl(tuple.b.toString());
 					replace= false;
 				}
 				
@@ -94,6 +104,7 @@ public class StringToResource extends Rule{
 					// do nothing
 				}
 			}
+			
 			keep.add(tuple);
 		}
 		return  keep;
