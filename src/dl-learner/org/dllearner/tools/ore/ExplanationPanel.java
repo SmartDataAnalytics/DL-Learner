@@ -31,17 +31,22 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.swingx.JXList;
+import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.mindswap.pellet.utils.progress.SwingProgressMonitor;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class ExplanationPanel extends JPanel implements ListSelectionListener,
-		ActionListener {
+		ActionListener,ImpactManagerListener{
 
 	private JXList unsatList;
 	private JSplitPane splitPane;
@@ -74,6 +79,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		this.expManager = expMan;
 		this.impManager = impMan;
 
+		impManager.addListener(this);
 		setLayout(new BorderLayout());
 
 		Dimension minimumSize = new Dimension(400, 400);
@@ -121,13 +127,28 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		statsSplitPane.setResizeWeight(1.0D);
 		statsSplitPane.setTopComponent(buttonExplanationsPanel);
 		
+		//repair panel
+		JPanel impactRepairPanel = new JPanel();
+		impactRepairPanel.setLayout(new BorderLayout());
+		impactRepairPanel.add(new JLabel("Repair plan"), BorderLayout.NORTH);
+		JSplitPane impRepSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		impRepSplit.setOneTouchExpandable(true);
+		impRepSplit.setDividerLocation(600);
+		impRepSplit.setBorder(null);
+		impactRepairPanel.add(impRepSplit);
+		
 		JPanel impactPanel = new JPanel();
 		impactPanel.setLayout(new BorderLayout());
 		impactPanel.add(new JLabel("Lost entailments"), BorderLayout.NORTH);
-		JScrollPane scr = new JScrollPane(new ImpactTable(impManager));
-		impactPanel.add(scr);
+		JScrollPane impScr = new JScrollPane(new ImpactTable(impManager));
+		impactPanel.add(impScr);
+		impRepSplit.setRightComponent(impactPanel);
 		
-		statsSplitPane.setBottomComponent(impactPanel);
+		RepairPlanPanel repairPanel = new RepairPlanPanel(impManager); 
+		impRepSplit.setLeftComponent(repairPanel);
+		
+		
+		statsSplitPane.setBottomComponent(impactRepairPanel);
 		
 		statsSplitPane.setBorder(null);
 		statsSplitPane.setDividerLocation(500);
@@ -235,9 +256,9 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 //		editor.setDescription(unsatClass);
 		
 		
-		if (regularButton.isSelected()) {
+		if (!unsatList.isSelectionEmpty() && regularButton.isSelected()) {
 			showRegularExplanations();
-		} else {
+		} else if(!unsatList.isSelectionEmpty()){
 			showLaconicExplanations();
 		}
 
@@ -254,30 +275,73 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		}
 
 	}
+	
+	@Override
+	public void axiomForImpactChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanExecuted() {
+		explanationsPanel.removeAll();
+		
+		fillUnsatClassesList();
+		repaint();
+	}
+	
 
 	public static void main(String[] args) {
 
 		try {
-			String file = "file:examples/ore/koala.owl";
+			String file = "file:examples/ore/miniEconomy.owl";
+			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.NONE;
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
 					.create(file));
+			
+			org.mindswap.pellet.utils.progress.ProgressMonitor mon = new SwingProgressMonitor();
 			PelletReasonerFactory reasonerFactory = new PelletReasonerFactory();
 			Reasoner reasoner = reasonerFactory.createReasoner(manager);
 			reasoner.loadOntologies(Collections.singleton(ontology));
+//			reasoner.getKB().getTaxonomyBuilder().setProgressMonitor(mon);
+//			mon.taskStarted();
 			reasoner.classify();
+//			mon.taskFinished();
+			
+			
+			
+//			try {
+//				String text = "Koala SubclassOf Class: Animal";
+//				OWLEntityChecker checker = new EntityChecker(manager);
+//				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(manager.getOWLDataFactory(),text);
+//				parser.setOWLEntityChecker(checker);
+//				parser.parseOntology(manager, ontology);
+//				parser.setBase(ontology.getURI().toString() + "#");
+//				parser.parseDescription();
+//			} catch (OWLOntologyChangeException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ParserException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			
+			
+			
 			ExplanationManager expManager = ExplanationManager
-					.getExplanationManager(manager, reasoner, ontology);
-			ImpactManager impManager = ImpactManager.getImpactManager(manager,
-					reasoner, ontology);
+					.getExplanationManager(reasoner);
+			ImpactManager impManager = ImpactManager.getImpactManager(
+					reasoner);
 			ExplanationPanel panel = new ExplanationPanel(expManager,
 					impManager);
-
+		
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 			JFrame test = new JFrame();
 			test.setLayout(new GridLayout(0, 1));
-			test.setSize(new Dimension(1200, 700));
+			test.setSize(new Dimension(1400, 1000));
 			test.add(panel);
 			test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			test.setVisible(true);
@@ -302,4 +366,8 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		}
 
 	}
+
+	
+
+	
 }

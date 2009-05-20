@@ -49,7 +49,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 		} else if(columnIndex == 1){
 			return expMan.getArity(unsat, axioms.get(rowIndex));
 		} else if(columnIndex == 2) {
-			return Boolean.valueOf(impMan.isSelected(getOWLAxiomAtRow(rowIndex)));//remove.get(rowIndex);
+			return Boolean.valueOf(impMan.isSelected(getOWLAxiomAtRow(rowIndex)));
 		} else {
 			return "rewrite";
 		}

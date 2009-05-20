@@ -15,6 +15,7 @@ import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.inference.OWLReasonerFactory;
 import org.semanticweb.owl.model.AxiomType;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataAllRestriction;
 import org.semanticweb.owl.model.OWLDataExactCardinalityRestriction;
@@ -83,6 +84,7 @@ public class RootFinder implements OWLDescriptionVisitor{
 	}
 	
 	public Set<OWLClass> getRootClasses(){
+		rootClasses.clear();
 		computePossibleRoots();
 		pruneRoots();
 		rootClasses.remove(manager.getOWLDataFactory().getOWLNothing());
@@ -164,6 +166,7 @@ public class RootFinder implements OWLDescriptionVisitor{
 	}
 	
 	private void reset(){
+
 		depend2Classes.clear();
 		depth2ExistsRestrictionPropertyMap.clear();
 		depth2UniversalRestrictionPropertyMap.clear();

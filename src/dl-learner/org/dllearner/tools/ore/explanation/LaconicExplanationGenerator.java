@@ -286,8 +286,7 @@ public class LaconicExplanationGenerator
     
     public Set<Set<OWLAxiom>> getRegularExplanations(OWLAxiom entailment) throws ExplanationException {
     	Set<Set<OWLAxiom>> regularJusts;
-    	
-    		regularJusts = pelletExplanation.getEntailmentExplanations((OWLAxiom)entailment);
+    	regularJusts = pelletExplanation.getEntailmentExplanations((OWLAxiom)entailment);
     	lastRegularJusts.addAll(regularJusts);
     	return regularJusts;
         }

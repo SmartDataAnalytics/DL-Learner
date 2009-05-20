@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractCellEditor;
@@ -35,6 +37,7 @@ public class ExplanationTable extends JXTable implements ImpactManagerListener{
 	public ExplanationTable(List<OWLAxiom> explanation, ImpactManager impMan, ExplanationManager expMan, OWLClass cl) {
 		this.explanation = explanation;
 		this.impMan = impMan;
+		impMan.addListener(this);
 		setBackground(Color.WHITE);
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ExplanationTableModel(explanation, expMan, impMan, cl));
@@ -86,6 +89,19 @@ public class ExplanationTable extends JXTable implements ImpactManagerListener{
                 
             }
         });
+		
+		addMouseListener(new MouseAdapter() {
+			
+			final ExplanationTable table;
+			{
+				table = ExplanationTable.this;
+			}
+			public void mouseClicked(MouseEvent e){
+				if(e.getClickCount() == 2){
+					System.out.println(getValueAt(table.rowAtPoint(e.getPoint()), 0));
+				}
+			}
+		});
 	}
 	
 	private OWLAxiom getOWLAxiomAtRow(int rowIndex){
@@ -100,13 +116,13 @@ public class ExplanationTable extends JXTable implements ImpactManagerListener{
 	
 	private void changeSelection() {
 
-		
-		if(getSelectedRow() >=0){
-			OWLAxiom rowAxiom = getOWLAxiomAtRow(getSelectedRow());
-			impMan.setActualAxiom(rowAxiom);
-		} else {
-			impMan.setActualAxiom(null);
-		}
+//		
+//		if(getSelectedRow() >=0){
+//			OWLAxiom rowAxiom = getOWLAxiomAtRow(getSelectedRow());
+//			impMan.setActualAxiom(rowAxiom);
+//		} else {
+//			impMan.setActualAxiom(null);
+//		}
 
 	}
 	
@@ -177,6 +193,12 @@ public class ExplanationTable extends JXTable implements ImpactManagerListener{
 	@Override
 	public void axiomForImpactChanged() {
 		repaint();
+		
+	}
+
+	@Override
+	public void repairPlanExecuted() {
+		// TODO Auto-generated method stub
 		
 	}
 	

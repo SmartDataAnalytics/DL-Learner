@@ -13,6 +13,7 @@ import org.dllearner.tools.ore.explanation.LaconicExplanationGenerator;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -29,7 +30,7 @@ import uk.ac.manchester.cs.owl.explanation.ordering.ExplanationTree;
 
 import com.clarkparsia.explanation.PelletExplanation;
 
-public class ExplanationManager implements OWLOntologyChangeListener{
+public class ExplanationManager implements OWLOntologyChangeListener, ImpactManagerListener{
 
 	private static ExplanationManager instance;
 	
@@ -49,17 +50,18 @@ public class ExplanationManager implements OWLOntologyChangeListener{
 	
 	
 	
-	private ExplanationManager(OWLOntologyManager manager, Reasoner reasoner,
-			OWLOntology ontology) {
+	private ExplanationManager(Reasoner reasoner) {
 		regularExplanationCache = new HashMap<OWLClass, Set<Set<OWLAxiom>>>();
 		laconicExplanationCache = new HashMap<OWLClass, Set<Set<OWLAxiom>>>();
 
-		this.manager = manager;
 		this.reasoner = reasoner;
-		this.ontology = ontology;
+		this.manager = reasoner.getManager();
+		this.ontology = reasoner.getLoadedOntologies().iterator().next();
+		
 		manager.addOntologyChangeListener(this);
+		manager.addOntologyChangeListener(reasoner);
 		dataFactory = manager.getOWLDataFactory();
-
+		ImpactManager.getImpactManager(reasoner).addListener(this);
 		reasonerFactory = new PelletReasonerFactory();
 
 		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
@@ -75,9 +77,9 @@ public class ExplanationManager implements OWLOntologyChangeListener{
 	}
 	
 	public static synchronized ExplanationManager getExplanationManager(
-			OWLOntologyManager manager, Reasoner reasoner, OWLOntology ontology) {
+			Reasoner reasoner) {
 		if (instance == null) {
-			instance = new ExplanationManager(manager, reasoner, ontology);
+			instance = new ExplanationManager(reasoner);
 		}
 		return instance;
 	}
@@ -177,9 +179,11 @@ public class ExplanationManager implements OWLOntologyChangeListener{
 	}
 
 	@Override
-	public void ontologiesChanged(List<? extends OWLOntologyChange> arg0)
-			throws OWLException {
+	public void ontologiesChanged(List<? extends OWLOntologyChange> changes)
+			throws OWLException {System.out.println(changes);
 		ontologyChanged = true;
+		
+		
 		
 	}
 	
@@ -196,6 +200,20 @@ public class ExplanationManager implements OWLOntologyChangeListener{
 			}
 		}
 		return arity;
+	}
+
+	@Override
+	public void axiomForImpactChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanExecuted() {
+		reasoner.refresh();
+		ontologyChanged = true;
+		regularExplanationCache.clear();
+		laconicExplanationCache.clear();
 	}
 	
 	

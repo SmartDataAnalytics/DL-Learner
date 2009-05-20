@@ -11,6 +11,8 @@ import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.AxiomType;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -26,18 +28,81 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
+import com.clarkparsia.modularity.IncrementalClassifier;
+
 public class AxiomRanker {
 	
 	private Map axiomSOSMap;
+	
 	private OWLOntology ontology;
 	private Reasoner reasoner;
+	private OWLOntologyManager manager;
 	private OWLDataFactory factory;
+	
 	boolean enableImpactUnsat;
 	
-	public AxiomRanker(OWLOntology ont, Reasoner reasoner, OWLDataFactory fact){
+	public AxiomRanker(OWLOntology ont, Reasoner reasoner, OWLOntologyManager mng){
 		this.ontology = ont;
 		this.reasoner = reasoner;
-		this.factory = fact;
+		this.manager = mng;
+		this.factory = manager.getOWLDataFactory();
+	}
+	
+	public Set<OWLAxiom> computeImpactOnRemoval(OWLAxiom ax){
+		Set<OWLAxiom> impact = new HashSet<OWLAxiom>();
+		
+		try {
+			IncrementalClassifier classifier = new IncrementalClassifier(manager);
+			classifier.loadOntology(ontology);
+			classifier.classify();
+			Set<OWLClass> inc = classifier.getInconsistentClasses();
+			for(OWLDescription cl : ontology.getClassesInSignature()){
+				if(!inc.contains(cl)){
+					for(OWLClass sup : SetUtils.union(classifier.getAncestorClasses(cl))){
+						if(!sup.equals(factory.getOWLThing())){
+							for(OWLClass sub : SetUtils.union(classifier.getDescendantClasses(cl))){
+								if(!sub.equals(factory.getOWLNothing())){
+									impact.add(factory.getOWLSubClassAxiom(cl, sup));
+								}
+							}
+							
+						}
+					}
+					
+				}
+			}
+			
+			
+			manager.applyChange(new RemoveAxiom(ontology, ax));
+			classifier.classify();
+			inc = classifier.getInconsistentClasses();
+			
+			for(OWLDescription cl : ontology.getClassesInSignature()){
+				if(!inc.contains(cl)){
+					for(OWLClass sup : SetUtils.union(classifier.getAncestorClasses(cl))){
+						if(!sup.equals(factory.getOWLThing())){
+							for(OWLClass sub : SetUtils.union(classifier.getDescendantClasses(cl))){
+								if(!sub.equals(factory.getOWLNothing())){
+									impact.remove(factory.getOWLSubClassAxiom(cl, sup));
+								}
+							}
+							
+						}
+					}
+					
+				}
+			}
+			manager.addAxiom(ontology, ax);classifier.classify();
+			
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return impact;
 	}
 
 	public Set<OWLAxiom> computeImpactSOS(OWLAxiom axiom) {
