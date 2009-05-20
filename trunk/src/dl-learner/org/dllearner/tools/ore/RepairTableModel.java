@@ -8,20 +8,19 @@ import javax.swing.table.AbstractTableModel;
 
 import org.semanticweb.owl.model.OWLAxiom;
 
-public class ImpactTableModel extends AbstractTableModel implements ImpactManagerListener
-{
+public class RepairTableModel extends AbstractTableModel implements ImpactManagerListener{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6109818990550020196L;
+	private static final long serialVersionUID = -5898900692701380258L;
 	private ImpactManager impMan;
-	private List<OWLAxiom> impact;
+	private List<OWLAxiom> axioms2Remove;
 	
-    public ImpactTableModel(ImpactManager impMan)
+    public RepairTableModel(ImpactManager impMan)
     {
       
-        impact = new ArrayList<OWLAxiom>();
+    	axioms2Remove = new ArrayList<OWLAxiom>();
         this.impMan = impMan;
         impMan.addListener(this);
         rebuildData();
@@ -29,9 +28,9 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 
     private void rebuildData()
     {
-    	impact.clear();
-    	impact.addAll(impMan.getImpactForAxioms2Remove());
-        Collections.sort(impact);
+    	axioms2Remove.clear();
+    	axioms2Remove.addAll(impMan.getAxioms2Remove());
+        Collections.sort(axioms2Remove);
         fireTableDataChanged();
     }
 
@@ -39,7 +38,7 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 
     public int getRowCount()
     {
-        return impact.size();
+        return axioms2Remove.size();
     }
 
     public int getColumnCount()
@@ -49,7 +48,7 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        return impact.get(rowIndex);
+        return axioms2Remove.get(rowIndex);
     }
 
     
@@ -64,6 +63,5 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 		rebuildData();
 		
 	}
-	
 
 }
