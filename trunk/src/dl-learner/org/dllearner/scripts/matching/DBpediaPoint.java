@@ -22,6 +22,8 @@ package org.dllearner.scripts.matching;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dllearner.kb.sparql.SparqlQuery;
 
@@ -35,8 +37,6 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 public class DBpediaPoint extends Point {
-
-	private URI uri;
 	
 	private String label;
 	
@@ -46,13 +46,14 @@ public class DBpediaPoint extends Point {
 	// number of decimals indicates a large object)
 	private int decimalCount;
 	
+	Pattern pattern = Pattern.compile("\\w+");
 	
 	/**
 	 * Constructs a DBpedia point using SPARQL.
 	 * @param uri URI of DBpedia resource.
 	 */
 	public DBpediaPoint(URI uri) throws Exception {
-		super(0,0);
+		super(uri, null, 0,0);
 		this.uri = uri;
 		
 		// construct DBpedia query
@@ -91,28 +92,33 @@ public class DBpediaPoint extends Point {
 		}
 		
 		classes = classList.toArray(classes);
+		poiClass = getPOIClass(classes);
 	}
 	
 	public DBpediaPoint(URI uri, String label, String[] classes, double geoLat, double geoLong, int decimalCount) {
-		super(geoLat,geoLong);
-		this.uri = uri;
+		super(uri, null, geoLat,geoLong);
 		this.label = label;
 		this.classes = classes;
 		this.decimalCount = decimalCount;
+		poiClass = getPOIClass(classes);
 	}
 	
-	/**
-	 * @return the uri
-	 */
-	public URI getUri() {
-		return uri;
-	}
-
 	/**
 	 * @return the label
 	 */
 	public String getLabel() {
 		return label;
+	}
+	
+	/**
+	 * 
+	 * @return Returns only first characters until a special symbol occurs, i.e. instead
+	 * of "Stretton, Derbyshire" it returns "Stretton". 
+	 */
+	public String getPlainLabel() {
+		Matcher matcher = pattern.matcher(label);
+		matcher.find();
+		return label.substring(0, matcher.end());
 	}
 	
 	public String[] getClasses() {
@@ -133,5 +139,14 @@ public class DBpediaPoint extends Point {
 			str += clazz + " ";
 		}
 		return str + ")";
+	}
+	
+	private POIClass getPOIClass(String[] classes) {
+		for(String clazz : classes) {
+			if(clazz.equals("http://dbpedia.org/ontology/City")) {
+				return POIClass.CITY;
+			}
+		}
+		return null;
 	}
 }

@@ -70,7 +70,7 @@ public class DBpediaLinkedGeoData {
 	
 	// true = SPARQL is used for retrieving close points;
 	// false = Triplify spatial extension is used
-	private static boolean useSparqlForGettingNearbyPoints = false;
+	private static boolean useSparqlForGettingNearbyPoints = true;
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -266,8 +266,12 @@ public class DBpediaLinkedGeoData {
 		
 		if(useSparqlForGettingNearbyPoints) {
 			// TODO: convert from meters to lat/long
-			double distanceThresholdLat = 0.3;
-			double distanceThresholdLong = 0.3;
+			double distanceThresholdLat = 0.5;
+			double distanceThresholdLong = 0.5;
+			
+			// Triplify: $1=  , $2=   , $3 = distance in meters
+			// $box='longitude between CEIL(($2-($3/1000)/abs(cos(radians($1))*111))*10000000) and CEIL(($2+($3/1000)/abs(cos(radians($1))*111))*10000000)
+			//	AND latitude between CEIL(($1-($3/1000/111))*10000000) and CEIL(($1+($3/1000/111))*10000000)';
 			
 			// create a box around the point
 			double minLat = dbpediaPoint.getGeoLat() - distanceThresholdLat;
@@ -275,27 +279,74 @@ public class DBpediaLinkedGeoData {
 			double minLong = dbpediaPoint.getGeoLong() - distanceThresholdLong;
 			double maxLong = dbpediaPoint.getGeoLong() + distanceThresholdLong;		
 			
-			// query all points in the box
-			String queryStr = "select ?point ?lat ?long ?name where { ";
+			// query all points in the box corresponding to this class
+			// (we make sure that returned points are in the same POI class)
+			String queryStr = "select ?point ?lat ?long ?name ?name_en ?name_int where { ";
+			queryStr += LGDPoint.getSPARQLRestriction(dbpediaPoint.getPoiClass(), "?point");
 			queryStr += "?point <http://linkedgeodata.org/vocabulary/latitude> ?lat .";
 			queryStr += "FILTER (xsd:float(?lat) > " + minLat + ") .";
 			queryStr += "FILTER (xsd:float(?lat) < " + maxLat + ") .";		
 			queryStr += "?point <http://linkedgeodata.org/vocabulary/longitude> ?long .";
 			queryStr += "FILTER (xsd:float(?long) > " + minLong + ") .";
 			queryStr += "FILTER (xsd:float(?long) < " + maxLong + ") .";
-			queryStr += "?point <http://linkedgeodata.org/vocabulary/name> ?name .";		
+			queryStr += "?point <http://linkedgeodata.org/vocabulary/name> ?name .";
+			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary/name%25en> ?name_en } .";
+			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary/name_int> ?name_int } .";
 			queryStr += "}";
 			
 			SparqlQuery query = new SparqlQuery(queryStr, geoDataEndpoint);
 			ResultSet rs = query.send();
 			
+			double highestScore = 0;
+			String bestURI = null;
+			String bestLabel = null;
 			while(rs.hasNext()) {
-//				QuerySolution qs = rs.nextSolution();
+				QuerySolution qs = rs.nextSolution();
 				
 				// measure string similarity and proximity
 				// TODO: incomplete
-			}		
-			return null;
+				
+				// step 1: string similarity
+				double stringSimilarity;
+				// from DBpedia we take the full label and an abbreviated version;
+				// from LGD we take name, name%25en, name, int_name
+				String dbpediaLabel1 = dbpediaPoint.getLabel();
+				String dbpediaLabel2 = dbpediaPoint.getPlainLabel();
+				String lgdLabel1 = qs.getLiteral("name").toString();
+				stringSimilarity = distance.score(dbpediaLabel1, lgdLabel1);
+				stringSimilarity = Math.max(distance.score(dbpediaLabel2, lgdLabel1), stringSimilarity);
+				if(qs.contains("name_en")) {
+					String lgdLabel2 = qs.getLiteral("name_en").toString();
+					stringSimilarity = distance.score(dbpediaLabel1, lgdLabel2);
+					stringSimilarity = Math.max(distance.score(dbpediaLabel2, lgdLabel2), stringSimilarity);					
+				}
+				if(qs.contains("name_int")) {
+					String lgdLabel3 = qs.getLiteral("name_int").toString();
+					stringSimilarity = distance.score(dbpediaLabel1, lgdLabel3);
+					stringSimilarity = Math.max(distance.score(dbpediaLabel2, lgdLabel3), stringSimilarity);					
+				}				
+				
+				// step 2: spatial distance
+				// ... not yet taken into account ... see spatialDistance() method below
+				
+				double score = stringSimilarity;
+				
+				if(score > highestScore) {
+					highestScore = score;
+					bestURI = qs.getResource("point").getURI();
+					bestLabel = lgdLabel1;
+				}
+				
+			}
+			
+			if(highestScore > scoreThreshold) {
+				System.out.println("Match: " + highestScore + " " + bestLabel + " (" + bestURI + ")");
+				return URI.create(bestURI);
+			} else {
+				System.out.println("No match: " + highestScore + " " + bestLabel + " (" + bestURI + ")");
+				return null;
+			}
+			
 		// use Tripliy spatial extension
 		} else {
 			
@@ -348,5 +399,25 @@ public class DBpediaLinkedGeoData {
 				return null;
 			}
 		}
+	}
+	
+	// returns distance between two points in meters
+	public static double spatialDistance(double lat1, double long1, double lat2, double long2) {
+//		$distance='ROUND(1000*1.609 * 3956 * 2 * ASIN(SQRT(  POWER(SIN(($1 - latitude/10000000) * pi()/180 / 2), 2) +
+//			COS($1 * pi()/180) *  COS(latitude/10000000 * pi()/180) *  POWER(SIN(($2 - longitude/10000000) * pi()
+//			/180 / 2), 2) ) )) AS distance';
+//		double distance = 1000 * 1.609 * 3956 * 2 * 
+//			Math.asin(Math.sqrt(Math.pow(Math.sin((lat1 - lat2)/1000000, b)));
+			
+		// implementation according to http://www.movable-type.co.uk/scripts/latlong.html
+		double r = 6371000; // meters
+		double dLat = Math.toRadians(lat2-lat1);
+		double dLon = Math.toRadians(long2-long1); 
+		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		        Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * 
+		        Math.sin(dLon/2) * Math.sin(dLon/2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		double distance = r * c;
+		return distance;
 	}
 }

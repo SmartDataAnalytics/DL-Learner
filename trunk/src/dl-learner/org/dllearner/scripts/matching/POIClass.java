@@ -19,45 +19,15 @@
  */
 package org.dllearner.scripts.matching;
 
-import java.net.URI;
-
 /**
- * A geo location.
+ * Contains all types of points of interests (POIs) we are
+ * interested in.
  * 
  * @author Jens Lehmann
  *
  */
-public class Point {
-	
-	protected double geoLat;
-	
-	protected double geoLong;
-	
-	protected URI uri;
-	
-	protected POIClass poiClass;
-	
-	public Point(URI uri, POIClass poiClass, double geoLat, double geoLong) {
-		this.uri = uri;
-		this.poiClass = poiClass;
-		this.geoLat = geoLat;
-		this.geoLong = geoLong;
-	}
+public enum POIClass {
 
-	public double getGeoLat() {
-		return geoLat;
-	}
-
-	public double getGeoLong() {
-		return geoLong;
-	}
-	
-	public URI getUri() {
-		return uri;
-	}	
-	
-	public POIClass getPoiClass() {
-		return poiClass;
-	}	
+	CITY, COUNTRY
 	
 }

@@ -72,7 +72,7 @@ public class Evaluation {
 			// memory to efficiently evaluate a lot of parameter settings without
 			// requiring to perform slow HTTP or SPARQL requests
 			
-			logger.trace("searching match for " + match.getKey() + "...");
+//			logger.trace("searching match for " + match.getKey() + "...");
 			
 			DBpediaPoint dbpediaPoint = null;
 			try {
@@ -82,7 +82,16 @@ public class Evaluation {
 				discarded++;
 				continue;
 			}
-			URI matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
+			
+			URI matchedURI = null;
+			
+			if(dbpediaPoint.getPoiClass() == POIClass.CITY) {
+				logger.trace("searching match for " + match.getKey() + "...");
+				matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
+			} else {
+				System.out.println("skipping");
+				continue;
+			}
 			
 			URI testURI = match.getValue();
 			
