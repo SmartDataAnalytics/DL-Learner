@@ -53,7 +53,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 */
 	public EvaluatedDescriptionPosNeg(Description description, ScorePosNeg score) {
 		super(description, score);
-		score2 = (ScorePosNeg) score;
+		score2 = score;
 	}
 	
 	/**

@@ -279,6 +279,15 @@ public boolean getUseDoubleDatatypes() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useDoubleDatatypes") ;
 }
 /**
+* useStringDatatypes specifies whether string datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getUseStringDatatypes() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useStringDatatypes") ;
+}
+/**
 * maxExecutionTimeInSeconds algorithm will stop after specified seconds.
 * mandatory: false| reinit necessary: true
 * default value: 0
@@ -619,6 +628,15 @@ reinitNecessary = true;
 **/
 public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
 ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useDoubleDatatypes", useDoubleDatatypes);
+reinitNecessary = true;
+}
+/**
+* @param useStringDatatypes specifies whether string datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setUseStringDatatypes(boolean useStringDatatypes) {
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useStringDatatypes", useStringDatatypes);
 reinitNecessary = true;
 }
 /**
