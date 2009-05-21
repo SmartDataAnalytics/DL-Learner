@@ -172,6 +172,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
 	private boolean useDoubleDatatypes = true;
+	private boolean useStringDatatypes = false;
 	private boolean disjointChecks = true;
 	private boolean instanceBasedDisjoints = true;
 	
@@ -202,6 +203,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		useNegation = configurator.getUseNegation();
 		useBooleanDatatypes = configurator.getUseBooleanDatatypes();
 		useDoubleDatatypes = configurator.getUseDoubleDatatypes();
+		useStringDatatypes = configurator.getUseStringDatatypes();
 		init();
 	}
 	
@@ -224,6 +226,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
+		useStringDatatypes = configurator.getUseStringDatatypes();
 		if(startClass != null) {
 			this.startClass = startClass;
 		}

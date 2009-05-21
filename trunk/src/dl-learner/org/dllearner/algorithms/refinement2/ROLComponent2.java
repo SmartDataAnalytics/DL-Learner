@@ -199,6 +199,7 @@ public class ROLComponent2 extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.useDoubleDatatypes());
+		options.add(CommonConfigOptions.useStringDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());

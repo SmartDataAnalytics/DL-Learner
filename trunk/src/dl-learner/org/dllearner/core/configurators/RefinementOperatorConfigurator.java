@@ -54,4 +54,8 @@ public abstract class RefinementOperatorConfigurator {
 	public boolean getUseDoubleDatatypes() {
 		return false;
 	}
+	
+	public boolean getUseStringDatatypes() {
+		return false;
+	}	
 }

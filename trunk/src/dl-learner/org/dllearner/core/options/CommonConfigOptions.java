@@ -49,6 +49,7 @@ public final class CommonConfigOptions {
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
 	public static boolean useDoubleDatatypesDefault = true;
+	public static boolean useStringDatatypesDefault = false;
 	public static int maxExecutionTimeInSecondsDefault = 0;
 	public static int minExecutionTimeInSecondsDefault = 0;
 	public static int guaranteeXgoodDescriptionsDefault = 1;
@@ -157,6 +158,10 @@ public final class CommonConfigOptions {
 	
 	public static BooleanConfigOption useDoubleDatatypes() {
 		return new BooleanConfigOption("useDoubleDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useDoubleDatatypesDefault);
+	}	
+	
+	public static BooleanConfigOption useStringDatatypes() {
+		return new BooleanConfigOption("useStringDatatypes", "specifies whether string datatypes are used in the learning algorothm",useStringDatatypesDefault);
 	}	
 	
 	public static IntegerConfigOption maxExecutionTimeInSeconds() {

@@ -29,10 +29,17 @@ import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectValueRestriction;
+import org.dllearner.core.owl.Union;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.StringToResource;
 import org.dllearner.kb.manipulator.Rule.Months;
@@ -40,6 +47,7 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosOnly;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 
@@ -74,8 +82,10 @@ public class LearnOSMClasses {
 //			System.out.println(isCity + " " + lgdURI);
 			if(isCity) {
 				positives.add(lgdURI.toString());
+				System.out.println("+\""+lgdURI+"\"");
 			} else {
 				negatives.add(lgdURI.toString());
+				System.out.println("-\""+lgdURI+"\"");
 			}
 		}
 		
@@ -93,7 +103,7 @@ public class LearnOSMClasses {
 		ks.getConfigurator().setPredefinedEndpoint("LOCALGEODATA");
 		ks.getConfigurator().setSaveExtractedFragment(true);
 		Manipulator m = Manipulator.getDefaultManipulator();
-		m.addRule(new StringToResource(Months.DECEMBER,"http://linkedgeodata.org/vocabulary", 40));
+		m.addRule(new StringToResource(Months.DECEMBER,"http://linkedgeodata.org/vocabulary", 0));
 		ks.setManipulator(m);
 		ks.init();
 		
@@ -105,9 +115,35 @@ public class LearnOSMClasses {
 		lp.init();
 		
 		CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+//		ROLComponent2 celoe = cm.learningAlgorithm(ROLComponent2.class, lp, reasoner);
+		celoe.getConfigurator().setUseAllConstructor(false);
+//		celoe.getConfigurator().setUseExistsConstructor(false);
+		celoe.getConfigurator().setUseCardinalityRestrictions(false);
+		celoe.getConfigurator().setUseBooleanDatatypes(false);
+		celoe.getConfigurator().setUseDoubleDatatypes(false);
+		celoe.getConfigurator().setUseNegation(false);
 		celoe.getConfigurator().setUseHasValueConstructor(true);
-		celoe.getConfigurator().setValueFrequencyThreshold(3);
+		celoe.getConfigurator().setValueFrequencyThreshold(10);
+		celoe.getConfigurator().setMaxExecutionTimeInSeconds(1000);
+		celoe.getConfigurator().setNoisePercentage(0.1);
 		celoe.init();
+		
+		// debugging
+//		ObjectProperty place = new ObjectProperty("http://linkedgeodata.org/vocabulary#place");
+//		Individual city = new Individual("http://linkedgeodata.org/vocabulary/city");
+//		Individual village = new Individual("http://linkedgeodata.org/vocabulary/village");
+//		Individual town = new Individual("http://linkedgeodata.org/vocabulary/town");
+//		Individual suburb = new Individual("http://linkedgeodata.org/vocabulary/suburb");
+//		Description vd = new ObjectValueRestriction(place, village);
+//		Description vc = new ObjectValueRestriction(place, city);
+//		Description vt = new ObjectValueRestriction(place, town);
+//		Description vs = new ObjectValueRestriction(place, suburb);
+//		Description d = new Union(vd, vt, vs);
+//		EvaluatedDescriptionPosOnly ed = lp.evaluate(d);
+//		System.out.println(ed);
+//		System.out.println(ed.getCoveredPositives().size() + ": " + ed.getCoveredPositives());
+//		System.out.println(ed.getNotCoveredPositives().size() + ": " + ed.getNotCoveredPositives());
+//		System.out.println(ed.getAdditionalInstances().size() + ": " + ed.getAdditionalInstances());
 		
 		// execute algorithm
 		celoe.start();

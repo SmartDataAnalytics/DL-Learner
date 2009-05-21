@@ -569,6 +569,8 @@ public class CELOE extends LearningAlgorithm {
 			
 			// inc. minimum since we found no other node which also has min. horiz. exp.
 			minHorizExp++;
+			
+//			System.out.println("minimum horizontal expansion is now " + minHorizExp);
 		}
 	}
 	

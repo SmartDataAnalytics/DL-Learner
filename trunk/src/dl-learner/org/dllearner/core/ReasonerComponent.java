@@ -661,6 +661,32 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
+	public final Map<Individual, SortedSet<String>> getStringDatatypeMembers(
+			DatatypeProperty datatypeProperty) {
+		try {
+			return getStringDatatypeMembersImpl(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Map<Individual, SortedSet<String>> getStringDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<Individual, SortedSet<String>> ret = new TreeMap<Individual, SortedSet<String>>();
+		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<String> valuesString = new TreeSet<String>();
+			for (Constant c : values) {
+				valuesString.add(c.getLiteral());				
+			}
+			ret.put(e.getKey(), valuesString);
+		}
+		return ret;
+	}	
+	
+	@Override
 	public final SortedSet<DatatypeProperty> getDatatypeProperties() {
 		try {
 			return getDatatypePropertiesImpl();

@@ -56,13 +56,13 @@ return component;
 }
 
 /**
-* numberOfTrees number of randomly generated concepts/trees.
+* numberOfGuesses number of randomly generated concepts/trees.
 * mandatory: false| reinit necessary: true
-* default value: 5
+* default value: 100
 * @return int 
 **/
-public int getNumberOfTrees() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuesser,  "numberOfTrees") ;
+public int getNumberOfGuesses() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuesser,  "numberOfGuesses") ;
 }
 /**
 * maxDepth maximum depth of generated concepts/trees.
@@ -75,12 +75,12 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuess
 }
 
 /**
-* @param numberOfTrees number of randomly generated concepts/trees.
+* @param numberOfGuesses number of randomly generated concepts/trees.
 * mandatory: false| reinit necessary: true
-* default value: 5
+* default value: 100
 **/
-public void setNumberOfTrees(int numberOfTrees) {
-ComponentManager.getInstance().applyConfigEntry(randomGuesser, "numberOfTrees", numberOfTrees);
+public void setNumberOfGuesses(int numberOfGuesses) {
+ComponentManager.getInstance().applyConfigEntry(randomGuesser, "numberOfGuesses", numberOfGuesses);
 reinitNecessary = true;
 }
 /**
