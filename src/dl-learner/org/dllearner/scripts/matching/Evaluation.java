@@ -19,12 +19,9 @@
  */
 package org.dllearner.scripts.matching;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
@@ -86,10 +83,10 @@ public class Evaluation {
 			URI matchedURI = null;
 			
 			if(dbpediaPoint.getPoiClass() == POIClass.CITY) {
-				logger.trace("searching match for " + match.getKey() + "...");
+				logger.info("Eval: searching match for " + match.getKey() + "...");
 				matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
 			} else {
-				System.out.println("skipping");
+				System.out.println("skipping " +  dbpediaPoint.getUri() + " (not detected as a city)");
 				continue;
 			}
 			
@@ -98,15 +95,15 @@ public class Evaluation {
 			// no match found
 			if(matchedURI == null) {
 				noMatchCount++;
-				logger.trace("  ... no match found");
+				logger.info("Eval:  ... no match found");
 			// correct match found
 			} else if(matchedURI.equals(testURI)) {
 				correctMatchCount++;
-				logger.trace("  ... " + testURI + " correctly detected");
+				logger.info("Eval:  ... " + testURI + " correctly detected");
 			// incorrect match found
 			} else {
 				incorrectMatchCount++;
-				logger.trace("  ... " + matchedURI + " detected, but " + testURI + " is correct");
+				logger.info("Eval:  ... " + matchedURI + " detected, but " + testURI + " is correct");
 			}
 			
 			tests++;
@@ -153,7 +150,7 @@ public class Evaluation {
 	
 	public static void main(String args[]) throws IOException, DataFormatException {
 		
-		Logger.getRootLogger().setLevel(Level.TRACE);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		// test file
 		File testFile = new File("log/geodata/owlsameas_en.dat");
 		// map for collecting matches
@@ -161,8 +158,8 @@ public class Evaluation {
 		// perform evaluation and print results
 		Evaluation eval = new Evaluation(matches);
 		System.out.println(eval.getTests() + " points tested (" + eval.getDiscarded() + " discarded)");
-		System.out.println("precision: " + eval.getPrecision());
-		System.out.println("recall: " + eval.getRecall());
+		System.out.println("precision: " + eval.getPrecision() + " (" + eval.getCorrectMatchCount() + "/" + eval.getMatchCount() + ")");
+		System.out.println("recall: " + eval.getRecall() + " (" + eval.getCorrectMatchCount() + "/" + eval.getTests() + ")");
 	}
 	
 }

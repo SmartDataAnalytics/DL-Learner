@@ -32,6 +32,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.Files;
@@ -50,6 +53,8 @@ import com.wcohen.ss.api.StringDistance;
  */
 public class DBpediaLinkedGeoData {
 
+	private static Logger logger = Logger.getLogger(DBpediaLinkedGeoData.class);
+	
 	// chose between nt and dat
 	private static String dbpediaFileFormat = "dat";
 	static File dbpediaFile =  new File("log/DBpedia_POIs." + dbpediaFileFormat);	
@@ -57,12 +62,15 @@ public class DBpediaLinkedGeoData {
 	
 	private static File matchingFile = new File("log/DBpedia_GeoData_Links.nt");
 	private static File missesFile = new File("log/DBpedia_GeoData_Misses.dat");
-	private static double scoreThreshold = 0.8;
+	private static double scoreThreshold = 0.9;
 	private static StringDistance distance = new Jaro();
+	
+	private static String usedDatatype = "xsd:decimal";
 	
 //	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointDBpedia();
 	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
+	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/matcher/"), geoDataEndpoint);
 	
 	// read in DBpedia ontology such that we perform taxonomy reasoning
 //	private static ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DBPEDIA_OWL);
@@ -283,19 +291,20 @@ public class DBpediaLinkedGeoData {
 			// (we make sure that returned points are in the same POI class)
 			String queryStr = "select ?point ?lat ?long ?name ?name_en ?name_int where { ";
 			queryStr += LGDPoint.getSPARQLRestriction(dbpediaPoint.getPoiClass(), "?point");
-			queryStr += "?point <http://linkedgeodata.org/vocabulary/latitude> ?lat .";
-			queryStr += "FILTER (xsd:float(?lat) > " + minLat + ") .";
-			queryStr += "FILTER (xsd:float(?lat) < " + maxLat + ") .";		
-			queryStr += "?point <http://linkedgeodata.org/vocabulary/longitude> ?long .";
-			queryStr += "FILTER (xsd:float(?long) > " + minLong + ") .";
-			queryStr += "FILTER (xsd:float(?long) < " + maxLong + ") .";
-			queryStr += "?point <http://linkedgeodata.org/vocabulary/name> ?name .";
-			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary/name%25en> ?name_en } .";
-			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary/name_int> ?name_int } .";
+			queryStr += "?point <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .";
+			queryStr += "FILTER ("+usedDatatype+"(?lat) > " + minLat + ") .";
+			queryStr += "FILTER ("+usedDatatype+"(?lat) < " + maxLat + ") .";		
+			queryStr += "?point <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .";
+			queryStr += "FILTER ("+usedDatatype+"(?long) > " + minLong + ") .";
+			queryStr += "FILTER ("+usedDatatype+"(?long) < " + maxLong + ") .";
+			queryStr += "?point <http://linkedgeodata.org/vocabulary#name> ?name .";
+			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary#name%25en> ?name_en } .";
+			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary#name_int> ?name_int } .";
 			queryStr += "}";
 			
-			SparqlQuery query = new SparqlQuery(queryStr, geoDataEndpoint);
-			ResultSet rs = query.send();
+//			SparqlQuery query = new SparqlQuery(queryStr, geoDataEndpoint);
+//			ResultSet rs = query.send();
+			ResultSet rs = lgd.queryAsResultSet(queryStr);
 			
 			double highestScore = 0;
 			String bestURI = null;
@@ -312,6 +321,10 @@ public class DBpediaLinkedGeoData {
 				// from LGD we take name, name%25en, name, int_name
 				String dbpediaLabel1 = dbpediaPoint.getLabel();
 				String dbpediaLabel2 = dbpediaPoint.getPlainLabel();
+				
+//				System.out.println("label 1: " + dbpediaLabel1);
+//				System.out.println("label 2: " + dbpediaLabel2);
+				
 				String lgdLabel1 = qs.getLiteral("name").toString();
 				stringSimilarity = distance.score(dbpediaLabel1, lgdLabel1);
 				stringSimilarity = Math.max(distance.score(dbpediaLabel2, lgdLabel1), stringSimilarity);
@@ -340,10 +353,10 @@ public class DBpediaLinkedGeoData {
 			}
 			
 			if(highestScore > scoreThreshold) {
-				System.out.println("Match: " + highestScore + " " + bestLabel + " (" + bestURI + ")");
+				logger.info("Match: " + highestScore + " " + bestLabel + " (" + dbpediaPoint.getUri() + " --> " + bestURI + ")");
 				return URI.create(bestURI);
 			} else {
-				System.out.println("No match: " + highestScore + " " + bestLabel + " (" + bestURI + ")");
+				logger.info("No match: " + highestScore + " " + bestLabel + " (" + dbpediaPoint.getUri() + " --/-> " + bestURI + ")");
 				return null;
 			}
 			

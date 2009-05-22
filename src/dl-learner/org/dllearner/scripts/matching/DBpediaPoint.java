@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.SPARQLTasks;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -46,7 +47,11 @@ public class DBpediaPoint extends Point {
 	// number of decimals indicates a large object)
 	private int decimalCount;
 	
-	Pattern pattern = Pattern.compile("\\w+");
+	// all word symbols + space
+	Pattern pattern = Pattern.compile("[\\w| ]+");
+	
+	// use a cache such that DBpedia points can be quickly constructed from URIs 
+	private static SPARQLTasks st = new SPARQLTasks(new Cache("cache/dbpedia_points/"), DBpediaLinkedGeoData.dbpediaEndpoint);
 	
 	/**
 	 * Constructs a DBpedia point using SPARQL.
@@ -66,8 +71,9 @@ public class DBpediaPoint extends Point {
 		queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%>) .";
 		queryStr += "} }";
 		
-		SparqlQuery query = new SparqlQuery(queryStr, DBpediaLinkedGeoData.dbpediaEndpoint);
-		ResultSet rs = query.send();
+//		SparqlQuery query = new SparqlQuery(queryStr, DBpediaLinkedGeoData.dbpediaEndpoint);
+		ResultSet rs = st.queryAsResultSet(queryStr);
+//		ResultSet rs = query.send();
 		classes = new String[] { };
 		List<String> classList = new LinkedList<String>();
 		
