@@ -29,17 +29,10 @@ import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
 
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.Union;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.StringToResource;
 import org.dllearner.kb.manipulator.Rule.Months;
@@ -47,7 +40,6 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosOnly;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 
@@ -79,6 +71,12 @@ public class LearnOSMClasses {
 			// test whether the dbpediaURI is a city
 			String query = "ASK {<"+dbpediaURI+"> a <http://dbpedia.org/ontology/City>}";
 			boolean isCity = dbpedia.ask(query);
+			if(!isCity) {
+				// DBpedia ontology does not capture all cities, so we also use UMBEL, YAGO
+				String query2 = "ASK {<"+dbpediaURI+"> a ?x . FILTER(?x LIKE <%City%>) }";
+				String query3 = "ASK {<"+dbpediaURI+"> a ?x . FILTER(?x LIKE <%Cities%>) }";
+				isCity = dbpedia.ask(query2) || dbpedia.ask(query3);
+			}
 //			System.out.println(isCity + " " + lgdURI);
 			if(isCity) {
 				positives.add(lgdURI.toString());

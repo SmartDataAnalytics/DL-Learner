@@ -172,6 +172,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
 	private boolean useDoubleDatatypes = true;
+	@SuppressWarnings("unused")
 	private boolean useStringDatatypes = false;
 	private boolean disjointChecks = true;
 	private boolean instanceBasedDisjoints = true;

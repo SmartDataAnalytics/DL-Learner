@@ -51,7 +51,7 @@ public class LGDPoint extends Point {
 	
 	public static String getSPARQLRestriction(POIClass poiClass, String variable) {
 		switch(poiClass) {
-		case CITY : return variable + " <http://linkedgeodata.org/vocabulary#amenity> \"city\" .";
+		case CITY : return "{ " + variable + " <http://linkedgeodata.org/vocabulary#place> \"city\" } UNION {" + variable + " <http://linkedgeodata.org/vocabulary#place> \"village\" } UNION {" + variable + " <http://linkedgeodata.org/vocabulary#place> \"town\" } UNION {" + variable + " <http://linkedgeodata.org/vocabulary#place> \"suburb\" }";
 		default: throw new Error("Cannot restrict.");
 		}
 	}
