@@ -62,13 +62,14 @@ public class DBpediaLinkedGeoData {
 	
 	private static File matchingFile = new File("log/DBpedia_GeoData_Links.nt");
 	private static File missesFile = new File("log/DBpedia_GeoData_Misses.dat");
-	private static double scoreThreshold = 0.9;
+	private static double scoreThreshold = 0.85;
 	private static StringDistance distance = new Jaro();
 	
 	private static String usedDatatype = "xsd:decimal";
 	
 //	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointDBpedia();
 	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
+	private static SPARQLTasks dbpedia = new SPARQLTasks(new Cache("cache/dbpedia_file/"), dbpediaEndpoint);	
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
 	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/lgd/"), geoDataEndpoint);
 	
@@ -181,12 +182,13 @@ public class DBpediaLinkedGeoData {
 			queryStr += "?object rdfs:label ?label . ";
 			queryStr += "OPTIONAL { ?object rdf:type ?type . ";
 			queryStr += "FILTER (!(?type LIKE <http://dbpedia.org/ontology/Resource>)) .";
-			queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%>) .";
+			queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%> || ?type LIKE <http://umbel.org/umbel/sc/%>) .";
 			queryStr += "} }";
 			queryStr += "LIMIT " + limit + " OFFSET " + offset;
 			
-			SparqlQuery query = new SparqlQuery(queryStr, dbpediaEndpoint);
-			ResultSet rs = query.send();
+//			SparqlQuery query = new SparqlQuery(queryStr, dbpediaEndpoint);
+//			ResultSet rs = query.send();
+			ResultSet rs = dbpedia.queryAsResultSet(queryStr);
 			String previousObject = null;
 			String geoLat = "";
 			String geoLong = "";
@@ -352,9 +354,13 @@ public class DBpediaLinkedGeoData {
 				}				
 				
 				// step 2: spatial distance
-				// ... not yet taken into account ... see spatialDistance() method below
+				double lat = qs.getLiteral("lat").getDouble();
+				double lon = qs.getLiteral("long").getDouble();
+				double distance = spatialDistance(dbpediaPoint.getGeoLat(), dbpediaPoint.getGeoLong(), lat, lon);
+				double frac = distance / dbpediaPoint.getPoiClass().getMaxBox();
+				double distanceScore = Math.pow(frac-1,4);
 				
-				double score = stringSimilarity;
+				double score = 0.8 * stringSimilarity + 0.2 * distanceScore;
 				
 				if(score > highestScore) {
 					highestScore = score;
