@@ -22,6 +22,8 @@ package org.dllearner.scripts.matching;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.DataFormatException;
@@ -47,6 +49,11 @@ public class Evaluation {
 	private double precision;
 	private double recall;
 
+	private Map<POIClass, Integer> testsPerClass = new HashMap<POIClass, Integer>();
+	private Map<POIClass, Integer> noMatchPerClass = new HashMap<POIClass, Integer>();
+	private Map<POIClass, Integer> correctMatchPerClass = new HashMap<POIClass, Integer>();
+	private Map<POIClass, Integer> incorrectMatchPerClass = new HashMap<POIClass, Integer>();
+	
 	private static Logger logger = Logger.getLogger(Evaluation.class);
 	
 	// map from DBpedia to LinkedGeoData
@@ -57,6 +64,14 @@ public class Evaluation {
 		noMatchCount = 0;
 		correctMatchCount = 0;
 		incorrectMatchCount = 0;
+		
+		// init counts
+		for(POIClass poiClass : POIClass.values()) {
+			testsPerClass.put(poiClass, 0);
+			noMatchPerClass.put(poiClass, 0);
+			correctMatchPerClass.put(poiClass, 0);
+			incorrectMatchPerClass.put(poiClass, 0);
+		}
 		
 		for(Entry<URI,URI> match : testMatches.entrySet()) {
 			// find point in DBpedia file:
@@ -82,12 +97,16 @@ public class Evaluation {
 			
 			URI matchedURI = null;
 			
-			if(dbpediaPoint.getPoiClass() == POIClass.CITY) {
-				logger.info("Eval: searching match for " + match.getKey() + "...");
-				matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
-			} else {
-				System.out.println("skipping " +  dbpediaPoint.getUri() + " (not detected as a city)");
+			if(dbpediaPoint.getPoiClass() == null) {
+				if(dbpediaPoint.getClasses().length == 0) {
+					System.out.println("skipping " +  dbpediaPoint.getUri() + " (unknown POI type)");
+				} else {
+					System.out.println("skipping " +  dbpediaPoint.getUri() + " (unsupported POI type)");
+				}
 				continue;
+			} else {
+				logger.info("Eval: searching match for " + match.getKey() + "(" + dbpediaPoint.getPoiClass() + ") ...");
+				matchedURI = DBpediaLinkedGeoData.findGeoDataMatch(dbpediaPoint);
 			}
 			
 			URI testURI = match.getValue();
@@ -95,18 +114,22 @@ public class Evaluation {
 			// no match found
 			if(matchedURI == null) {
 				noMatchCount++;
+				inc(noMatchPerClass, dbpediaPoint.getPoiClass());
 				logger.info("Eval:  ... no match found");
 			// correct match found
 			} else if(matchedURI.equals(testURI)) {
 				correctMatchCount++;
+				inc(correctMatchPerClass, dbpediaPoint.getPoiClass());
 				logger.info("Eval:  ... " + testURI + " correctly detected");
 			// incorrect match found
 			} else {
 				incorrectMatchCount++;
+				inc(incorrectMatchPerClass, dbpediaPoint.getPoiClass());
 				logger.info("Eval:  ... " + matchedURI + " detected, but " + testURI + " is correct");
 			}
 			
 			tests++;
+			inc(testsPerClass, dbpediaPoint.getPoiClass());
 		}
 		
 		matchCount = correctMatchCount + incorrectMatchCount;
@@ -148,6 +171,50 @@ public class Evaluation {
 		return discarded;
 	}	
 	
+	private void inc(Map<POIClass,Integer> map, POIClass poiClass) {
+//		if(map.containsKey(poiClass)) {
+			map.put(poiClass, map.get(poiClass)+1);
+//		} else {
+//			map.put(poiClass, 1);
+//		}
+	}
+	
+	public Integer getCorrectMatchPerClass(POIClass poiClass) {
+		return correctMatchPerClass.get(poiClass);
+	}	
+	
+	public Integer getIncorrectMatchPerClass(POIClass poiClass) {
+		return incorrectMatchPerClass.get(poiClass);
+	}	
+	
+	public Integer getTestsPerClass(POIClass poiClass) {
+		return testsPerClass.get(poiClass);
+	}	
+	
+	public Integer getMatchPerClass(POIClass poiClass) {
+		return incorrectMatchPerClass.get(poiClass) + correctMatchPerClass.get(poiClass);
+	}	
+	
+	public Integer getNoMatchPerClass(POIClass poiClass) {
+		return noMatchPerClass.get(poiClass);
+	}
+	
+	public double getPrecisionPerClass(POIClass poiClass) {
+		if(getMatchPerClass(poiClass) == 0) {
+			return 0;
+		} else {
+			return correctMatchPerClass.get(poiClass) / (double) getMatchPerClass(poiClass);
+		}
+	}
+	
+	public double getRecallPerClass(POIClass poiClass) {
+		if(testsPerClass.get(poiClass) == 0) {
+			return 0;
+		} else {
+			return correctMatchPerClass.get(poiClass) / (double) testsPerClass.get(poiClass);
+		}
+	}		
+	
 	public static void main(String args[]) throws IOException, DataFormatException {
 		
 		Logger.getRootLogger().setLevel(Level.INFO);
@@ -156,10 +223,24 @@ public class Evaluation {
 		// map for collecting matches
 		Map<URI,URI> matches = Utility.getMatches(testFile);
 		// perform evaluation and print results
+		System.out.println(new Date());
 		Evaluation eval = new Evaluation(matches);
+		System.out.println(new Date());
+
+		for(POIClass poiClass : POIClass.values()) {
+			System.out.println();
+			System.out.println("summary for POI class " + poiClass + ":");
+			System.out.println(eval.getTestsPerClass(poiClass) + " points tested");
+			System.out.println("precision: " + eval.getPrecisionPerClass(poiClass) + " (" + eval.getCorrectMatchPerClass(poiClass) + "/" + eval.getMatchPerClass(poiClass) + ")");
+			System.out.println("recall: " + eval.getRecallPerClass(poiClass) + " (" + eval.getCorrectMatchPerClass(poiClass) + "/" + eval.getTestsPerClass(poiClass) + ")");			
+		}
+		
+		System.out.println("");
+		System.out.println("Overall summary:");
 		System.out.println(eval.getTests() + " points tested (" + eval.getDiscarded() + " discarded)");
 		System.out.println("precision: " + eval.getPrecision() + " (" + eval.getCorrectMatchCount() + "/" + eval.getMatchCount() + ")");
 		System.out.println("recall: " + eval.getRecall() + " (" + eval.getCorrectMatchCount() + "/" + eval.getTests() + ")");
+				
 	}
 	
 }

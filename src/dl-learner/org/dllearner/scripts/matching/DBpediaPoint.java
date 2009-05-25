@@ -68,7 +68,7 @@ public class DBpediaPoint extends Point {
 		queryStr += "<"+uri+"> rdfs:label ?label . ";
 		queryStr += "OPTIONAL { <"+uri+"> rdf:type ?type . ";
 		queryStr += "FILTER (!(?type LIKE <http://dbpedia.org/ontology/Resource>)) .";
-		queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%>) .";
+		queryStr += "FILTER (?type LIKE <http://dbpedia.org/ontology/%> || ?type LIKE <http://umbel.org/umbel/sc/%>) .";
 		queryStr += "} }";
 		
 //		SparqlQuery query = new SparqlQuery(queryStr, DBpediaLinkedGeoData.dbpediaEndpoint);
@@ -147,10 +147,28 @@ public class DBpediaPoint extends Point {
 		return str + ")";
 	}
 	
+	// maps classes (in DBpedia ontology or otherwise) to supported POI classes
 	private POIClass getPOIClass(String[] classes) {
 		for(String clazz : classes) {
+//			System.out.println("class: " + clazz);
 			if(clazz.equals("http://dbpedia.org/ontology/City")) {
 				return POIClass.CITY;
+			} if(clazz.equals("http://umbel.org/umbel/sc/City")) {
+				return POIClass.CITY;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Lake")) {
+				return POIClass.LAKE;
+			} else if(clazz.equals("http://dbpedia.org/ontology/University")) {
+				return POIClass.UNIVERSITY;
+			} else if(clazz.equals("http://dbpedia.org/ontology/School")) {
+				return POIClass.SCHOOL;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Country")) {
+				return POIClass.COUNTRY;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Airport")) {
+				return POIClass.AIRPORT;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Airfield")) {
+				return POIClass.AIRPORT;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Station")) {
+				return POIClass.RAILWAY_STATION;
 			}
 		}
 		return null;

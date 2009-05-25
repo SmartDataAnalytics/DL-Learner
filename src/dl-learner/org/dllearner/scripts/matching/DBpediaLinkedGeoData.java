@@ -70,7 +70,7 @@ public class DBpediaLinkedGeoData {
 //	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointDBpedia();
 	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
-	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/matcher/"), geoDataEndpoint);
+	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/lgd/"), geoDataEndpoint);
 	
 	// read in DBpedia ontology such that we perform taxonomy reasoning
 //	private static ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DBPEDIA_OWL);
@@ -266,27 +266,39 @@ public class DBpediaLinkedGeoData {
 		fos.close();		
 	}
 	
+	/**
+	 * The main matching method. The matching is directed from DBpedia to LGD,
+	 * i.e. given a POI in DBpedia, we try to find a match in LGD.
+	 * 
+	 * @param dbpediaPoint The DBpedia point.
+	 * @return The URI of the matched LGD point or null if no match was found.
+	 * @throws IOException Thrown if a query or linked data access does not work.
+	 */
 	public static URI findGeoDataMatch(DBpediaPoint dbpediaPoint) throws IOException {
 		
 		// 1 degree is about 111 km (depending on the specific point)
-		int distanceThresholdMeters = 1000;
+		double distanceThresholdMeters = dbpediaPoint.getPoiClass().getMaxBox();
 		boolean quiet = true;
 		
 		if(useSparqlForGettingNearbyPoints) {
-			// TODO: convert from meters to lat/long
-			double distanceThresholdLat = 0.5;
-			double distanceThresholdLong = 0.5;
-			
-			// Triplify: $1=  , $2=   , $3 = distance in meters
+			// deprecated: direct specification of long/lat difference
+//			double distanceThresholdLat = 0.5;
+//			double distanceThresholdLong = 0.5;
+			// create a box around the point
+//			double minLat2 = dbpediaPoint.getGeoLat() - distanceThresholdLat;
+//			double maxLat2 = dbpediaPoint.getGeoLat() + distanceThresholdLat;
+//			double minLong2 = dbpediaPoint.getGeoLong() - distanceThresholdLong;
+//			double maxLong2 = dbpediaPoint.getGeoLong() + distanceThresholdLong;	
+ 
+			// Triplify: $1 = latitude, $2 = longitude, $3 = distance in meters
+			// LGD uses integer for lat/long (standard values multiplied by 10000000)
 			// $box='longitude between CEIL(($2-($3/1000)/abs(cos(radians($1))*111))*10000000) and CEIL(($2+($3/1000)/abs(cos(radians($1))*111))*10000000)
 			//	AND latitude between CEIL(($1-($3/1000/111))*10000000) and CEIL(($1+($3/1000/111))*10000000)';
 			
-			// create a box around the point
-			double minLat = dbpediaPoint.getGeoLat() - distanceThresholdLat;
-			double maxLat = dbpediaPoint.getGeoLat() + distanceThresholdLat;
-			double minLong = dbpediaPoint.getGeoLong() - distanceThresholdLong;
-			double maxLong = dbpediaPoint.getGeoLong() + distanceThresholdLong;		
-			
+			double minLat =  dbpediaPoint.getGeoLat()-(distanceThresholdMeters/1000/111);
+			double maxLat =  dbpediaPoint.getGeoLat()+(distanceThresholdMeters/1000/111);
+			double minLong = dbpediaPoint.getGeoLong()-(distanceThresholdMeters/1000)/Math.abs(Math.cos(Math.toRadians(dbpediaPoint.getGeoLat()))*111);
+			double maxLong = dbpediaPoint.getGeoLong()+(distanceThresholdMeters/1000)/Math.abs(Math.cos(Math.toRadians(dbpediaPoint.getGeoLat()))*111);	
 			// query all points in the box corresponding to this class
 			// (we make sure that returned points are in the same POI class)
 			String queryStr = "select ?point ?lat ?long ?name ?name_en ?name_int where { ";
