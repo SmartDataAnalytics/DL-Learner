@@ -52,7 +52,7 @@ public class SPARQLTasks {
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
-		super();
+//		super();
 		this.cache = null;
 		this.sparqlEndpoint = sparqlEndpoint;
 	}
@@ -64,7 +64,7 @@ public class SPARQLTasks {
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
-		super();
+//		super();
 		this.cache = cache;
 		this.sparqlEndpoint = sparqlEndpoint;
 	}
@@ -472,7 +472,6 @@ public class SPARQLTasks {
 
 	/**
 	 * low level, executes query returns ResultSet.
-	 * TODO: Why convert from result set to JSON and back? See method below.
 	 * 
 	 * @param sparqlQueryString
 	 *            The query
@@ -480,7 +479,13 @@ public class SPARQLTasks {
 	 */
 	public ResultSetRewindable queryAsResultSet(String sparqlQueryString) {
 		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
-		return sq.send();
+		if(cache == null) {
+			return sq.send();
+		} else {
+			// get JSON from cache and convert to result set
+			String json = cache.executeSparqlQuery(sq);
+			return SparqlQuery.convertJSONtoResultSet(json);
+		}
 	}
 	
 	/**

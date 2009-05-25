@@ -28,6 +28,44 @@ package org.dllearner.scripts.matching;
  */
 public enum POIClass {
 
-	CITY, COUNTRY
+	// 50 km box
+	CITY (50000), 
 	
+	// 5 km box
+	AIRPORT (5000),
+	
+	// 10 km box
+	UNIVERSITY (10000),
+	
+	// 10 km box - usage unclear
+//	MUNICIPALITY (10000),
+	
+	SCHOOL (10000),
+	
+	RAILWAY_STATION (10000),
+	
+	// 1000 km box
+	LAKE (1000000000),
+	
+	// 5000 km box
+	COUNTRY (5000000);
+	
+	private double maxBox;
+	
+	POIClass(double maxBox) {
+		this.maxBox = maxBox;
+	}
+	
+	/**
+	 * Maximum distance coordinates and actual position of
+	 * this POI type can differ in meters. Retrieving POIs within
+	 * the box specified by this distance should always contain
+	 * the POI itself.
+	 *  
+	 * @return The distance in meters different typical POIs for this
+	 * type can differ.
+	 */
+	public double getMaxBox() {
+		return maxBox;
+	}
 }
