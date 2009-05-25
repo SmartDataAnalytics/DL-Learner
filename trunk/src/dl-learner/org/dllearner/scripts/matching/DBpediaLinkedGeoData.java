@@ -30,13 +30,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.Files;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -73,6 +75,9 @@ public class DBpediaLinkedGeoData {
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
 	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/lgd/"), geoDataEndpoint);
 	
+	private static Map<POIClass, Integer> noMatchPerClass = new HashMap<POIClass, Integer>();
+	private static Map<POIClass, Integer> matchPerClass = new HashMap<POIClass, Integer>();
+	
 	// read in DBpedia ontology such that we perform taxonomy reasoning
 //	private static ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DBPEDIA_OWL);
 //	private static ClassHierarchy hierarchy = reasoner.getClassHierarchy();
@@ -83,9 +88,16 @@ public class DBpediaLinkedGeoData {
 	
 	public static void main(String[] args) throws IOException {
 		
+		Logger.getRootLogger().setLevel(Level.WARN);
+		
 		// download all objects having geo-coordinates from DBpedia if necessary
 		if(!dbpediaFile.exists() || regenerateFile) {
 			createDBpediaFile();
+		}
+		
+		for(POIClass poiClass : POIClass.values()) {
+			matchPerClass.put(poiClass, 0);
+			noMatchPerClass.put(poiClass, 0);
 		}
 		
 		Files.clearFile(matchingFile);
@@ -100,6 +112,7 @@ public class DBpediaLinkedGeoData {
 		
 		// temporary variables needed while reading in file
 		int itemCount = 0;
+		int skipCount = 0;
 		URI uri = null;
 		String label = null;
 		String[] classes = null;
@@ -111,22 +124,29 @@ public class DBpediaLinkedGeoData {
 			
 			if(line.isEmpty()) {
 				DBpediaPoint dp = new DBpediaPoint(uri, label, classes, geoLat, geoLong, decimalCount);
+				POIClass poiClass = dp.getPoiClass();
 				
-				// find match (we assume there is exactly one match)
-				URI matchURI = findGeoDataMatch(dp);
-				if(matchURI == null) {
-					String missStr = dp.toString() + "\n";
-					fosMiss.write(missStr.getBytes());
+				if(poiClass != null) {
+					// find match (we assume there is exactly one match)
+					URI matchURI = findGeoDataMatch(dp);
+					if(matchURI == null) {
+						String missStr = dp.toString() + "\n";
+						fosMiss.write(missStr.getBytes());
+						noMatchPerClass.put(poiClass, noMatchPerClass.get(poiClass)+1);
+					} else {
+						String matchStr = "<" + dp.getUri() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + matchURI + "> .\n";
+						fos.write(matchStr.getBytes());	
+						matches++;
+						matchPerClass.put(poiClass, noMatchPerClass.get(poiClass)+1);
+					}
+					counter++;
+					
+					if(counter % 100 == 0) {
+						System.out.println(new Date().toString() + ": " + counter + " points processed. " + matches + " matches found. " + skipCount + " POIs skipped.");
+					}				
 				} else {
-					String matchStr = "<" + dp.getUri() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + matchURI + "> .\n";
-					fos.write(matchStr.getBytes());	
-					matches++;
+					skipCount++;
 				}
-				counter++;
-				
-				if(counter % 1000 == 0) {
-					System.out.println(new Date().toString() + ": " + counter + " points processed. " + matches + " matches found.");
-				}				
 				
 				itemCount = 0;
 			} else {
@@ -159,6 +179,21 @@ public class DBpediaLinkedGeoData {
 		}
 		br.close();
 		fos.close();
+		
+		
+		
+		for(POIClass poiClass : POIClass.values()) {
+			System.out.println();
+			System.out.println("summary for POI class " + poiClass + ":");
+			System.out.println("matches " + matchPerClass.get(poiClass));
+			System.out.println("no matches " + noMatchPerClass.get(poiClass));
+		}
+		
+		System.out.println("");
+		System.out.println("Overall summary:");
+		System.out.println(skipCount + " POIs skipped (no classification available)");
+		System.out.println(counter + " POIs processed");
+		System.out.println(matches + " matches found");
 	}
 	
 	// downloads information about DBpedia into a separate file

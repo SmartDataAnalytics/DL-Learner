@@ -44,11 +44,11 @@ public enum POIClass {
 	
 	RAILWAY_STATION (10000),
 	
-	// 1000 km box
-	LAKE (1000000000),
+	// 200 km box (largest lake is the Caspian Sea with 1200 km length)
+	LAKE (200000),
 	
-	// 5000 km box
-	COUNTRY (5000000);
+	// 2000 km box (Russia has radius 4000 km)
+	COUNTRY (2000000);
 	
 	private double maxBox;
 	
