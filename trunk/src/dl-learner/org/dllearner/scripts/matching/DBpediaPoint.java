@@ -148,7 +148,7 @@ public class DBpediaPoint extends Point {
 	}
 	
 	// maps classes (in DBpedia ontology or otherwise) to supported POI classes
-	private POIClass getPOIClass(String[] classes) {
+	public static POIClass getPOIClass(String[] classes) {
 		for(String clazz : classes) {
 //			System.out.println("class: " + clazz);
 			if(clazz.equals("http://dbpedia.org/ontology/City")) {
@@ -169,6 +169,20 @@ public class DBpediaPoint extends Point {
 				return POIClass.AIRPORT;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Station")) {
 				return POIClass.RAILWAY_STATION;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Stadium")) {
+				return POIClass.STADIUM;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Island")) {
+				return POIClass.ISLAND;
+			} else if(clazz.equals("http://dbpedia.org/ontology/River")) {
+				return POIClass.RIVER;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Bridge")) {
+				return POIClass.BRIDGE;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Mountain")) {
+				return POIClass.MOUNTAIN;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Mountain")) {
+				return POIClass.MOUNTAIN;
+			} else if(clazz.equals("http://dbpedia.org/ontology/Lighthouse")) {
+				return POIClass.LIGHT_HOUSE;
 			}
 		}
 		return null;
