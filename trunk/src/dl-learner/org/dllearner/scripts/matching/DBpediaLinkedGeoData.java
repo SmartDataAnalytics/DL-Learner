@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,6 +79,11 @@ public class DBpediaLinkedGeoData {
 	private static Map<POIClass, Integer> noMatchPerClass = new HashMap<POIClass, Integer>();
 	private static Map<POIClass, Integer> matchPerClass = new HashMap<POIClass, Integer>();
 	
+	private static DecimalFormat df = new DecimalFormat();
+	private static int skipCount = 0;
+	private static int counter = 0;
+	private static int matches = 0;
+	
 	// read in DBpedia ontology such that we perform taxonomy reasoning
 //	private static ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DBPEDIA_OWL);
 //	private static ClassHierarchy hierarchy = reasoner.getClassHierarchy();
@@ -107,12 +113,9 @@ public class DBpediaLinkedGeoData {
 		// read file point by point
 		BufferedReader br = new BufferedReader(new FileReader(dbpediaFile));
 		String line;
-		int counter = 0;
-		int matches = 0;
 		
 		// temporary variables needed while reading in file
 		int itemCount = 0;
-		int skipCount = 0;
 		URI uri = null;
 		String label = null;
 		String[] classes = null;
@@ -141,8 +144,9 @@ public class DBpediaLinkedGeoData {
 					}
 					counter++;
 					
-					if(counter % 100 == 0) {
-						System.out.println(new Date().toString() + ": " + counter + " points processed. " + matches + " matches found. " + skipCount + " POIs skipped.");
+					if(counter % 1000 == 0) {
+//						System.out.println(new Date().toString() + ": " + counter + " points processed. " + matches + " matches found. " + skipCount + " POIs skipped.");
+						printSummary();
 					}				
 				} else {
 					skipCount++;
@@ -180,20 +184,27 @@ public class DBpediaLinkedGeoData {
 		br.close();
 		fos.close();
 		
-		
+		printSummary();
+		System.out.println("Finished Successfully.");
+	}
+	
+	private static void printSummary() {
+		System.out.println("Summary at date " + new Date().toString());
 		
 		for(POIClass poiClass : POIClass.values()) {
-			System.out.println();
-			System.out.println("summary for POI class " + poiClass + ":");
-			System.out.println("matches " + matchPerClass.get(poiClass));
-			System.out.println("no matches " + noMatchPerClass.get(poiClass));
+			double per = matchPerClass.get(poiClass)/(double)(matchPerClass.get(poiClass)+noMatchPerClass.get(poiClass));
+			System.out.println("POI class " + poiClass + ": " + matchPerClass.get(poiClass) + " matches found, " + df.format(per) + "% of DBpedia POIs matched" );
 		}
 		
-		System.out.println("");
-		System.out.println("Overall summary:");
-		System.out.println(skipCount + " POIs skipped (no classification available)");
-		System.out.println(counter + " POIs processed");
-		System.out.println(matches + " matches found");
+//		System.out.println("");
+		System.out.println("Overall:");
+		int total = skipCount + matches;
+		double skipFreq = skipCount/(double)total;
+		double countFreq = counter/(double)total;
+		double matchFreq = matches/(double)total;
+		System.out.println(skipCount + " POIs skipped (cannot be assigned to a POI class) = " + df.format(skipFreq) + "%");
+		System.out.println(counter + " POIs processed = " + df.format(countFreq) + "%");
+		System.out.println(matches + " matches found = " + df.format(matchFreq) + "%");			
 	}
 	
 	// downloads information about DBpedia into a separate file
