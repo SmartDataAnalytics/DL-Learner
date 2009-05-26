@@ -142,13 +142,15 @@ public class DBpediaLinkedGeoData {
 						matches++;
 						matchPerClass.put(poiClass, noMatchPerClass.get(poiClass)+1);
 					}
+//					System.out.println(poiClass);
 					counter++;
 					
 					if(counter % 1000 == 0) {
 //						System.out.println(new Date().toString() + ": " + counter + " points processed. " + matches + " matches found. " + skipCount + " POIs skipped.");
 						printSummary();
-					}				
+					}
 				} else {
+//					System.out.println(dp.getUri() + " " + dp.getClasses());
 					skipCount++;
 				}
 				
@@ -192,16 +194,17 @@ public class DBpediaLinkedGeoData {
 		System.out.println("Summary at date " + new Date().toString());
 		
 		for(POIClass poiClass : POIClass.values()) {
-			double per = matchPerClass.get(poiClass)/(double)(matchPerClass.get(poiClass)+noMatchPerClass.get(poiClass));
-			System.out.println("POI class " + poiClass + ": " + matchPerClass.get(poiClass) + " matches found, " + df.format(per) + "% of DBpedia POIs matched" );
+			int classTests = matchPerClass.get(poiClass)+noMatchPerClass.get(poiClass);
+			double per = classTests == 0 ? 0 : 100 * matchPerClass.get(poiClass)/(double)(classTests);
+			System.out.println("POI class " + poiClass + ": " + matchPerClass.get(poiClass) + " matches found, " + df.format(per) + "% match rate" );
 		}
 		
 //		System.out.println("");
 		System.out.println("Overall:");
-		int total = skipCount + matches;
-		double skipFreq = skipCount/(double)total;
-		double countFreq = counter/(double)total;
-		double matchFreq = matches/(double)total;
+		int total = skipCount + counter;
+		double skipFreq = 100*skipCount/(double)total;
+		double countFreq = 100*counter/(double)total;
+		double matchFreq = 100*matches/(double)total;
 		System.out.println(skipCount + " POIs skipped (cannot be assigned to a POI class) = " + df.format(skipFreq) + "%");
 		System.out.println(counter + " POIs processed = " + df.format(countFreq) + "%");
 		System.out.println(matches + " matches found = " + df.format(matchFreq) + "%");			

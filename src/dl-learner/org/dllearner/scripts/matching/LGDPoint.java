@@ -58,6 +58,13 @@ public class LGDPoint extends Point {
 		case LAKE : return variable + " <http://linkedgeodata.org/vocabulary#natural> \"water\" . ";
 		case COUNTRY : return variable + " <http://linkedgeodata.org/vocabulary#place> \"country\" . ";
 		case RAILWAY_STATION : return variable + " <http://linkedgeodata.org/vocabulary#railway> \"station\" . ";
+		case ISLAND : return variable + " <http://linkedgeodata.org/vocabulary#place> \"island\" . ";
+		case STADIUM : return variable + " <http://linkedgeodata.org/vocabulary#leisure> \"stadium\" . ";
+		case RIVER : return variable + " <http://linkedgeodata.org/vocabulary#waterway> ?something . ";
+		case BRIDGE : return variable + " <http://linkedgeodata.org/vocabulary#bridge> ?something . ";				
+		case MOUNTAIN : return variable + " <http://linkedgeodata.org/vocabulary#natural> \"peak\" . ";				
+		case RADIO_STATION : return variable + " <http://linkedgeodata.org/vocabulary#amenity> \"studio\" . ";				
+		case LIGHT_HOUSE : return variable + " <http://linkedgeodata.org/vocabulary#man_made> \"lighthouse\" . ";				
 		default: throw new Error("Cannot restrict.");
 		}
 	}

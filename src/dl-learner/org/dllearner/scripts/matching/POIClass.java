@@ -47,6 +47,27 @@ public enum POIClass {
 	// 200 km box (largest lake is the Caspian Sea with 1200 km length)
 	LAKE (200000),
 	
+	// 1 km box
+	BRIDGE (1000),
+	
+	// 10 km box
+	MOUNTAIN (10000),
+	
+	// 10000 km box (continents?)
+	ISLAND (10000000),
+	
+	// 1 km box
+	STADIUM (1000),
+	
+	// 1000 km box
+	RIVER (1000000),
+	
+	// 1 km box
+	RADIO_STATION (1000),
+	
+	// 1 km box
+	LIGHT_HOUSE (1000),	
+	
 	// 2000 km box (Russia has radius 4000 km)
 	COUNTRY (2000000);
 	
