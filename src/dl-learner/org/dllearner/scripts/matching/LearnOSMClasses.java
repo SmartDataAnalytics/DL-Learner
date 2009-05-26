@@ -54,7 +54,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 public class LearnOSMClasses {
 
 	private static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
-	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();	
+//	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();	
 	
 	public static void main(String args[]) throws IOException, DataFormatException, LearningProblemUnsupportedException, ComponentInitException {
 		File matchesFile = new File("log/geodata/owlsameas_en.dat");
