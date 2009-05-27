@@ -370,7 +370,8 @@ public class Info {
 				</copy>
 	    	<javac srcdir="${source}"
 	         destdir="${temp}"
-	         debug="on">
+	         debug="on"
+	    	 target="1.5">
 				<classpath refid="classpath"/>
 	    	</javac>
 	    	<jar destfile="${release}/DL-Learner-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
