@@ -69,16 +69,17 @@ public class LearnOSMClasses {
 			URI dbpediaURI = match.getKey();
 			URI lgdURI = match.getValue();
 			// test whether the dbpediaURI is a city
-			String query = "ASK {<"+dbpediaURI+"> a <http://dbpedia.org/ontology/City>}";
-			boolean isCity = dbpedia.ask(query);
-			if(!isCity) {
-				// DBpedia ontology does not capture all cities, so we also use UMBEL, YAGO
-				String query2 = "ASK {<"+dbpediaURI+"> a ?x . FILTER(?x LIKE <%City%>) }";
-				String query3 = "ASK {<"+dbpediaURI+"> a ?x . FILTER(?x LIKE <%Cities%>) }";
-				isCity = dbpedia.ask(query2) || dbpedia.ask(query3);
-			}
+//			String query = "ASK {<"+dbpediaURI+"> a <http://dbpedia.org/ontology/City>}";
+			String query = "ASK {<"+dbpediaURI+"> a <http://dbpedia.org/ontology/Organisation>}";
+			boolean isInClass = dbpedia.ask(query);
+//			if(!isCity) {
+//				// DBpedia ontology does not capture all cities, so we also use UMBEL, YAGO
+//				String query2 = "ASK {<"+dbpediaURI+"> a ?x . FILTER(?x LIKE <%City%>) }";
+//				String query3 = "ASK {<"+dbpediaURI+"> a ?x . FILTER(?x LIKE <%Cities%>) }";
+//				isCity = dbpedia.ask(query2) || dbpedia.ask(query3);
+//			}
 //			System.out.println(isCity + " " + lgdURI);
-			if(isCity) {
+			if(isInClass) {
 				positives.add(lgdURI.toString());
 				System.out.println("+\""+lgdURI+"\"");
 			} else {
@@ -121,9 +122,9 @@ public class LearnOSMClasses {
 		celoe.getConfigurator().setUseDoubleDatatypes(false);
 		celoe.getConfigurator().setUseNegation(false);
 		celoe.getConfigurator().setUseHasValueConstructor(true);
-		celoe.getConfigurator().setValueFrequencyThreshold(10);
-		celoe.getConfigurator().setMaxExecutionTimeInSeconds(1000);
-		celoe.getConfigurator().setNoisePercentage(0.1);
+		celoe.getConfigurator().setValueFrequencyThreshold(3);
+		celoe.getConfigurator().setMaxExecutionTimeInSeconds(100);
+		celoe.getConfigurator().setNoisePercentage(0.2);
 		celoe.init();
 		
 		// debugging

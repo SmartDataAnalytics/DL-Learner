@@ -74,7 +74,8 @@ public class DBpediaLinkedGeoData {
 	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
 	private static SPARQLTasks dbpedia = new SPARQLTasks(new Cache("cache/dbpedia_file/"), dbpediaEndpoint);	
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
-	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/lgd/"), geoDataEndpoint);
+//	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/lgd/"), geoDataEndpoint);
+	private static SPARQLTasks lgd = new SPARQLTasks(geoDataEndpoint);	
 	
 	private static Map<POIClass, Integer> noMatchPerClass = new HashMap<POIClass, Integer>();
 	private static Map<POIClass, Integer> matchPerClass = new HashMap<POIClass, Integer>();
@@ -363,6 +364,9 @@ public class DBpediaLinkedGeoData {
 			queryStr += "?point <http://linkedgeodata.org/vocabulary#name> ?name .";
 			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary#name%25en> ?name_en } .";
 			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary#name_int> ?name_int } .";
+			// filter out ways => we assume that it is always better to match a point and not a way
+			// (if there is a way, there should also be a point but not vice versa)
+			queryStr += "FILTER (?point LIKE <http://linkedgeodata.org/triplify/node/%>) .";
 			queryStr += "}";
 			
 //			SparqlQuery query = new SparqlQuery(queryStr, geoDataEndpoint);
@@ -410,6 +414,7 @@ public class DBpediaLinkedGeoData {
 				double distanceScore = Math.pow(frac-1,4);
 				
 				double score = 0.8 * stringSimilarity + 0.2 * distanceScore;
+//				if(qs.getResource("point").toString().contains("/way/");
 				
 				if(score > highestScore) {
 					highestScore = score;

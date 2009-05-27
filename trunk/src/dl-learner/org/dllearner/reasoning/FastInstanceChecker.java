@@ -458,7 +458,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 			Individual i = ((ObjectValueRestriction)description).getIndividual();
 			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
 			
-			return opPos.get(op).get(individual).contains(i);
+			Set<Individual> inds = opPos.get(op).get(individual);
+			return inds == null ? false : inds.contains(i);
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
 					.getRestrictedPropertyExpresssion();
