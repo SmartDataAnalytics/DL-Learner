@@ -1,1 +1,44 @@
-@charset 'utf-8';@media all { /* Yes we want to reset this for print-Styles too *//* Based on various Reset-Styles, included own stuff and added mediabox-Style */  /* Reset all elements except form stuff */html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,table, caption, tbody, tfoot, thead, tr, th, td {  margin: 0; padding: 0; border: 0; outline: 0; font-weight: inherit; font-style: inherit; vertical-align: baseline; }html { height: 100%; }body { height: 101%; background-color: #fff; color: #000; line-height: 1; }ol, ul { list-style: none; }table { border-collapse: collapse; border-spacing: 0; }caption, th, td { text-align: left; font-weight: normal; }blockquote:before, blockquote:after, q:before, q:after { content: ""; }blockquote, q { quotes: "" ""; }strong, b { font-weight: bold; }em, i { font-style: italic; }label, input[type=button], input[type=submit], button { cursor: pointer; }abbr[title] { border-bottom: 1px dotted #888 !important; cursor: help; }a abbr { cursor: pointer !important; }/* General purpose-Classes */.hidden { position: absolute; left: -9999999em; top: -9999999em;}/* Clearfix hack */.clearfix:after { clear: both; content: "."; display: block; height: 0; visibility: hidden; }.clearfix { display: inline-block; }* html .clearfix { height: 1%; }.clearfix { display: block; }/* Special Stuff */:focus { outline: 0; }a { text-decoration: none; }a:hover { text-decoration: underline; }a:active { position: relative; top: 1px; }input:focus, textarea:focus, select:focus { background: #eee; }fieldset { border: 1px solid #333; padding: 9px; }fieldset legend { padding: 0 9px; }h1, h2, h3, h4, h5, h6 { clear: both; font-weight: normal; }} /* End @media all */
+@media all { /* Yes we want to reset this for print-Styles too */
+/* Based on various Reset-Styles, included own stuff and added mediabox-Style */  
+/* Reset all elements except form stuff */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0; padding: 0; border: 0; outline: 0; font-weight: inherit; font-style: inherit; vertical-align: baseline; 
+}
+
+html { height: 100%; }
+body { height: 101%; background-color: #fff; color: #000; line-height: 1; }
+ol, ul { list-style: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight: normal; }
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q { quotes: "" ""; }
+strong, b { font-weight: bold; }
+em, i { font-style: italic; }
+label, input[type=button], input[type=submit], button { cursor: pointer; }
+abbr[title] { border-bottom: 1px dotted #888 !important; cursor: help; }
+a abbr { cursor: pointer !important; }
+
+/* General purpose-Classes */
+.hidden { position: absolute; left: -9999999em; top: -9999999em;}
+
+/* Clearfix hack */
+.clearfix:after { clear: both; content: "."; display: block; height: 0; visibility: hidden; }
+.clearfix { display: inline-block; }
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+
+/* Special Stuff */
+:focus { outline: 0; }
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:active { position: relative; top: 1px; }
+.ie6 a:active, .ie7 a:active { position: static; top: auto; }
+input:focus, textarea:focus, select:focus { background: #eee; }
+fieldset { border: 1px solid #333; padding: 9px; }
+fieldset legend { padding: 0 9px; }
+h1, h2, h3, h4, h5, h6 { clear: both; font-weight: normal; }
+
+} /* End @media all */

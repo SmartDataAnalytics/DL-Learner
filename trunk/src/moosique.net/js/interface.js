@@ -5,13 +5,32 @@ window.addEvent('domready', function() {
 $$('#mainMenu ul li a').each(function(a) {
   a.addEvent('click', function(e) {
     e.stop(); // dont follow link
-    $$('#mainMenu ul li').removeClass('active');
-    a.getParent().toggleClass('active');
-    console.log(a.get('class'));
-    $('content').getChildren().setStyle('display', 'none')
-    $(a.get('class')).setStyle('display', 'block');
+    showTab(a.get('class').toString());
   }); 
   
 });
 
+$('searchValue').addEvent('keyup', function() {
+  if (this.get('value').length > 2) {
+    $('searchSubmit').erase('disabled');
+  } else {
+    $('searchSubmit').set('disabled', 'disabled');
+  }
 });
+
+
+});
+
+/**
+ * 
+ * @param {String} tabID ID of the Tab to show
+ */
+function showTab(tabID) {
+  $$('#mainMenu ul li').removeClass('active');
+  $$('#mainMenu ul li a.' + tabID).getParent().toggleClass('active');
+  $('content').getChildren().setStyle('display', 'none')
+  $(tabID).setStyle('display', 'block');  
+  
+}
+
+

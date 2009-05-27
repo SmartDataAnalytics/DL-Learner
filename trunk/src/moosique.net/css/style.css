@@ -1,12 +1,8 @@
-@charset 'utf-8';
-@import url(default.css);  
-
 /* moosique.net 
  *
  * Semiblack:   #131313
- * Dark Grey:   #383838
  * Light Grey:  #545454
- * White:       #fff
+ * White:       #f8faf7
  * Yellowish:   #ffbc00
  * 
  */
@@ -16,14 +12,14 @@
 /* Default Element Styling --- Start Editing below this line */
 /* =================================================================== */
 * {
-  font-family: Verdana, Arial, "Lucida Grande", Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 18px;
-  color: #fff;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  color: #131313;
 }
 
 body {
-  background: #333;
+  background: #f8faf7;
 }
 
 a:hover {
@@ -32,7 +28,7 @@ a:hover {
 
 /* Abstand Zeilenhoehe nach unten bei manchen Elementen */
 p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 /* Default Container Positioning */
@@ -42,25 +38,27 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 }
 
 #headerContainer {
-  height: 140px;
-  background: #131313;
-  border-top: 1px solid #999;
-  border-bottom: 10px solid #ffbc00;
+  height: 95px;
+  background: #333;
+  border-bottom: 5px solid #ffbc00;
+  padding: 20px 0 0 0;
 }
 
 #header {
-  width: 960px;
+  width: 760px;
   margin: 0 auto;
 }
 
 #container {
-  border-top: 1px solid #1a1a1a;
+  border-top: 1px solid #ccc;
 }
 
 #mainContainer {
-  width: 960px;
+  width: 700px;
   margin: 0 auto;
-  padding: 30px 0;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-top: none;
 }
 
 #footer {
@@ -71,58 +69,226 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
 /* header Area */
 /* =================================================================== */
 #header h1 a {
-  font-size: 36px;
-  line-height: 90px;
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 32px;
+  line-height: 32px;
+  font-family: Georgia, Times, "Times New Roman",  serif;
   text-decoration: none;
+  color: #f8faf7;
 }
 
-#now {
+#status, #header .currentlyPlaying {
   position: absolute;
-  top: 20px;
-  left: 280px;
-  width: 410px;
-  height: 37px;
-  padding: 10px 20px;
-  background: #545454;
+  top: 0;
+  right: 0;
+  width: 380px;
+  background: #545454;  
+  padding: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
 }
 
-#now h2, #now h3, now p {
-  margin: 0;
+#status {
+  background: #545454;
+  color: #f8faf7;
+  z-index: 1000000;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
 }
 
-#now h2, #now p {
-  font-size: 11px;
-  line-height: 11px;
+.currentlyPlaying h2, .currentlyPlaying h3, .currentlyPlaying h4 {
+  margin-bottom: 0;
 }
 
-#now h3 {
-  font-size: 18px;
+#header .currentlyPlaying h2 {
+  font-size: 10px;
+}
+
+#header .currentlyPlaying h4 {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 10px;
+}
+
+#searchForm input#searchValue {
+  margin: 0 5px;
+  width: 100px;
+}
+
+#loadingImg {
+  display: none;
+}
+
+/* mainMenu & status */
+/* =================================================================== */
+
+#mainMenu ul {
+  position: absolute;
+  top: 70px;
+  right: 0;  
+}
+
+#mainMenu ul li {
+  float: left;
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  -webkit-border-top-left-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  padding: 0 15px;
+  background: #545454;
+  margin: 5px 0 0 5px;
+  height: 20px;
+  line-height: 20px;
+}
+
+#mainMenu ul li a {
+  color: #131313;
+}
+
+#mainMenu ul li.active {
+  height: 25px;
+  line-height: 25px;
+  margin-top: 0;
+  background: #ffbc00;
+}
+
+#mainMenu ul li.active a {
+  font-weight: bold;
+}
+
+#mainMenu ul li a:hover {
+  text-decoration: none;
+}
+
+
+/* Content Area Default Styles */
+/* =================================================================== */
+#content h2, #content h3 {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: bold;
+}
+
+/* for debugging */
+#content pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+}
+
+/* Initial hiding */
+#recommendations, #player, #information, #help { 
+  display: none; /* Initial Hide */
+}
+
+#footer * {
+  font-size: 10px;
+}
+
+
+/* home -- search results */
+/* =================================================================== */
+#results h3 em {
+  font-size: 16px;
+}
+
+#results ul li h3 a {
+  font-weight: normal;
+}
+
+#results ul li img {
+  border: 2px solid #545454;
+  margin-bottom: 16px;
+}
+
+#results ul li {
+  display: block;
+  border: 1px dotted #545454;
+  padding: 16px;
+  margin: 0 16px 16px 0;
+  float: left;
+  width: 300px;
+}
+
+#results .artistSearch ul li {
+  height: 450px; 
+}
+
+#results ul ul {
+  list-style: square;
+}
+
+#results ul li ul li,
+#results .artistSearch ul li ul li,
+#results .tagSearch ul li ul li {
+  border: none;
+  display: list-item;
+  padding: 0;
+  margin: 0 0 0 32px;
+  width: auto;
+  height: auto;
+  float: none;
+}
+
+#results .tagSearch ul li ul {
+  clear: both;
+}
+  
+
+
+#results .artistSearch ul li div.artistImage {
+  text-align: center;
+}
+
+#results .tagSearch ul li div.cover {
+  margin-right: 16px; 
+  width: 110px;
+  float: left;
+}
+
+#results .tagSearch ul li h4 {
+  display: inline;
+  font-weight: bold;
+}
+
+
+
+
+
+/* Recommendations */
+/* =================================================================== */
+#recommended {
+  list-style: decimal;
+  margin-left: 24px;
+}
+
+#recommended li {
   line-height: 24px;
 }
 
-#now p {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  text-align: right;
+#recommended a:hover {
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  color: #131313;
 }
 
-#status {
-  position: absolute;
-  top: 83px;
-  left: 300px;
-  width: 410px;
-  font-size: 11px;  
-}
+
+
+/* information */
+/* =================================================================== */
+
+
+
+
+/* player */
+/* =================================================================== */
 
 #playerControls {
   position: absolute;
-  width: 116px;
+  width: 149px;
   height: 37px;
-  top: 20px;
+  top: 0;
   right: 0;
   padding: 10px 20px;
   background: #545454;
@@ -130,7 +296,7 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   -webkit-border-radius: 10px;
 }
 
-#prev, #next, #stop, #playPause {
+#prev, #next, #stop, #playPause, #mute {
   display: block;
   width: 20px;
   height: 37px;
@@ -140,105 +306,29 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   margin-right: 10px;
 }
 
-#playPause {
-  width: 26px;
-}
-
-#next {
-  margin-right: 0;
-}
-
 /* clicky feel */
-#prev:active, #next:active, #stop:active, #playPause:active {
+#prev:active, #next:active, #stop:active, 
+#playPause:active, #mute:active {
   position: relative;
   top: 2px;
 }
 
-#prev {
-  background: url(../img/controls.png) 0px -160px no-repeat;
-}
-#next {
-  background: url(../img/controls.png) 0px -120px no-repeat;
-}
-#playPause {
-  background: url(../img/controls.png) 0px 0px no-repeat;
-}
-#stop {
-  background: url(../img/controls.png) 0px -80px no-repeat;
+/* Sprites */
+#prev { background: url(../img/controls.png) 0px -160px no-repeat; }
+#next { background: url(../img/controls.png) 0px -120px no-repeat; }
+#stop { background: url(../img/controls.png) 0px -80px no-repeat; }
+
+#playPause { 
+  background: url(../img/controls.png) 0px 0px no-repeat; 
+  width: 26px;
 }
 
-#toggles {
-  position: absolute;
-  width: 156px;
-  height: 18px;
-  top: 93px;
-  right: 0;
-  text-align: center;
+#mute { 
+  background: url(../img/controls.png) 0px -280px no-repeat; 
+  margin-right: 0;  
+  width: 23px;
 }
-
-#toggleMute, #togglePlaylist {
-  font-size: 11px;
-  text-decoration: none;
-}
-
-#toggleMute {
-  padding-right: 10px;
-}
-
-
-/* Playlist Area */
-/* =================================================================== */
-
-#playlistContainer {
-  position: absolute;
-  width: 368px;
-  top: 30px;
-  right: 0;
-  background: #000;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  z-index: 100;
-  display: none;
-}
-
-#playlistHeader {
-  position: relative;
-  -moz-border-radius-topleft: 10px;
-  -moz-border-radius-topright: 10px;
-  -webkit-border-top-left-radius: 10px;
-  -webkit-border-top-right-radius: 10px;
-  background: #111;
-  padding: 5px 10px;
-  cursor: move;
-}
-
-#playlistFooter {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-  -moz-border-radius-bottomleft: 10px;
-  -moz-border-radius-bottomright: 10px;
-  -webkit-border-bottom-left-radius: 10px;
-  -webkit-border-bottom-right-radius: 10px;
-  background: #111;
-  padding: 5px 0;
-  cursor: se-resize;
-}
-
-#closePlaylist {
-  position: absolute;
-  width: 100px;
-  height: 20px;
-  top: 5px;
-  right: 10px;
-  text-align: right;
-  font-size: 10px;
-}
-
-#playlist {
-  padding: 20px;
-  margin: 0 0 20px 0;
-}
+/* End Sprites */
 
 #playlist li {
   position: relative; /* Delete Buttons */
@@ -257,7 +347,7 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   position: absolute;
   display: block;
   top: 5px;
-  right: 10px;
+  right: 20px;
   width: 14px;
   height: 14px;
   line-height: 14px;
@@ -267,120 +357,16 @@ p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
   background: url(../img/controls.png) 0px -200px no-repeat;
 }
 
-/* mainMenu */
-/* =================================================================== */
-
-#mainMenu ul {
-  position: absolute;
-  top: -46px;
-  left: 0;  
-}
-
-#mainMenu ul li {
-  float: left;
-  -moz-border-radius-topleft: 10px;
-  -moz-border-radius-topright: 10px;
-  -webkit-border-top-left-radius: 10px;
-  -webkit-border-top-right-radius: 10px;
-  padding: 0 15px;
-  background: #545454;
-  margin: 5px 5px 0 0;
-  height: 30px;
-  line-height: 30px;
-}
-
-#mainMenu ul li a {
-  color: #131313;
-}
-
-#mainMenu ul li.active {
-  height: 35px;
-  line-height: 35px;
-  margin-top: 0;
-  background: #ffbc00;
-}
-
-#mainMenu ul li.active a {
-  font-weight: bold;
-}
-
-
-/* Content Area Default Styles */
-/* =================================================================== */
-
-#mainContainer h2 {
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: bold;
-}
-
-/* for debugging */
-#mainContainer pre {
-  font-size: 12px;
-  font-family: "Courier New", Courier, monospace;
-}
-
-
-/* search */
-/* =================================================================== */
-#searchForm * {
-  color: #131313;
-}
-
-
-/* Recommendations */
-/* =================================================================== */
-#recommendations { 
-  display: none; /* Initial Hide */
-}
-
-#recommendations ol {
-  list-style: decimal;
-  margin-left: 24px;
-  width: 50%;
-}
-
-#recommendations ol li a {
-  cursor: move;
-  text-decoration: none;
-}
-
-#recommendations ol li a:hover {
-  text-decoration: none;
-  color: #fff; 
-}
-
-#recommendations li:hover {
-  border: 1px solid #ffbc00;
-}
-
-
 /* Draggable li-Items */
-#playlist li.moving, #recommendations li.moving {
+#playlist li.moving {
   background: #666;
   border: 3px solid #ffbc00;
-  color: #000;
   font-weight: bold;
 } 
 
-/* information */
-/* =================================================================== */
-#information {
-  display: none; /* Initial Hide */
-}
 
 
 
-/* Sidebar Area */
-/* =================================================================== */
 
 
-
-/* Footer Area */
-/* =================================================================== */
-#footer a {
-  font-size: 11px;
-}
-
-
-} /* end @media screen
+} /* end @media screen */
