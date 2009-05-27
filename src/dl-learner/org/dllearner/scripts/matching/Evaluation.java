@@ -86,6 +86,10 @@ public class Evaluation {
 			
 //			logger.trace("searching match for " + match.getKey() + "...");
 			
+			// we make the assumption that we always want to match against nodes
+			if(match.getValue().toString().contains("/way/")) 
+				continue;
+			
 			DBpediaPoint dbpediaPoint = null;
 			try {
 				dbpediaPoint = new DBpediaPoint(match.getKey());

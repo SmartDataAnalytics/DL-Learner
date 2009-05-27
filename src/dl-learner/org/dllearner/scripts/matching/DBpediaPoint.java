@@ -157,11 +157,21 @@ public class DBpediaPoint extends Point {
 				return POIClass.CITY;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Lake")) {
 				return POIClass.LAKE;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Lake")) {
+				return POIClass.LAKE;
 			} else if(clazz.equals("http://dbpedia.org/ontology/University")) {
 				return POIClass.UNIVERSITY;
 			} else if(clazz.equals("http://dbpedia.org/ontology/School")) {
 				return POIClass.SCHOOL;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/SchoolInstitution")) {
+				return POIClass.SCHOOL;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/HighSchool")) {
+				return POIClass.SCHOOL;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Country")) {
+				return POIClass.COUNTRY;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Country")) {
+				return POIClass.COUNTRY;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/IndependentCountry")) {
 				return POIClass.COUNTRY;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Airport")) {
 				return POIClass.AIRPORT;
@@ -171,11 +181,17 @@ public class DBpediaPoint extends Point {
 				return POIClass.RAILWAY_STATION;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Stadium")) {
 				return POIClass.STADIUM;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Stadium")) {
+				return POIClass.STADIUM;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Island")) {
 				return POIClass.ISLAND;
 			} else if(clazz.equals("http://dbpedia.org/ontology/River")) {
 				return POIClass.RIVER;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/River")) {
+				return POIClass.RIVER;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Bridge")) {
+				return POIClass.BRIDGE;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Bridge")) {
 				return POIClass.BRIDGE;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Mountain")) {
 				return POIClass.MOUNTAIN;
@@ -183,6 +199,10 @@ public class DBpediaPoint extends Point {
 				return POIClass.MOUNTAIN;
 			} else if(clazz.equals("http://dbpedia.org/ontology/Lighthouse")) {
 				return POIClass.LIGHT_HOUSE;
+			} else if(clazz.equals("http://umbel.org/umbel/sc/Lighthouse")) {
+				return POIClass.LIGHT_HOUSE;
+			} else if(clazz.equals("http://dbpedia.org/ontology/RadioStation")) {
+				return POIClass.RADIO_STATION;
 			}
 		}
 		return null;
