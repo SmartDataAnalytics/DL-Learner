@@ -94,6 +94,7 @@ public class Evaluation {
 			try {
 				dbpediaPoint = new DBpediaPoint(match.getKey());
 			} catch (Exception e) {
+//				System.out.println("discarded: " + match.getKey());
 				logger.debug(e.getMessage());
 				discarded++;
 				continue;
