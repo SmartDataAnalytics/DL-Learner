@@ -84,6 +84,9 @@ public class DBpediaLinkedGeoData {
 	private static int skipCount = 0;
 	private static int counter = 0;
 	private static int matches = 0;
+	private static Date startDate;
+	
+	private static final int totalPOICount = 328232;
 	
 	// read in DBpedia ontology such that we perform taxonomy reasoning
 //	private static ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.DBPEDIA_OWL);
@@ -124,6 +127,8 @@ public class DBpediaLinkedGeoData {
 		Double geoLat = null;
 		Double geoLong = null;
 		
+		startDate = new Date();
+		System.out.println("Start matching process at date " + startDate);
 		while ((line = br.readLine()) != null) {
 			
 			if(line.isEmpty()) {
@@ -192,12 +197,13 @@ public class DBpediaLinkedGeoData {
 	}
 	
 	private static void printSummary() {
-		System.out.println("Summary at date " + new Date().toString());
+		Date currDate = new Date();
+		System.out.println("Summary at date " + currDate.toString());
 		
 		for(POIClass poiClass : POIClass.values()) {
 			int classTests = matchPerClass.get(poiClass)+noMatchPerClass.get(poiClass);
-			double per = classTests == 0 ? 0 : 100 * matchPerClass.get(poiClass)/(double)(classTests);
-			System.out.println("POI class " + poiClass + ": " + matchPerClass.get(poiClass) + " matches found, " + df.format(per) + "% match rate" );
+			double per = (classTests == 0) ? 0 : 100 * matchPerClass.get(poiClass)/(double)(classTests);
+			System.out.println("POI class " + getFixedLengthString(poiClass,15) + ": " + getFixedLengthString(matchPerClass.get(poiClass),5) + " matches found from " + getFixedLengthString(classTests,5) + " POIs = " + df.format(per) + "% match rate" );
 		}
 		
 //		System.out.println("");
@@ -206,10 +212,30 @@ public class DBpediaLinkedGeoData {
 		double skipFreq = 100*skipCount/(double)total;
 		double countFreq = 100*counter/(double)total;
 		double matchFreq = 100*matches/(double)total;
+		double matchCountFreq = 100*matches/(double)counter;
+		long diffMs = currDate.getTime() - startDate.getTime();
+	    long diffMinutes = diffMs / (60 * 1000);
+	    long diffHours = diffMs / (60 * 60 * 1000);
+	    double pointPercentage = total / (double) totalPOICount;
+	    double pointsPerMs = total / (double) diffMs;
+	    double pointsPerHour = 3600 * 1000 * pointsPerMs;
+	    long estimatedMs = totalPOICount * diffMs / total;
+	    Date estimatedDate = new Date(startDate.getTime() + estimatedMs);
+	    System.out.println("algorithm runtime: " + diffHours + " hours " + diffMinutes + " minutes, estimated to finish at " + estimatedDate);
+	    System.out.println(df.format(pointPercentage) + "% of points skipped or processed = " + df.format(pointsPerHour) + " points per hour");
 		System.out.println(skipCount + " POIs skipped (cannot be assigned to a POI class) = " + df.format(skipFreq) + "%");
 		System.out.println(counter + " POIs processed = " + df.format(countFreq) + "%");
-		System.out.println(matches + " matches found = " + df.format(matchFreq) + "%");			
+		System.out.println(matches + " matches found = " + df.format(matchCountFreq) + "% of processed POIs, " + df.format(matchFreq) + "% of all POIs");
+		System.out.println();
 	}
+	
+	private static String getFixedLengthString(Object object, int length) {
+		String str = object.toString();
+		for(int i = str.length(); i < length; i++ ) {
+			str = " " + str;
+		}
+		return str;
+	}	
 	
 	// downloads information about DBpedia into a separate file
 	private static void createDBpediaFile() throws IOException {
@@ -350,7 +376,11 @@ public class DBpediaLinkedGeoData {
 			double minLat =  dbpediaPoint.getGeoLat()-(distanceThresholdMeters/1000/111);
 			double maxLat =  dbpediaPoint.getGeoLat()+(distanceThresholdMeters/1000/111);
 			double minLong = dbpediaPoint.getGeoLong()-(distanceThresholdMeters/1000)/Math.abs(Math.cos(Math.toRadians(dbpediaPoint.getGeoLat()))*111);
-			double maxLong = dbpediaPoint.getGeoLong()+(distanceThresholdMeters/1000)/Math.abs(Math.cos(Math.toRadians(dbpediaPoint.getGeoLat()))*111);	
+			double maxLong = dbpediaPoint.getGeoLong()+(distanceThresholdMeters/1000)/Math.abs(Math.cos(Math.toRadians(dbpediaPoint.getGeoLat()))*111);
+			
+//			System.out.println("lat:  " + minLat + " < " + dbpediaPoint.getGeoLat() + " < " + maxLat);
+//			System.out.println("long: " + minLong + " < " + dbpediaPoint.getGeoLong() + " < " + maxLong);
+			
 			// query all points in the box corresponding to this class
 			// (we make sure that returned points are in the same POI class)
 			String queryStr = "select ?point ?lat ?long ?name ?name_en ?name_int where { ";
@@ -398,7 +428,9 @@ public class DBpediaLinkedGeoData {
 				if(qs.contains("name_en")) {
 					String lgdLabel2 = qs.getLiteral("name_en").toString();
 					stringSimilarity = distance.score(dbpediaLabel1, lgdLabel2);
-					stringSimilarity = Math.max(distance.score(dbpediaLabel2, lgdLabel2), stringSimilarity);					
+					stringSimilarity = Math.max(distance.score(dbpediaLabel2, lgdLabel2), stringSimilarity);
+					System.out.println(qs.getResource("point").getURI());
+					System.exit(0);
 				}
 				if(qs.contains("name_int")) {
 					String lgdLabel3 = qs.getLiteral("name_int").toString();
