@@ -20,6 +20,8 @@
 
 package org.dllearner.tools.protege;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -231,11 +233,9 @@ public class DLLearnerModel implements Runnable{
 			view.setIsInconsistent(false);
 			isReasonerSet = true;
 		}catch (ComponentInitException e) {
-			System.out.println("testen");
 			view.setIsInconsistent(true);
 			//e.printStackTrace();
 		} catch (InconsistentOntologyException incon) {
-			System.out.println("test");
 			view.setIsInconsistent(true);
 		} 
 	}
@@ -262,7 +262,16 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public void setLearningProblem() {
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		cm.applyConfigEntry(lp, "classToDescribe", currentConcept.toString());
+		URL currentConceptURL = null;
+		try {
+			currentConceptURL = new URL(currentConcept.toString());
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			String error = "Cannot convert to URL.";
+			view.renderErrorMessage(error);
+			e1.printStackTrace();
+		}
+		cm.applyConfigEntry(lp, "classToDescribe", currentConceptURL);
 		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
