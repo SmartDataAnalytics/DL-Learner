@@ -141,7 +141,7 @@ public class DBpediaLinkedGeoData {
 						String matchStr = "<" + dp.getUri() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + matchURI + "> .\n";
 						fos.write(matchStr.getBytes());	
 						matches++;
-						matchPerClass.put(poiClass, noMatchPerClass.get(poiClass)+1);
+						matchPerClass.put(poiClass, matchPerClass.get(poiClass)+1);
 					}
 //					System.out.println(poiClass);
 					counter++;
