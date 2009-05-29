@@ -135,6 +135,8 @@ public class DBpediaLinkedGeoData {
 				DBpediaPoint dp = new DBpediaPoint(uri, label, classes, geoLat, geoLong, decimalCount);
 				POIClass poiClass = dp.getPoiClass();
 				
+//				System.out.println("DBpedia Point: " + dp);
+				
 				if(poiClass != null) {
 					// find match (we assume there is exactly one match)
 					URI matchURI = findGeoDataMatch(dp);
@@ -165,7 +167,13 @@ public class DBpediaLinkedGeoData {
 				switch(itemCount) {
 				case 0 : uri = URI.create(line); break;
 				case 1 : label = line; break;
-				case 2 : classes = line.substring(1, line.length()).split(","); break;
+				case 2 : line = line.substring(1, line.length()-1); // strip brackets
+					if(line.length()>1) {
+						classes = line.split(",");
+					} else {
+						classes = new String[0];
+					}
+					break;
 				case 3 : 
 					geoLat = new Double(line);
 					// we avoid "computerized scientific notation" e.g. 9.722222457639873E-4
@@ -398,7 +406,7 @@ public class DBpediaLinkedGeoData {
 			// (if there is a way, there should also be a point but not vice versa)
 			// => according to OSM data model, ways do not have longitude/latitude, so we should
 			// always match nodes and not ways (TODO: discuss with Soeren)
-			queryStr += "FILTER (?point LIKE <http://linkedgeodata.org/triplify/node/%>) .";
+//			queryStr += "FILTER (?point LIKE <http://linkedgeodata.org/triplify/node/%>) .";
 			queryStr += "}";
 			
 //			SparqlQuery query = new SparqlQuery(queryStr, geoDataEndpoint);
@@ -453,9 +461,9 @@ public class DBpediaLinkedGeoData {
 				
 				double score = 0.8 * stringSimilarity + 0.2 * distanceScore;
 				// if there is a node and a way, we prefer the node (better representative) 
-//				if(lgdURI.contains("/way/")) {
-//					score -= 0.02;
-//				}
+				if(lgdURI.contains("/way/")) {
+					score -= 0.02;
+				}
 				
 				if(score > highestScore) {
 					highestScore = score;
