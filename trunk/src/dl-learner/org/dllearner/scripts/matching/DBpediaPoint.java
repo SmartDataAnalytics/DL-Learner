@@ -140,7 +140,7 @@ public class DBpediaPoint extends Point {
 	
 	@Override
 	public String toString() {
-		String str = uri + ", \"" + label + "\", " + geoLat + ", " + geoLong + " (classes: ";
+		String str = uri + ", \"" + label + "\", " + geoLat + ", " + geoLong + " (" + classes.length + " classes: ";
 		for(String clazz : classes) {
 			str += clazz + " ";
 		}
