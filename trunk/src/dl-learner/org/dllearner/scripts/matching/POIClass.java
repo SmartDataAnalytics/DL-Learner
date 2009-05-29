@@ -31,8 +31,8 @@ public enum POIClass {
 	// 50 km box
 	CITY (50000), 
 	
-	// 5 km box
-	AIRPORT (5000),
+	// 10 km box
+	AIRPORT (10000),
 	
 	// 10 km box
 	UNIVERSITY (10000),
@@ -53,11 +53,11 @@ public enum POIClass {
 	// 10 km box
 	MOUNTAIN (10000),
 	
-	// 10000 km box (continents?)
-	ISLAND (10000000),
+	// 1000 km box (continents are not counted as islands in UMBEL and DBpedia ontology)
+	ISLAND (1000000),
 	
-	// 1 km box
-	STADIUM (1000),
+	// 2 km box
+	STADIUM (2000),
 	
 	// 1000 km box
 	RIVER (1000000),

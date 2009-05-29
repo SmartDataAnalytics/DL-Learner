@@ -214,9 +214,9 @@ public class DBpediaLinkedGeoData {
 		double matchFreq = 100*matches/(double)total;
 		double matchCountFreq = 100*matches/(double)counter;
 		long diffMs = currDate.getTime() - startDate.getTime();
-	    long diffMinutes = diffMs / (60 * 1000);
 	    long diffHours = diffMs / (60 * 60 * 1000);
-	    double pointPercentage = total / (double) totalPOICount;
+	    long diffMinutes = diffMs / (60 * 1000) - diffHours * 60;	    
+	    double pointPercentage = 100 * total / (double) totalPOICount;
 	    double pointsPerMs = total / (double) diffMs;
 	    double pointsPerHour = 3600 * 1000 * pointsPerMs;
 	    long estimatedMs = totalPOICount * diffMs / total;
@@ -396,7 +396,9 @@ public class DBpediaLinkedGeoData {
 			queryStr += "OPTIONAL { ?point <http://linkedgeodata.org/vocabulary#name_int> ?name_int } .";
 			// filter out ways => we assume that it is always better to match a point and not a way
 			// (if there is a way, there should also be a point but not vice versa)
-//			queryStr += "FILTER (?point LIKE <http://linkedgeodata.org/triplify/node/%>) .";
+			// => according to OSM data model, ways do not have longitude/latitude, so we should
+			// always match nodes and not ways (TODO: discuss with Soeren)
+			queryStr += "FILTER (?point LIKE <http://linkedgeodata.org/triplify/node/%>) .";
 			queryStr += "}";
 			
 //			SparqlQuery query = new SparqlQuery(queryStr, geoDataEndpoint);
@@ -408,9 +410,7 @@ public class DBpediaLinkedGeoData {
 			String bestLabel = null;
 			while(rs.hasNext()) {
 				QuerySolution qs = rs.nextSolution();
-				
-				// measure string similarity and proximity
-				// TODO: incomplete
+				String lgdURI = qs.getResource("point").toString();
 				
 				// step 1: string similarity
 				double stringSimilarity;
@@ -442,18 +442,24 @@ public class DBpediaLinkedGeoData {
 				double lat = qs.getLiteral("lat").getDouble();
 				double lon = qs.getLiteral("long").getDouble();
 				double distance = spatialDistance(dbpediaPoint.getGeoLat(), dbpediaPoint.getGeoLong(), lat, lon);
-				double frac = distance / dbpediaPoint.getPoiClass().getMaxBox();
-				double distanceScore = Math.pow(frac-1,4);
+				double frac = Math.min(1,distance / dbpediaPoint.getPoiClass().getMaxBox());
+				double distanceScore = Math.pow(frac-1,2);
+				
+//				System.out.println(dbpediaPoint.getPoiClass().getMaxBox());
+//				System.out.println(distance);
+//				System.out.println(frac);
+//				System.out.println(distanceScore);
+//				System.out.println("===============");
 				
 				double score = 0.8 * stringSimilarity + 0.2 * distanceScore;
 				// if there is a node and a way, we prefer the node (better representative) 
-				if(qs.getResource("point").toString().contains("/way/")) {
-					score -= 0.02;
-				}
+//				if(lgdURI.contains("/way/")) {
+//					score -= 0.02;
+//				}
 				
 				if(score > highestScore) {
 					highestScore = score;
-					bestURI = qs.getResource("point").getURI();
+					bestURI = lgdURI;
 					bestLabel = lgdLabel1;
 				}
 				
