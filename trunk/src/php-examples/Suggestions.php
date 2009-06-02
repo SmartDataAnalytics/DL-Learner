@@ -22,7 +22,7 @@ $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/class/yago/","
 $relatedInstances = array('http://dbpedia.org/resource/Berlin','http://dbpedia.org/resource/London');
 $instances = array_merge($examples, $relatedInstances);
 $client->applyConfigEntryStringArray($id, $ksID, "instances", $instances);
-// $client->applyConfigEntryString($id, $ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
+$client->applyConfigEntryString($id, $ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
 $client->applyConfigEntryString($id, $ksID, "predefinedEndpoint", "LOCALDBPEDIA");
 $client->applyConfigEntryString($id, $ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 $client->applyConfigEntryBoolean($id, $ksID, "saveExtractedFragment", true);
