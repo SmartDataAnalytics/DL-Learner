@@ -138,6 +138,32 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		
 	}
 	
+	public Set<Set<OWLAxiom>> getInconsistencyExplanations(){
+		Set<Set<OWLAxiom>> explanations = regularExplanationCache.get(dataFactory.getOWLThing());
+		if(explanations == null){
+			explanations = regularExpGen.getInconsistencyExplanations();
+			regularExplanationCache.put(dataFactory.getOWLThing(), explanations);
+		} 
+		return explanations;
+	}
+	
+	public Set<Set<OWLAxiom>> getLaconicInconsistencyExplanations(){
+		OWLClass thing = dataFactory.getOWLThing();
+		Set<Set<OWLAxiom>> explanations = laconicExplanationCache.get(thing);
+		OWLSubClassAxiom unsatAxiom;
+		if(explanations == null){
+			unsatAxiom = dataFactory.getOWLSubClassAxiom(thing, dataFactory.getOWLNothing());
+			try {
+				explanations = laconicExpGen.getExplanations(unsatAxiom);
+			} catch (ExplanationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			laconicExplanationCache.put(thing, explanations);
+		} 
+		return explanations;
+	}
+	
 	public Set<List<OWLAxiom>> getOrderedUnsatisfiableExplanations(OWLClass unsat){
 		
 		return getOrderedExplanations(dataFactory.getOWLSubClassAxiom(unsat, dataFactory.getOWLNothing()),
@@ -150,6 +176,18 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		return getOrderedExplanations(dataFactory.getOWLSubClassAxiom(unsat, dataFactory.getOWLNothing()),
 				getLaconicUnsatisfiableExplanations(unsat));
 		
+	}
+	
+	public Set<List<OWLAxiom>> getOrderedInconsistencyExplanations(){
+		
+		return getOrderedExplanations(dataFactory.getOWLSubClassAxiom(dataFactory.getOWLThing(), dataFactory.getOWLNothing()),
+				getInconsistencyExplanations());
+		
+	}
+	
+	public Set<List<OWLAxiom>> getOrderedLaconicInconsistencyExplanations(){
+		return getOrderedExplanations(dataFactory.getOWLSubClassAxiom(dataFactory.getOWLThing(), dataFactory.getOWLNothing()),
+				getLaconicInconsistencyExplanations());
 	}
 	
 	public ArrayList<OWLAxiom> getTree2List(Tree<OWLAxiom> tree){
@@ -180,7 +218,7 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 
 	@Override
 	public void ontologiesChanged(List<? extends OWLOntologyChange> changes)
-			throws OWLException {System.out.println(changes);
+			throws OWLException {
 		ontologyChanged = true;
 		
 		

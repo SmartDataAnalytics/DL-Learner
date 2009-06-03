@@ -212,6 +212,9 @@ public class AxiomRanker {
 				}
 			}
 		}
+		for(OWLAxiom ax : result){
+			System.out.println(reasoner.isEntailed(axiom));
+		}
 		return result;
 	}
 	

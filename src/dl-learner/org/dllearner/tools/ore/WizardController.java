@@ -21,22 +21,21 @@
 package org.dllearner.tools.ore;
 
 
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 
 import javax.swing.DefaultListModel;
-import javax.swing.Icon;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
-import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.error.ErrorInfo;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 /**
@@ -96,20 +95,30 @@ public class WizardController implements ActionListener {
         WizardPanelDescriptor nextDescriptor = model.getPanelHashMap().get(nextPanelDescriptor);
       
         if(nextPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
-//        	model.getOre().getOwlReasoner().isSatisfiable()
+        	ore.initPelletReasoner();
+
         	if(!ore.consistentOntology()){
-        		Exception e = new Exception("ff");
-        		ErrorInfo info = new ErrorInfo("Inconsistent ontology", "2", "3", null, e, Level.ALL, null);
-        		JXErrorPane error = new JXErrorPane();
-        		Icon icon = UIManager.getIcon("JOptionPane.errorIcon");
-        		error.setErrorInfo(info);
-        		error.setIcon(icon);System.out.println(icon);
-        		JXErrorPane.showDialog(wizard.getDialog(), error);
         		
         		
+        		int n = showInconsistentOntologyWarning();
+
+        		if(n == JOptionPane.NO_OPTION){
+        			nextPanelDescriptor = KnowledgeSourcePanelDescriptor.IDENTIFIER;
+        		} else {
+        			InconsistencyExplanationPanelDescriptor incDescriptor = new InconsistencyExplanationPanelDescriptor();
+                    wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
+                    ((InconsistencyExplanationPanelDescriptor)model.getPanelHashMap().get(InconsistencyExplanationPanelDescriptor.IDENTIFIER)).init();
+                    incDescriptor.init();
+                    wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
+                    nextPanelDescriptor = InconsistencyExplanationPanelDescriptor.IDENTIFIER;
+        		}
+        		
+        		
+        	} else {
+        		((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
+            	new ConceptRetriever(nextPanelDescriptor).execute();
         	}
-        	((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
-        	new ConceptRetriever(nextPanelDescriptor).execute();
+        	
         }
        
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
@@ -229,6 +238,39 @@ public class WizardController implements ActionListener {
     	
         
     }
+    
+    private int showInconsistentOntologyWarning(){
+//    	Exception e = new Exception("ff");
+		String infoString = "<html>Can not do reasoning with inconsistent ontologies, " +
+				"since everything is equivalent to owl:nothing\n" +
+				"<ul>" +
+				"<li>Press 'Yes' and try to repair the ontology</li>" +
+				"<li>Press 'No' and choose another ontology or exit</li>" +
+				"</ul></html>";
+//		ErrorInfo info = new ErrorInfo("Warning: Inconsistent ontology.",infoString , wizard.getModel().getOre().getInconsistencyExplanationsString(), null, e, Level.ALL, null);
+//		JXErrorPane error = new JXErrorPane();
+//		Icon icon = UIManager.getIcon("OptionPane.warningIcon");
+//		error.setErrorInfo(info);
+//		error.setIcon(icon);
+//		JXErrorPane.showDialog(wizard.getDialog(), error);
+		
+		Object[] options = {"Yes",
+        "No"};
+
+		int n = JOptionPane.showOptionDialog(wizard.getDialog(),
+			    infoString,
+			    "Inconsistent ontology loaded!",
+			    JOptionPane.YES_NO_OPTION,
+			    JOptionPane.WARNING_MESSAGE,
+			    null,     //do not use a custom Icon
+			    options,  //the titles of buttons
+			    options[0]); //default button title
+		
+		return n;
+		
+    }
+    
+    
 
     
     void resetButtonsToPanelRules() {
@@ -298,9 +340,9 @@ public class WizardController implements ActionListener {
 //			owlClassPanel.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
 
 			wizard.getModel().getOre().initReasoners();
-
-			Set<NamedClass> classes = wizard.getModel().getOre().getOwlReasoner().getNamedClasses();
-			unsatClasses = wizard.getModel().getOre().getOwlReasoner().getInconsistentClasses();
+			
+			Set<NamedClass> classes = wizard.getModel().getOre().getPelletReasoner().getNamedClasses();
+			
 
 			return classes;
 		}
@@ -336,6 +378,13 @@ public class WizardController implements ActionListener {
 		}
 
 	}
+    
+ 
+    
+		
+		
+    	
+    
    
 
     

@@ -64,8 +64,8 @@ public class ImpactManager {
 			imp = new HashSet<OWLAxiom>();
 			impact.put(ax, imp);
 			if(ax != null){
-				imp.addAll(ranker.computeImpactOnRemoval(ax));
-				imp.addAll(ranker.computeImpactSOS(ax));//computeImpactSOS(actual));
+//				imp.addAll(ranker.computeImpactOnRemoval(ax));
+				imp.addAll(ranker.computeImpactSOS(ax));
 			}
 		}
 		return imp;
