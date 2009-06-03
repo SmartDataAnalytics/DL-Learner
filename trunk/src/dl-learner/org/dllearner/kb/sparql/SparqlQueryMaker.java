@@ -58,6 +58,10 @@ public class SparqlQueryMaker {
 
 	private boolean literals = false;
 
+	public void setLiterals(boolean literals) {
+		this.literals = literals;
+	}
+
 	public SparqlQueryMaker(Set<String> objectFilterList,
 			Set<String> predicateFilterList, boolean literals) {
 		super();
@@ -190,6 +194,8 @@ public class SparqlQueryMaker {
 		terms = new ArrayList<String>();
 		terms.add(assembled);
 		if (!isLiterals()) {
+			System.out.println(isLiterals()+"true");
+			System.exit(0);
 			terms.add("!isLiteral(" + objectVariable + ")");
 		}
 		return assembleTerms(terms, "&&");
@@ -383,10 +389,12 @@ public class SparqlQueryMaker {
 		
 		String dbont = "http://dbpedia.org/ontology/";
 		sqm.addPredicateFilter(dbont);
+		sqm.addPredicateFilter(OWLVocabulary.RDFS_range);
+		sqm.addPredicateFilter(OWLVocabulary.RDFS_domain);
 		sqm.addPredicateObjectFilter(dbont, dbont);
 		sqm.addPredicateObjectFilter(OWLVocabulary.RDF_TYPE, dbont);
 		sqm.addPredicateObjectFilter(OWLVocabulary.RDFS_SUBCLASS_OF, dbont);
-		
+		sqm.setLiterals(true);
 		
 		// pred.add("http://dbpedia.org/property/wikipage");
 		// pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
