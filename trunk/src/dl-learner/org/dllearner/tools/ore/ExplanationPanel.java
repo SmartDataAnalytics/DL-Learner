@@ -25,6 +25,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
@@ -35,15 +36,18 @@ import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.progress.SwingProgressMonitor;
+import org.protege.editor.owl.ui.inference.ClassifyAction;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
+
+import com.clarkparsia.modularity.AxiomBasedModuleExtractor;
+import com.clarkparsia.modularity.IncrementalClassifier;
+import com.clarkparsia.modularity.ModuleExtractor;
 
 public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		ActionListener,ImpactManagerListener{
@@ -294,20 +298,29 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	public static void main(String[] args) {
 
 		try {
-			String file = "file:examples/ore/miniEconomy.owl";
-			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.NONE;
+			String file = "file:examples/ore/tambis.owl";
+			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.SWING;
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
 					.create(file));
 			
 			org.mindswap.pellet.utils.progress.ProgressMonitor mon = new SwingProgressMonitor();
+			org.mindswap.pellet.utils.progress.ProgressMonitor m = new ClassificationProgressMonitor();
+			JFrame fr = new JFrame();
+			fr.setSize(new Dimension(400, 400));
+			fr.setLayout(new BorderLayout());
+			fr.add((JPanel)m);
+			fr.setVisible(true);
 			PelletReasonerFactory reasonerFactory = new PelletReasonerFactory();
 			Reasoner reasoner = reasonerFactory.createReasoner(manager);
 			reasoner.loadOntologies(Collections.singleton(ontology));
-//			reasoner.getKB().getTaxonomyBuilder().setProgressMonitor(mon);
+			reasoner.getKB().getTaxonomyBuilder().setProgressMonitor(mon);
 //			mon.taskStarted();
+			
+			
 			reasoner.classify();
-//			mon.taskFinished();
+			
+			
 			
 			
 			
@@ -363,7 +376,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		} catch (UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 
 	}
 

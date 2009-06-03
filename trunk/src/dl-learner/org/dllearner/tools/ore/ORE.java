@@ -21,7 +21,10 @@
 package org.dllearner.tools.ore;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +44,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -53,13 +57,12 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.PelletReasoner;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLException;
+
+import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 
 /**
  * This class contains init methods, and is used as broker between wizard and OWL-API. 
@@ -69,18 +72,17 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 public class ORE {
 	
 	private LearningAlgorithm la;
-	private ReasonerComponent rs;
+	
 	private KnowledgeSource ks; 
 	private LearningProblem lp;
 	private ComponentManager cm;
 	
 	private ReasonerComponent fastReasoner;
-	private ReasonerComponent owlReasoner;
 	
-	private SortedSet<Individual> posExamples;
-	private SortedSet<Individual> negExamples;
+	private PelletReasoner pelletReasoner;
 	
-	private NamedClass classToLearn;
+	
+	private NamedClass class2Learn;
 	private EvaluatedDescriptionClass newClassDescription;
 
 	
@@ -116,6 +118,7 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 		
 		try {
 			ks.init();
@@ -126,21 +129,23 @@ public class ORE {
 
 	}
 	
-	public boolean consistentOntology() throws InconsistentOntologyException{
-		boolean consistent = true;
+	public void initPelletReasoner(){
+		pelletReasoner = cm.reasoner(PelletReasoner.class, ks);
 		try {
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			OWLOntology ont = manager.loadOntology(owlFile.toURI());
-			Reasoner reasoner = new PelletReasonerFactory().createReasoner(manager);
-			reasoner.loadOntology(ont);
-			
-			consistent = reasoner.isConsistent();
-		} catch (OWLOntologyCreationException e) {
+			pelletReasoner.init();
+		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return consistent;
+		pelletReasoner.loadOntologies();
+	}
+	
+	public boolean consistentOntology() throws InconsistentOntologyException{
+		return pelletReasoner.isConsistent();
+			}
+	
+	public PelletReasoner getPelletReasoner(){
+		return pelletReasoner;
 	}
 	
 	
@@ -156,33 +161,36 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-				
-		
-		owlReasoner = cm.reasoner(OWLAPIReasoner.class, ks);
-		try {
-			owlReasoner.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		modifier = new OntologyModifier(owlReasoner, rs);
+		pelletReasoner.loadOntologies();
+		pelletReasoner.classify();
+		modifier = new OntologyModifier(pelletReasoner);
 		baseURI = fastReasoner.getBaseURI();
 		prefixes = fastReasoner.getPrefixes();
 		
 	}
 	
-		
-	
-	
-	public void setPosNegExamples(){
-		posExamples = owlReasoner.getIndividuals(classToLearn);
-		negExamples = owlReasoner.getIndividuals();
-		
-		
-		for (Individual pos : posExamples){
-			negExamples.remove(pos);
+	public String getInconsistencyExplanationsString(){
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
+		StringWriter buffer = new StringWriter();
+		renderer.startRendering(buffer);
+		try {
+			renderer.render(getInconsistencyExplanations());
+		} catch (UnsupportedOperationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		renderer.endRendering();
+		return buffer.toString();
+	}
+	
+	private Set<Set<OWLAxiom>> getInconsistencyExplanations(){
+		return pelletReasoner.getInconsistencyReasons();
 	}
 	
 		
@@ -204,23 +212,33 @@ public class ORE {
 		return prefixes;
 	}
 
-	public ReasonerComponent getOwlReasoner() {
-		return owlReasoner;
-	}
 	
 	public ReasonerComponent getFastReasoner() {
 		return fastReasoner;
 	}
 
 	public void setLearningProblem(){
-		lp = cm.learningProblem(ClassLearningProblem.class, fastReasoner);
-		cm.applyConfigEntry(lp, "classToDescribe", classToLearn.toString());
+		
+		lp = ComponentFactory.getClassLearningProblem(fastReasoner, getClass2LearnAsURL());
+		
 		try {
 			lp.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private URL getClass2LearnAsURL(){
+		URL classURL = null;
+		try {
+			classURL = new URL(class2Learn.toString());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return classURL;
+		
 	}
 	
 	public void setNoise(double noise){
@@ -236,20 +254,16 @@ public class ORE {
 	}
 	
 	public void setLearningAlgorithm(){
+		
 		try {
-			la = cm.learningAlgorithm(CELOE.class, lp, fastReasoner);
+			la = ComponentFactory.getCELOE(lp, fastReasoner);
 			cm.applyConfigEntry(la, "useNegation", false);
 		} catch (LearningProblemUnsupportedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-	
-		Set<String> t = new TreeSet<String>();
-		
-		
-		t.add(classToLearn.getName());
-//		cm.applyConfigEntry(la, "ignoredConcepts", t);
-//		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 10);
+
+
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -261,21 +275,14 @@ public class ORE {
 	
 	/**
 	 * Sets the class that has to be learned.
-	 * @param oldClass class that is choosen to be (re)learned
+	 * @param oldClass class that is chosen to be (re)learned
 	 */
-	public void setClassToLearn(NamedClass oldClass){
-		this.classToLearn = oldClass;
+	public void setClassToLearn(NamedClass class2Learn){
+		this.class2Learn = class2Learn;
 	}
 	
 	public void init(){
-//		try {
-//			owlReasoner.init();
-//			fastReasoner.init();
-//		} catch (ComponentInitException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		this.setPosNegExamples();
+		
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
 			
@@ -286,10 +293,7 @@ public class ORE {
 	 * 
 	 */
 	public void start(){
-		Set<String> t = new TreeSet<String>();
-//		t.add(classToLearn.getName());
-//		cm.applyConfigEntry(la, "ignoredConcepts", t);
-//		cm.applyConfigEntry(la, "noisePercentage", noise);
+
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -310,7 +314,7 @@ public class ORE {
 	}
 
 	public NamedClass getIgnoredConcept() {
-		return classToLearn;
+		return class2Learn;
 	}
 
 	
@@ -325,7 +329,7 @@ public class ORE {
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-		if(owlReasoner.hasType(desc, ind)){
+		if(pelletReasoner.hasType(desc, ind)){
 			
 			if(children.size() >= 2){
 				
@@ -335,7 +339,7 @@ public class ORE {
 					}
 				} else if(desc instanceof Union){
 					for(Description d: children){
-						if(owlReasoner.hasType(d, ind)){
+						if(pelletReasoner.hasType(d, ind)){
 							criticals.addAll(getNegCriticalDescriptions(ind, d));
 						}
 					}
@@ -468,7 +472,7 @@ public class ORE {
 	 */
 	public Set<Individual> getIndividualsInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
-		Set<Individual> individuals = owlReasoner.getIndividuals(objRestr.getChild(0));
+		Set<Individual> individuals = pelletReasoner.getIndividuals(objRestr.getChild(0));
 		individuals.remove(ind);
 		
 		return individuals;
@@ -484,7 +488,7 @@ public class ORE {
 
 		Set<Individual> allIndividuals = new HashSet<Individual>();
 		
-		for(Individual i : owlReasoner.getIndividuals()){
+		for(Individual i : pelletReasoner.getIndividuals()){
 			
 //			try {
 				if(!fastReasoner.hasType(objRestr.getChild(0), i)){
@@ -507,12 +511,12 @@ public class ORE {
 	 */
 	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : owlReasoner.getNamedClasses()){
-			if(!owlReasoner.hasType(nc, ind)){
+		for(NamedClass nc : pelletReasoner.getNamedClasses()){
+			if(!pelletReasoner.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
-		moveClasses.remove(classToLearn);
+		moveClasses.remove(class2Learn);
 			
 		return moveClasses;
 	}
@@ -524,12 +528,12 @@ public class ORE {
 	 */
 	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : owlReasoner.getNamedClasses()){
-			if(owlReasoner.hasType(nc, ind)){
+		for(NamedClass nc : pelletReasoner.getNamedClasses()){
+			if(pelletReasoner.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
-		moveClasses.remove(classToLearn);
+		moveClasses.remove(class2Learn);
 			
 		return moveClasses;
 	}
@@ -545,10 +549,10 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		owlReasoner = cm.reasoner(OWLAPIReasoner.class, new OWLAPIOntology(modifier.getOntology()));
+		
 		
 		try {
-			owlReasoner.init();
+			pelletReasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -563,18 +567,19 @@ public class ORE {
 	 * @param ind
 	 */
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
-//		System.out.println("----------------" + desc + "---------------");
+
 		Set<NamedClass> complements = new HashSet<NamedClass>();
-		for(NamedClass nc : owlReasoner.getNamedClasses()){
+		System.out.println(pelletReasoner.getComplementClasses(desc));
+		for(NamedClass nc : pelletReasoner.getNamedClasses()){
 			if(!(nc.toString().endsWith("Thing"))){
-				if(owlReasoner.hasType(nc, ind)){
+				if(pelletReasoner.hasType(nc, ind)){
 					if(modifier.isComplement(desc, nc)){
 						complements.add(nc);
 					}
 				}
 			}
 		}
-		System.out.println("Disjunkt sind: " + complements);
+		
 		
 		return complements;
 	}

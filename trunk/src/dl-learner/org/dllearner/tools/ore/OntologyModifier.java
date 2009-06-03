@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -37,6 +36,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -75,18 +75,18 @@ import org.semanticweb.owl.util.OWLEntityRemover;
 public class OntologyModifier {
 
 	private OWLOntology ontology;
-	private ReasonerComponent reasoner;
+	private PelletReasoner reasoner;
 	private OWLDataFactory factory;
 	private OWLOntologyManager manager;
-	private ReasonerComponent rs;
 	
 	
-	public OntologyModifier(ReasonerComponent reasoner, ReasonerComponent rs){
+	
+	public OntologyModifier(PelletReasoner reasoner){
 		this.reasoner = reasoner;
-		this.manager = OWLManager.createOWLOntologyManager();
+		this.manager = reasoner.getOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
-		this.ontology = ((OWLAPIReasoner)reasoner).getOWLAPIOntologies().get(0);
-		this.rs = rs;
+		this.ontology = (reasoner.getOWLAPIOntologies());
+		
 	}
 	
 	/**
@@ -595,7 +595,7 @@ public class OntologyModifier {
 			}
 	        OWLDebugger debugger = new BlackBoxOWLDebugger(manager, ontology, checker);
 	        
-	        for(OWLClass owlClass : ((OWLAPIReasoner)reasoner).getInconsistentOWLClasses()){
+	        for(OWLClass owlClass : reasoner.getInconsistentOWLClasses()){
 	        /* Find the sets of support and print them */
 		        Set<Set<OWLAxiom>> allsos = null;
 				try {
