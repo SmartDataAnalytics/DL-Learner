@@ -130,15 +130,17 @@ public class ExtractionAlgorithm {
 			
 		
 		if(configuration.isGetPropertyInformation() ){
+			collectNodes.add(seedNode);
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
 			List<ObjectPropertyNode> objectProperties = getObjectPropertyNodes(collectNodes);
+			logger.info("Get info for "+objectProperties.size() + " objectProperties");
 			for (ObjectPropertyNode node : objectProperties) {
 				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
 			}
 			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
+			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
 			for (DatatypePropertyNode node : datatypeProperties) {
 				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
-				//System.out.println(node+""+collectNodes.size());
 			}
 			m.stop();
 		}
@@ -282,7 +284,6 @@ public class ExtractionAlgorithm {
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getDatatypePropertyNode());
-				
 			}
 			
 		}
