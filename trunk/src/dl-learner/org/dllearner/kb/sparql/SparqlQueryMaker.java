@@ -373,7 +373,8 @@ public class SparqlQueryMaker {
 	}
 
 	public static SparqlQueryMaker getDBpediaNavigatorFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), false);
+//		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), true);
 //		sqm.addPredicateFilter("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 //		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#subClassOf");
 //		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#lat");

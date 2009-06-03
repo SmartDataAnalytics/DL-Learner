@@ -24,8 +24,10 @@ $instances = array_merge($examples, $relatedInstances);
 $client->applyConfigEntryStringArray($id, $ksID, "instances", $instances);
 $client->applyConfigEntryString($id, $ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
 $client->applyConfigEntryString($id, $ksID, "predefinedEndpoint", "LOCALDBPEDIA");
-$client->applyConfigEntryString($id, $ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
+// $client->applyConfigEntryString($id, $ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 $client->applyConfigEntryBoolean($id, $ksID, "saveExtractedFragment", true);
+// $client->applyConfigEntryBoolean($id, $ksID, "useLits", true);
+$client->applyConfigEntryBoolean($id, $ksID, "getPropertyInformation", true);
 
 $rID = $client->setReasoner($id, "fastInstanceChecker");
 
@@ -33,6 +35,9 @@ $client->setLearningProblem($id, "posOnlyLP");
 $client->setPositiveExamples($id, $examples);
 
 $laID = $client->setLearningAlgorithm($id, "celoe");
+$client->applyConfigEntryInt($id, $laID, "maxExecutionTimeInSeconds", 1);
+$client->applyConfigEntryBoolean($id, $laID, "useHasValueConstructor", true);
+$client->applyConfigEntryInt($id, $laID, "valueFrequencyThreshold", 2);
 
 $client->initAll($id);
 
@@ -43,19 +48,27 @@ foreach($examples as $example) {
 echo '</p>';
 
 echo '<p>Additional instances:<br />';
-foreach($relatedinstances as $related) {
+foreach($relatedInstances as $related) {
 	echo $related.'<br />';
 }
 echo '</p>';
 
-echo 'start learning ... ';
-$concepts = $client->learnDescriptionsEvaluated($id, 5);
-echo 'OK <br />';
+echo '<p>start learning ... ';
+$startTime = microtime(true);
+$concepts = $client->learnDescriptionsEvaluated($id, 10);
+$runTime = microtime(true) - $startTime;
+echo 'OK ('.$runTime.' seconds)</p>';
 
 $concepts = json_decode($concepts);
 
+// var_dump($concepts);
+
+echo '<table border="1px"><tr><td><i>natural description</i></td><td><i>Manchester OWL Syntax</i></td><td><i>accuracy</i></td></tr>';
 foreach($concepts as $concept) {
-	echo $concept;
+	$natural =  $client->getNaturalDescription($id, $concept->descriptionKBSyntax); 
+	// echo $natural . '(Manchester: ' . $concept->descriptionManchesterSyntax . ', acc. ' . $concept->scoreValue . ')<br />'; ;
+	echo '<tr><td>'.$natural.'</td><td>'.$concept->descriptionManchesterSyntax.'</td><td>'.$concept->scoreValue.'</td></tr>';
 }
+echo '</table>';
 
 ?> 
