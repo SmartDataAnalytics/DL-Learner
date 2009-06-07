@@ -26,8 +26,10 @@ public class ImpactManager {
 	private List<ImpactManagerListener> listeners;
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
+	private Reasoner reasoner;
 
 	private ImpactManager(Reasoner reasoner) {
+		this.reasoner = reasoner;
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		this.manager = reasoner.getManager();
 		impact = new HashMap<OWLAxiom, Set<OWLAxiom>>();
@@ -116,9 +118,10 @@ public class ImpactManager {
 		try {
 			manager.applyChanges(changes);
 		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Error in Impactmanager: Couldn't apply ontology changes");
 			e.printStackTrace();
 		}
+		
 		impact.clear();
 		selectedAxioms.clear();
 		fireRepairPlanExecuted();
@@ -131,6 +134,7 @@ public class ImpactManager {
 	}
 	
 	private void fireRepairPlanExecuted(){
+			
 		for(ImpactManagerListener listener : listeners){
 			listener.repairPlanExecuted();
 		}

@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.ore;
 
+import java.awt.Dimension;
 import java.util.Locale;
 
 import javax.swing.UIManager;
@@ -57,7 +58,8 @@ public class Main {
 		Locale.setDefault(Locale.ENGLISH);
         Wizard wizard = new Wizard();
         wizard.getDialog().setTitle("DL-Learner ORE-Tool");
-        wizard.getDialog().setSize(1300, 600);
+        Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        wizard.getDialog().setSize(dim);
         
         WizardPanelDescriptor descriptor1 = new IntroductionPanelDescriptor();
         wizard.registerWizardPanel(IntroductionPanelDescriptor.IDENTIFIER, descriptor1);

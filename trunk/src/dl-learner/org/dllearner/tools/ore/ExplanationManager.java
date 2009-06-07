@@ -13,7 +13,6 @@ import org.dllearner.tools.ore.explanation.LaconicExplanationGenerator;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -47,6 +46,7 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 	private Set<OWLClass> unsatClasses;
 	private Set<OWLClass> rootClasses;
 	boolean ontologyChanged = true;
+	boolean isLaconicMode = false;
 	
 	
 	
@@ -59,17 +59,17 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		
 		manager.addOntologyChangeListener(this);
-		manager.addOntologyChangeListener(reasoner);
+//		manager.addOntologyChangeListener(reasoner);
 		dataFactory = manager.getOWLDataFactory();
 		ImpactManager.getImpactManager(reasoner).addListener(this);
 		reasonerFactory = new PelletReasonerFactory();
 
 		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
 
-		regularExpGen = new PelletExplanation(manager, Collections
-				.singleton(ontology));
+		regularExpGen = new PelletExplanation(reasoner.getManager(), reasoner.getLoadedOntologies());
+	
 		laconicExpGen = new LaconicExplanationGenerator(manager,
-				reasonerFactory, Collections.singleton(ontology));
+				reasonerFactory, manager.getOntologies());
 
 		rootClasses = new HashSet<OWLClass>();
 		unsatClasses = new HashSet<OWLClass>();
@@ -223,11 +223,18 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		
 		
 		
+		
+		
 	}
 	
 	public int getArity(OWLClass cl, OWLAxiom ax) {
 		int arity = 0;
-		Set<Set<OWLAxiom>> explanations = regularExplanationCache.get(cl);
+		Set<Set<OWLAxiom>> explanations;
+		if(isLaconicMode){
+			explanations = laconicExplanationCache.get(cl);
+		} else {
+			explanations = regularExplanationCache.get(cl);
+		}
 		
 		if(explanations != null){
 			
@@ -238,6 +245,11 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 			}
 		}
 		return arity;
+	}
+	
+	public void setLaconicMode(boolean laconic){
+		isLaconicMode = laconic;
+		
 	}
 
 	@Override
@@ -250,6 +262,9 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 	public void repairPlanExecuted() {
 		reasoner.refresh();
 		ontologyChanged = true;
+		regularExpGen = new PelletExplanation(reasoner.getManager(), reasoner.getLoadedOntologies());
+		laconicExpGen = new LaconicExplanationGenerator(manager,
+				reasonerFactory, reasoner.getLoadedOntologies());
 		regularExplanationCache.clear();
 		laconicExplanationCache.clear();
 	}

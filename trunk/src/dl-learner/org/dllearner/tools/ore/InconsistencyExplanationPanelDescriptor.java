@@ -7,13 +7,15 @@ import java.util.List;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
 
-public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener{
+public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ImpactManagerListener{
 	public static final String IDENTIFIER = "INCONSISTENCY_PANEL";
     public static final String INFORMATION = "";
 
     private InconsistencyExplanationPanel panel;
     private ExplanationManager expMan;
     private ImpactManager impMan;
+    private Reasoner reasoner;
+    private boolean laconicMode = false;
        
     public InconsistencyExplanationPanelDescriptor() {
 
@@ -22,19 +24,22 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 	}
 
 	public void init() {
-		Reasoner reasoner = getWizardModel().getOre().getPelletReasoner()
+		reasoner = getWizardModel().getOre().getPelletReasoner()
 				.getReasoner();
 		expMan = ExplanationManager.getExplanationManager(reasoner);
 		impMan = ImpactManager.getImpactManager(reasoner);
+		impMan.addListener(this);
 		panel = new InconsistencyExplanationPanel(expMan, impMan);
 		panel.addActionListeners(this);
 		setPanelComponent(panel);
+		
 		
 
 	}
     
     private void showLaconicExplanations() {
     	panel.clearExplanationsPanel();
+    	expMan.setLaconicMode(true);
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expMan
 				.getOrderedLaconicInconsistencyExplanations()) {
@@ -46,6 +51,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     
     private void showRegularExplanations() {
     	panel.clearExplanationsPanel();
+    	expMan.setLaconicMode(false);
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expMan
 				.getOrderedInconsistencyExplanations()) {
@@ -54,6 +60,21 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 		}
     }
     
+    private void showExplanations(){
+    	if(laconicMode) {
+    		showLaconicExplanations();
+    	} else {
+    		showRegularExplanations();
+    	}
+    }
+    
+    private void setNextButtonEnabled2ConsistentOntology(){
+    	if(reasoner.isConsistent()){
+    		getWizard().setNextFinishButtonEnabled(true);
+    	} else {
+    		getWizard().setNextFinishButtonEnabled(false);
+    	}
+    }
     
     
     
@@ -65,25 +86,44 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     
     @Override
 	public Object getBackPanelDescriptor() {
-        return null;
+        return KnowledgeSourcePanelDescriptor.IDENTIFIER;
     }
     
     @Override
 	public void aboutToDisplayPanel() {
     	showRegularExplanations();
         getWizard().getInformationField().setText(INFORMATION);
+        getWizard().setNextFinishButtonEnabled(false);
     }
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("regular")) {
-			showRegularExplanations();
+			laconicMode = false;
 		} else if (e.getActionCommand().equals("laconic")) {
-			showLaconicExplanations();
-
+			laconicMode = true;
 		}
+		showExplanations();
 		
 	}
+
+	@Override
+	public void axiomForImpactChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanExecuted() {
+		
+		System.out.println("repair plan executed");
+		showExplanations();
+		panel.repaint();
+		setNextButtonEnabled2ConsistentOntology();
+		
+	}
+	
+	
     
     
 }

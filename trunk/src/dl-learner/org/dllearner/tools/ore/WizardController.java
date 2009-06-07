@@ -108,7 +108,7 @@ public class WizardController implements ActionListener {
         			InconsistencyExplanationPanelDescriptor incDescriptor = new InconsistencyExplanationPanelDescriptor();
                     wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
                     ((InconsistencyExplanationPanelDescriptor)model.getPanelHashMap().get(InconsistencyExplanationPanelDescriptor.IDENTIFIER)).init();
-                    incDescriptor.init();
+                    
                     wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
                     nextPanelDescriptor = InconsistencyExplanationPanelDescriptor.IDENTIFIER;
         		}

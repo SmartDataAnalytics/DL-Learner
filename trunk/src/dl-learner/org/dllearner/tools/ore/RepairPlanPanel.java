@@ -34,6 +34,8 @@ public class RepairPlanPanel extends JPanel {
 		}));
 
 		JScrollPane repScr = new JScrollPane(new RepairTable(impMan));
+		repScr.setBackground(null);
+		repScr.getViewport().setOpaque(false);
 		add(repScr);
 	}
 

@@ -106,7 +106,7 @@ public class InconsistencyExplanationPanel extends JPanel{
 	
 	}
 	
-	public void clearExplanationsPanel(){
+	public void clearExplanationsPanel(){System.out.println("Clearing explanations");
 		explanationsPanel.removeAll();
 	}
 	
