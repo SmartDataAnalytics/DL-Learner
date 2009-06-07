@@ -291,7 +291,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	public static void main(String[] args) {
 
 		try {
-			String file = "file:examples/ore/koala.owl";
+			String file = "file:examples/ore/tambis.owl";
 			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.SWING;
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
@@ -303,7 +303,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 			fr.setSize(new Dimension(400, 400));
 			fr.setLayout(new BorderLayout());
 			fr.add((JPanel)m);
-			fr.setVisible(true);
+//			fr.setVisible(true);
 			PelletReasonerFactory reasonerFactory = new PelletReasonerFactory();
 			Reasoner reasoner = reasonerFactory.createReasoner(manager);
 			reasoner.loadOntologies(Collections.singleton(ontology));

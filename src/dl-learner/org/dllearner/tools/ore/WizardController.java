@@ -21,17 +21,13 @@
 package org.dllearner.tools.ore;
 
 
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.owl.Description;
@@ -85,18 +81,19 @@ public class WizardController implements ActionListener {
     private void nextButtonPressed() {
  
         WizardModel model = wizard.getModel();
-        WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
+        WizardPanelDescriptor currentPanelDescriptor = model.getCurrentPanelDescriptor();
         ORE ore = model.getOre();
         //  If it is a finishable panel, close down the dialog. Otherwise,
         //  get the ID that the current panel identifies as the next panel,
         //  and display it.
         
-        Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
+        Object nextPanelDescriptor = currentPanelDescriptor.getNextPanelDescriptor();
         WizardPanelDescriptor nextDescriptor = model.getPanelHashMap().get(nextPanelDescriptor);
-      
-        if(nextPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
+        
+        if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals
+        		(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
         	ore.initPelletReasoner();
-
+        	
         	if(!ore.consistentOntology()){
         		
         		
@@ -115,10 +112,35 @@ public class WizardController implements ActionListener {
         		
         		
         	} else {
-        		((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
-            	new ConceptRetriever(nextPanelDescriptor).execute();
+        		ore.getPelletReasoner().classify();
+        		if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
+        			UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();
+        			wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, unsatDescriptor);
+        			((UnsatisfiableExplanationPanelDescriptor)model.getPanelHashMap().get(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)).init();
+        			wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, unsatDescriptor);
+        			nextPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
+        		} else {
+        			
+        			nextPanelDescriptor = ClassPanelOWLDescriptor.IDENTIFIER;
+        			((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
+                	new ConceptRetriever(nextPanelDescriptor).execute();
+        		}
+        		
         	}
         	
+        }
+        if(currentPanelDescriptor.equals(InconsistencyExplanationPanelDescriptor.IDENTIFIER)){
+        	ore.getPelletReasoner().classify();
+        	if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
+        		
+        	} else {
+        		nextPanelDescriptor = KnowledgeSourcePanelDescriptor.IDENTIFIER;
+        	}
+        }
+        if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)){
+        	nextPanelDescriptor = ClassPanelOWLDescriptor.IDENTIFIER;
+			((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
+        	new ConceptRetriever(nextPanelDescriptor).execute();
         }
        
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
@@ -144,7 +166,7 @@ public class WizardController implements ActionListener {
         	Description oldClass = model.getOre().getIgnoredConcept();
         	
         	List<OWLOntologyChange> changes = ore.getModifier().rewriteClassDescription(newDesc, oldClass);
-        	((RepairPanelDescriptor) descriptor).getOntologyChanges().addAll(changes);
+        	((RepairPanelDescriptor) currentPanelDescriptor).getOntologyChanges().addAll(changes);
                 	
         }
         
