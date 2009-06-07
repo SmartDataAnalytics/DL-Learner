@@ -25,7 +25,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
-import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
@@ -36,18 +35,12 @@ import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.progress.SwingProgressMonitor;
-import org.protege.editor.owl.ui.inference.ClassifyAction;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
-
-import com.clarkparsia.modularity.AxiomBasedModuleExtractor;
-import com.clarkparsia.modularity.IncrementalClassifier;
-import com.clarkparsia.modularity.ModuleExtractor;
 
 public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		ActionListener,ImpactManagerListener{
@@ -298,7 +291,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	public static void main(String[] args) {
 
 		try {
-			String file = "file:examples/ore/tambis.owl";
+			String file = "file:examples/ore/koala.owl";
 			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.SWING;
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
