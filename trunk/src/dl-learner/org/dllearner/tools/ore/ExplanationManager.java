@@ -121,6 +121,17 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		return explanations;
 	}
 	
+	public Set<Set<OWLAxiom>> getUnsatisfiableExplanations(OWLClass unsat, int count){
+		Set<Set<OWLAxiom>> explanations = regularExplanationCache.get(unsat);
+		if(explanations == null){
+			explanations = regularExpGen.getUnsatisfiableExplanations(unsat, count);
+			regularExplanationCache.put(unsat, explanations);
+		} 
+		
+		return explanations;
+	}
+	
+	
 	public Set<Set<OWLAxiom>> getLaconicUnsatisfiableExplanations(OWLClass unsat){
 		Set<Set<OWLAxiom>> explanations = laconicExplanationCache.get(unsat);
 		OWLSubClassAxiom unsatAxiom;
@@ -168,6 +179,13 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		
 		return getOrderedExplanations(dataFactory.getOWLSubClassAxiom(unsat, dataFactory.getOWLNothing()),
 				getUnsatisfiableExplanations(unsat));
+		
+	}
+	
+	public Set<List<OWLAxiom>> getOrderedUnsatisfiableExplanations(OWLClass unsat, int count){
+		
+		return getOrderedExplanations(dataFactory.getOWLSubClassAxiom(unsat, dataFactory.getOWLNothing()),
+				getUnsatisfiableExplanations(unsat, count));
 		
 	}
 	

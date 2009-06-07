@@ -2,48 +2,58 @@ package org.dllearner.tools.ore;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.jdesktop.swingx.JXList;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClass;
 
-public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ImpactManagerListener{
-	public static final String IDENTIFIER = "INCONSISTENCY_PANEL";
+public class UnsatisfiableExplanationPanelDescriptor extends
+		WizardPanelDescriptor implements ActionListener, ImpactManagerListener, ListSelectionListener{
+	
+	public static final String IDENTIFIER = "UNSATISFIABLE_PANEL";
     public static final String INFORMATION = "";
 
-    private InconsistencyExplanationPanel panel;
+    private UnsatisfiableExplanationPanel panel;
     private ExplanationManager expMan;
     private ImpactManager impMan;
     private Reasoner reasoner;
     private boolean laconicMode = false;
-       
-    public InconsistencyExplanationPanelDescriptor() {
-
+    private OWLClass unsatClass;
+	
+	public UnsatisfiableExplanationPanelDescriptor(){
 		setPanelDescriptorIdentifier(IDENTIFIER);
-
 	}
-
+	
 	public void init() {
 		reasoner = getWizardModel().getOre().getPelletReasoner()
 				.getReasoner();
 		expMan = ExplanationManager.getExplanationManager(reasoner);
 		impMan = ImpactManager.getImpactManager(reasoner);
 		impMan.addListener(this);
-		panel = new InconsistencyExplanationPanel(expMan, impMan);
+		panel = new UnsatisfiableExplanationPanel(expMan, impMan);
 		panel.addActionListeners(this);
+		panel.addListSelectionListener(this);
 		setPanelComponent(panel);
 		
 		
 
 	}
-    
-    private void showLaconicExplanations() {
+	
+	private void showLaconicExplanations() {
     	panel.clearExplanationsPanel();
     	expMan.setLaconicMode(true);
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expMan
-				.getOrderedLaconicInconsistencyExplanations()) {
-			panel.addExplanation(explanation, counter);
+				.getOrderedLaconicUnsatisfiableExplanations(unsatClass)) {
+			panel.addExplanation(explanation, unsatClass, counter);
 			counter++;
 		}
 		
@@ -54,8 +64,8 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     	expMan.setLaconicMode(false);
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expMan
-				.getOrderedInconsistencyExplanations()) {
-			panel.addExplanation(explanation, counter);
+				.getOrderedUnsatisfiableExplanations(unsatClass)) {
+			panel.addExplanation(explanation, unsatClass, counter);
 			counter++;
 		}
     }
@@ -67,17 +77,6 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     		showRegularExplanations();
     	}
     }
-    
-    private void setNextButtonEnabled2ConsistentOntology(){
-    	if(reasoner.isConsistent()){
-    		getWizard().setNextFinishButtonEnabled(true);
-    	} else {
-    		getWizard().setNextFinishButtonEnabled(false);
-    	}
-    }
-    
-    
-    
     
     @Override
 	public Object getNextPanelDescriptor() {
@@ -91,9 +90,9 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     
     @Override
 	public void aboutToDisplayPanel() {
-    	showRegularExplanations();
+    	fillUnsatClassesList();
         getWizard().getInformationField().setText(INFORMATION);
-        getWizard().setNextFinishButtonEnabled(false);
+        
     }
 
 	@Override
@@ -115,16 +114,34 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 
 	@Override
 	public void repairPlanExecuted() {
+		panel.clearExplanationsPanel();
 		
-		
-		showExplanations();
+		fillUnsatClassesList();
 		panel.repaint();
-		setNextButtonEnabled2ConsistentOntology();
 		
 	}
 	
-	
-    
-    
+	private void fillUnsatClassesList(){
+		List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
+		Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
+				.getRootUnsatisfiableClasses());
+		unsatClasses.addAll(rootClasses);
+		Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
+				.getUnsatisfiableClasses());
+		derivedClasses.removeAll(rootClasses);
+		
+		unsatClasses.addAll(derivedClasses);
+		panel.fillUnsatClassesList(unsatClasses);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		JXList unsatList = (JXList) e.getSource();
+		unsatClass = (OWLClass)unsatList.getSelectedValue();
+		if (!unsatList.isSelectionEmpty()) {
+			showExplanations();
+		}
+		
+	}
+
 }
- 
