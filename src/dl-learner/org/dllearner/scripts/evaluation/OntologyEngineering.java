@@ -225,8 +225,7 @@ public class OntologyEngineering {
 						// but there is one which was not found
 						// - n ("none"): none of the axioms is appropriate and
 						// there is probably no other appropriate axiom
-						System.out
-								.println("Type a number (\"0\"-\""
+						System.out.println("Type a number (\"0\"-\""
 										+ (suggestions.size() - 1)
 										+ "\") if any of the suggestions is appropriate (if several are possible choose the lowest number). Type \"n\" if there is no appropriate suggestion for this class in your opinion. Type \"m\" if there is an appropriate suggestion in your opinion, but the algorithm did not suggest it.");
 
@@ -244,6 +243,8 @@ public class OntologyEngineering {
 							input = br.readLine();
 						} while (!allowedInputs.contains(input));
 
+						userInputProtocol += input;
+						
 						if (input.equals("m")) {
 							if (i == 0) {
 								missesCount++;
