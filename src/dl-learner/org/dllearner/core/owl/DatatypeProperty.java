@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -46,6 +47,10 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 		return name;
 	}
 
+    public URI getURI() {
+    	return URI.create(name);
+    }	
+	
 	@Override
 	public String toString() {
 		return toString(null, null);

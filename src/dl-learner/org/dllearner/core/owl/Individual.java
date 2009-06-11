@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -37,6 +38,10 @@ public class Individual implements Entity, NamedKBElement, Comparable<Individual
 		return name;
 	}
 
+    public URI getURI() {
+    	return URI.create(name);
+    }	
+	
 	public Individual(String name) {
 		this.name = name;
 	}

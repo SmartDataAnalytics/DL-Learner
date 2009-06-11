@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -39,6 +40,10 @@ public class ObjectProperty extends ObjectPropertyExpression implements Property
 	public int getLength() {
 		return 1;
 	}
+	
+    public URI getURI() {
+    	return URI.create(name);
+    }	
 	
 	@Override		
 	public String toString() {

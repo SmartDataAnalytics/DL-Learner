@@ -47,6 +47,10 @@ public class NamedClass extends Description implements Entity, NamedKBElement, C
 		return name;
 	}
     
+    public URI getURI() {
+    	return URI.create(name);
+    }
+    
 	public int getLength() {
 		return 1;
 	}

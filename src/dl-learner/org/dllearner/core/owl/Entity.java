@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
+
 /**
  * Marker interface for classes, properties, individuals.
  * 
@@ -27,4 +29,6 @@ package org.dllearner.core.owl;
  */
 public interface Entity extends NamedKBElement {
 
+	public URI getURI();
+	
 }
