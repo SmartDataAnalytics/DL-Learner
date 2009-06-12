@@ -15,7 +15,7 @@ $client = new SoapClient("main.wsdl",array('features' => SOAP_SINGLE_ELEMENT_ARR
 $id = $client->generateID();
 
 $ksID=$client->addKnowledgeSource($id,"sparql","http://dbpedia.org/sparql");
-$client->applyConfigEntryInt($id, $ksID, "recursionDepth", 1);
+$client->applyConfigEntryInt($id, $ksID, "recursionDepth", 2);
 $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/class/yago/","http://dbpedia.org/ontology/Resource");
 // $relatedInstances = $client->getNegativeExamples($id,$ksID,$examples,count($examples),"http://dbpedia.org/resource/",$filterClasses);
 // $relatedInstances = $relatedInstances->item;
