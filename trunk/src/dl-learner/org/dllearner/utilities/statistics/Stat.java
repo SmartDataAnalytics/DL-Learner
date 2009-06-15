@@ -128,12 +128,16 @@ public class Stat {
 	}
 
 	public String prettyPrint(String unit) {
-		DecimalFormat df = new DecimalFormat();
-		String str = "av. " + df.format(getMean()) + unit;
-		str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
-		str += "min " + df.format(getMin()) + unit + "; ";
-		str += "max " + df.format(getMax()) + unit + ")";		
-		return str;
+		if(sum > 0) {
+			DecimalFormat df = new DecimalFormat();
+			String str = "av. " + df.format(getMean()) + unit;
+			str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
+			str += "min " + df.format(getMin()) + unit + "; ";
+			str += "max " + df.format(getMax()) + unit + ")";
+			return str;
+		} else {
+			return "no data collected";
+		}
 	}	
 	
 	public String prettyPrint(String unit, DecimalFormat df) {

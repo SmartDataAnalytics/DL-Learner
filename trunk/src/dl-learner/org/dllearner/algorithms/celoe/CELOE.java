@@ -118,7 +118,7 @@ public class CELOE extends LearningAlgorithm {
 	private ConceptComparator descriptionComparator = new ConceptComparator();
 	
 	// statistical variables
-	private int descriptionTests = 0;
+	private int expressionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
@@ -283,9 +283,9 @@ public class CELOE extends LearningAlgorithm {
 		}
 
 		if (stop) {
-			logger.info("Algorithm stopped ("+descriptionTests+" descriptions tested).\n");
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested).\n");
 		} else {
-			logger.info("Algorithm terminated successfully ("+descriptionTests+" descriptions tested).\n");
+			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested).\n");
 		}
 		
 		// print solution(s)
@@ -345,7 +345,7 @@ public class CELOE extends LearningAlgorithm {
 		
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
-		descriptionTests++;
+		expressionTests++;
 //		System.out.println(description + " " + accuracy);
 		if(accuracy == -1) {
 			return false;
@@ -503,7 +503,7 @@ public class CELOE extends LearningAlgorithm {
 		nodes = new TreeSet<OENode>(heuristic);
 		descriptions = new TreeSet<Description>(new ConceptComparator());
 		bestEvaluatedDescriptions.getSet().clear();
-		descriptionTests = 0;
+		expressionTests = 0;
 	}
 	
 	@Override
@@ -582,4 +582,10 @@ public class CELOE extends LearningAlgorithm {
 		return minHorizExp;
 	}
 	
+	/**
+	 * @return the expressionTests
+	 */
+	public int getClassExpressionTests() {
+		return expressionTests;
+	}	
 }

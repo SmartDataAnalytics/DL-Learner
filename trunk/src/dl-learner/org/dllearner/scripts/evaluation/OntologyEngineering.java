@@ -101,6 +101,7 @@ public class OntologyEngineering {
 		String userInputProtocol = "";
 		int classCandidatesCount = 0;
 		Stat instanceCountStat = new Stat();
+		Stat classExpressionTestsStat = new Stat();
 
 		// equivalence classes
 		int candidatesAboveThresholdCount = 0;
@@ -109,6 +110,7 @@ public class OntologyEngineering {
 		int noSensibleDescriptionCount = 0;
 		int inconsistencyDetected = 0;
 		int moreInstancesCount = 0;
+		int nonPerfectCount = 0;
 		Stat moreInstancesCountStat = new Stat();
 		Stat accStat = new Stat();
 		Stat accSelectedStat = new Stat();
@@ -122,6 +124,7 @@ public class OntologyEngineering {
 		int noSensibleDescriptionCountSC = 0;
 		int inconsistencyDetectedSC = 0;
 		int moreInstancesCountSC = 0;
+		int nonPerfectCountSC = 0;
 		Stat moreInstancesCountStatSC = new Stat();
 		Stat accStatSC = new Stat();
 		Stat accSelectedStatSC = new Stat();
@@ -176,7 +179,8 @@ public class OntologyEngineering {
 					celoe.init();
 
 					celoe.start();
-
+					classExpressionTestsStat.addNumber(celoe.getClassExpressionTests());
+					
 					// test whether a solution above the threshold was found
 					EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
 					double bestAcc = best.getAccuracy();
@@ -295,6 +299,9 @@ public class OntologyEngineering {
 									moreInstancesCount++;
 									moreInstancesCountStat.addNumber(additionalInstances);
 								}
+								if(bestAcc < 0.9999) {
+									nonPerfectCount++;
+								}
 							} else {
 								accSelectedStatSC.addNumber(bestAcc);
 								positionStatSC.addNumber(selectedNr);
@@ -306,6 +313,9 @@ public class OntologyEngineering {
 									moreInstancesCountSC++;
 									moreInstancesCountStatSC.addNumber(additionalInstances);
 								}
+								if(bestAcc < 0.9999) {
+									nonPerfectCountSC++;
+								}								
 							}
 						}
 					}
@@ -323,10 +333,12 @@ public class OntologyEngineering {
 				.println("knowledge engineering process finished successfully - summary shown below");
 		System.out.println();
 		System.out.println("ontology: " + args[0]);
+		System.out.println("settings: " + minAccuracy + " min accuracy, " + minInstanceCount + " min instances, " + algorithmRuntimeInSeconds + "s algorithm runtime");
 		System.out.println("user input protocol: " + userInputProtocol);
 		System.out.println("classes in ontology: " + classes.size());
 		System.out.println("classes with at least " + minInstanceCount + " instances: "
 				+ classCandidatesCount);
+		System.out.println("class expressions tested: " + classExpressionTestsStat.prettyPrint(""));
 		System.out.println();
 
 		System.out.println("statistics for equivalence axioms:");
@@ -334,13 +346,14 @@ public class OntologyEngineering {
 				+ candidatesAboveThresholdCount);
 		System.out.println("axioms learned succesfully: " + foundDescriptionCount);
 		System.out.println("axioms missed: " + missesCount);
-		System.out.println("axiom with no sensible axioms: " + noSensibleDescriptionCount);
+		System.out.println("class with no sensible axioms: " + noSensibleDescriptionCount);
 		System.out.println("average accuracy overall: " + accStat.prettyPrint(""));
 		System.out.println("average accuracy of selected expressions: "
 				+ accSelectedStat.prettyPrint(""));
-		System.out.println("average accuracy of expressions above threshold "
+		System.out.println("average accuracy of expressions above threshold: "
 				+ accAboveThresholdStat.prettyPrint(""));
-		System.out.println("average number typed by user " + positionStat.prettyPrint(""));
+		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + nonPerfectCount);
+		System.out.println("average number typed by user: " + positionStat.prettyPrint(""));
 		System.out.println();
 
 		System.out.println("statistics for super class axioms:");
@@ -348,13 +361,14 @@ public class OntologyEngineering {
 				+ candidatesAboveThresholdCountSC);
 		System.out.println("axioms learned succesfully: " + foundDescriptionCountSC);
 		System.out.println("axioms missed: " + missesCountSC);
-		System.out.println("axiom with no sensible axioms: " + noSensibleDescriptionCountSC);
+		System.out.println("class with no sensible axioms: " + noSensibleDescriptionCountSC);
 		System.out.println("average accuracy overall: " + accStatSC.prettyPrint(""));
 		System.out.println("average accuracy of selected expressions: "
 				+ accSelectedStatSC.prettyPrint(""));
-		System.out.println("average accuracy of expressions above threshold "
+		System.out.println("average accuracy of expressions above threshold: "
 				+ accAboveThresholdStatSC.prettyPrint(""));
-		System.out.println("average number typed by user " + positionStatSC.prettyPrint(""));
+		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + nonPerfectCountSC);	
+		System.out.println("average number typed by user: " + positionStatSC.prettyPrint(""));
 	}
 
 	@SuppressWarnings("unused")
