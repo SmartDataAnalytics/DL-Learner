@@ -29,6 +29,8 @@ import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
 import com.clarkparsia.modularity.IncrementalClassifier;
+import com.clarkparsia.modularity.ModuleExtractor;
+import com.clarkparsia.modularity.ModuleExtractorFactory;
 
 public class AxiomRanker {
 	
@@ -38,6 +40,7 @@ public class AxiomRanker {
 	private Reasoner reasoner;
 	private OWLOntologyManager manager;
 	private OWLDataFactory factory;
+	private IncrementalClassifier classifier;
 	
 	boolean enableImpactUnsat;
 	
@@ -46,15 +49,17 @@ public class AxiomRanker {
 		this.reasoner = reasoner;
 		this.manager = mng;
 		this.factory = manager.getOWLDataFactory();
+		ModuleExtractor extractor = ModuleExtractorFactory.createModuleExtractor();
+		classifier = new IncrementalClassifier(manager, reasoner, extractor);
 	}
 	
 	public Set<OWLAxiom> computeImpactOnRemoval(OWLAxiom ax){
 		Set<OWLAxiom> impact = new HashSet<OWLAxiom>();
 		
 		try {
-			IncrementalClassifier classifier = new IncrementalClassifier(manager);
-			classifier.loadOntology(ontology);
-			classifier.classify();
+//			IncrementalClassifier classifier = new IncrementalClassifier(manager);
+//			classifier.loadOntology(ontology);
+//			classifier.classify();
 			Set<OWLClass> inc = classifier.getInconsistentClasses();
 			for(OWLDescription cl : ontology.getClassesInSignature()){
 				if(!inc.contains(cl)){
@@ -170,7 +175,7 @@ public class AxiomRanker {
 						
 					}							
 				}
-				return result;
+//				return result;
 			}
 		}
 		else if (axiom instanceof OWLObjectPropertyDomainAxiom) {
@@ -239,12 +244,12 @@ public class AxiomRanker {
 			OWLAxiom ax = dFactory.getOWLSubClassAxiom(cl1, dFactory.getOWLObjectComplementOf(cl2));
 			Set<OWLClass> before = null;
 			Set<OWLClass> after = null;
-			if(ax instanceof OWLSubClassAxiom){
+			
 				before = SetUtils.union(reasoner.getSuperClasses(cl1));
 				manager.applyChange(new RemoveAxiom(ontology, ax));
 				after = SetUtils.union(reasoner.getSuperClasses(cl1));
 				System.out.println(SetUtils.difference(before, after));
-			}
+			
 			System.out.println(cl1.getSuperClasses(ontology));
 			System.out.println(after);
 			
