@@ -309,6 +309,10 @@ public class OntologyEngineering {
 							}
 						}
 					}
+					
+					// remove components to save memory
+					cm.freeComponent(celoe);
+					cm.freeComponent(lp);
 				}
 			}
 		}
@@ -354,9 +358,9 @@ public class OntologyEngineering {
 	}
 
 	@SuppressWarnings("unused")
-	private static void shrinkSet(Set set, int nrOfElements) {
+	private static void shrinkSet(Set<?> set, int nrOfElements) {
 		while (set.size() > nrOfElements) {
-			Iterator it = set.iterator();
+			Iterator<?> it = set.iterator();
 			it.next();
 			it.remove();
 		}
