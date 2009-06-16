@@ -3,8 +3,10 @@ package org.dllearner.tools.ore.explanation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
@@ -13,11 +15,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
@@ -98,7 +100,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 				e.printStackTrace();
 			}
 			reasoner.refresh();
-			if(!hittingSetLocal.isEmpty()){
+			if(!hittingSetLocal.isEmpty()){// checking for global hitting sets
 				for(HittingSet hit : hittingSetLocal){
 					try {
 						for(OWLAxiom ax : hit){
@@ -108,6 +110,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 
 						if(reasoner.isSatisfiable(unsat)){
 							hittingSets.add(hit);
+							logger.debug("step " + k + ": found global hitting set: " + hit);
 						}
 						manager.addAxioms(ontology, hit);
 						reasoner.refresh();
@@ -118,7 +121,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 				}
 				hittingSetLocal.removeAll(hittingSets);
 				if( (!strategie.equals(Strategie.All_Just_Relevance) && !hittingSets.isEmpty()) || (hittingSetLocal.isEmpty()) ){
-					logger.debug("early termination");
+					logger.debug("early termination");System.out.println(hittingSets);
 					return justifications;
 				}
 				Set<HittingSet> temp = new HashSet<HittingSet>(hittingSetLocal);
@@ -127,7 +130,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 						for(OWLAxiom ax : hit){
 							man.applyChange(new RemoveAxiom(ont, ax));
 						}
-						List<Set<? extends Set<OWLAxiom>>> result = computeJustifications(unsat, ont);
+						List<Set<? extends Set<OWLAxiom>>> result = computeJustifications(unsat, ont, hit, justifications, k);
 						justifications.addAll(result.get(0));
 						Set<HittingSet> localTemp = (Set<HittingSet>)result.get(1);
 						for(HittingSet h : localTemp){
@@ -146,7 +149,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 				
 			} else if(!localReasoner.isSatisfiable(unsat)){
 			
-				List<Set<? extends Set<OWLAxiom>>> result = computeJustifications(unsat, ont);
+				List<Set<? extends Set<OWLAxiom>>> result = computeJustifications(unsat, ont, null, null, k);
 				logger.debug("step " + k + ": justifications computed : " + result.get(0));
 				justifications.addAll(result.get(0));
 				hittingSetLocal.addAll((Set<HittingSet>)result.get(1));
@@ -157,15 +160,27 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 		return justifications;
 	}
 	
-	private List<Set<? extends Set<OWLAxiom>>> computeJustifications(OWLClass unsat, OWLOntology ont){
-		Set<Set<OWLAxiom>> justifications = new HashSet<Set<OWLAxiom>>();
+	private List<Set<? extends Set<OWLAxiom>>> computeJustifications(OWLClass unsat, OWLOntology ont, HittingSet path, Set<Set<OWLAxiom>> justifications, int step){
+		
+		Set<Set<OWLAxiom>> newJustifications = new HashSet<Set<OWLAxiom>>();
 		PelletExplanation expGen = new PelletExplanation(manager, Collections.singleton(ont));
 		Set<HittingSet> hittingSets = new HashSet<HittingSet>();
 		Set<HittingSet> hittingSets1 = new HashSet<HittingSet>();
+		Set<OWLAxiom> justification = null;
+		if(path != null && !justifications.isEmpty()){
+			for(Set<OWLAxiom> just : justifications){
+				if(!SetUtils.intersects(path, just)){
+					justification = just;
+					logger.debug("using justification reuse: " + just);
+					break;
+				}
+			}
+		}
+		if(justification == null){
+			justification = expGen.getUnsatisfiableExplanation(unsat);
+		}
 		
-		Set<OWLAxiom> justification = expGen.getUnsatisfiableExplanation(unsat);
-		
-		justifications.add(justification);
+		newJustifications.add(justification);
 		for(OWLAxiom ax : justification){
 			hittingSets1.add(new HittingSet(ax));
 		}
@@ -181,7 +196,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 					
 					if(localReasoner.isSatisfiable(unsat)){
 						hittingSets.add(hit);
-						logger.debug("found local hitting set: " + hit);
+						logger.debug("step " + step +": found local hitting set: " + hit);
 					} else {
 						hittingSets2.add(hit);
 					}
@@ -194,25 +209,42 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			}
 			if( (!strategie.equals(Strategie.All_Just_Relevance) && !hittingSets.isEmpty() ) || hittingSets1.isEmpty() || hittingSets2.isEmpty()){
 				List<Set<? extends Set<OWLAxiom>>> result = new ArrayList<Set<? extends Set<OWLAxiom>>>();
-				result.add(justifications);
+				result.add(newJustifications);
 				result.add(hittingSets);
 				return result;
 			}
 			hittingSets1.clear();
-			for(Set<OWLAxiom> axioms : hittingSets2){
+			for(HittingSet hit2 : hittingSets2){
 				try {
-					for(OWLAxiom ax : axioms){
+					for(OWLAxiom ax : hit2){
 						manager.applyChange(new RemoveAxiom(ont, ax));
 					}
-					expGen = new PelletExplanation(manager, Collections.singleton(ont));
-					Set<OWLAxiom> just = expGen.getUnsatisfiableExplanation(unsat);
-					justifications.add(just);
+					// justification reuse
+					Set<OWLAxiom> just = null;
+					if(!newJustifications.isEmpty()){
+						for(Set<OWLAxiom> jus : newJustifications){
+							if(!SetUtils.intersects(hit2, jus)){
+								just = jus;
+								logger.debug("using justification reuse: " + just);
+								break;
+							}
+						}
+					}
+					if(just == null){
+						expGen = new PelletExplanation(manager, Collections.singleton(ont));
+						just = expGen.getUnsatisfiableExplanation(unsat);
+					}
+					/////////////////////
+					
+					
+					
+					newJustifications.add(just);
 					for(OWLAxiom a : just){
-						HittingSet temp = new HittingSet(axioms);
+						HittingSet temp = new HittingSet(hit2);
 						temp.add(a);
 						hittingSets1.add(temp);
 					}
-					manager.addAxioms(ont, axioms);
+					manager.addAxioms(ont, hit2);
 				} catch (OWLOntologyChangeException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -302,7 +334,10 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			OWLClass g = factory.getOWLClass(URI.create("G"));
 			OWLClass h = factory.getOWLClass(URI.create("H"));
 			OWLClass k = factory.getOWLClass(URI.create("K"));
-			Set<OWLAxiom> examples = new HashSet<OWLAxiom>();
+			List<OWLAxiom> examples = new ArrayList<OWLAxiom>();
+			
+			
+			
 			examples.add( factory.getOWLSubClassAxiom(u, a));
 			examples.add(  factory.getOWLSubClassAxiom(u, factory.getOWLObjectComplementOf(a)));
 			examples.add(  factory.getOWLSubClassAxiom(u, c));
@@ -317,7 +352,12 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			examples.add(  factory.getOWLSubClassAxiom(c, k));
 			examples.add( factory.getOWLSubClassAxiom(k, factory.getOWLObjectComplementOf(h)));
 			examples.add( factory.getOWLSubClassAxiom(b, h));
-			OWLOntology example = manager.createOntology(examples);
+			OWLOntology example = manager.createOntology(new HashSet<OWLAxiom>(examples));
+			Map<OWLAxiom, Integer  > axiomMap = new HashMap<OWLAxiom, Integer >();
+			for(int i = 1; i<=examples.size(); i++){
+				
+				axiomMap.put(examples.get(i - 1), Integer.valueOf(i));
+			}
 			
 			
 			
@@ -326,15 +366,17 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			reasoner.loadOntologies(Collections.singleton(example));
 			SyntacticRelevanceBasedExplanationGenerator expGen = 
 				new SyntacticRelevanceBasedExplanationGenerator(reasoner, manager);
-			DLSyntaxObjectRenderer renderer = new DLSyntaxObjectRenderer();
-			int i = 1;
+			
+			System.out.print("J = {");
 			for(Set<OWLAxiom> explanation : expGen.getExplanations(u, Strategie.CM_Just_Relevance)){
-				System.out.println("Explanation " + i);
-				i++;
+				System.out.print("{");
 				for(OWLAxiom ax : explanation){
-					System.out.println(renderer.render(ax));
+					System.out.print(axiomMap.get(ax));
+					System.out.print(",");
 				}
+				System.out.print("}, ");
 			}
+			System.out.print("}");
 				
 			
 			
