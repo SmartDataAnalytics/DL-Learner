@@ -127,6 +127,10 @@ public class Stat {
 		return max;
 	}
 
+	public String prettyPrint() {
+		return prettyPrint("");
+	}
+	
 	public String prettyPrint(String unit) {
 		if(sum > 0) {
 			DecimalFormat df = new DecimalFormat();
