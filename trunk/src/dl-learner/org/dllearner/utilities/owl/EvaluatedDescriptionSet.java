@@ -86,11 +86,11 @@ public class EvaluatedDescriptionSet {
 	}
 	
 	public EvaluatedDescription getBest() {
-		return set.last();
+		return set.size()==0 ? null : set.last();
 	}
 	
 	public EvaluatedDescription getWorst() {
-		return set.first();
+		return set.size()==0 ? null : set.first();
 	}
 	
 	/**

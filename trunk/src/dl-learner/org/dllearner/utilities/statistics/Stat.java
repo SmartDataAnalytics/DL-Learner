@@ -133,7 +133,8 @@ public class Stat {
 			String str = "av. " + df.format(getMean()) + unit;
 			str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
 			str += "min " + df.format(getMin()) + unit + "; ";
-			str += "max " + df.format(getMax()) + unit + ")";
+			str += "max " + df.format(getMax()) + unit + "; ";
+			str += "count " + count + ")";
 			return str;
 		} else {
 			return "no data collected";

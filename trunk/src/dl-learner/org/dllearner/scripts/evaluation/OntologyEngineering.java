@@ -43,6 +43,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -189,11 +190,11 @@ public class OntologyEngineering {
 					} else {
 						accStatSC.addNumber(bestAcc);
 					}
-					if (bestAcc < minAccuracy) {
+					if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
 						System.out
 								.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
 										+ (100 * minAccuracy)
-										+ "%. (The best one was \""
+										+ "% or the best description is not appropriate. (The best one was \""
 										+ best.getDescription().toManchesterSyntaxString(baseURI,
 												prefixes)
 										+ "\" with an accuracy of "
@@ -347,6 +348,8 @@ public class OntologyEngineering {
 		System.out.println("axioms learned succesfully: " + foundDescriptionCount);
 		System.out.println("axioms missed: " + missesCount);
 		System.out.println("class with no sensible axioms: " + noSensibleDescriptionCount);
+		System.out.println("inconsistencies detected: " + inconsistencyDetected);
+		System.out.println("additional instances found: " + moreInstancesCountStat.prettyPrint(""));
 		System.out.println("average accuracy overall: " + accStat.prettyPrint(""));
 		System.out.println("average accuracy of selected expressions: "
 				+ accSelectedStat.prettyPrint(""));
@@ -362,6 +365,8 @@ public class OntologyEngineering {
 		System.out.println("axioms learned succesfully: " + foundDescriptionCountSC);
 		System.out.println("axioms missed: " + missesCountSC);
 		System.out.println("class with no sensible axioms: " + noSensibleDescriptionCountSC);
+		System.out.println("inconsistencies detected: " + inconsistencyDetectedSC);
+		System.out.println("additional instances found: " + moreInstancesCountStatSC.prettyPrint(""));
 		System.out.println("average accuracy overall: " + accStatSC.prettyPrint(""));
 		System.out.println("average accuracy of selected expressions: "
 				+ accSelectedStatSC.prettyPrint(""));
