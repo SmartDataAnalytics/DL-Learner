@@ -31,6 +31,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
+import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.URLConfigOption;
@@ -57,6 +58,8 @@ public class ClassLearningProblem extends LearningProblem {
 	// approximation of accuracy +- 0.05 %
 	private static final double approx = 0.05;
 	
+	private boolean useApproximations;
+	
 	// factor for higher weight on coverage (needed for subclass learning)
 	private double coverageFactor;
 	
@@ -80,7 +83,9 @@ public class ClassLearningProblem extends LearningProblem {
 		options.add(classToDescribeOption);
 		StringConfigOption type = new StringConfigOption("type", "whether to learn an equivalence class or super class axiom","equivalence"); //  or domain/range of a property.
 		type.setAllowedValues(new String[] {"equivalence", "superClass"}); // , "domain", "range"});
-		options.add(type);		
+		options.add(type);	
+		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", true);
+		options.add(approx);
 		return options;
 	}
 
@@ -91,6 +96,7 @@ public class ClassLearningProblem extends LearningProblem {
 	@Override
 	public void init() throws ComponentInitException {
 		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
+		useApproximations = configurator.getUseApproximations();
 		
 		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
@@ -201,9 +207,16 @@ public class ClassLearningProblem extends LearningProblem {
 
 	@Override
 	public double getAccuracyOrTooWeak(Description description, double noise) {
-		// instead of using the standard operation, we use optimisation
-		// and approximation here
-		
+		if(useApproximations) {
+			return getAccuracyOrTooWeakApprox(description, noise);
+		} else {
+			return getAccuracyOrTooWeakExact(description, noise);
+		}
+	}
+	
+	// instead of using the standard operation, we use optimisation
+	// and approximation here
+	public double getAccuracyOrTooWeakApprox(Description description, double noise) {
 		// we abort when there are too many uncovered positives
 		int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
 		int instancesCovered = 0;
@@ -245,7 +258,7 @@ public class ClassLearningProblem extends LearningProblem {
 					// if the mean is greater than the required minimum, we can accept;
 					// we also accept if the interval is small and close to the minimum
 					// (worst case is to accept a few inaccurate descriptions)
-					if(mean > noise || (upperBorderA > mean && size < 0.03)) {
+					if(mean > 1-noise || (upperBorderA > mean && size < 0.03)) {
 						instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
 						upperEstimateA = (int) (upperBorderA * classInstances.size());
 						lowerEstimateA = (int) (lowerBorderA * classInstances.size());
@@ -255,7 +268,7 @@ public class ClassLearningProblem extends LearningProblem {
 					
 					// reject only if the upper border is far away (we are very
 					// certain not to lose a potential solution)
-					if(upperBorderA + 0.1 < noise) {
+					if(upperBorderA + 0.1 < 1-noise) {
 						return -1;
 					}
 				}				
@@ -328,20 +341,48 @@ public class ClassLearningProblem extends LearningProblem {
 //		MonitorFactory.add("estimatedB","count", estimatedB ? 1 : 0);
 //		MonitorFactory.add("bInstances","count", testsPerformed);		
 	
-		return getAccuracy(coverage, protusion);
-	}	
+		return getAccuracy(coverage, protusion);		
+	}
 	
-	@Deprecated
-	public double getAccuracyOrTooWeakStandard(Description description, double minAccuracy) {
-		// since we have to perform a retrieval operation anyway, we cannot easily
-		// get a benefit from the accuracy limit
-		double accuracy = getAccuracy(description);
-		if(accuracy >= minAccuracy) {
-			return accuracy;
-		} else {
+	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+		// overhang
+		int additionalInstances = 0;
+		for(Individual ind : superClassInstances) {
+			if(reasoner.hasType(description, ind)) {
+				additionalInstances++;
+			}
+		}
+		
+		// coverage
+		int coveredInstances = 0;
+		for(Individual ind : classInstances) {
+			if(reasoner.hasType(description, ind)) {
+				coveredInstances++;
+			}
+		}
+		
+		double coverage = coveredInstances/(double)classInstances.size();
+		
+		if(coverage < 1 - noise) {
 			return -1;
 		}
+		
+		double protusion = additionalInstances == 0 ? 0 : coveredInstances/(double)(coveredInstances+additionalInstances);
+		
+		return getAccuracy(coverage, protusion);		
 	}
+	
+//	@Deprecated
+//	public double getAccuracyOrTooWeakStandard(Description description, double minAccuracy) {
+//		// since we have to perform a retrieval operation anyway, we cannot easily
+//		// get a benefit from the accuracy limit
+//		double accuracy = getAccuracy(description);
+//		if(accuracy >= minAccuracy) {
+//			return accuracy;
+//		} else {
+//			return -1;
+//		}
+//	}
 	
 	// computes accuracy from coverage and protusion (changing this function may
 	// make it necessary to change the appoximation too)

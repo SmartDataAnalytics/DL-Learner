@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
@@ -48,6 +50,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.statistics.Stat;
 
 /**
@@ -65,6 +68,8 @@ import org.dllearner.utilities.statistics.Stat;
 public class OntologyEngineering {
 
 	private static double minAccuracy = 0.85;
+	
+	private static double noisePercent = 5.0;
 
 	private static int minInstanceCount = 3;
 
@@ -72,6 +77,12 @@ public class OntologyEngineering {
 
 	private static DecimalFormat df = new DecimalFormat();
 
+	// for performance measurements and development
+	private static boolean autoMode = false;
+	private static boolean useFastInstanceChecker = true;
+	private static boolean useApproximations = true;
+	private static boolean computeApproxDiff = false;
+	
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException,
 			LearningProblemUnsupportedException, IOException {
@@ -83,15 +94,25 @@ public class OntologyEngineering {
 			System.out.println("You need to give an OWL file as argument.");
 			System.exit(0);
 		}
-		File owlFile = new File(args[0]);
+		
 
 		ComponentManager cm = ComponentManager.getInstance();
 
 		// load OWL in reasoner
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(owlFile.toURI().toURL());
+		if(args[0].startsWith("http")) {
+			ks.getConfigurator().setUrl(new URL(args[0]));
+		} else {
+			File owlFile = new File(args[0]);
+			ks.getConfigurator().setUrl(owlFile.toURI().toURL());
+		}
 		ks.init();
-		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		ReasonerComponent reasoner = null;
+		if(useFastInstanceChecker) {
+			reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		} else {
+			reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		}
 		reasoner.init();
 		System.out.println("Loaded ontology " + args[0] + ".");
 
@@ -103,6 +124,7 @@ public class OntologyEngineering {
 		int classCandidatesCount = 0;
 		Stat instanceCountStat = new Stat();
 		Stat classExpressionTestsStat = new Stat();
+		Stat approxDiffStat = new Stat();
 
 		// equivalence classes
 		int candidatesAboveThresholdCount = 0;
@@ -168,6 +190,7 @@ public class OntologyEngineering {
 								+ algorithmRuntimeInSeconds + " seconds)");
 						lp.getConfigurator().setType("superClass");
 					}
+					lp.getConfigurator().setUseApproximations(useApproximations);
 					lp.init();
 
 					CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
@@ -175,7 +198,7 @@ public class OntologyEngineering {
 					cf.setUseNegation(false);
 					cf.setValueFrequencyThreshold(3);
 					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-					cf.setNoisePercentage(0.05);
+					cf.setNoisePercentage(noisePercent);
 					cf.setMaxNrOfResults(10);
 					celoe.init();
 
@@ -214,6 +237,15 @@ public class OntologyEngineering {
 						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
 								suggestions.descendingSet());
 
+						if(computeApproxDiff) {
+							for(EvaluatedDescription ed : suggestionsList) {
+								Description d = ed.getDescription();
+								double approx = lp.getAccuracyOrTooWeakApprox(d, noisePercent/(double)100);
+								double exact = lp.getAccuracyOrTooWeakExact(d, noisePercent/(double)100);
+								approxDiffStat.addNumber(approx-exact);
+							}
+						}
+						
 						int nr = 0;
 						for (EvaluatedDescription suggestion : suggestionsList) {
 							System.out.println(nr
@@ -243,11 +275,15 @@ public class OntologyEngineering {
 
 						List<String> allowedInputs = Arrays.asList(inputs);
 						String input;
-						do {
-							BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-							input = br.readLine();
-						} while (!allowedInputs.contains(input));
-
+						if(autoMode) {
+							input = "n";
+						} else {
+							do {
+								BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+								input = br.readLine();
+							} while (!allowedInputs.contains(input));							
+						}
+						
 						userInputProtocol += input;
 						
 						if (input.equals("m")) {
@@ -340,6 +376,9 @@ public class OntologyEngineering {
 		System.out.println("classes with at least " + minInstanceCount + " instances: "
 				+ classCandidatesCount);
 		System.out.println("class expressions tested: " + classExpressionTestsStat.prettyPrint(""));
+		if(computeApproxDiff) {
+			System.out.println("approximation difference: " + approxDiffStat.prettyPrint());
+		}
 		System.out.println();
 
 		System.out.println("statistics for equivalence axioms:");

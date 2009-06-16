@@ -72,6 +72,15 @@ return (URL) ComponentManager.getInstance().getConfigOptionValue(classLearningPr
 public String getType() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "type") ;
 }
+/**
+* useApproximations whether to use stochastic approximations for computing accuracy.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseApproximations() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "useApproximations") ;
+}
 
 /**
 * @param classToDescribe class of which a description should be learned.
@@ -88,6 +97,15 @@ ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "classToDe
 **/
 public void setType(String type) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "type", type);
+reinitNecessary = true;
+}
+/**
+* @param useApproximations whether to use stochastic approximations for computing accuracy.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseApproximations(boolean useApproximations) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "useApproximations", useApproximations);
 reinitNecessary = true;
 }
 
