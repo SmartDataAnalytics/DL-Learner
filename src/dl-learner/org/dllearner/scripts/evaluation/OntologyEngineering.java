@@ -243,7 +243,10 @@ public class OntologyEngineering {
 								double approx = lp.getAccuracyOrTooWeakApprox(d, noisePercent/(double)100);
 								double exact = lp.getAccuracyOrTooWeakExact(d, noisePercent/(double)100);
 								double diff = Math.abs(approx-exact);
-								approxDiffStat.addNumber(diff);
+								// do not count "too weak"
+								if(approx > -0.01 && exact > -0.01) {
+									approxDiffStat.addNumber(diff);
+								}
 //								if(diff>0.1) {
 //									System.out.println("description: " + d);
 //									System.out.println("approx: " + approx);
