@@ -242,7 +242,15 @@ public class OntologyEngineering {
 								Description d = ed.getDescription();
 								double approx = lp.getAccuracyOrTooWeakApprox(d, noisePercent/(double)100);
 								double exact = lp.getAccuracyOrTooWeakExact(d, noisePercent/(double)100);
-								approxDiffStat.addNumber(approx-exact);
+								double diff = Math.abs(approx-exact);
+								approxDiffStat.addNumber(diff);
+//								if(diff>0.1) {
+//									System.out.println("description: " + d);
+//									System.out.println("approx: " + approx);
+//									System.out.println("exact: " + exact);
+//									System.out.println("evaluated: " + lp.evaluate(d).getAccuracy());
+//									System.exit(0);
+//								}
 							}
 						}
 						
