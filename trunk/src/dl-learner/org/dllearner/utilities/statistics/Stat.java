@@ -132,7 +132,7 @@ public class Stat {
 	}
 	
 	public String prettyPrint(String unit) {
-		if(sum > 0) {
+		if(count > 0) {
 			DecimalFormat df = new DecimalFormat();
 			String str = "av. " + df.format(getMean()) + unit;
 			str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
