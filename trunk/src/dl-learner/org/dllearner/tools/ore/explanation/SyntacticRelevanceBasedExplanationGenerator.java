@@ -77,7 +77,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 		}
 		localReasoner.loadOntology(ont);
 		
-		Set<OWLAxiom> relevant = getSyntacticRelevantAxioms(unsat, k);
+		Set<OWLAxiom> relevant = AxiomSelector.getSyntacticRelevantAxioms(ontology, unsat);//getSyntacticRelevantAxioms(unsat, k);
 		
 		Set<HittingSet> hittingSets = new HashSet<HittingSet>();
 		Set<HittingSet> hittingSetLocal = new HashSet<HittingSet>();
@@ -155,7 +155,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 				hittingSetLocal.addAll((Set<HittingSet>)result.get(1));
 			}
 			k++;
-			relevant = getSyntacticRelevantAxioms(unsat, k);
+			relevant = AxiomSelector.getSyntacticRelevantAxioms(ontology, relevant);//getSyntacticRelevantAxioms(unsat, k);
 		}
 		return justifications;
 	}
