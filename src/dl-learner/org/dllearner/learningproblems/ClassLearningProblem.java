@@ -345,6 +345,7 @@ public class ClassLearningProblem extends LearningProblem {
 	}
 	
 	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+
 		// overhang
 		int additionalInstances = 0;
 		for(Individual ind : superClassInstances) {
@@ -367,7 +368,8 @@ public class ClassLearningProblem extends LearningProblem {
 			return -1;
 		}
 		
-		double protusion = additionalInstances == 0 ? 0 : coveredInstances/(double)(coveredInstances+additionalInstances);
+//		double protusion = additionalInstances == 0 ? 0 : coveredInstances/(double)(coveredInstances+additionalInstances);
+		double protusion = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 		
 		return getAccuracy(coverage, protusion);		
 	}
