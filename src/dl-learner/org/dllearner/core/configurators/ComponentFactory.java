@@ -26,6 +26,7 @@ import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
+import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
@@ -202,6 +203,16 @@ return CELOEConfigurator.getCELOE(learningProblem, reasoningService);
 **/
 public static ELLearningAlgorithm getELLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ELLearningAlgorithmConfigurator.getELLearningAlgorithm(learningProblem, reasoningService);
+}
+
+/**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization ELLearningAlgorithmDisjunctive
+**/
+public static ELLearningAlgorithmDisjunctive getELLearningAlgorithmDisjunctive(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return ELLearningAlgorithmDisjunctiveConfigurator.getELLearningAlgorithmDisjunctive(learningProblem, reasoningService);
 }
 
 /**

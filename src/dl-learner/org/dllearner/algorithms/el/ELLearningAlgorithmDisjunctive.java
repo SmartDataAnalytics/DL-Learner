@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -33,12 +34,13 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.Configurator;
-import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
+import org.dllearner.core.configurators.ELLearningAlgorithmDisjunctiveConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
@@ -71,32 +73,38 @@ import org.dllearner.refinementoperators.ELDown2;
 public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithmDisjunctive.class);	
-	private ELLearningAlgorithmConfigurator configurator;
+	private ELLearningAlgorithmDisjunctiveConfigurator configurator;
+	
+	String baseURI;
+	Map<String,String> prefixes;
 	
 	private ELDown2 operator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
 	
+	private Description startClass;
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
 	
 	// tree search
+	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
 	private EvaluatedDescription bestEvaluatedDescription;
-	// how important not cover
-	private double posWeight = 5;
+	// how important not to cover negatives
+	private double posWeight = 2;
 	private int startPosExamplesSize;
 	private int startNegExamplesSize;
 	private SortedSet<Individual> currentPosExamples;
 	private SortedSet<Individual> currentNegExamples;
-	private ELDescriptionTree bestCurrentTree;
+	private SearchTreeNode bestCurrentNode;
 	private double bestCurrentScore = 0;
 	private long treeStartTime;
 	
 	public ELLearningAlgorithmDisjunctive(PosNegLP problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
+		configurator = new ELLearningAlgorithmDisjunctiveConfigurator(this);
 	}
 	
 	public static String getName() {
@@ -132,7 +140,17 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		heuristic = new DisjunctiveHeuristic();
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
+		if(configurator.getStartClass() != null) {
+			startClass = new NamedClass(configurator.getStartClass());
+		} else {
+			startClass = Thing.instance;
+		}
 		operator = new ELDown2(reasoner);
+		
+		noise = configurator.getNoisePercentage()/(double)100;
+		
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
 	}	
 	
 	@Override
@@ -146,9 +164,9 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 			
 			treeStartTime = System.nanoTime();
 			// create start node
-			ELDescriptionTree top = new ELDescriptionTree(reasoner, Thing.instance);
-			addDescriptionTree(top, null);
-			bestCurrentTree = top;
+			ELDescriptionTree startTree = new ELDescriptionTree(reasoner, startClass);
+			addDescriptionTree(startTree, null);
+//			bestCurrentTree = top;
 			bestCurrentScore = Double.NEGATIVE_INFINITY;
 			
 			// main loop
@@ -156,6 +174,8 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 			while(!stop && !treeCriteriaSatisfied()) {
 				// pick the best candidate according to the heuristic
 				SearchTreeNode best = candidates.pollLast();
+//				System.out.println("best: " + best);
+				
 				// apply operator
 				List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
 				// add all refinements to search tree, candidates, best descriptions
@@ -169,11 +189,18 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 					logger.trace(startNode.getTreeString());
 					logger.trace("Loop " + loop + " completed.");
 				}
+				
+//				for(SearchTreeNode node : candidates) {
+//					System.out.println(node);
+//				}
+//				System.out.println(candidates.last());
+//				System.out.println(candidates.first());
+//				System.out.println("==");
 			}
 			
 			// we found a tree (partial solution)
-			currentSolution.add(bestCurrentTree);
-			Description bestDescription = bestCurrentTree.transformToDescription();
+			currentSolution.add(bestCurrentNode.getDescriptionTree());
+			Description bestDescription = bestCurrentNode.getDescriptionTree().transformToDescription();
 			// form union of trees found so far with 
 			if(treeCount==0) {
 				bestEvaluatedDescription = learningProblem.evaluate(bestDescription);
@@ -201,13 +228,16 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 					negCov++;
 				}
 			}
-			logger.info("tree found: " + bestDescription + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining");
+			logger.info("tree found: " + bestDescription.toManchesterSyntaxString(baseURI, prefixes) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");
+			
+			// reset temporary variables
+			candidates.clear();
 			
 			treeCount++;
 		}
 		
 		// print solution
-		logger.info("solution : " + bestEvaluatedDescription);
+		logger.info("solution : " + bestEvaluatedDescription.getDescription().toManchesterSyntaxString(baseURI, prefixes) + "(acc: " + bestEvaluatedDescription.getAccuracy() + ")");
 		
 		isRunning = false;
 	}
@@ -231,12 +261,13 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		
 		// TODO: define "too weak" as a coverage on negative examples, which is
 		// too high for the tree to be considered
-		
-		candidates.add(node);
+		if(score != Double.NEGATIVE_INFINITY) {
+			candidates.add(node);
+		}
 		
 		// check whether this is the best tree
 		if(score > bestCurrentScore) {
-			bestCurrentTree = descriptionTree;
+			bestCurrentNode = node;
 			bestCurrentScore = score;
 		}
 	}
@@ -259,8 +290,11 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		
 		// penalty if a minimum coverage is not achieved (avoids too many trees where
 		// each tree has only little impact)
-		if(startPosExamplesSize > 10 && posCovered<3 || posCovered < 1) {
-			score -= 10;
+		if((startPosExamplesSize > 10 && posCovered<3) || posCovered < 1) {
+//			score -= 100;
+			// further refining such a tree will not cover more positives
+			// => reject
+			return Double.NEGATIVE_INFINITY;
 		}
 		
 		// test coverage on current negative examples
@@ -273,8 +307,17 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		}
 //		double negPercentage = negCovered/(double)currentNegExamples.size();
 		
+		// remove - does not make sense
+		// check whether tree is too weak, i.e. covers more than noise % negatives
+//		int maxNegCov = (int) Math.round(noise * currentNegExamples.size());
+//		if(negCovered > maxNegCov) {
+//			return Double.NEGATIVE_INFINITY;
+//		}
+		
 		// length penalty
 		score -= 0.1*tree.getSize();
+		
+//		System.out.println("score: " + score);
 		
 		return score;
 	}
@@ -282,7 +325,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 	private boolean treeCriteriaSatisfied() {
 		long runTime = System.nanoTime() - treeStartTime;
 		// more than one second has passed
-		if(runTime / 1000000000 > 1) {
+		if(runTime / (double) 1000000000 >= 10) {
 			return true;
 		} else {
 			return false;
