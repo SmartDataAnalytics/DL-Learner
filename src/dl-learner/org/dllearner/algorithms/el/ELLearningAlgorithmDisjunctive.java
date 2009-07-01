@@ -66,7 +66,19 @@ import org.dllearner.utilities.owl.DescriptionMinimizer;
  * the algorithm is not really an anytime algorithm, since the solution is constructed
  * stepwise as a set of trees. 
  * 
- * TODO redundancy check
+ * Parameter optimisation:
+ *  - runtime per tree: 10 seconds
+ *  - tradeoff pos/neg: 1.0 1.2 1.4 1.6. 1.8 2.0
+ *  - min score: 0 -2.5 -5 -7.5 -10
+ *  - tests: 30
+ *  - runtime per test: 200 seconds => 2000 seconds cross val => 60000 seconds overall
+ * 
+ * Next idea: 
+ *  - reduce tradeoff for each tree added (start with 2.0 and reduce by 0.1)
+ *  - for the last tress it is not very important to cover less negatives
+ *  - minimum is something between 0 and -1 (ensures that in the worst case as many
+ *    positives as negatives are covered)
+ *  - only high impact parameter is runtime (and maybe start tradeoff)
  * 
  * @author Jens Lehmann
  *
@@ -89,22 +101,25 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
+	// all trees (for fast redundancy check)
+	private TreeSet<ELDescriptionTree> trees;
 	
 	// tree search
-	private double noise = 0;
+	private int treeSearchTimeSeconds = 10;
+//	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
 	private EvaluatedDescription bestEvaluatedDescription;
 	// how important not to cover negatives
-	private double posWeight = 2;
+	private double posWeight = 1.5; // 2;
 	private int startPosExamplesSize;
-	private int startNegExamplesSize;
+//	private int startNegExamplesSize;
 	private SortedSet<Individual> currentPosExamples;
 	private SortedSet<Individual> currentNegExamples;
 	private SearchTreeNode bestCurrentNode;
 	private double bestCurrentScore = 0;
 	private long treeStartTime;
 	// minimum score a tree must have to be part of the solution
-	private double minimumTreeScore = -8; 
+	private double minimumTreeScore = -1; 
 	
 	public ELLearningAlgorithmDisjunctive(PosNegLP problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
@@ -143,6 +158,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 	public void init() throws ComponentInitException {
 		heuristic = new DisjunctiveHeuristic();
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
+		trees = new TreeSet<ELDescriptionTree>(new ELDescriptionTreeComparator());
 		
 		if(configurator.getStartClass() != null) {
 			startClass = new NamedClass(configurator.getStartClass());
@@ -151,7 +167,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		}
 		operator = new ELDown2(reasoner);
 		
-		noise = configurator.getNoisePercentage()/(double)100;
+//		noise = configurator.getNoisePercentage()/(double)100;
 		
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
@@ -240,8 +256,14 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + bestCurrentNode.getDescriptionTree().transformToDescription().toManchesterSyntaxString(baseURI, prefixes) + " with score " + bestCurrentNode.getScore());
 			}
 			
+			logger.info(trees.size() + " trees checked");
+			
+			// reduce importance of not covering negatives
+			posWeight = Math.max(1.0, posWeight-0.1);
+			
 			// reset temporary variables
 			candidates.clear();
+			trees.clear();
 			
 			treeCount++;
 		}
@@ -258,6 +280,12 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 
 	// evaluates a description in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
+		
+		// redundancy check
+		boolean nonRedundant = trees.add(descriptionTree);
+		if(!nonRedundant) {
+			return;
+		}
 		
 		// create search tree node
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
@@ -340,7 +368,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		long runTime = System.nanoTime() - treeStartTime;
 		double runTimeSeconds = runTime / (double) 1000000000;
 		
-		if(runTimeSeconds >= 10) {
+		if(runTimeSeconds >= treeSearchTimeSeconds) {
 			return true;
 		} else {
 			return false;
@@ -355,7 +383,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		// we stop when the score of the last tree added is too low
 		// (indicating that the algorithm could not find anything appropriate 
 		// in the timeframe set)
-		if(bestCurrentScore < minimumTreeScore) {
+		if(bestCurrentScore <= minimumTreeScore) {
 			return true;
 		}
 		
@@ -368,12 +396,13 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
 		candidates.clear();
+		trees.clear();
 		currentSolution.clear();
 		bestEvaluatedDescription = learningProblem.evaluate(Thing.instance);
 		currentPosExamples = getLearningProblem().getPositiveExamples();
 		currentNegExamples = getLearningProblem().getNegativeExamples();
 		startPosExamplesSize = currentPosExamples.size();
-		startNegExamplesSize = currentNegExamples.size();
+//		startNegExamplesSize = currentNegExamples.size();
 	}
 	
 	@Override
