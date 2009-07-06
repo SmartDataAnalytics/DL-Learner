@@ -19,6 +19,8 @@
  */
 package org.dllearner.tools.ore;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -31,55 +33,57 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 
 /**
  * Test class for SPARQL mode.
+ * 
  * @author Lorenz Buehmann
- *
+ * 
  */
-public class SPARQLTest{
-	
+public class SPARQLTest {
+
 	@SuppressWarnings("unused")
-	public static void main(String[] args){
-		String example = "Angela_Merkel";
+	public static void main(String[] args) throws MalformedURLException {
+		String exampleClass = "\"http://dbpedia.org/class/yago/LeadersOfPoliticalParties\"";
 		ComponentManager cm = ComponentManager.getInstance();
-	
+
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
-		
+
 		SPARQLTasks task = new SPARQLTasks(endPoint);
-	
+
 		AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(task);
-		pos.makePositiveExamplesFromConcept(example);
+		pos.makePositiveExamplesFromConcept(exampleClass);
 		SortedSet<String> posExamples = pos.getPosExamples();
-		
-		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(posExamples, task, new TreeSet<String>());
+		System.out.println(posExamples);
+
+		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(
+				posExamples, task, new TreeSet<String>());
 		SortedSet<String> negExamples = neg.getNegativeExamples(20);
 		System.out.println(negExamples);
-		
-		
-		
-		
+
+		SortedSet<String> instances = new TreeSet<String>(posExamples);
+		instances.addAll(negExamples);
+
 		try {
-			
-			
-			
-			
+
 			SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
 			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
-			ks.getConfigurator().setInstances(posExamples);
+			ks.getConfigurator().setInstances(instances);
+			ks.getConfigurator().setPredefinedFilter("YAGO");
 			ks.init();
 			ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 			reasoner.init();
-			PosOnlyLP lp = cm.learningProblem(PosOnlyLP.class, reasoner);
-			lp.getConfigurator().setPositiveExamples(posExamples);
+			ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+//			lp.getConfigurator().setPositiveExamples(posExamples);
+			lp.getConfigurator().setClassToDescribe(new URL(exampleClass));
 			lp.init();
 			LearningAlgorithm la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 			la.init();
-					
+
 			la.start();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block

@@ -105,12 +105,12 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 	private TreeSet<ELDescriptionTree> trees;
 	
 	// tree search
-	private int treeSearchTimeSeconds = 10;
+	private double treeSearchTimeSeconds = 1.0;
 //	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
 	private EvaluatedDescription bestEvaluatedDescription;
 	// how important not to cover negatives
-	private double posWeight = 1.5; // 2;
+	private double posWeight = 1.2; // 2;
 	private int startPosExamplesSize;
 //	private int startNegExamplesSize;
 	private SortedSet<Individual> currentPosExamples;
