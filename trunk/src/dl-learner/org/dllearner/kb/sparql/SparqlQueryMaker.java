@@ -194,8 +194,6 @@ public class SparqlQueryMaker {
 		terms = new ArrayList<String>();
 		terms.add(assembled);
 		if (!isLiterals()) {
-			System.out.println(isLiterals()+"true");
-			System.exit(0);
 			terms.add("!isLiteral(" + objectVariable + ")");
 		}
 		return assembleTerms(terms, "&&");
