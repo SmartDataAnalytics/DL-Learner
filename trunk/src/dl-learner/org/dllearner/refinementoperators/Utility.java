@@ -58,7 +58,8 @@ public final class Utility {
 	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances
-	private boolean instanceBasedDisjoints = false;	
+	// TODO: turn this into a parameter
+	private boolean instanceBasedDisjoints = true;	
 	
 	// cache for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
