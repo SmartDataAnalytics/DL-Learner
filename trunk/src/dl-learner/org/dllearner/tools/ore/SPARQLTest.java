@@ -25,15 +25,13 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
@@ -47,6 +45,7 @@ public class SPARQLTest{
 	
 	@SuppressWarnings("unused")
 	public static void main(String[] args){
+		String example = "Angela_Merkel";
 		ComponentManager cm = ComponentManager.getInstance();
 	
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
@@ -54,7 +53,7 @@ public class SPARQLTest{
 		SPARQLTasks task = new SPARQLTasks(endPoint);
 	
 		AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(task);
-		pos.makePositiveExamplesFromConcept("angela_merkel");
+		pos.makePositiveExamplesFromConcept(example);
 		SortedSet<String> posExamples = pos.getPosExamples();
 		
 		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(posExamples, task, new TreeSet<String>());
@@ -65,16 +64,18 @@ public class SPARQLTest{
 		
 		
 		try {
-			String example = "http://dbpedia.org/resource/Angela_Merkel";
 			
 			
 			
-			KnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
+			
+			SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
 			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
+			ks.getConfigurator().setInstances(posExamples);
 			ks.init();
 			ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 			reasoner.init();
-			LearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+			PosOnlyLP lp = cm.learningProblem(PosOnlyLP.class, reasoner);
+			lp.getConfigurator().setPositiveExamples(posExamples);
 			lp.init();
 			LearningAlgorithm la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 			la.init();
