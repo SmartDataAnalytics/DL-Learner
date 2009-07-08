@@ -60,10 +60,11 @@ public class DBpediaLinkedGeoData {
 	
 	// chose between nt and dat
 	private static String dbpediaFileFormat = "dat";
-	static File dbpediaFile =  new File("log/DBpedia_POIs." + dbpediaFileFormat);	
+	static File dbpediaFile =  new File("log/DBpedia_POIs." + dbpediaFileFormat);
 	private static boolean regenerateFile = false;
 	
 	private static File matchingFile = new File("log/DBpedia_GeoData_Links.nt");
+	private static File matchingFileMySQL =  new File("log/DBpedia_POIs.csv");	
 	private static File missesFile = new File("log/DBpedia_GeoData_Misses.dat");
 	private static double scoreThreshold = 0.85;
 	private static StringDistance distance = new Jaro();
@@ -113,6 +114,7 @@ public class DBpediaLinkedGeoData {
 		Files.clearFile(matchingFile);
 		Files.clearFile(missesFile);
 		FileOutputStream fos = new FileOutputStream(matchingFile, true);
+		FileOutputStream fosMySQL = new FileOutputStream(matchingFile, true);
 		FileOutputStream fosMiss = new FileOutputStream(missesFile, true);
 		// read file point by point
 		BufferedReader br = new BufferedReader(new FileReader(dbpediaFile));
@@ -147,6 +149,17 @@ public class DBpediaLinkedGeoData {
 					} else {
 						String matchStr = "<" + dp.getUri() + "> <http://www.w3.org/2002/07/owl#sameAs> <" + matchURI + "> .\n";
 						fos.write(matchStr.getBytes());	
+						
+						// strip off http://dbpedia.org/resource/
+						String dpName = dp.getUri().toString().substring(28);
+						String uriStr = matchURI.toString();
+						String nodeWay = uriStr.contains("/node/") ? "node" : "way";
+						String lgdID = uriStr.substring(uriStr.lastIndexOf("/"));
+						String matchStrMySQL = dpName + "\t" + nodeWay + "\t" + lgdID + "\n";
+						fosMySQL.write(matchStrMySQL.getBytes());
+						
+						System.out.println(matchStrMySQL);
+						
 						matches++;
 						matchPerClass.put(poiClass, matchPerClass.get(poiClass)+1);
 					}
