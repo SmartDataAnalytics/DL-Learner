@@ -192,7 +192,10 @@ public class SparqlQueryMaker {
 		String assembled =  assembleTerms(terms, getOperator());
 		
 		terms = new ArrayList<String>();
-		terms.add(assembled);
+		// the next line could be removed as it is included in assemble terms
+		if(!assembled.isEmpty()){
+			terms.add(assembled);
+		}
 		if (!isLiterals()) {
 			terms.add("!isLiteral(" + objectVariable + ")");
 		}
@@ -216,7 +219,7 @@ public class SparqlQueryMaker {
 		if (terms.isEmpty())
 			return "";
 		else if (terms.size() == 1)
-			return brackets(terms.get(0));
+			return (terms.get(0).isEmpty())?"": brackets(terms.get(0));
 		else {
 			StringBuffer sbuf = new StringBuffer(1400);
 			String first = terms.remove(0);
