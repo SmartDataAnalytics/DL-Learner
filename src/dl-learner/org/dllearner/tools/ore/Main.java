@@ -26,6 +26,16 @@ import java.util.Locale;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.dllearner.tools.ore.ui.wizard.Wizard;
+import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.ClassPanelOWLDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.ClassPanelSparqlDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.IntroductionPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
+
 
 /**
  * Main class starting the wizard and registering wizard panels.

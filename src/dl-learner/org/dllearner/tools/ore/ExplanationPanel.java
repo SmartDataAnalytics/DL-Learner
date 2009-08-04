@@ -30,6 +30,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.tools.ore.ui.ClassificationProgressMonitor;
+import org.dllearner.tools.ore.ui.ExplanationTable;
+import org.dllearner.tools.ore.ui.ImpactTable;
+import org.dllearner.tools.ore.ui.UnsatClassesListCellRenderer;
+import org.dllearner.tools.ore.ui.wizard.panels.ExplanationTablePanel;
+import org.dllearner.tools.ore.ui.wizard.panels.RepairPlanPanel;
 import org.jdesktop.swingx.JXList;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
@@ -61,7 +67,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 
 	private ExplanationManager expManager;
 	private ImpactManager impManager;
-
+	private RepairManager repManager;
 	
 	
 	private OWLClass unsatClass;
@@ -70,11 +76,12 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	 */
 	private static final long serialVersionUID = 2213073383532597460L;
 
-	public ExplanationPanel(ExplanationManager expMan, ImpactManager impMan) {
+	public ExplanationPanel(ExplanationManager expMan, ImpactManager impMan, RepairManager repMan) {
 
 		
 		this.expManager = expMan;
 		this.impManager = impMan;
+		this.repManager = repMan;
 
 		impManager.addListener(this);
 		setLayout(new BorderLayout());
@@ -141,7 +148,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		impactPanel.add(impScr);
 		impRepSplit.setRightComponent(impactPanel);
 		
-		RepairPlanPanel repairPanel = new RepairPlanPanel(impManager); 
+		RepairPlanPanel repairPanel = new RepairPlanPanel(repManager); 
 		impRepSplit.setLeftComponent(repairPanel);
 		
 		
@@ -185,7 +192,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		// t.add(r.render(ax));
 		// model.addColumn("axiom", t);
 		
-		ExplanationTable expTable = new ExplanationTable(explanation, impManager, expManager, unsatClass);
+		ExplanationTable expTable = new ExplanationTable(explanation, repManager, impManager, expManager, unsatClass);
 		explanationsPanel.add(new ExplanationTablePanel(expTable, number));
 
 	}
@@ -340,8 +347,9 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 					.getExplanationManager(reasoner);
 			ImpactManager impManager = ImpactManager.getImpactManager(
 					reasoner);
+			RepairManager repManager= RepairManager.getRepairManager(reasoner);
 			ExplanationPanel panel = new ExplanationPanel(expManager,
-					impManager);
+					impManager, repManager);
 		
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 

@@ -290,7 +290,7 @@ public class PelletReasoner extends ReasonerComponent {
 		manager = OWLManager.createOWLOntologyManager();
 		factory = manager.getOWLDataFactory();
 		//set classification output to "none", while default is "console"
-		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.NONE;
+		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.CONSOLE;
 		// change log level to WARN for Pellet, because otherwise log
 		// output will be very large
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");

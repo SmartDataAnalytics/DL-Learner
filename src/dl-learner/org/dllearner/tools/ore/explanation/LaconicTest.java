@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.progress.SwingProgressMonitor;
@@ -34,8 +35,8 @@ public class LaconicTest {
 	public static void main(String[] args) {
 
 //		test();
-//		miniTest();
-		miniEconomyTest();
+		miniTest();
+//		miniEconomyTest();
 //		universityTest();
 	}
 
@@ -121,7 +122,7 @@ public class LaconicTest {
 			
 			Set<OWLClass> unsatClasses = reasoner.getInconsistentClasses();
 			OWLSubClassAxiom unsatAxiom;
-			unsatAxiom = dataFactory.getOWLSubClassAxiom(dataFactory.getOWLClass(URI.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#KoalaWithPhD")),
+			unsatAxiom = dataFactory.getOWLSubClassAxiom(dataFactory.getOWLClass(URI.create("http://reliant.teknowledge.com/DAML/Economy.owl#Cassava")),
 					dataFactory.getOWLNothing());
 //			for (OWLClass unsat : unsatClasses) {
 //				unsatAxiom = dataFactory.getOWLSubClassAxiom(unsat, dataFactory
@@ -173,6 +174,7 @@ public class LaconicTest {
 			Set<Set<OWLAxiom>> preciseJusts = expGen.getExplanations(unsatAxiom);
 			renderer.render(unsatAxiom, preciseJusts);
 			renderer.endRendering();
+			expGen.returnSourceAxioms(preciseJusts);
 			
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
