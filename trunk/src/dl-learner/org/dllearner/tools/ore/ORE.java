@@ -30,8 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -58,6 +56,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.PelletReasoner;
+import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLException;

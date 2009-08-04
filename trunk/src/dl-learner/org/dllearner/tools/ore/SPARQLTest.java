@@ -21,6 +21,7 @@ package org.dllearner.tools.ore;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -33,10 +34,14 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
+
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
 
 /**
  * Test class for SPARQL mode.
@@ -52,8 +57,24 @@ public class SPARQLTest {
 		ComponentManager cm = ComponentManager.getInstance();
 
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
-
+		
+		
+		
+		String queryString = "SELECT DISTINCT ?class, ?label WHERE {" +
+							"?class rdf:type owl:Class ." +
+							"?class rdfs:label ?label .}" ;
+							//"FILTER(regex(?label, '^$deinstring')) }";
 		SPARQLTasks task = new SPARQLTasks(endPoint);
+		System.out.println(task.queryAsSet(queryString, "label"));
+//		SparqlQuery query = new SparqlQuery(queryString, endPoint);
+//		query.send();
+//		String json = query.getJson();
+//		ResultSet rs = SparqlQuery.convertJSONtoResultSet(json);
+//		Set<String> results = SPARQLTasks.getStringSetForVariableFromResultSet
+//												(ResultSetFactory.makeRewindable(rs), "label");
+//
+//		System.out.println(results);
+		
 
 		AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(task);
 		pos.makePositiveExamplesFromConcept(exampleClass);
@@ -67,7 +88,7 @@ public class SPARQLTest {
 
 		SortedSet<String> instances = new TreeSet<String>(posExamples);
 		instances.addAll(negExamples);
-
+		
 		try {
 
 			SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);

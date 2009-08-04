@@ -1,7 +1,6 @@
 package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,8 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.tools.ore.explanation.ExplanationException;
-import org.dllearner.tools.ore.explanation.LaconicExplanationGenerator;
 import org.dllearner.tools.ore.explanation.RootFinder;
+import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -29,7 +28,7 @@ import uk.ac.manchester.cs.owl.explanation.ordering.ExplanationTree;
 
 import com.clarkparsia.explanation.PelletExplanation;
 
-public class ExplanationManager implements OWLOntologyChangeListener, ImpactManagerListener{
+public class ExplanationManager implements OWLOntologyChangeListener, RepairManagerListener{
 
 	private static ExplanationManager instance;
 	
@@ -61,7 +60,7 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		manager.addOntologyChangeListener(this);
 //		manager.addOntologyChangeListener(reasoner);
 		dataFactory = manager.getOWLDataFactory();
-		ImpactManager.getImpactManager(reasoner).addListener(this);
+		RepairManager.getRepairManager(reasoner).addListener(this);
 		reasonerFactory = new PelletReasonerFactory();
 
 		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
@@ -270,11 +269,6 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 		
 	}
 
-	@Override
-	public void axiomForImpactChanged() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void repairPlanExecuted() {
@@ -285,6 +279,12 @@ public class ExplanationManager implements OWLOntologyChangeListener, ImpactMana
 				reasonerFactory, reasoner.getLoadedOntologies());
 		regularExplanationCache.clear();
 		laconicExplanationCache.clear();
+	}
+
+	@Override
+	public void repairPlanChanged() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

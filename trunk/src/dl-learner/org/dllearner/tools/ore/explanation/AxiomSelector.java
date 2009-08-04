@@ -1,8 +1,10 @@
 package org.dllearner.tools.ore.explanation;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
@@ -24,6 +26,22 @@ public class AxiomSelector {
 	}
 	
 	public static Set<OWLAxiom> getSyntacticRelevantAxioms(
+			OWLOntology ontology, OWLAxiom axiom) {
+
+		Set<OWLAxiom> relevantAxioms = new HashSet<OWLAxiom>();
+
+		for (OWLAxiom ax : ontology.getLogicalAxioms()) {
+			if (isSyntacticRelevant(ax, axiom)) {
+					relevantAxioms.add(ax);
+				
+			}
+
+		}
+
+		return relevantAxioms;
+	}
+	
+	public static Set<OWLAxiom> getSyntacticRelevantAxioms(
 			OWLOntology ontology, Set<OWLAxiom> axioms) {
 
 		Set<OWLAxiom> relevantAxioms = new HashSet<OWLAxiom>();
@@ -36,9 +54,11 @@ public class AxiomSelector {
 			}
 
 		}
-
+		if(SetUtils.difference(relevantAxioms, axioms).isEmpty()) return Collections.emptySet();
 		return relevantAxioms;
 	}
+	
+	
 
 	private static boolean isSyntacticRelevant(OWLAxiom ax1, OWLAxiom ax2) {
 		return org.mindswap.pellet.utils.SetUtils.intersects(

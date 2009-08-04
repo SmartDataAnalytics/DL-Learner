@@ -11,10 +11,7 @@ import org.dllearner.tools.ore.explanation.AxiomRanker;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.RemoveAxiom;
 
 public class ImpactManager {
 	
@@ -106,37 +103,10 @@ public class ImpactManager {
 		return selectedAxioms.contains(ax);
 	}
 	
-	public List<OWLAxiom> getAxioms2Remove(){
-		return selectedAxioms;
-	}
-	
-	public void executeRepairPlan(){
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-		for(OWLAxiom ax : selectedAxioms){
-			changes.add(new RemoveAxiom(ontology, ax));
-		}
-		try {
-			manager.applyChanges(changes);
-		} catch (OWLOntologyChangeException e) {
-			System.out.println("Error in Impactmanager: Couldn't apply ontology changes");
-			e.printStackTrace();
-		}
-		
-		impact.clear();
-		selectedAxioms.clear();
-		fireRepairPlanExecuted();
-	}
 	
 	private void fireAxiomForImpactChanged(){
 		for(ImpactManagerListener listener : listeners){
 			listener.axiomForImpactChanged();
-		}
-	}
-	
-	private void fireRepairPlanExecuted(){
-			
-		for(ImpactManagerListener listener : listeners){
-			listener.repairPlanExecuted();
 		}
 	}
 	
