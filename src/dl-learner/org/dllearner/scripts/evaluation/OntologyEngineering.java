@@ -78,10 +78,10 @@ public class OntologyEngineering {
 	private static DecimalFormat df = new DecimalFormat();
 
 	// for performance measurements and development
-	private static boolean autoMode = true;
+	private static boolean autoMode = false;
 	private static boolean useFastInstanceChecker = true;
-	private static boolean useApproximations = false;
-	private static boolean computeApproxDiff = true;
+	private static boolean useApproximations = true;
+	private static boolean computeApproxDiff = false;
 	
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException,
@@ -424,6 +424,24 @@ public class OntologyEngineering {
 				+ accAboveThresholdStatSC.prettyPrint(""));
 		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + nonPerfectCountSC);	
 		System.out.println("average number typed by user: " + positionStatSC.prettyPrint(""));
+		System.out.println();
+		
+		System.out.println("merged statistics for equivalence/superclass:");
+		System.out.println("classes above " + (minAccuracy * 100) + "% threshold: "
+				+ (candidatesAboveThresholdCount+candidatesAboveThresholdCountSC));
+		System.out.println("axioms learned succesfully: " + (foundDescriptionCount+foundDescriptionCountSC));
+		System.out.println("axioms missed: " + (missesCount+missesCountSC));
+		System.out.println("class with no sensible axioms: " + (noSensibleDescriptionCount+noSensibleDescriptionCountSC));
+		System.out.println("inconsistencies detected: " + (inconsistencyDetected+inconsistencyDetectedSC));
+		System.out.println("additional instances found: " + new Stat(moreInstancesCountStat,moreInstancesCountStatSC).prettyPrint(""));
+		System.out.println("average accuracy overall: " + new Stat(accStat,accStatSC).prettyPrint(""));
+		System.out.println("average accuracy of selected expressions: "
+				+ new Stat(accSelectedStat,accSelectedStatSC).prettyPrint(""));
+		System.out.println("average accuracy of expressions above threshold: "
+				+ new Stat(accAboveThresholdStat,accAboveThresholdStatSC).prettyPrint(""));
+		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + (nonPerfectCount+nonPerfectCountSC));
+		System.out.println("average number typed by user: " + new Stat(positionStat,positionStatSC).prettyPrint(""));
+		System.out.println();		
 	}
 
 	@SuppressWarnings("unused")

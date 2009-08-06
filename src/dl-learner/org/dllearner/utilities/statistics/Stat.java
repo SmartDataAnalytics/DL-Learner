@@ -39,6 +39,25 @@ public class Stat {
     //used to give a good percentage output
     private DecimalFormat df = new DecimalFormat( ".00%" ); 
 
+    public Stat() {
+    	
+    }
+    
+    /**
+     * Creates a new stat object by merging two stat objects. The result is the same as if
+     * the numbers, which have been added to stat1 and stat2 would have been added to this
+     * stat object.
+     * @param stat1 Statistical object 1.
+     * @param stat2 Statistical object 2.
+     */
+    public Stat(Stat stat1, Stat stat2) {
+    	count = stat1.count + stat2.count;
+    	sum = stat1.sum + stat2.sum;
+    	squareSum = stat1.squareSum + stat2.squareSum;
+    	min = Math.min(stat1.min, stat2.min);
+    	max = Math.max(stat1.max, stat2.max);
+    }
+    
     /**
      * Add a number to this object.
      * 
