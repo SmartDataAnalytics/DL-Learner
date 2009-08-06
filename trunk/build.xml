@@ -97,7 +97,7 @@
 	
 	
 	<!-- build target -->
-	<target name="build" depends="createScripts" description="fast build including scripts, no javadoc">
+	<target name="build" depends="createScripts,manual" description="fast build including scripts, no javadoc">
 		
 		<!-- write current build date into Info.java -->
 		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
