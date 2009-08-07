@@ -36,7 +36,9 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 
@@ -78,11 +80,16 @@ public class SPARQLTest {
 
 		AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(task);
 		pos.makePositiveExamplesFromConcept(exampleClass);
-		SortedSet<String> posExamples = pos.getPosExamples();
+		
+		SortedSet<String> allPosExamples = pos.getPosExamples();
+		SortedSet<String> posExamples = SetManipulation.stableShrink(allPosExamples, 20);
+		System.out.println(posExamples.size());
 		System.out.println(posExamples);
 
+	
 		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(
 				posExamples, task, new TreeSet<String>());
+		neg.makeNegativeExamplesFromSuperClasses(exampleClass, 1000);
 		SortedSet<String> negExamples = neg.getNegativeExamples(20);
 		System.out.println(negExamples);
 
@@ -95,8 +102,9 @@ public class SPARQLTest {
 			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
 			ks.getConfigurator().setInstances(instances);
 			ks.getConfigurator().setPredefinedFilter("YAGO");
+			ks.getConfigurator().setSaveExtractedFragment(true);
 			ks.init();
-			ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+			ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
 			reasoner.init();
 			ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 //			lp.getConfigurator().setPositiveExamples(posExamples);
