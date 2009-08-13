@@ -356,12 +356,37 @@ public class DLLearnerWS {
 	 * of the learned description.
 	 * 
 	 * @param id The session ID.
+	 * @return A JSON string encoding learned descriptions.
+	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
+	 */
+	@WebMethod
+	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		state.getLearningAlgorithm().start();
+		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions();
+		String json = "{";
+		int count = 1;
+		for(EvaluatedDescription description : descriptions) {
+			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
+			else json += "\"solution" + count + "\" : " + description.asJSON();
+			count++;
+		}
+		json+="}";
+		return json;
+	}	
+	
+	/**
+	 * Returns a list of JSON encoded description including extra information
+	 * (which partially depends on the learning problem) such as the accuracy
+	 * of the learned description.
+	 * 
+	 * @param id The session ID.
 	 * @param limit Maximum number of results desired.
 	 * @return A JSON string encoding learned descriptions.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 */
 	@WebMethod
-	public String learnDescriptionsEvaluated(int id, int limit) throws ClientNotKnownException {
+	public String learnDescriptionsEvaluatedLimit(int id, int limit) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
 		List<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);

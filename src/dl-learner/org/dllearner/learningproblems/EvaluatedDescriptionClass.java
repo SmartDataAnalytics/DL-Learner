@@ -24,6 +24,11 @@ import java.util.Set;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.semanticweb.owl.model.OWLDescription;
 
 /**
  * An evaluated description for learning classes in ontologies.
@@ -95,4 +100,28 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 		return classScore.followsFromKB();
 	}	
 	
+	/**
+	 * This convenience method can be used to store and exchange evaluated
+	 * descriptions by transforming them to a JSON string.
+	 * @return A JSON representation of an evaluated description.
+	 */
+	public String asJSON() {
+		JSONObject object = new JSONObject();
+		try {
+			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
+			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
+			object.put("descriptionKBSyntax", description.toKBSyntaxString());
+			object.put("scoreValue", score.getAccuracy());	
+			object.put("additionalInstances", getAdditionalInstances());
+			object.put("coveredInstances", getCoveredInstances());
+			object.put("isConsistent", isConsistent());
+			object.put("coverage", getCoverage());
+			object.put("addition", getAddition());
+			return object.toString(3);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}		
 }
