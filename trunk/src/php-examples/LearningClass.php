@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -33,32 +33,21 @@ $wsdluri="http://localhost:8181/services?wsdl";
 // Utilities::loadWSDLfiles($wsdluri);
 
 // specifiy ontology
-$ontology = 'file:'.realpath("../../examples/family/father.owl");
+$ontology = 'file:'.realpath("../../examples/swore/swore.rdf");
 
 // create DL-Learner client
 $client = new SoapClient("main.wsdl");
 // $client = new SoapClient($wsdluri);
 
-// load owl file in DIG reasoner (you need a running DIG reasoner)
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
 $rID = $client->setReasoner($id, "fastInstanceChecker");
 
 // create a learning problem
-$posExamples = array('http://example.com/father#stefan',
-                     'http://example.com/father#markus',
-                     'http://example.com/father#martin');
-$negExamples = array('http://example.com/father#heinz',
-                     'http://example.com/father#anna',
-                     'http://example.com/father#michelle');
-$client->setLearningProblem($id, "posNegLPStandard");
-$client->setPositiveExamples($id, $posExamples);
-$client->setNegativeExamples($id, $negExamples);
+$lp = $client->setLearningProblem($id, "classLearning");
+$client->applyConfigEntryURL($id, $lp, "classToDescribe", "http://ns.softwiki.de/req/CustomerRequirement");
 
-// choose refinement operator approach
-$la_id = $client->setLearningAlgorithm($id, "refexamples");
-// you can add the following to apply a config option to a component, e.g. ignore a concept
-$client->applyConfigEntryStringArray($id, $la_id, "ignoredConcepts", array('http://example.com/father#female'));
+$la_id = $client->setLearningAlgorithm($id, "celoe");
 
 $client->initAll($id);
 
@@ -67,7 +56,7 @@ echo 'start learning ... ';
 // get only concept
 // $concept = $client->learn($id, "manchester");
 // get concept and additional information in JSON syntax
-$concept = $client->learnDescriptionsEvaluated($id, 5);
+$concept = $client->learnDescriptionsEvaluated($id);
 echo 'OK <br />';
 
 echo 'solution: <pre>';
