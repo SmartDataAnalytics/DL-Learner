@@ -6,6 +6,7 @@
 	<property name="source_dir" value="src/dl-learner" />
 	<property name="protege_dir" value="/home/jl/programme/Protege_4.0_beta/plugins" />
 	<property name="class_dir" value="classes" />
+	<property name="ontowiki_dir" value="${user.home}/workspace/ontowiki/ontowiki/src/extensions/components/dllearner/dllearner" />
 	
 	<property name="php_client_dir" value="src/php-client" />
 	<tstamp>
@@ -400,6 +401,46 @@ public class Info {
 		<zip destfile="${ProtRelease}/DL-Learner-plugin.zip"
 		       basedir="${release}"
 		  />
+		<delete dir="${temp}" />
+		<delete dir="${release}" />
+	</target>
+	
+	<!--Builds the Ontowiki DL-Learner Jar -->
+	
+	<target name="buildOntowikiDLLearnerJar">
+	<mkdir dir="${temp}"/>
+	<mkdir dir="${release}"/>
+	<mkdir dir="${release}/lib"/>
+	<mkdir dir="${release}/lib/pellet"/>
+	<mkdir dir="${release}/lib/jena"/>
+	<mkdir dir="${release}/lib/owlapi"/>
+	
+	<copy toDir="${release}/lib">
+	<fileset dir="${lib_dir}" includes="jamon-2.7.jar,log4j.jar,components.ini"/>
+	</copy>
+	
+		<copy toDir="${release}/lib/owlapi">
+			<fileset dir="${lib_dir}/owlapi" includes="owlapi-bin.jar"/>
+			</copy>
+	<copy toDir="${release}/lib/pellet">
+	<fileset dir="${lib_dir}/pellet" includes="pellet-core.jar, pellet-owlapi.jar"/>
+	</copy>
+	
+	<copy toDir="${release}/lib/jena">
+	<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar"/>
+	</copy>
+	
+	<copy toDir="${temp}">
+	<fileset dir="${class_dir}"/>
+	</copy>
+		
+	<jar destfile="${release}/dllearner.jar">
+	<fileset dir="${temp}"/>
+	</jar>
+	<copy toDir="${ontowiki_dir}">
+		<fileset dir="${release}"/>
+		</copy>
+		
 		<delete dir="${temp}" />
 		<delete dir="${release}" />
 	</target>
