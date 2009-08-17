@@ -366,7 +366,7 @@ public class DLLearnerWS {
 		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions();
 		String json = "{";
 		int count = 1;
-		for(EvaluatedDescription description : descriptions) {
+		for(EvaluatedDescription description : descriptions.descendingSet()) {
 			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
 			else json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
