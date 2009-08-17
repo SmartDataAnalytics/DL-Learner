@@ -570,7 +570,10 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/AbstractComment -->
 
-    <owl:Class rdf:about="AbstractComment"/>
+    <owl:Class rdf:about="AbstractComment">
+        <rdfs:label
+            >abstract comment</rdfs:label>
+    </owl:Class>
     
 
 
@@ -616,6 +619,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/AllocatedRequirement -->
 
     <owl:Class rdf:about="AllocatedRequirement">
+        <rdfs:label
+            >allocated requirement</rdfs:label>
         <rdfs:subClassOf rdf:resource="Requirement"/>
     </owl:Class>
     
@@ -624,6 +629,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/ApplicationPointer -->
 
     <owl:Class rdf:about="ApplicationPointer">
+        <rdfs:label
+            >application pointer</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
     </owl:Class>
     
@@ -632,6 +639,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/ApplicationState -->
 
     <owl:Class rdf:about="ApplicationState">
+        <rdfs:label
+            >application state</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
     </owl:Class>
     
@@ -651,6 +660,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Comment -->
 
     <owl:Class rdf:about="Comment">
+        <rdfs:label>comment</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractComment"/>
     </owl:Class>
     
@@ -659,6 +669,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Creditor -->
 
     <owl:Class rdf:about="Creditor">
+        <rdfs:label>creditor</rdfs:label>
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
@@ -667,6 +678,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Customer -->
 
     <owl:Class rdf:about="Customer">
+        <rdfs:label>customer</rdfs:label>
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
         <owl:disjointWith rdf:resource="Programmer"/>
     </owl:Class>
@@ -676,6 +688,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/CustomerRequirement -->
 
     <owl:Class rdf:about="CustomerRequirement">
+        <rdfs:label
+            >customer requirement</rdfs:label>
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -695,6 +709,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/DefinedKeyword -->
 
     <owl:Class rdf:about="DefinedKeyword">
+        <rdfs:label>defined keyword</rdfs:label>
         <rdfs:subClassOf rdf:resource="Keyword"/>
     </owl:Class>
     
@@ -703,6 +718,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/DerivedRequirement -->
 
     <owl:Class rdf:about="DerivedRequirement">
+        <rdfs:label
+            >derived requirement</rdfs:label>
         <rdfs:subClassOf rdf:resource="Requirement"/>
     </owl:Class>
     
@@ -711,6 +728,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/DesignRequirement -->
 
     <owl:Class rdf:about="DesignRequirement">
+        <rdfs:label
+            >design requirement</rdfs:label>
         <rdfs:subClassOf rdf:resource="Requirement"/>
     </owl:Class>
     
@@ -719,6 +738,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Document -->
 
     <owl:Class rdf:about="Document">
+        <rdfs:label>document</rdfs:label>
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -769,6 +789,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Government -->
 
     <owl:Class rdf:about="Government">
+        <rdfs:label>government</rdfs:label>
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
@@ -777,6 +798,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Keyword -->
 
     <owl:Class rdf:about="Keyword">
+        <rdfs:label>keyword</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
     </owl:Class>
     
@@ -785,6 +807,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/PerformanceRequirement -->
 
     <owl:Class rdf:about="PerformanceRequirement">
+        <rdfs:label
+            >performance requirement</rdfs:label>
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -805,6 +829,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/PriorityRating -->
 
     <owl:Class rdf:about="PriorityRating">
+        <rdfs:label>priority rating</rdfs:label>
         <rdfs:subClassOf rdf:resource="Rating"/>
         <rdfs:comment rdf:datatype="&xsd;string"
             >Rule: Every Author only defines at most one rating about the priority for each requirement.</rdfs:comment>
@@ -815,6 +840,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Programmer -->
 
     <owl:Class rdf:about="Programmer">
+        <rdfs:label>programmer</rdfs:label>
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
@@ -823,6 +849,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/QualityRating -->
 
     <owl:Class rdf:about="QualityRating">
+        <rdfs:label>quality rating</rdfs:label>
         <rdfs:subClassOf rdf:resource="Rating"/>
         <rdfs:comment rdf:datatype="&xsd;string"
             >Rule: Every Author only defines at most one rating about the quality for each requirement.</rdfs:comment>
@@ -834,7 +861,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <owl:Class rdf:about="QualityRequirement">
         <rdfs:label rdf:datatype="&xsd;string"
-            >QualityRequirement</rdfs:label>
+            >quality requirement</rdfs:label>
         <rdfs:subClassOf rdf:resource="Requirement"/>
         <rdfs:comment rdf:datatype="&xsd;string"
             >refers to quality reference point, e.g. reliability, performance, usability</rdfs:comment>
@@ -845,6 +872,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Rating -->
 
     <owl:Class rdf:about="Rating">
+        <rdfs:label>rating</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractComment"/>
     </owl:Class>
     
@@ -882,6 +910,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/SeniorManagementStaff -->
 
     <owl:Class rdf:about="SeniorManagementStaff">
+        <rdfs:label
+            >senior management staff</rdfs:label>
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
@@ -890,6 +920,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Stakeholder -->
 
     <owl:Class rdf:about="Stakeholder">
+        <rdfs:label>stakeholder</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractSource"/>
     </owl:Class>
     
@@ -898,6 +929,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/SystemRequirement -->
 
     <owl:Class rdf:about="SystemRequirement">
+        <rdfs:label
+            >system requirement</rdfs:label>
         <rdfs:subClassOf rdf:resource="&owl;Thing"/>
     </owl:Class>
     
@@ -924,6 +957,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Topic -->
 
     <owl:Class rdf:about="Topic">
+        <rdfs:label>topic</rdfs:label>
         <rdfs:subClassOf rdf:resource="DefinedKeyword"/>
         <rdfs:comment rdf:datatype="&xsd;string"
             >Rule: Every Requirement refers to exact one topic.</rdfs:comment>
@@ -934,6 +968,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/TradeUnion -->
 
     <owl:Class rdf:about="TradeUnion">
+        <rdfs:label>trade union</rdfs:label>
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
@@ -952,13 +987,17 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://purl.org/dc/dcmitype/Image -->
 
-    <owl:Class rdf:about="&dcmitype;Image"/>
+    <owl:Class rdf:about="&dcmitype;Image">
+        <rdfs:label>image</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.w3.org/2000/01/rdf-schema#Resource -->
 
-    <owl:Class rdf:about="&rdfs;Resource"/>
+    <owl:Class rdf:about="&rdfs;Resource">
+        <rdfs:label>resource</rdfs:label>
+    </owl:Class>
     
 
 
@@ -980,13 +1019,16 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <owl:Class rdf:about="&skos;Concept">
         <rdfs:label xml:lang="de">Thema</rdfs:label>
+        <rdfs:label>concept</rdfs:label>
     </owl:Class>
     
 
 
     <!-- http://xmlns.com/foaf/0.1/Document -->
 
-    <owl:Class rdf:about="&foaf2;Document"/>
+    <owl:Class rdf:about="&foaf2;Document">
+        <rdfs:label>document</rdfs:label>
+    </owl:Class>
     
 
 
@@ -1004,6 +1046,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/1 -->
 
     <QualityRating rdf:about="1">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>1</rdfs:label>
         <rates rdf:resource="BuildASecureLoginSystem"/>
     </QualityRating>
     
@@ -1011,15 +1055,19 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/2 -->
 
-    <QualityRating rdf:about="2">
+    <owl:Thing rdf:about="2">
+        <rdf:type rdf:resource="QualityRating"/>
+        <rdfs:label>2</rdfs:label>
         <rates rdf:resource="BuildASoftwareThatRuns24hADay"/>
-    </QualityRating>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/3 -->
 
     <QualityRating rdf:about="3">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>3</rdfs:label>
         <rates rdf:resource="BuildLoginSystem"/>
     </QualityRating>
     
@@ -1028,6 +1076,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/4 -->
 
     <QualityRating rdf:about="4">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>4</rdfs:label>
         <rates rdf:resource="BuildNetworkLoginSystem"/>
     </QualityRating>
     
@@ -1035,23 +1085,29 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/5 -->
 
-    <QualityRating rdf:about="5">
+    <owl:Thing rdf:about="5">
+        <rdf:type rdf:resource="QualityRating"/>
+        <rdfs:label>5</rdfs:label>
         <rates rdf:resource="DataBaseBackupCreatedSyncron"/>
-    </QualityRating>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/6 -->
 
-    <QualityRating rdf:about="6">
+    <owl:Thing rdf:about="6">
+        <rdf:type rdf:resource="QualityRating"/>
+        <rdfs:label>6</rdfs:label>
         <rates rdf:resource="CustomerRequirement1"/>
-    </QualityRating>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/7 -->
 
     <QualityRating rdf:about="7">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>7</rdfs:label>
         <rates rdf:resource="DialogSystemShoudRespondInUnder5Sec"/>
     </QualityRating>
     
@@ -1060,6 +1116,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/8 -->
 
     <QualityRating rdf:about="8">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>8</rdfs:label>
         <rates rdf:resource="loadGUIInUnder2Sec"/>
     </QualityRating>
     
@@ -1067,33 +1125,43 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/9 -->
 
-    <QualityRating rdf:about="9">
+    <owl:Thing rdf:about="9">
+        <rdf:type rdf:resource="QualityRating"/>
+        <rdfs:label>9</rdfs:label>
         <rates rdf:resource="LogEveryUserActivity"/>
-    </QualityRating>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/ActiveHelpDialog -->
 
-    <DesignRequirement rdf:about="ActiveHelpDialog">
+    <owl:Thing rdf:about="ActiveHelpDialog">
+        <rdf:type rdf:resource="DesignRequirement"/>
+        <rdfs:label
+            >Active Help Dialog</rdfs:label>
         <isCreatedBy rdf:resource="GermanGovernment"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </DesignRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Andrew_Stellman -->
 
-    <Author rdf:about="Andrew_Stellman">
+    <owl:Thing rdf:about="Andrew_Stellman">
+        <rdf:type rdf:resource="Author"/>
+        <rdfs:label>Andrew Stellman</rdfs:label>
         <defines rdf:resource="MultiUserSystem"/>
         <votes rdf:resource="UseDatabaseToStoreUserData"/>
-    </Author>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/BuildAFastSoftware -->
 
     <CustomerRequirement rdf:about="BuildAFastSoftware">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Build a Fast Software</rdfs:label>
         <isCreatedBy rdf:resource="Charlotte_Blay"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <refersTo rdf:resource="PerformanceTopic"/>
@@ -1103,16 +1171,22 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/BuildASecureLoginSystem -->
 
-    <DerivedRequirement rdf:about="BuildASecureLoginSystem">
+    <owl:Thing rdf:about="BuildASecureLoginSystem">
+        <rdf:type rdf:resource="DerivedRequirement"/>
+        <rdfs:label
+            >Build A Secure Login System</rdfs:label>
         <details rdf:resource="BuildLoginSystem"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </DerivedRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/BuildASoftwareThatRuns24hADay -->
 
     <CustomerRequirement rdf:about="BuildASoftwareThatRuns24hADay">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Build A Software That Runs 24 h A Day</rdfs:label>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCreatedBy rdf:resource="Philippe_Soupault"/>
         <depentsOn rdf:resource="SystemStabilityRequirement"/>
@@ -1123,71 +1197,95 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/BuildLoginSystem -->
 
-    <DerivedRequirement rdf:about="BuildLoginSystem">
+    <owl:Thing rdf:about="BuildLoginSystem">
+        <rdf:type rdf:resource="DerivedRequirement"/>
+        <rdfs:label
+            >Build Login System</rdfs:label>
         <details rdf:resource="MultiUserSystem"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </DerivedRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/BuildNetworkLoginSystem -->
 
-    <DerivedRequirement rdf:about="BuildNetworkLoginSystem">
+    <owl:Thing rdf:about="BuildNetworkLoginSystem">
+        <rdf:type rdf:resource="DerivedRequirement"/>
+        <rdfs:label
+            >Build Network Login System</rdfs:label>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
         <details rdf:resource="UserCanAccessDataFromEveryComputer"/>
-    </DerivedRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/CentralOrganisationOfFinnishTrade -->
 
-    <TradeUnion rdf:about="CentralOrganisationOfFinnishTrade"/>
+    <owl:Thing rdf:about="CentralOrganisationOfFinnishTrade">
+        <rdf:type rdf:resource="TradeUnion"/>
+        <rdfs:label
+            >Central Organisaion Of Finnish Trade</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Charlotte_Blay -->
 
-    <Customer rdf:about="Charlotte_Blay"/>
+    <Customer rdf:about="Charlotte_Blay">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Carlotte Blay</rdfs:label>
+    </Customer>
     
 
 
     <!-- http://ns.softwiki.de/req/Consistent -->
 
-    <rdf:Description rdf:about="Consistent">
+    <owl:Thing rdf:about="Consistent">
+        <rdfs:label>Consistent</rdfs:label>
         <isCreatedBy rdf:resource="USGovernment"/>
-    </rdf:Description>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Correct -->
 
-    <rdf:Description rdf:about="Correct">
+    <owl:Thing rdf:about="Correct">
+        <rdfs:label>Correct</rdfs:label>
         <isCreatedBy rdf:resource="Jennifer_Greene"/>
-    </rdf:Description>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/CreateACheaperSoftware -->
 
-    <Goal rdf:about="CreateACheaperSoftware">
+    <owl:Thing rdf:about="CreateACheaperSoftware">
+        <rdf:type rdf:resource="Goal"/>
+        <rdfs:label
+            >Create A Cheaper Software</rdfs:label>
         <details rdf:resource="SearchShouldBeDoneIn3Sec"/>
         <isDefinedBy rdf:resource="Tim"/>
-    </Goal>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/CreateDatabaseInterface -->
 
-    <DerivedRequirement rdf:about="CreateDatabaseInterface">
+    <owl:Thing rdf:about="CreateDatabaseInterface">
+        <rdf:type rdf:resource="DerivedRequirement"/>
+        <rdfs:label
+            >Create Database Interface</rdfs:label>
         <details rdf:resource="DataBaseBackupCreatedSyncron"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
-    </DerivedRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/CreateModernGUIDesign -->
 
     <CustomerRequirement rdf:about="CreateModernGUIDesign">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Create Modern GUI Design</rdfs:label>
         <refersTo rdf:resource="DesignTopic"/>
         <isCreatedBy rdf:resource="Jane_Smiley"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
@@ -1198,25 +1296,34 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/CreateNetworkInterface -->
 
-    <DerivedRequirement rdf:about="CreateNetworkInterface">
+    <owl:Thing rdf:about="CreateNetworkInterface">
+        <rdf:type rdf:resource="DerivedRequirement"/>
+        <rdfs:label
+            >Create Network Interface</rdfs:label>
         <details rdf:resource="BuildNetworkLoginSystem"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </DerivedRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/CreateVersion1 -->
 
-    <Goal rdf:about="CreateVersion1">
+    <owl:Thing rdf:about="CreateVersion1">
+        <rdf:type rdf:resource="Goal"/>
+        <rdfs:label
+            >Create Version 1</rdfs:label>
         <isDefinedBy rdf:resource="Jim"/>
         <details rdf:resource="SystemStabilityRequirement"/>
-    </Goal>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/CreateVersion2 -->
 
     <Goal rdf:about="CreateVersion2">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Create Version 2</rdfs:label>
         <isDefinedBy rdf:resource="Tom"/>
         <details rdf:resource="UseDatabaseToStoreUserData"/>
     </Goal>
@@ -1226,6 +1333,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/CustomerRequirement1 -->
 
     <Requirement rdf:about="CustomerRequirement1">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Customer Requirement 1</rdfs:label>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCreatedBy rdf:resource="Tom"/>
     </Requirement>
@@ -1234,31 +1344,40 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/DataBaseBackupCreatedSyncron -->
 
-    <PerformanceRequirement rdf:about="DataBaseBackupCreatedSyncron">
+    <owl:Thing rdf:about="DataBaseBackupCreatedSyncron">
+        <rdf:type rdf:resource="PerformanceRequirement"/>
+        <rdfs:label
+            >Database Backup Created Syncrom</rdfs:label>
         <isCreatedBy rdf:resource="Andrew_Stellman"/>
         <willLeadTo rdf:resource="DualCoreSystemWith8GigRam"/>
         <isCommentedBy rdf:resource="MustBeDiscussed"/>
         <refersTo rdf:resource="PerformanceTopic"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </PerformanceRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/DataExecutionShouldBeDoneInUnder3Sec -->
 
-    <PerformanceRequirement rdf:about="DataExecutionShouldBeDoneInUnder3Sec">
+    <owl:Thing rdf:about="DataExecutionShouldBeDoneInUnder3Sec">
+        <rdf:type rdf:resource="PerformanceRequirement"/>
+        <rdfs:label
+            >Dataexecution Should Be Done In Under 3 Sec</rdfs:label>
         <isCreatedBy rdf:resource="Jennifer_Greene"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCommentedBy rdf:resource="MustBeDiscussed"/>
         <refersTo rdf:resource="PerformanceTopic"/>
         <willLeadTo rdf:resource="QuadCoreSystemWith16GigRam"/>
-    </PerformanceRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/DatabaseServerCanBeUsedBy1000PersonsSimultaneus -->
 
     <PerformanceRequirement rdf:about="DatabaseServerCanBeUsedBy1000PersonsSimultaneus">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Database Server Can Be Used By 1000 Persons Simultaneus</rdfs:label>
         <willLeadTo rdf:resource="DatabaseServerWith32GigRam"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCommentedBy rdf:resource="MustBeDiscussed"/>
@@ -1270,13 +1389,19 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/DatabaseServerWith32GigRam -->
 
-    <SystemRequirement rdf:about="DatabaseServerWith32GigRam"/>
+    <owl:Thing rdf:about="DatabaseServerWith32GigRam">
+        <rdf:type rdf:resource="SystemRequirement"/>
+        <rdfs:label
+            >Database Server With 32 Gig Ram</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/DatabaseTopic -->
 
     <Topic rdf:about="DatabaseTopic">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Database Topic</rdfs:label>
         <specifies rdf:resource="UseDatabaseToStoreUserData"/>
     </Topic>
     
@@ -1284,23 +1409,31 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/Derick_Garnier -->
 
-    <Customer rdf:about="Derick_Garnier"/>
+    <owl:Thing rdf:about="Derick_Garnier">
+        <rdf:type rdf:resource="Customer"/>
+        <rdfs:label>Derick Garnier</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/DesignTopic -->
 
-    <Topic rdf:about="DesignTopic">
+    <owl:Thing rdf:about="DesignTopic">
+        <rdf:type rdf:resource="Topic"/>
+        <rdfs:label>Design Topic</rdfs:label>
         <specifies rdf:resource="CreateModernGUIDesign"/>
         <specifies rdf:resource="UseOfIcons"/>
         <specifies rdf:resource="WindowDesign"/>
-    </Topic>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/DialogSystemShoudRespondInUnder5Sec -->
 
     <PerformanceRequirement rdf:about="DialogSystemShoudRespondInUnder5Sec">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Dialog System Should Respond In Under 5 Sec</rdfs:label>
         <willLeadTo rdf:resource="DualCoreSystemWith8GigRam"/>
         <isCommentedBy rdf:resource="GoodIdea"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
@@ -1312,19 +1445,29 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/DualCoreSystemWith8GigRam -->
 
-    <SystemRequirement rdf:about="DualCoreSystemWith8GigRam"/>
+    <SystemRequirement rdf:about="DualCoreSystemWith8GigRam">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Dual Core System With 8 Gig Ram</rdfs:label>
+    </SystemRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/EuropeanTradeUnionConfederation -->
 
-    <TradeUnion rdf:about="EuropeanTradeUnionConfederation"/>
+    <TradeUnion rdf:about="EuropeanTradeUnionConfederation">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >European Trade Union Confederation</rdfs:label>
+    </TradeUnion>
     
 
 
     <!-- http://ns.softwiki.de/req/FunctionTopic -->
 
     <Topic rdf:about="FunctionTopic">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Function Topic</rdfs:label>
         <specifies rdf:resource="LogEveryUserActivity"/>
     </Topic>
     
@@ -1332,29 +1475,40 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/GermanGovernment -->
 
-    <Government rdf:about="GermanGovernment"/>
+    <owl:Thing rdf:about="GermanGovernment">
+        <rdf:type rdf:resource="Government"/>
+        <rdfs:label
+            >German Government</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/GoodIdea -->
 
-    <Comment rdf:about="GoodIdea">
+    <owl:Thing rdf:about="GoodIdea">
+        <rdf:type rdf:resource="Comment"/>
+        <rdfs:label>Good Idea</rdfs:label>
         <comments rdf:resource="DialogSystemShoudRespondInUnder5Sec"/>
         <isDefinedBy rdf:resource="Jennifer_Greene"/>
         <isDefinedBy rdf:resource="Stefan"/>
-    </Comment>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Jane_Smiley -->
 
-    <Customer rdf:about="Jane_Smiley"/>
+    <owl:Thing rdf:about="Jane_Smiley">
+        <rdf:type rdf:resource="Customer"/>
+        <rdfs:label>Jane Smiley</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Jennifer_Greene -->
 
     <Author rdf:about="Jennifer_Greene">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Jennifer Greene</rdfs:label>
         <votes rdf:resource="MultiWindowSystem"/>
         <defines rdf:resource="loadGUIInUnder2Sec"/>
     </Author>
@@ -1363,16 +1517,20 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/Jill -->
 
-    <Author rdf:about="Jill">
+    <owl:Thing rdf:about="Jill">
+        <rdf:type rdf:resource="Author"/>
+        <rdfs:label>Jill</rdfs:label>
         <defines rdf:resource="DialogSystemShoudRespondInUnder5Sec"/>
         <votes rdf:resource="SystemRequirement1"/>
-    </Author>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Jim -->
 
     <Author rdf:about="Jim">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Jim</rdfs:label>
         <defines rdf:resource="MultiWindowSystem"/>
         <votes rdf:resource="SystemStabilityRequirement"/>
     </Author>
@@ -1382,6 +1540,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Lastenheft -->
 
     <Document rdf:about="Lastenheft">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Lastenheft</rdfs:label>
         <leadsTo rdf:resource="text"/>
     </Document>
     
@@ -1390,6 +1550,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/LogEveryUserActivity -->
 
     <FunctionalRequirement rdf:about="LogEveryUserActivity">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Log Every User Activity</rdfs:label>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCommentedBy rdf:resource="NotNecessaryRequirment"/>
         <isDefinedBy rdf:resource="Steve_McConnell"/>
@@ -1400,76 +1563,100 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/LoginTopic -->
 
-    <Topic rdf:about="LoginTopic">
+    <owl:Thing rdf:about="LoginTopic">
+        <rdf:type rdf:resource="Topic"/>
+        <rdfs:label>Login Topic</rdfs:label>
         <specifies rdf:resource="BuildASecureLoginSystem"/>
         <specifies rdf:resource="BuildLoginSystem"/>
         <specifies rdf:resource="BuildNetworkLoginSystem"/>
-    </Topic>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Michael_Steinmetz -->
 
-    <Customer rdf:about="Michael_Steinmetz"/>
+    <owl:Thing rdf:about="Michael_Steinmetz">
+        <rdf:type rdf:resource="Customer"/>
+        <rdfs:label
+            >Michael Steinmetz</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/MultiTabSystem -->
 
-    <DesignRequirement rdf:about="MultiTabSystem">
+    <owl:Thing rdf:about="MultiTabSystem">
+        <rdf:type rdf:resource="DesignRequirement"/>
+        <rdfs:label
+            >Multi Tab System</rdfs:label>
         <refersTo rdf:resource="DesignTopic"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
         <isCommentedBy rdf:resource="ShouldBeImplementedInALaterVersion"/>
         <isCreatedBy rdf:resource="Steve_McConnell"/>
         <isDefinedBy rdf:resource="Steve_McConnell"/>
-    </DesignRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/MultiUserSystem -->
 
-    <FunctionalRequirement rdf:about="MultiUserSystem">
+    <owl:Thing rdf:about="MultiUserSystem">
+        <rdf:type rdf:resource="FunctionalRequirement"/>
+        <rdfs:label
+            >Multi User System</rdfs:label>
         <isDefinedBy rdf:resource="Andrew_Stellman"/>
         <isCreatedBy rdf:resource="Andrew_Stellman"/>
         <isDetailedBy rdf:resource="BuildLoginSystem"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </FunctionalRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/MultiWindowSystem -->
 
-    <DesignRequirement rdf:about="MultiWindowSystem">
+    <owl:Thing rdf:about="MultiWindowSystem">
+        <rdf:type rdf:resource="DesignRequirement"/>
+        <rdfs:label
+            >Multi Window System</rdfs:label>
         <refersTo rdf:resource="DesignTopic"/>
         <isDefinedBy rdf:resource="Jennifer_Greene"/>
         <isCreatedBy rdf:resource="Jennifer_Greene"/>
         <isLeadingTo rdf:resource="UML"/>
-    </DesignRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/MustBeDiscussed -->
 
-    <Comment rdf:about="MustBeDiscussed">
+    <owl:Thing rdf:about="MustBeDiscussed">
+        <rdf:type rdf:resource="Comment"/>
+        <rdfs:label
+            >Must Be Discussed</rdfs:label>
         <isDefinedBy rdf:resource="Andrew_Stellman"/>
         <isDefinedBy rdf:resource="Jennifer_Greene"/>
         <comments rdf:resource="UserCanAccessDataFromEveryComputer"/>
-    </Comment>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/NotNecessaryRequirment -->
 
-    <Comment rdf:about="NotNecessaryRequirment">
+    <owl:Thing rdf:about="NotNecessaryRequirment">
+        <rdf:type rdf:resource="Comment"/>
+        <rdfs:label
+            >Not Necessary Requirement</rdfs:label>
         <isDefinedBy rdf:resource="Jennifer_Greene"/>
         <comments rdf:resource="LogEveryUserActivity"/>
-    </Comment>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/PerformanceTopic -->
 
     <Topic rdf:about="PerformanceTopic">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Performance Topic</rdfs:label>
         <specifies rdf:resource="BuildAFastSoftware"/>
         <specifies rdf:resource="DataExecutionShouldBeDoneInUnder3Sec"/>
         <specifies rdf:resource="loadGUIInUnder2Sec"/>
@@ -1479,35 +1666,50 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/Pflichtenheft -->
 
-    <Document rdf:about="Pflichtenheft">
+    <owl:Thing rdf:about="Pflichtenheft">
+        <rdf:type rdf:resource="Document"/>
+        <rdfs:label>Pflichtenheft</rdfs:label>
         <leadsTo rdf:resource="TextualScenario2"/>
-    </Document>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/Philippe_Soupault -->
 
-    <Customer rdf:about="Philippe_Soupault"/>
+    <owl:Thing rdf:about="Philippe_Soupault">
+        <rdf:type rdf:resource="Customer"/>
+        <rdfs:label
+            >Philippe Soupault</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/QuadCoreSystemWith16GigRam -->
 
-    <SystemRequirement rdf:about="QuadCoreSystemWith16GigRam"/>
+    <SystemRequirement rdf:about="QuadCoreSystemWith16GigRam">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Quad Core System With 16 Gig Ram</rdfs:label>
+    </SystemRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/QualityTopic -->
 
-    <Topic rdf:about="QualityTopic">
+    <owl:Thing rdf:about="QualityTopic">
+        <rdf:type rdf:resource="Topic"/>
+        <rdfs:label>Quality Topic</rdfs:label>
         <specifies rdf:resource="usability"/>
-    </Topic>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/SearchShouldBeDoneIn3Sec -->
 
     <PerformanceRequirement rdf:about="SearchShouldBeDoneIn3Sec">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Search Should Be Done In 3 Sec</rdfs:label>
         <isCreatedBy rdf:resource="Andrew_Stellman"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCommentedBy rdf:resource="NotNecessaryRequirment"/>
@@ -1519,22 +1721,31 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/ShouldBeImplementedInALaterVersion -->
 
-    <Comment rdf:about="ShouldBeImplementedInALaterVersion">
+    <owl:Thing rdf:about="ShouldBeImplementedInALaterVersion">
+        <rdf:type rdf:resource="Comment"/>
+        <rdfs:label
+            >Should Be Implemented In A Later Version</rdfs:label>
         <comments rdf:resource="MultiTabSystem"/>
         <isDefinedBy rdf:resource="Stefan"/>
-    </Comment>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/SingleCoreWith_2GigRam -->
 
-    <SystemRequirement rdf:about="SingleCoreWith_2GigRam"/>
+    <SystemRequirement rdf:about="SingleCoreWith_2GigRam">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Single Core With 2 Gig Ram</rdfs:label>
+    </SystemRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/Stefan -->
 
     <Author rdf:about="Stefan">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Stefan</rdfs:label>
         <votes rdf:resource="BuildNetworkLoginSystem"/>
         <defines rdf:resource="CreateModernGUIDesign"/>
         <defines rdf:resource="ShouldBeImplementedInALaterVersion"/>
@@ -1545,6 +1756,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Steve_McConnell -->
 
     <Author rdf:about="Steve_McConnell">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Steve McConnell</rdfs:label>
         <votes rdf:resource="LogEveryUserActivity"/>
         <defines rdf:resource="comment"/>
     </Author>
@@ -1553,19 +1766,30 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/SwedishTradeUnionConfederation -->
 
-    <TradeUnion rdf:about="SwedishTradeUnionConfederation"/>
+    <TradeUnion rdf:about="SwedishTradeUnionConfederation">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Swedish Trade Union Confederation</rdfs:label>
+    </TradeUnion>
     
 
 
     <!-- http://ns.softwiki.de/req/SystemRequirement1 -->
 
-    <SystemRequirement rdf:about="SystemRequirement1"/>
+    <owl:Thing rdf:about="SystemRequirement1">
+        <rdf:type rdf:resource="SystemRequirement"/>
+        <rdfs:label
+            >Systemj Requirement 1</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/SystemShouldAlwaysRunBasicFeaturesAfterFailure -->
 
     <PerformanceRequirement rdf:about="SystemShouldAlwaysRunBasicFeaturesAfterFailure">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >System Should Always Run Basic Features After Failure</rdfs:label>
         <refersTo rdf:resource="PerformanceTopic"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
         <willLeadTo rdf:resource="SingleCoreWith_2GigRam"/>
@@ -1578,6 +1802,11 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/SystemShoundStartUpIn7Sec -->
 
     <PerformanceRequirement rdf:about="SystemShoundStartUpIn7Sec">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >System Should Sartup In 7 Sec</rdfs:label>
+        <rdfs:label
+            >System Stability Requirement</rdfs:label>
         <isCreatedBy rdf:resource="Jennifer_Greene"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <refersTo rdf:resource="PerformanceTopic"/>
@@ -1589,34 +1818,47 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/SystemStabilityRequirement -->
 
-    <PerformanceRequirement rdf:about="SystemStabilityRequirement">
+    <owl:Thing rdf:about="SystemStabilityRequirement">
+        <rdf:type rdf:resource="PerformanceRequirement"/>
+        <rdfs:label
+            >System Stability Requirement</rdfs:label>
         <isCreatedBy rdf:resource="Jennifer_Greene"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
         <willLeadTo rdf:resource="SystemRequirement1"/>
         <refersTo rdf:resource="SystemStabilityTopic"/>
         <isCommentedBy rdf:resource="comment"/>
-    </PerformanceRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/SystemStabilityTopic -->
 
-    <Topic rdf:about="SystemStabilityTopic">
+    <owl:Thing rdf:about="SystemStabilityTopic">
+        <rdf:type rdf:resource="Topic"/>
+        <rdfs:label
+            >System Stability Topic</rdfs:label>
         <specifies rdf:resource="BuildASoftwareThatRuns24hADay"/>
         <specifies rdf:resource="SystemStabilityRequirement"/>
-    </Topic>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/SystemWithDiskArray -->
 
-    <SystemRequirement rdf:about="SystemWithDiskArray"/>
+    <SystemRequirement rdf:about="SystemWithDiskArray">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >System With Disk Array</rdfs:label>
+    </SystemRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/TextualScenario1 -->
 
     <TextualScenario rdf:about="TextualScenario1">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Textual Scenario 1</rdfs:label>
         <isLeadingTo rdf:resource="UML"/>
     </TextualScenario>
     
@@ -1625,6 +1867,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/TextualScenario2 -->
 
     <TextualScenario rdf:about="TextualScenario2">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Textual Scenario 2</rdfs:label>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
     </TextualScenario>
     
@@ -1633,6 +1878,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/TextualScenario3 -->
 
     <TextualScenario rdf:about="TextualScenario3">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Textual Scenario 3</rdfs:label>
         <isLeadingTo rdf:resource="use_cases"/>
     </TextualScenario>
     
@@ -1641,6 +1889,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/TextualScenario4 -->
 
     <TextualScenario rdf:about="TextualScenario4">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Textual Scenario 4</rdfs:label>
         <isLeadingTo rdf:resource="UML"/>
     </TextualScenario>
     
@@ -1649,6 +1900,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/TextualScenario5 -->
 
     <TextualScenario rdf:about="TextualScenario5">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Textual Scenario 5</rdfs:label>
         <isLeadingTo rdf:resource="Lastenheft"/>
     </TextualScenario>
     
@@ -1657,6 +1911,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/TextualScenario6 -->
 
     <TextualScenario rdf:about="TextualScenario6">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Textual Scenario 6</rdfs:label>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
     </TextualScenario>
     
@@ -1664,13 +1921,18 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/Tilman_R&#246;hrig -->
 
-    <Customer rdf:about="Tilman_R&#246;hrig"/>
+    <Customer rdf:about="Tilman_R&#246;hrig">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Tilman R&#246;hrig</rdfs:label>
+    </Customer>
     
 
 
     <!-- http://ns.softwiki.de/req/Tim -->
 
     <Author rdf:about="Tim">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Tim</rdfs:label>
         <defines rdf:resource="SystemShoundStartUpIn7Sec"/>
         <votes rdf:resource="UseDatabaseToStoreUserData"/>
     </Author>
@@ -1679,16 +1941,20 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/Tom -->
 
-    <Author rdf:about="Tom">
+    <owl:Thing rdf:about="Tom">
+        <rdf:type rdf:resource="Author"/>
+        <rdfs:label>Tom</rdfs:label>
         <defines rdf:resource="CustomerRequirement1"/>
         <votes rdf:resource="UserCanAccessDataFromEveryComputer"/>
-    </Author>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/UML -->
 
     <Document rdf:about="UML">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>UML</rdfs:label>
         <leadsTo rdf:resource="TextualScenario1"/>
     </Document>
     
@@ -1696,13 +1962,19 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/USGovernment -->
 
-    <Government rdf:about="USGovernment"/>
+    <owl:Thing rdf:about="USGovernment">
+        <rdf:type rdf:resource="Government"/>
+        <rdfs:label>US Government</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/UseAsLittleSystemResourcesAsPosible -->
 
     <CustomerRequirement rdf:about="UseAsLittleSystemResourcesAsPosible">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Use As Little System Resources As Possible</rdfs:label>
         <isLeadingTo rdf:resource="Lastenheft"/>
         <isCreatedBy rdf:resource="Michael_Steinmetz"/>
         <refersTo rdf:resource="PerformanceTopic"/>
@@ -1712,34 +1984,45 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/UseDatabaseToStoreUserData -->
 
-    <CustomerRequirement rdf:about="UseDatabaseToStoreUserData">
+    <owl:Thing rdf:about="UseDatabaseToStoreUserData">
+        <rdf:type rdf:resource="CustomerRequirement"/>
+        <rdfs:label
+            >Use Database To Store User Data</rdfs:label>
         <isCreatedBy rdf:resource="Derick_Garnier"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </CustomerRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/UseOfIcons -->
 
-    <DesignRequirement rdf:about="UseOfIcons">
+    <owl:Thing rdf:about="UseOfIcons">
+        <rdf:type rdf:resource="DesignRequirement"/>
+        <rdfs:label>Use Of Icons</rdfs:label>
         <refersTo rdf:resource="DesignTopic"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </DesignRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/UsefulRequirement -->
 
-    <Comment rdf:about="UsefulRequirement">
+    <owl:Thing rdf:about="UsefulRequirement">
+        <rdf:type rdf:resource="Comment"/>
+        <rdfs:label
+            >Useful Requirement</rdfs:label>
         <comments rdf:resource="CreateModernGUIDesign"/>
         <isDefinedBy rdf:resource="Steve_McConnell"/>
-    </Comment>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/UserCanAccessDataFromEveryComputer -->
 
     <FunctionalRequirement rdf:about="UserCanAccessDataFromEveryComputer">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >User Can Access Data From Every Computer</rdfs:label>
         <isDetailedBy rdf:resource="BuildNetworkLoginSystem"/>
         <isCommentedBy rdf:resource="MustBeDiscussed"/>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
@@ -1750,17 +2033,21 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/WindowDesign -->
 
-    <DesignRequirement rdf:about="WindowDesign">
+    <owl:Thing rdf:about="WindowDesign">
+        <rdf:type rdf:resource="DesignRequirement"/>
+        <rdfs:label>Window Design</rdfs:label>
         <isCreatedBy rdf:resource="Andrew_Stellman"/>
         <refersTo rdf:resource="DesignTopic"/>
         <isLeadingTo rdf:resource="Lastenheft"/>
-    </DesignRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/calculations -->
 
     <FunctionalRequirement rdf:about="calculations">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Calculations</rdfs:label>
         <isLeadingTo rdf:resource="UML"/>
     </FunctionalRequirement>
     
@@ -1768,22 +2055,30 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/comment -->
 
-    <Comment rdf:about="comment">
+    <owl:Thing rdf:about="comment">
+        <rdf:type rdf:resource="Comment"/>
+        <rdfs:label>Comment</rdfs:label>
         <isDefinedBy rdf:resource="Steve_McConnell"/>
         <comments rdf:resource="SystemStabilityRequirement"/>
-    </Comment>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/complete -->
 
-    <ApplicationState rdf:about="complete"/>
+    <owl:Thing rdf:about="complete">
+        <rdf:type rdf:resource="ApplicationState"/>
+        <rdfs:label>Complete</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/data_manipulation -->
 
     <FunctionalRequirement rdf:about="data_manipulation">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Data Manipulation</rdfs:label>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
         <isCreatedBy rdf:resource="Steve_McConnell"/>
     </FunctionalRequirement>
@@ -1793,6 +2088,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/determineCoreRequirements -->
 
     <Goal rdf:about="determineCoreRequirements">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Determine Core Requirments</rdfs:label>
         <details rdf:resource="DialogSystemShoudRespondInUnder5Sec"/>
         <isDefinedBy rdf:resource="Jennifer_Greene"/>
     </Goal>
@@ -1801,34 +2099,49 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/determineSystemRequirements -->
 
-    <Goal rdf:about="determineSystemRequirements">
+    <owl:Thing rdf:about="determineSystemRequirements">
+        <rdf:type rdf:resource="Goal"/>
+        <rdfs:label
+            >Determine System Requirment</rdfs:label>
         <details rdf:resource="CreateModernGUIDesign"/>
         <isDefinedBy rdf:resource="Jill"/>
-    </Goal>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/important -->
 
-    <Vote rdf:about="important"/>
+    <owl:Thing rdf:about="important">
+        <rdf:type rdf:resource="Vote"/>
+        <rdfs:label>Important</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/incomplete -->
 
-    <ApplicationState rdf:about="incomplete"/>
+    <ApplicationState rdf:about="incomplete">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Incomplete</rdfs:label>
+    </ApplicationState>
     
 
 
     <!-- http://ns.softwiki.de/req/less_importent -->
 
-    <Vote rdf:about="less_importent"/>
+    <owl:Thing rdf:about="less_importent">
+        <rdf:type rdf:resource="Vote"/>
+        <rdfs:label>Less Important</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/loadGUIInUnder2Sec -->
 
     <PerformanceRequirement rdf:about="loadGUIInUnder2Sec">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Load GUI In Under 2 Sec</rdfs:label>
         <isDefinedBy rdf:resource="Andrew_Stellman"/>
         <isCreatedBy rdf:resource="Andrew_Stellman"/>
         <willLeadTo rdf:resource="DualCoreSystemWith8GigRam"/>
@@ -1841,13 +2154,18 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/task -->
 
-    <owl:Thing rdf:about="task"/>
+    <owl:Thing rdf:about="task">
+        <rdfs:label>Task</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/technical_details -->
 
     <FunctionalRequirement rdf:about="technical_details">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label
+            >Technical Details</rdfs:label>
         <isLeadingTo rdf:resource="use_cases"/>
     </FunctionalRequirement>
     
@@ -1855,29 +2173,38 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/text -->
 
-    <TextualScenario rdf:about="text">
+    <owl:Thing rdf:about="text">
+        <rdf:type rdf:resource="TextualScenario"/>
+        <rdfs:label>Text</rdfs:label>
         <isLeadingTo rdf:resource="Lastenheft"/>
-    </TextualScenario>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/unimportant -->
 
-    <Vote rdf:about="unimportant"/>
+    <Vote rdf:about="unimportant">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Unimportant</rdfs:label>
+    </Vote>
     
 
 
     <!-- http://ns.softwiki.de/req/usability -->
 
-    <QualityRequirement rdf:about="usability">
+    <owl:Thing rdf:about="usability">
+        <rdf:type rdf:resource="QualityRequirement"/>
+        <rdfs:label>Usability</rdfs:label>
         <isLeadingTo rdf:resource="Pflichtenheft"/>
-    </QualityRequirement>
+    </owl:Thing>
     
 
 
     <!-- http://ns.softwiki.de/req/use_cases -->
 
     <Document rdf:about="use_cases">
+        <rdf:type rdf:resource="&owl;Thing"/>
+        <rdfs:label>Use Cases</rdfs:label>
         <leadsTo rdf:resource="TextualScenario3"/>
     </Document>
     
@@ -1885,35 +2212,40 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/very_important -->
 
-    <Vote rdf:about="very_important"/>
+    <owl:Thing rdf:about="very_important">
+        <rdf:type rdf:resource="Vote"/>
+        <rdfs:label>Very Important</rdfs:label>
+    </owl:Thing>
     
 
 
     <!-- http://www.holygoat.co.uk/foaf.rdf#RichardNewman -->
 
-    <Author rdf:about="&foaf;RichardNewman">
+    <owl:Thing rdf:about="&foaf;RichardNewman">
+        <rdf:type rdf:resource="Author"/>
+        <rdfs:label>Richard Newman</rdfs:label>
         <defines rdf:resource="DataBaseBackupCreatedSyncron"/>
         <votes rdf:resource="SearchShouldBeDoneIn3Sec"/>
-    </Author>
+    </owl:Thing>
     
 
 
     <!-- http://www.w3.org/2001/XMLSchema#boolean -->
 
-    <rdf:Description rdf:about="&xsd;boolean">
+    <owl:Thing rdf:about="&xsd;boolean">
         <rdfs:label rdf:datatype="&xsd;string">boolean</rdfs:label>
-    </rdf:Description>
+    </owl:Thing>
     
 
 
     <!-- http://www.w3.org/2001/XMLSchema#dateTime -->
 
-    <rdf:Description rdf:about="&xsd;dateTime">
+    <owl:Thing rdf:about="&xsd;dateTime">
         <rdfs:label rdf:datatype="&xsd;string">dateTime</rdfs:label>
-    </rdf:Description>
+    </owl:Thing>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 2.2.1.962) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
 
