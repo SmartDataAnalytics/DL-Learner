@@ -51,11 +51,15 @@ public class Individual implements Entity, NamedKBElement, Comparable<Individual
 	}
 
 	public int compareTo(Individual o) {
+//		System.out.println(o);
 		return name.compareTo(o.name);
 	}
     
 	@Override
 	public boolean equals(Object o) {
+		if(o==null) {
+			return false;
+		}
 		return (compareTo((Individual)o)==0);
 	}
 	

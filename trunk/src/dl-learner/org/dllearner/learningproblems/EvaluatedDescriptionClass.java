@@ -26,6 +26,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owl.model.OWLDescription;
@@ -114,8 +115,8 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
 			object.put("scoreValue", score.getAccuracy());	
-			object.put("additionalInstances", getAdditionalInstances());
-			object.put("coveredInstances", getCoveredInstances());
+			object.put("additionalInstances", new JSONArray(getAdditionalInstances()));
+			object.put("coveredInstances", new JSONArray(getCoveredInstances()));
 			object.put("isConsistent", isConsistent());
 			object.put("coverage", getCoverage());
 			object.put("addition", getAddition());

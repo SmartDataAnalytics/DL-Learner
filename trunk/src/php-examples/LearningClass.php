@@ -48,6 +48,7 @@ $lp = $client->setLearningProblem($id, "classLearning");
 $client->applyConfigEntryURL($id, $lp, "classToDescribe", "http://ns.softwiki.de/req/CustomerRequirement");
 
 $la_id = $client->setLearningAlgorithm($id, "celoe");
+$client->applyConfigEntryInt($id, $la_id, "maxExecutionTimeInSeconds", 5);
 
 $client->initAll($id);
 
