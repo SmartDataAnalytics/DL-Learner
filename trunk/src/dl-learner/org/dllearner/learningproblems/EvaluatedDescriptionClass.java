@@ -105,6 +105,7 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 	 * descriptions by transforming them to a JSON string.
 	 * @return A JSON representation of an evaluated description.
 	 */
+	@Override
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
