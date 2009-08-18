@@ -3,6 +3,9 @@ package org.dllearner.tools.ore.ui.wizard.panels;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.util.List;
 
@@ -16,7 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ExplanationManager;
@@ -43,9 +49,14 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	private JComponent explanationsPanel;
 	private JPanel buttonExplanationsPanel;
 	private JPanel buttonPanel;
+	
 	private ButtonGroup explanationType;
 	private JRadioButton regularButton;
 	private JRadioButton laconicButton;
+	private JRadioButton mostRelevantButton;
+	private JRadioButton computeAllExplanationsRadioButton;
+    private  JRadioButton computeMaxExplanationsRadioButton;
+	private JSpinner maxExplanationsSelector;
 
 	private UnsatClassesListCellRenderer listRenderer;
 
@@ -84,25 +95,64 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsScrollPane.getViewport().setOpaque(false);
 		explanationsScrollPane.getViewport().setBackground(null);
 		explanationsScrollPane.setOpaque(false);
-
-		regularButton = new JRadioButton("regular", true);
-		regularButton.setActionCommand("regular");
 		
-		laconicButton = new JRadioButton("laconic");
+		
+		
+		
+		GridBagLayout layout = new GridBagLayout();
+		buttonPanel = new JPanel();
+		buttonPanel.setLayout(layout);
+		
+		regularButton = new JRadioButton("show regular explanations", true);
+		regularButton.setActionCommand("regular");
+		regularButton.setSelected(true);
+		laconicButton = new JRadioButton("show precise explanations");
 		laconicButton.setActionCommand("laconic");
+		
+		mostRelevantButton = new JRadioButton("show most relevant explanations");
+		mostRelevantButton.setActionCommand("relevant");
 		
 		explanationType = new ButtonGroup();
 		explanationType.add(regularButton);
 		explanationType.add(laconicButton);
-		buttonPanel = new JPanel();
-		buttonPanel.add(regularButton);
-		buttonPanel.add(laconicButton);
+		
+		buttonPanel.add(regularButton, new GridBagConstraints(0, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 2, 30), 0, 0));
+		buttonPanel.add(laconicButton, new GridBagConstraints(0, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 30), 0, 0));
+		
+		JPanel buttonPanelHolder = new JPanel(new BorderLayout());
+		buttonPanelHolder.add(buttonPanel, "West");
+		
+		maxExplanationsSelector = new JSpinner();
+		maxExplanationsSelector.setEnabled(true);
+	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
+	    maxExplanationsSelector.setModel(spinnerModel);
+	    
+	    computeAllExplanationsRadioButton = new JRadioButton("compute all explanations");
+	    computeAllExplanationsRadioButton.setActionCommand("all");
+	    
+	        
+	    computeMaxExplanationsRadioButton = new JRadioButton("limit explanation count to:");
+	    computeMaxExplanationsRadioButton.setActionCommand("max");
+	    computeMaxExplanationsRadioButton.setSelected(true);
+	    
+	    ButtonGroup limitButtonGroup = new ButtonGroup();
+	    limitButtonGroup.add(computeAllExplanationsRadioButton);
+	    limitButtonGroup.add(computeMaxExplanationsRadioButton);
+	       
+	        buttonPanel.add(computeAllExplanationsRadioButton, new GridBagConstraints(1, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
+	        buttonPanel.add(computeMaxExplanationsRadioButton, new GridBagConstraints(1, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
+	        
+	       
+	        buttonPanel.add(maxExplanationsSelector, new GridBagConstraints(3, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
+	        maxExplanationsSelector.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+	       
+	        
 
 		buttonExplanationsPanel = new JPanel();
 		buttonExplanationsPanel.setLayout(new BorderLayout());
 		buttonExplanationsPanel
 				.add(explanationsScrollPane, BorderLayout.CENTER);
-		buttonExplanationsPanel.add(buttonPanel, BorderLayout.NORTH);
+		buttonExplanationsPanel.add(buttonPanelHolder, BorderLayout.NORTH);
 
 		statsSplitPane = new JSplitPane(0);
 		statsSplitPane.setResizeWeight(1.0D);
@@ -168,14 +218,28 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsPanel.add(Box.createVerticalStrut(10));
 		this.updateUI();
 	}
+	
+	public void setMaxExplanationsMode(boolean value){
+		
+		maxExplanationsSelector.setEnabled(value);
+		
+		
+	}
 
 	public void addActionListeners(ActionListener aL) {
 		regularButton.addActionListener(aL);
 		laconicButton.addActionListener(aL);
+		computeAllExplanationsRadioButton.addActionListener(aL);
+		computeMaxExplanationsRadioButton.addActionListener(aL);
+		
 	}
 	
 	public void addListSelectionListener(ListSelectionListener l){
 		unsatList.addListSelectionListener(l);
+	}
+	
+	public void addChangeListener(ChangeListener cL){
+		maxExplanationsSelector.addChangeListener(cL);
 	}
 
 	

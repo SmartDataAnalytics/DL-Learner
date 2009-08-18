@@ -36,6 +36,7 @@ import javax.swing.event.ListSelectionListener;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.ColumnListCellRenderer;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
@@ -102,7 +103,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //		Description de = new NamedClass("http://example.com/father#male");
 		
 		if (!e.getValueIsAdjusting()){
-			getWizardModel().getOre().setNewClassDescription(((EvaluatedDescriptionClass) (learnPanel.getResultList().getSelectedValue()))); 					
+			OREManager.getInstance().setNewClassDescription(((EvaluatedDescriptionClass) (learnPanel.getResultList().getSelectedValue()))); 					
 		}
 		
 	}
@@ -188,11 +189,11 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@Override
 		public List<? extends EvaluatedDescription> doInBackground() {
 			
-			learnPanel.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
+//			learnPanel.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
 			learnPanel.getLoadingLabel().setBusy(true);
 			learnPanel.getStatusLabel().setText("Learning");
-			getWizardModel().getOre().setNoise(learnPanel.getNoise());
-			la = getWizardModel().getOre().getLa();
+//			OREManager.getInstance().setNoise(learnPanel.getNoise());
+			la = OREManager.getInstance().getLa();
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
 
@@ -211,7 +212,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				@Override
 				public void run() {
 					
-					getWizardModel().getOre().start();
+					OREManager.getInstance().start();
 				}
 				
 			});

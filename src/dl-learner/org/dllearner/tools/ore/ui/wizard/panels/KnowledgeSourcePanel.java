@@ -22,25 +22,22 @@ package org.dllearner.tools.ore.ui.wizard.panels;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.protege.editor.core.ui.util.LinkLabel;
+import org.dllearner.tools.ore.ui.LinkLabel;
+import org.dllearner.tools.ore.ui.MetricsPanel;
 
 /**
  * Wizard panel where radio buttons for choosing knowledge source type, button for browsing
@@ -66,6 +63,13 @@ public class KnowledgeSourcePanel extends JPanel{
 	private JRadioButton owl;
 	private JRadioButton sparql;
 	
+	private Box box;
+	private LinkLabel openFromFileLink;
+	private LinkLabel openFromURILink;
+	private LinkLabel loadFromSparqlEndpointLink;
+	private Box recentLinkBox;
+
+	
 	
 	public KnowledgeSourcePanel() {
 
@@ -73,115 +77,55 @@ public class KnowledgeSourcePanel extends JPanel{
 		contentPanel = getContentPanel();
 		
 		setLayout(new java.awt.BorderLayout());
+		setLayout(new GridLayout(1,2));
 		
-		add(contentPanel,BorderLayout.CENTER);
+		add(contentPanel);
 
 	}
 
 	private JPanel getContentPanel() {
 
-		JPanel contentPanel1 = new JPanel();
-		LinkLabel label = new LinkLabel("Choose OWL-File from URI", new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				openFileChooser();
-				
-			}
-			
-		});
-		JPanel buttonPanel = new JPanel();
-		ButtonGroup bg = new ButtonGroup();
-		Box box = Box.createVerticalBox();
-		owl = new JRadioButton("OWL", true);
-		sparql = new JRadioButton("SPARQL");
-		bg.add(owl);
-		bg.add(sparql);
-		box.add(owl);
-		box.add(sparql);
-		buttonPanel.add(box);
-		
-		JPanel owlPanel = new JPanel();
-		GroupLayout layout = new GroupLayout(owlPanel);
-		owlPanel.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		owlPanel.setBorder(new TitledBorder("OWL"));
-		owlMessage = new JLabel();
-		owlMessage.setText("enter or browse OWL file");
-		fileURL = new javax.swing.JTextField(60);
-		browseButton = new javax.swing.JButton("browse");
-		layout.setHorizontalGroup(layout.createSequentialGroup()
-			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-			         .addComponent(fileURL)
-			         .addComponent(owlMessage))
-			    .addComponent(browseButton));
-		layout.linkSize(SwingConstants.HORIZONTAL, fileURL, owlMessage);
-
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				        .addComponent(fileURL)
-				        .addComponent(browseButton))
-      
-			    .addComponent(owlMessage));
-		
-		
-		JPanel sparqlPanel = new JPanel();
-		GroupLayout sparqlLayout = new GroupLayout(sparqlPanel);
-		sparqlPanel.setLayout(sparqlLayout);
-		sparqlLayout.setAutoCreateGaps(true);
-		sparqlLayout.setAutoCreateContainerGaps(true);
-		sparqlPanel.setBorder(new TitledBorder("SPARQL"));
-		sparqlMessage = new JLabel();
-		sparqlMessage.setText("enter SPARQL-URL and press connect");
-		sparqlMessage.setVisible(false);
-		sparqlURL = new JTextField(60);
-		sparqlURL.setEnabled(false);
-		
-//		Vector<URL> model = new Vector<URL>();
-//		for(SparqlEndpoint e : SparqlEndpoint.listEndpoints())
-//			model.add(e.getURL());
-//		sparqlBox = new JComboBox(model);
-//		sparqlBox.setEditable(false);
-//		sparqlBox.setSelectedIndex(-1);
-//		sparqlBox.setEnabled(false);
-//		sparqlPanel.add(sparqlURL);
-		connectButton = new javax.swing.JButton("connect");
-		sparqlLayout.setHorizontalGroup(sparqlLayout.createSequentialGroup()
-			    .addGroup(sparqlLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-			         .addComponent(sparqlURL)
-			         .addComponent(sparqlMessage))
-			    .addComponent(connectButton));
-		sparqlLayout.linkSize(SwingConstants.HORIZONTAL, sparqlURL, sparqlMessage);
-
-		sparqlLayout.setVerticalGroup(sparqlLayout.createSequentialGroup()
-				.addGroup(sparqlLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				        .addComponent(sparqlURL)
-				        .addComponent(connectButton))
-      
-			    .addComponent(sparqlMessage));
-		
-		
-		contentPanel1.setLayout(new GridLayout(0, 1));
-		contentPanel1.add(buttonPanel);
-		contentPanel1.add(owlPanel);
-		contentPanel1.add(sparqlPanel);
-		contentPanel1.add(label);
 	
-		
+		JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+       
+        int strutHeight = 10;
 
-		return contentPanel1;
+       
+        box = new Box(BoxLayout.Y_AXIS);
+        box.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 0));
+        panel.add(box);
+        openFromFileLink = new LinkLabel("Open OWL-Ontology from filesystem");
+        openFromFileLink.setName("openFromFileLink");
+        box.add(openFromFileLink);
+        box.add(Box.createVerticalStrut(strutHeight));
+        openFromURILink = new LinkLabel("Open OWL-Ontology from URI");
+        openFromURILink.setName("openFromURILink");
+        box.add(openFromURILink);
+        box.add(Box.createVerticalStrut(strutHeight));
+        loadFromSparqlEndpointLink = new LinkLabel("Open OWL-Ontology from Sparql-Endpoint");
+        loadFromSparqlEndpointLink.setName("loadFromSparqlEndpointLink");
+        box.add(loadFromSparqlEndpointLink);
+        panel.add(box);
+        
+        box.add(Box.createVerticalStrut(2 * strutHeight));
+      
+
+		return panel;
 	}
 	
-	public void addListeners(ActionListener l, DocumentListener d) {
-		browseButton.addActionListener(l);
-		fileURL.addActionListener(l);
-		sparqlURL.addActionListener(l);
-		connectButton.addActionListener(l);
-		owl.addActionListener(l);
-		sparql.addActionListener(l);
-		fileURL.getDocument().addDocumentListener(d);
+	private void addMetricsPanel(MetricsPanel metrics){
+		add(metrics);
+	}
+	
+	public void addListeners(ActionListener aL) {
+		openFromFileLink.addLinkListener(aL);
+		openFromURILink.addLinkListener(aL);
+		loadFromSparqlEndpointLink.addLinkListener(aL);
+		
     }
+
+	
 	
 	
 	
@@ -189,10 +133,10 @@ public class KnowledgeSourcePanel extends JPanel{
 		JFileChooser filechooser = new JFileChooser();
 		
 		filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		String choosenPath = fileURL.getText();
-		if(!choosenPath.equals("") && (new File(choosenPath)).exists()){
-			filechooser.setCurrentDirectory(new File(fileURL.getText()));
-		}
+//		String choosenPath = fileURL.getText();
+//		if(!choosenPath.equals("") && (new File(choosenPath)).exists()){
+//			filechooser.setCurrentDirectory(new File(fileURL.getText()));
+//		}
 	
 		filechooser.addChoosableFileFilter(new FileFilter() {
 		    @Override
@@ -252,7 +196,7 @@ public class KnowledgeSourcePanel extends JPanel{
 	}
 	
 	public void setFileURL(String fileURL){
-		this.fileURL.setText(fileURL);
+//		this.fileURL.setText(fileURL);
 	}
 	
 	public void setOWLMode(){

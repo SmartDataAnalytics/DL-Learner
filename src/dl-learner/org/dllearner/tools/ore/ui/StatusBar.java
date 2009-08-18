@@ -3,6 +3,7 @@ package org.dllearner.tools.ore.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -13,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
 
@@ -22,11 +24,16 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 	 */
 	private static final long serialVersionUID = 1L;
 	private JLabel infoLabel;
-	private JProgressBar progress;
+	private JProgressBar progressBar;
+	private int		progress		= 0;
+	private int		progressLength	= 0;
+	private int		progressPercent	= -1;
+	private String progressMessage;
 
 	public StatusBar() {
 		infoLabel = new JLabel("");
-		progress = new JProgressBar();
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(10, 23));
 
@@ -35,7 +42,7 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 				BorderLayout.SOUTH);
 		rightPanel.setOpaque(false);
 		JPanel leftPanel = new JPanel(new FlowLayout());
-		leftPanel.add(progress);
+		leftPanel.add(progressBar);
 		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
 		leftPanel.add(infoLabel);
 		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
@@ -50,7 +57,7 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 	}
 
 	public void showProgress(boolean b) {
-		progress.setIndeterminate(b);
+		progressBar.setIndeterminate(b);
 	}
 
 	protected void paintComponent(Graphics g) {
@@ -83,62 +90,94 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 
 	@Override
 	public int getProgress() {
-		// TODO Auto-generated method stub
-		return 0;
+		return progress;
 	}
 
 	@Override
 	public int getProgressPercent() {
-		// TODO Auto-generated method stub
-		return 0;
+		return progressPercent;
 	}
 
 	@Override
 	public void incrementProgress() {
-		// TODO Auto-generated method stub
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				setProgress(progress + 1);
+				
+			}
+		});
 		
 	}
 
 	@Override
 	public boolean isCanceled() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void setProgress(int arg0) {
-		// TODO Auto-generated method stub
+	public void setProgress(int progress) {
+		this.progress = progress;
+		updateProgress();
 		
 	}
 
 	@Override
-	public void setProgressLength(int arg0) {
-		// TODO Auto-generated method stub
+	public void setProgressLength(int length) {
+		progressLength = length;
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				progressBar.setMaximum(progressLength);
+				
+			}
+		});
+		
+	
+		
+		
 		
 	}
 
 	@Override
-	public void setProgressMessage(String arg0) {
-		// TODO Auto-generated method stub
+	public void setProgressMessage(String message) {
+		progressMessage = message;
+		infoLabel.setText(message);
+		
 		
 	}
 
 	@Override
-	public void setProgressTitle(String arg0) {
-		// TODO Auto-generated method stub
+	public void setProgressTitle(String title) {
+		infoLabel.setText(title);
 		
 	}
 
 	@Override
 	public void taskFinished() {
-		// TODO Auto-generated method stub
+		setCursor(null);
 		
 	}
 
 	@Override
 	public void taskStarted() {
-		// TODO Auto-generated method stub
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
+	}
+	
+	private void updateProgress(){
+		SwingUtilities.invokeLater(new Runnable(){
+
+			@Override
+			public void run() {
+				progressBar.setValue(progress);
+				
+				
+			}
+			
+		});
 	}
 	
 	

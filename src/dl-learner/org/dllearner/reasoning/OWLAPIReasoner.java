@@ -70,6 +70,7 @@ import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
 import org.mindswap.pellet.PelletOptions;
+import org.mindswap.pellet.PelletOptions.MonitorType;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
@@ -298,7 +299,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			manager.addOntologyChangeListener((org.mindswap.pellet.owlapi.Reasoner)reasoner);
 			
 			//set classification output to "none", while default is "console"
-			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.valueOf("NONE");
+			PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.CONSOLE;
 			// change log level to WARN for Pellet, because otherwise log
 			// output will be very large
 			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");

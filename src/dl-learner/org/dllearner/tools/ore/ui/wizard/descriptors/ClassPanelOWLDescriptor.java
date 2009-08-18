@@ -23,6 +23,7 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 import javax.swing.event.ListSelectionEvent;
 
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.ClassPanelOWL;
 
@@ -83,7 +84,7 @@ public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements ja
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting()) {
-			 getWizardModel().getOre().setClassToLearn((NamedClass) owlClassPanel.getList().getSelectedValue());
+			 OREManager.getInstance().setCurrentClass2Learn((NamedClass) owlClassPanel.getList().getSelectedValue());
 		}
 	}
 	

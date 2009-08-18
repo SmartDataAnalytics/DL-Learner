@@ -32,7 +32,7 @@ import javax.swing.border.BevelBorder;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
 
 /**
@@ -47,28 +47,27 @@ public class DescriptionPanel extends JPanel{
 	 */
 	private static final long serialVersionUID = -3684937339236885595L;
 	
-	private ORE ore;
+	
 	private Individual ind;
 	private ActionListener aL;
 	private String mode;
 	private boolean correct = false;
 	private Description newClassDescription;
 	
-	public DescriptionPanel(ORE ore, Individual ind, ActionListener aL, String mode){
+	public DescriptionPanel(Individual ind, ActionListener aL, String mode){
 		super();
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		this.ore = ore;
-		this.newClassDescription = ore.getNewClassDescription().getDescription();
+		this.newClassDescription = OREManager.getInstance().getNewClassDescription().getDescription();
 		this.ind = ind;
 		this.aL = aL;
 		this.mode = mode;
 		if(mode.equals("neg")){
-			for(JLabel jL : ore.descriptionToJLabelNeg(ind, newClassDescription)){
+			for(JLabel jL : OREManager.getInstance().descriptionToJLabelNeg(ind, newClassDescription)){
 				add(jL);
 				if(jL instanceof DescriptionLabel){
 					
-					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).setIndOre(ind);
 					((DescriptionLabel) jL).init();
 					((DescriptionLabel) jL).addActionListeners(aL);
 					
@@ -76,11 +75,11 @@ public class DescriptionPanel extends JPanel{
 				
 			}
 		} else if(mode.equals("pos")){
-			for(JLabel jL : ore.descriptionToJLabelPos(ind, newClassDescription)){
+			for(JLabel jL : OREManager.getInstance().descriptionToJLabelPos(ind, newClassDescription)){
 				add(jL);
 				if(jL instanceof DescriptionLabel){
 					
-					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).setIndOre(ind);
 					((DescriptionLabel) jL).init();
 					((DescriptionLabel) jL).addActionListeners(aL);
 					
@@ -102,10 +101,10 @@ public class DescriptionPanel extends JPanel{
 //		ore.updateReasoner();
 		correct = true;
 		if (mode.equals("neg")) {
-			for (JLabel jL : ore.descriptionToJLabelNeg(ind, newClassDescription)) {
+			for (JLabel jL : OREManager.getInstance().descriptionToJLabelNeg(ind, newClassDescription)) {
 				add(jL);
 				if (jL instanceof DescriptionLabel) {
-					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).setIndOre(ind);
 					((DescriptionLabel) jL).init();
 					((DescriptionLabel) jL).addActionListeners(aL);
 					correct = false;
@@ -113,10 +112,10 @@ public class DescriptionPanel extends JPanel{
 				}
 			}
 		} else if(mode.equals("pos")){
-			for (JLabel jL : ore.descriptionToJLabelPos(ind, newClassDescription)) {
+			for (JLabel jL : OREManager.getInstance().descriptionToJLabelPos(ind, newClassDescription)) {
 				add(jL);
 				if (jL instanceof DescriptionLabel) {
-					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).setIndOre(ind);
 					((DescriptionLabel) jL).init();
 					((DescriptionLabel) jL).addActionListeners(aL);
 					correct = false;

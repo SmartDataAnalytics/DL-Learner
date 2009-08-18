@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -22,26 +23,45 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.Configurator;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.configurators.PelletReasonerConfigurator;
+import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DoubleMaxValue;
+import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyExpression;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
+import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
@@ -51,7 +71,6 @@ import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.SetUtils;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -90,6 +109,10 @@ public class PelletReasoner extends ReasonerComponent {
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
 	
+	private PelletReasonerConfigurator configurator;
+	
+
+	
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
 	
@@ -99,7 +122,27 @@ public class PelletReasoner extends ReasonerComponent {
 	SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	SortedSet<Individual> individuals = new TreeSet<Individual>();	
+	TreeSet<Individual> individuals = new TreeSet<Individual>();	
+	
+	
+	//CWA
+	// we use sorted sets (map indices) here, because they have only log(n)
+	// complexity for checking whether an element is contained in them
+	// instances of classes
+	private Map<NamedClass, TreeSet<Individual>> classInstancesPos = new TreeMap<NamedClass, TreeSet<Individual>>();
+	private Map<NamedClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, TreeSet<Individual>>();
+	// object property mappings
+	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
+	// datatype property mappings
+	// we have one mapping for true and false for efficiency reasons
+	private Map<DatatypeProperty, TreeSet<Individual>> bdPos = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
+	private Map<DatatypeProperty, TreeSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
+	// for int and double we assume that a property can have several values,
+	// althoug this should be rare,
+	// e.g. hasValue(object,2) and hasValue(object,3)
+	private Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
+	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
+	
 	
 	// namespaces
 	private Map<String, String> prefixes = new TreeMap<String,String>();
@@ -110,7 +153,7 @@ public class PelletReasoner extends ReasonerComponent {
 
 	public PelletReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
-		// TODO Auto-generated constructor stub
+		this.configurator = new PelletReasonerConfigurator(this);
 	}
 	
 	public void loadOntologies() {
@@ -239,6 +282,56 @@ public class PelletReasoner extends ReasonerComponent {
 			}
 		}
 		reasoner.loadOntologies(allImports);
+		dematerialise();
+	}
+	
+	private void dematerialise(){
+		long dematStartTime = System.currentTimeMillis();
+
+		logger.debug("dematerialising concepts");
+
+		for (NamedClass atomicConcept : atomicConcepts) {
+
+			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
+			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
+
+			if (configurator.getDefaultNegation()) {
+				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+			} else {
+				// Pellet needs approximately infinite time to answer
+				// negated queries
+				// on the carcinogenesis data set (and probably others), so
+				// we have to
+				// be careful here
+				Negation negatedAtomicConcept = new Negation(atomicConcept);
+				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) getIndividuals(negatedAtomicConcept));
+			}
+
+		}
+
+		logger.debug("dematerialising object properties");
+
+		for (ObjectProperty atomicRole : atomicRoles) {
+			opPos.put(atomicRole, getPropertyMembers(atomicRole));
+		}
+
+		logger.debug("dematerialising datatype properties");
+
+		for (DatatypeProperty dp : booleanDatatypeProperties) {
+			bdPos.put(dp, (TreeSet<Individual>) getTrueDatatypeMembers(dp));
+			bdNeg.put(dp, (TreeSet<Individual>) getFalseDatatypeMembers(dp));
+		}
+
+		for (DatatypeProperty dp : intDatatypeProperties) {
+			id.put(dp, getIntDatatypeMembers(dp));
+		}
+
+		for (DatatypeProperty dp : doubleDatatypeProperties) {
+			dd.put(dp, getDoubleDatatypeMembers(dp));
+		}
+
+		long dematDuration = System.currentTimeMillis() - dematStartTime;
+		logger.debug("TBox dematerialised in " + dematDuration + " ms");
 	}
 	
 	public boolean isConsistent(){
@@ -265,9 +358,19 @@ public class PelletReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public Configurator getConfigurator() {
-		// TODO Auto-generated method stub
-		return null;
+	public PelletReasonerConfigurator getConfigurator() {
+		return configurator;
+	}
+	
+	/**
+	 * @return The options of this component.
+	 */
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		
+		options.add(new BooleanConfigOption("defaultNegation", "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", true, false, true));
+		
+		return options;
 	}
 	
 	public OWLOntologyManager getOWLOntologyManager(){
@@ -290,7 +393,7 @@ public class PelletReasoner extends ReasonerComponent {
 		manager = OWLManager.createOWLOntologyManager();
 		factory = manager.getOWLDataFactory();
 		//set classification output to "none", while default is "console"
-		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.CONSOLE;
+		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.SWING;
 		// change log level to WARN for Pellet, because otherwise log
 		// output will be very large
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
@@ -302,6 +405,10 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	public void classify(){
 		reasoner.classify();
+	}
+	
+	public void refresh(){
+		reasoner.refresh();
 	}
 	
 	public void addProgressMonitor(ProgressMonitor monitor){
@@ -419,20 +526,246 @@ public class PelletReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
-	public boolean hasTypeImpl(Description concept, Individual individual) {
-		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
-		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
-		try {
-			return reasoner.hasType(i,d,false);
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-			throw new Error("Instance check error in OWL API.");
+	public boolean hasTypeImpl(Description description, Individual individual) throws ReasoningMethodUnsupportedException {
+//		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
+//		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
+//		try {
+//			return reasoner.hasType(i,d,false);
+//		} catch (OWLReasonerException e) {
+//			e.printStackTrace();
+//			throw new Error("Instance check error in OWL API.");
+//		}
+		if (description instanceof NamedClass) {
+			return classInstancesPos.get((NamedClass) description).contains(individual);
+		} else if (description instanceof Negation) {
+			Description child = description.getChild(0);
+			if (child instanceof NamedClass) {
+				return classInstancesNeg.get((NamedClass) child).contains(individual);
+			} else {
+				// default negation
+				if(configurator.getDefaultNegation()) {
+					return !hasTypeImpl(child, individual);
+				} else {
+					logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");
+					Description nnf = ConceptTransformation.transformToNegationNormalForm(child);
+					return hasTypeImpl(nnf, individual);					
+				}
+//				throw new ReasoningMethodUnsupportedException("Instance check for description "
+//						+ description
+//						+ " unsupported. Description needs to be in negation normal form.");
+			}
+		} else if (description instanceof Thing) {
+			return true;
+		} else if (description instanceof Nothing) {
+			return false;
+		} else if (description instanceof Union) {
+			// if the individual is instance of any of the subdescription of
+			// the union, we return true
+			List<Description> children = description.getChildren();
+			for (Description child : children) {
+				if (hasTypeImpl(child, individual)) {
+					return true;
+				}
+			}
+			return false;
+		} else if (description instanceof Intersection) {
+			// if the individual is instance of all of the subdescription of
+			// the union, we return true
+			List<Description> children = description.getChildren();
+			for (Description child : children) {
+				if (!hasTypeImpl(child, individual)) {
+					return false;
+				}
+			}
+			return true;
+		} else if (description instanceof ObjectSomeRestriction) {
+			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return false;
+			}
+			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			if (roleFillers == null) {
+				return false;
+			}
+			for (Individual roleFiller : roleFillers) {
+				if (hasTypeImpl(child, roleFiller)) {
+					return true;
+				}
+			}
+			return false;
+		} else if (description instanceof ObjectAllRestriction) {
+			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return true;
+			}
+			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			if (roleFillers == null) {
+				return true;
+			}
+			for (Individual roleFiller : roleFillers) {
+				if (!hasTypeImpl(child, roleFiller)) {
+					return false;
+				}
+			}
+			return true;
+		} else if (description instanceof ObjectMinCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return true;
+			}
+
+			int number = ((ObjectCardinalityRestriction) description).getNumber();
+			int nrOfFillers = 0;
+
+//			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			SortedSet<Individual> roleFillers = mapping.get(individual);
+//			System.out.println(roleFillers);
+			
+			// special case: there are always at least zero fillers
+			if (number == 0) {
+				return true;
+			}
+			// return false if there are none or not enough role fillers
+			if (roleFillers == null || roleFillers.size() < number) {
+				return false;
+			}
+
+			int index = 0;
+			for (Individual roleFiller : roleFillers) {
+				index++;
+				if (hasTypeImpl(child, roleFiller)) {
+					nrOfFillers++;
+					if (nrOfFillers == number) {
+						return true;
+					}
+					// early abort: e.g. >= 10 hasStructure.Methyl;
+					// if there are 11 fillers and 2 are not Methyl, the result
+					// is false
+				} else {
+					if (roleFillers.size() - index < number) {
+						return false;
+					}
+				}
+			}
+			return false;
+		} else if (description instanceof ObjectMaxCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return true;
+			}
+
+			int number = ((ObjectCardinalityRestriction) description).getNumber();
+			int nrOfFillers = 0;
+
+			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			// return true if there are none or not enough role fillers
+			if (roleFillers == null || roleFillers.size() < number) {
+				return true;
+			}
+
+			int index = 0;
+			for (Individual roleFiller : roleFillers) {
+				index++;
+				if (hasTypeImpl(child, roleFiller)) {
+					nrOfFillers++;
+					if (nrOfFillers > number) {
+						return false;
+					}
+					// early abort: e.g. <= 5 hasStructure.Methyl;
+					// if there are 6 fillers and 2 are not Methyl, the result
+					// is true
+				} else {
+					if (roleFillers.size() - index <= number) {
+						return true;
+					}
+				}
+			}
+			return true;
+		} else if (description instanceof ObjectValueRestriction) {
+			Individual i = ((ObjectValueRestriction)description).getIndividual();
+			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+			
+			Set<Individual> inds = opPos.get(op).get(individual);
+			return inds == null ? false : inds.contains(i);
+		} else if (description instanceof BooleanValueRestriction) {
+			DatatypeProperty dp = ((BooleanValueRestriction) description)
+					.getRestrictedPropertyExpresssion();
+			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+
+			if (value) {
+				// check whether the individual is in the set of individuals
+				// mapped
+				// to true by this datatype property
+				return bdPos.get(dp).contains(individual);
+			} else {
+				return bdNeg.get(dp).contains(individual);
+			}
+		} else if (description instanceof DatatypeSomeRestriction) {
+			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
+			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DataRange dr = dsr.getDataRange();
+			SortedSet<Double> values = dd.get(dp).get(individual);
+
+			// if there is no filler for this individual and property we
+			// need to return false
+			if (values == null) {
+				return false;
+			}
+
+			if (dr instanceof DoubleMaxValue) {
+				return (values.first() <= ((DoubleMaxValue) dr).getValue());
+			} else if (dr instanceof DoubleMinValue) {
+				return (values.last() >= ((DoubleMinValue) dr).getValue());
+			}
 		}
+
+		throw new ReasoningMethodUnsupportedException("Instance check for description "
+				+ description + " unsupported.");
+	
 	}
 	
-	@Override
-	public SortedSet<Individual> getIndividualsImpl(Description concept) {
-//		OWLDescription d = getOWLAPIDescription(concept);
+	private SortedSet<Individual> getIndividualsWithPellet(Description concept){
+
 		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
 		Set<OWLIndividual> individuals = null;
 		
@@ -443,6 +776,285 @@ public class PelletReasoner extends ReasonerComponent {
 			inds.add(new Individual(ind.getURI().toString()));
 		return inds;
 	}
+	
+	@Override
+	public SortedSet<Individual> getIndividualsImpl(Description concept)  throws ReasoningMethodUnsupportedException{
+//
+//		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
+//		Set<OWLIndividual> individuals = null;
+//		
+//		individuals = reasoner.getIndividuals(d, false);
+//		
+//		SortedSet<Individual> inds = new TreeSet<Individual>();
+//		for(OWLIndividual ind : individuals)
+//			inds.add(new Individual(ind.getURI().toString()));
+//		return inds;
+		return getIndividualsImplFast(concept);
+	}
+	
+	public SortedSet<Individual> getIndividualsImplStandard(Description concept)
+	throws ReasoningMethodUnsupportedException {
+	if (concept instanceof NamedClass) {
+ 		return classInstancesPos.get((NamedClass) concept);
+ 	} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
+ 		return classInstancesNeg.get((NamedClass) concept.getChild(0));
+ 	}
+ 
+ 	// return rs.retrieval(concept);
+ 	SortedSet<Individual> inds = new TreeSet<Individual>();
+ 	for (Individual i : individuals) {
+ 		if (hasType(concept, i)) {
+ 			inds.add(i);
+ 		}
+ 	}
+	return inds;
+}
+
+@SuppressWarnings("unchecked")
+public SortedSet<Individual> getIndividualsImplFast(Description description)
+		throws ReasoningMethodUnsupportedException {
+	// policy: returned sets are clones, i.e. can be modified
+	// (of course we only have to clone the leafs of a class description tree)
+	if (description instanceof NamedClass) {
+		return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
+	} else if (description instanceof Negation) {
+		if(description.getChild(0) instanceof NamedClass) {
+			return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
+		}
+		// implement retrieval as default negation
+		return Helper.difference((TreeSet<Individual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
+	} else if (description instanceof Thing) {
+		return (TreeSet<Individual>) individuals.clone();
+	} else if (description instanceof Nothing) {
+		return new TreeSet<Individual>();
+	} else if (description instanceof Union) {
+		// copy instances of first element and then subtract all others
+		SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+		int childNr = 0;
+		for(Description child : description.getChildren()) {
+			if(childNr != 0) {
+				ret.addAll(getIndividualsImpl(child));
+			}
+			childNr++;
+		}
+		return ret;
+	} else if (description instanceof Intersection) {
+		// copy instances of first element and then subtract all others
+		SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+		int childNr = 0;
+		for(Description child : description.getChildren()) {
+			if(childNr != 0) {
+				ret.retainAll(getIndividualsImpl(child));
+			}
+			childNr++;
+		}
+		return ret;
+	} else if (description instanceof ObjectSomeRestriction) {
+		SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
+		
+		ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
+		if (!(ope instanceof ObjectProperty)) {
+			throw new ReasoningMethodUnsupportedException("Retrieval for description "
+					+ description + " unsupported. Inverse object properties not supported.");
+		}
+		ObjectProperty op = (ObjectProperty) ope;
+		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+		
+		// each individual is connected to a set of individuals via the property;
+		// we loop through the complete mapping
+		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			SortedSet<Individual> inds = entry.getValue();
+			for(Individual ind : inds) {
+				if(targetSet.contains(ind)) {
+					returnSet.add(entry.getKey());
+					// once we found an individual, we do not need to check the others
+					continue; 
+				}
+			}
+		}
+		return returnSet;
+	} else if (description instanceof ObjectAllRestriction) {
+		// \forall restrictions are difficult to handle; assume we want to check
+		// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
+		// this is satisfied trivially (all of their non-existing children are male)
+//		if(!configurator.getForallRetrievalSemantics().equals("standard")) {
+//			throw new Error("Only forallExists semantics currently implemented.");
+//		}
+		
+		// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
+		// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
+		// semantics)
+		
+		SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+					
+		ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
+		if (!(ope instanceof ObjectProperty)) {
+			throw new ReasoningMethodUnsupportedException("Instance check for description "
+					+ description + " unsupported. Inverse object properties not supported.");
+		}
+		ObjectProperty op = (ObjectProperty) ope;
+		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+//		SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
+		SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+		
+		// each individual is connected to a set of individuals via the property;
+		// we loop through the complete mapping
+		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			SortedSet<Individual> inds = entry.getValue();
+			for(Individual ind : inds) {
+				if(!targetSet.contains(ind)) {
+					returnSet.remove(entry.getKey());
+					continue; 
+				}
+			}
+		}
+		return returnSet;
+	} else if (description instanceof ObjectMinCardinalityRestriction) {
+		ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+		if (!(ope instanceof ObjectProperty)) {
+			throw new ReasoningMethodUnsupportedException("Instance check for description "
+					+ description + " unsupported. Inverse object properties not supported.");
+		}
+		ObjectProperty op = (ObjectProperty) ope;
+		Description child = description.getChild(0);
+		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+		SortedSet<Individual> targetSet = getIndividualsImpl(child);
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
+
+		int number = ((ObjectCardinalityRestriction) description).getNumber();			
+
+		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			int nrOfFillers = 0;
+			int index = 0;
+			SortedSet<Individual> inds = entry.getValue();
+			
+			// we do not need to run tests if there are not sufficiently many fillers
+			if(inds.size() < number) {
+				continue;
+			}
+			
+			for(Individual ind : inds) {
+				// stop inner loop when nr of fillers is reached
+				if(nrOfFillers >= number) {
+					returnSet.add(entry.getKey());
+					break;
+				}		
+				// early abort when too many instance checks failed
+				if (inds.size() - index < number) {
+					break;
+				}					
+				if(targetSet.contains(ind)) {
+					nrOfFillers++;
+				}
+				index++;
+			}
+		}			
+		
+		return returnSet;
+	} else if (description instanceof ObjectMaxCardinalityRestriction) {
+		ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+		if (!(ope instanceof ObjectProperty)) {
+			throw new ReasoningMethodUnsupportedException("Instance check for description "
+					+ description + " unsupported. Inverse object properties not supported.");
+		}
+		ObjectProperty op = (ObjectProperty) ope;
+		Description child = description.getChild(0);
+		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+		SortedSet<Individual> targetSet = getIndividualsImpl(child);
+		// initially all individuals are in the return set and we then remove those
+		// with too many fillers			
+		SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+
+		int number = ((ObjectCardinalityRestriction) description).getNumber();			
+
+		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			int nrOfFillers = 0;
+			int index = 0;
+			SortedSet<Individual> inds = entry.getValue();
+			
+			// we do not need to run tests if there are not sufficiently many fillers
+			if(number < inds.size()) {
+				returnSet.add(entry.getKey());
+				continue;
+			}
+			
+			for(Individual ind : inds) {
+				// stop inner loop when nr of fillers is reached
+				if(nrOfFillers >= number) {
+					break;
+				}		
+				// early abort when too many instance are true already
+				if (inds.size() - index < number) {
+					returnSet.add(entry.getKey());
+					break;
+				}					
+				if(targetSet.contains(ind)) {
+					nrOfFillers++;
+				}
+				index++;
+			}
+		}			
+		
+		return returnSet;
+	} else if (description instanceof ObjectValueRestriction) {
+		Individual i = ((ObjectValueRestriction)description).getIndividual();
+		ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+		
+		Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
+		
+		for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			if(entry.getValue().contains(i)) {
+				returnSet.add(entry.getKey());
+			}
+		}
+		return returnSet;
+	} else if (description instanceof BooleanValueRestriction) {
+		DatatypeProperty dp = ((BooleanValueRestriction) description)
+				.getRestrictedPropertyExpresssion();
+		boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+
+		if (value) {
+			return (TreeSet<Individual>) bdPos.get(dp).clone();
+		} else {
+			return (TreeSet<Individual>) bdNeg.get(dp).clone();
+		}
+	} else if (description instanceof DatatypeSomeRestriction) {
+		DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
+		DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+		DataRange dr = dsr.getDataRange();
+
+		Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();			
+
+		if (dr instanceof DoubleMaxValue) {
+			for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+				if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
+					returnSet.add(entry.getKey());
+				}
+			}				
+		} else if (dr instanceof DoubleMinValue) {
+			for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+				if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
+					returnSet.add(entry.getKey());
+				}
+			}
+		}
+	}
+		
+	throw new ReasoningMethodUnsupportedException("Retrieval for description "
+				+ description + " unsupported.");		
+		
+	// return rs.retrieval(concept);
+//	SortedSet<Individual> inds = new TreeSet<Individual>();
+//	for (Individual i : individuals) {
+//		if (hasType(concept, i)) {
+//			inds.add(i);
+//		}
+//	}
+//	return inds;
+}
 	
 	@Override
 	public Set<NamedClass> getTypesImpl(Individual individual) {
@@ -854,5 +1466,6 @@ public class PelletReasoner extends ReasonerComponent {
 	public Reasoner getReasoner() {
 		return reasoner;
 	}
+	
 
 }

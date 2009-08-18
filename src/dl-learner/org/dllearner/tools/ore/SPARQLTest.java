@@ -55,7 +55,9 @@ public class SPARQLTest {
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws MalformedURLException {
-		String exampleClass = "\"http://dbpedia.org/class/yago/LeadersOfPoliticalParties\"";
+		String exampleClass = "http://dbpedia.org/class/yago/LeadersOfPoliticalParties";
+		String exampleClassKBString = "\"" + exampleClass + "\"";
+		
 		ComponentManager cm = ComponentManager.getInstance();
 
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
@@ -79,7 +81,7 @@ public class SPARQLTest {
 		
 
 		AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(task);
-		pos.makePositiveExamplesFromConcept(exampleClass);
+		pos.makePositiveExamplesFromConcept(exampleClassKBString);
 		
 		SortedSet<String> allPosExamples = pos.getPosExamples();
 		SortedSet<String> posExamples = SetManipulation.stableShrink(allPosExamples, 20);
@@ -87,14 +89,14 @@ public class SPARQLTest {
 		System.out.println(posExamples);
 
 	
-		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(
-				posExamples, task, new TreeSet<String>());
-		neg.makeNegativeExamplesFromSuperClasses(exampleClass, 1000);
-		SortedSet<String> negExamples = neg.getNegativeExamples(20);
-		System.out.println(negExamples);
+//		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(
+//				posExamples, task, new TreeSet<String>());
+//		neg.makeNegativeExamplesFromSuperClasses(exampleClass, 1000);
+//		SortedSet<String> negExamples = neg.getNegativeExamples(20);
+//		System.out.println(negExamples);
 
 		SortedSet<String> instances = new TreeSet<String>(posExamples);
-		instances.addAll(negExamples);
+//		instances.addAll(negExamples);
 		
 		try {
 

@@ -112,7 +112,6 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 				}
 				bf.append("</html>");
 				newAxiom = bf.toString();
-				
 				setText(newAxiom);
 //				oldAxioms.add(buffer.toString());
 				buffer.getBuffer().delete(0, buffer.toString().length());

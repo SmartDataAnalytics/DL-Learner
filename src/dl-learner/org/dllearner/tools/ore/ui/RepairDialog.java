@@ -53,6 +53,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.wizard.panels.ChangePanel;
 import org.dllearner.tools.ore.ui.wizard.panels.ChangesPanel;
@@ -103,7 +104,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	private Map<String, String> prefixes;
 	
 	
-	public RepairDialog(Individual ind, JDialog dialog, final ORE ore, String mode){
+	public RepairDialog(Individual ind, JDialog dialog, String mode){
 		super(dialog, true);
 		final Component dialogd = this.getParent();
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -135,7 +136,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 
 		
 		this.ind = ind;
-		this.ore = ore;
+	
 		this.modifier = ore.getModifier();
 		this.mode = mode;
 		allChanges = new HashSet<OWLOntologyChange>();
@@ -147,8 +148,8 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	 * @return integer value
 	 */
 	public int showDialog(){
-		baseURI = ore.getBaseURI();
-		prefixes = ore.getPrefixes();
+		baseURI = OREManager.getInstance().getBaseURI();
+		prefixes = OREManager.getInstance().getPrefixes();
 		if(mode.equals("neg")){
 			this.setTitle("Repair negative example");
 		} else if(mode.equals("pos")){
@@ -157,7 +158,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		this.setSize(700, 700);
 		this.setLayout(new BorderLayout());
 		
-		descPanel = new DescriptionPanel(ore, ind, this, mode);		
+		descPanel = new DescriptionPanel(ind, this, mode);		
 		JScrollPane descScroll = new JScrollPane();
 		descScroll.setViewportView(descPanel);
 		

@@ -14,7 +14,7 @@ public class RepairTable extends JXTable {
 
 	public RepairTable(RepairManager manager){
 		super(new RepairTableModel(manager));
-	        
+		setBackground(Color.WHITE);
 	    setShowHorizontalLines(true);
 	    setGridColor(Color.LIGHT_GRAY);
 	    setTableHeader(null);

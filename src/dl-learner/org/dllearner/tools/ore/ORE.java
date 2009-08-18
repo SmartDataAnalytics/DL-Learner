@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,7 +50,6 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
-import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -72,7 +72,7 @@ public class ORE {
 	
 	private LearningAlgorithm la;
 	
-	private KnowledgeSource ks; 
+	private OWLFile ks; 
 	private LearningProblem lp;
 	private ComponentManager cm;
 	
@@ -110,14 +110,12 @@ public class ORE {
 		this.owlFile = f;
 
 		ks = cm.knowledgeSource(OWLFile.class);
-
 		try {
-			cm.applyConfigEntry(ks, "url", f.toURI().toURL());
-		} catch (MalformedURLException e1) {
+			ks.getConfigurator().setUrl(f.toURI().toURL());
+		} catch (MalformedURLException e2) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e2.printStackTrace();
 		}
-
 		
 		try {
 			ks.init();
@@ -128,6 +126,22 @@ public class ORE {
 
 	}
 	
+	public void setKnowledgeSourceFromURI(URI uri){
+		ks = cm.knowledgeSource(OWLFile.class);
+		try {
+			ks.getConfigurator().setUrl(uri.toURL());
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			ks.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void initPelletReasoner(){
 		pelletReasoner = cm.reasoner(PelletReasoner.class, ks);
 		try {
@@ -136,6 +150,10 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		pelletReasoner.loadOntologies();
+	}
+	
+	public void loadOntology(){
 		pelletReasoner.loadOntologies();
 	}
 	
@@ -541,21 +559,22 @@ public class ORE {
 	 * Update reasoners ontology.
 	 */
 	public void updateReasoner(){
-		fastReasoner = cm.reasoner(FastInstanceChecker.class, new OWLAPIOntology(modifier.getOntology()));
-		try {
-			fastReasoner.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		fastReasoner = cm.reasoner(FastInstanceChecker.class, new OWLAPIOntology(modifier.getOntology()));
+//		try {
+//			fastReasoner.init();
+//		} catch (ComponentInitException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		
+//		try {
+//			pelletReasoner.init();
+//		} catch (ComponentInitException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		
-		try {
-			pelletReasoner.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		setLearningAlgorithm();
 	}
