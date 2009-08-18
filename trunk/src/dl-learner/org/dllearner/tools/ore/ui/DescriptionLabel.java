@@ -43,6 +43,7 @@ import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
 
 /**
  * Label that might have menu items when clicked on it.
@@ -66,7 +67,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 
 	private final Description desc;
 	private Individual ind;
-	private ORE ore;
+	private OREManager ore;
 	private JPopupMenu menu;
 	private String mode;
 	private String descriptionLabel;
@@ -271,8 +272,8 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 		
 	}
 
-	public void setIndOre(ORE ore, Individual ind) {
-		this.ore = ore;
+	public void setIndOre(Individual ind) {
+		this.ore = OREManager.getInstance();
 		this.ind = ind;
 	}
 

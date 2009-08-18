@@ -81,89 +81,96 @@ public class LaconicExplanationGenerator
      * @return
      * @throws OWLException
      */
-    public Set<Set<OWLAxiom>> computePreciseJusts(OWLAxiom entailment, int limit) throws OWLException {
-	
-	Set<Set<OWLAxiom>> regularJusts = pelletExplanation.getEntailmentExplanations((OWLAxiom)entailment);
-	
-	System.out.println(new StringBuilder().append
-			       ("Got regular justifications: ").append
-			       (regularJusts.size()).toString());
-	lastRegularJusts.clear();
-	lastRegularJusts.addAll(regularJusts);
-	allPreviouslyFoundJustifications = new HashSet<Set<OWLAxiom>>();
-	allPreviouslyFoundJustifications.addAll(regularJusts);
-	Set<Set<OWLAxiom>> nonLaconicJusts = new HashSet<Set<OWLAxiom>>();
-	Set<Set<OWLAxiom>> laconicJusts = new HashSet<Set<OWLAxiom>>();
-	Set<OWLAxiom> axiomsInPreviousOntology = new HashSet<OWLAxiom>();
-	long counter = 0L;
-	for (;;) {
-	    counter++;
-	    System.out.println(new StringBuilder().append("Count ").append
-				   (counter).toString());
-	    Set<OWLAxiom> unionOfAllJustifications = new HashSet<OWLAxiom>();
-	    for(Set<OWLAxiom> just : allPreviouslyFoundJustifications){
-	    	unionOfAllJustifications.addAll(just);
-	    }
-	    
-	    
-//	    Set<OWLAxiom> lastOPlus = new HashSet<OWLAxiom>(computeOPlus(unionOfAllJustifications));
-	    Set<OWLAxiom> oPlus = computeOPlus(unionOfAllJustifications);
-	    OWLOntologyManager man2 = OWLManager.createOWLOntologyManager();
-	    OWLOntology extendedOnt = man2.createOntology(oPlus);
-	    for(OWLLogicalAxiom logAx : ontology.getLogicalAxioms()){
-	    	if (!unionOfAllJustifications.contains(logAx) || oPlus.contains(logAx)){
-			    man2.addAxiom(extendedOnt, logAx);
-	    	}
-	    }
-	    	
-	    if (extendedOnt.getLogicalAxioms().equals(axiomsInPreviousOntology)) {
-	    	System.out.println("\t ***** No change in ontology. Early termination.");
-	    	break;
-	    }
-//	    man2.saveOntology(extendedOnt, URI.create("file:/home/lorenz/neu.owl"));
-	    axiomsInPreviousOntology.clear();
-	    axiomsInPreviousOntology.addAll(extendedOnt.getLogicalAxioms());
-	    Set<Set<OWLAxiom>> allPrevJustsCopy = new HashSet<Set<OWLAxiom>>(allPreviouslyFoundJustifications);
-	   
-	   
-	    Set<OWLOntology> ont2 = new HashSet<OWLOntology>();
-	    ont2.add(extendedOnt); 
-	    PelletExplanation expGen = new PelletExplanation(man2, ont2);
-	    Set<Set<OWLAxiom>> currentJustifications = expGen.getEntailmentExplanations((OWLAxiom)entailment);
-	    
-	    
-	    allPreviouslyFoundJustifications.addAll(currentJustifications);
-	    if (allPreviouslyFoundJustifications.equals(allPrevJustsCopy)){
-	    	break;
+	public Set<Set<OWLAxiom>> computePreciseJusts(OWLAxiom entailment, int limit)
+			throws OWLException {
+
+		Set<Set<OWLAxiom>> regularJusts = pelletExplanation
+				.getEntailmentExplanations((OWLAxiom) entailment);
+
+		System.out.println(new StringBuilder().append(
+				"Got regular justifications: ").append(regularJusts.size())
+				.toString());
+		lastRegularJusts.clear();
+		lastRegularJusts.addAll(regularJusts);
+		allPreviouslyFoundJustifications = new HashSet<Set<OWLAxiom>>();
+		allPreviouslyFoundJustifications.addAll(regularJusts);
+		Set<Set<OWLAxiom>> nonLaconicJusts = new HashSet<Set<OWLAxiom>>();
+		Set<Set<OWLAxiom>> laconicJusts = new HashSet<Set<OWLAxiom>>();
+		Set<OWLAxiom> axiomsInPreviousOntology = new HashSet<OWLAxiom>();
+		long counter = 0L;
+		for (;;) {
+			counter++;
+			System.out.println(new StringBuilder().append("Count ").append(
+					counter).toString());
+			Set<OWLAxiom> unionOfAllJustifications = new HashSet<OWLAxiom>();
+			for (Set<OWLAxiom> just : allPreviouslyFoundJustifications) {
+				unionOfAllJustifications.addAll(just);
+			}
+
+			// Set<OWLAxiom> lastOPlus = new
+			// HashSet<OWLAxiom>(computeOPlus(unionOfAllJustifications));
+			Set<OWLAxiom> oPlus = computeOPlus(unionOfAllJustifications);
+			OWLOntologyManager man2 = OWLManager.createOWLOntologyManager();
+			OWLOntology extendedOntology = man2.createOntology(oPlus);
+			for (OWLLogicalAxiom logAx : ontology.getLogicalAxioms()) {
+				if (!unionOfAllJustifications.contains(logAx)
+						|| oPlus.contains(logAx)) {
+					man2.addAxiom(extendedOntology, logAx);
+				}
+			}
+
+			if (extendedOntology.getLogicalAxioms().equals(
+					axiomsInPreviousOntology)) {
+				System.out
+						.println("\t ***** No change in ontology. Early termination.");
+				break;
+			}
+			// man2.saveOntology(extendedOnt,
+			// URI.create("file:/home/lorenz/neu.owl"));
+			axiomsInPreviousOntology.clear();
+			axiomsInPreviousOntology
+					.addAll(extendedOntology.getLogicalAxioms());
+			Set<Set<OWLAxiom>> allPrevJustsCopy = new HashSet<Set<OWLAxiom>>(
+					allPreviouslyFoundJustifications);
+
+			Set<OWLOntology> ont2 = new HashSet<OWLOntology>();
+			ont2.add(extendedOntology);
+			PelletExplanation expGen = new PelletExplanation(man2, ont2);
+			Set<Set<OWLAxiom>> currentJustifications = expGen
+					.getEntailmentExplanations((OWLAxiom) entailment);
+
+			allPreviouslyFoundJustifications.addAll(currentJustifications);
+			if (allPreviouslyFoundJustifications.equals(allPrevJustsCopy)) {
+				break;
+			}
+			for (Set<OWLAxiom> currentJust : currentJustifications) {
+				if (!laconicJusts.contains(currentJust)
+						&& !nonLaconicJusts.contains(currentJust)) {
+					if (isLaconic(currentJust, entailment)) {
+						laconicJusts.add(currentJust);
+					} else {
+						nonLaconicJusts.add(currentJust);
+					}
+					if (laconicJusts.size() == limit) {
+						return retrieveAxioms(laconicJusts);
+					}
+				}
+			}
+
 		}
-	    for(Set<OWLAxiom> currentJust : currentJustifications){
-	    	if(!laconicJusts.contains(currentJust) && !nonLaconicJusts.contains(currentJust)){
-	    		if(isLaconic(currentJust, entailment)){
-	    			laconicJusts.add(currentJust);
-	    		} else{
-	    			nonLaconicJusts.add(currentJust);
-	    		}
-	    		if(laconicJusts.size() == limit){
-	    			return retrieveAxioms(laconicJusts);
-	    		}
-	    	}
-	    }
-	   
-	}
-	Set<Set<OWLAxiom>> laconicJustifications = new HashSet<Set<OWLAxiom>>();
-	for(Set<OWLAxiom> just : allPreviouslyFoundJustifications){
-		if(!nonLaconicJusts.contains(just)){
-			if(laconicJusts.contains(just)){
-				laconicJustifications.add(just);
-			} else if(isLaconic(just, entailment)){
-				laconicJustifications.add(just);
+		Set<Set<OWLAxiom>> laconicJustifications = new HashSet<Set<OWLAxiom>>();
+		for (Set<OWLAxiom> just : allPreviouslyFoundJustifications) {
+			if (!nonLaconicJusts.contains(just)) {
+				if (laconicJusts.contains(just)) {
+					laconicJustifications.add(just);
+				} else if (isLaconic(just, entailment)) {
+					laconicJustifications.add(just);
+				}
 			}
 		}
+
+		return retrieveAxioms(laconicJustifications);
 	}
-	
-	
-	return retrieveAxioms(laconicJustifications);
-    }
     
     public boolean isLaconic(Set<OWLAxiom> justification, OWLAxiom entailment)
 			throws ExplanationException {

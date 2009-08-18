@@ -15,6 +15,7 @@ public class ImpactTable extends JXTable {
 	public ImpactTable(ImpactManager manager){
 		super(new ImpactTableModel(manager));
 	        
+		setBackground(Color.WHITE);
 	    setShowHorizontalLines(true);
 	    setGridColor(Color.LIGHT_GRAY);
 	    setTableHeader(null);

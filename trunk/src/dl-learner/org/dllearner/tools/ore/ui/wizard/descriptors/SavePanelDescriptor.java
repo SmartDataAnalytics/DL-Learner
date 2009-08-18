@@ -23,6 +23,8 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.SavePanel;
 
@@ -65,11 +67,12 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		OntologyModifier modifier = OREManager.getInstance().getModifier();
 		if(e.getActionCommand().equals("Save and go to class choose panel")){
-			getWizardModel().getOre().getModifier().saveOntology();
+			modifier.saveOntology();
 			getWizard().setCurrentPanel(ClassPanelOWLDescriptor.IDENTIFIER);
 		}else if(e.getActionCommand().equals("Save and Exit")){
-			getWizardModel().getOre().getModifier().saveOntology();
+			modifier.saveOntology();
 			getWizard().close(0);
 		}
 

@@ -7,6 +7,7 @@ import java.util.List;
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.ImpactManagerListener;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
@@ -32,7 +33,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 	}
 
 	public void init() {
-		reasoner = getWizardModel().getOre().getPelletReasoner()
+		reasoner = OREManager.getInstance().getPelletReasoner()
 				.getReasoner();
 		expMan = ExplanationManager.getExplanationManager(reasoner);
 		impMan = ImpactManager.getImpactManager(reasoner);
@@ -52,7 +53,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     	expMan.setLaconicMode(true);
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expMan
-				.getOrderedLaconicInconsistencyExplanations()) {
+				.getInconsistencyExplanations()) {
 			panel.addExplanation(explanation, counter);
 			counter++;
 		}
@@ -64,7 +65,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     	expMan.setLaconicMode(false);
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expMan
-				.getOrderedInconsistencyExplanations()) {
+				.getInconsistencyExplanations()) {
 			panel.addExplanation(explanation, counter);
 			counter++;
 		}

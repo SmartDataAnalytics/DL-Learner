@@ -33,7 +33,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.owl.Individual;
-import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.RepairDialog;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
@@ -55,7 +55,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     
     private RepairPanel repairPanel;
     private Set<OWLOntologyChange> ontologyChanges;
-    private ORE ore;
+ 
     private OntologyModifier modi;
    
     
@@ -93,19 +93,19 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
      * Adds the wrong negative and positive examples to the lists.
      */
     public void refreshExampleLists(){
-    	this.ore = getWizardModel().getOre();
-    	repairPanel.setCellRenderers(ore);
+    	
+//    	repairPanel.setCellRenderers(ore);
     	
     	DefaultListModel negModel = repairPanel.getNegFailureModel();
     	negModel.clear();
-    	for(Individual ind : ore.getNewClassDescription().getAdditionalInstances()){
+    	for(Individual ind : OREManager.getInstance().getNewClassDescription().getAdditionalInstances()){
     		negModel.addElement(ind);
     	}
     	
     	DefaultListModel posModel = repairPanel.getPosFailureModel();
-    	posModel.clear();System.out.println(ore.getNewClassDescription().getCoveredInstances());
-    	Set<Individual> posNotCovered = ore.getPelletReasoner().getIndividuals(ore.getIgnoredConcept());
-    	posNotCovered.removeAll(ore.getNewClassDescription().getCoveredInstances());
+    	posModel.clear();
+    	Set<Individual> posNotCovered = OREManager.getInstance().getPelletReasoner().getIndividuals(OREManager.getInstance().getCurrentClass2Learn());
+    	posNotCovered.removeAll(OREManager.getInstance().getNewClassDescription().getCoveredInstances());
     	for(Individual ind : posNotCovered){
     		posModel.addElement(ind);
     	}
@@ -119,14 +119,14 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
      */
 	public void actionPerformed(ActionEvent event) {
 //		ore = getWizardModel().getOre();
-        modi = ore.getModifier();       
+        modi = OREManager.getInstance().getModifier();       
 		String actionName = ((JButton) event.getSource()).getName();
 		String actionType = ((JButton) event.getSource()).getParent().getName();
 		
 		if(actionType.equals("negative")){
 			Individual ind = (Individual) repairPanel.getNegFailureList().getSelectedValue();
 				if(actionName.equals("negRepair")){
-					RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(), ore, "neg");
+					RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(),  "neg");
 					int returncode = negDialog.showDialog();
 					if(returncode == 2){
 						ontologyChanges.addAll(negDialog.getAllChanges());
@@ -135,7 +135,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 						repairPanel.getNegFailureModel().removeElement(ind);
 					}
 				} else if(actionName.equals("negAdd")){
-					ontologyChanges.addAll(modi.addClassAssertion(ind, ore.getIgnoredConcept()));
+					ontologyChanges.addAll(modi.addClassAssertion(ind, OREManager.getInstance().getCurrentClass2Learn()));
 					repairPanel.getNegFailureModel().removeElement(ind);
 					
 				} else if(actionName.equals("negDelete")){
@@ -146,7 +146,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		} else if(actionType.equals("positive")){
 			Individual ind = (Individual) repairPanel.getPosFailureList().getSelectedValue();
 			if(actionName.equals("posRepair")){
-				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(), ore, "pos");
+				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(),  "pos");
 				int returncode = posDialog.showDialog();
 				if(returncode == 2){
 					ontologyChanges.addAll(posDialog.getAllChanges());
@@ -155,7 +155,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 					repairPanel.getPosFailureModel().removeElement(ind);
 				}
 			} else if(actionName.equals("posRemove")){
-				ontologyChanges.addAll(modi.addClassAssertion(ind, ore.getIgnoredConcept()));
+				ontologyChanges.addAll(modi.addClassAssertion(ind, OREManager.getInstance().getCurrentClass2Learn()));
 				repairPanel.getPosFailureModel().removeElement(ind);
 				
 			} else if(actionName.equals("posDelete")){
@@ -176,7 +176,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		if(e.getClickCount() == 2){
 			if(e.getSource() == repairPanel.getNegFailureList()){
 				Individual ind = (Individual) repairPanel.getNegFailureList().getSelectedValue();
-				RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre(), "neg");
+				RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(),  "neg");
 				int returncode = negDialog.showDialog();
 				if(returncode == 2){
 					ontologyChanges.addAll(negDialog.getAllChanges());
@@ -187,7 +187,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 				}
 			} else if(e.getSource() == repairPanel.getPosFailureList()){
 				Individual ind = (Individual) repairPanel.getPosFailureList().getSelectedValue();
-				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre(), "pos");
+				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(),  "pos");
 				int returncode = posDialog.showDialog();
 				if(returncode == 2){
 					ontologyChanges.addAll(posDialog.getAllChanges());

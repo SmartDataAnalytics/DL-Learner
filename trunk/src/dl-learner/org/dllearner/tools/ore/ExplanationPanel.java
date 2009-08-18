@@ -33,6 +33,7 @@ import javax.swing.event.ListSelectionListener;
 import org.dllearner.tools.ore.ui.ClassificationProgressMonitor;
 import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ImpactTable;
+import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.UnsatClassesListCellRenderer;
 import org.dllearner.tools.ore.ui.wizard.panels.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.wizard.panels.RepairPlanPanel;
@@ -49,7 +50,7 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class ExplanationPanel extends JPanel implements ListSelectionListener,
-		ActionListener,ImpactManagerListener{
+		ActionListener,ImpactManagerListener, ExplanationManagerListener{
 
 	private JXList unsatList;
 	private JSplitPane splitPane;
@@ -68,6 +69,8 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	private ExplanationManager expManager;
 	private ImpactManager impManager;
 	private RepairManager repManager;
+	
+	private StatusBar statusBar;
 	
 	
 	private OWLClass unsatClass;
@@ -165,6 +168,9 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		splitPane.setBorder(null);
 
 		add(splitPane);
+		
+		statusBar = new StatusBar();
+		add(statusBar, BorderLayout.SOUTH);
 	}
 
 	private void fillUnsatClassesList() {
@@ -205,7 +211,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		clearExplanationsPanel();
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expManager
-				.getOrderedLaconicUnsatisfiableExplanations(unsatClass)) {
+				.getUnsatisfiableExplanations(unsatClass)) {
 			addExplanationTable(explanation, counter);
 			counter++;
 		}
@@ -219,7 +225,21 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		clearExplanationsPanel();
 		int counter = 1;
 		for (List<OWLAxiom> explanation : expManager
-				.getOrderedUnsatisfiableExplanations(unsatClass)) {
+				.getUnsatisfiableExplanations(unsatClass)) {
+			addExplanationTable(explanation, counter);
+			counter++;
+		}
+		explanationsPanel.add(Box.createVerticalStrut(10));
+		explanationsPanel.add(new JSeparator());
+		explanationsPanel.add(Box.createVerticalStrut(10));
+		this.updateUI();
+	}
+	
+	private void showExplanations(){
+		clearExplanationsPanel();
+		int counter = 1;
+		for (List<OWLAxiom> explanation : expManager
+				.getUnsatisfiableExplanations(unsatClass)) {
 			addExplanationTable(explanation, counter);
 			counter++;
 		}
@@ -260,10 +280,8 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 //		editor.setDescription(unsatClass);
 		
 		
-		if (!unsatList.isSelectionEmpty() && regularButton.isSelected()) {
-			showRegularExplanations();
-		} else if(!unsatList.isSelectionEmpty()){
-			showLaconicExplanations();
+		if (!unsatList.isSelectionEmpty()) {
+			showExplanations();
 		}
 
 	}
@@ -271,10 +289,9 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("regular")) {
-			showRegularExplanations();
-		} else if (e.getActionCommand().equals("laconic")
-				&& !unsatList.isSelectionEmpty()) {
-			showLaconicExplanations();
+			expManager.setLaconicMode(false);
+		} else if (e.getActionCommand().equals("laconic")) {
+			expManager.setLaconicMode(true);
 
 		}
 
@@ -292,6 +309,14 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		
 		fillUnsatClassesList();
 		repaint();
+	}
+	
+	@Override
+	public void explanationLimitChanged() {
+		if(unsatClass != null){
+			showExplanations();
+		}
+		
 	}
 	
 
@@ -380,6 +405,14 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 		} 
 
 	}
+
+	@Override
+	public void explanationTypeChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 
 	
 

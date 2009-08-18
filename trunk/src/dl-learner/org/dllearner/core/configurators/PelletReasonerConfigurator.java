@@ -21,6 +21,7 @@
 package org.dllearner.core.configurators;
 
 import java.util.Set;
+
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.PelletReasoner;
@@ -52,6 +53,25 @@ PelletReasoner component = ComponentManager.getInstance().reasoner(PelletReasone
 return component;
 }
 
+/**
+* defaultNegation Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getDefaultNegation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(pelletReasoner,  "defaultNegation") ;
+}
+
+/**
+* @param defaultNegation Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setDefaultNegation(boolean defaultNegation) {
+ComponentManager.getInstance().applyConfigEntry(pelletReasoner, "defaultNegation", defaultNegation);
+reinitNecessary = true;
+}
 
 
 /**

@@ -21,18 +21,28 @@
 package org.dllearner.tools.ore.ui.wizard;
 
 
+import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.gui.Config;
 import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.ui.ClassificationProgressMonitor;
+import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassPanelOWLDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
@@ -40,6 +50,7 @@ import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.ClassPanelOWL;
+import org.mindswap.pellet.utils.progress.ProgressMonitor;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 /**
@@ -90,7 +101,7 @@ public class WizardController implements ActionListener {
  
         WizardModel model = wizard.getModel();
         WizardPanelDescriptor currentPanelDescriptor = model.getCurrentPanelDescriptor();
-        ORE ore = model.getOre();
+        OREManager ore = OREManager.getInstance();
         //  If it is a finishable panel, close down the dialog. Otherwise,
         //  get the ID that the current panel identifies as the next panel,
         //  and display it.
@@ -98,11 +109,19 @@ public class WizardController implements ActionListener {
         Object nextPanelDescriptor = currentPanelDescriptor.getNextPanelDescriptor();
         WizardPanelDescriptor nextDescriptor = model.getPanelHashMap().get(nextPanelDescriptor);
         
+        if(nextPanelDescriptor.equals(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
+        	
+        	KnowledgeSourcePanelDescriptor knowledgeDescriptor = ((KnowledgeSourcePanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
+//        	knowledgeDescriptor.addMetricsPanel();
+        	        	
+        }
         if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals
         		(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
-        	wizard.getStatusBar().setMessage("loading ontology");
-        	wizard.getStatusBar().showProgress(true);
+        	
+//        	wizard.getStatusBar().setMessage("loading ontology");
+//        	wizard.getStatusBar().showProgress(true);
         	ore.initPelletReasoner();
+//        	ore.getPelletReasoner().addProgressMonitor(wizard.getStatusBar());
         	
         	if(!ore.consistentOntology()){
         		
@@ -122,6 +141,9 @@ public class WizardController implements ActionListener {
         		
         		
         	} else {
+//        		ClassificationWorker task = new ClassificationWorker(ore, wizard.getStatusBar());
+//        		task.execute();
+        		
         		ore.getPelletReasoner().classify();
         		if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
         			UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();
@@ -173,8 +195,8 @@ public class WizardController implements ActionListener {
         
         if(nextPanelDescriptor.equals("SAVE_PANEL")){
 
-        	Description newDesc = model.getOre().getNewClassDescription().getDescription();
-        	Description oldClass = model.getOre().getIgnoredConcept();
+        	Description newDesc = ore.getNewClassDescription().getDescription();
+        	Description oldClass = ore.getCurrentClass2Learn();
         	
         	List<OWLOntologyChange> changes = ore.getModifier().rewriteClassDescription(newDesc, oldClass);
         	((RepairPanelDescriptor) currentPanelDescriptor).getOntologyChanges().addAll(changes);
@@ -217,7 +239,7 @@ public class WizardController implements ActionListener {
 				        JOptionPane.YES_NO_OPTION)
 				     == JOptionPane.YES_OPTION){
 	
-	        		model.getOre().getModifier().undoChanges(repairDescriptor.getOntologyChanges());
+	        		OREManager.getInstance().getModifier().undoChanges(repairDescriptor.getOntologyChanges());
 	        		repairDescriptor.getOntologyChanges().clear();
 					wizard.setCurrentPanel(backPanelDescriptor);
 			        refreshLeftPanel(backPanelDescriptor);
@@ -372,9 +394,9 @@ public class WizardController implements ActionListener {
 			owlClassPanel.getLoadingLabel().setBusy(true);
 //			owlClassPanel.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
 
-			wizard.getModel().getOre().initReasoners();
 			
-			Set<NamedClass> classes = wizard.getModel().getOre().getPelletReasoner().getNamedClasses();
+			
+			Set<NamedClass> classes = OREManager.getInstance().getPelletReasoner().getNamedClasses();
 			
 
 			return classes;
@@ -408,6 +430,33 @@ public class WizardController implements ActionListener {
 			owlClassPanel.getList().setModel(dm);
 			owlClassPanel.getStatusLabel().setText("Atomic classes loaded");
 			owlClassPanel.getLoadingLabel().setBusy(false);
+		}
+
+	}
+    
+    class ClassificationWorker extends SwingWorker<Void, Void>{
+		
+		private ORE ore;
+		private StatusBar statusBar;
+		
+		public ClassificationWorker(ORE ore, StatusBar statusBar) {
+			this.ore = ore;
+			this.statusBar = statusBar;
+			ore.getPelletReasoner().addProgressMonitor(new ClassificationProgressMonitor());
+			
+		}
+
+		@Override
+		public Void doInBackground() {
+			
+			ore.getPelletReasoner().classify();
+
+			return null;
+		}
+
+		@Override
+		public void done() {
+			statusBar.showProgress(false);
 		}
 
 	}

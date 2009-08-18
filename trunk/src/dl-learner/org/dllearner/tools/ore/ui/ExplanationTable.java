@@ -25,6 +25,7 @@ import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 
@@ -39,72 +40,73 @@ public class ExplanationTable extends JXTable implements RepairManagerListener{
 	private RepairManager repMan;
 	private ImpactManager impMan;
 	
-	public ExplanationTable(List<OWLAxiom> explanation, RepairManager repMan,ImpactManager impMan, ExplanationManager expMan, OWLClass cl) {
+	public ExplanationTable(List<OWLAxiom> explanation, RepairManager repMan,
+			ImpactManager impMan, ExplanationManager expMan, OWLClass cl) {
 		this.explanation = explanation;
 		this.repMan = repMan;
 		this.impMan = impMan;
 		repMan.addListener(this);
 		setBackground(Color.WHITE);
+		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		setModel(new ExplanationTableModel(explanation, expMan,impMan, repMan, cl));
+		setModel(new ExplanationTableModel(explanation, expMan, impMan, repMan,
+				cl));
 		getColumn(0).setCellRenderer(new OWLSyntaxTableCellRenderer(repMan));
 		TableColumn column4 = getColumn(3);
 		column4.setCellRenderer(new ButtonCellRenderer());
 		column4.setCellEditor(new ButtonCellEditor());
 		column4.setResizable(false);
 		setColumnSizes();
-		getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+		getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
 
-			
-			final ExplanationTable table;
-			
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				
-				table.changeSelection();
-				
-			}
-			{
-				table = ExplanationTable.this;
-				
-			}
-			
-		});
-		
+					final ExplanationTable table;
+
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+
+						table.changeSelection();
+
+					}
+
+					{
+						table = ExplanationTable.this;
+
+					}
+
+				});
+
 		addFocusListener(new FocusListener() {
 
 			final ExplanationTable table;
-			
-            public void focusGained(FocusEvent focusevent)
-            {
-            }
 
-            public void focusLost(FocusEvent e)
-            {
-                table.clearSelection();
-                table.changeSelection();
-                
-            }
+			public void focusGained(FocusEvent focusevent) {
+			}
 
-            
+			public void focusLost(FocusEvent e) {
+				table.clearSelection();
+				table.changeSelection();
 
-            
-            {
-            	
-                table = ExplanationTable.this;
-                
-            }
-        });
-		
+			}
+
+			{
+
+				table = ExplanationTable.this;
+
+			}
+		});
+
 		addMouseListener(new MouseAdapter() {
-			
+
 			final ExplanationTable table;
 			{
 				table = ExplanationTable.this;
 			}
-			public void mouseClicked(MouseEvent e){
-				if(e.getClickCount() == 2){
-					System.out.println(getValueAt(table.rowAtPoint(e.getPoint()), 0));
+
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					System.out.println(getValueAt(table
+							.rowAtPoint(e.getPoint()), 0));
 				}
 			}
 		});

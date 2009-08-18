@@ -21,8 +21,10 @@
 package org.dllearner.tools.ore;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.util.Locale;
 
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -42,7 +44,7 @@ import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
  * @author Lorenz Buehmann
  *
  */
-public class Main {
+public class OREApplication {
     
 	/**
 	 * main method.
@@ -66,7 +68,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		Locale.setDefault(Locale.ENGLISH);
-        Wizard wizard = new Wizard();
+        final Wizard wizard = new Wizard();
         wizard.getDialog().setTitle("DL-Learner ORE-Tool");
         Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         wizard.getDialog().setSize(dim);
@@ -95,20 +97,24 @@ public class Main {
         if (!(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);
         } else{
-        	((KnowledgeSourcePanelDescriptor) descriptor2).getPanel().setFileURL(args[0]); 
+        	OREManager.getInstance().setCurrentKnowledgeSource(new File(args[0]).toURI());
+        	OREManager.getInstance().initPelletReasoner();
+//        	((KnowledgeSourcePanelDescriptor) descriptor2).getPanel().setFileURL(args[0]); 
         	wizard.setCurrentPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER);
         	wizard.setLeftPanel(1);
         	 
         }
+			    
+        SwingUtilities.invokeLater(new Runnable() {
 			
-       
-        int ret = wizard.showModalDialog();
-       
-        
-        System.out.println("Dialog return code is (0=Finish,1=Cancel,2=Error): " + ret);
-       
-        
-        System.exit(0);
+			@Override
+			public void run() {
+				int ret = wizard.showModalDialog(); 
+				System.out.println("Dialog return code is (0=Finish,1=Cancel,2=Error): " + ret);
+				System.exit(0);
+				
+			}
+		});
         
     }
     
