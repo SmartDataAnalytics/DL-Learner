@@ -27,6 +27,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.swing.ProgressMonitor;
+
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.semanticweb.owl.model.OWLOntology;
@@ -45,6 +47,8 @@ public class Manager {
 	private ExtractionAlgorithm extractionAlgorithm;
 	private int nrOfExtractedTriples = 0;
 	private List<Node> seedNodes = new ArrayList<Node>();
+	
+	private ProgressMonitor mon;
 	
 	private static Logger logger = Logger
 		.getLogger(Manager.class);
@@ -69,9 +73,16 @@ public class Manager {
 	public List<Node> extract(Set<String> instances) {
 		List<Node> allExtractedNodes = new ArrayList<Node>();
 		logger.info("Start extracting "+instances.size() + " instances ");
+		if(mon != null){
+			mon.setNote("Start extracting "+instances.size() + " instances ");
+			mon.setMaximum(instances.size());
+		}
 		int progress=0;
 		for (String one : instances) {
 			progress++;
+			if(mon != null){
+				mon.setProgress(progress);
+			}
 			logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
 			try {
 				Node n = extractionAlgorithm.expandNode(one, configuration.getTupelAquisitor());
@@ -144,4 +155,7 @@ public class Manager {
 		return nrOfExtractedTriples;
 	}
 
+	public void addProgressMonitor(ProgressMonitor mon){
+		this.mon = mon;
+	}
 }

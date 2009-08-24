@@ -28,6 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.swing.ProgressMonitor;
+
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
@@ -59,6 +61,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
+import org.mindswap.pellet.utils.progress.SilentProgressMonitor;
 import org.semanticweb.owl.model.OWLOntology;
 
 import com.jamonapi.Monitor;
@@ -73,6 +76,7 @@ import com.jamonapi.MonitorFactory;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
+	private ProgressMonitor mon;
 	
 	private static final boolean debug = false;
 	
@@ -236,11 +240,14 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		logger.info("SparqlModul: Collecting Ontology");
 		SimpleClock totalTime = new SimpleClock();
 		//SimpleClock extractionTime = new SimpleClock();
-
+		if(mon != null){
+			mon.setNote("Collecting Ontology");
+		}
 		logger.trace(getURL());
 		logger.trace(getSparqlEndpoint());
 		logger.trace(configurator.getInstances());
 		Manager m = new Manager();
+		m.addProgressMonitor(mon);
 
 		// get Options for Manipulator
 		Manipulator manipulator = getManipulator();
@@ -508,6 +515,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	public int getNrOfExtractedAxioms() {
 		return nrOfExtractedAxioms;
+	}
+	
+	public void addProgressMonitor(ProgressMonitor mon){
+		this.mon = mon;
 	}
 
 	/*
