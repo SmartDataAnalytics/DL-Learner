@@ -1,15 +1,13 @@
 package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.tools.ore.explanation.CachedExplanationGenerator;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.explanation.RootFinder;
-import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -26,8 +24,6 @@ import uk.ac.manchester.cs.bhig.util.Tree;
 import uk.ac.manchester.cs.owl.explanation.ordering.DefaultExplanationOrderer;
 import uk.ac.manchester.cs.owl.explanation.ordering.ExplanationTree;
 
-import com.clarkparsia.explanation.PelletExplanation;
-
 public class ExplanationManager implements OWLOntologyChangeListener, RepairManagerListener{
 
 	private static ExplanationManager instance;
@@ -37,11 +33,9 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	private PelletReasonerFactory reasonerFactory;
 	private OWLOntology ontology;
 	private Reasoner reasoner;
-	private PelletExplanation regularExpGen;
-	private LaconicExplanationGenerator laconicExpGen;
+
 	private RootFinder rootFinder;
-	private Map<OWLClass, Set<Set<OWLAxiom>>> regularExplanationCache;
-	private Map<OWLClass, Set<Set<OWLAxiom>>> laconicExplanationCache;
+
 	private Set<OWLClass> unsatClasses;
 	private Set<OWLClass> rootClasses;
 	boolean ontologyChanged = true;
@@ -56,9 +50,7 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	
 	
 	private ExplanationManager(Reasoner reasoner) {
-		regularExplanationCache = new HashMap<OWLClass, Set<Set<OWLAxiom>>>();
-		laconicExplanationCache = new HashMap<OWLClass, Set<Set<OWLAxiom>>>();
-
+		
 		this.reasoner = reasoner;
 		this.manager = reasoner.getManager();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
@@ -71,21 +63,20 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 
 		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
 
-		regularExpGen = new PelletExplanation(reasoner.getManager(), reasoner.getLoadedOntologies());
-	
-		laconicExpGen = new LaconicExplanationGenerator(manager,
-				reasonerFactory, manager.getOntologies());
-
 		rootClasses = new HashSet<OWLClass>();
 		unsatClasses = new HashSet<OWLClass>();
 		
 		listeners = new ArrayList<ExplanationManagerListener>();
 		
-		gen = new CachedExplanationGenerator(ontology);
+		gen = new CachedExplanationGenerator(ontology, reasoner);
 
 	}
 	
-	public static synchronized ExplanationManager getExplanationManager(
+	public ExplanationManager() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public static synchronized ExplanationManager getInstance(
 			Reasoner reasoner) {
 		if (instance == null) {
 			instance = new ExplanationManager(reasoner);
@@ -93,8 +84,10 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 		return instance;
 	}
 	
-	public static synchronized ExplanationManager getExplanationManager(){
-	
+	public static synchronized ExplanationManager getInstance(){
+		if (instance == null) {
+			instance = new ExplanationManager();
+		}
 		return instance;
 	}
 	
@@ -125,28 +118,28 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 		OWLSubClassAxiom entailment = dataFactory.getOWLSubClassAxiom(unsat,
 				dataFactory.getOWLNothing());
 
-		Set<Set<OWLAxiom>> explanations;
+		Set<Explanation> explanations;
 		if (isComputeAllExplanations) {
 			explanations = gen.getExplanations(entailment);
 		} else {
 			explanations = gen.getExplanations(entailment, maxExplantionCount);
 		}
 
-		return getOrderedExplanations(entailment, explanations);
+		return getOrderedExplanations(explanations);
 	}
 	
 	public Set<List<OWLAxiom>> getInconsistencyExplanations(){
 		OWLSubClassAxiom entailment = dataFactory.getOWLSubClassAxiom(dataFactory.getOWLThing(),
 				dataFactory.getOWLNothing());
 
-		Set<Set<OWLAxiom>> explanations;
+		Set<Explanation> explanations;
 		if (isComputeAllExplanations) {
 			explanations = gen.getExplanations(entailment);
 		} else {
 			explanations = gen.getExplanations(entailment, maxExplantionCount);
 		}
 
-		return getOrderedExplanations(entailment, explanations);
+		return getOrderedExplanations(explanations);
 	}
 	
 	
@@ -160,13 +153,13 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 		return ordering;
 	}
 	
-	private Set<List<OWLAxiom>> getOrderedExplanations(OWLAxiom entailment, Set<Set<OWLAxiom>> explanations){
+	private Set<List<OWLAxiom>> getOrderedExplanations(Set<Explanation> explanations){
 		DefaultExplanationOrderer orderer = new DefaultExplanationOrderer();
 		Set<List<OWLAxiom>> orderedExplanations = new HashSet<List<OWLAxiom>>();
 		ArrayList<OWLAxiom> ordering;
-		for(Set<OWLAxiom> explanation : explanations){
+		for(Explanation explanation : explanations){
 			ordering = new ArrayList<OWLAxiom>();
-			ExplanationTree tree = orderer.getOrderedExplanation(entailment, explanation);
+			ExplanationTree tree = orderer.getOrderedExplanation(explanation.getEntailment(), explanation.getAxioms());
 			
 //			ordering.add(tree.getUserObject());
 			for(Tree<OWLAxiom> child : tree.getChildren()){
@@ -186,12 +179,12 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	public int getArity(OWLClass cl, OWLAxiom ax) {
 		int arity = 0;
 		
-		Set<Set<OWLAxiom>> explanations = gen.getExplanations(dataFactory.getOWLSubClassAxiom(cl, dataFactory.getOWLNothing()));
+		Set<Explanation> explanations = gen.getExplanations(dataFactory.getOWLSubClassAxiom(cl, dataFactory.getOWLNothing()));
 		
 		if(explanations != null){
 			
-			for (Set<OWLAxiom> explanation : explanations) {
-				if (explanation.contains(ax)) {
+			for (Explanation explanation : explanations) {
+				if (explanation.getAxioms().contains(ax)) {
 					arity++;
 				}
 			}
@@ -201,7 +194,7 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	
 	public void setLaconicMode(boolean laconic){
 		gen.setComputeLaconicExplanations(laconic);
-		fireExplanationLimitChanged();
+		fireExplanationTypeChanged();
 		
 	}
 	
@@ -224,14 +217,9 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	}
 
 	@Override
-	public void repairPlanExecuted() {
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		reasoner.refresh();
 		ontologyChanged = true;
-		regularExpGen = new PelletExplanation(reasoner.getManager(), reasoner.getLoadedOntologies());
-		laconicExpGen = new LaconicExplanationGenerator(manager,
-				reasonerFactory, reasoner.getLoadedOntologies());
-		regularExplanationCache.clear();
-		laconicExplanationCache.clear();
 	}
 
 	@Override
@@ -251,6 +239,12 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	public void fireExplanationLimitChanged(){
 		for(ExplanationManagerListener listener : listeners){
 			listener.explanationLimitChanged();
+		}
+	}
+	
+	public void fireExplanationTypeChanged(){
+		for(ExplanationManagerListener listener : listeners){
+			listener.explanationTypeChanged();
 		}
 	}
 	

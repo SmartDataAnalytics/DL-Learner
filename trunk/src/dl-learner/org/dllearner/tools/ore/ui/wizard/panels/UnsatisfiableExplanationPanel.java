@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,8 +29,8 @@ import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ImpactTable;
-import org.dllearner.tools.ore.ui.UnsatClassesListCellRenderer;
-import org.jdesktop.swingx.JXList;
+import org.dllearner.tools.ore.ui.UnsatClassesTableCellRenderer;
+import org.dllearner.tools.ore.ui.UnsatisfiableClassesTable;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 
@@ -41,7 +40,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JXList unsatList;
+	private UnsatisfiableClassesTable unsatClassesTable;
 	private JSplitPane splitPane;
 	private JSplitPane statsSplitPane;
 	private JScrollPane listScrollPane;
@@ -58,7 +57,6 @@ public class UnsatisfiableExplanationPanel extends JPanel{
     private  JRadioButton computeMaxExplanationsRadioButton;
 	private JSpinner maxExplanationsSelector;
 
-	private UnsatClassesListCellRenderer listRenderer;
 
 	private ExplanationManager expMan;
 	private ImpactManager impMan;
@@ -76,12 +74,11 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 
 		Dimension minimumSize = new Dimension(400, 400);
 
-		listRenderer = new UnsatClassesListCellRenderer(expMan);
-		unsatList = new JXList();
+		unsatClassesTable = new UnsatisfiableClassesTable();
+		unsatClassesTable.getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
 		
-		
-		unsatList.setCellRenderer(listRenderer);
-		listScrollPane = new JScrollPane(unsatList);
+
+		listScrollPane = new JScrollPane(unsatClassesTable);
 		listScrollPane.setPreferredSize(minimumSize);
 
 		explanationsPanel = new Box(1);
@@ -194,17 +191,11 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		add(splitPane);
 	}
 	
-	public void fillUnsatClassesList(List<OWLClass> unsatClasses) {
-		DefaultListModel model = new DefaultListModel();
-		for(OWLClass cl : unsatClasses){
-			model.addElement(cl);
-		}
-		
-		unsatList.setModel(model);
+	public void fillUnsatClassesTable(List<OWLClass> unsatClasses) {
+		unsatClassesTable.addUnsatClasses(unsatClasses);
 	}
 	
-	public void clearExplanationsPanel() {
-		
+	public void clearExplanationsPanel() {		
 		explanationsPanel.removeAll();
 	}
 
@@ -220,27 +211,25 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	}
 	
 	public void setMaxExplanationsMode(boolean value){
-		
-		maxExplanationsSelector.setEnabled(value);
-		
-		
+		maxExplanationsSelector.setEnabled(value);	
 	}
 
 	public void addActionListeners(ActionListener aL) {
 		regularButton.addActionListener(aL);
 		laconicButton.addActionListener(aL);
 		computeAllExplanationsRadioButton.addActionListener(aL);
-		computeMaxExplanationsRadioButton.addActionListener(aL);
-		
+		computeMaxExplanationsRadioButton.addActionListener(aL);	
 	}
 	
 	public void addListSelectionListener(ListSelectionListener l){
-		unsatList.addListSelectionListener(l);
+		unsatClassesTable.getSelectionModel().addListSelectionListener(l);
 	}
 	
 	public void addChangeListener(ChangeListener cL){
 		maxExplanationsSelector.addChangeListener(cL);
 	}
-
 	
+	public UnsatisfiableClassesTable getUnsatTable(){
+		return unsatClassesTable;
+	}
 }

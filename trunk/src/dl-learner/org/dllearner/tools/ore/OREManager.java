@@ -17,7 +17,7 @@ import javax.swing.JLabel;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -26,6 +26,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.PelletReasoner;
@@ -46,7 +47,7 @@ public class OREManager {
 	private PelletReasoner pelletReasoner;
 	private ClassLearningProblem lp;
 	private CELOE la;
-	private OWLFile ks;
+	private KnowledgeSource ks;
 	
 	private String baseURI;
 	private Map<String, String> prefixes;
@@ -81,7 +82,7 @@ public class OREManager {
 	public void setCurrentKnowledgeSource(URI uri){
 		ks = cm.knowledgeSource(OWLFile.class);
 		try {
-			ks.getConfigurator().setUrl(uri.toURL());
+			((OWLFile)ks).getConfigurator().setUrl(uri.toURL());
 			ks.init();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -90,6 +91,11 @@ public class OREManager {
 			System.out.println("Could not init knowledge source");
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public void setCurrentKnowledgeSource(SparqlKnowledgeSource ks){
+		this.ks = ks;
 		
 	}
 	
@@ -245,6 +251,10 @@ public class OREManager {
 		this.maxNrOfResults = maxNrOfResults;
 	}
 	
+	public int getMaxNrOfResults(){
+		return maxNrOfResults;
+	}
+	
 	
 	
 	/**
@@ -288,7 +298,7 @@ public class OREManager {
 	}
 
 	
-	public LearningAlgorithm getLa() {
+	public CELOE getLa() {
 		return la;
 	}
 

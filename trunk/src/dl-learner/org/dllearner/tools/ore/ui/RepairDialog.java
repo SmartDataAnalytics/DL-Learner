@@ -52,7 +52,6 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.tools.ore.ORE;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.wizard.panels.ChangePanel;
@@ -95,7 +94,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	private String mode;
 		
 	private OntologyModifier modifier;
-	private ORE ore;
+
 	private Individual ind;
 	private Description actualDesc;
 	private Description newDesc;
@@ -118,7 +117,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 					     == JOptionPane.YES_OPTION){
 		
 						modifier.undoChanges(allChanges);
-						ore.updateReasoner();
+//						ore.updateReasoner();
 						allChanges.clear();
 						returncode = CANCEL_RETURN_CODE;
 						setVisible(false);
@@ -137,7 +136,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		
 		this.ind = ind;
 	
-		this.modifier = ore.getModifier();
+		this.modifier = OREManager.getInstance().getModifier();
 		this.mode = mode;
 		allChanges = new HashSet<OWLOntologyChange>();
 		
@@ -162,7 +161,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		JScrollPane descScroll = new JScrollPane();
 		descScroll.setViewportView(descPanel);
 		
-		statsPanel = new StatsPanel(ore, ind);
+		statsPanel = new StatsPanel(ind);
 		statsPanel.init();
 		JScrollPane statsScroll = new JScrollPane();
 		statsScroll.setViewportView(statsPanel);
@@ -242,7 +241,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 			} else if(action == 5){
 				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
 				List<OWLOntologyChange> changes = null;
-				for(Individual i : ore.getIndividualsInPropertyRange(property, ind)){
+				for(Individual i : OREManager.getInstance().getIndividualsInPropertyRange(property, ind)){
 					changes = modifier.removeObjectPropertyAssertion(ind, property, i);
 					allChanges.addAll(changes);
 				}
@@ -286,7 +285,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 			} else if(action == 7){
 				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
 				List<OWLOntologyChange> changes = null;
-				for(Individual i : ore.getIndividualsNotInPropertyRange(property, ind)){
+				for(Individual i : OREManager.getInstance().getIndividualsNotInPropertyRange(property, ind)){
 					changes = modifier.removeObjectPropertyAssertion(ind, property, i);
 					allChanges.addAll(changes);
 				}
@@ -313,7 +312,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 			} else{
 				returncode = OK_RETURN_CODE;
 			}
-			ore.updateReasoner();
+//			ore.updateReasoner();
 			setVisible(false);
 			dispose();
 		} else if(e.getActionCommand().equals("Cancel")){
@@ -324,7 +323,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 				     == JOptionPane.YES_OPTION){
 	
 					modifier.undoChanges(allChanges);
-					ore.updateReasoner();
+//					ore.updateReasoner();
 					allChanges.clear();
 					returncode = CANCEL_RETURN_CODE;
 					setVisible(false);

@@ -21,36 +21,26 @@
 package org.dllearner.tools.ore.ui.wizard;
 
 
-import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.gui.Config;
-import org.dllearner.tools.ore.ORE;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.ui.ClassificationProgressMonitor;
 import org.dllearner.tools.ore.ui.StatusBar;
-import org.dllearner.tools.ore.ui.wizard.descriptors.ClassPanelOWLDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.panels.ClassPanelOWL;
-import org.mindswap.pellet.utils.progress.ProgressMonitor;
+import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 /**
@@ -112,16 +102,12 @@ public class WizardController implements ActionListener {
         if(nextPanelDescriptor.equals(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
         	
         	KnowledgeSourcePanelDescriptor knowledgeDescriptor = ((KnowledgeSourcePanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
-//        	knowledgeDescriptor.addMetricsPanel();
+        	knowledgeDescriptor.addMetricsPanel();
         	        	
         }
         if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals
         		(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
         	
-//        	wizard.getStatusBar().setMessage("loading ontology");
-//        	wizard.getStatusBar().showProgress(true);
-        	ore.initPelletReasoner();
-//        	ore.getPelletReasoner().addProgressMonitor(wizard.getStatusBar());
         	
         	if(!ore.consistentOntology()){
         		
@@ -141,10 +127,10 @@ public class WizardController implements ActionListener {
         		
         		
         	} else {
-//        		ClassificationWorker task = new ClassificationWorker(ore, wizard.getStatusBar());
-//        		task.execute();
+        		ClassificationWorker task = new ClassificationWorker(wizard.getStatusBar());
+        		task.execute();
         		
-        		ore.getPelletReasoner().classify();
+        	
         		if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
         			UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();
         			wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, unsatDescriptor);
@@ -153,8 +139,8 @@ public class WizardController implements ActionListener {
         			nextPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
         		} else {
         			
-        			nextPanelDescriptor = ClassPanelOWLDescriptor.IDENTIFIER;
-        			((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
+        			nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+        			((ClassChoosePanelDescriptor) nextDescriptor).getOwlClassPanel().getClassesTable().clear();
                 	new ConceptRetriever(nextPanelDescriptor).execute();
         		}
         		
@@ -171,14 +157,14 @@ public class WizardController implements ActionListener {
         	}
         }
         if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)){
-        	nextPanelDescriptor = ClassPanelOWLDescriptor.IDENTIFIER;
-			((ClassPanelOWLDescriptor) nextDescriptor).getOwlClassPanel().getModel().clear();
-        	new ConceptRetriever(nextPanelDescriptor).execute();
+        	nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+			((ClassChoosePanelDescriptor) nextDescriptor).getOwlClassPanel().getClassesTable().clear();
+			((ClassChoosePanelDescriptor) nextDescriptor).getOwlClassPanel().getClassesTable().addClasses(OREManager.getInstance().getPelletReasoner().getNamedClasses());
+//        	new ConceptRetriever(nextPanelDescriptor).execute();
         }
        
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
-        	ore.init();
-//        	ore.get
+        	ore.setLearningProblem();
         	LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
         	learnDescriptor.setPanelDefaults();
         	        	
@@ -378,35 +364,29 @@ public class WizardController implements ActionListener {
      */
     class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass> {
 		private Object nextPanelID;
-		private ClassPanelOWL owlClassPanel;
-		private Set<NamedClass> unsatClasses;
+		private ClassChoosePanel owlClassPanel;
 		
 		public ConceptRetriever(Object nextPanelDescriptor) {
 
 			nextPanelID = nextPanelDescriptor;
-			owlClassPanel = ((ClassPanelOWLDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID)).getOwlClassPanel();
+			owlClassPanel = ((ClassChoosePanelDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID)).getOwlClassPanel();
 		}
 
 		@Override
 		public Set<NamedClass> doInBackground() {
-
-			owlClassPanel.getStatusLabel().setText("Loading atomic classes");
-			owlClassPanel.getLoadingLabel().setBusy(true);
-//			owlClassPanel.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
-
-			
+			wizard.getStatusBar().showProgress(true);
+			wizard.getStatusBar().setProgressTitle("retrieving atomic classes");
 			
 			Set<NamedClass> classes = OREManager.getInstance().getPelletReasoner().getNamedClasses();
 			
-
 			return classes;
 		}
 
 		@Override
 		public void done() {
-			Set<NamedClass> ind = null;
+			Set<NamedClass> classes = null;
 			try {
-				ind = get();
+				classes = get();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -415,60 +395,42 @@ public class WizardController implements ActionListener {
 				e.printStackTrace();
 			}
 			
-			DefaultListModel dm = new DefaultListModel();
-			
-			if(ind != null){
-				for (NamedClass cl : ind) {
-					dm.addElement(cl);
-					
-					
-					//nextPanel.panel3.getModel().addElement(cl);
-					
-				}
-			}
-//			wizard.getModel().getOre().setAllAtomicConcepts(ind);
-			owlClassPanel.getList().setModel(dm);
-			owlClassPanel.getStatusLabel().setText("Atomic classes loaded");
-			owlClassPanel.getLoadingLabel().setBusy(false);
+			owlClassPanel.getClassesTable().addClasses(classes);
+			wizard.getStatusBar().showProgress(false);
+			wizard.getStatusBar().setProgressTitle("atomic classes loaded");
 		}
 
 	}
     
     class ClassificationWorker extends SwingWorker<Void, Void>{
 		
-		private ORE ore;
 		private StatusBar statusBar;
 		
-		public ClassificationWorker(ORE ore, StatusBar statusBar) {
-			this.ore = ore;
+		public ClassificationWorker(StatusBar statusBar) {
 			this.statusBar = statusBar;
-			ore.getPelletReasoner().addProgressMonitor(new ClassificationProgressMonitor());
+//			OREManager.getInstance().getPelletReasoner().addProgressMonitor(new ClassificationProgressMonitor());
 			
 		}
 
 		@Override
 		public Void doInBackground() {
+			statusBar.showProgress(true);
+			wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
-			ore.getPelletReasoner().classify();
+			statusBar.setProgressTitle("classifying ontology");
+			OREManager.getInstance().getPelletReasoner().classify();
 
 			return null;
 		}
 
 		@Override
 		public void done() {
+			wizard.getDialog().setCursor(null);
 			statusBar.showProgress(false);
+			statusBar.setProgressTitle("");
 		}
 
 	}
-    
- 
-    
-		
-		
-    	
-    
-   
-
     
     
 }

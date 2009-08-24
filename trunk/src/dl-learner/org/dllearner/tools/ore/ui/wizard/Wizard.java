@@ -109,12 +109,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     private StatusBar statusBar;
     
     private int returnCode;
-    
-    private int knowledgeSourceType;
-    
-   
-
-    
+  
     
     /**
      * Default constructor. This method creates a new WizardModel object and passes it
@@ -494,21 +489,6 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 		return informationsField;
 	}
 
-	/**
-	 * Sets the type of knowledge source - SPARQL or OWL.
-	 * @param knowledgeSourceType 0 for OWL, 1 for SPARQL
-	 */
-	public void setKnowledgeSourceType(int knowledgeSourceType) {
-		this.knowledgeSourceType = knowledgeSourceType;
-	}
-
-	/**
-	 * Returns the type of knowledge source, represented as number - 0 for OWL, 1 for SPARQL.
-	 * @return integer value
-	 */
-	public int getKnowledgeSourceType() {
-		return knowledgeSourceType;
-	}
 	
 	public StatusBar getStatusBar() {
 		return statusBar;

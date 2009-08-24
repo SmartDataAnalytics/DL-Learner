@@ -1,13 +1,9 @@
 package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Stack;
 
-import org.dllearner.tools.ore.explanation.AxiomRanker;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
@@ -27,6 +23,9 @@ public class RepairManager {
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
 	private Reasoner reasoner;
+	
+	private Stack<List<OWLOntologyChange>> undoStack;
+	private Stack<List<OWLOntologyChange>> redoStack;
 
 	private RepairManager(Reasoner reasoner) {
 		this.reasoner = reasoner;
@@ -36,6 +35,8 @@ public class RepairManager {
 		axioms2Remove = new ArrayList<OWLAxiom>();
 		listeners = new ArrayList<RepairManagerListener>();
 	
+		undoStack = new Stack<List<OWLOntologyChange>>();
+		redoStack = new Stack<List<OWLOntologyChange>>();
 
 	}
 	
@@ -87,9 +88,24 @@ public class RepairManager {
 			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
 			e.printStackTrace();
 		}
-		
+		undoStack.push(changes);
 		axioms2Remove.clear();
-		fireRepairPlanExecuted();
+		fireRepairPlanExecuted(changes);
+	}
+	
+	public void undo(){
+		List<OWLOntologyChange> changes = undoStack.pop();
+		redoStack.push(changes);
+		try {
+			manager.applyChanges(changes);
+		} catch (OWLOntologyChangeException e) {
+			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
+			e.printStackTrace();
+		}
+	}
+	
+	public void redo(){
+		
 	}
 	
 	private void fireRepairPlanChanged(){
@@ -98,10 +114,10 @@ public class RepairManager {
 		}
 	}
 	
-	private void fireRepairPlanExecuted(){
+	private void fireRepairPlanExecuted(List<OWLOntologyChange> changes){
 			
 		for(RepairManagerListener listener : listeners){
-			listener.repairPlanExecuted();
+			listener.repairPlanExecuted(changes);
 		}
 	}
 }

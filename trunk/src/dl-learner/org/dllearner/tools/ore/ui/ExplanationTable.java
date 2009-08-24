@@ -28,6 +28,7 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLOntologyChange;
 
 public class ExplanationTable extends JXTable implements RepairManagerListener{
 
@@ -200,7 +201,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener{
 
 
 	@Override
-	public void repairPlanExecuted() {
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		// TODO Auto-generated method stub
 		
 	}

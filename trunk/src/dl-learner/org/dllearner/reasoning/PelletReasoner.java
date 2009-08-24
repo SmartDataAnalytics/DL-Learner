@@ -59,6 +59,7 @@ import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -394,6 +395,7 @@ public class PelletReasoner extends ReasonerComponent {
 		factory = manager.getOWLDataFactory();
 		//set classification output to "none", while default is "console"
 		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.SWING;
+		
 		// change log level to WARN for Pellet, because otherwise log
 		// output will be very large
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");

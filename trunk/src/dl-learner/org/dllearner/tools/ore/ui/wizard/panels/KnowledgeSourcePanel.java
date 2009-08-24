@@ -21,53 +21,43 @@
 package org.dllearner.tools.ore.ui.wizard.panels;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.MetricsPanel;
+import org.dllearner.tools.ore.ui.RecentManager;
 
 /**
- * Wizard panel where radio buttons for choosing knowledge source type, button for browsing
- * file system and textfields for inserting file name or SPARQL-URL are added.
+ * Wizard panel  for choosing knowledge source.
  * @author Lorenz Buehmann
  *
  */
 public class KnowledgeSourcePanel extends JPanel{
 
 	private static final long serialVersionUID = -3997200565180270088L;
-	private javax.swing.JTextField fileURL;
-	private JTextField sparqlURL;
-	private JButton browseButton;
-	private JButton connectButton;
-	
-//	private JComboBox sparqlBox;
+
 	
 	private JPanel contentPanel;
-	
-	private JLabel owlMessage;
-	private JLabel sparqlMessage;
-	
-	private JRadioButton owl;
-	private JRadioButton sparql;
-	
+
 	private Box box;
 	private LinkLabel openFromFileLink;
 	private LinkLabel openFromURILink;
 	private LinkLabel loadFromSparqlEndpointLink;
+	private List<LinkLabel> openFromRecentLinks;
 	private Box recentLinkBox;
+	private GridBagConstraints c;
 
 	
 	
@@ -75,155 +65,103 @@ public class KnowledgeSourcePanel extends JPanel{
 
 		new LeftPanel(1);
 		contentPanel = getContentPanel();
+
+		setLayout(new GridBagLayout());
+		c = new GridBagConstraints();
 		
-		setLayout(new java.awt.BorderLayout());
-		setLayout(new GridLayout(1,2));
-		
-		add(contentPanel);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.gridheight = 1;
+	    c.fill = GridBagConstraints.HORIZONTAL;
+	    add(contentPanel, c);
 
 	}
 
 	private JPanel getContentPanel() {
+
+		
 
 	
 		JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
        
         int strutHeight = 10;
-
-       
+ 
         box = new Box(BoxLayout.Y_AXIS);
         box.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 0));
         panel.add(box);
+        
         openFromFileLink = new LinkLabel("Open OWL-Ontology from filesystem");
         openFromFileLink.setName("openFromFileLink");
         box.add(openFromFileLink);
+        
         box.add(Box.createVerticalStrut(strutHeight));
+        
         openFromURILink = new LinkLabel("Open OWL-Ontology from URI");
         openFromURILink.setName("openFromURILink");
         box.add(openFromURILink);
+        
         box.add(Box.createVerticalStrut(strutHeight));
+        
         loadFromSparqlEndpointLink = new LinkLabel("Open OWL-Ontology from Sparql-Endpoint");
         loadFromSparqlEndpointLink.setName("loadFromSparqlEndpointLink");
         box.add(loadFromSparqlEndpointLink);
-        panel.add(box);
         
         box.add(Box.createVerticalStrut(2 * strutHeight));
-      
+        
+        
+        
+        
+        if (RecentManager.getInstance().getURIs().size() > 0) {
+            recentLinkBox = new Box(BoxLayout.Y_AXIS);
 
+            recentLinkBox.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
+                    " Open recent ",
+                    0,
+                    0,
+                    getFont().deriveFont(Font.BOLD),
+                    Color.GRAY), BorderFactory.createEmptyBorder(20, 20, 20, 20)));
+
+            openFromRecentLinks = new ArrayList<LinkLabel>();
+            LinkLabel link;
+            for (final URI uri : RecentManager.getInstance().getURIs()) {
+            	link = new LinkLabel(uri.toString());
+            	link.setName("recent");
+            	openFromRecentLinks.add(link);
+                recentLinkBox.add(link);
+                
+            }
+            box.add(recentLinkBox);
+        }
+
+        panel.add(box);
+        
 		return panel;
 	}
 	
-	private void addMetricsPanel(MetricsPanel metrics){
-		add(metrics);
+	public void addMetricsPanel(MetricsPanel metrics) {
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		c.gridheight = 2;
+		c.weightx = 0.5;
+		c.weighty = 1;
+
+		c.fill = GridBagConstraints.BOTH;
+		add(metrics, c);
 	}
 	
 	public void addListeners(ActionListener aL) {
 		openFromFileLink.addLinkListener(aL);
 		openFromURILink.addLinkListener(aL);
 		loadFromSparqlEndpointLink.addLinkListener(aL);
+		for(LinkLabel link : openFromRecentLinks){
+			link.addLinkListener(aL);
+		}
 		
     }
-
-	
-	
-	
-	
-	public void openFileChooser(){
-		JFileChooser filechooser = new JFileChooser();
-		
-		filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//		String choosenPath = fileURL.getText();
-//		if(!choosenPath.equals("") && (new File(choosenPath)).exists()){
-//			filechooser.setCurrentDirectory(new File(fileURL.getText()));
-//		}
-	
-		filechooser.addChoosableFileFilter(new FileFilter() {
-		    @Override
-			public boolean accept(File f) {
-		      if(f.isDirectory()){ 
-		    	  return true;
-		      }
-		      return f.getName().toLowerCase().endsWith(".owl") || f.getName().toLowerCase().endsWith(".rdf");
-		    }
-		    @Override
-			public String getDescription(){
-		    	return "OWLs, RDFs"; 
-		    }  
-		  });
-		int status = filechooser.showOpenDialog(null);
-        
-        if (status == JFileChooser.APPROVE_OPTION){
-        	String strURL = filechooser.getSelectedFile().getAbsolutePath();
-        	fileURL.setText(strURL);
-        
-            
-           
-        } else{
-            System.out.println("Auswahl abgebrochen");
-        }
-	}
-	
-	public boolean isExistingOWLFile(){
-		if(!fileURL.getText().equals("") && !getOWLFile().exists()){
-			
-			owlMessage.setText(fileURL.getText()+" does not exist");
-			return false;
-		}
-		if(!fileURL.getText().equals("") && (getOWLFile().isDirectory() || 
-				(getOWLFile().isFile() && !getOWLFile().getPath().endsWith(".owl")))){ 
-				//(getOWLFile().isFile() && !getOWLFile().getPath().endsWith(".rdf")))){
-			System.err.println(getOWLFile().getPath());
-			owlMessage.setText(fileURL.getText()+" is not a OWL or RDF file");
-			return false;
-		}
-		if(fileURL.getText().equals("")){
-			owlMessage.setText("enter or browse OWL file");
-			return false;
-		}
-		if(getOWLFile().exists() && getOWLFile().getPath().endsWith(".owl")){
-			owlMessage.setText("");
-			return true;
-		}
-		return true;
-		
-		
-		
-	}
-
-	public File getOWLFile() {
-		return new File(fileURL.getText());
-	}
-	
-	public void setFileURL(String fileURL){
-//		this.fileURL.setText(fileURL);
-	}
-	
-	public void setOWLMode(){
-		fileURL.setEnabled(true);
-		browseButton.setEnabled(true);
-		owlMessage.setVisible(true);
-		
-		sparqlURL.setEnabled(false);
-		connectButton.setEnabled(false);
-		sparqlMessage.setVisible(false);
-//		sparqlBox.setEditable(false);
-//		sparqlBox.setEnabled(false);
-	
-	}
-	
-	public void setSPARQLMode(){
-		fileURL.setEnabled(false);
-		browseButton.setEnabled(false);
-		owlMessage.setVisible(false);
-		
-		sparqlURL.setEnabled(true);
-		connectButton.setEnabled(true);
-		sparqlMessage.setVisible(true);
-//		sparqlBox.setEnabled(true);
-//		sparqlBox.setEditable(true);
-		
-	}
 	
 	
 }

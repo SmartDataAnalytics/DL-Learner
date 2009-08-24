@@ -2,6 +2,7 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -26,12 +29,13 @@ import org.dllearner.tools.ore.ImpactManagerListener;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
+import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel;
-import org.jdesktop.swingx.JXList;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLOntologyChange;
 
 public class UnsatisfiableExplanationPanelDescriptor extends
 		WizardPanelDescriptor implements ActionListener, ImpactManagerListener, ListSelectionListener, ChangeListener, ExplanationManagerListener, RepairManagerListener{
@@ -53,9 +57,9 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	public void init() {
 		reasoner = OREManager.getInstance().getPelletReasoner()
 				.getReasoner();
-		expMan = ExplanationManager.getExplanationManager(reasoner);
+		expMan = ExplanationManager.getInstance(reasoner);
 		expMan.addListener(this);
-		impMan = ImpactManager.getImpactManager(reasoner);
+		impMan = ImpactManager.getInstance(reasoner);
 		impMan.addListener(this);
 		repMan = RepairManager.getRepairManager(reasoner);
 		repMan.addListener(this);
@@ -72,22 +76,23 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	  
     private void showExplanations(){
     	panel.clearExplanationsPanel();
+    	new ExplanationTask(getWizard().getStatusBar()).execute();
     	
-		int counter = 1;
-		Set<List<OWLAxiom>> explanations = expMan.getUnsatisfiableExplanations(unsatClass);
-		
-		for (List<OWLAxiom> explanation : explanations) {
-			panel.addExplanation(explanation, unsatClass, counter);
-			counter++;
-			if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
-				break;
-			}
-		}   	
+//		int counter = 1;
+//		Set<List<OWLAxiom>> explanations = expMan.getUnsatisfiableExplanations(unsatClass);
+//		
+//		for (List<OWLAxiom> explanation : explanations) {
+//			panel.addExplanation(explanation, unsatClass, counter);
+//			counter++;
+//			if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
+//				break;
+//			}
+//		}   	
     }
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return ClassPanelOWLDescriptor.IDENTIFIER;
+        return ClassChoosePanelDescriptor.IDENTIFIER;
     }
     
     @Override
@@ -97,7 +102,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     
     @Override
 	public void aboutToDisplayPanel() {
-    	fillUnsatClassesList();
+    	fillUnsatClassesTable();
         getWizard().getInformationField().setText(INFORMATION);
         
     }
@@ -121,20 +126,20 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	}
 
 	@Override
-	public void axiomForImpactChanged() {
+	public void impactListChanged() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void repairPlanExecuted() {
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		panel.clearExplanationsPanel();	
-		fillUnsatClassesList();
+		fillUnsatClassesTable();
 		panel.repaint();
 		
 	}
 	
-	private void fillUnsatClassesList(){
+	private void fillUnsatClassesTable(){
 		List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
 		Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
 				.getRootUnsatisfiableClasses());
@@ -144,14 +149,13 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		derivedClasses.removeAll(rootClasses);
 		
 		unsatClasses.addAll(derivedClasses);
-		panel.fillUnsatClassesList(unsatClasses);
+		panel.fillUnsatClassesTable(unsatClasses);
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		JXList unsatList = (JXList) e.getSource();
-		unsatClass = (OWLClass)unsatList.getSelectedValue();
-		if (!unsatList.isSelectionEmpty()) {
+		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
+		if (!e.getValueIsAdjusting()) {
 			showExplanations();
 		}
 		
@@ -207,7 +211,55 @@ public class UnsatisfiableExplanationPanelDescriptor extends
             JOptionPane.showMessageDialog(parent, new NotifyPanel(), "Warning", JOptionPane.WARNING_MESSAGE);
     }
 
-	
+	 class ExplanationTask extends SwingWorker<Void, Void>{
+			
+			private StatusBar statusBar;
+			
+			public ExplanationTask(StatusBar statusBar) {
+				this.statusBar = statusBar;
+				
+			}
+
+			@Override
+			public Void doInBackground() {
+				statusBar.showProgress(true);
+				statusBar.setProgressTitle("computing explanations");
+				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				expMan.getUnsatisfiableExplanations(unsatClass);
+				return null;
+			}
+
+			@Override
+			public void done() {
+				statusBar.showProgress(false);
+				statusBar.setProgressTitle("");
+				
+				showExplanations();
+				getWizard().getDialog().setCursor(null);
+			}
+			
+			private void showExplanations(){
+				panel.clearExplanationsPanel();
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						int counter = 1;
+						
+						for (List<OWLAxiom> explanation : expMan.getUnsatisfiableExplanations(unsatClass)) {
+							panel.addExplanation(explanation, unsatClass, counter);
+							counter++;
+							if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
+								break;
+							}
+						}
+						
+					}
+				});
+				
+			}
+
+		}
 
 
 }
