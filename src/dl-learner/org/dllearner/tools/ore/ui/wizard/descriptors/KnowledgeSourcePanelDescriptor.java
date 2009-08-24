@@ -20,19 +20,22 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URI;
 
 import javax.swing.JFileChooser;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.ui.ExtractFromSparqlPanel;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.MetricsPanel;
+import org.dllearner.tools.ore.ui.RecentManager;
+import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;
 import org.protege.editor.core.ui.OpenFromURIPanel;
@@ -43,7 +46,7 @@ import org.protege.editor.core.ui.error.ErrorLogPanel;
  * @author Lorenz Buehmann
  *
  */
-public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener, DocumentListener{
+public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
     public static final String INFORMATION = "Select the type of knowledgesource you want to work with and then enter the URI."
@@ -55,9 +58,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
         
         knowledgePanel = new KnowledgeSourcePanel();
         knowledgePanel.addListeners(this);
-        
-        
-        
+ 
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(knowledgePanel);
         
@@ -65,15 +66,12 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     public void addMetricsPanel(){
     	MetricsPanel metrics = new MetricsPanel(OREManager.getInstance().getPelletReasoner().getOWLOntologyManager());
+    	knowledgePanel.addMetricsPanel(metrics);
     }
     
     @Override
 	public Object getNextPanelDescriptor() {
-    	if(getWizard().getKnowledgeSourceType() == 0){
-    		return ClassPanelOWLDescriptor.IDENTIFIER;
-    	} else{
-    		return ClassPanelSparqlDescriptor.IDENTIFIER;
-    	}
+    		return ClassChoosePanelDescriptor.IDENTIFIER;
     }
     
     @Override
@@ -85,7 +83,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     @Override
 	public void aboutToDisplayPanel() {
         getWizard().getInformationField().setText(INFORMATION);
-//    	setNextButtonAccordingToExistingOWLFile();
+        getWizard().setNextFinishButtonEnabled(false);
     }    
 
     /**
@@ -100,10 +98,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     		handleOpenFromFile();
     	} else if(linkname.equals("loadFromSparqlEndpointLink")){
     		handleLoadFromSparqlEndpoint();
+    	} else {
+    		handleOpenFromRecent(URI.create(((LinkLabel)e.getSource()).getText()));
     	}
-    	
-    	    	
-//        setNextButtonAccordingToExistingOWLFile();
     }
     
     private void handleOpenFromURI() {
@@ -111,7 +108,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
             URI uri = OpenFromURIPanel.showDialog();
             if(uri != null){
             	OREManager.getInstance().setCurrentKnowledgeSource(uri);
-            	OREManager.getInstance().initPelletReasoner();
+            	RecentManager.getInstance().addURI(uri);
+            	RecentManager.getInstance().serialize();
+            	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
             }
         }
         catch (Exception e1) {
@@ -148,8 +147,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			if (filePathString != null && !filePathString.isEmpty()) {
 				OREManager.getInstance().setCurrentKnowledgeSource(
 						new File(filePathString).toURI());
-				OREManager.getInstance().initPelletReasoner();
-//				getWizardModel().getOre().getPelletReasoner().classify();
+				RecentManager.getInstance().addURI(new File(filePathString).toURI());
+            	RecentManager.getInstance().serialize();
+				new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 				
 			}
 
@@ -161,46 +161,49 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	
 	private void handleLoadFromSparqlEndpoint(){
 		
+		OREManager.getInstance().setCurrentKnowledgeSource(
+				ExtractFromSparqlPanel.showDialog());
+		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+	}
+	
+	private void handleOpenFromRecent(URI uri){
+		OREManager.getInstance().setCurrentKnowledgeSource(
+				uri);
+		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 	}
     
     private void showMetrics(){
     	
     }
   
-            
-    
-    private void setNextButtonAccordingToExistingOWLFile() {
-         
-    	if (knowledgePanel.isExistingOWLFile()){
-    		OREManager.getInstance().setCurrentKnowledgeSource(knowledgePanel.getOWLFile().toURI());
-        	getWizard().setNextFinishButtonEnabled(true);
-    	}else{
-            getWizard().setNextFinishButtonEnabled(false); 
-    	}
-    
-    }
-    
-    
-    
-   
-
-	public void changedUpdate(DocumentEvent e) {
-		setNextButtonAccordingToExistingOWLFile();
-		
-	}
-
-	public void insertUpdate(DocumentEvent e) {
-		setNextButtonAccordingToExistingOWLFile();
-		
-	}
-
-	public void removeUpdate(DocumentEvent e) {
-		setNextButtonAccordingToExistingOWLFile();
-		
-	}
     public KnowledgeSourcePanel getPanel() {
 		return knowledgePanel;
 	}
-  
+    
+    class OntologyLoadingTask extends SwingWorker<Void, Void>{
+		
+		private StatusBar statusBar;
+		
+		public OntologyLoadingTask(StatusBar statusBar) {		
+			this.statusBar = statusBar;				
+		}
 
+		@Override
+		public Void doInBackground() {
+			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			statusBar.showProgress(true);
+			statusBar.setProgressTitle("loading ontology");
+        	OREManager.getInstance().initPelletReasoner();
+
+			return null;
+		}
+
+		@Override
+		public void done() {
+			statusBar.showProgress(false);
+			statusBar.setProgressTitle("ontology loaded");
+			getWizard().getDialog().setCursor(null);
+			getWizard().setNextFinishButtonEnabled(true);
+		}
+	}
 }

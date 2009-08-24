@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
-import org.dllearner.tools.ore.ImpactManagerListener;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
@@ -14,8 +13,9 @@ import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.InconsistencyExplanationPanel;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLOntologyChange;
 
-public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ImpactManagerListener, RepairManagerListener{
+public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener,  RepairManagerListener{
 	public static final String IDENTIFIER = "INCONSISTENCY_PANEL";
     public static final String INFORMATION = "";
 
@@ -35,9 +35,10 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 	public void init() {
 		reasoner = OREManager.getInstance().getPelletReasoner()
 				.getReasoner();
-		expMan = ExplanationManager.getExplanationManager(reasoner);
-		impMan = ImpactManager.getImpactManager(reasoner);
-		impMan.addListener(this);
+		expMan = ExplanationManager.getInstance(reasoner);
+		expMan.setComputeAllExplanationsMode(true);
+		impMan = ImpactManager.getInstance(reasoner);
+//		impMan.addListener(this);
 		repMan = RepairManager.getRepairManager(reasoner);
 		repMan.addListener(this);
 		panel = new InconsistencyExplanationPanel(expMan, impMan, repMan);
@@ -92,7 +93,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return ClassPanelOWLDescriptor.IDENTIFIER;
+        return ClassChoosePanelDescriptor.IDENTIFIER;
     }
     
     @Override
@@ -119,24 +120,17 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 	}
 
 	@Override
-	public void axiomForImpactChanged() {
+	public void repairPlanChanged() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void repairPlanExecuted() {
-		
-		
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
+
 		showExplanations();
 		panel.repaint();
 		setNextButtonEnabled2ConsistentOntology();
-		
-	}
-
-	@Override
-	public void repairPlanChanged() {
-		// TODO Auto-generated method stub
 		
 	}
 	

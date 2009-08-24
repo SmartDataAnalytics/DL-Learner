@@ -11,9 +11,10 @@ import org.dllearner.tools.ore.explanation.AxiomRanker;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-public class ImpactManager {
+public class ImpactManager implements RepairManagerListener{
 	
 	private static ImpactManager instance;
 	private Map<OWLAxiom, Set<OWLAxiom>> impact;
@@ -33,6 +34,7 @@ public class ImpactManager {
 		selectedAxioms = new ArrayList<OWLAxiom>();
 		listeners = new ArrayList<ImpactManagerListener>();
 		ranker = new AxiomRanker(ontology, reasoner, manager);
+		RepairManager.getRepairManager(reasoner).addListener(this);
 
 	}
 	
@@ -48,7 +50,7 @@ public class ImpactManager {
 		listeners.remove(listener);
 	}
 
-	public static synchronized ImpactManager getImpactManager(Reasoner reasoner) {
+	public static synchronized ImpactManager getInstance(Reasoner reasoner) {
 		if (instance == null) {
 			instance = new ImpactManager(reasoner);
 		}
@@ -85,18 +87,18 @@ public class ImpactManager {
 	
 	public void setActualAxiom(OWLAxiom ax){
 		actual = ax;
-		fireAxiomForImpactChanged();
+		fireImpactListChanged();
 	}
 	
 	public void addAxiom2ImpactList(OWLAxiom ax){
 		selectedAxioms.add(ax);
 		
-		fireAxiomForImpactChanged();
+		fireImpactListChanged();
 	}
 	
 	public void removeAxiomFromImpactList(OWLAxiom ax){
 		selectedAxioms.remove(ax);
-		fireAxiomForImpactChanged();
+		fireImpactListChanged();
 	}
 	
 	public boolean isSelected(OWLAxiom ax){
@@ -104,10 +106,24 @@ public class ImpactManager {
 	}
 	
 	
-	private void fireAxiomForImpactChanged(){
+	private void fireImpactListChanged(){
 		for(ImpactManagerListener listener : listeners){
-			listener.axiomForImpactChanged();
+			listener.impactListChanged();
 		}
+	}
+
+	@Override
+	public void repairPlanChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
+		selectedAxioms.clear();
+		impact.clear();
+		fireImpactListChanged();
+		
 	}
 	
 

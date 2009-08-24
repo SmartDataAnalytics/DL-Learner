@@ -37,7 +37,7 @@ import javax.swing.border.BevelBorder;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -51,7 +51,6 @@ public class StatsPanel extends JPanel{
 	
 	private static final long serialVersionUID = -8418286820511803278L;
 	
-	private ORE ore;
 	private OntologyModifier modifier;
 	private Individual ind;
 	private Set<NamedClass> oldClasses;
@@ -70,10 +69,10 @@ public class StatsPanel extends JPanel{
 	private String baseURI;
 	private Map<String, String> prefixes;
 	
-	public StatsPanel(ORE ore, Individual ind){
+	public StatsPanel(Individual ind){
 		super();
-		this.ore = ore;
-		this.modifier = ore.getModifier();
+
+		this.modifier = OREManager.getInstance().getModifier();
 		this.ind = ind;
 		
 	}
@@ -82,8 +81,8 @@ public class StatsPanel extends JPanel{
 	 * Initializes the panel. 
 	 */
 	public void init(){
-		prefixes = ore.getPrefixes();
-		baseURI = ore.getBaseURI();
+		prefixes = OREManager.getInstance().getPrefixes();
+		baseURI = OREManager.getInstance().getBaseURI();
 		
 		newIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/new.gif");
 		
@@ -102,7 +101,7 @@ public class StatsPanel extends JPanel{
            
         classPane = new JXTaskPane();
         classPane.setTitle("Classes");
-        oldClasses = ore.getPelletReasoner().getTypes(ind);
+        oldClasses = OREManager.getInstance().getPelletReasoner().getTypes(ind);
        	for(NamedClass nc : oldClasses){
 			classPane.add(new JLabel(nc.toManchesterSyntaxString(baseURI, prefixes)));
        	}
@@ -156,7 +155,7 @@ public class StatsPanel extends JPanel{
 		classPane.removeAll();
 				
 		Set<String> newClassesString = new HashSet<String>();
-		for (NamedClass nc : ore.getPelletReasoner().getTypes(ind)){
+		for (NamedClass nc : OREManager.getInstance().getPelletReasoner().getTypes(ind)){
 			newClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
 		}
 		Set<String> oldClassesString = new HashSet<String>();

@@ -30,8 +30,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.dllearner.tools.ore.ui.wizard.Wizard;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.descriptors.ClassPanelOWLDescriptor;
-import org.dllearner.tools.ore.ui.wizard.descriptors.ClassPanelSparqlDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.IntroductionPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
@@ -79,20 +78,17 @@ public class OREApplication {
         WizardPanelDescriptor descriptor2 = new KnowledgeSourcePanelDescriptor();
         wizard.registerWizardPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER, descriptor2);
 
-        WizardPanelDescriptor descriptor3 = new ClassPanelOWLDescriptor();
-        wizard.registerWizardPanel(ClassPanelOWLDescriptor.IDENTIFIER, descriptor3);
+        WizardPanelDescriptor descriptor3 = new ClassChoosePanelDescriptor();
+        wizard.registerWizardPanel(ClassChoosePanelDescriptor.IDENTIFIER, descriptor3);
         
-        WizardPanelDescriptor descriptor4 = new ClassPanelSparqlDescriptor();
-        wizard.registerWizardPanel(ClassPanelSparqlDescriptor.IDENTIFIER, descriptor4);
+        WizardPanelDescriptor descriptor4 = new LearningPanelDescriptor();
+        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor4);
         
-        WizardPanelDescriptor descriptor5 = new LearningPanelDescriptor();
-        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor5);
+        WizardPanelDescriptor descriptor5 = new RepairPanelDescriptor();
+        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor5);
         
-        WizardPanelDescriptor descriptor6 = new RepairPanelDescriptor();
-        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor6);
-        
-        WizardPanelDescriptor descriptor7 = new SavePanelDescriptor();
-        wizard.registerWizardPanel(SavePanelDescriptor.IDENTIFIER, descriptor7);
+        WizardPanelDescriptor descriptor6 = new SavePanelDescriptor();
+        wizard.registerWizardPanel(SavePanelDescriptor.IDENTIFIER, descriptor6);
         
         if (!(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);

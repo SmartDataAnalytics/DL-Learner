@@ -9,6 +9,7 @@ import javax.swing.table.AbstractTableModel;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLOntologyChange;
 
 public class RepairTableModel extends AbstractTableModel implements RepairManagerListener{
 
@@ -55,7 +56,7 @@ public class RepairTableModel extends AbstractTableModel implements RepairManage
 
 
 	@Override
-	public void repairPlanExecuted() {
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		rebuildData();
 		
 	}

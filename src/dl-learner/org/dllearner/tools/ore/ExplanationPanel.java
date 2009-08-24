@@ -34,7 +34,7 @@ import org.dllearner.tools.ore.ui.ClassificationProgressMonitor;
 import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ImpactTable;
 import org.dllearner.tools.ore.ui.StatusBar;
-import org.dllearner.tools.ore.ui.UnsatClassesListCellRenderer;
+import org.dllearner.tools.ore.ui.UnsatClassesTableCellRenderer;
 import org.dllearner.tools.ore.ui.wizard.panels.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.wizard.panels.RepairPlanPanel;
 import org.jdesktop.swingx.JXList;
@@ -46,11 +46,12 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class ExplanationPanel extends JPanel implements ListSelectionListener,
-		ActionListener,ImpactManagerListener, ExplanationManagerListener{
+		ActionListener,ImpactManagerListener, ExplanationManagerListener, RepairManagerListener{
 
 	private JXList unsatList;
 	private JSplitPane splitPane;
@@ -64,7 +65,7 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	private JRadioButton regularButton;
 	private JRadioButton laconicButton;
 
-	private UnsatClassesListCellRenderer listRenderer;
+	private UnsatClassesTableCellRenderer listRenderer;
 
 	private ExplanationManager expManager;
 	private ImpactManager impManager;
@@ -91,11 +92,11 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 
 		Dimension minimumSize = new Dimension(400, 400);
 
-		listRenderer = new UnsatClassesListCellRenderer(expManager);
+		listRenderer = new UnsatClassesTableCellRenderer(expManager);
 		unsatList = new JXList();
 		fillUnsatClassesList();
 		unsatList.addListSelectionListener(this);
-		unsatList.setCellRenderer(listRenderer);
+//		unsatList.setCellRenderer(listRenderer);
 		listScrollPane = new JScrollPane(unsatList);
 		listScrollPane.setPreferredSize(minimumSize);
 
@@ -298,13 +299,13 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 	}
 	
 	@Override
-	public void axiomForImpactChanged() {
+	public void impactListChanged() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void repairPlanExecuted() {
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		explanationsPanel.removeAll();
 		
 		fillUnsatClassesList();
@@ -369,8 +370,8 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 			
 			
 			ExplanationManager expManager = ExplanationManager
-					.getExplanationManager(reasoner);
-			ImpactManager impManager = ImpactManager.getImpactManager(
+					.getInstance(reasoner);
+			ImpactManager impManager = ImpactManager.getInstance(
 					reasoner);
 			RepairManager repManager= RepairManager.getRepairManager(reasoner);
 			ExplanationPanel panel = new ExplanationPanel(expManager,
@@ -408,6 +409,12 @@ public class ExplanationPanel extends JPanel implements ListSelectionListener,
 
 	@Override
 	public void explanationTypeChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanChanged() {
 		// TODO Auto-generated method stub
 		
 	}

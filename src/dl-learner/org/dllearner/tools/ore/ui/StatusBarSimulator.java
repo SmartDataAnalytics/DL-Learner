@@ -50,7 +50,7 @@ public class StatusBarSimulator {
 
 		    statusBar = new StatusBar();
 		    statusBar.setMessage("loading ontology");
-		    ore.getPelletReasoner().getReasoner().getKB().getTaxonomyBuilder().setProgressMonitor(statusBar);
+//		    ore.getPelletReasoner().getReasoner().getKB().getTaxonomyBuilder().setProgressMonitor(statusBar);
 //		    reasoner.getKB().getTaxonomyBuilder().setProgressMonitor(statusBar);
 		   
 		    contentPane.add(statusBar, BorderLayout.SOUTH);
@@ -72,7 +72,7 @@ public class StatusBarSimulator {
 	      @Override
 	      public Void doInBackground() {
 	         
-//	          statusBar.showProgress(true);
+	          statusBar.showProgress(true);
 //	          statusBar.setMessage("loading ontology");
 	          Timer t1 = new Timer("load");t1.start();
 //	          reasoner.classify();

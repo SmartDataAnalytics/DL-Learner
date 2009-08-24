@@ -8,9 +8,12 @@ import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.ImpactManagerListener;
+import org.dllearner.tools.ore.RepairManager;
+import org.dllearner.tools.ore.RepairManagerListener;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLOntologyChange;
 
-public class ImpactTableModel extends AbstractTableModel implements ImpactManagerListener
+public class ImpactTableModel extends AbstractTableModel implements ImpactManagerListener, RepairManagerListener
 {
 
 	/**
@@ -56,13 +59,20 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 
     
 	@Override
-	public void axiomForImpactChanged() {
+	public void impactListChanged() {
 		rebuildData();
 		
 	}
 
+
 	@Override
-	public void repairPlanExecuted() {
+	public void repairPlanChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		rebuildData();
 		
 	}

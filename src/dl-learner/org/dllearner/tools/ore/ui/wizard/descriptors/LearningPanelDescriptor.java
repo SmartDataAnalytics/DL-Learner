@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -27,17 +28,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.ui.ColumnListCellRenderer;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
 
@@ -51,12 +51,12 @@ import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
 public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
     
     public static final String IDENTIFIER = "LEARNING_PANEL";
-    public static final String INFORMATION = "In this panel you can start the learning algorithm. While it ist running, " 
+    public static final String INFORMATION = "In this panel you can start the learning algorithm. While it is running, " 
 	 										+ "temporary results are shown in the list above. Select one of them and press Next";
     
     private LearningPanel learnPanel;
-    private LearnSwingWorker worker;
-    private LearningAlgorithm la;
+    private LearningTask worker;
+    private CELOE la;
     private Timer timer;
    
     
@@ -80,7 +80,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
     @Override
 	public Object getBackPanelDescriptor() {
-        return ClassPanelOWLDescriptor.IDENTIFIER;
+        return ClassChoosePanelDescriptor.IDENTIFIER;
     }
     
    
@@ -102,8 +102,8 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //				range);
 //		Description de = new NamedClass("http://example.com/father#male");
 		
-		if (!e.getValueIsAdjusting()){
-			OREManager.getInstance().setNewClassDescription(((EvaluatedDescriptionClass) (learnPanel.getResultList().getSelectedValue()))); 					
+		if (!e.getValueIsAdjusting() && (worker.isDone() || worker.isCancelled())){
+			OREManager.getInstance().setNewClassDescription(learnPanel.getResultTable().getSelectedValue()); 					
 		}
 		
 	}
@@ -114,11 +114,12 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
-			learnPanel.getListModel().clear();
+			learnPanel.getResultTable().clear();
 			learnPanel.getStartButton().setEnabled(false);
 	        learnPanel.getStopButton().setEnabled(true);
-	        
-	        worker = new LearnSwingWorker();
+	        OREManager.getInstance().setLearningAlgorithm();
+	       
+	        worker = new LearningTask();
 	        worker.execute();
 		} else{
 			
@@ -126,8 +127,10 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			la.stop();
 	        timer.cancel();
 			learnPanel.getStartButton().setEnabled(true);
-	        learnPanel.getStatusLabel().setText("Algorithm aborted");
-	        learnPanel.getLoadingLabel().setBusy(false);
+			getWizard().getStatusBar().showProgress(false);
+			getWizard().getStatusBar().setProgressTitle("learning aborted");
+//	        learnPanel.getStatusLabel().setText("Algorithm aborted");
+//	        learnPanel.getLoadingLabel().setBusy(false);
 	        
 		}
 		
@@ -135,7 +138,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 	private void setNextButtonAccordingToConceptSelected() {
 	    
-		if (learnPanel.getResultList().getSelectedValue()!= null){
+		if (learnPanel.getResultTable().getSelectedRow() >= 0){
 			getWizard().setNextFinishButtonEnabled(true);
 		}else{
 			getWizard().setNextFinishButtonEnabled(false);
@@ -147,7 +150,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 * Returns the swing worker thread instance.
 	 * @return swing worker
 	 */
-	public LearnSwingWorker getWorkerThread(){
+	public LearningTask getWorkerThread(){
 		return worker;
 	}
 	
@@ -171,8 +174,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 * Clear list and loading message.
 	 */
 	public void setPanelDefaults(){
-		learnPanel.getListModel().clear();
-		learnPanel.getStatusLabel().setText("");
+		learnPanel.getResultTable().clear();
 	}
 
 
@@ -181,18 +183,20 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 * @author Lorenz Buehmann
 	 *
 	 */
-	class LearnSwingWorker extends SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
+	class LearningTask extends SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
 		    	
     	private Thread t;
     	
 		@SuppressWarnings("unchecked")
 		@Override
 		public List<? extends EvaluatedDescription> doInBackground() {
-			
-//			learnPanel.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
-			learnPanel.getLoadingLabel().setBusy(true);
-			learnPanel.getStatusLabel().setText("Learning");
-//			OREManager.getInstance().setNoise(learnPanel.getNoise());
+			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			getWizard().getStatusBar().showProgress(true);
+			getWizard().getStatusBar().setProgressTitle("learning class expressions");
+
+//			learnPanel.getLoadingLabel().setBusy(true);
+//			learnPanel.getStatusLabel().setText("Learning");
+
 			la = OREManager.getInstance().getLa();
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
@@ -205,21 +209,17 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				}
 				
 			}, 1000, 2000);
-			
-			
+				
 			t = new Thread(new Runnable(){
 
 				@Override
-				public void run() {
-					
+				public void run() {					
 					OREManager.getInstance().start();
-				}
-				
+				}				
 			});
-//			t.setPriority(Thread.MIN_PRIORITY);
+
 			t.start();
-			
-			
+					
 			try {
 				t.join();
 			} catch (InterruptedException e) {
@@ -243,12 +243,14 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
-			
+			getWizard().getDialog().setCursor(null);
+			getWizard().getStatusBar().showProgress(false);
+			getWizard().getStatusBar().setProgressTitle("class expressions successfully learned");
 			learnPanel.getStartButton().setEnabled(true);
 			learnPanel.getStopButton().setEnabled(false);
 			updateList(result);
-			learnPanel.getLoadingLabel().setBusy(false);
-			learnPanel.getStatusLabel().setText("Algorithm terminated successfully.");
+//			learnPanel.getLoadingLabel().setBusy(false);
+//			learnPanel.getStatusLabel().setText("Algorithm terminated successfully.");
 		}
 
 		@Override
@@ -262,18 +264,9 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		private void updateList(final List<? extends EvaluatedDescription> result) {
 			
 			Runnable doUpdateList = new Runnable() {
-				
-				
-				DefaultListModel dm = new DefaultListModel();
+							
 				public void run() {
-//					learnPanel.getListModel().clear();
-					for (EvaluatedDescription d : result) {
-						dm.addElement(d);
-//						panel4.getModel().addElement(d);
-						
-					}
-					learnPanel.getResultList().setModel(dm);
-
+					learnPanel.getResultTable().addResults((List<EvaluatedDescriptionClass>) result);
 				}
 			};
 			SwingUtilities.invokeLater(doUpdateList);

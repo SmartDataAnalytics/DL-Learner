@@ -21,7 +21,6 @@ package org.dllearner.tools.ore;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -34,16 +33,10 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
-
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
 
 /**
  * Test class for SPARQL mode.
@@ -55,7 +48,7 @@ public class SPARQLTest {
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws MalformedURLException {
-		String exampleClass = "http://dbpedia.org/class/yago/LeadersOfPoliticalParties";
+		String exampleClass = "http://dbpedia.org/ontology/HistoricPlace";
 		String exampleClassKBString = "\"" + exampleClass + "\"";
 		
 		ComponentManager cm = ComponentManager.getInstance();
@@ -104,7 +97,7 @@ public class SPARQLTest {
 			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
 			ks.getConfigurator().setInstances(instances);
 			ks.getConfigurator().setPredefinedFilter("YAGO");
-			ks.getConfigurator().setSaveExtractedFragment(true);
+//			ks.getConfigurator().setSaveExtractedFragment(true);
 			ks.init();
 			ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
 			reasoner.init();

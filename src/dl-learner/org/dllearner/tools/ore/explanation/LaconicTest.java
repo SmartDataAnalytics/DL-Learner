@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.explanation;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Collections;
@@ -131,8 +130,8 @@ public class LaconicTest {
 //						.getExplanations(unsatAxiom);
 //				renderer.render(unsatAxiom, preciseJusts);
 //			}
-			Set<Set<OWLAxiom>> preciseJusts = expGen.getExplanations(unsatAxiom);
-			renderer.render(unsatAxiom, preciseJusts);
+			Set<Explanation> preciseJusts = expGen.getExplanations(unsatAxiom);
+//			renderer.render(unsatAxiom, preciseJusts);
 			renderer.endRendering();
 
 		} catch (OWLOntologyCreationException e) {
@@ -145,10 +144,7 @@ public class LaconicTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 	
 	public static void miniTest(){
@@ -171,8 +167,8 @@ public class LaconicTest {
 			OWLSubClassAxiom unsatAxiom = factory.getOWLSubClassAxiom(c, factory.getOWLNothing());
 			
 			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(manager, resonerFact, Collections.singleton(ontology));
-			Set<Set<OWLAxiom>> preciseJusts = expGen.getExplanations(unsatAxiom);
-			renderer.render(unsatAxiom, preciseJusts);
+			Set<Explanation> preciseJusts = expGen.getExplanations(unsatAxiom);
+//			renderer.render(unsatAxiom, preciseJusts);
 			renderer.endRendering();
 			expGen.returnSourceAxioms(preciseJusts);
 			
@@ -189,9 +185,6 @@ public class LaconicTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OWLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -230,13 +223,13 @@ public class LaconicTest {
 			
 
 			 
-			 Set<Set<OWLAxiom>> regularJusts = expGen.getRegularExplanations(axiom);
+			 Set<Explanation> regularJusts = expGen.getRegularExplanations(axiom);
 			 System.out.println("Regular explanations:");
-			 renderer.render(axiom, regularJusts);
+//			 renderer.render(axiom, regularJusts);
 			 
-			Set<Set<OWLAxiom>> preciseJusts = expGen.getExplanations(axiom);
+			Set<Explanation> preciseJusts = expGen.getExplanations(axiom);
 			System.out.println("Precise explanations:");
-			renderer.render(axiom, preciseJusts);
+//			renderer.render(axiom, preciseJusts);
 			
 
 			renderer.endRendering();
@@ -251,9 +244,6 @@ public class LaconicTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }
