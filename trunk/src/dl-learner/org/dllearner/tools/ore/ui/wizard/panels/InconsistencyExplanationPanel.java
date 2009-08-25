@@ -97,7 +97,7 @@ public class InconsistencyExplanationPanel extends JPanel{
 		repairPanelHolder.setOpaque(false);
 		repairPanelHolder.setLayout(new BorderLayout());
 		repairPanelHolder.add(new JLabel("Repair plan"), BorderLayout.NORTH);
-		RepairPlanPanel repairPanel = new RepairPlanPanel(repMan); 
+		RepairPlanPanel repairPanel = new RepairPlanPanel(); 
 		repairPanelHolder.add(repairPanel);
 		
 		
@@ -116,7 +116,7 @@ public class InconsistencyExplanationPanel extends JPanel{
 	}
 	
 	public void addExplanation(List<OWLAxiom> explanation, int counter){
-		ExplanationTable expTable = new ExplanationTable(explanation, repMan, impMan, expMan, OWLManager.createOWLOntologyManager().getOWLDataFactory().getOWLThing());
+		ExplanationTable expTable = new ExplanationTable(explanation, OWLManager.createOWLOntologyManager().getOWLDataFactory().getOWLThing());
 		explanationsPanel.add(new ExplanationTablePanel(expTable, counter));
 		
 		explanationsPanel.add(Box.createVerticalStrut(10));

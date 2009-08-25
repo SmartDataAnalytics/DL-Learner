@@ -1,12 +1,12 @@
 package org.dllearner.tools.ore.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
@@ -19,22 +19,17 @@ public class ExplanationTableModel extends AbstractTableModel {
 	 */
 	private static final long serialVersionUID = -4537633628250304813L;
 	private List<OWLAxiom> axioms;
-	private List<Boolean> remove;
 	private ExplanationManager expMan;
 	private ImpactManager impMan;
 	private RepairManager repMan;
 	private OWLClass unsat;
 	
-	public ExplanationTableModel(List<OWLAxiom> axioms, ExplanationManager expMan, ImpactManager impMan, RepairManager repMan, OWLClass cl){
+	public ExplanationTableModel(List<OWLAxiom> axioms, OWLClass cl){
 		this.axioms = axioms;
-		this.expMan = expMan;
-		this.impMan = impMan;
-		this.repMan = repMan;
+		this.expMan = ExplanationManager.getInstance(OREManager.getInstance());
+		this.impMan = ImpactManager.getInstance(OREManager.getInstance());
+		this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
 		this.unsat = cl;
-		remove = new ArrayList<Boolean>();
-		for(int i = 0; i < axioms.size(); i++){
-			remove.add(false);
-		}
 	}
 	
 	@Override
@@ -49,8 +44,10 @@ public class ExplanationTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(columnIndex == 0 && rowIndex >=0){
-			return axioms.get(rowIndex);
+		if(columnIndex == 0){
+//			return getOWLAxiomAtRow(rowIndex);
+			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
+			return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax));
 		} else if(columnIndex == 1){
 			return expMan.getArity(unsat, axioms.get(rowIndex));
 		} else if(columnIndex == 2) {

@@ -1,4 +1,4 @@
-package org.dllearner.tools.ore.ui;
+package org.dllearner.tools.ore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

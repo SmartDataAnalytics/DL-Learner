@@ -18,6 +18,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
 
+import org.dllearner.tools.ore.MouseOverHintManager;
+
  
 
  

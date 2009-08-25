@@ -7,7 +7,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
@@ -26,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ImpactTable;
@@ -56,32 +58,30 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	private JRadioButton computeAllExplanationsRadioButton;
     private  JRadioButton computeMaxExplanationsRadioButton;
 	private JSpinner maxExplanationsSelector;
-
-
-	private ExplanationManager expMan;
-	private ImpactManager impMan;
-	private RepairManager repMan;
 	
+	private Set<ExplanationTablePanel> explanationPanels;
+
 	
 	private OWLClass unsatClass;
 	
-	public UnsatisfiableExplanationPanel(ExplanationManager expMan, ImpactManager impMan, RepairManager repMan){
-		this.expMan = expMan;
-		this.impMan = impMan;
-		this.repMan = repMan;
+	public UnsatisfiableExplanationPanel(){
+	
 		
 		setLayout(new BorderLayout());
 
 		Dimension minimumSize = new Dimension(400, 400);
 
 		unsatClassesTable = new UnsatisfiableClassesTable();
-		unsatClassesTable.getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
+		unsatClassesTable.getColumn(0).setCellRenderer
+		(new UnsatClassesTableCellRenderer(ExplanationManager.getInstance(OREManager.getInstance())));
 		
 
 		listScrollPane = new JScrollPane(unsatClassesTable);
 		listScrollPane.setPreferredSize(minimumSize);
 
 		explanationsPanel = new Box(1);
+		
+		explanationPanels = new HashSet<ExplanationTablePanel>();
 
 		JPanel pan = new JPanel(new BorderLayout());
 		pan.add(explanationsPanel, BorderLayout.NORTH);
@@ -168,11 +168,11 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		JPanel impactPanel = new JPanel();
 		impactPanel.setLayout(new BorderLayout());
 		impactPanel.add(new JLabel("Lost entailments"), BorderLayout.NORTH);
-		JScrollPane impScr = new JScrollPane(new ImpactTable(impMan));
+		JScrollPane impScr = new JScrollPane(new ImpactTable());
 		impactPanel.add(impScr);
 		impRepSplit.setRightComponent(impactPanel);
 		
-		RepairPlanPanel repairPanel = new RepairPlanPanel(repMan); 
+		RepairPlanPanel repairPanel = new RepairPlanPanel(); 
 		impRepSplit.setLeftComponent(repairPanel);
 		
 		
@@ -197,17 +197,25 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	
 	public void clearExplanationsPanel() {		
 		explanationsPanel.removeAll();
+		explanationsPanel.validate();
 	}
 
 	public void addExplanation(List<OWLAxiom> explanation, OWLClass unsat, int counter) {
-		ExplanationTable expTable = new ExplanationTable(explanation, repMan, impMan,
-				expMan, unsat);
-		explanationsPanel.add(new ExplanationTablePanel(expTable, counter));
+		ExplanationTable expTable = new ExplanationTable(explanation, unsat);
+		ExplanationTablePanel panel = new ExplanationTablePanel(expTable, counter);
+		explanationsPanel.add(panel);
+		
+		explanationPanels.add(panel);
 
 		explanationsPanel.add(Box.createVerticalStrut(10));
-		explanationsPanel.add(new JSeparator());
-		explanationsPanel.add(Box.createVerticalStrut(10));
-		this.updateUI();
+		
+//		explanationsPanel.add(new JSeparator());
+//		explanationsPanel.add(Box.createVerticalStrut(10));
+//		this.updateUI();
+	}
+	
+	public void validate(){
+		explanationsScrollPane.validate();
 	}
 	
 	public void setMaxExplanationsMode(boolean value){

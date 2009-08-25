@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
@@ -48,7 +49,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		laconicExplanationCache = new HashMap<OWLAxiom, Set<Explanation>>();
 		lastRequestedRegularSize = new HashMap<OWLAxiom, Integer>();
 		lastRequestedLaconicSize = new HashMap<OWLAxiom, Integer>();
-		RepairManager.getRepairManager(reasoner).addListener(this);
+		RepairManager.getRepairManager(OREManager.getInstance()).addListener(this);
 //		regularExpGen = new PelletExplanation(manager, Collections.singleton(ontology));
 //		laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(ontology));
 
@@ -144,17 +145,27 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
+		Map<OWLAxiom, Set<Explanation>> copy = new HashMap<OWLAxiom, Set<Explanation>>();
 		for(OWLOntologyChange change : changes){
-			if(change instanceof RemoveAxiom){System.out.println(changes);
+			if(change instanceof RemoveAxiom){
 				for(Entry<OWLAxiom, Set<Explanation>> entry: regularExplanationCache.entrySet()){
+					Set<Explanation> explanationsCopy = new HashSet<Explanation>();
 					for(Explanation explanation : entry.getValue()){
 						if(explanation.getAxioms().contains(change.getAxiom())){
-							entry.getValue().remove(explanation);System.out.println("test");
+							explanationsCopy.add(explanation);
 						}
 					}
+					if(!explanationsCopy.isEmpty()){
+						copy.put(entry.getKey(), explanationsCopy);
+					}
+					
 					
 				}
 			}
+		}
+		for(Entry<OWLAxiom, Set<Explanation>> copyEntry : copy.entrySet()){
+			regularExplanationCache.get(copyEntry.getKey()).removeAll(copyEntry.getValue());
+			
 		}
 		
 	}

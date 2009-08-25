@@ -57,13 +57,13 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	public void init() {
 		reasoner = OREManager.getInstance().getPelletReasoner()
 				.getReasoner();
-		expMan = ExplanationManager.getInstance(reasoner);
+		expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		expMan.addListener(this);
-		impMan = ImpactManager.getInstance(reasoner);
+		impMan = ImpactManager.getInstance(OREManager.getInstance());
 		impMan.addListener(this);
-		repMan = RepairManager.getRepairManager(reasoner);
+		repMan = RepairManager.getRepairManager(OREManager.getInstance());
 		repMan.addListener(this);
-		panel = new UnsatisfiableExplanationPanel(expMan, impMan, repMan);
+		panel = new UnsatisfiableExplanationPanel();
 		panel.addActionListeners(this);
 		panel.addListSelectionListener(this);
 		panel.addChangeListener(this);
@@ -75,7 +75,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	}
 	  
     private void showExplanations(){
-    	panel.clearExplanationsPanel();
+//    	panel.clearExplanationsPanel();
     	new ExplanationTask(getWizard().getStatusBar()).execute();
     	
 //		int counter = 1;
@@ -155,7 +155,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
-		if (!e.getValueIsAdjusting()) {
+		if (!e.getValueIsAdjusting() && unsatClass != null) {
 			showExplanations();
 		}
 		
@@ -233,17 +233,18 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 			public void done() {
 				statusBar.showProgress(false);
 				statusBar.setProgressTitle("");
-				
-				showExplanations();
 				getWizard().getDialog().setCursor(null);
+				showExplanations();
+				
 			}
 			
 			private void showExplanations(){
-				panel.clearExplanationsPanel();
+				
 				SwingUtilities.invokeLater(new Runnable() {
 					
 					@Override
 					public void run() {
+						panel.clearExplanationsPanel();
 						int counter = 1;
 						
 						for (List<OWLAxiom> explanation : expMan.getUnsatisfiableExplanations(unsatClass)) {
@@ -253,7 +254,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 								break;
 							}
 						}
-						
+						panel.validate();
 					}
 				});
 				

@@ -35,11 +35,11 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 	public void init() {
 		reasoner = OREManager.getInstance().getPelletReasoner()
 				.getReasoner();
-		expMan = ExplanationManager.getInstance(reasoner);
+		expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		expMan.setComputeAllExplanationsMode(true);
-		impMan = ImpactManager.getInstance(reasoner);
+		impMan = ImpactManager.getInstance(OREManager.getInstance());
 //		impMan.addListener(this);
-		repMan = RepairManager.getRepairManager(reasoner);
+		repMan = RepairManager.getRepairManager(OREManager.getInstance());
 		repMan.addListener(this);
 		panel = new InconsistencyExplanationPanel(expMan, impMan, repMan);
 		panel.addActionListeners(this);

@@ -64,7 +64,7 @@ public class ManchesterSyntaxTableCellRenderer extends DefaultTableCellRenderer 
 				} 
 			}
 			if(isReserved){
-				bf.append("<font color=" + color + ">" + token + " </font>");
+				bf.append("<b><font color=" + color + ">" + token + " </font></b>");
 			} else {
 				bf.append(" " + token + " ");
 			}

@@ -20,43 +20,39 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.dllearner.tools.ore.ExplanationManager;
-import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.protege.editor.core.Disposable;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
-public class ExplanationTable extends JXTable implements RepairManagerListener{
+public class ExplanationTable extends JXTable implements RepairManagerListener, Disposable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5580730282611559609L;
 	
-	private List<OWLAxiom> explanation;
 	private RepairManager repMan;
-	private ImpactManager impMan;
 	
-	public ExplanationTable(List<OWLAxiom> explanation, RepairManager repMan,
-			ImpactManager impMan, ExplanationManager expMan, OWLClass cl) {
-		this.explanation = explanation;
-		this.repMan = repMan;
-		this.impMan = impMan;
+	public ExplanationTable(List<OWLAxiom> explanation, OWLClass cl) {
+		
+		repMan = RepairManager.getRepairManager(OREManager.getInstance());
+		
 		repMan.addListener(this);
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		setModel(new ExplanationTableModel(explanation, expMan, impMan, repMan,
-				cl));
-		getColumn(0).setCellRenderer(new OWLSyntaxTableCellRenderer(repMan));
+		setModel(new ExplanationTableModel(explanation,	cl));
 		TableColumn column4 = getColumn(3);
 		column4.setCellRenderer(new ButtonCellRenderer());
 		column4.setCellEditor(new ButtonCellEditor());
 		column4.setResizable(false);
+		setRowHeight(getRowHeight() + 4);
 		setColumnSizes();
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
@@ -113,10 +109,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener{
 		});
 	}
 	
-	private OWLAxiom getOWLAxiomAtRow(int rowIndex){
-		return ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex);
-	}
-	
+		
 	private void setColumnSizes(){
 		getColumn(1).setMaxWidth(30);
 		getColumn(2).setMaxWidth(30);
@@ -124,14 +117,6 @@ public class ExplanationTable extends JXTable implements RepairManagerListener{
 	}
 	
 	private void changeSelection() {
-
-//		
-//		if(getSelectedRow() >=0){
-//			OWLAxiom rowAxiom = getOWLAxiomAtRow(getSelectedRow());
-//			impMan.setActualAxiom(rowAxiom);
-//		} else {
-//			impMan.setActualAxiom(null);
-//		}
 
 	}
 	
@@ -211,6 +196,14 @@ public class ExplanationTable extends JXTable implements RepairManagerListener{
 		repaint();
 		
 	}
+
+	@Override
+	public void dispose() throws Exception {
+		repMan.removeListener(this);
+		
+	}
+	
+
 	
 
 	

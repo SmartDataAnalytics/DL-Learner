@@ -1,4 +1,4 @@
-package org.dllearner.tools.ore.ui;
+package org.dllearner.tools.ore;
 
 import java.awt.Component;
 import java.awt.Container;

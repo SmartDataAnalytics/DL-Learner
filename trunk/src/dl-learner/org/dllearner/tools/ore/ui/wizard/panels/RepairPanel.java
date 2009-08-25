@@ -41,9 +41,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
-import org.dllearner.tools.ore.ORE;
-import org.dllearner.tools.ore.ui.ColorListCellRenderer;
-
 /**
  * JPanel for repairing action.
  * @author Lorenz Buehmann
@@ -290,15 +287,6 @@ public class RepairPanel extends JPanel{
 		negList.addMouseListener(mL);
 	}
 	
-	/**
-	 * Sets custom cell renderer to the lists.
-	 * @param ore
-	 */
-	public void setCellRenderers(ORE ore){
-		ColorListCellRenderer cell = new ColorListCellRenderer(ore);
-		posList.setCellRenderer(cell);
-		negList.setCellRenderer(cell);
-	}
 	
 	
 	
