@@ -49,16 +49,16 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	private CachedExplanationGenerator gen;
 	
 	
-	private ExplanationManager(Reasoner reasoner) {
+	private ExplanationManager(OREManager oreMan) {
 		
-		this.reasoner = reasoner;
+		this.reasoner = oreMan.getPelletReasoner().getReasoner();
 		this.manager = reasoner.getManager();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		
 		manager.addOntologyChangeListener(this);
 //		manager.addOntologyChangeListener(reasoner);
 		dataFactory = manager.getOWLDataFactory();
-		RepairManager.getRepairManager(reasoner).addListener(this);
+		RepairManager.getRepairManager(oreMan).addListener(this);
 		reasonerFactory = new PelletReasonerFactory();
 
 		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
@@ -77,9 +77,9 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	}
 
 	public static synchronized ExplanationManager getInstance(
-			Reasoner reasoner) {
+			OREManager oreMan) {
 		if (instance == null) {
-			instance = new ExplanationManager(reasoner);
+			instance = new ExplanationManager(oreMan);
 		}
 		return instance;
 	}

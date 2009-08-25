@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.ui.RepairTable;
 
@@ -22,8 +22,8 @@ public class RepairPlanPanel extends JPanel {
 	private static final long serialVersionUID = 537629900742120594L;
 	private RepairManager repMan;
 
-	public RepairPlanPanel(RepairManager repMan) {
-		this.repMan = repMan;
+	public RepairPlanPanel() {
+		this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
 		
 		setLayout(new BorderLayout());
 		add(new JLabel("Axioms to remove"), BorderLayout.NORTH);
@@ -42,7 +42,7 @@ public class RepairPlanPanel extends JPanel {
 
 		}));
 
-		JScrollPane repScr = new JScrollPane(new RepairTable(repMan));
+		JScrollPane repScr = new JScrollPane(new RepairTable());
 		repScr.setBackground(null);
 		repScr.getViewport().setOpaque(false);
 		add(repScr);

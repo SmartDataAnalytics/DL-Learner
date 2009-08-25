@@ -3,14 +3,13 @@ package org.dllearner.tools.ore.ui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.io.File;
 import java.net.URI;
 
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
-import org.dllearner.tools.ore.ORE;
+import org.dllearner.tools.ore.OREManager;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.Timer;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -24,10 +23,10 @@ import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 public class StatusBarSimulator {
 	
 	private StatusBar statusBar;
-	private ORE ore;
+	private OREManager ore;
 	private Reasoner reasoner;
 	
-	public StatusBarSimulator(ORE ore, Reasoner reasoner){
+	public StatusBarSimulator(OREManager ore, Reasoner reasoner){
 		this.ore = ore;
 		this.reasoner = reasoner;
 		ore.initPelletReasoner();
@@ -98,8 +97,8 @@ public class StatusBarSimulator {
 
   public static void main(String[] args) throws OWLOntologyCreationException {
 	  String file = "file:examples/ore/tambis.owl";
-	  ORE ore = new ORE();
-	  ore.setKnowledgeSource(new File("examples/ore/tambis.owl"));
+	  OREManager ore = new OREManager();
+	  ore.setCurrentKnowledgeSource(URI.create(file));
 	  OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntology( URI.create( file ) );
 		OWLDataFactory factory = manager.getOWLDataFactory();

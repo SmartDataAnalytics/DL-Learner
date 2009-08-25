@@ -42,7 +42,6 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.tools.ore.ORE;
 import org.dllearner.tools.ore.OREManager;
 
 /**

@@ -31,10 +31,10 @@ import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.ui.ExtractFromSparqlPanel;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.MetricsPanel;
-import org.dllearner.tools.ore.ui.RecentManager;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;

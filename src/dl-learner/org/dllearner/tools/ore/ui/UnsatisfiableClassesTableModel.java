@@ -9,6 +9,8 @@ import org.semanticweb.owl.model.OWLClass;
 
 public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 
+	
+
 	/**
 	 * 
 	 */
@@ -19,6 +21,11 @@ public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 	public UnsatisfiableClassesTableModel(){
 		super();
 		unsatClasses = new ArrayList<OWLClass>();
+	}
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return false;
 	}
 
 	@Override
@@ -34,13 +41,11 @@ public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(rowIndex >= 0){
-			return unsatClasses.get(rowIndex);
-		
+			return unsatClasses.get(rowIndex);	
 		}
 		return null;
 	}
-	
-	
+		
 	public void addUnsatClasses(List<OWLClass> unsatClasses){
 		this.unsatClasses.clear();
 		this.unsatClasses = unsatClasses;

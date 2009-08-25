@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -18,43 +19,44 @@ public class RepairTableModel extends AbstractTableModel implements RepairManage
 	 */
 	private static final long serialVersionUID = -5898900692701380258L;
 	private RepairManager repMan;
-	private List<OWLAxiom> axioms2Remove;
+	private List<OWLAxiom> axioms;
 	
-    public RepairTableModel(RepairManager impMan)
+    public RepairTableModel()
     {
-      
-    	axioms2Remove = new ArrayList<OWLAxiom>();
-        this.repMan = impMan;
+    	axioms = new ArrayList<OWLAxiom>();
+        this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
         repMan.addListener(this);
         rebuildData();
     }
 
     private void rebuildData()
     {
-    	axioms2Remove.clear();
-    	axioms2Remove.addAll(repMan.getAxioms2Remove());
-        Collections.sort(axioms2Remove);
+    	axioms.clear();
+    	axioms.addAll(repMan.getAxioms2Remove());
+    	axioms.addAll(repMan.getAxioms2Keep());
+        Collections.sort(axioms);
         fireTableDataChanged();
     }
 
-
-
     public int getRowCount()
     {
-        return axioms2Remove.size();
+        return axioms.size();
     }
 
     public int getColumnCount()
     {
-        return 1;
+        return 2;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        return axioms2Remove.get(rowIndex);
+    	if(columnIndex == 1){
+    		return ManchesterSyntaxRenderer.render(axioms.get(rowIndex), false);
+    	} else {
+    		   return axioms.get(rowIndex);
+        }
     }
-
-
+     
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		rebuildData();

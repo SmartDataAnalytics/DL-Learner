@@ -26,15 +26,15 @@ public class ImpactManager implements RepairManagerListener{
 	private OWLOntologyManager manager;
 	private Reasoner reasoner;
 
-	private ImpactManager(Reasoner reasoner) {
-		this.reasoner = reasoner;
+	private ImpactManager(OREManager oreMan) {
+		this.reasoner = oreMan.getPelletReasoner().getReasoner();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		this.manager = reasoner.getManager();
 		impact = new HashMap<OWLAxiom, Set<OWLAxiom>>();
 		selectedAxioms = new ArrayList<OWLAxiom>();
 		listeners = new ArrayList<ImpactManagerListener>();
 		ranker = new AxiomRanker(ontology, reasoner, manager);
-		RepairManager.getRepairManager(reasoner).addListener(this);
+		RepairManager.getRepairManager(oreMan).addListener(this);
 
 	}
 	
@@ -50,9 +50,9 @@ public class ImpactManager implements RepairManagerListener{
 		listeners.remove(listener);
 	}
 
-	public static synchronized ImpactManager getInstance(Reasoner reasoner) {
+	public static synchronized ImpactManager getInstance(OREManager oreMan) {
 		if (instance == null) {
-			instance = new ImpactManager(reasoner);
+			instance = new ImpactManager(oreMan);
 		}
 		return instance;
 	}

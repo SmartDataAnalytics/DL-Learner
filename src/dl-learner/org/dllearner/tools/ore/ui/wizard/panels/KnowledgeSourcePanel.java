@@ -35,9 +35,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.MetricsPanel;
-import org.dllearner.tools.ore.ui.RecentManager;
 
 /**
  * Wizard panel  for choosing knowledge source.
