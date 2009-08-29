@@ -40,10 +40,7 @@ public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(rowIndex >= 0){
-			return unsatClasses.get(rowIndex);	
-		}
-		return null;
+		return unsatClasses.get(rowIndex);	
 	}
 		
 	public void addUnsatClasses(List<OWLClass> unsatClasses){

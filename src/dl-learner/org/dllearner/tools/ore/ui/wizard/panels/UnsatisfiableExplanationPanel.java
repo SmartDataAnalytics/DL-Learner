@@ -26,9 +26,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ExplanationManager;
-import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ImpactTable;
 import org.dllearner.tools.ore.ui.UnsatClassesTableCellRenderer;
@@ -45,7 +43,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	private UnsatisfiableClassesTable unsatClassesTable;
 	private JSplitPane splitPane;
 	private JSplitPane statsSplitPane;
-	private JScrollPane listScrollPane;
+	private JScrollPane unsatClassesScrollPane;
 	private JScrollPane explanationsScrollPane;
 	private JComponent explanationsPanel;
 	private JPanel buttonExplanationsPanel;
@@ -76,8 +74,8 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		(new UnsatClassesTableCellRenderer(ExplanationManager.getInstance(OREManager.getInstance())));
 		
 
-		listScrollPane = new JScrollPane(unsatClassesTable);
-		listScrollPane.setPreferredSize(minimumSize);
+		unsatClassesScrollPane = new JScrollPane(unsatClassesTable);
+		unsatClassesScrollPane.setPreferredSize(minimumSize);
 
 		explanationsPanel = new Box(1);
 		
@@ -182,7 +180,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		statsSplitPane.setDividerLocation(500);
 		statsSplitPane.setOneTouchExpandable(true);
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollPane,
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, unsatClassesScrollPane,
 				statsSplitPane);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
@@ -193,6 +191,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	
 	public void fillUnsatClassesTable(List<OWLClass> unsatClasses) {
 		unsatClassesTable.addUnsatClasses(unsatClasses);
+		unsatClassesScrollPane.validate();
 	}
 	
 	public void clearExplanationsPanel() {		

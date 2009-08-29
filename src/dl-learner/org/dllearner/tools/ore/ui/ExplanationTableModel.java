@@ -68,7 +68,15 @@ public class ExplanationTableModel extends AbstractTableModel {
 				impMan.removeAxiomFromImpactList(ax);
 			} else {
 				impMan.addAxiom2ImpactList(ax);
-				repMan.addAxiom2Remove(ax);
+				if(expMan.isLaconicMode()){
+					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
+						repMan.addAxiom2Remove(source);
+						repMan.addAxioms2Keep(expMan.getRemainingAxioms(source, ax));
+					}		
+				} else {
+					repMan.addAxiom2Remove(ax);
+				}
+				
 			}
 		}
 		super.setValueAt(value, rowIndex, columnIndex);

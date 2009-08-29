@@ -1,7 +1,10 @@
 package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.List;
+
+import javax.swing.JTable;
 
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -22,11 +25,20 @@ public class UnsatisfiableClassesTable extends JXTable {
 		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
 		getColumn(0).setMaxWidth(20);
+//		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
 		
 	}
+	@Override
+	public Dimension getPreferredScrollableViewportSize()
+	{
+	    Dimension size = super.getPreferredScrollableViewportSize();
+	    return new Dimension(Math.min(getPreferredSize().width, size.width), size.height);
+	}
+
 	
 	public void addUnsatClasses(List<OWLClass> unsatClasses){
-		((UnsatisfiableClassesTableModel)getModel()).addUnsatClasses(unsatClasses);
+		((UnsatisfiableClassesTableModel)getModel()).addUnsatClasses(unsatClasses);	
 	}
 	
 	public OWLClass getSelectedClass(){

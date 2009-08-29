@@ -170,7 +170,7 @@ public class LaconicTest {
 			Set<Explanation> preciseJusts = expGen.getExplanations(unsatAxiom);
 //			renderer.render(unsatAxiom, preciseJusts);
 			renderer.endRendering();
-			expGen.returnSourceAxioms(preciseJusts);
+		
 			
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block

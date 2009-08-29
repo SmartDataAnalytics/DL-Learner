@@ -30,16 +30,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
+
+import org.dllearner.tools.ore.ui.IndividualsTable;
 
 /**
  * JPanel for repairing action.
@@ -52,12 +52,9 @@ public class RepairPanel extends JPanel{
 
 	private JPanel contentPanel;
 	
-	private DefaultListModel posFailureModel;
-	private DefaultListModel negFailureModel;
-	
 	private JPanel posPanel;
 	private JScrollPane posScrollPane;
-	private JList posList;
+	private IndividualsTable posTable;
 	private JPanel posButtonPanel;
 	private JButton posRepairButton;
 	private JButton posDeleteButton;
@@ -65,7 +62,7 @@ public class RepairPanel extends JPanel{
 	
 	private JPanel negPanel;
 	private JScrollPane negScrollPane;
-	private JList negList;
+	private IndividualsTable negTable;
 	private JPanel negButtonPanel;
 	private JButton negRepairButton;
 	private JButton negDeleteButton;
@@ -75,9 +72,7 @@ public class RepairPanel extends JPanel{
 	public RepairPanel() {
 		
 		super();
-		posFailureModel = new DefaultListModel();
-		negFailureModel = new DefaultListModel();
-		
+
 		this.setLayout(new java.awt.BorderLayout());
 		
 		JPanel labelPanel = new JPanel();
@@ -114,10 +109,10 @@ public class RepairPanel extends JPanel{
 				posScrollPane.setSize(126, 276);
 				{
 					
-					posList = new JList(posFailureModel);
-					posScrollPane.setViewportView(posList);
-					posList.setPreferredSize(new java.awt.Dimension(85, 93));
-					posList.setSize(127, 273);
+					posTable = new IndividualsTable();
+					posScrollPane.setViewportView(posTable);
+					posTable.setPreferredSize(new java.awt.Dimension(85, 93));
+					posTable.setSize(127, 273);
 				}
 			}
 			{
@@ -175,10 +170,10 @@ public class RepairPanel extends JPanel{
 				negScrollPane = new JScrollPane();
 				negPanel.add(negScrollPane, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 				{
-					negList = new JList(negFailureModel);
-					negScrollPane.setViewportView(negList);
-					negList.setPreferredSize(new java.awt.Dimension(85, 93));
-					negList.setSize(127, 273);
+					negTable = new IndividualsTable();
+					negScrollPane.setViewportView(negTable);
+					negTable.setPreferredSize(new java.awt.Dimension(85, 93));
+					negTable.setSize(127, 273);
 				}
 			}
 			{
@@ -225,35 +220,19 @@ public class RepairPanel extends JPanel{
 	}
 	
 	/**
-	 * Returns the list model for positive examples.
-	 * @return list model
-	 */
-	public DefaultListModel getPosFailureModel() {
-		return posFailureModel;
-	}
-	
-	/**
-	 * Returns the list model for negative examples.
-	 * @return list model
-	 */
-	public DefaultListModel getNegFailureModel() {
-		return negFailureModel;
-	}
-	
-	/**
 	 * Returns the list for positive examples.
 	 * @return positive list
 	 */
-	public javax.swing.JList getPosFailureList() {
-		return posList;
+	public IndividualsTable getPosFailureTable() {
+		return posTable;
 	}
 	
 	/**
 	 * Returns the list for negative examples.
 	 * @return negative list
 	 */
-	public javax.swing.JList getNegFailureList() {
-		return negList;
+	public IndividualsTable getNegFailureTable() {
+		return negTable;
 	}
 	
 	/**
@@ -261,8 +240,8 @@ public class RepairPanel extends JPanel{
 	 * @param l list selection listener
 	 */
 	public void addSelectionListeners(ListSelectionListener l){
-		posList.addListSelectionListener(l);
-		negList.addListSelectionListener(l);
+		posTable.getSelectionModel().addListSelectionListener(l);
+		negTable.getSelectionModel().addListSelectionListener(l);
 	}
 	
 	/**
@@ -283,8 +262,8 @@ public class RepairPanel extends JPanel{
 	 * @param mL mouse listener
 	 */
 	public void addMouseListeners(MouseListener mL){
-		posList.addMouseListener(mL);
-		negList.addMouseListener(mL);
+		posTable.addMouseListener(mL);
+		negTable.addMouseListener(mL);
 	}
 	
 	

@@ -53,7 +53,9 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		column4.setCellEditor(new ButtonCellEditor());
 		column4.setResizable(false);
 		setRowHeight(getRowHeight() + 4);
-		setColumnSizes();
+		getColumn(1).setMaxWidth(30);
+		getColumn(2).setMaxWidth(30);
+		getColumn(3).setMaxWidth(80);
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -107,13 +109,6 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 				}
 			}
 		});
-	}
-	
-		
-	private void setColumnSizes(){
-		getColumn(1).setMaxWidth(30);
-		getColumn(2).setMaxWidth(30);
-		getColumn(3).setMaxWidth(80);
 	}
 	
 	private void changeSelection() {

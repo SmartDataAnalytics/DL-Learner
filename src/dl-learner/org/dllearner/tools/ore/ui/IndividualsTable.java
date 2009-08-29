@@ -6,27 +6,26 @@ import java.util.Set;
 
 import javax.swing.ListSelectionModel;
 
-import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Individual;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
-public class ClassesTable extends JXTable {
+public class IndividualsTable extends JXTable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8466845175104839818L;
+	private static final long serialVersionUID = 6874941283913237464L;
 
-	public ClassesTable(){
+	public IndividualsTable(){
+		super(new IndividualsTableModel());
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
-		setModel(new ClassesTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		getColumn(0).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
-		getColumn(0).setResizable(false);
 		setEditable(false);
 		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
+		getColumn(0).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 	}
 	
 	@Override
@@ -43,15 +42,15 @@ public class ClassesTable extends JXTable {
         return tip;
 	}
 	
-	public void clear(){
-		((ClassesTableModel)getModel()).clear();
+	public void addIndividuals(Set<Individual> individuals){
+		((IndividualsTableModel)getModel()).addIndividuals(individuals);
 	}
 	
-	public void addClasses(Set<NamedClass> classes){
-		((ClassesTableModel)getModel()).addClasses(classes);
+	public void removeIndividual(Individual ind){
+		((IndividualsTableModel)getModel()).removeIndividual(ind);
 	}
 	
-	public NamedClass getSelectedValue(){
-		return ((ClassesTableModel)getModel()).getSelectedValue(getSelectedRow());
+	public Individual getSelectedIndividual(){
+		return ((IndividualsTableModel)getModel()).getSelectedIndividual(getSelectedRow());
 	}
 }

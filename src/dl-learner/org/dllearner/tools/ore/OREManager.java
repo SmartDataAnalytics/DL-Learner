@@ -5,11 +5,14 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -59,17 +62,13 @@ public class OREManager {
 	private int maxExecutionTimeInSeconds = 10;
 	private int maxNrOfResults = 10;
 	
-	
-
+	private List<OREManagerListener> listeners;
 
 	private OntologyModifier modifier;
-	
-	private Thread currentClassificationThread;
-
-
 
 	public OREManager(){
 		cm = ComponentManager.getInstance();
+		listeners = new ArrayList<OREManagerListener>();
 	}
 	
 	public static synchronized OREManager getInstance() {
@@ -97,6 +96,10 @@ public class OREManager {
 	public void setCurrentKnowledgeSource(SparqlKnowledgeSource ks){
 		this.ks = ks;
 		
+	}
+	
+	public KnowledgeSource getKnowledgeSource(){
+		return ks;
 	}
 	
 	public void setLearningProblem(){
@@ -150,29 +153,21 @@ public class OREManager {
 		baseURI = pelletReasoner.getBaseURI();
 		prefixes = pelletReasoner.getPrefixes();
 		modifier = new OntologyModifier(pelletReasoner);
+		fireActiveOntologyChanged();
 	}
 	
 	public void loadOntology(){
 		pelletReasoner.loadOntologies();
+		
 	}
 	
-	public void classifyAsynchronously(){
-		currentClassificationThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				pelletReasoner.classify();
-				
-			}
-		});
+	public void addListener(OREManagerListener listener){
+		listeners.add(listener);
 	}
 	
-	public void killCurrentClassificationThread(){
-		currentClassificationThread.stop();
-        
+	public void removeListener(OREManagerListener listener){
+		listeners.remove(listener);
 	}
-	
-	
 	
 	public boolean consistentOntology() throws InconsistentOntologyException{
 		return pelletReasoner.isConsistent();
@@ -180,6 +175,12 @@ public class OREManager {
 	
 	public PelletReasoner getPelletReasoner(){
 		return pelletReasoner;
+	}
+	
+	private void fireActiveOntologyChanged(){
+		for(OREManagerListener listener : listeners){
+			listener.activeOntologyChanged();
+		}
 	}
 	
 	
@@ -237,6 +238,16 @@ public class OREManager {
 		}
 		return classURL;
 		
+	}
+	
+	public SortedSet<Individual> getPositiveFailureExamples(){
+		SortedSet<Individual> posNotCovered = pelletReasoner.getIndividuals(currentClass2Learn);
+		posNotCovered.removeAll(learnedClassDescription.getCoveredInstances());
+		return posNotCovered;
+	}
+	
+	public SortedSet<Individual> getNegativeFailureExamples(){
+		return new TreeSet<Individual>(learnedClassDescription.getAdditionalInstances());
 	}
 	
 	public void setNoisePercentage(double noisePercentage) {
@@ -533,7 +544,7 @@ public class OREManager {
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
 
 		Set<NamedClass> complements = new HashSet<NamedClass>();
-		System.out.println(pelletReasoner.getComplementClasses(desc));
+		
 		for(NamedClass nc : pelletReasoner.getNamedClasses()){
 			if(!(nc.toString().endsWith("Thing"))){
 				if(pelletReasoner.hasType(nc, ind)){

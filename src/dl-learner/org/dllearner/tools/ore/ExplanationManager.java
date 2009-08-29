@@ -24,33 +24,32 @@ import uk.ac.manchester.cs.bhig.util.Tree;
 import uk.ac.manchester.cs.owl.explanation.ordering.DefaultExplanationOrderer;
 import uk.ac.manchester.cs.owl.explanation.ordering.ExplanationTree;
 
-public class ExplanationManager implements OWLOntologyChangeListener, RepairManagerListener{
+public class ExplanationManager implements OWLOntologyChangeListener, RepairManagerListener, OREManagerListener{
 
 	private static ExplanationManager instance;
 	
 	private OWLOntologyManager manager;
 	private OWLDataFactory dataFactory;
-	private PelletReasonerFactory reasonerFactory;
 	private OWLOntology ontology;
 	private Reasoner reasoner;
 
 	private RootFinder rootFinder;
 
-	private Set<OWLClass> unsatClasses;
-	private Set<OWLClass> rootClasses;
-	boolean ontologyChanged = true;
-	boolean isLaconicMode = false;
+	private boolean ontologyChanged = true;
+	private boolean isLaconicMode = false;
 	private boolean isComputeAllExplanations = false;
 	private int maxExplantionCount = 1;
+	private boolean allExplanationWarningChecked = false;
+	
 	private List<ExplanationManagerListener> listeners;
 	
-	private boolean allExplanationWarningChecked = false;
+	
 	
 	private CachedExplanationGenerator gen;
 	
 	
 	private ExplanationManager(OREManager oreMan) {
-		
+		OREManager.getInstance().addListener(this);
 		this.reasoner = oreMan.getPelletReasoner().getReasoner();
 		this.manager = reasoner.getManager();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
@@ -59,13 +58,10 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 //		manager.addOntologyChangeListener(reasoner);
 		dataFactory = manager.getOWLDataFactory();
 		RepairManager.getRepairManager(oreMan).addListener(this);
-		reasonerFactory = new PelletReasonerFactory();
+	
 
-		rootFinder = new RootFinder(manager, reasoner, reasonerFactory);
+		rootFinder = new RootFinder();
 
-		rootClasses = new HashSet<OWLClass>();
-		unsatClasses = new HashSet<OWLClass>();
-		
 		listeners = new ArrayList<ExplanationManagerListener>();
 		
 		gen = new CachedExplanationGenerator(ontology, reasoner);
@@ -91,26 +87,12 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 		return instance;
 	}
 	
-	public Set<OWLClass> getUnsatisfiableClasses(){
-		computeRootUnsatisfiableClasses();
-		return unsatClasses;
+	public Set<OWLClass> getDerivedClasses(){
+		return rootFinder.getDerivedClasses();
 	}
 	
 	public Set<OWLClass> getRootUnsatisfiableClasses(){
-		computeRootUnsatisfiableClasses();
-		return rootClasses;
-	}
-	
-		
-	private void computeRootUnsatisfiableClasses(){
-		if(ontologyChanged){
-			rootClasses.clear();
-			unsatClasses.clear();
-			unsatClasses.addAll(reasoner.getInconsistentClasses());
-			rootClasses.addAll(rootFinder.getRootClasses());
-			ontologyChanged = false;
-		}
-		
+		return rootFinder.getRootClasses();
 	}
 	
 	public Set<List<OWLAxiom>> getUnsatisfiableExplanations(OWLClass unsat) {
@@ -173,7 +155,7 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	@Override
 	public void ontologiesChanged(List<? extends OWLOntologyChange> changes)
 			throws OWLException {
-		ontologyChanged = true;	
+		ontologyChanged = true;
 	}
 	
 	public int getArity(OWLClass cl, OWLAxiom ax) {
@@ -196,6 +178,10 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 		gen.setComputeLaconicExplanations(laconic);
 		fireExplanationTypeChanged();
 		
+	}
+	
+	public boolean isLaconicMode(){
+		return gen.isLaconicMode();
 	}
 	
 	public void setComputeAllExplanationsMode(boolean value){
@@ -254,6 +240,21 @@ public class ExplanationManager implements OWLOntologyChangeListener, RepairMana
 	
 	public boolean isAllExplanationWarningChecked(){
 		return allExplanationWarningChecked;
+	}
+	
+	public Set<OWLAxiom> getSourceAxioms(OWLAxiom ax){
+		return gen.getSourceAxioms(ax);
+	}
+	
+	public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
+		return gen.getRemainingAxioms(source, part);
+	}
+
+	@Override
+	public void activeOntologyChanged() {
+		ontology = OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies();
+		reasoner = OREManager.getInstance().getPelletReasoner().getReasoner();
+		gen = new CachedExplanationGenerator(ontology, reasoner);
 	}
 	
 	

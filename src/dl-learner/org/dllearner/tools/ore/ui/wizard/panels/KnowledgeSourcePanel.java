@@ -35,6 +35,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.MetricsPanel;
@@ -58,11 +59,13 @@ public class KnowledgeSourcePanel extends JPanel{
 	private List<LinkLabel> openFromRecentLinks;
 	private Box recentLinkBox;
 	private GridBagConstraints c;
+	
+	private MetricsPanel metricsPanel;
 
 	
 	
 	public KnowledgeSourcePanel() {
-
+//		setBackground(Color.WHITE);
 		new LeftPanel(1);
 		contentPanel = getContentPanel();
 
@@ -75,14 +78,12 @@ public class KnowledgeSourcePanel extends JPanel{
 		c.gridheight = 1;
 	    c.fill = GridBagConstraints.HORIZONTAL;
 	    add(contentPanel, c);
+//	    addMetricsPanel();
 
 	}
 
 	private JPanel getContentPanel() {
 
-		
-
-	
 		JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
        
@@ -141,16 +142,21 @@ public class KnowledgeSourcePanel extends JPanel{
 		return panel;
 	}
 	
-	public void addMetricsPanel(MetricsPanel metrics) {
+	public void addMetricsPanel() {
 		c.gridx = 2;
 		c.gridy = 0;
 		c.gridwidth = 1;
 		c.gridheight = 2;
-		c.weightx = 0.5;
-		c.weighty = 1;
-
-		c.fill = GridBagConstraints.BOTH;
-		add(metrics, c);
+		c.weightx = 0.1;
+		c.weighty = 0.8;
+		
+		metricsPanel = new MetricsPanel();
+		c.fill = GridBagConstraints.VERTICAL;
+		add(metricsPanel, c);
+	}
+	
+	public void updateMetrics(){
+		metricsPanel.updateView(OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies());
 	}
 	
 	public void addListeners(ActionListener aL) {

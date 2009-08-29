@@ -28,7 +28,8 @@ public class ResultTable extends JXTable {
 		getColumn(0).setResizable(false);
 		getColumn(1).setResizable(false);
 		setEditable(false);
-		setTableHeader(null);
+//		setAutoCreateRowSorter(true);
+//		getRowSorter().toggleSortOrder(0);
 		setGridColor(Color.LIGHT_GRAY);
 	}
 	
