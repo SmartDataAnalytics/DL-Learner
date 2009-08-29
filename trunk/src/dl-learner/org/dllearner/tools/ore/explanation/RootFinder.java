@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.OREManagerListener;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
@@ -26,6 +28,7 @@ import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLDescriptionVisitor;
 import org.semanticweb.owl.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObjectAllRestriction;
 import org.semanticweb.owl.model.OWLObjectComplementOf;
 import org.semanticweb.owl.model.OWLObjectExactCardinalityRestriction;
@@ -41,19 +44,27 @@ import org.semanticweb.owl.model.OWLObjectValueRestriction;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLQuantifiedRestriction;
 import org.semanticweb.owl.model.RemoveAxiom;
 
-public class RootFinder implements OWLDescriptionVisitor{
+public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OWLOntologyChangeListener{
 
 	private OWLOntologyManager manager;
 	private OWLReasoner reasoner;
 	private OWLReasonerFactory reasonerFactory;
-	private Set<OWLClass> rootClasses;
+	
 	private Set<OWLClass> depend2Classes;
 	private OWLOntology ontology;
+	
+	
+	private Set<OWLClass> rootClasses;
+	private Set<OWLClass> derivedClasses;
+	
+	private boolean ontologyChanged = true;
+	
 	
 	int depth;
 	private Map<Integer, Set<OWLObjectAllRestriction>> depth2UniversalRestrictionPropertyMap;
@@ -62,10 +73,11 @@ public class RootFinder implements OWLDescriptionVisitor{
     private Map<OWLClass, Set<OWLClass>> child2Parents;
     private Map<OWLClass, Set<OWLClass>> parent2Children;
 	
-	public RootFinder(OWLOntologyManager manager, OWLReasoner reasoner, OWLReasonerFactory reasonerFactory){
-		this.manager = manager;
-		this.reasoner = reasoner;
-		this.reasonerFactory = reasonerFactory;
+	public RootFinder(){
+		
+		this.manager = OWLManager.createOWLOntologyManager();
+		this.reasoner = OREManager.getInstance().getPelletReasoner().getReasoner();
+		this.reasonerFactory = new PelletReasonerFactory();
 		try {
 			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());
 		} catch (OWLOntologyCreationException e) {
@@ -74,19 +86,23 @@ public class RootFinder implements OWLDescriptionVisitor{
 			e.printStackTrace();
 		}
 		rootClasses = new HashSet<OWLClass>();
+		derivedClasses = new HashSet<OWLClass>();
 		depend2Classes = new HashSet<OWLClass>();
 		depth2UniversalRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectAllRestriction>>();
 		depth2ExistsRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectPropertyExpression>>();
 		
 		child2Parents = new HashMap<OWLClass, Set<OWLClass>>();
 		parent2Children = new HashMap<OWLClass, Set<OWLClass>>();
+		
+		OREManager.getInstance().addListener(this);
+		OREManager.getInstance().getPelletReasoner().getOWLOntologyManager().addOntologyChangeListener(this);
 	}
 	
 	public Set<OWLClass> getRootClasses(){
-		rootClasses.clear();
-		computePossibleRoots();
-		pruneRoots();
-		rootClasses.remove(manager.getOWLDataFactory().getOWLNothing());
+		if(ontologyChanged){
+			computeRootDerivedClasses();
+			ontologyChanged = false;
+		}
 //        for(OWLClass child : child2Parents.keySet()){
 //        	for(OWLClass par : get(child, child2Parents)){
 //        		get(par, parent2Childs).add(child);
@@ -95,9 +111,27 @@ public class RootFinder implements OWLDescriptionVisitor{
 		return Collections.unmodifiableSet(rootClasses);
 	}
 	
+	public Set<OWLClass> getDerivedClasses(){
+		if(ontologyChanged){
+			computeRootDerivedClasses();
+			ontologyChanged = false;
+		}
+		return Collections.unmodifiableSet(derivedClasses);
+	}
+	
+	public void computeRootDerivedClasses(){
+		rootClasses.clear();
+		derivedClasses.clear();
+		computePossibleRoots();
+		pruneRoots();
+		derivedClasses.removeAll(rootClasses);
+		
+		rootClasses.remove(manager.getOWLDataFactory().getOWLNothing());
+	}
+	
 	private void computePossibleRoots(){
-		try {
-			for(OWLClass cls : reasoner.getInconsistentClasses()){
+		try {derivedClasses.addAll(reasoner.getInconsistentClasses());
+			for(OWLClass cls : derivedClasses){
 				reset();
 				for(OWLDescription equi : cls.getEquivalentClasses(ontology)){
 					equi.accept(this);
@@ -327,20 +361,27 @@ public class RootFinder implements OWLDescriptionVisitor{
 	public void visit(OWLDataMaxCardinalityRestriction arg0) {	
 	}
 
-	public static void main(String[] args){
-    	try {
-			String	file	= "file:examples/ore/tambis.owl";
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI.create(file));
-			OWLReasonerFactory factory = new PelletReasonerFactory();
-			OWLReasoner reasoner = factory.createReasoner(manager);
-			reasoner.loadOntologies(Collections.singleton(ontology));
-			RootFinder strReasoner = new RootFinder(manager, reasoner, factory);
-			System.out.println(strReasoner.getRootClasses());
+	@Override
+	public void activeOntologyChanged() {
+		this.manager = OWLManager.createOWLOntologyManager();
+		this.reasoner = OREManager.getInstance().getPelletReasoner().getReasoner();
+		this.reasonerFactory = new PelletReasonerFactory();
+		try {
+			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
-		} catch (OWLReasonerException e) {
+		} catch (OWLOntologyChangeException e) {
 			e.printStackTrace();
 		}
-    }
+		
+		ontologyChanged = true;
+		
+	}
+
+	@Override
+	public void ontologiesChanged(List<? extends OWLOntologyChange> arg0)
+			throws OWLException {
+		ontologyChanged = true;
+		
+	}
 }

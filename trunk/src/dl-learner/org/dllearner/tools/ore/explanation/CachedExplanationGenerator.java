@@ -58,6 +58,10 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 	public void setComputeLaconicExplanations(boolean laconic){
 		laconicMode = laconic;
 	}
+	
+	public boolean isLaconicMode(){
+		return laconicMode;
+	}
 
 	@Override
 	public Explanation getExplanation(OWLAxiom entailment){
@@ -168,5 +172,13 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 			
 		}
 		
+	}
+	
+	public Set<OWLAxiom> getSourceAxioms(OWLAxiom ax){
+		return laconicExpGen.getSourceAxioms(ax);
+	}
+	
+	public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
+		return laconicExpGen.getRemainingAxioms(source, part);
 	}
 }

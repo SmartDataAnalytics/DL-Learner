@@ -55,7 +55,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 										+ "temporary results are shown in the list above. Select one of them and press Next";
     
     private LearningPanel learnPanel;
-    private LearningTask worker;
+    private LearningTask learningTask;
     private CELOE la;
     private Timer timer;
    
@@ -102,9 +102,12 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //				range);
 //		Description de = new NamedClass("http://example.com/father#male");
 		
-		if (!e.getValueIsAdjusting() && (worker.isDone() || worker.isCancelled())){
-			OREManager.getInstance().setNewClassDescription(learnPanel.getResultTable().getSelectedValue()); 					
+		if (!e.getValueIsAdjusting() && (learningTask.isDone() || learningTask.isCancelled())){
+			OREManager.getInstance().setNewClassDescription(learnPanel.getResultTable().getSelectedValue());
+			
+			learnPanel.updateCurrentGraphicalCoveragePanel(OREManager.getInstance().getNewClassDescription());
 		}
+		
 		
 	}
 
@@ -114,13 +117,16 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
-			learnPanel.getResultTable().clear();
 			learnPanel.getStartButton().setEnabled(false);
 	        learnPanel.getStopButton().setEnabled(true);
+	        OREManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
+	        OREManager.getInstance().setMaxExecutionTimeInSeconds(learnPanel.getOptionsPanel().getMaxExecutionTime());
+	        OREManager.getInstance().setMaxNrOfResults(learnPanel.getOptionsPanel().getNrOfConcepts());
+	        
 	        OREManager.getInstance().setLearningAlgorithm();
 	       
-	        worker = new LearningTask();
-	        worker.execute();
+	        learningTask = new LearningTask();
+	        learningTask.execute();
 		} else{
 			
 			learnPanel.getStopButton().setEnabled(false);
@@ -128,9 +134,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	        timer.cancel();
 			learnPanel.getStartButton().setEnabled(true);
 			getWizard().getStatusBar().showProgress(false);
-			getWizard().getStatusBar().setProgressTitle("learning aborted");
-//	        learnPanel.getStatusLabel().setText("Algorithm aborted");
-//	        learnPanel.getLoadingLabel().setBusy(false);
+			getWizard().getStatusBar().setProgressTitle("learning stopped");
 	        
 		}
 		
@@ -151,7 +155,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 * @return swing worker
 	 */
 	public LearningTask getWorkerThread(){
-		return worker;
+		return learningTask;
 	}
 	
 	/**
@@ -190,12 +194,10 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@SuppressWarnings("unchecked")
 		@Override
 		public List<? extends EvaluatedDescription> doInBackground() {
+			learnPanel.getResultTable().clear();
 			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			getWizard().getStatusBar().showProgress(true);
 			getWizard().getStatusBar().setProgressTitle("learning class expressions");
-
-//			learnPanel.getLoadingLabel().setBusy(true);
-//			learnPanel.getStatusLabel().setText("Learning");
 
 			la = OREManager.getInstance().getLa();
 			timer = new Timer();
@@ -203,29 +205,29 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 				@Override
 				public void run() {
-					if(la != null){
-						publish(la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true));
+					if(!isCancelled() && la.isRunning()){
+						publish(la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 0.0, true));
 					}
 				}
 				
 			}, 1000, 2000);
-				
-			t = new Thread(new Runnable(){
-
-				@Override
-				public void run() {					
-					OREManager.getInstance().start();
-				}				
-			});
-
-			t.start();
-					
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
+			OREManager.getInstance().start();
+//			t = new Thread(new Runnable(){
+//
+//				@Override
+//				public void run() {					
+//					OREManager.getInstance().start();
+//				}				
+//			});
+//
+//			t.start();
+//					
+//			try {
+//				t.join();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}		
 			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true);
 			
 			return result;
@@ -249,8 +251,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			learnPanel.getStartButton().setEnabled(true);
 			learnPanel.getStopButton().setEnabled(false);
 			updateList(result);
-//			learnPanel.getLoadingLabel().setBusy(false);
-//			learnPanel.getStatusLabel().setText("Algorithm terminated successfully.");
+
 		}
 
 		@Override

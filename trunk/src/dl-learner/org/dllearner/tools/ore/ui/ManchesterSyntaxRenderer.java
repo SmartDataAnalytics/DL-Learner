@@ -80,7 +80,7 @@ public class ManchesterSyntaxRenderer {
 		writer.flush();
 		String renderedString = buffer.toString();
 		StringTokenizer st = new StringTokenizer(renderedString);
-		System.out.println(renderedString);
+		
 		StringBuffer bf = new StringBuffer();
 		bf.append("<html>");
 		String token;
@@ -102,6 +102,7 @@ public class ManchesterSyntaxRenderer {
 		}
 		bf.append("</html>");
 		renderedString = bf.toString();
+		buffer.getBuffer().delete(0, buffer.toString().length());
 		return renderedString;
 		
 	}

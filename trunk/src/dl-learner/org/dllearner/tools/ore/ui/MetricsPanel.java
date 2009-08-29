@@ -2,30 +2,39 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.protege.editor.core.ui.util.ComponentFactory;
+import org.protege.editor.owl.ui.OWLAxiomTypeFramePanel;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.metrics.AxiomCountMetric;
 import org.semanticweb.owl.metrics.AxiomTypeMetric;
@@ -39,7 +48,9 @@ import org.semanticweb.owl.metrics.ReferencedDataPropertyCount;
 import org.semanticweb.owl.metrics.ReferencedIndividualCount;
 import org.semanticweb.owl.metrics.ReferencedObjectPropertyCount;
 import org.semanticweb.owl.model.AxiomType;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
@@ -68,9 +79,18 @@ public class MetricsPanel extends JPanel {
 
     private AxiomCountMetric lastMetric;
 
-    public MetricsPanel( OWLOntologyManager manager) {
-    	this.manager = manager;
-        
+    public MetricsPanel() {
+    	this.manager = OWLManager.createOWLOntologyManager();
+        try {
+			manager.createOntology(Collections.<OWLAxiom>emptySet());
+			
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         initialiseOWLView();
         createPopupMenu();
     }
@@ -356,7 +376,7 @@ public class MetricsPanel extends JPanel {
   		JFrame test = new JFrame();
   		test.setBounds(200, 200, 600, 200);
   		test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  		test.add(new MetricsPanel(manager));
+  		test.add(new MetricsPanel());
   		test.setVisible(true);
   		
   		

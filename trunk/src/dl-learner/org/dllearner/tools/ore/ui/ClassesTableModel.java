@@ -33,11 +33,7 @@ public class ClassesTableModel extends AbstractTableModel{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(rowIndex >= 0){
 			return classes.get(rowIndex);
-		} else {
-			return "";
-		}
 	}
 	
 	public void clear(){

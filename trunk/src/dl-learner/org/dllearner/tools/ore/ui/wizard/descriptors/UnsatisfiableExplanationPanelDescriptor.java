@@ -141,21 +141,22 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	
 	private void fillUnsatClassesTable(){
 		List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
+		
 		Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
 				.getRootUnsatisfiableClasses());
 		unsatClasses.addAll(rootClasses);
-		Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
-				.getUnsatisfiableClasses());
-		derivedClasses.removeAll(rootClasses);
 		
+		Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
+				.getDerivedClasses());
 		unsatClasses.addAll(derivedClasses);
+		
 		panel.fillUnsatClassesTable(unsatClasses);
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
-		if (!e.getValueIsAdjusting() && unsatClass != null) {
+//		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
+		if (!e.getValueIsAdjusting() && panel.getUnsatTable().getSelectedRow() >= 0) {
 			showExplanations();
 		}
 		
@@ -246,7 +247,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 					public void run() {
 						panel.clearExplanationsPanel();
 						int counter = 1;
-						
+						unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
 						for (List<OWLAxiom> explanation : expMan.getUnsatisfiableExplanations(unsatClass)) {
 							panel.addExplanation(explanation, unsatClass, counter);
 							counter++;

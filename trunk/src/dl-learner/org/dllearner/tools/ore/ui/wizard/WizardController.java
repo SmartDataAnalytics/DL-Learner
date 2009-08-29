@@ -102,7 +102,6 @@ public class WizardController implements ActionListener {
         if(nextPanelDescriptor.equals(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
         	
         	KnowledgeSourcePanelDescriptor knowledgeDescriptor = ((KnowledgeSourcePanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
-        	knowledgeDescriptor.addMetricsPanel();
         	        	
         }
         if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals

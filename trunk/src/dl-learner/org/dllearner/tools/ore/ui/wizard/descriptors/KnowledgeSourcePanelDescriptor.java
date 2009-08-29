@@ -34,7 +34,6 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.ui.ExtractFromSparqlPanel;
 import org.dllearner.tools.ore.ui.LinkLabel;
-import org.dllearner.tools.ore.ui.MetricsPanel;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;
@@ -64,11 +63,6 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
         
     }
     
-    public void addMetricsPanel(){
-    	MetricsPanel metrics = new MetricsPanel(OREManager.getInstance().getPelletReasoner().getOWLOntologyManager());
-    	knowledgePanel.addMetricsPanel(metrics);
-    }
-    
     @Override
 	public Object getNextPanelDescriptor() {
     		return ClassChoosePanelDescriptor.IDENTIFIER;
@@ -83,7 +77,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     @Override
 	public void aboutToDisplayPanel() {
         getWizard().getInformationField().setText(INFORMATION);
-        getWizard().setNextFinishButtonEnabled(false);
+        getWizard().setNextFinishButtonEnabled(OREManager.getInstance().getKnowledgeSource() != null);
     }    
 
     /**
@@ -172,8 +166,8 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 	}
     
-    private void showMetrics(){
-    	
+    private void updateMetrics(){
+    	knowledgePanel.updateMetrics();
     }
   
     public KnowledgeSourcePanel getPanel() {
@@ -204,6 +198,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			statusBar.setProgressTitle("ontology loaded");
 			getWizard().getDialog().setCursor(null);
 			getWizard().setNextFinishButtonEnabled(true);
+//			updateMetrics();
 		}
 	}
 }

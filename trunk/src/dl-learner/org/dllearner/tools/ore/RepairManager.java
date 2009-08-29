@@ -2,6 +2,7 @@ package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import org.mindswap.pellet.owlapi.Reasoner;
@@ -68,8 +69,18 @@ public class RepairManager {
 		fireRepairPlanChanged();
 	}
 	
+	public void addAxioms2Remove(Set<OWLAxiom> axioms){
+		axioms2Remove.addAll(axioms);
+		fireRepairPlanChanged();
+	}
+	
 	public void removeAxiom2Remove(OWLAxiom ax){
 		axioms2Remove.remove(ax);
+		fireRepairPlanChanged();
+	}
+	
+	public void removeAxioms2Remove(Set<OWLAxiom> axioms){
+		axioms2Remove.removeAll(axioms);
 		fireRepairPlanChanged();
 	}
 	
@@ -78,8 +89,18 @@ public class RepairManager {
 		fireRepairPlanChanged();
 	}
 	
+	public void addAxioms2Keep(Set<OWLAxiom> axioms){
+		axioms2Keep.addAll(axioms);
+		fireRepairPlanChanged();
+	}
+	
 	public void removeAxiom2Keep(OWLAxiom ax){
 		axioms2Keep.remove(ax);
+		fireRepairPlanChanged();
+	}
+	
+	public void removeAxioms2Keep(Set<OWLAxiom> axioms){
+		axioms2Keep.removeAll(axioms);
 		fireRepairPlanChanged();
 	}
 	
