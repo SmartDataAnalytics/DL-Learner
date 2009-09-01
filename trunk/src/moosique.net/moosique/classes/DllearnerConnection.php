@@ -5,13 +5,16 @@
  */
 class DllearnerConnection extends Config {		
 	
-  private $client;
-  private $endpoint;
+  private $knowledgeSourceID;
+  private $client;    // here we store the soap-client
+  private $endpoint;  // the currently used endpoint
+                      // use getEndpoint and setEndpoint to change
 
   /**
-   * 
-   * @return 
-   * @param object $config
+   * Object initializing: retrieve ini-values, set the endpoint
+   * and include the neccessary wsdl-utilities and try to establish
+   * a connection to the dl-learner webservice
+   *  
    */
 	function __construct() {
 	  parent::__construct(); // init config
@@ -25,34 +28,124 @@ class DllearnerConnection extends Config {
 	}
   
   /**
+   * Tries to connect to the DL-Learner Webservice using the Tools 
+   * from Utilities.php. Sets private var client.
    * 
-   * @return 
    */
   private function connect() {
 		// connect to DL-Learner-Web-Service
-		$this->client = new SoapClient($this->getConfigUrl('wsdlLocal'));
+		try {
+		  $this->client = new SoapClient($this->getConfigUrl('wsdlLocal'));
+    } catch (Exception $e) {
+      $this->debugger->log($e, "Error connecting to the DL-Learner Webservice.");
+      echo '<h2>Could not connect to the DL-Learner Webservice.</h2>';
+      exit;
+    }
+    
+    // After establishing the SoapClient we create a Session ID
+    // and add the default knowledgeSource (see config.ini)
+    if (isset($_SESSION['sessionID'])) {
+      // if there is a current session running, we don't need to
+      // register a new client at the dl-learner webservice
+      try {
+        $this->knowledgeSourceID = $this->client->addKnowledgeSource($_SESSION['sessionID'], 'sparql', $this->endpoint);        
+      } catch (Exception $e) {
+        /* the current session-ID is not connected to the dllearner,
+         * this can happen if the dl-learner ws is restarted, but the session
+         * still exists in the browser -- kill the session, and 
+         * create a new ID and try again
+         */
+        $this->debugger->log($e->getMessage(), 'Error creating ID for connection to the DL-Learner Webservice, trying again...');
+        session_destroy();
+        $_SESSION['sessionID'] = $this->client->generateID();
+        try { 
+          $this->knowledgeSourceID = $this->client->addKnowledgeSource($_SESSION['sessionID'], 'sparql', $this->endpoint);  
+        } catch (Exception $e) { // if this happens again, we are _really_ not able to connect 
+          $this->debugger->log($e->getMessage(), 'Could not register at the DL-Learner Webservice.');
+          exit;
+        }
+      }
+    } else { // no session started yet? do it now.
+      $_SESSION['sessionID'] = $this->client->generateID();
+      $this->knowledgeSourceID = $this->client->addKnowledgeSource($_SESSION['sessionID'], 'sparql', $this->endpoint);
+    }
+    
 	}
   
   /**
+   * Sets the SPARQL-endpoint, the DL-Learner Webservice is connecting to 
    * 
-   * @return 
-   * @param object $endpoint
+   * @param String $endpoint The URI of the SPARQL-Endpoint to set
    */
   public function setEndpoint($endpoint) {
     $this->endpoint = $endpoint;
   }
 
-  
+  /**
+   * Returns a String with the URI for the SPARQL-Endpoint currently used
+   * 
+   * @return String The Endpoint URI currently used 
+   */
   public function getEndpoint() {
     return $this->endpoint;
   }
 
+  /**
+   * This method tries to create a connectionID from the DL-Learner
+   * Webservice and returns a JSON-object with the results from the
+   * Sparql-Query sent to the current endpoint
+   * 
+   * @return String A JSON-Object with the containing result-set
+   * @param String $query The SPARQL-Querystring to send
+   */
 	public function sparqlQuery($query) {
-		$id = $this->client->generateID();
-		$knowledgeSourceId = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
-		$result = $this->client->sparqlQuery($id, $knowledgeSourceId, $query);
+		$result = $this->client->sparqlQuery($_SESSION['sessionID'], $this->knowledgeSourceID, $query);
 		return $result;
 	}
+  
+  
+  
+  /**
+   *
+   *
+   *
+   */
+  public function learn($instances, $positiveExamples, $owlfile) {
+    $learnConfig = $this->getLearningConfig();
+    $this->client->addKnowledgeSource($_SESSION['sessionID'], 'owlfile', $owlfile);
+
+    $this->client->setReasoner($_SESSION['sessionID'], $learnConfig['reasoner']);
+    $this->client->setLearningProblem($_SESSION['sessionID'], $learnConfig['problem']);
+    
+    // set the instances, randomly chosen ones added    
+    $this->client->applyConfigEntryStringArray($_SESSION['sessionID'], $this->knowledgeSourceID, 'instances', $instances);
+    $this->client->setPositiveExamples($_SESSION['sessionID'], $positiveExamples);
+    
+    
+    $this->client->applyConfigEntryInt($_SESSION['sessionID'], $this->knowledgeSourceID, 'recursionDepth', $learnConfig['recursionDepth']);
+    $this->client->applyConfigEntryBoolean($_SESSION['sessionID'], $this->knowledgeSourceID, 'saveExtractedFragment', $learnConfig['saveExtractedFragment']);
+    
+    $learnID = $this->client->setLearningAlgorithm($_SESSION['sessionID'], $learnConfig['algorithm']);
+    $this->client->applyConfigEntryInt($_SESSION['sessionID'], $learnID, 'maxExecutionTimeInSeconds', $learnConfig['maxExecutionTimeInSeconds']);
+    $this->client->applyConfigEntryInt($_SESSION['sessionID'], $learnID, 'valueFrequencyThreshold', $learnConfig['valueFrequencyThreshold']);
+    $this->client->applyConfigEntryBoolean($_SESSION['sessionID'], $learnID, 'useHasValueConstructor', $learnConfig['useHasValueConstructor']);
+
+    // TODO replacement not working?
+    $this->client->applyConfigEntryStringArray($_SESSION['sessionID'], $learnID, 'replacePredicate', array(
+      "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Type")
+    );
+    
+    $this->client->initAll($_SESSION['sessionID']);
+
+    $concepts = $this->client->learnDescriptionsEvaluated($_SESSION['sessionID'], 10);
+    
+    $concepts = json_decode($concepts);
+    
+    return $concepts;
+    
+  }
 
 }
+
 ?>

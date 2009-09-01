@@ -17,7 +17,7 @@ class Debugger {
    * Initializes the Debugger by inlcuding and instanciating FirePHP  
    */
   function __construct() {
-    require_once('FirePHP.php');
+    require_once('FirePHP.class.php');
     $this->fb = FirePHP::getInstance(true);
   }
   
