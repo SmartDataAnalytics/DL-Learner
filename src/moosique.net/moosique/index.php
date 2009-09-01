@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 require('classes/Config.php'); 
 require('classes/DllearnerConnection.php');
 require('classes/SparqlQueryBuilder.php');

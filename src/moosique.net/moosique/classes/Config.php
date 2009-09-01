@@ -44,6 +44,10 @@ class Config {
     return $this->config['url'][$value];
   }
   
+  public function getLearningConfig() {
+    return $this->config['learning'];
+  }
+  
   /**
    * 
    * @return Array An associative array of all prefixes 
