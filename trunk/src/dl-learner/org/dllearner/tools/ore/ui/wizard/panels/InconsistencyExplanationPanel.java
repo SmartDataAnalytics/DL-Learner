@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,9 +19,11 @@ import javax.swing.JSplitPane;
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.RepairManager;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.ExplanationTable;
+import org.dllearner.tools.ore.ui.ExplanationTablePanel;
+import org.dllearner.tools.ore.ui.RepairPlanPanel;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLAxiom;
 
 public class InconsistencyExplanationPanel extends JPanel{
 
@@ -115,7 +116,7 @@ public class InconsistencyExplanationPanel extends JPanel{
 		explanationsPanel.removeAll();
 	}
 	
-	public void addExplanation(List<OWLAxiom> explanation, int counter){
+	public void addExplanation(Explanation explanation, int counter){
 		ExplanationTable expTable = new ExplanationTable(explanation, OWLManager.createOWLOntologyManager().getOWLDataFactory().getOWLThing());
 		explanationsPanel.add(new ExplanationTablePanel(expTable, counter));
 		

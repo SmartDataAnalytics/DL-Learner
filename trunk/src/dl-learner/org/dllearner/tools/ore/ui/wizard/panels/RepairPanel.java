@@ -20,22 +20,16 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
@@ -49,13 +43,10 @@ import org.dllearner.tools.ore.ui.IndividualsTable;
 public class RepairPanel extends JPanel{
 
 	private static final long serialVersionUID = -7411197973240429632L;
-
-	private JPanel contentPanel;
 	
 	private JPanel posPanel;
 	private JScrollPane posScrollPane;
 	private IndividualsTable posTable;
-	private JPanel posButtonPanel;
 	private JButton posRepairButton;
 	private JButton posDeleteButton;
 	private JButton posRemoveButton;
@@ -63,7 +54,6 @@ public class RepairPanel extends JPanel{
 	private JPanel negPanel;
 	private JScrollPane negScrollPane;
 	private IndividualsTable negTable;
-	private JPanel negButtonPanel;
 	private JButton negRepairButton;
 	private JButton negDeleteButton;
 	private JButton negAddButton;
@@ -71,152 +61,81 @@ public class RepairPanel extends JPanel{
 	
 	public RepairPanel() {
 		
-		super();
-
-		this.setLayout(new java.awt.BorderLayout());
+		setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		add(getPosPanel(), c);
+		c.gridx = 1;
+		add(getNegPanel(), c);
 		
-		JPanel labelPanel = new JPanel();
-				
-		contentPanel = getContentPanel();
-		
-		add(contentPanel, BorderLayout.CENTER);
-		add(labelPanel, BorderLayout.SOUTH);
 	}
-
-	private JPanel getContentPanel() {
-		JPanel contentPanel = new JPanel();
-		GridBagLayout thisLayout = new GridBagLayout();
-		thisLayout.rowWeights = new double[] {0.1};
-		thisLayout.rowHeights = new int[] {7};
-		thisLayout.columnWeights = new double[] {0.5, 0.5};
-		thisLayout.columnWidths = new int[] {100, 100};
-		contentPanel.setLayout(thisLayout);
-		setPreferredSize(new Dimension(400, 300));
-		{
-			posPanel = new JPanel();
-			GridBagLayout posPanelLayout = new GridBagLayout();
-			contentPanel.add(posPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			posPanelLayout.rowWeights = new double[] {0.1};
-			posPanelLayout.rowHeights = new int[] {7};
-			posPanelLayout.columnWeights = new double[] {0.0, 0.5};
-			posPanelLayout.columnWidths = new int[] {80, 110};
-			posPanel.setLayout(posPanelLayout);
-			posPanel.setPreferredSize(new java.awt.Dimension(182, 275));
-			posPanel.setBorder(BorderFactory.createTitledBorder("positive examples"));
-			{
-				posScrollPane = new JScrollPane();
-				posPanel.add(posScrollPane, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				posScrollPane.setSize(126, 276);
-				{
-					
-					posTable = new IndividualsTable();
-					posScrollPane.setViewportView(posTable);
-					posTable.setPreferredSize(new java.awt.Dimension(85, 93));
-					posTable.setSize(127, 273);
-				}
-			}
-			{
-				posButtonPanel = new JPanel();
-				posButtonPanel.setName("positive");
-				GroupLayout posButtonPanelLayout = new GroupLayout((JComponent) posButtonPanel);
-				posPanel.add(posButtonPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				posButtonPanel.setLayout(posButtonPanelLayout);
-				{
-					posRemoveButton = new JButton();
-					posRemoveButton.setName("posRemove");
-					posRemoveButton.setText("remove");
-				}
-				{
-					posDeleteButton = new JButton();
-					posDeleteButton.setName("posDelete");
-					posDeleteButton.setText("delete");
-				}
-				{
-					posRepairButton = new JButton();
-					posRepairButton.setName("posRepair");
-					posRepairButton.setText("repair");
-				}
-					posButtonPanelLayout.setHorizontalGroup(posButtonPanelLayout.createSequentialGroup()
-					.addGroup(posButtonPanelLayout.createParallelGroup()
-					    .addGroup(GroupLayout.Alignment.LEADING, posButtonPanelLayout.createSequentialGroup()
-					        .addComponent(posRemoveButton, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
-					        .addGap(10))
-					    .addComponent(posDeleteButton, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
-					    .addGroup(GroupLayout.Alignment.LEADING, posButtonPanelLayout.createSequentialGroup()
-					        .addComponent(posRepairButton, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
-					        .addGap(10)))
-					.addContainerGap(22, 22));
-					posButtonPanelLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {posRepairButton, posDeleteButton, posRemoveButton});
-					posButtonPanelLayout.setVerticalGroup(posButtonPanelLayout.createSequentialGroup()
-						.addComponent(posRemoveButton, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-						.addComponent(posDeleteButton, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-						.addComponent(posRepairButton, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(213, 213));
-					posButtonPanelLayout.linkSize(SwingConstants.VERTICAL, new Component[] {posRepairButton, posDeleteButton, posRemoveButton});
-			}
-		}
-		{
-			negPanel = new JPanel();
-			GridBagLayout negPanelLayout = new GridBagLayout();
-			contentPanel.add(negPanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			negPanelLayout.rowWeights = new double[] {0.1};
-			negPanelLayout.rowHeights = new int[] {7};
-			negPanelLayout.columnWeights = new double[] {0.5, 0.0};
-			negPanelLayout.columnWidths = new int[] {110, 80};
-			negPanel.setLayout(negPanelLayout);
-			posPanel.setPreferredSize(new java.awt.Dimension(182, 275));
-			negPanel.setBorder(BorderFactory.createTitledBorder(null, "negative examples", TitledBorder.LEADING, TitledBorder.TOP));
-			{
-				negScrollPane = new JScrollPane();
-				negPanel.add(negScrollPane, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				{
-					negTable = new IndividualsTable();
-					negScrollPane.setViewportView(negTable);
-					negTable.setPreferredSize(new java.awt.Dimension(85, 93));
-					negTable.setSize(127, 273);
-				}
-			}
-			{
-				negButtonPanel = new JPanel();
-				negButtonPanel.setName("negative");
-				GroupLayout negButtonPanelLayout = new GroupLayout((JComponent) negButtonPanel);
-				negButtonPanel.setLayout(negButtonPanelLayout);
-				negPanel.add(negButtonPanel, new GridBagConstraints(1, 0, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				{
-					negAddButton = new JButton();
-					negAddButton.setName("negAdd");
-					negAddButton.setText("add");
-				}
-				{
-					negDeleteButton = new JButton();
-					negDeleteButton.setName("negDelete");
-					negDeleteButton.setText("delete");
-				}
-				{
-					negRepairButton = new JButton();
-					negRepairButton.setName("negRepair");
-					negRepairButton.setText("repair");
-				}
-					negButtonPanelLayout.setHorizontalGroup(negButtonPanelLayout.createSequentialGroup()
-					.addGroup(negButtonPanelLayout.createParallelGroup()
-					    .addComponent(negAddButton, GroupLayout.Alignment.LEADING, 0, 79, Short.MAX_VALUE)
-					    .addComponent(negDeleteButton, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
-					    .addGroup(GroupLayout.Alignment.LEADING, negButtonPanelLayout.createSequentialGroup()
-					        .addComponent(negRepairButton, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-					        .addGap(7)))
-					.addContainerGap());
-					negButtonPanelLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {negRepairButton, negDeleteButton, negAddButton});
-					negButtonPanelLayout.setVerticalGroup(negButtonPanelLayout.createSequentialGroup()
-						.addComponent(negAddButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(negDeleteButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(negRepairButton, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(213, 213));
-					negButtonPanelLayout.linkSize(SwingConstants.VERTICAL, new Component[] {negRepairButton, negDeleteButton, negAddButton});
-			}
-		}
+	
+	private JPanel getPosPanel(){
+		posPanel = new JPanel();
+		posPanel.setName("positive");
+		posPanel.setLayout(new GridBagLayout());
+		posPanel.setBorder(new TitledBorder("Positive examples"));
 		
-
-		return contentPanel;
+		GridBagConstraints c = new GridBagConstraints();
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setName("positive");
+		buttonPanel.setLayout(new GridLayout(0, 1));
+		posRemoveButton = new JButton("Remove");
+		posRemoveButton.setActionCommand("posRemove");
+		buttonPanel.add(posRemoveButton);
+		posDeleteButton = new JButton("Delete");
+		posDeleteButton.setActionCommand("posDelete");
+		buttonPanel.add(posDeleteButton);
+		posRepairButton = new JButton("Repair");
+		posRepairButton.setActionCommand("posRepair");
+		buttonPanel.add(posRepairButton);
+		c.anchor = GridBagConstraints.NORTH;
+		add(buttonPanel, c);
+		
+		posTable = new IndividualsTable();
+		posScrollPane = new JScrollPane(posTable);
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		add(posScrollPane, c);
+		
+		return posPanel;
+	}
+	
+	private JPanel getNegPanel(){
+		negPanel = new JPanel();
+		negPanel.setName("negative");
+		negPanel.setLayout(new GridBagLayout());
+		negPanel.setBorder(new TitledBorder("Negative examples"));
+		
+		GridBagConstraints c = new GridBagConstraints();
+			
+		negTable = new IndividualsTable();
+		negScrollPane = new JScrollPane(negTable);
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		add(negScrollPane, c);
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setName("negative");
+		buttonPanel.setLayout(new GridLayout(0, 1));
+		negAddButton = new JButton("Add");
+		negAddButton.setActionCommand("negAdd");
+		buttonPanel.add(negAddButton);
+		negDeleteButton = new JButton("Delete");
+		negDeleteButton.setActionCommand("negDelete");
+		buttonPanel.add(negDeleteButton);
+		negRepairButton = new JButton("Repair");
+		negRepairButton.setActionCommand("negRepair");
+		buttonPanel.add(negRepairButton);
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0;
+		c.weighty = 0;
+		c.anchor = GridBagConstraints.NORTH;
+		add(buttonPanel, c);
+		
+		return negPanel;
 	}
 	
 	/**
@@ -266,7 +185,15 @@ public class RepairPanel extends JPanel{
 		negTable.addMouseListener(mL);
 	}
 	
-	
+	public static void main(String[] args){
+		
+		JFrame frame = new JFrame();
+		JPanel panel = new RepairPanel();
+		frame.add(panel);
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
 	
 	
 }  

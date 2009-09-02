@@ -1,4 +1,4 @@
-package org.dllearner.tools.ore.ui.wizard.panels;
+package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

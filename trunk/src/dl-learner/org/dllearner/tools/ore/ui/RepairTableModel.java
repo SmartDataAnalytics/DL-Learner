@@ -51,7 +51,7 @@ public class RepairTableModel extends AbstractTableModel implements RepairManage
     public Object getValueAt(int rowIndex, int columnIndex)
     {
     	if(columnIndex == 1){
-    		return ManchesterSyntaxRenderer.render(axioms.get(rowIndex), false);
+    		return ManchesterSyntaxRenderer.render(axioms.get(rowIndex), false, 0);
     	} else {
     		   return axioms.get(rowIndex);
         }

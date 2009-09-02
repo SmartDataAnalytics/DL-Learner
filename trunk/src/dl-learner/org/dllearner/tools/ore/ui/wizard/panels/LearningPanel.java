@@ -20,7 +20,7 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -28,12 +28,15 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.ResultTable;
 import org.dllearner.tools.protege.OptionPanel;
@@ -72,17 +75,21 @@ public class LearningPanel extends JPanel{
 
 		c.gridx = 0;
 		c.gridy = 0;
+		
 		c.weightx = 1.0;
 		c.weighty = 1.0;
+		c.anchor = GridBagConstraints.NORTHWEST;
 		c.fill = GridBagConstraints.BOTH;
 		contentPanel = getResultPanel();
 		add(contentPanel, c);
 
 
-		c.gridx = 1;
+		c.gridx = GridBagConstraints.RELATIVE;
 		c.gridy = 0;
+		c.anchor = GridBagConstraints.NORTH;
 		c.weightx = 0.0;
-		c.weighty = 1.0;
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
 		buttonSliderPanel = new JPanel();
 		add(buttonSliderPanel, c);
 		GridBagLayout buttonSliderPanelLayout = new GridBagLayout();
@@ -95,7 +102,7 @@ public class LearningPanel extends JPanel{
 		buttonPanel = new JPanel();
 		BoxLayout buttonPanelLayout = new BoxLayout(buttonPanel,
 				javax.swing.BoxLayout.X_AXIS);
-		buttonPanel.setLayout(buttonPanelLayout);
+//		buttonPanel.setLayout(buttonPanelLayout);
 		buttonSliderPanel.add(buttonPanel, new GridBagConstraints(0, 0, 1, 1,
 				0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
 				new Insets(0, 0, 0, 0), 0, 0));
@@ -108,6 +115,8 @@ public class LearningPanel extends JPanel{
 		buttonPanel.add(stopButton);
 		stopButton.setText("Stop");
 
+//		add(buttonPanel, c);
+		
 		optionsPanel = new OptionPanel();
 		optionsPanel.setBorder(new TitledBorder("Options"));
 		buttonSliderPanel.add(optionsPanel, new GridBagConstraints(0, 1,
@@ -116,13 +125,14 @@ public class LearningPanel extends JPanel{
 		
 		
 		graphicPanel = new GraphicalCoveragePanel("test");
-		JPanel graphicHolderPanel = new JPanel();
+		JPanel graphicHolderPanel = new JPanel(new BorderLayout());
 		graphicHolderPanel.add(graphicPanel);
 		graphicHolderPanel.setBorder(new TitledBorder("Graphical coverage"));
-		graphicHolderPanel.setPreferredSize(new Dimension(300,300));
+//		graphicHolderPanel.setPreferredSize(new Dimension(300,300));
 		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 1;
+		c.gridy = GridBagConstraints.RELATIVE;
+		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.gridwidth = GridBagConstraints.REMAINDER;
 		
 		add(graphicHolderPanel, c);
 
@@ -131,12 +141,13 @@ public class LearningPanel extends JPanel{
 	private JPanel getResultPanel() {
 
 		resultPanel = new JPanel();
+		resultPanel.setLayout(new BorderLayout());
 		resultTable = new ResultTable();
 		
 		
 		tableScrollPane = new JScrollPane(resultTable);
-		int height = resultTable.getRowHeight() * 10 + resultTable.getTableHeader().getHeight();
-		tableScrollPane.getViewport().setPreferredSize(new Dimension(800, height));
+//		int height = resultTable.getRowHeight() * 10 + resultTable.getTableHeader().getHeight();
+//		tableScrollPane.getViewport().setPreferredSize(new Dimension(800, height));
 		resultPanel.add(tableScrollPane);
 		resultPanel.setBorder(new TitledBorder("Learned class expressions"));
 
@@ -173,6 +184,16 @@ public class LearningPanel extends JPanel{
 	
 	public OptionPanel getOptionsPanel(){
 		return optionsPanel;
+	}
+	
+	public static void main(String[] args){
+		OREManager.getInstance().setCurrentClass2Learn(new NamedClass("dummy"));
+		JFrame frame = new JFrame();
+		JPanel panel = new LearningPanel();
+		frame.add(panel);
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 	}
 	
 }  

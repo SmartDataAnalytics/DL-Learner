@@ -20,7 +20,7 @@ public class ResultTable extends JXTable {
 	public ResultTable(){
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
-		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ResultTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
@@ -35,7 +35,8 @@ public class ResultTable extends JXTable {
 	
 	private void setColumnSizes(){
 		getColumn(0).setMaxWidth(70);
-		getColumn(1).setPreferredWidth(430);
+		
+//		getColumn(1).setPreferredWidth(430);
 				
 	}
 	

@@ -9,10 +9,10 @@ import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.InconsistencyExplanationPanel;
 import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener,  RepairManagerListener{
@@ -53,7 +53,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     	panel.clearExplanationsPanel();
     	expMan.setLaconicMode(true);
 		int counter = 1;
-		for (List<OWLAxiom> explanation : expMan
+		for (Explanation explanation : expMan
 				.getInconsistencyExplanations()) {
 			panel.addExplanation(explanation, counter);
 			counter++;
@@ -65,7 +65,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     	panel.clearExplanationsPanel();
     	expMan.setLaconicMode(false);
 		int counter = 1;
-		for (List<OWLAxiom> explanation : expMan
+		for (Explanation explanation : expMan
 				.getInconsistencyExplanations()) {
 			panel.addExplanation(explanation, counter);
 			counter++;

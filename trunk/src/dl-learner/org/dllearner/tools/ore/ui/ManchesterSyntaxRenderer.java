@@ -39,16 +39,21 @@ public class ManchesterSyntaxRenderer {
 		return render(ind);
 	}
 	
-	public static String render(OWLAxiom value, boolean striked){
+	public static String render(OWLAxiom value, boolean striked, int depth){
 		value.accept(renderer);
 		writer.flush();
 		String renderedString = buffer.toString();
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
+		
 		bf.append("<html>");
 		if(striked){
 			bf.append("<strike>");
 		}
+		for(int i = 0; i < depth; i++){
+			bf.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		}
+		
 		String token;
 		while(st.hasMoreTokens()){
 			token = st.nextToken();

@@ -22,20 +22,15 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -51,14 +46,11 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
-import org.dllearner.tools.ore.ui.wizard.panels.ChangePanel;
-import org.dllearner.tools.ore.ui.wizard.panels.ChangesPanel;
-import org.dllearner.tools.ore.ui.wizard.panels.DescriptionPanel;
-import org.dllearner.tools.ore.ui.wizard.panels.StatsPanel;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
 
 /**
  * The repair dialog where the learned class description (including error parts), 
@@ -66,7 +58,7 @@ import org.semanticweb.owl.model.OWLOntologyChange;
  * @author Lorenz Buehmann
  *
  */
-public class RepairDialog extends JDialog implements ActionListener, MouseListener{
+public class RepairDialog extends JDialog implements ActionListener, OWLOntologyChangeListener{
 	
 	/**
 	 * 
@@ -85,7 +77,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	private JPanel okCancelPanel;
 	private JPanel actionStatsPanel;
 	
-	private ChangesPanel changesPanel;
+	private ChangesTable changesTable;
 	private JScrollPane changesScroll;
 	
 	private JButton okButton;
@@ -98,9 +90,6 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	private Individual ind;
 	private Description actualDesc;
 	private Description newDesc;
-	private Set<OWLOntologyChange> allChanges;
-	private String baseURI;
-	private Map<String, String> prefixes;
 	
 	
 	public RepairDialog(Individual ind, JDialog dialog, String mode){
@@ -110,15 +99,14 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		addWindowListener(new WindowAdapter() {
 			@Override
 		    public void windowClosing(WindowEvent we) {
-		    	if(allChanges.size() > 0){
+		    	if(changesTable.getRowCount() > 0){
 					if (JOptionPane.showConfirmDialog(dialogd,
 					        "All changes will be lost!", "Warning!", 
 					        JOptionPane.YES_NO_OPTION)
 					     == JOptionPane.YES_OPTION){
 		
-						modifier.undoChanges(allChanges);
-//						ore.updateReasoner();
-						allChanges.clear();
+						modifier.undoChanges(getAllChanges());
+						changesTable.clear();
 						returncode = CANCEL_RETURN_CODE;
 						setVisible(false);
 						dispose();
@@ -138,7 +126,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	
 		this.modifier = OREManager.getInstance().getModifier();
 		this.mode = mode;
-		allChanges = new HashSet<OWLOntologyChange>();
+		OREManager.getInstance().getPelletReasoner().getOWLOntologyManager().addOntologyChangeListener(this);
 		
 	}
 	
@@ -147,8 +135,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	 * @return integer value
 	 */
 	public int showDialog(){
-		baseURI = OREManager.getInstance().getBaseURI();
-		prefixes = OREManager.getInstance().getPrefixes();
+	
 		if(mode.equals("neg")){
 			this.setTitle("Repair negative example");
 		} else if(mode.equals("pos")){
@@ -166,10 +153,8 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		JScrollPane statsScroll = new JScrollPane();
 		statsScroll.setViewportView(statsPanel);
 		        
-				
-		changesPanel = new ChangesPanel();
-		changesScroll = new JScrollPane();
-		changesScroll.setViewportView(changesPanel);
+		changesTable = new ChangesTable();
+		changesScroll = new JScrollPane(changesTable);
 		
 	    actionStatsPanel = new JPanel();
 		
@@ -228,83 +213,39 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 			int action = item.getActionID();
 			if(action == 4){
 				Individual obj = new Individual(e.getActionCommand());
-				
 				List<OWLOntologyChange> changes  = modifier.addObjectProperty(ind, (ObjectQuantorRestriction) actualDesc, obj);
-				allChanges.addAll(changes);
-				
-				descPanel.updatePanel();
-				
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectQuantorRestriction) actualDesc).getRole().toKBSyntaxString(baseURI, prefixes) 
-													+ " to " + obj.toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
+				changesTable.addChanges(changes);
 			} else if(action == 5){
 				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
-				List<OWLOntologyChange> changes = null;
+				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 				for(Individual i : OREManager.getInstance().getIndividualsInPropertyRange(property, ind)){
-					changes = modifier.removeObjectPropertyAssertion(ind, property, i);
-					allChanges.addAll(changes);
+					changes.addAll(modifier.removeObjectPropertyAssertion(ind, property, i));
 				}
+				changesTable.addChanges(changes);
 				
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("removed property assertions "  
-												+ ((ObjectSomeRestriction) actualDesc).getRole().toKBSyntaxString(baseURI, prefixes)  
-												+ " to range " + ((ObjectSomeRestriction) actualDesc).getChild(0).toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
 			} else if(action == 6){
 				List<OWLOntologyChange> changes = modifier.deleteObjectProperty(ind, (ObjectQuantorRestriction) actualDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("deleted property " + ((ObjectQuantorRestriction) actualDesc).getRole().toKBSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
+				changesTable.addChanges(changes);
 			} else if(action == 0){
 				newDesc = new NamedClass(item.getName());
 				List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, actualDesc, newDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc.toManchesterSyntaxString(baseURI, prefixes)  
-												+ " to " + newDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
+				changesTable.addChanges(changes);
 			} else if(action == 3){
 				List<OWLOntologyChange> changes  = modifier.removeClassAssertion(ind, actualDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("removed class assertion to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
+				changesTable.addChanges(changes);
 			} else if(action == 2){
 				List<OWLOntologyChange> changes  = modifier.addClassAssertion(ind, actualDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("added class assertion to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
+				changesTable.addChanges(changes);
 			} else if(action == 7){
 				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
-				List<OWLOntologyChange> changes = null;
+				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 				for(Individual i : OREManager.getInstance().getIndividualsNotInPropertyRange(property, ind)){
-					changes = modifier.removeObjectPropertyAssertion(ind, property, i);
-					allChanges.addAll(changes);
+					changes.addAll(modifier.removeObjectPropertyAssertion(ind, property, i));
 				}
-				
-				
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("removed property assertion " + property.getRole().toKBSyntaxString(baseURI, prefixes) 
-										       + " to " + ind.toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
 			} else if(action == 1){
 				Description oldDesc = new NamedClass(item.getName());
 				List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, oldDesc, actualDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("moved class assertion from " + oldDesc.toManchesterSyntaxString(baseURI, prefixes) 
-												+ " to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
-				changesScroll.updateUI();
+				changesTable.addChanges(changes);
 			}
 		} else if(e.getActionCommand().equals("Ok")){
 			if(descPanel.isCorrect()){
@@ -312,19 +253,17 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 			} else{
 				returncode = OK_RETURN_CODE;
 			}
-//			ore.updateReasoner();
 			setVisible(false);
 			dispose();
 		} else if(e.getActionCommand().equals("Cancel")){
-			if(allChanges.size() > 0){
+			if(changesTable.getRowCount() > 0){
 				if (JOptionPane.showConfirmDialog(this,
 				        "All changes will be lost!", "Warning!", 
 				        JOptionPane.YES_NO_OPTION)
 				     == JOptionPane.YES_OPTION){
 	
-					modifier.undoChanges(allChanges);
-//					ore.updateReasoner();
-					allChanges.clear();
+					modifier.undoChanges(getAllChanges());
+					changesTable.clear();
 					returncode = CANCEL_RETURN_CODE;
 					setVisible(false);
 					dispose();
@@ -339,50 +278,17 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 			
 
 	}
-			
 
-	public void mouseClicked(MouseEvent e) {
-		if(e.getSource() instanceof UndoLabel){
-			List<OWLOntologyChange> changes = ((UndoLabel) e.getSource()).getChanges();
-			modifier.undoChanges(changes);
-			allChanges.removeAll(changes);
-			descPanel.updatePanel();
-			statsPanel.updatePanel();
-			changesPanel.updatePanel(((UndoLabel) e.getSource()).getParent());
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			
-		}
+	public List<OWLOntologyChange> getAllChanges() {
+		return changesTable.getChanges();
 	}
 
-	public void mouseEntered(MouseEvent e) {
-		if(e.getSource() instanceof UndoLabel){
-			((UndoLabel) e.getSource()).setText("<html><u>Undo</u></html>");
-			setCursor(new Cursor(Cursor.HAND_CURSOR));
-		}
+	@Override
+	public void ontologiesChanged(List<? extends OWLOntologyChange> arg0)
+			throws OWLException {
+		descPanel.updatePanel();
+		statsPanel.updatePanel();
 		
 	}
 
-	public void mouseExited(MouseEvent e) {
-		if(e.getSource() instanceof UndoLabel){
-			((UndoLabel) e.getSource()).setText("Undo");
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-		
-	}
-
-	public void mousePressed(MouseEvent e) {
-				
-	}
-
-	public void mouseReleased(MouseEvent e) {
-				
-	}
-
-	public Set<OWLOntologyChange> getAllChanges() {
-		return allChanges;
-	}
-
-		
-
-	
 }

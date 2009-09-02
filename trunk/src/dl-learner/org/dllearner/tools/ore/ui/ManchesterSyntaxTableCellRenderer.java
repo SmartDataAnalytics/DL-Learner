@@ -9,6 +9,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObject;
@@ -39,6 +40,8 @@ public class ManchesterSyntaxTableCellRenderer extends DefaultTableCellRenderer 
 		} else if(value instanceof Individual){
 			OWLIndividual ind = OWLAPIConverter.getOWLAPIIndividual((Individual) value);
 			render(ind);		
+		} else if(value instanceof OWLAxiom){
+			render((OWLAxiom)value);
 		} else {
 			super.setValue(value);
 		}

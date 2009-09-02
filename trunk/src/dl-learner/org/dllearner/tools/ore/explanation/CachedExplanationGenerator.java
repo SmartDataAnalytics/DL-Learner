@@ -149,28 +149,34 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
-		Map<OWLAxiom, Set<Explanation>> copy = new HashMap<OWLAxiom, Set<Explanation>>();
-		for(OWLOntologyChange change : changes){
-			if(change instanceof RemoveAxiom){
-				for(Entry<OWLAxiom, Set<Explanation>> entry: regularExplanationCache.entrySet()){
-					Set<Explanation> explanationsCopy = new HashSet<Explanation>();
-					for(Explanation explanation : entry.getValue()){
-						if(explanation.getAxioms().contains(change.getAxiom())){
-							explanationsCopy.add(explanation);
-						}
-					}
-					if(!explanationsCopy.isEmpty()){
-						copy.put(entry.getKey(), explanationsCopy);
-					}
-					
-					
-				}
-			}
-		}
-		for(Entry<OWLAxiom, Set<Explanation>> copyEntry : copy.entrySet()){
-			regularExplanationCache.get(copyEntry.getKey()).removeAll(copyEntry.getValue());
-			
-		}
+//		Map<OWLAxiom, Set<Explanation>> copy = new HashMap<OWLAxiom, Set<Explanation>>();
+//		for(OWLOntologyChange change : changes){
+//			if(change instanceof RemoveAxiom){
+//				for(Entry<OWLAxiom, Set<Explanation>> entry: regularExplanationCache.entrySet()){
+//					Set<Explanation> explanationsCopy = new HashSet<Explanation>();
+//					for(Explanation explanation : entry.getValue()){
+//						if(explanation.getAxioms().contains(change.getAxiom())){
+//							explanationsCopy.add(explanation);
+//						}
+//					}
+//					if(!explanationsCopy.isEmpty()){
+//						copy.put(entry.getKey(), explanationsCopy);
+//					}
+//					
+//					
+//				}
+//			}
+//		}
+//		for(Entry<OWLAxiom, Set<Explanation>> copyEntry : copy.entrySet()){
+//			regularExplanationCache.get(copyEntry.getKey()).removeAll(copyEntry.getValue());
+//			
+//		}
+		regularExplanationCache.clear();
+		laconicExplanationCache.clear();
+		
+		axiom2Module.clear();
+		lastRequestedRegularSize.clear();
+		lastRequestedLaconicSize.clear();
 		
 	}
 	

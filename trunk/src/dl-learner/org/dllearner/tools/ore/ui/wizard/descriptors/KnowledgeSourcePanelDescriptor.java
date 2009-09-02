@@ -144,6 +144,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 				RecentManager.getInstance().addURI(new File(filePathString).toURI());
             	RecentManager.getInstance().serialize();
 				new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+//            	TaskManager.getInstance().loadOntology();
 				
 			}
 
@@ -165,7 +166,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 				uri);
 		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 	}
-    
+    @SuppressWarnings(value = { "unused" })
     private void updateMetrics(){
     	knowledgePanel.updateMetrics();
     }
@@ -186,8 +187,12 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		public Void doInBackground() {
 			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			statusBar.showProgress(true);
-			statusBar.setProgressTitle("loading ontology");
+			statusBar.setProgressTitle("Loading ontology");
         	OREManager.getInstance().initPelletReasoner();
+        	statusBar.setProgressTitle("Classifying ontology");
+        	OREManager.getInstance().getPelletReasoner().classify();
+        	statusBar.setProgressTitle("Realising ontology");
+        	OREManager.getInstance().getPelletReasoner().realise();
 
 			return null;
 		}
@@ -195,7 +200,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		@Override
 		public void done() {
 			statusBar.showProgress(false);
-			statusBar.setProgressTitle("ontology loaded");
+			statusBar.setProgressTitle("Done");
 			getWizard().getDialog().setCursor(null);
 			getWizard().setNextFinishButtonEnabled(true);
 //			updateMetrics();

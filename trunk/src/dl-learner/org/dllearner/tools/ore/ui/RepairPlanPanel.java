@@ -1,4 +1,4 @@
-package org.dllearner.tools.ore.ui.wizard.panels;
+package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
-import org.dllearner.tools.ore.ui.RepairTable;
 
 public class RepairPlanPanel extends JPanel {
 
@@ -26,10 +25,10 @@ public class RepairPlanPanel extends JPanel {
 		this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
 		
 		setLayout(new BorderLayout());
-		add(new JLabel("Axioms to remove"), BorderLayout.NORTH);
+		add(new JLabel("Axioms"), BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel(new FlowLayout(2));
 		add(buttonPanel, "South");
-		buttonPanel.add(new JButton(new AbstractAction("compute plan") {
+		buttonPanel.add(new JButton(new AbstractAction("Compute plan") {
 
 			/**
 			 * 

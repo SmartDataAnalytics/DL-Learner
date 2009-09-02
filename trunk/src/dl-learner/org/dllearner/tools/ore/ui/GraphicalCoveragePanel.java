@@ -209,124 +209,124 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 				g2D.fill(additionalIndividuals.get(i).getIndividualPoint());
 			}
 
-			if(eval != null){
-			// Plus 1
-			if (coveredIndividualSize != OREManager.getInstance()
-					.getPelletReasoner().getIndividuals(
-							OREManager.getInstance().getCurrentClass2Learn())
-					.size()
-					&& notCoveredInd != 0) {
-				g2D.drawLine(x1 - 1 - shiftOldConcept, y1 - 1, x2 + 1
-						- shiftOldConcept, y1 - 1);
-				g2D.drawLine(x1 - shiftOldConcept, centerY - 1, x2
-						- shiftOldConcept, centerY - 1);
-				g2D.drawLine(x1 - shiftOldConcept, centerY, x2
-						- shiftOldConcept, centerY);
-				g2D.drawLine(x1 - shiftOldConcept, centerY + 1, x2
-						- shiftOldConcept, centerY + 1);
-				g2D.drawLine(x1 - 1 - shiftOldConcept, y2 + 1, x2 + 1
-						- shiftOldConcept, y2 + 1);
-
-				g2D.drawLine(x1 - 1 - shiftOldConcept, y1 - 1, x1 - 1
-						- shiftOldConcept, y2 + 1);
-				g2D.drawLine(centerX - 1 - shiftOldConcept, y1, centerX - 1
-						- shiftOldConcept, y2);
-				g2D.drawLine(centerX - shiftOldConcept, y1, centerX
-						- shiftOldConcept, y2);
-				g2D.drawLine(centerX + 1 - shiftOldConcept, y1, centerX + 1
-						- shiftOldConcept, y2);
-				g2D.drawLine(x2 + 1 - shiftOldConcept, y1 - 1, x2 + 1
-						- shiftOldConcept, y2 + 1);
-			}
-			// Plus 2
-
-			g2D.drawLine(x1 - 1 + shiftCovered, y1 - 1, x2 + 1 + shiftCovered,
-					y1 - 1);
-			g2D.drawLine(x1 + shiftCovered, centerY - 1, x2 + shiftCovered,
-					centerY - 1);
-			g2D
-					.drawLine(x1 + shiftCovered, centerY, x2 + shiftCovered,
-							centerY);
-			g2D.drawLine(x1 + shiftCovered, centerY + 1, x2 + shiftCovered,
-					centerY + 1);
-			g2D.drawLine(x1 - 1 + shiftCovered, y2 + 1, x2 + 1 + shiftCovered,
-					y2 + 1);
-
-			g2D.drawLine(x1 - 1 + shiftCovered, y1 - 1, x1 - 1 + shiftCovered,
-					y2 + 1);
-			g2D.drawLine(centerX - 1 + shiftCovered, y1, centerX - 1
-					+ shiftCovered, y2);
-			g2D
-					.drawLine(centerX + shiftCovered, y1, centerX
-							+ shiftCovered, y2);
-			g2D.drawLine(centerX + 1 + shiftCovered, y1, centerX + 1
-					+ shiftCovered, y2);
-			g2D.drawLine(x2 + 1 + shiftCovered, y1 - 1, x2 + 1 + shiftCovered,
-					y2 + 1);
-
-			// Plus 3
-			if (coveredIndividualSize != OREManager.getInstance()
-					.getPelletReasoner().getIndividuals(
-							OREManager.getInstance().getCurrentClass2Learn())
-					.size()
-					&& ((EvaluatedDescriptionClass) eval)
-							.getAdditionalInstances().size() != 0) {
-				g2D.drawLine(x1 - 1 + shiftNewConcept, y1 - 1, x2 + 1
-						+ shiftNewConcept, y1 - 1);
-				g2D.drawLine(x1 + shiftNewConcept, centerY - 1, x2
-						+ shiftNewConcept, centerY - 1);
-				g2D.drawLine(x1 + shiftNewConcept, centerY, x2
-						+ shiftNewConcept, centerY);
-				g2D.drawLine(x1 + shiftNewConcept, centerY + 1, x2
-						+ shiftNewConcept, centerY + 1);
-				g2D.drawLine(x1 - 1 + shiftNewConcept, y2 + 1, x2 + 1
-						+ shiftNewConcept, y2 + 1);
-
-				g2D.drawLine(x1 - 1 + shiftNewConcept, y1 - 1, x1 - 1
-						+ shiftNewConcept, y2 + 1);
-				g2D.drawLine(centerX - 1 + shiftNewConcept, y1, centerX - 1
-						+ shiftNewConcept, y2);
-				g2D.drawLine(centerX + shiftNewConcept, y1, centerX
-						+ shiftNewConcept, y2);
-				g2D.drawLine(centerX + 1 + shiftNewConcept, y1, centerX + 1
-						+ shiftNewConcept, y2);
-				g2D.drawLine(x2 + 1 + shiftNewConcept, y1 - 1, x2 + 1
-						+ shiftNewConcept, y2 + 1);
-			}
-			// Plus 4
-			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0
-					&& ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0) {
-				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
-						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y1 - 1
-						+ shiftNewConcept);
-				g2D.drawLine(x1 + shiftNewConceptX, centerY - 1
-						+ shiftNewConcept, x2 + shiftNewConceptX, centerY - 1
-						+ shiftNewConcept);
-				g2D.drawLine(x1 + shiftNewConceptX, centerY + shiftNewConcept,
-						x2 + shiftNewConceptX, centerY + shiftNewConcept);
-				g2D.drawLine(x1 + shiftNewConceptX, centerY + 1
-						+ shiftNewConcept, x2 + shiftNewConceptX, centerY + 1
-						+ shiftNewConcept);
-				g2D.drawLine(x1 - 1 + shiftNewConceptX, y2 + 1
-						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y2 + 1
-						+ shiftNewConcept);
-
-				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
-						+ shiftNewConcept, x1 - 1 + shiftNewConceptX, y2 + 1
-						+ shiftNewConcept);
-				g2D.drawLine(centerX - 1 + shiftNewConceptX, y1
-						+ shiftNewConcept, centerX - 1 + shiftNewConceptX, y2
-						+ shiftNewConcept);
-				g2D.drawLine(centerX + shiftNewConceptX, y1 + shiftNewConcept,
-						centerX + shiftNewConceptX, y2 + shiftNewConcept);
-				g2D.drawLine(centerX + 1 + shiftNewConceptX, y1
-						+ shiftNewConcept, centerX + 1 + shiftNewConceptX, y2
-						+ shiftNewConcept);
-				g2D.drawLine(x2 + 1 + shiftNewConceptX, y1 - 1
-						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y2 + 1
-						+ shiftNewConcept);
-			}
-			}
+//			if(eval != null){
+//			// Plus 1
+//			if (coveredIndividualSize != OREManager.getInstance()
+//					.getPelletReasoner().getIndividuals(
+//							OREManager.getInstance().getCurrentClass2Learn())
+//					.size()
+//					&& notCoveredInd != 0) {
+//				g2D.drawLine(x1 - 1 - shiftOldConcept, y1 - 1, x2 + 1
+//						- shiftOldConcept, y1 - 1);
+//				g2D.drawLine(x1 - shiftOldConcept, centerY - 1, x2
+//						- shiftOldConcept, centerY - 1);
+//				g2D.drawLine(x1 - shiftOldConcept, centerY, x2
+//						- shiftOldConcept, centerY);
+//				g2D.drawLine(x1 - shiftOldConcept, centerY + 1, x2
+//						- shiftOldConcept, centerY + 1);
+//				g2D.drawLine(x1 - 1 - shiftOldConcept, y2 + 1, x2 + 1
+//						- shiftOldConcept, y2 + 1);
+//
+//				g2D.drawLine(x1 - 1 - shiftOldConcept, y1 - 1, x1 - 1
+//						- shiftOldConcept, y2 + 1);
+//				g2D.drawLine(centerX - 1 - shiftOldConcept, y1, centerX - 1
+//						- shiftOldConcept, y2);
+//				g2D.drawLine(centerX - shiftOldConcept, y1, centerX
+//						- shiftOldConcept, y2);
+//				g2D.drawLine(centerX + 1 - shiftOldConcept, y1, centerX + 1
+//						- shiftOldConcept, y2);
+//				g2D.drawLine(x2 + 1 - shiftOldConcept, y1 - 1, x2 + 1
+//						- shiftOldConcept, y2 + 1);
+//			}
+//			// Plus 2
+//
+//			g2D.drawLine(x1 - 1 + shiftCovered, y1 - 1, x2 + 1 + shiftCovered,
+//					y1 - 1);
+//			g2D.drawLine(x1 + shiftCovered, centerY - 1, x2 + shiftCovered,
+//					centerY - 1);
+//			g2D
+//					.drawLine(x1 + shiftCovered, centerY, x2 + shiftCovered,
+//							centerY);
+//			g2D.drawLine(x1 + shiftCovered, centerY + 1, x2 + shiftCovered,
+//					centerY + 1);
+//			g2D.drawLine(x1 - 1 + shiftCovered, y2 + 1, x2 + 1 + shiftCovered,
+//					y2 + 1);
+//
+//			g2D.drawLine(x1 - 1 + shiftCovered, y1 - 1, x1 - 1 + shiftCovered,
+//					y2 + 1);
+//			g2D.drawLine(centerX - 1 + shiftCovered, y1, centerX - 1
+//					+ shiftCovered, y2);
+//			g2D
+//					.drawLine(centerX + shiftCovered, y1, centerX
+//							+ shiftCovered, y2);
+//			g2D.drawLine(centerX + 1 + shiftCovered, y1, centerX + 1
+//					+ shiftCovered, y2);
+//			g2D.drawLine(x2 + 1 + shiftCovered, y1 - 1, x2 + 1 + shiftCovered,
+//					y2 + 1);
+//
+//			// Plus 3
+//			if (coveredIndividualSize != OREManager.getInstance()
+//					.getPelletReasoner().getIndividuals(
+//							OREManager.getInstance().getCurrentClass2Learn())
+//					.size()
+//					&& ((EvaluatedDescriptionClass) eval)
+//							.getAdditionalInstances().size() != 0) {
+//				g2D.drawLine(x1 - 1 + shiftNewConcept, y1 - 1, x2 + 1
+//						+ shiftNewConcept, y1 - 1);
+//				g2D.drawLine(x1 + shiftNewConcept, centerY - 1, x2
+//						+ shiftNewConcept, centerY - 1);
+//				g2D.drawLine(x1 + shiftNewConcept, centerY, x2
+//						+ shiftNewConcept, centerY);
+//				g2D.drawLine(x1 + shiftNewConcept, centerY + 1, x2
+//						+ shiftNewConcept, centerY + 1);
+//				g2D.drawLine(x1 - 1 + shiftNewConcept, y2 + 1, x2 + 1
+//						+ shiftNewConcept, y2 + 1);
+//
+//				g2D.drawLine(x1 - 1 + shiftNewConcept, y1 - 1, x1 - 1
+//						+ shiftNewConcept, y2 + 1);
+//				g2D.drawLine(centerX - 1 + shiftNewConcept, y1, centerX - 1
+//						+ shiftNewConcept, y2);
+//				g2D.drawLine(centerX + shiftNewConcept, y1, centerX
+//						+ shiftNewConcept, y2);
+//				g2D.drawLine(centerX + 1 + shiftNewConcept, y1, centerX + 1
+//						+ shiftNewConcept, y2);
+//				g2D.drawLine(x2 + 1 + shiftNewConcept, y1 - 1, x2 + 1
+//						+ shiftNewConcept, y2 + 1);
+//			}
+//			// Plus 4
+//			if (((EvaluatedDescriptionClass) eval).getAddition() != 1.0
+//					&& ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0) {
+//				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
+//						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y1 - 1
+//						+ shiftNewConcept);
+//				g2D.drawLine(x1 + shiftNewConceptX, centerY - 1
+//						+ shiftNewConcept, x2 + shiftNewConceptX, centerY - 1
+//						+ shiftNewConcept);
+//				g2D.drawLine(x1 + shiftNewConceptX, centerY + shiftNewConcept,
+//						x2 + shiftNewConceptX, centerY + shiftNewConcept);
+//				g2D.drawLine(x1 + shiftNewConceptX, centerY + 1
+//						+ shiftNewConcept, x2 + shiftNewConceptX, centerY + 1
+//						+ shiftNewConcept);
+//				g2D.drawLine(x1 - 1 + shiftNewConceptX, y2 + 1
+//						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y2 + 1
+//						+ shiftNewConcept);
+//
+//				g2D.drawLine(x1 - 1 + shiftNewConceptX, y1 - 1
+//						+ shiftNewConcept, x1 - 1 + shiftNewConceptX, y2 + 1
+//						+ shiftNewConcept);
+//				g2D.drawLine(centerX - 1 + shiftNewConceptX, y1
+//						+ shiftNewConcept, centerX - 1 + shiftNewConceptX, y2
+//						+ shiftNewConcept);
+//				g2D.drawLine(centerX + shiftNewConceptX, y1 + shiftNewConcept,
+//						centerX + shiftNewConceptX, y2 + shiftNewConcept);
+//				g2D.drawLine(centerX + 1 + shiftNewConceptX, y1
+//						+ shiftNewConcept, centerX + 1 + shiftNewConceptX, y2
+//						+ shiftNewConcept);
+//				g2D.drawLine(x2 + 1 + shiftNewConceptX, y1 - 1
+//						+ shiftNewConcept, x2 + 1 + shiftNewConceptX, y2 + 1
+//						+ shiftNewConcept);
+//			}
+//			}
 //
 //			for (int i = 0; i < posCovIndVector.size(); i++) {
 //				g2D.setColor(darkGreen);
@@ -363,7 +363,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 //			}
 			
 //		}
-			getParent().repaint();
+//			getParent().repaint();
 	}
 
 	private void computeGraphics() {

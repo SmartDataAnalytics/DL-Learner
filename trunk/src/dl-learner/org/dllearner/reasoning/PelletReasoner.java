@@ -59,7 +59,6 @@ import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -72,10 +71,12 @@ import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.SetUtils;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
@@ -87,7 +88,9 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLNamedObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyFormat;
@@ -286,6 +289,46 @@ public class PelletReasoner extends ReasonerComponent {
 		dematerialise();
 	}
 	
+	/*
+	 * Updates the CWA ontology dematerialised before
+	 */
+	public void updateCWAOntology(List<OWLOntologyChange> changes){
+		for(OWLOntologyChange change : changes){
+			OWLAxiom axiom = change.getAxiom();
+			if(axiom instanceof OWLClassAssertionAxiom){
+				Individual ind = OWLAPIConverter.convertIndividual(((OWLClassAssertionAxiom)axiom).getIndividual());
+				Description desc = OWLAPIConverter.convertClass(((OWLClassAssertionAxiom)axiom).getDescription().asOWLClass());
+				if(change instanceof RemoveAxiom){
+					classInstancesPos.get(desc).remove(ind);
+				} else if(change instanceof AddAxiom){
+					classInstancesPos.get(desc).add(ind);
+				}
+			} else if(axiom instanceof OWLObjectPropertyAssertionAxiom){System.out.println(axiom);
+				Individual obj = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getObject());
+				Individual sub = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getSubject());
+				ObjectProperty prop = OWLAPIConverter.convertObjectProperty(((OWLObjectPropertyAssertionAxiom)axiom).getProperty().asOWLObjectProperty());
+				if(change instanceof RemoveAxiom){
+					SortedSet<Individual> fillers = opPos.get(prop).get(sub);
+					if(fillers != null){
+						fillers.remove(obj);
+					}
+				} else if(change instanceof AddAxiom){
+					SortedSet<Individual> fillers = opPos.get(prop).get(sub);
+					if(fillers == null){
+						fillers = new TreeSet<Individual>();
+						fillers.add(obj);
+						opPos.get(prop).put(sub, fillers);
+					} else {
+						fillers.add(obj);
+					}
+				}
+				
+				
+			}
+		}
+		
+	}
+	
 	private void dematerialise(){
 		long dematStartTime = System.currentTimeMillis();
 
@@ -407,6 +450,15 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	public void classify(){
 		reasoner.classify();
+	}
+	
+	public void realise(){
+		try {
+			reasoner.realise();
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void refresh(){

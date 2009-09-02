@@ -51,6 +51,7 @@ public class AxiomRanker {
 		this.factory = manager.getOWLDataFactory();
 		ModuleExtractor extractor = ModuleExtractorFactory.createModuleExtractor();
 		classifier = new IncrementalClassifier(manager, reasoner, extractor);
+		
 	}
 	
 	public Set<OWLAxiom> computeImpactOnRemoval(OWLAxiom ax){
@@ -58,8 +59,8 @@ public class AxiomRanker {
 		
 		try {
 //			IncrementalClassifier classifier = new IncrementalClassifier(manager);
-//			classifier.loadOntology(ontology);
-//			classifier.classify();
+			classifier.loadOntology(ontology);
+			classifier.classify();
 			Set<OWLClass> inc = classifier.getInconsistentClasses();
 			for(OWLDescription cl : ontology.getClassesInSignature()){
 				if(!inc.contains(cl)){
@@ -79,8 +80,9 @@ public class AxiomRanker {
 			
 			
 			manager.applyChange(new RemoveAxiom(ontology, ax));
+			
 			classifier.classify();
-			inc = classifier.getInconsistentClasses();
+			inc = classifier.getInconsistentClasses();System.out.println(inc);
 			
 			for(OWLDescription cl : ontology.getClassesInSignature()){
 				if(!inc.contains(cl)){

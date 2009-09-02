@@ -76,7 +76,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			e.printStackTrace();
 		}
 	      logger.addAppender( fileAppender );
-	    logger.setLevel(Level.DEBUG);
+	    logger.setLevel(Level.OFF);
 
 	}
 	
@@ -509,7 +509,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 	public static void main(String[] args){
 		URI file = URI.create("http://krono.act.uji.es/Links/ontologies/tambis.owl/at_download/file");
 		String base = "http://krono.act.uji.es/Links/ontologies/tambis.owl#";
-		URI classURI = URI.create(base + "protein");
+		URI classURI = URI.create(base + "metal");
 		
 		try {
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -590,22 +590,23 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			Timer t1 = new Timer("pellet");
 			t1.start();
 			PelletExplanation exp1 = new PelletExplanation(manager, Collections.singleton(ontology));
-			exp1.getUnsatisfiableExplanations(cl, 1);
+			exp1.getUnsatisfiableExplanations(cl);
 			t1.stop();
 			Timer t3 = new Timer("module-based");
 			t3.start();
 			OWLOntology module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontology, cl.getSignature(), ModuleType.TOP_OF_BOT));
 			System.out.println(module);
 			PelletExplanation exp2 = new PelletExplanation(manager, Collections.singleton(module));
-			exp2.getUnsatisfiableExplanations(cl, 1);
+			System.out.println(exp2.getUnsatisfiableExplanations(cl).size());
 			t3.stop();
 			
 			Timer t2 = new Timer("syntactic relevance");
 			t2.start();
 			Reasoner reasoner = new PelletReasonerFactory().createReasoner(manager);
 			reasoner.loadOntologies(Collections.singleton(ontology));
-			SyntacticRelevanceBasedExplanationGenerator expGen = 
+			SyntacticRelevanceBasedExplanationGenerator exp3 = 
 				new SyntacticRelevanceBasedExplanationGenerator(reasoner, manager);
+			System.out.println(exp3.getUnsatisfiableExplanations(cl, Strategie.All_Just_Relevance).size());
 			
 			System.out.print("J = {");
 //			for(Set<OWLAxiom> explanation : expGen.getUnsatisfiableExplanations(cl, Strategie.All_Just_Relevance)){

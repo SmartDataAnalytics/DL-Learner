@@ -45,6 +45,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.panels.LeftPanel;
 
@@ -449,6 +450,9 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         
         leftPanel = new LeftPanel(0);
         wizardDialog.getContentPane().add(leftPanel, BorderLayout.WEST);
+        
+        TaskManager.getInstance().setDialog(wizardDialog);
+        TaskManager.getInstance().setStatusBar(statusBar);
     }
     
     

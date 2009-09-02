@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -29,11 +30,11 @@ import org.dllearner.tools.ore.ImpactManagerListener;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
+import org.dllearner.tools.ore.TaskManager;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
@@ -47,16 +48,16 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     private ExplanationManager expMan;
     private ImpactManager impMan;
     private RepairManager repMan;
-    private Reasoner reasoner;
     private OWLClass unsatClass;
+    
 	
 	public UnsatisfiableExplanationPanelDescriptor(){
 		setPanelDescriptorIdentifier(IDENTIFIER);
+		
 	}
 	
 	public void init() {
-		reasoner = OREManager.getInstance().getPelletReasoner()
-				.getReasoner();
+		
 		expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		expMan.addListener(this);
 		impMan = ImpactManager.getInstance(OREManager.getInstance());
@@ -73,21 +74,14 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		
 
 	}
+	Thread t;
+	Timer timer;
 	  
     private void showExplanations(){
-//    	panel.clearExplanationsPanel();
-    	new ExplanationTask(getWizard().getStatusBar()).execute();
-    	
-//		int counter = 1;
-//		Set<List<OWLAxiom>> explanations = expMan.getUnsatisfiableExplanations(unsatClass);
-//		
-//		for (List<OWLAxiom> explanation : explanations) {
-//			panel.addExplanation(explanation, unsatClass, counter);
-//			counter++;
-//			if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
-//				break;
-//			}
-//		}   	
+    	ExplanationTask task = new ExplanationTask(getWizard().getStatusBar());
+    	TaskManager.getInstance().setCurrentTask(task);
+    	task.execute();
+	
     }
     
     @Override
@@ -102,7 +96,8 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     
     @Override
 	public void aboutToDisplayPanel() {
-    	fillUnsatClassesTable();
+//    	fillUnsatClassesTable();
+    	new RootDerivedTask(getWizard().getStatusBar()).execute();
         getWizard().getInformationField().setText(INFORMATION);
         
     }
@@ -134,28 +129,16 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		panel.clearExplanationsPanel();	
-		fillUnsatClassesTable();
+		new RootDerivedTask(getWizard().getStatusBar()).execute();
 		panel.repaint();
 		
 	}
 	
-	private void fillUnsatClassesTable(){
-		List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
-		
-		Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
-				.getRootUnsatisfiableClasses());
-		unsatClasses.addAll(rootClasses);
-		
-		Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
-				.getDerivedClasses());
-		unsatClasses.addAll(derivedClasses);
-		
-		panel.fillUnsatClassesTable(unsatClasses);
-	}
+	
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-//		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
+		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
 		if (!e.getValueIsAdjusting() && panel.getUnsatTable().getSelectedRow() >= 0) {
 			showExplanations();
 		}
@@ -215,6 +198,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	 class ExplanationTask extends SwingWorker<Void, Void>{
 			
 			private StatusBar statusBar;
+		
 			
 			public ExplanationTask(StatusBar statusBar) {
 				this.statusBar = statusBar;
@@ -227,15 +211,22 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 				statusBar.setProgressTitle("computing explanations");
 				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				expMan.getUnsatisfiableExplanations(unsatClass);
+				
+			
 				return null;
 			}
 
 			@Override
 			public void done() {
+				if(!isCancelled()){
+					showExplanations();
+					statusBar.setProgressTitle("Done");
+				}
+				
 				statusBar.showProgress(false);
-				statusBar.setProgressTitle("");
 				getWizard().getDialog().setCursor(null);
-				showExplanations();
+				
+			
 				
 			}
 			
@@ -248,7 +239,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 						panel.clearExplanationsPanel();
 						int counter = 1;
 						unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
-						for (List<OWLAxiom> explanation : expMan.getUnsatisfiableExplanations(unsatClass)) {
+						for (Explanation explanation : expMan.getUnsatisfiableExplanations(unsatClass)) {
 							panel.addExplanation(explanation, unsatClass, counter);
 							counter++;
 							if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
@@ -262,6 +253,60 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 			}
 
 		}
+	 
+	 class RootDerivedTask extends SwingWorker<Void, Void>{
+			
+			private StatusBar statusBar;
+			
+			public RootDerivedTask(StatusBar statusBar) {
+				this.statusBar = statusBar;
+				
+			}
+
+			@Override
+			public Void doInBackground() {
+				
+				statusBar.showProgress(true);
+				statusBar.setProgressTitle("Computing root derived class");
+				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				expMan.getRootUnsatisfiableClasses();
+				expMan.getDerivedClasses();
+				return null;
+			}
+
+			@Override
+			public void done() {
+				statusBar.showProgress(false);
+				statusBar.setProgressTitle("Done");
+				getWizard().getDialog().setCursor(null);
+				if(!isCancelled()){
+					fillUnsatClassesTable();
+				}
+				
+			}
+			
+			private void fillUnsatClassesTable(){
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
+						
+						Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
+								.getRootUnsatisfiableClasses());
+						unsatClasses.addAll(rootClasses);
+						
+						Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
+								.getDerivedClasses());
+						unsatClasses.addAll(derivedClasses);
+						
+						panel.fillUnsatClassesTable(unsatClasses);
+						panel.getUnsatTable().clearSelection();
+					}
+				});
+			}
+	 }
+	 
 
 
 }

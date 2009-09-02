@@ -16,6 +16,7 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.inference.OWLReasonerFactory;
+import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.AxiomType;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataAllRestriction;
@@ -122,6 +123,11 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	public void computeRootDerivedClasses(){
 		rootClasses.clear();
 		derivedClasses.clear();
+		depend2Classes.clear();
+		depth2ExistsRestrictionPropertyMap.clear();
+		depth2UniversalRestrictionPropertyMap.clear();
+		child2Parents.clear();
+		parent2Children.clear();
 		computePossibleRoots();
 		pruneRoots();
 		derivedClasses.removeAll(rootClasses);
@@ -181,14 +187,23 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 				}
 			}
 			for (OWLClass cls : roots) {
-				manager.addAxiom(ontology, manager.getOWLDataFactory()
+				OWLOntologyChange add = new AddAxiom(ontology, manager.getOWLDataFactory()
 						.getOWLDeclarationAxiom(cls));
+				manager.applyChange(add);
+				appliedChanges.add(add);
 			}
 			OWLReasoner checker = reasonerFactory.createReasoner(manager);
 			checker.loadOntologies(Collections.singleton(ontology));
 			for (OWLClass root : new ArrayList<OWLClass>(roots)) {
 				if (!potentialRoots.contains(root) && checker.isSatisfiable(root)) {
 					rootClasses.remove(root);
+				}
+			}
+			for(OWLOntologyChange change: appliedChanges){
+				if(change instanceof RemoveAxiom){
+					manager.applyChange(new AddAxiom(ontology, change.getAxiom()));
+				} else if(change instanceof AddAxiom){
+					manager.applyChange(new RemoveAxiom(ontology, change.getAxiom()));
 				}
 			}
 		} catch (OWLOntologyChangeException e) {
