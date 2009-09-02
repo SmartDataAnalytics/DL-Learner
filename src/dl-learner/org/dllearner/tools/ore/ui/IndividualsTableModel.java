@@ -42,6 +42,7 @@ public class IndividualsTableModel extends AbstractTableModel{
 	
 	public void removeIndividual(Individual ind){
 		individuals.remove(ind);
+		fireTableDataChanged();
 	}
 	
 	public Individual getSelectedIndividual(int rowIndex){

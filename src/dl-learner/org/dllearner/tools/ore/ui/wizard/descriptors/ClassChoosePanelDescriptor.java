@@ -83,7 +83,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
      */
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
-		if (!e.getValueIsAdjusting()) {
+		if (!e.getValueIsAdjusting() && owlClassPanel.getClassesTable().getSelectedRow() >= 0) {
 			 OREManager.getInstance().setCurrentClass2Learn((NamedClass) owlClassPanel.getClassesTable().getSelectedValue());
 		}
 	}

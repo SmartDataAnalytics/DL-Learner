@@ -1,13 +1,12 @@
 package org.dllearner.tools.ore.ui;
 
-import java.util.List;
-
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 
@@ -18,14 +17,14 @@ public class ExplanationTableModel extends AbstractTableModel {
 	 * 
 	 */
 	private static final long serialVersionUID = -4537633628250304813L;
-	private List<OWLAxiom> axioms;
+	private Explanation exp;
 	private ExplanationManager expMan;
 	private ImpactManager impMan;
 	private RepairManager repMan;
 	private OWLClass unsat;
 	
-	public ExplanationTableModel(List<OWLAxiom> axioms, OWLClass cl){
-		this.axioms = axioms;
+	public ExplanationTableModel(Explanation exp, OWLClass cl){
+		this.exp = exp;
 		this.expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		this.impMan = ImpactManager.getInstance(OREManager.getInstance());
 		this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
@@ -39,17 +38,17 @@ public class ExplanationTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {	
-		return axioms.size();
+		return exp.getAxioms().size();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0){
-//			return getOWLAxiomAtRow(rowIndex);
 			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
-			return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax));
+			int depth2Root = expMan.getOrdering(exp).get(rowIndex).values().iterator().next();
+           return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
 		} else if(columnIndex == 1){
-			return expMan.getArity(unsat, axioms.get(rowIndex));
+			return expMan.getArity(unsat, getOWLAxiomAtRow(rowIndex));
 		} else if(columnIndex == 2) {
 			return Boolean.valueOf(impMan.isSelected(getOWLAxiomAtRow(rowIndex)));
 		} else {
@@ -103,7 +102,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 	}
 	
 	public OWLAxiom getOWLAxiomAtRow(int rowIndex){
-		return axioms.get(rowIndex);
+		return expMan.getOrdering(exp).get(rowIndex).keySet().iterator().next();
 	}
 	
 	

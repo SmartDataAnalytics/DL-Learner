@@ -33,6 +33,7 @@ import javax.swing.SwingWorker;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
@@ -127,8 +128,8 @@ public class WizardController implements ActionListener {
         		
         	} else {
         		ClassificationWorker task = new ClassificationWorker(wizard.getStatusBar());
-        		task.execute();
-        		
+//        		task.execute();
+//        		TaskManager.getInstance().classifyOntology();
         	
         		if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
         			UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();

@@ -31,11 +31,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.dllearner.tools.ore.ui.wizard.Wizard;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.IntroductionPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
 
 
 /**
@@ -77,18 +79,24 @@ public class OREApplication {
 
         WizardPanelDescriptor descriptor2 = new KnowledgeSourcePanelDescriptor();
         wizard.registerWizardPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER, descriptor2);
+        
+//        WizardPanelDescriptor descriptor3 = new InconsistencyExplanationPanelDescriptor();
+//        wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, descriptor3);
+//        
+//        WizardPanelDescriptor descriptor4 = new UnsatisfiableExplanationPanelDescriptor();
+//        wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, descriptor4);
 
-        WizardPanelDescriptor descriptor3 = new ClassChoosePanelDescriptor();
-        wizard.registerWizardPanel(ClassChoosePanelDescriptor.IDENTIFIER, descriptor3);
+        WizardPanelDescriptor descriptor5 = new ClassChoosePanelDescriptor();
+        wizard.registerWizardPanel(ClassChoosePanelDescriptor.IDENTIFIER, descriptor5);
         
-        WizardPanelDescriptor descriptor4 = new LearningPanelDescriptor();
-        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor4);
+        WizardPanelDescriptor descriptor6 = new LearningPanelDescriptor();
+        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor6);
         
-        WizardPanelDescriptor descriptor5 = new RepairPanelDescriptor();
-        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor5);
+        WizardPanelDescriptor descriptor7 = new RepairPanelDescriptor();
+        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor7);
         
-        WizardPanelDescriptor descriptor6 = new SavePanelDescriptor();
-        wizard.registerWizardPanel(SavePanelDescriptor.IDENTIFIER, descriptor6);
+        WizardPanelDescriptor descriptor8 = new SavePanelDescriptor();
+        wizard.registerWizardPanel(SavePanelDescriptor.IDENTIFIER, descriptor8);
         
         if (!(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);

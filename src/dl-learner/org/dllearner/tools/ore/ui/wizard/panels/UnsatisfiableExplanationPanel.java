@@ -27,11 +27,13 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.ExplanationTable;
+import org.dllearner.tools.ore.ui.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.ImpactTable;
+import org.dllearner.tools.ore.ui.RepairPlanPanel;
 import org.dllearner.tools.ore.ui.UnsatClassesTableCellRenderer;
 import org.dllearner.tools.ore.ui.UnsatisfiableClassesTable;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 
 public class UnsatisfiableExplanationPanel extends JPanel{
@@ -199,7 +201,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsPanel.validate();
 	}
 
-	public void addExplanation(List<OWLAxiom> explanation, OWLClass unsat, int counter) {
+	public void addExplanation(Explanation explanation, OWLClass unsat, int counter) {
 		ExplanationTable expTable = new ExplanationTable(explanation, unsat);
 		ExplanationTablePanel panel = new ExplanationTablePanel(expTable, counter);
 		explanationsPanel.add(panel);

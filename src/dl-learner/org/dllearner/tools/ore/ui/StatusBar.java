@@ -9,6 +9,8 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Shape;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 
 import javax.swing.Icon;
@@ -19,6 +21,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
+import org.dllearner.tools.ore.TaskManager;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
 
 public class StatusBar extends JPanel implements ProgressMonitor{
@@ -47,6 +50,14 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 		rightPanel.setOpaque(false);
 		JPanel leftPanel = new JPanel(new FlowLayout());
 		CancelButton rB = new CancelButton("");
+		rB.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TaskManager.getInstance().cancelCurrentThread();
+				
+			}
+		});
 		rB.setToolTipText("Abort");
 		leftPanel.add(rB);
 		leftPanel.add(progressBar);

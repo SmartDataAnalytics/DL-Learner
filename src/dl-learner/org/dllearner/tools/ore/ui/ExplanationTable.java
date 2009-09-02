@@ -23,10 +23,10 @@ import javax.swing.table.TableColumn;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.protege.editor.core.Disposable;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
@@ -39,7 +39,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	
 	private RepairManager repMan;
 	
-	public ExplanationTable(List<OWLAxiom> explanation, OWLClass cl) {
+	public ExplanationTable(Explanation exp, OWLClass cl) {
 		
 		repMan = RepairManager.getRepairManager(OREManager.getInstance());
 		
@@ -47,7 +47,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		setModel(new ExplanationTableModel(explanation,	cl));
+		setModel(new ExplanationTableModel(exp,	cl));
 		TableColumn column4 = getColumn(3);
 		column4.setCellRenderer(new ButtonCellRenderer());
 		column4.setCellEditor(new ButtonCellEditor());

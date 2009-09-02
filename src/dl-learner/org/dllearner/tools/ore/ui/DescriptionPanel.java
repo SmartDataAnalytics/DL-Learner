@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.tools.ore.ui.wizard.panels;
+package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -33,7 +33,6 @@ import javax.swing.border.BevelBorder;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.ui.DescriptionLabel;
 
 /**
  * Panel where learned class description is shown, and parts that might occur errors are red colored.

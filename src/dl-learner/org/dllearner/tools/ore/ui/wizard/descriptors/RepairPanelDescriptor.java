@@ -102,14 +102,12 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
      * Method to control actions by button pressed.
      */
 	public void actionPerformed(ActionEvent event) {
-//		ore = getWizardModel().getOre();
+
         modi = OREManager.getInstance().getModifier();       
-		String actionName = ((JButton) event.getSource()).getName();
 		String actionType = ((JButton) event.getSource()).getParent().getName();
-		
 		if(actionType.equals("negative")){
 			Individual ind = repairPanel.getNegFailureTable().getSelectedIndividual();
-				if(actionName.equals("negRepair")){
+				if(event.getActionCommand().equals("negRepair")){
 					RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(),  "neg");
 					int returncode = negDialog.showDialog();
 					if(returncode == 2){
@@ -118,18 +116,18 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 						ontologyChanges.addAll(negDialog.getAllChanges());
 						repairPanel.getNegFailureTable().removeIndividual(ind);
 					}
-				} else if(actionName.equals("negAdd")){
+				} else if(event.getActionCommand().equals("negAdd")){
 					ontologyChanges.addAll(modi.addClassAssertion(ind, OREManager.getInstance().getCurrentClass2Learn()));
 					repairPanel.getNegFailureTable().removeIndividual(ind);
 					
-				} else if(actionName.equals("negDelete")){
+				} else if(event.getActionCommand().equals("negDelete")){
 					ontologyChanges.addAll(modi.deleteIndividual(ind));
 					repairPanel.getNegFailureTable().removeIndividual(ind);
 				
 				}
 		} else if(actionType.equals("positive")){
 			Individual ind = repairPanel.getPosFailureTable().getSelectedIndividual();
-			if(actionName.equals("posRepair")){
+			if(event.getActionCommand().equals("posRepair")){
 				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(),  "pos");
 				int returncode = posDialog.showDialog();
 				if(returncode == 2){
@@ -138,11 +136,11 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 					ontologyChanges.addAll(posDialog.getAllChanges());
 					repairPanel.getPosFailureTable().removeIndividual(ind);
 				}
-			} else if(actionName.equals("posRemove")){
+			} else if(event.getActionCommand().equals("posRemove")){
 				ontologyChanges.addAll(modi.addClassAssertion(ind, OREManager.getInstance().getCurrentClass2Learn()));
 				repairPanel.getPosFailureTable().removeIndividual(ind);
 				
-			} else if(actionName.equals("posDelete")){
+			} else if(event.getActionCommand().equals("posDelete")){
 				ontologyChanges.addAll(modi.deleteIndividual(ind));
 				repairPanel.getPosFailureTable().removeIndividual(ind);
 				

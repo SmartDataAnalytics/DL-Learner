@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.tools.ore.ui.wizard.panels;
+package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
 import java.awt.GridLayout;
