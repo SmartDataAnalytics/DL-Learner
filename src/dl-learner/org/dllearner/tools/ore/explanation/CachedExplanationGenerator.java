@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
@@ -19,7 +18,6 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.RemoveAxiom;
 
 import uk.ac.manchester.cs.owl.modularity.ModuleType;
 
@@ -49,7 +47,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		laconicExplanationCache = new HashMap<OWLAxiom, Set<Explanation>>();
 		lastRequestedRegularSize = new HashMap<OWLAxiom, Integer>();
 		lastRequestedLaconicSize = new HashMap<OWLAxiom, Integer>();
-		RepairManager.getRepairManager(OREManager.getInstance()).addListener(this);
+		RepairManager.getInstance(OREManager.getInstance()).addListener(this);
 //		regularExpGen = new PelletExplanation(manager, Collections.singleton(ontology));
 //		laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(ontology));
 

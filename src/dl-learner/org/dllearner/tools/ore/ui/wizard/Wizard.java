@@ -243,6 +243,11 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         
     }  
     
+    public void updatePanel(JPanel panel, Object id){
+    	cardPanel.remove(4);
+    	cardPanel.add(panel, id);
+    }
+    
     /**
      * Displays the panel identified by the object passed in. This is the same Object-based
      * identified used when registering the panel.

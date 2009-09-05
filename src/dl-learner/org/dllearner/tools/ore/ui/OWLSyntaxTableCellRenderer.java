@@ -5,6 +5,8 @@ import java.util.StringTokenizer;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.semanticweb.owl.model.OWLAxiom;
 
@@ -23,20 +25,9 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 	private StringWriter buffer;
 	private TextBlockWriter writer;
 	private ManchesterSyntaxObjectRenderer renderer;
-	private RepairManager repMan;
-//	private List<String> oldAxioms;
+	private ImpactManager impMan;
+
 	
-	public OWLSyntaxTableCellRenderer(RepairManager repMan){
-		super();
-		this.repMan = repMan;
-		buffer = new StringWriter();
-		writer = new TextBlockWriter(buffer);
-		renderer = new ManchesterSyntaxObjectRenderer(writer);
-		renderer.setWrapLines( false );
-		renderer.setSmartIndent( true );
-//		oldAxioms = new ArrayList<String>();
-		
-	}
 	
 	public OWLSyntaxTableCellRenderer(){
 		super();
@@ -45,6 +36,7 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 		renderer = new ManchesterSyntaxObjectRenderer(writer);
 		renderer.setWrapLines( false );
 		renderer.setSmartIndent( true );
+		impMan = ImpactManager.getInstance(OREManager.getInstance());
 	}
 	
 	@Override
@@ -52,7 +44,7 @@ public class OWLSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 			
 			if(value instanceof OWLAxiom){
 				boolean striked = false;
-				if(repMan != null && repMan.isSelected((OWLAxiom)value)){
+				if(impMan != null && impMan.isSelected((OWLAxiom)value)){
 					striked = true;
 				}
 				((OWLAxiom)value).accept(renderer);

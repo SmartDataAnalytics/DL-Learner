@@ -189,7 +189,6 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 */
 	class LearningTask extends SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
 		    	
-    	private Thread t;
     	
 		@SuppressWarnings("unchecked")
 		@Override
@@ -212,23 +211,8 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				
 			}, 1000, 2000);
 			OREManager.getInstance().start();
-//			t = new Thread(new Runnable(){
-//
-//				@Override
-//				public void run() {					
-//					OREManager.getInstance().start();
-//				}				
-//			});
-//
-//			t.start();
-//					
-//			try {
-//				t.join();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}		
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true);
+	
+			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 0.0, true);
 			
 			return result;
 		}
@@ -266,6 +250,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			
 			Runnable doUpdateList = new Runnable() {
 							
+				@SuppressWarnings("unchecked")
 				public void run() {
 					learnPanel.getResultTable().addResults((List<EvaluatedDescriptionClass>) result);
 				}

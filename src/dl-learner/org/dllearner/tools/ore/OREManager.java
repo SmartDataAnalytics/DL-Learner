@@ -1,7 +1,5 @@
 package org.dllearner.tools.ore;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -35,10 +33,6 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLException;
-
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 
 public class OREManager {
 
@@ -181,32 +175,6 @@ public class OREManager {
 		for(OREManagerListener listener : listeners){
 			listener.activeOntologyChanged();
 		}
-	}
-	
-	
-	
-	public String getInconsistencyExplanationsString(){
-		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
-		StringWriter buffer = new StringWriter();
-		renderer.startRendering(buffer);
-		try {
-			renderer.render(getInconsistencyExplanations());
-		} catch (UnsupportedOperationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		renderer.endRendering();
-		return buffer.toString();
-	}
-	
-	private Set<Set<OWLAxiom>> getInconsistencyExplanations(){
-		return pelletReasoner.getInconsistencyReasons();
 	}
 	
 		

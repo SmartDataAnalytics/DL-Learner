@@ -20,15 +20,32 @@ public class RepairPlanPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 537629900742120594L;
 	private RepairManager repMan;
+	private JButton undoButton;
 
 	public RepairPlanPanel() {
-		this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
+		this.repMan = RepairManager.getInstance(OREManager.getInstance());
 		
 		setLayout(new BorderLayout());
 		add(new JLabel("Axioms"), BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel(new FlowLayout(2));
 		add(buttonPanel, "South");
-		buttonPanel.add(new JButton(new AbstractAction("Compute plan") {
+		undoButton = new JButton(new AbstractAction("Undo") {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -6089211629549822981L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				undo();
+				
+			}
+		});
+		undoButton.setEnabled(false);
+		buttonPanel.add(undoButton);
+		
+		buttonPanel.add(new JButton(new AbstractAction("Apply") {
 
 			/**
 			 * 
@@ -49,5 +66,12 @@ public class RepairPlanPanel extends JPanel {
 
 	private void computeRepairPlan() {
 		repMan.executeRepairPlan();
+		undoButton.setEnabled(repMan.isUndoable());
 	}
+	
+	private void undo() {
+		repMan.undo();
+		undoButton.setEnabled(repMan.isUndoable());
+	}
+	
 }

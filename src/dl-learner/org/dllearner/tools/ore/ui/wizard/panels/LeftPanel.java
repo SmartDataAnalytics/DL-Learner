@@ -61,7 +61,7 @@ public class LeftPanel extends JPanel{
 			panel2.add(current);
 		}
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(140, 500));
+		setPreferredSize(new Dimension(165, 500));
 		add(panel2, BorderLayout.NORTH);
 		
 	}

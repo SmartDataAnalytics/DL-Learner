@@ -31,13 +31,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.dllearner.tools.ore.ui.wizard.Wizard;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.IntroductionPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
 
 
 /**
@@ -68,9 +66,10 @@ public class OREApplication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		Locale.setDefault(Locale.ENGLISH);
         final Wizard wizard = new Wizard();
-        wizard.getDialog().setTitle("DL-Learner ORE-Tool");
+        wizard.getDialog().setTitle("DL-Learner Ontology Repair and Enrichment");
         Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         wizard.getDialog().setSize(dim);
         
@@ -101,12 +100,10 @@ public class OREApplication {
         if (!(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);
         } else{
-        	OREManager.getInstance().setCurrentKnowledgeSource(new File(args[0]).toURI());
-        	OREManager.getInstance().initPelletReasoner();
-//        	((KnowledgeSourcePanelDescriptor) descriptor2).getPanel().setFileURL(args[0]); 
         	wizard.setCurrentPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER);
-        	wizard.setLeftPanel(1);
-        	 
+        	wizard.setLeftPanel(1);	
+        	((KnowledgeSourcePanelDescriptor)wizard.getModel().getPanelHashMap().get(KnowledgeSourcePanelDescriptor.IDENTIFIER)).loadOntology(new File(args[0]).toURI());
+        	
         }
 			    
         SwingUtilities.invokeLater(new Runnable() {

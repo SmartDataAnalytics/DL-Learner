@@ -2,46 +2,41 @@ package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.RemoveAxiom;
 
-public class RepairManager {
+public class RepairManager implements OREManagerListener{
 
 	private static RepairManager instance;
 	
-
-	private OWLAxiom actual;
-	private List<OWLAxiom> axioms2Remove;
-	private List<OWLAxiom> axioms2Keep;
 	private List<RepairManagerListener> listeners;
-	private OWLOntology ontology;
+	
 	private OWLOntologyManager manager;
 	private Reasoner reasoner;
+	
+	private List<OWLOntologyChange> repairPlan;
 	
 	private Stack<List<OWLOntologyChange>> undoStack;
 	private Stack<List<OWLOntologyChange>> redoStack;
 
-	private RepairManager(OREManager oreMan) {
+	private RepairManager(OREManager oreMan){
 		this.reasoner = oreMan.getPelletReasoner().getReasoner();
-		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		this.manager = reasoner.getManager();
-		
-		axioms2Remove = new ArrayList<OWLAxiom>();
-		axioms2Keep = new ArrayList<OWLAxiom>();
-		
+
 		listeners = new ArrayList<RepairManagerListener>();
 	
 		undoStack = new Stack<List<OWLOntologyChange>>();
 		redoStack = new Stack<List<OWLOntologyChange>>();
+		
+		repairPlan = new ArrayList<OWLOntologyChange>();
+		
+		oreMan.addListener(this);
 
 	}
 	
@@ -57,98 +52,75 @@ public class RepairManager {
 		listeners.remove(listener);
 	}
 
-	public static synchronized RepairManager getRepairManager(OREManager oreMan) {
+	public static synchronized RepairManager getInstance(OREManager oreMan) {
 		if (instance == null) {
 			instance = new RepairManager(oreMan);
 		}
 		return instance;
 	}
 	
-	public void addAxiom2Remove(OWLAxiom ax){
-		axioms2Remove.add(ax);
+	public void addToRepairPlan(OWLOntologyChange change){
+		repairPlan.add(change);
 		fireRepairPlanChanged();
 	}
 	
-	public void addAxioms2Remove(Set<OWLAxiom> axioms){
-		axioms2Remove.addAll(axioms);
+	public void removeFromRepairPlan(OWLOntologyChange change){
+		repairPlan.remove(change);
 		fireRepairPlanChanged();
 	}
 	
-	public void removeAxiom2Remove(OWLAxiom ax){
-		axioms2Remove.remove(ax);
-		fireRepairPlanChanged();
+	public List<OWLOntologyChange> getRepairPlan(){
+		return repairPlan;
 	}
 	
-	public void removeAxioms2Remove(Set<OWLAxiom> axioms){
-		axioms2Remove.removeAll(axioms);
-		fireRepairPlanChanged();
-	}
-	
-	public void addAxiom2Keep(OWLAxiom ax){
-		axioms2Keep.add(ax);
-		fireRepairPlanChanged();
-	}
-	
-	public void addAxioms2Keep(Set<OWLAxiom> axioms){
-		axioms2Keep.addAll(axioms);
-		fireRepairPlanChanged();
-	}
-	
-	public void removeAxiom2Keep(OWLAxiom ax){
-		axioms2Keep.remove(ax);
-		fireRepairPlanChanged();
-	}
-	
-	public void removeAxioms2Keep(Set<OWLAxiom> axioms){
-		axioms2Keep.removeAll(axioms);
-		fireRepairPlanChanged();
-	}
-	
-	public boolean isSelected(OWLAxiom ax){
-		return axioms2Remove.contains(ax);
-	}
-	
-	public List<OWLAxiom> getAxioms2Remove(){
-		return axioms2Remove;
-	}
-	
-	public List<OWLAxiom> getAxioms2Keep(){
-		return axioms2Keep;
+	public boolean isUndoable(){
+		return !undoStack.isEmpty();
 	}
 	
 	public void executeRepairPlan(){
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-		for(OWLAxiom ax : axioms2Remove){
-			changes.add(new RemoveAxiom(ontology, ax));
-		}
-		for(OWLAxiom ax : axioms2Keep){
-			changes.add(new AddAxiom(ontology, ax));
-		}
+		
 		try {
-			manager.applyChanges(changes);
+			manager.applyChanges(repairPlan);
 		} catch (OWLOntologyChangeException e) {
 			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
 			e.printStackTrace();
 		}
-		undoStack.push(changes);
-		axioms2Remove.clear();
-		axioms2Keep.clear();
+		undoStack.push(new ArrayList<OWLOntologyChange>(repairPlan));
+		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>(repairPlan);
+		
+		repairPlan.clear();
 		fireRepairPlanExecuted(changes);
+		
 	}
 	
 	public void undo(){
 		List<OWLOntologyChange> changes = undoStack.pop();
 		redoStack.push(changes);
+		
 		try {
-			manager.applyChanges(changes);
+			manager.applyChanges(getInverseChanges(changes));
 		} catch (OWLOntologyChangeException e) {
 			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
 			e.printStackTrace();
 		}
+		
+		fireRepairPlanExecuted(changes);
 	}
 	
 	public void redo(){
 		
+	}
+	
+	private List<OWLOntologyChange> getInverseChanges(List<OWLOntologyChange> changes){
+		List<OWLOntologyChange> inverseChanges = new ArrayList<OWLOntologyChange>(changes.size());
+		for(OWLOntologyChange change : changes){
+			if(change instanceof RemoveAxiom){
+				inverseChanges.add(new AddAxiom(change.getOntology(), change.getAxiom()));
+			} else {
+				inverseChanges.add(new RemoveAxiom(change.getOntology(), change.getAxiom()));
+			}
+		}
+		return inverseChanges;
 	}
 	
 	private void fireRepairPlanChanged(){
@@ -158,9 +130,14 @@ public class RepairManager {
 	}
 	
 	private void fireRepairPlanExecuted(List<OWLOntologyChange> changes){
-			
 		for(RepairManagerListener listener : listeners){
 			listener.repairPlanExecuted(changes);
 		}
+	}
+
+	@Override
+	public void activeOntologyChanged() {
+		repairPlan.clear();
+		
 	}
 }

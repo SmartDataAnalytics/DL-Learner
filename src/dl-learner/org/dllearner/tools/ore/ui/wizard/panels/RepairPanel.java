@@ -63,6 +63,9 @@ public class RepairPanel extends JPanel{
 		
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.5;
+		c.weighty = 0.5;
 		add(getPosPanel(), c);
 		c.gridx = 1;
 		add(getNegPanel(), c);
@@ -90,14 +93,14 @@ public class RepairPanel extends JPanel{
 		posRepairButton.setActionCommand("posRepair");
 		buttonPanel.add(posRepairButton);
 		c.anchor = GridBagConstraints.NORTH;
-		add(buttonPanel, c);
+		posPanel.add(buttonPanel, c);
 		
 		posTable = new IndividualsTable();
 		posScrollPane = new JScrollPane(posTable);
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1;
 		c.weighty = 1;
-		add(posScrollPane, c);
+		posPanel.add(posScrollPane, c);
 		
 		return posPanel;
 	}
@@ -115,7 +118,7 @@ public class RepairPanel extends JPanel{
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1;
 		c.weighty = 1;
-		add(negScrollPane, c);
+		negPanel.add(negScrollPane, c);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setName("negative");
@@ -133,7 +136,7 @@ public class RepairPanel extends JPanel{
 		c.weightx = 0;
 		c.weighty = 0;
 		c.anchor = GridBagConstraints.NORTH;
-		add(buttonPanel, c);
+		negPanel.add(buttonPanel, c);
 		
 		return negPanel;
 	}

@@ -21,7 +21,6 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -55,14 +54,14 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	private static final int ELLIPSE_X_AXIS = 30;
 	private static final int ELLIPSE_Y_AXIS = 30;
 	private static final int MAX_NUMBER_OF_INDIVIDUAL_POINTS = 20;
-	private static final int PLUS_SIZE = 5;
+//	private static final int PLUS_SIZE = 5;
 	private static final int SUBSTRING_SIZE = 25;
 	private static final int SPACE_SIZE = 7;
 	private static final int MAX_RANDOM_NUMBER = 300;
 
 	
-	private int shiftXAxis;
-	private int distortionOld;
+//	private int shiftXAxis;
+//	private int distortionOld;
 	private Ellipse2D oldConcept;
 	private Ellipse2D newConcept;
 
@@ -75,7 +74,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	private final Vector<IndividualPoint> points;
 	private final Vector<String> conceptVector;
 
-	private int adjustment;
+//	private int adjustment;
 	private int shiftOldConcept;
 	private int shiftNewConcept;
 	private int shiftNewConceptX;
@@ -86,12 +85,12 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	private int x2;
 	private int y1;
 	private int y2;
-	private int centerX;
-	private int centerY;
+//	private int centerX;
+//	private int centerY;
 	private final Random random;
 	private final Color darkGreen;
 	private final Color darkRed;
-	private int notCoveredInd;
+//	private int notCoveredInd;
 
 
 	/**
@@ -138,7 +137,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			
 			Graphics2D g2D;
 			g2D = (Graphics2D) g;
-			Composite original = g2D.getComposite();
+//			Composite original = g2D.getComposite();
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
@@ -365,36 +364,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 //		}
 //			getParent().repaint();
 	}
-
-	private void computeGraphics() {
-		if (eval != null) {
-			this.setVisible(true);
-			getParent().repaint();
-			additionalIndividualSize = ((EvaluatedDescriptionClass) eval)
-					.getAdditionalInstances().size();
-			distortionOld = 0;
-			adjustment = 0;
-			Ellipse2D old = new Ellipse2D.Double(ELLIPSE_X_AXIS, ELLIPSE_Y_AXIS,
-					WIDTH, HEIGHT);
-			x1 = (int) old.getCenterX() - PLUS_SIZE;
-			x2 = (int) old.getCenterX() + PLUS_SIZE;
-			y1 = (int) old.getCenterY() - PLUS_SIZE;
-			y2 = (int) old.getCenterY() + PLUS_SIZE;
-			centerX = (int) old.getCenterX();
-			centerY = (int) old.getCenterY();
-			double coverage = ((EvaluatedDescriptionClass) eval).getCoverage();
-			shiftXAxis = (int) Math.round((WIDTH) * (1 - coverage));
-			
-			if (additionalIndividualSize != 0 && ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0 && ((EvaluatedDescriptionClass) eval).getAddition() < 1.0) {
-				distortionOld = (int) Math.round((WIDTH) * 0.3);
-				Ellipse2D newer = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis,
-						ELLIPSE_Y_AXIS, (WIDTH), HEIGHT);
-				adjustment = (int) Math.round(newer.getCenterY() / 4);
-			}
-			this.renderPlus();
-		}
-	}
-
+	@SuppressWarnings(value = { "unused" }) 
 	private void renderPlus() {
 		if (eval != null) {
 			coveredIndividualSize = ((EvaluatedDescriptionClass) eval)
@@ -593,7 +563,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 
 			Set<Individual> notCovInd = OREManager.getInstance().getPositiveFailureExamples();
 			
-			notCoveredInd = notCovInd.size();
+//			notCoveredInd = notCovInd.size();
 			int k = 0;
 			x = random.nextInt(MAX_RANDOM_NUMBER);
 			y = random.nextInt(MAX_RANDOM_NUMBER);

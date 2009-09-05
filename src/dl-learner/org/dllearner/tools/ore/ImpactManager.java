@@ -1,40 +1,47 @@
 package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.dllearner.tools.ore.explanation.AxiomRanker;
+import org.dllearner.tools.ore.explanation.LostEntailmentsChecker;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-public class ImpactManager implements RepairManagerListener{
+public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	
 	private static ImpactManager instance;
-	private Map<OWLAxiom, Set<OWLAxiom>> impact;
-	private AxiomRanker ranker;
-	private OWLAxiom actual;
+	private LostEntailmentsChecker lostEntailmentsChecker;
 	private List<OWLAxiom> selectedAxioms;
 	private List<ImpactManagerListener> listeners;
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
 	private Reasoner reasoner;
+	private OREManager oreMan;
+	
+	private Set<OWLAxiom> lostEntailments;
+	private Set<OWLAxiom> addedEntailments;
 
 	private ImpactManager(OREManager oreMan) {
+		this.oreMan = oreMan;
 		this.reasoner = oreMan.getPelletReasoner().getReasoner();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		this.manager = reasoner.getManager();
-		impact = new HashMap<OWLAxiom, Set<OWLAxiom>>();
+		
+		lostEntailments = new HashSet<OWLAxiom>();
+		addedEntailments = new HashSet<OWLAxiom>();
+		
 		selectedAxioms = new ArrayList<OWLAxiom>();
 		listeners = new ArrayList<ImpactManagerListener>();
-		ranker = new AxiomRanker(ontology, reasoner, manager);
-		RepairManager.getRepairManager(oreMan).addListener(this);
+		
+		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getPelletReasoner().getClassifier(), manager);
+		RepairManager.getInstance(oreMan).addListener(this);
+		oreMan.addListener(this);
+	
 
 	}
 	
@@ -57,46 +64,31 @@ public class ImpactManager implements RepairManagerListener{
 		return instance;
 	}
 	
-
-	public Set<OWLAxiom> getImpactAxioms(OWLAxiom ax) {
-		
-		Set<OWLAxiom> imp = impact.get(ax);
-		if (imp == null) {
-			imp = new HashSet<OWLAxiom>();
-			impact.put(ax, imp);
-			if(ax != null){
-//				imp.addAll(ranker.computeImpactOnRemoval(ax));
-				imp.addAll(ranker.computeImpactSOS(ax));
-			}
-		}
-		return imp;
+	public Set<OWLAxiom> getLostEntailments(){
+		return lostEntailments;
 	}
 	
-	public Set<OWLAxiom> getImpactForAxioms2Remove(){
-		Set<OWLAxiom> totalImpact = new HashSet<OWLAxiom>();
-		for(OWLAxiom ax : selectedAxioms){
-			Set<OWLAxiom> imp = getImpactAxioms(ax);
-			if(imp != null){
-				totalImpact.addAll(imp);
-			}
-			
-			
-		}
-		return totalImpact;
+	public Set<OWLAxiom> getAddedEntailments(){
+		return addedEntailments;
 	}
 	
-	public void setActualAxiom(OWLAxiom ax){
-		actual = ax;
+	public void computeImpactForAxiomsInRepairPlan(){
+		lostEntailments.clear();
+		addedEntailments.clear();
+		List<OWLOntologyChange> repairPlan = RepairManager.getInstance(oreMan).getRepairPlan();
+		List<Set<OWLAxiom>> classificationImpact = lostEntailmentsChecker.computeClassificationImpact(repairPlan);
+		lostEntailments.addAll(classificationImpact.get(0));
+		addedEntailments.addAll(classificationImpact.get(1));
+		Set<OWLAxiom> structuralImpact = lostEntailmentsChecker.computeStructuralImpact(repairPlan);
+		lostEntailments.addAll(structuralImpact);
+	}
+	
+	public void addSelection(OWLAxiom ax){
+		selectedAxioms.add(ax);	
 		fireImpactListChanged();
 	}
 	
-	public void addAxiom2ImpactList(OWLAxiom ax){
-		selectedAxioms.add(ax);
-		
-		fireImpactListChanged();
-	}
-	
-	public void removeAxiomFromImpactList(OWLAxiom ax){
+	public void removeSelection(OWLAxiom ax){
 		selectedAxioms.remove(ax);
 		fireImpactListChanged();
 	}
@@ -121,10 +113,26 @@ public class ImpactManager implements RepairManagerListener{
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		selectedAxioms.clear();
-		impact.clear();
+		lostEntailments.clear();
+		addedEntailments.clear();
 		fireImpactListChanged();
 		
 	}
+
+	@Override
+	public void activeOntologyChanged() {
+		this.reasoner = oreMan.getPelletReasoner().getReasoner();
+		this.ontology = reasoner.getLoadedOntologies().iterator().next();
+		this.manager = reasoner.getManager();
+		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getPelletReasoner().getClassifier(), manager);
+		selectedAxioms.clear();
+		lostEntailments.clear();
+		addedEntailments.clear();
+		fireImpactListChanged();
+		
+	}
+	
+	
 	
 
 }

@@ -33,7 +33,6 @@ import javax.swing.SwingWorker;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
@@ -118,23 +117,17 @@ public class WizardController implements ActionListener {
         			nextPanelDescriptor = KnowledgeSourcePanelDescriptor.IDENTIFIER;
         		} else {
         			InconsistencyExplanationPanelDescriptor incDescriptor = new InconsistencyExplanationPanelDescriptor();
-                    wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
-                    ((InconsistencyExplanationPanelDescriptor)model.getPanelHashMap().get(InconsistencyExplanationPanelDescriptor.IDENTIFIER)).init();
-                    
+        			incDescriptor.init();
                     wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
                     nextPanelDescriptor = InconsistencyExplanationPanelDescriptor.IDENTIFIER;
         		}
         		
         		
         	} else {
-        		ClassificationWorker task = new ClassificationWorker(wizard.getStatusBar());
-//        		task.execute();
-//        		TaskManager.getInstance().classifyOntology();
-        	
+
         		if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
         			UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();
-        			wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, unsatDescriptor);
-        			((UnsatisfiableExplanationPanelDescriptor)model.getPanelHashMap().get(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)).init();
+        			unsatDescriptor.init();
         			wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, unsatDescriptor);
         			nextPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
         		} else {
@@ -145,7 +138,6 @@ public class WizardController implements ActionListener {
         		}
         		
         	}
-//        	wizard.getStatusBar().setMessage("");wizard.getStatusBar().showProgress(false);
         	
         }
         if(currentPanelDescriptor.equals(InconsistencyExplanationPanelDescriptor.IDENTIFIER)){
@@ -281,19 +273,13 @@ public class WizardController implements ActionListener {
     }
     
     private int showInconsistentOntologyWarning(){
-//    	Exception e = new Exception("ff");
 		String infoString = "<html>Can not do reasoning with inconsistent ontologies, " +
-				"since everything is equivalent to owl:nothing\n" +
-				"<ul>" +
-				"<li>Press 'Yes' and try to repair the ontology</li>" +
-				"<li>Press 'No' and choose another ontology or exit</li>" +
-				"</ul></html>";
-//		ErrorInfo info = new ErrorInfo("Warning: Inconsistent ontology.",infoString , wizard.getModel().getOre().getInconsistencyExplanationsString(), null, e, Level.ALL, null);
-//		JXErrorPane error = new JXErrorPane();
-//		Icon icon = UIManager.getIcon("OptionPane.warningIcon");
-//		error.setErrorInfo(info);
-//		error.setIcon(icon);
-//		JXErrorPane.showDialog(wizard.getDialog(), error);
+				"since everything is equivalent to OWL:nothing" +
+				"<UL>" +
+				"<LI>Press 'Yes' and try to repair the ontology" +
+				"<LI>Press 'No' and choose another ontology or exit" +
+				"</UL>";
+
 		
 		Object[] options = {"Yes",
         "No"};
