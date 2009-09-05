@@ -47,12 +47,13 @@ public class ManchesterSyntaxRenderer {
 		StringBuffer bf = new StringBuffer();
 		
 		bf.append("<html>");
-		if(striked){
-			bf.append("<strike>");
-		}
 		for(int i = 0; i < depth; i++){
 			bf.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 		}
+		if(striked){
+			bf.append("<strike>");
+		}
+		
 		
 		String token;
 		while(st.hasMoreTokens()){

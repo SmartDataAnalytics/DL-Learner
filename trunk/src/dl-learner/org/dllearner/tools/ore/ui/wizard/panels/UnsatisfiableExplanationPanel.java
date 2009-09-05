@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
@@ -32,7 +33,6 @@ import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.ImpactTable;
 import org.dllearner.tools.ore.ui.RepairPlanPanel;
-import org.dllearner.tools.ore.ui.UnsatClassesTableCellRenderer;
 import org.dllearner.tools.ore.ui.UnsatisfiableClassesTable;
 import org.semanticweb.owl.model.OWLClass;
 
@@ -62,20 +62,16 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	private Set<ExplanationTablePanel> explanationPanels;
 
 	
-	private OWLClass unsatClass;
+	private ExplanationManager expMan;
 	
 	public UnsatisfiableExplanationPanel(){
-	
+		expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		
 		setLayout(new BorderLayout());
 
 		Dimension minimumSize = new Dimension(400, 400);
 
 		unsatClassesTable = new UnsatisfiableClassesTable();
-		unsatClassesTable.getColumn(0).setCellRenderer
-		(new UnsatClassesTableCellRenderer(ExplanationManager.getInstance(OREManager.getInstance())));
-		
-
 		unsatClassesScrollPane = new JScrollPane(unsatClassesTable);
 		unsatClassesScrollPane.setPreferredSize(minimumSize);
 
@@ -89,11 +85,9 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsScrollPane.setPreferredSize(minimumSize);
 		explanationsScrollPane.setBorder(BorderFactory
 				.createLineBorder(Color.LIGHT_GRAY));
-		explanationsScrollPane.getViewport().setOpaque(false);
+		explanationsScrollPane.getViewport().setOpaque(true);
 		explanationsScrollPane.getViewport().setBackground(null);
-		explanationsScrollPane.setOpaque(false);
-		
-		
+		explanationsScrollPane.setOpaque(true);
 		
 		
 		GridBagLayout layout = new GridBagLayout();
@@ -167,7 +161,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		
 		JPanel impactPanel = new JPanel();
 		impactPanel.setLayout(new BorderLayout());
-		impactPanel.add(new JLabel("Lost entailments"), BorderLayout.NORTH);
+		impactPanel.add(new JLabel("Impact"), BorderLayout.NORTH);
 		JScrollPane impScr = new JScrollPane(new ImpactTable());
 		impactPanel.add(impScr);
 		impRepSplit.setRightComponent(impactPanel);
@@ -205,14 +199,29 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		ExplanationTable expTable = new ExplanationTable(explanation, unsat);
 		ExplanationTablePanel panel = new ExplanationTablePanel(expTable, counter);
 		explanationsPanel.add(panel);
-		
-		explanationPanels.add(panel);
-
 		explanationsPanel.add(Box.createVerticalStrut(10));
-		
+		explanationPanels.add(panel);
 //		explanationsPanel.add(new JSeparator());
 //		explanationsPanel.add(Box.createVerticalStrut(10));
 //		this.updateUI();
+	}
+	
+	public void addExplanations(Set<Explanation> explanations, OWLClass unsat){
+		Box explanationHolderPanel = new Box(1);
+		
+		explanationHolderPanel.setBorder(new TitledBorder(unsat + " is unsatisfiable"));
+		int counter = 1;
+		for(Explanation exp : explanations){
+			ExplanationTable expTable = new ExplanationTable(exp, unsat);
+			ExplanationTablePanel panel = new ExplanationTablePanel(expTable, counter);
+			explanationHolderPanel.add(panel);
+			explanationHolderPanel.add(Box.createVerticalStrut(5));
+			counter++;
+			if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
+				break;
+			}
+		}
+		explanationsPanel.add(explanationHolderPanel);
 	}
 	
 	public void validate(){

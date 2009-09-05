@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -41,21 +42,22 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	
 	public ExplanationTable(Explanation exp, OWLClass cl) {
 		
-		repMan = RepairManager.getRepairManager(OREManager.getInstance());
+		repMan = RepairManager.getInstance(OREManager.getInstance());
 		
 		repMan.addListener(this);
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ExplanationTableModel(exp,	cl));
-		TableColumn column4 = getColumn(3);
-		column4.setCellRenderer(new ButtonCellRenderer());
-		column4.setCellEditor(new ButtonCellEditor());
-		column4.setResizable(false);
+		TableColumn column5 = getColumn(4);
+		column5.setCellRenderer(new ButtonCellRenderer());
+		column5.setCellEditor(new ButtonCellEditor());
+		column5.setResizable(false);
 		setRowHeight(getRowHeight() + 4);
 		getColumn(1).setMaxWidth(30);
 		getColumn(2).setMaxWidth(30);
-		getColumn(3).setMaxWidth(80);
+		getColumn(3).setMaxWidth(30);
+		getColumn(4).setMaxWidth(30);
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -133,7 +135,8 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 					setForeground(table.getForeground());
 					setBackground(UIManager.getColor("Button.background"));
 				}
-				setText( (value ==null) ? "" : value.toString() );
+				setIcon(new ImageIcon("src/dl-learner/org/dllearner/tools/ore/Edit16.gif"));
+				setText("");
 				return this;
 				}
 				 
@@ -164,7 +167,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
 			text = (value == null) ? "" : value.toString();
-			editButton.setText(text);
+			editButton.setText("");
 			return editButton;
 		}
 
@@ -182,7 +185,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
-		// TODO Auto-generated method stub
+		repaint();
 		
 	}
 

@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -31,7 +30,6 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
-import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel;
@@ -52,8 +50,8 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     
 	
 	public UnsatisfiableExplanationPanelDescriptor(){
-		setPanelDescriptorIdentifier(IDENTIFIER);
-		
+		setPanelDescriptorIdentifier(IDENTIFIER);	
+//		init();
 	}
 	
 	public void init() {
@@ -62,7 +60,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		expMan.addListener(this);
 		impMan = ImpactManager.getInstance(OREManager.getInstance());
 		impMan.addListener(this);
-		repMan = RepairManager.getRepairManager(OREManager.getInstance());
+		repMan = RepairManager.getInstance(OREManager.getInstance());
 		repMan.addListener(this);
 		panel = new UnsatisfiableExplanationPanel();
 		panel.addActionListeners(this);
@@ -70,18 +68,13 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		panel.addChangeListener(this);
 		
 		setPanelComponent(panel);
-		
-		
-
+//		getWizard().updatePanel(panel, this.IDENTIFIER);
 	}
-	Thread t;
-	Timer timer;
-	  
+	
     private void showExplanations(){
     	ExplanationTask task = new ExplanationTask(getWizard().getStatusBar());
     	TaskManager.getInstance().setCurrentTask(task);
     	task.execute();
-	
     }
     
     @Override
@@ -96,11 +89,15 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     
     @Override
 	public void aboutToDisplayPanel() {
-//    	fillUnsatClassesTable();
-    	new RootDerivedTask(getWizard().getStatusBar()).execute();
+//    	new RootDerivedTask(getWizard().getStatusBar()).execute();
         getWizard().getInformationField().setText(INFORMATION);
         
     }
+
+	@Override
+	public void displayingPanel() {
+		new RootDerivedTask(getWizard().getStatusBar()).execute();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -109,7 +106,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		} else if (e.getActionCommand().equals("laconic")) {
 			expMan.setLaconicMode(true);
 		} else if (e.getActionCommand().equals("all")){
-			conditionalWarning("Computing all explanations might be very expensive", getWizard().getDialog());
+			conditionalWarning("Computing all explanations might take a long time!", getWizard().getDialog());
 			expMan.setComputeAllExplanationsMode(true);
 			panel.setMaxExplanationsMode(false);
 		} else if (e.getActionCommand().equals("max")){
@@ -138,8 +135,8 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
 		if (!e.getValueIsAdjusting() && panel.getUnsatTable().getSelectedRow() >= 0) {
+			unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
 			showExplanations();
 		}
 		
@@ -208,11 +205,12 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 			@Override
 			public Void doInBackground() {
 				statusBar.showProgress(true);
-				statusBar.setProgressTitle("computing explanations");
+				statusBar.setProgressTitle("Computing explanations");
 				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				expMan.getUnsatisfiableExplanations(unsatClass);
+				for(OWLClass unsat : panel.getUnsatTable().getSelectedClasses()){
+					expMan.getUnsatisfiableExplanations(unsat);
+				}
 				
-			
 				return null;
 			}
 
@@ -236,16 +234,12 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 					
 					@Override
 					public void run() {
+
 						panel.clearExplanationsPanel();
-						int counter = 1;
-						unsatClass = (OWLClass)panel.getUnsatTable().getSelectedClass();
-						for (Explanation explanation : expMan.getUnsatisfiableExplanations(unsatClass)) {
-							panel.addExplanation(explanation, unsatClass, counter);
-							counter++;
-							if(counter > expMan.getMaxExplantionCount() && !expMan.isComputeAllExplanationsMode()){
-								break;
-							}
+						for(OWLClass unsat : panel.getUnsatTable().getSelectedClasses()){
+							panel.addExplanations(expMan.getUnsatisfiableExplanations(unsat), unsat);
 						}
+						
 						panel.validate();
 					}
 				});

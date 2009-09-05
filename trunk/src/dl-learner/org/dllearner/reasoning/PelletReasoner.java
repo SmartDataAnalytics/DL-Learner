@@ -103,13 +103,14 @@ import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.SimpleURIMapper;
 import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
 
-import com.clarkparsia.explanation.PelletExplanation;
+import com.clarkparsia.modularity.IncrementalClassifier;
 
 public class PelletReasoner extends ReasonerComponent {
 	
 	private Reasoner reasoner;
 	private OWLOntologyManager manager;
 	private OWLOntology ontology;
+	private IncrementalClassifier classifier;
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
 	
@@ -285,8 +286,14 @@ public class PelletReasoner extends ReasonerComponent {
 				// TODO: add method to find datatypes
 			}
 		}
-		reasoner.loadOntologies(allImports);
-		dematerialise();
+		try {
+			classifier.loadOntologies(allImports);
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		reasoner.loadOntologies(allImports);
+//		dematerialise();
 	}
 	
 	/*
@@ -329,7 +336,7 @@ public class PelletReasoner extends ReasonerComponent {
 		
 	}
 	
-	private void dematerialise(){
+	public void dematerialise(){
 		long dematStartTime = System.currentTimeMillis();
 
 		logger.debug("dematerialising concepts");
@@ -379,13 +386,8 @@ public class PelletReasoner extends ReasonerComponent {
 	}
 	
 	public boolean isConsistent(){
-		return reasoner.isConsistent();
-	}
-	
-	public Set<Set<OWLAxiom>> getInconsistencyReasons(){
-		PelletExplanation expGen = new PelletExplanation(manager, reasoner.getLoadedOntologies());
-		
-		return expGen.getInconsistencyExplanations();
+		return classifier.getReasoner().isConsistent();
+//		return reasoner.isConsistent();
 	}
 
 	@Override
@@ -396,8 +398,15 @@ public class PelletReasoner extends ReasonerComponent {
 
 	@Override
 	public void releaseKB() {
-		reasoner.clearOntologies();
-		reasoner.dispose();
+		try {
+			classifier.clearOntologies();
+			classifier.dispose();
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		reasoner.clearOntologies();
+//		reasoner.dispose();
 
 	}
 
@@ -437,23 +446,30 @@ public class PelletReasoner extends ReasonerComponent {
 		manager = OWLManager.createOWLOntologyManager();
 		factory = manager.getOWLDataFactory();
 		//set classification output to "none", while default is "console"
-		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.SWING;
+		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.NONE;
 		
 		// change log level to WARN for Pellet, because otherwise log
 		// output will be very large
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 		pelletLogger.setLevel(Level.WARN);
-		reasoner = new Reasoner(manager);
-		manager.addOntologyChangeListener(reasoner);
+
+		classifier = new IncrementalClassifier(manager);
+		reasoner = classifier.getReasoner();
 
 	}
 	
 	public void classify(){
-		reasoner.classify();
+		try {
+			classifier.classify();
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void realise(){
 		try {
+
 			reasoner.realise();
 		} catch (OWLReasonerException e) {
 			// TODO Auto-generated catch block
@@ -462,7 +478,7 @@ public class PelletReasoner extends ReasonerComponent {
 	}
 	
 	public void refresh(){
-		reasoner.refresh();
+		classifier.getReasoner().refresh();
 	}
 	
 	public void addProgressMonitor(ProgressMonitor monitor){
@@ -1519,6 +1535,10 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 
 	public Reasoner getReasoner() {
 		return reasoner;
+	}
+	
+	public IncrementalClassifier getClassifier(){
+		return classifier;
 	}
 	
 

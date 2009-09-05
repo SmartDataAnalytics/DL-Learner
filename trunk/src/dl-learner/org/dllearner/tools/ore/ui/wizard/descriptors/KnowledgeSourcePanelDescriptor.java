@@ -97,14 +97,18 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     	}
     }
     
+    public void loadOntology(URI uri){
+    	OREManager.getInstance().setCurrentKnowledgeSource(uri);
+    	RecentManager.getInstance().addURI(uri);
+    	RecentManager.getInstance().serialize();
+    	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+    }
+    
     private void handleOpenFromURI() {
         try {
             URI uri = OpenFromURIPanel.showDialog();
             if(uri != null){
-            	OREManager.getInstance().setCurrentKnowledgeSource(uri);
-            	RecentManager.getInstance().addURI(uri);
-            	RecentManager.getInstance().serialize();
-            	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+            	loadOntology(uri);
             }
         }
         catch (Exception e1) {
@@ -139,12 +143,8 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			String filePathString = filechooser.getSelectedFile()
 					.getAbsolutePath();
 			if (filePathString != null && !filePathString.isEmpty()) {
-				OREManager.getInstance().setCurrentKnowledgeSource(
-						new File(filePathString).toURI());
-				RecentManager.getInstance().addURI(new File(filePathString).toURI());
-            	RecentManager.getInstance().serialize();
-				new OntologyLoadingTask(getWizard().getStatusBar()).execute();
-//            	TaskManager.getInstance().loadOntology();
+				URI uri = new File(filePathString).toURI();
+				loadOntology(uri);
 				
 			}
 
@@ -178,22 +178,36 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     class OntologyLoadingTask extends SwingWorker<Void, Void>{
 		
 		private StatusBar statusBar;
+		private OREManager oreMan;
 		
 		public OntologyLoadingTask(StatusBar statusBar) {		
-			this.statusBar = statusBar;				
+			this.statusBar = statusBar;
+			this.oreMan = OREManager.getInstance();
 		}
 
 		@Override
 		public Void doInBackground() {
+			getWizard().setNextFinishButtonEnabled(false);
 			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			statusBar.showProgress(true);
 			statusBar.setProgressTitle("Loading ontology");
-        	OREManager.getInstance().initPelletReasoner();
-        	statusBar.setProgressTitle("Classifying ontology");
-        	OREManager.getInstance().getPelletReasoner().classify();
-        	statusBar.setProgressTitle("Realising ontology");
-        	OREManager.getInstance().getPelletReasoner().realise();
+			try{
+	        	oreMan.initPelletReasoner();
+	        	
+			} catch(Throwable e){
+				statusBar.showProgress(false);
+				statusBar.setProgressTitle("Error occured");
+				getWizard().getDialog().setCursor(null);
+				 ErrorLogPanel.showErrorDialog(e);
+				 return null;
 
+			}
+			if(oreMan.consistentOntology()){
+				statusBar.setProgressTitle("Classifying ontology");
+				oreMan.getPelletReasoner().classify();
+	        	statusBar.setProgressTitle("Realising ontology");
+	        	oreMan.getPelletReasoner().realise();
+			}
 			return null;
 		}
 

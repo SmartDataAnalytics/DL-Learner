@@ -11,7 +11,10 @@ import java.util.Set;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
+import org.dllearner.tools.ore.RepairManager;
+import org.dllearner.tools.ore.RepairManagerListener;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
+import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
@@ -51,10 +54,10 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLQuantifiedRestriction;
 import org.semanticweb.owl.model.RemoveAxiom;
 
-public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OWLOntologyChangeListener{
+public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OWLOntologyChangeListener, RepairManagerListener{
 
 	private OWLOntologyManager manager;
-	private OWLReasoner reasoner;
+	private Reasoner reasoner;
 	private OWLReasonerFactory reasonerFactory;
 	
 	private Set<OWLClass> depend2Classes;
@@ -67,7 +70,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	private boolean ontologyChanged = true;
 	
 	
-	int depth;
+	private int depth;
 	private Map<Integer, Set<OWLObjectAllRestriction>> depth2UniversalRestrictionPropertyMap;
     private Map<Integer, Set<OWLObjectPropertyExpression>> depth2ExistsRestrictionPropertyMap;
     
@@ -96,7 +99,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		parent2Children = new HashMap<OWLClass, Set<OWLClass>>();
 		
 		OREManager.getInstance().addListener(this);
-		OREManager.getInstance().getPelletReasoner().getOWLOntologyManager().addOntologyChangeListener(this);
+		RepairManager.getInstance(OREManager.getInstance()).addListener(this);
+//		OREManager.getInstance().getPelletReasoner().getOWLOntologyManager().addOntologyChangeListener(this);
 	}
 	
 	public Set<OWLClass> getRootClasses(){
@@ -121,6 +125,14 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 	
 	public void computeRootDerivedClasses(){
+//		this.manager = OWLManager.createOWLOntologyManager();
+//		try {
+//			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());
+//		} catch (OWLOntologyCreationException e) {
+//			e.printStackTrace();
+//		} catch (OWLOntologyChangeException e) {
+//			e.printStackTrace();
+//		}
 		rootClasses.clear();
 		derivedClasses.clear();
 		depend2Classes.clear();
@@ -136,7 +148,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 	
 	private void computePossibleRoots(){
-		try {derivedClasses.addAll(reasoner.getInconsistentClasses());
+			derivedClasses.addAll(reasoner.getInconsistentClasses());
 			for(OWLClass cls : derivedClasses){
 				reset();
 				for(OWLDescription equi : cls.getEquivalentClasses(ontology)){
@@ -160,9 +172,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 					rootClasses.add(cls);	
 				}
 			}
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}
+		
 	}
 	
 	private void pruneRoots() {
@@ -222,7 +232,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	
 	private void checkObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression,OWLDescription> restr){
 		OWLDescription filler = restr.getFiller();
-		try {
+		
 			if(filler.isAnonymous()){
 				depth++;
 				filler.accept(this);
@@ -237,9 +247,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 				}
 				addExistsRestrictionProperty(restr.getProperty());
 			}
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
@@ -265,19 +273,17 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	@Override
 	public void visit(OWLClass cls) {
 		
-		try {
+		
 			if(!reasoner.isSatisfiable(cls)) {
 				depend2Classes.add(cls);
 			}
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}		
+			
 	}
 
 	@Override
 	public void visit(OWLObjectIntersectionOf and) {
 		
-		try {
+		
 			for(OWLDescription op : and.getOperands()) {
 				if(op.isAnonymous()){
 					op.accept(this);
@@ -285,15 +291,13 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 					depend2Classes.add(op.asOWLClass());				
 				}
 			}
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}				
+					
 	}
 
 	@Override
 	public void visit(OWLObjectUnionOf or) {
 		
-		try {
+		
 			for(OWLDescription op : or.getOperands()){
 				if(reasoner.isSatisfiable(op)){
 					return;
@@ -306,9 +310,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 					depend2Classes.add(op.asOWLClass());
 				}
 			}
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}	
+		
 	}
 	
 	@Override
@@ -396,6 +398,18 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	@Override
 	public void ontologiesChanged(List<? extends OWLOntologyChange> arg0)
 			throws OWLException {
+		ontologyChanged = true;
+		
+	}
+
+	@Override
+	public void repairPlanChanged() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		ontologyChanged = true;
 		
 	}

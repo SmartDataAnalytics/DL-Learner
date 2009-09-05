@@ -7,8 +7,11 @@ import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.RemoveAxiom;
 
 public class ExplanationTableModel extends AbstractTableModel {
 
@@ -22,18 +25,20 @@ public class ExplanationTableModel extends AbstractTableModel {
 	private ImpactManager impMan;
 	private RepairManager repMan;
 	private OWLClass unsat;
+	private OWLOntology ont;
 	
 	public ExplanationTableModel(Explanation exp, OWLClass cl){
 		this.exp = exp;
 		this.expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		this.impMan = ImpactManager.getInstance(OREManager.getInstance());
-		this.repMan = RepairManager.getRepairManager(OREManager.getInstance());
+		this.repMan = RepairManager.getInstance(OREManager.getInstance());
 		this.unsat = cl;
+		this.ont = OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies();
 	}
 	
 	@Override
 	public int getColumnCount() {
-		return 4;
+		return 5;
 	}
 
 	@Override
@@ -50,6 +55,8 @@ public class ExplanationTableModel extends AbstractTableModel {
 		} else if(columnIndex == 1){
 			return expMan.getArity(unsat, getOWLAxiomAtRow(rowIndex));
 		} else if(columnIndex == 2) {
+			return expMan.getUsage(getOWLAxiomAtRow(rowIndex)).size();
+		} else if(columnIndex == 3){
 			return Boolean.valueOf(impMan.isSelected(getOWLAxiomAtRow(rowIndex)));
 		} else {
 			return "rewrite";
@@ -60,20 +67,41 @@ public class ExplanationTableModel extends AbstractTableModel {
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		if(columnIndex == 2){
+		if(columnIndex == 3){
 			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 			if(impMan.isSelected(ax)){
-				repMan.removeAxiom2Remove(ax);
-				impMan.removeAxiomFromImpactList(ax);
-			} else {
-				impMan.addAxiom2ImpactList(ax);
+				impMan.removeSelection(ax);
 				if(expMan.isLaconicMode()){
 					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
-						repMan.addAxiom2Remove(source);
-						repMan.addAxioms2Keep(expMan.getRemainingAxioms(source, ax));
+						impMan.removeSelection(source);
+						repMan.removeFromRepairPlan(new RemoveAxiom(ont, source));
+						for(OWLAxiom rem : expMan.getRemainingAxioms(source, ax)){
+							repMan.removeFromRepairPlan(new AddAxiom(ont, rem));
+						}
+						
+//						repMan.removeAxiom2Remove(source);
+//						repMan.removeAxioms2Keep(expMan.getRemainingAxioms(source, ax));
+					}
+				} else {
+//					repMan.removeAxiom2Remove(ax);
+					repMan.removeFromRepairPlan(new RemoveAxiom(ont, ax));
+				}
+			} else {
+				impMan.addSelection(ax);
+				if(expMan.isLaconicMode()){
+					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
+						impMan.addSelection(source);
+						repMan.addToRepairPlan(new RemoveAxiom(ont, source));
+						for(OWLAxiom rem : expMan.getRemainingAxioms(source, ax)){
+							repMan.addToRepairPlan(new AddAxiom(ont, rem));
+						}
+						
+//						repMan.addAxiom2Remove(source);
+//						repMan.addAxioms2Keep(expMan.getRemainingAxioms(source, ax));
 					}		
 				} else {
-					repMan.addAxiom2Remove(ax);
+//					repMan.addAxiom2Remove(ax);	
+					repMan.addToRepairPlan(new RemoveAxiom(ont, ax));
 				}
 				
 			}
@@ -87,7 +115,9 @@ public class ExplanationTableModel extends AbstractTableModel {
 			return OWLAxiom.class;
 		} else if(columnIndex == 1){
 			return int.class;
-		} else if(columnIndex == 2) {
+		} else if(columnIndex == 2){
+			return int.class;
+		} else if(columnIndex == 3){
 			return Boolean.class;
 		} else {
 			return String.class;
@@ -96,7 +126,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex == 2 || columnIndex == 3)
+		if(columnIndex == 3 || columnIndex == 4)
 			return true;
 		return false;
 	}

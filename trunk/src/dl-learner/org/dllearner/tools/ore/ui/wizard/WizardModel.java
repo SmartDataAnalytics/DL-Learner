@@ -25,8 +25,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 
-import org.dllearner.tools.ore.OREManager;
-
 /**
  * The model for the Wizard component, which tracks the text, icons, and enabled state
  * of each of the buttons, as well as the current panel that is displayed. Note that 
@@ -81,7 +79,7 @@ public class WizardModel {
     
     private PropertyChangeSupport propertyChangeSupport;
     
-    private OREManager ore;
+
     
     /**
      * Default constructor.
@@ -94,8 +92,7 @@ public class WizardModel {
         buttonEnabledHashmap = new HashMap<String, Boolean>();
         
         propertyChangeSupport = new PropertyChangeSupport(this);
-        ore = OREManager.getInstance();
-        
+      
     }
     
     /**

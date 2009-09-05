@@ -2,10 +2,17 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTable;
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
 
+import org.dllearner.tools.ore.ExplanationManager;
+import org.dllearner.tools.ore.OREManager;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.semanticweb.owl.model.OWLClass;
@@ -18,6 +25,7 @@ public class UnsatisfiableClassesTable extends JXTable {
 	private static final long serialVersionUID = 59201134390657458L;
 	
 	public UnsatisfiableClassesTable(){
+		ExplanationManager expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setModel(new UnsatisfiableClassesTableModel());
@@ -25,9 +33,52 @@ public class UnsatisfiableClassesTable extends JXTable {
 		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
 		getColumn(0).setMaxWidth(20);
+		
+		getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-		
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				int row = rowAtPoint(e.getPoint());
+				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
+					OWLClass cl = (OWLClass) getValueAt(row, 1);
+					if (ExplanationManager
+							.getInstance(OREManager.getInstance())
+							.getDerivedClasses().contains(cl)) {
+						showPopupMenu(e);
+					}
+				}
+
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				int row = rowAtPoint(e.getPoint());
+				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
+					OWLClass cl = (OWLClass) getValueAt(row, 1);
+					if (ExplanationManager
+							.getInstance(OREManager.getInstance())
+							.getDerivedClasses().contains(cl)) {
+						showPopupMenu(e);
+					}
+				}
+			}
+
+		});
+	}
+	
+	private void showPopupMenu(MouseEvent e){
+		JPopupMenu menu = new JPopupMenu();
+        menu.add(new AbstractAction("Why is derived class?") {
+        	final UnsatisfiableClassesTable table = UnsatisfiableClassesTable.this;
+            
+            public void actionPerformed(ActionEvent e)
+            {
+                
+            }
+
+            
+        });
+        menu.show(this, e.getX(), e.getY());
 	}
 	@Override
 	public Dimension getPreferredScrollableViewportSize()
@@ -43,6 +94,16 @@ public class UnsatisfiableClassesTable extends JXTable {
 	
 	public OWLClass getSelectedClass(){
 		return (OWLClass)((UnsatisfiableClassesTableModel)getModel()).getValueAt(getSelectedRow(), 0);
+	}
+	
+	public List<OWLClass> getSelectedClasses(){
+		List<OWLClass> selectedClasses = new ArrayList<OWLClass>(getSelectedRows().length);
+		int[] rows = getSelectedRows();
+		for(int i = 0; i < rows.length; i++){
+			selectedClasses.add((OWLClass)((UnsatisfiableClassesTableModel)getModel()).getValueAt(rows[i], 0));
+		}
+		
+		return selectedClasses;
 	}
 	
 	public void clear(){

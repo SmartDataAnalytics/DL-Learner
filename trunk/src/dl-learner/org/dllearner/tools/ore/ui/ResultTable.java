@@ -3,7 +3,6 @@ package org.dllearner.tools.ore.ui;
 import java.awt.Color;
 import java.util.List;
 
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -32,11 +31,11 @@ public class ResultTable extends JXTable {
 //		getRowSorter().toggleSortOrder(0);
 		setGridColor(Color.LIGHT_GRAY);
 	}
-	
+
 	private void setColumnSizes(){
 		getColumn(0).setMaxWidth(70);
 		
-//		getColumn(1).setPreferredWidth(430);
+		getColumn(1).setPreferredWidth(430);
 				
 	}
 	

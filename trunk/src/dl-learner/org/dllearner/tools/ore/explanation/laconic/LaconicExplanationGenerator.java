@@ -306,7 +306,7 @@ public class LaconicExplanationGenerator
     public Set<OWLAxiom> getSourceAxioms(OWLAxiom axiom){
     	Map<OWLAxiom, Set<OWLAxiom>> axioms2SourceMap = oPlus.getAxiomsMap();
     	Set<OWLAxiom> sourceAxioms = new HashSet<OWLAxiom>();
-    	
+    	System.out.println(axiom);
     	for(OWLAxiom ax : axioms2SourceMap.get(axiom)){
     		if(ontology.containsAxiom(ax)){
     			sourceAxioms.add(ax);

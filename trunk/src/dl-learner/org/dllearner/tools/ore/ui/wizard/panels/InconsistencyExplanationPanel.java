@@ -13,12 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
-import org.dllearner.tools.ore.ExplanationManager;
-import org.dllearner.tools.ore.ImpactManager;
-import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ExplanationTablePanel;
@@ -42,17 +38,8 @@ public class InconsistencyExplanationPanel extends JPanel{
 	private JRadioButton regularButton;
 	private JRadioButton laconicButton;
 
-	private ImpactManager impMan;
-	private ExplanationManager expMan;
-	private RepairManager repMan;
-
-	public InconsistencyExplanationPanel(ExplanationManager expMan, ImpactManager impMan, RepairManager repMan) {
-		
-		this.expMan = expMan;
-		this.impMan = impMan;
-		this.repMan = repMan;
-
-//		impManager.addListener(this);
+	public InconsistencyExplanationPanel() {
+	
 		setLayout(new BorderLayout());
 
 		Dimension minimumSize = new Dimension(400, 400);
@@ -72,10 +59,10 @@ public class InconsistencyExplanationPanel extends JPanel{
 
 		regularButton = new JRadioButton("regular", true);
 		regularButton.setActionCommand("regular");
-//		regularButton.addActionListener(this);
+
 		laconicButton = new JRadioButton("laconic");
 		laconicButton.setActionCommand("laconic");
-//		laconicButton.addActionListener(this);
+
 		explanationType = new ButtonGroup();
 		explanationType.add(regularButton);
 		explanationType.add(laconicButton);
@@ -119,20 +106,13 @@ public class InconsistencyExplanationPanel extends JPanel{
 	public void addExplanation(Explanation explanation, int counter){
 		ExplanationTable expTable = new ExplanationTable(explanation, OWLManager.createOWLOntologyManager().getOWLDataFactory().getOWLThing());
 		explanationsPanel.add(new ExplanationTablePanel(expTable, counter));
-		
 		explanationsPanel.add(Box.createVerticalStrut(10));
-		explanationsPanel.add(new JSeparator());
-		explanationsPanel.add(Box.createVerticalStrut(10));
-		this.updateUI();
+
 	}
 	
 	public void addActionListeners(ActionListener aL){
 		regularButton.addActionListener(aL);
 		laconicButton.addActionListener(aL);
 	}
-	
-	
-	
-	
 	
 }

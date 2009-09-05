@@ -1,5 +1,7 @@
 package org.dllearner.tools.ore;
 
+import java.awt.Cursor;
+
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
 
@@ -50,4 +52,18 @@ public class TaskManager {
 	
 	public synchronized void cancelCurrentThread(){currentThread.stop();
 	}
+	
+	public void setTaskStarted(String message){
+		dialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		statusBar.setProgressTitle(message);
+		statusBar.showProgress(true);
+	}
+	
+	public void setTaskFinished(){
+		dialog.setCursor(null);
+		statusBar.setProgressTitle("Done");
+		statusBar.showProgress(false);
+	}
+	
+	
 }
