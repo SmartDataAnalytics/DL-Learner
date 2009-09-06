@@ -310,7 +310,7 @@ public class PelletReasoner extends ReasonerComponent {
 				} else if(change instanceof AddAxiom){
 					classInstancesPos.get(desc).add(ind);
 				}
-			} else if(axiom instanceof OWLObjectPropertyAssertionAxiom){System.out.println(axiom);
+			} else if(axiom instanceof OWLObjectPropertyAssertionAxiom){
 				Individual obj = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getObject());
 				Individual sub = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getSubject());
 				ObjectProperty prop = OWLAPIConverter.convertObjectProperty(((OWLObjectPropertyAssertionAxiom)axiom).getProperty().asOWLObjectProperty());

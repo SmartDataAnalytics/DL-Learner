@@ -33,7 +33,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 		this.impMan = ImpactManager.getInstance(OREManager.getInstance());
 		this.repMan = RepairManager.getInstance(OREManager.getInstance());
 		this.unsat = cl;
-		this.ont = OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies();
+		this.ont = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
 	}
 	
 	@Override

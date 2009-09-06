@@ -80,7 +80,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	public RootFinder(){
 		
 		this.manager = OWLManager.createOWLOntologyManager();
-		this.reasoner = OREManager.getInstance().getPelletReasoner().getReasoner();
+		this.reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		this.reasonerFactory = new PelletReasonerFactory();
 		try {
 			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());
@@ -381,7 +381,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	@Override
 	public void activeOntologyChanged() {
 		this.manager = OWLManager.createOWLOntologyManager();
-		this.reasoner = OREManager.getInstance().getPelletReasoner().getReasoner();
+		this.reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		this.reasonerFactory = new PelletReasonerFactory();
 		try {
 			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());

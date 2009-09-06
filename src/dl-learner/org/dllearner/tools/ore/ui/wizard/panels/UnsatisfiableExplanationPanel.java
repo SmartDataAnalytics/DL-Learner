@@ -3,6 +3,7 @@ package org.dllearner.tools.ore.ui.wizard.panels;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -42,19 +43,22 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private UnsatisfiableClassesTable unsatClassesTable;
+	
 	private JSplitPane splitPane;
 	private JSplitPane statsSplitPane;
+	
+	private UnsatisfiableClassesTable unsatClassesTable;
 	private JScrollPane unsatClassesScrollPane;
+	
 	private JScrollPane explanationsScrollPane;
 	private JComponent explanationsPanel;
-	private JPanel buttonExplanationsPanel;
-	private JPanel buttonPanel;
 	
+	private JPanel buttonExplanationsPanel;
+	
+	private JPanel buttonPanel;
 	private ButtonGroup explanationType;
 	private JRadioButton regularButton;
 	private JRadioButton laconicButton;
-	private JRadioButton mostRelevantButton;
 	private JRadioButton computeAllExplanationsRadioButton;
     private  JRadioButton computeMaxExplanationsRadioButton;
 	private JSpinner maxExplanationsSelector;
@@ -74,6 +78,12 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		unsatClassesTable = new UnsatisfiableClassesTable();
 		unsatClassesScrollPane = new JScrollPane(unsatClassesTable);
 		unsatClassesScrollPane.setPreferredSize(minimumSize);
+		JPanel unsatClassesHolder = new JPanel();
+		unsatClassesHolder.setLayout(new BorderLayout());
+		JLabel title = new JLabel("Unsatisfiable classes");
+		title.setFont(getFont().deriveFont(Font.BOLD));
+		unsatClassesHolder.add(title, BorderLayout.PAGE_START);
+		unsatClassesHolder.add(unsatClassesScrollPane, BorderLayout.CENTER);
 
 		explanationsPanel = new Box(1);
 		
@@ -94,14 +104,12 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(layout);
 		
-		regularButton = new JRadioButton("show regular explanations", true);
+		regularButton = new JRadioButton("Show regular explanations", true);
 		regularButton.setActionCommand("regular");
 		regularButton.setSelected(true);
-		laconicButton = new JRadioButton("show precise explanations");
+		laconicButton = new JRadioButton("Show precise explanations");
 		laconicButton.setActionCommand("laconic");
 		
-		mostRelevantButton = new JRadioButton("show most relevant explanations");
-		mostRelevantButton.setActionCommand("relevant");
 		
 		explanationType = new ButtonGroup();
 		explanationType.add(regularButton);
@@ -176,10 +184,10 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		statsSplitPane.setDividerLocation(500);
 		statsSplitPane.setOneTouchExpandable(true);
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, unsatClassesScrollPane,
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, unsatClassesHolder, //unsatClassesScrollPane,
 				statsSplitPane);
 		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(150);
+		splitPane.setDividerLocation(200);
 		splitPane.setBorder(null);
 
 		add(splitPane);

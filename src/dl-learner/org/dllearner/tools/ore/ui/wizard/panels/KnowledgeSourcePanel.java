@@ -156,7 +156,7 @@ public class KnowledgeSourcePanel extends JPanel{
 	}
 	
 	public void updateMetrics(){
-		metricsPanel.updateView(OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies());
+		metricsPanel.updateView(OREManager.getInstance().getReasoner().getOWLAPIOntologies());
 	}
 	
 	public void addListeners(ActionListener aL) {

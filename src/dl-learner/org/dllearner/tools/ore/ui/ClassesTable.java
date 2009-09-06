@@ -43,10 +43,6 @@ public class ClassesTable extends JXTable {
         return tip;
 	}
 	
-	public void clear(){
-		((ClassesTableModel)getModel()).clear();
-	}
-	
 	public void addClasses(Set<NamedClass> classes){
 		((ClassesTableModel)getModel()).addClasses(classes);
 	}

@@ -42,12 +42,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
+import org.dllearner.tools.ore.ui.item.AddPropertyAssertionMenuItem;
+import org.dllearner.tools.ore.ui.item.AddToClassMenuItem;
+import org.dllearner.tools.ore.ui.item.MoveFromClassToMenuItem;
+import org.dllearner.tools.ore.ui.item.MoveToClassFromMenuItem;
+import org.dllearner.tools.ore.ui.item.RemoveAllPropertyAssertionsMenuItem;
+import org.dllearner.tools.ore.ui.item.RemoveAllPropertyAssertionsNotToMenuItem;
+import org.dllearner.tools.ore.ui.item.RemoveAllPropertyAssertionsToMenuItem;
+import org.dllearner.tools.ore.ui.item.RemoveFromClassMenuItem;
 import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeListener;
@@ -88,8 +93,6 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 	private OntologyModifier modifier;
 
 	private Individual ind;
-	private Description actualDesc;
-	private Description newDesc;
 	
 	
 	public RepairDialog(Individual ind, JDialog dialog, String mode){
@@ -126,7 +129,7 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 	
 		this.modifier = OREManager.getInstance().getModifier();
 		this.mode = mode;
-		OREManager.getInstance().getPelletReasoner().getOWLOntologyManager().addOntologyChangeListener(this);
+		OREManager.getInstance().getReasoner().getOWLOntologyManager().addOntologyChangeListener(this);
 		
 	}
 	
@@ -206,48 +209,45 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 	 * Method controls action events triggered by clicking on red labels in class description at the top of the dialog.
 	 */
 	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() instanceof RemoveFromClassMenuItem){
+			RemoveFromClassMenuItem item = (RemoveFromClassMenuItem)e.getSource();
+			List<OWLOntologyChange> changes  = modifier.removeClassAssertion(ind, item.getDescription());
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof MoveFromClassToMenuItem){
+			MoveFromClassToMenuItem item = (MoveFromClassToMenuItem)e.getSource();
+			List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, item.getSource(), item.getDestination());
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof AddToClassMenuItem){
+			AddToClassMenuItem item = (AddToClassMenuItem)e.getSource();
+			List<OWLOntologyChange> changes  = modifier.addClassAssertion(ind, item.getDescription());
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof RemoveAllPropertyAssertionsMenuItem){
+			RemoveAllPropertyAssertionsMenuItem item = (RemoveAllPropertyAssertionsMenuItem)e.getSource();
+			List<OWLOntologyChange> changes = modifier.deleteObjectProperty(ind, item.getProperty());
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof RemoveAllPropertyAssertionsToMenuItem){
+			RemoveAllPropertyAssertionsToMenuItem item = (RemoveAllPropertyAssertionsToMenuItem)e.getSource();
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.addAll(modifier.removeAllObjectPropertyAssertions(ind, item.getProperty(), OREManager.getInstance().getIndividualsInPropertyRange(item.getDestination(), ind)));
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof RemoveAllPropertyAssertionsNotToMenuItem){
+			RemoveAllPropertyAssertionsNotToMenuItem item = (RemoveAllPropertyAssertionsNotToMenuItem)e.getSource();
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.addAll(modifier.removeAllObjectPropertyAssertions(ind, item.getProperty(), OREManager.getInstance().getIndividualsNotInPropertyRange(item.getDestination(), ind)));
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof MoveToClassFromMenuItem){
+			MoveToClassFromMenuItem item = (MoveToClassFromMenuItem)e.getSource();
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.addAll(modifier.moveIndividual(ind, item.getSource(), item.getDestination()));
+			changesTable.addChanges(changes);
+		} else if(e.getSource() instanceof AddPropertyAssertionMenuItem){
+			AddPropertyAssertionMenuItem item = (AddPropertyAssertionMenuItem)e.getSource();
+			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+			changes.addAll(modifier.addObjectProperty(ind, item.getProperty(), item.getObject()));
+			changesTable.addChanges(changes);
+		}
 		
-		if(e.getSource() instanceof DescriptionMenuItem){
-			DescriptionMenuItem item =(DescriptionMenuItem) e.getSource();
-			actualDesc = item.getDescription();
-			int action = item.getActionID();
-			if(action == 4){
-				Individual obj = new Individual(e.getActionCommand());
-				List<OWLOntologyChange> changes  = modifier.addObjectProperty(ind, (ObjectQuantorRestriction) actualDesc, obj);
-				changesTable.addChanges(changes);
-			} else if(action == 5){
-				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
-				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-				for(Individual i : OREManager.getInstance().getIndividualsInPropertyRange(property, ind)){
-					changes.addAll(modifier.removeObjectPropertyAssertion(ind, property, i));
-				}
-				changesTable.addChanges(changes);
-				
-			} else if(action == 6){
-				List<OWLOntologyChange> changes = modifier.deleteObjectProperty(ind, (ObjectQuantorRestriction) actualDesc);
-				changesTable.addChanges(changes);
-			} else if(action == 0){
-				newDesc = new NamedClass(item.getName());
-				List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, actualDesc, newDesc);
-				changesTable.addChanges(changes);
-			} else if(action == 3){
-				List<OWLOntologyChange> changes  = modifier.removeClassAssertion(ind, actualDesc);
-				changesTable.addChanges(changes);
-			} else if(action == 2){
-				List<OWLOntologyChange> changes  = modifier.addClassAssertion(ind, actualDesc);
-				changesTable.addChanges(changes);
-			} else if(action == 7){
-				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
-				List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-				for(Individual i : OREManager.getInstance().getIndividualsNotInPropertyRange(property, ind)){
-					changes.addAll(modifier.removeObjectPropertyAssertion(ind, property, i));
-				}
-			} else if(action == 1){
-				Description oldDesc = new NamedClass(item.getName());
-				List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, oldDesc, actualDesc);
-				changesTable.addChanges(changes);
-			}
-		} else if(e.getActionCommand().equals("Ok")){
+		else if(e.getActionCommand().equals("Ok")){
 			if(descPanel.isCorrect()){
 				returncode = VALID_RETURN_CODE;
 			} else{

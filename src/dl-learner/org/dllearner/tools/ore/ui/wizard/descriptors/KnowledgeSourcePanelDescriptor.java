@@ -204,9 +204,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			}
 			if(oreMan.consistentOntology()){
 				statusBar.setProgressTitle("Classifying ontology");
-				oreMan.getPelletReasoner().classify();
+				oreMan.getReasoner().classify();
 	        	statusBar.setProgressTitle("Realising ontology");
-	        	oreMan.getPelletReasoner().realise();
+	        	oreMan.getReasoner().realise();
 			}
 			return null;
 		}

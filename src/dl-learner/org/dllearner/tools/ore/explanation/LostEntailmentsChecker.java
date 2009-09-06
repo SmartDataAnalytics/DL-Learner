@@ -1,6 +1,7 @@
 package org.dllearner.tools.ore.explanation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
+import com.clarkparsia.explanation.PelletExplanation;
 import com.clarkparsia.modularity.IncrementalClassifier;
 
 public class LostEntailmentsChecker {
@@ -62,6 +64,11 @@ public class LostEntailmentsChecker {
 							entailmentsBefore.add(factory.getOWLSubClassAxiom(sub, cl));
 						}
 					}
+					for(OWLClass equ : classifier.getEquivalentClasses(cl)){
+						if(!equ.isOWLNothing() && ! inc.contains(equ)){
+							entailmentsBefore.add(factory.getOWLEquivalentClassesAxiom(equ, cl));
+						}
+					}
 				}
 			}
 			
@@ -77,6 +84,11 @@ public class LostEntailmentsChecker {
 						if(!sub.isOWLNothing() && !inc.contains(sub)){
 							entailmentsAfter.add(factory.getOWLSubClassAxiom(sub, cl));
 						}
+					}
+				}
+				for(OWLClass equ : classifier.getEquivalentClasses(cl)){
+					if(!equ.isOWLNothing() && ! inc.contains(equ)){
+						entailmentsAfter.add(factory.getOWLEquivalentClassesAxiom(equ, cl));
 					}
 				}
 			}
@@ -215,7 +227,9 @@ public class LostEntailmentsChecker {
 		}
 		
 		for(OWLAxiom ax : possibleLosts){
-			try {
+			try {System.out.println(ax + " is entailed " + reasoner.isEntailed(ax));
+			PelletExplanation exp = new PelletExplanation(manager, Collections.singleton(ontology), false);
+			System.out.println(exp.getEntailmentExplanation(ax));
 				manager.applyChanges(changes);
 				if(!reasoner.isEntailed(ax)){
 					realLosts.add(ax);

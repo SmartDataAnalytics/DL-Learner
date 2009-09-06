@@ -28,7 +28,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 
 	private ImpactManager(OREManager oreMan) {
 		this.oreMan = oreMan;
-		this.reasoner = oreMan.getPelletReasoner().getReasoner();
+		this.reasoner = oreMan.getReasoner().getReasoner();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		this.manager = reasoner.getManager();
 		
@@ -38,7 +38,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 		selectedAxioms = new ArrayList<OWLAxiom>();
 		listeners = new ArrayList<ImpactManagerListener>();
 		
-		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getPelletReasoner().getClassifier(), manager);
+		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getReasoner().getClassifier(), manager);
 		RepairManager.getInstance(oreMan).addListener(this);
 		oreMan.addListener(this);
 	
@@ -121,10 +121,10 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 
 	@Override
 	public void activeOntologyChanged() {
-		this.reasoner = oreMan.getPelletReasoner().getReasoner();
+		this.reasoner = oreMan.getReasoner().getReasoner();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		this.manager = reasoner.getManager();
-		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getPelletReasoner().getClassifier(), manager);
+		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getReasoner().getClassifier(), manager);
 		selectedAxioms.clear();
 		lostEntailments.clear();
 		addedEntailments.clear();

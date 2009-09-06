@@ -35,8 +35,9 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.reasoning.PelletReasoner;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
@@ -188,8 +189,8 @@ public class OntologyModifier {
 		individualOWLAPI.accept(remover);
 		changes.addAll(remover.getChanges());
 		try {
+			reasoner.updateCWAOntology(changes);
 			manager.applyChanges(changes);
-			saveOntology();
 			return changes;
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
@@ -310,12 +311,12 @@ public class OntologyModifier {
 	 * @param objSome the property which has to be removed
 	 * @return changes that have been done
 	 */
-	public List<OWLOntologyChange> deleteObjectProperty(Individual ind, ObjectQuantorRestriction objSome){
+	public List<OWLOntologyChange> deleteObjectProperty(Individual ind, ObjectPropertyExpression property){
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
+		OWLIndividual individualOWLAPI = OWLAPIConverter.getOWLAPIIndividual(ind);
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(individualOWLAPI);
 		Set<OWLInverseObjectPropertiesAxiom> invProperties = ontology.getInverseObjectPropertyAxioms(propertyOWLAPI);
@@ -370,18 +371,18 @@ public class OntologyModifier {
 	 * @param object
 	 * @return changes that have been done
 	 */
-	public List<OWLOntologyChange> removeObjectPropertyAssertion(Individual subject, ObjectQuantorRestriction objSome, Individual object){
+	public List<OWLOntologyChange> removeObjectPropertyAssertion(Individual subject, ObjectPropertyExpression property, Individual object){
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
 		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subject.getName()));
 		OWLIndividual objectOWLAPI = factory.getOWLIndividual(URI.create(object.getName()));
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(subjectOWLAPI);
-		
+	
 		RemoveAxiom remove = null;
-		for(OWLObjectPropertyAssertionAxiom o :properties){
+		for(OWLObjectPropertyAssertionAxiom o :properties){System.out.println(o);
 			if((o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(subjectOWLAPI)) && (o.getObject().equals(objectOWLAPI))){ 
 				remove = new RemoveAxiom(ontology, o);
 			}
@@ -395,9 +396,9 @@ public class OntologyModifier {
 			if(remove != null){
 				reasoner.updateCWAOntology(changes);
 				manager.applyChange(remove);
-				
+				return changes;
 			}
-			return changes;
+			
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -407,6 +408,38 @@ public class OntologyModifier {
 		
 	}
 	
+	public List<OWLOntologyChange> removeAllObjectPropertyAssertions(Individual subject, ObjectPropertyExpression property,Set<Individual> objects){
+		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
+		
+		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subject.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
+		Set<OWLIndividual> objectsOWLAPI = new HashSet<OWLIndividual>();
+		for(Individual ind : objects){
+			objectsOWLAPI.add(OWLAPIConverter.getOWLAPIIndividual(ind));
+		}
+		
+		
+		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(subjectOWLAPI);
+		
+		for(OWLObjectPropertyAssertionAxiom o :properties){
+			if((o.getProperty().equals(propertyOWLAPI)) && objectsOWLAPI.contains(o.getObject())){ 
+				changes.add(new RemoveAxiom(ontology, o));
+			}
+		}
+		
+		try {	
+				reasoner.updateCWAOntology(changes);
+				manager.applyChanges(changes);
+				return changes;
+			
+			
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return changes;
+	}
+	
 	/**
 	 * Adds an object property assertion to the ontology.
 	 * @param subInd the individual which is subject in the objectProperty 
@@ -414,13 +447,13 @@ public class OntologyModifier {
 	 * @param objInd the individual which is object in the objectProperty 
 	 * @return changes that have been done
 	 */
-	public List<OWLOntologyChange> addObjectProperty(Individual subInd, ObjectQuantorRestriction objSome, Individual objInd){
+	public List<OWLOntologyChange> addObjectProperty(Individual subInd, ObjectPropertyExpression property, Individual objInd){
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
 		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subInd.getName()));
 		OWLIndividual objectOWLAPI = factory.getOWLIndividual(URI.create(objInd.getName()));
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
 		
 		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(subjectOWLAPI, propertyOWLAPI, objectOWLAPI);
 		AddAxiom axiom = new AddAxiom(ontology, objAssertion);

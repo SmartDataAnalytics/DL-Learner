@@ -32,7 +32,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 	}
 
 	public void init() {
-		reasoner = OREManager.getInstance().getPelletReasoner()
+		reasoner = OREManager.getInstance().getReasoner()
 				.getReasoner();
 		expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		expMan.setComputeAllExplanationsMode(true);

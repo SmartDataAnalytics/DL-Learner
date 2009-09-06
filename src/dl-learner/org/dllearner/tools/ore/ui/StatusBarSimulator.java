@@ -77,7 +77,7 @@ public class StatusBarSimulator {
 //	          reasoner.classify();
 	          frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	          ore.loadOntology();
-	          ore.getPelletReasoner().classify();
+	          ore.getReasoner().classify();
 	         
 	          t1.stop();
 	          System.out.println(t1.getTotal());
