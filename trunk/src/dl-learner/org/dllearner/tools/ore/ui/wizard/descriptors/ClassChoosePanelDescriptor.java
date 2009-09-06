@@ -20,10 +20,15 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
 
@@ -106,12 +111,41 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		return owlClassPanel;
 	}
 	
+	public void refill(){
+		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes");
+		new ClassRetrievingTask().execute();
+	}
 	
+	/**
+     * Inner class to get all atomic classes in a background thread.
+     * @author Lorenz Buehmann
+     *
+     */
+    class ClassRetrievingTask extends SwingWorker<Set<NamedClass>, NamedClass> {
 
-	
-    
-   
+		@Override
+		public Set<NamedClass> doInBackground() {		
+			Set<NamedClass> classes = OREManager.getInstance().getReasoner().getNamedClasses();
+			return classes;
+		}
 
-    
-    
+		@Override
+		public void done() {
+			Set<NamedClass> classes = null;
+			try {
+				classes = get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			owlClassPanel.getClassesTable().addClasses(classes);
+			TaskManager.getInstance().setTaskFinished();
+		}
+
+	}
+
 }

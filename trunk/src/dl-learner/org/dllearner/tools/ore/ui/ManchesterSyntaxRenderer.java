@@ -34,6 +34,32 @@ public class ManchesterSyntaxRenderer {
 		return render(desc);
 	}
 	
+	public static String renderSimple(OWLAxiom ax){	
+		ax.accept(renderer);
+		writer.flush();
+		String renderedString = buffer.toString();
+		buffer.getBuffer().delete(0, buffer.toString().length());
+		return renderedString;
+	}
+	
+	public static String renderSimple(Description value){
+		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
+		desc.accept(renderer);
+		writer.flush();
+		String renderedString = buffer.toString();
+		buffer.getBuffer().delete(0, buffer.toString().length());
+		return renderedString;
+	}
+	
+	public static String renderSimple(Individual value){	
+		OWLIndividual ind = OWLAPIConverter.getOWLAPIIndividual(value);
+		ind.accept(renderer);
+		writer.flush();
+		String renderedString = buffer.toString();
+		buffer.getBuffer().delete(0, buffer.toString().length());
+		return renderedString;
+	}
+	
 	public static String render(Individual value){
 		OWLIndividual ind = OWLAPIConverter.getOWLAPIIndividual((Individual) value);
 		return render(ind);

@@ -26,7 +26,7 @@ public class RepairManager implements OREManagerListener{
 	private Stack<List<OWLOntologyChange>> redoStack;
 
 	private RepairManager(OREManager oreMan){
-		this.reasoner = oreMan.getPelletReasoner().getReasoner();
+		this.reasoner = oreMan.getReasoner().getReasoner();
 		this.manager = reasoner.getManager();
 
 		listeners = new ArrayList<RepairManagerListener>();
@@ -111,7 +111,7 @@ public class RepairManager implements OREManagerListener{
 		
 	}
 	
-	private List<OWLOntologyChange> getInverseChanges(List<OWLOntologyChange> changes){
+	public List<OWLOntologyChange> getInverseChanges(List<OWLOntologyChange> changes){
 		List<OWLOntologyChange> inverseChanges = new ArrayList<OWLOntologyChange>(changes.size());
 		for(OWLOntologyChange change : changes){
 			if(change instanceof RemoveAxiom){

@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.ui;
 
-import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -27,7 +26,6 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.tools.ore.OREManager;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;

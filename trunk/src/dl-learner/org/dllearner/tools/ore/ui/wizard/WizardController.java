@@ -24,14 +24,11 @@ package org.dllearner.tools.ore.ui.wizard;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
@@ -39,8 +36,8 @@ import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPan
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 /**
@@ -98,119 +95,103 @@ public class WizardController implements ActionListener {
         
         Object nextPanelDescriptor = currentPanelDescriptor.getNextPanelDescriptor();
         WizardPanelDescriptor nextDescriptor = model.getPanelHashMap().get(nextPanelDescriptor);
-        
-        if(nextPanelDescriptor.equals(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
-        	
-        	KnowledgeSourcePanelDescriptor knowledgeDescriptor = ((KnowledgeSourcePanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
-        	        	
-        }
-        if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals
-        		(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
-        	
-        	
-        	if(!ore.consistentOntology()){
-        		
-        		
-        		int n = showInconsistentOntologyWarning();
-
-        		if(n == JOptionPane.NO_OPTION){
-        			nextPanelDescriptor = KnowledgeSourcePanelDescriptor.IDENTIFIER;
-        		} else {
-        			InconsistencyExplanationPanelDescriptor incDescriptor = new InconsistencyExplanationPanelDescriptor();
-        			incDescriptor.init();
-                    wizard.registerWizardPanel(InconsistencyExplanationPanelDescriptor.IDENTIFIER, incDescriptor);
-                    nextPanelDescriptor = InconsistencyExplanationPanelDescriptor.IDENTIFIER;
-        		}
-        		
-        		
-        	} else {
-
-        		if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
-        			UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();
-        			unsatDescriptor.init();
-        			wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, unsatDescriptor);
-        			nextPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
-        		} else {
-        			
-        			nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
-        			((ClassChoosePanelDescriptor) nextDescriptor).getOwlClassPanel().getClassesTable().clear();
-                	new ConceptRetriever(nextPanelDescriptor).execute();
-        		}
-        		
-        	}
-        	
-        }
-        if(currentPanelDescriptor.equals(InconsistencyExplanationPanelDescriptor.IDENTIFIER)){
-        	ore.getPelletReasoner().classify();
-        	if(ore.getPelletReasoner().getInconsistentClasses().size() > 0 ){
-        		
-        	} else {
-        		nextPanelDescriptor = KnowledgeSourcePanelDescriptor.IDENTIFIER;
-        	}
-        }
-        if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)){
-        	nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
-			((ClassChoosePanelDescriptor) nextDescriptor).getOwlClassPanel().getClassesTable().clear();
-			((ClassChoosePanelDescriptor) nextDescriptor).getOwlClassPanel().getClassesTable().addClasses(OREManager.getInstance().getPelletReasoner().getNamedClasses());
-//        	new ConceptRetriever(nextPanelDescriptor).execute();
-        }
        
-        if(nextPanelDescriptor.equals("LEARNING_PANEL")){
-        	ore.setLearningProblem();
-        	LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
-        	learnDescriptor.setPanelDefaults();
-        	        	
-        }
-        
-        if(nextPanelDescriptor.equals("REPAIR_PANEL")){
-        	RepairPanelDescriptor repair = ((RepairPanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
-        	repair.refreshExampleLists();
-        	
-//        	OWLOntologyChange change = model.getOre().getModi().addAxiomToOWL(model.getOre().getConceptToAdd(), model.getOre().getIgnoredConcept());
-//        	repair.getOntologyChanges().add(change);
+		if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(
+				KnowledgeSourcePanelDescriptor.IDENTIFIER)) {
 
-        }
-        
-        if(nextPanelDescriptor.equals("SAVE_PANEL")){
+			if (!ore.consistentOntology()) {
 
-        	Description newDesc = ore.getNewClassDescription().getDescription();
-        	Description oldClass = ore.getCurrentClass2Learn();
-        	
-        	List<OWLOntologyChange> changes = ore.getModifier().rewriteClassDescription(newDesc, oldClass);
-        	((RepairPanelDescriptor) currentPanelDescriptor).getOntologyChanges().addAll(changes);
-                	
-        }
-        
-        
-        if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
-            wizard.close(Wizard.FINISH_RETURN_CODE);
-        } else {        
-            wizard.setCurrentPanel(nextPanelDescriptor);
-        }
+				int n = showInconsistentOntologyWarning();
+
+				if (n == JOptionPane.NO_OPTION) {
+					nextPanelDescriptor = KnowledgeSourcePanelDescriptor.IDENTIFIER;
+				} else {
+					InconsistencyExplanationPanelDescriptor incDescriptor = new InconsistencyExplanationPanelDescriptor();
+					incDescriptor.init();
+					wizard.registerWizardPanel(
+							InconsistencyExplanationPanelDescriptor.IDENTIFIER,
+							incDescriptor);
+					nextPanelDescriptor = InconsistencyExplanationPanelDescriptor.IDENTIFIER;
+				}
+			} else {
+				if (ore.getReasoner().getInconsistentClasses().size() > 0) {
+					UnsatisfiableExplanationPanelDescriptor unsatDescriptor = new UnsatisfiableExplanationPanelDescriptor();
+					unsatDescriptor.init();
+					wizard.registerWizardPanel(
+							UnsatisfiableExplanationPanelDescriptor.IDENTIFIER,
+							unsatDescriptor);
+					nextPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
+				} else {
+					nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+					((ClassChoosePanelDescriptor) nextDescriptor).refill();
+				}
+			}
+		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier()
+				.equals(InconsistencyExplanationPanelDescriptor.IDENTIFIER)) {
+			ore.getReasoner().classify();
+			if (ore.getReasoner().getInconsistentClasses().size() > 0) {
+
+			} else {
+				nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+				((ClassChoosePanelDescriptor) nextDescriptor).refill();
+			}
+		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier()
+				.equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)) {
+			nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+			((ClassChoosePanelDescriptor) nextDescriptor).refill();
+		} else if (nextPanelDescriptor
+				.equals(LearningPanelDescriptor.IDENTIFIER)) {
+			ore.makeOWAToCWA();
+			ore.setLearningProblem();
+			LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model
+					.getPanelHashMap().get(nextPanelDescriptor));
+			learnDescriptor.setPanelDefaults();
+
+		} else if (nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)) {
+			RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
+					.getPanelHashMap().get(nextPanelDescriptor));
+			repair.refreshExampleLists();
+
+			// OWLOntologyChange change =
+			// model.getOre().getModi().addAxiomToOWL(model.getOre().getConceptToAdd(),
+			// model.getOre().getIgnoredConcept());
+			// repair.getOntologyChanges().add(change);
+
+		} else if (nextPanelDescriptor.equals(SavePanelDescriptor.IDENTIFIER)) {
+
+			Description newDesc = ore.getNewClassDescription().getDescription();
+			Description oldClass = ore.getCurrentClass2Learn();
+
+			List<OWLOntologyChange> changes = ore.getModifier()
+					.rewriteClassDescription(newDesc, oldClass);
+			((RepairPanelDescriptor) currentPanelDescriptor)
+					.getOntologyChanges().addAll(changes);
+
+		}
+		if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
+			wizard.close(Wizard.FINISH_RETURN_CODE);
+		} else {
+			wizard.setCurrentPanel(nextPanelDescriptor);
+		}
         
         //TODO
         refreshLeftPanel(nextPanelDescriptor);
-        
-        
-        
-        
-        
+  
     }
     
     
     private void backButtonPressed() {
  
         WizardModel model = wizard.getModel();
-        WizardPanelDescriptor descriptor = model.getCurrentPanelDescriptor();
+        WizardPanelDescriptor currentPanelDescriptor = model.getCurrentPanelDescriptor();
  
         //  Get the descriptor that the current panel identifies as the previous
         //  panel, and display it.
         
-        Object backPanelDescriptor = descriptor.getBackPanelDescriptor();        
+        Object backPanelDescriptor = currentPanelDescriptor.getBackPanelDescriptor();        
         
-        
-        if(backPanelDescriptor.equals("LEARNING_PANEL")){
-        	RepairPanelDescriptor repairDescriptor = (RepairPanelDescriptor) descriptor;
+        if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(RepairPanelDescriptor.IDENTIFIER)){
+        	RepairPanelDescriptor repairDescriptor = (RepairPanelDescriptor) currentPanelDescriptor;
         	if(repairDescriptor.getOntologyChanges().size() > 0){
 	        	if (JOptionPane.showConfirmDialog(wizard.getDialog(),
 				        "All changes will be lost!", "Warning!", 
@@ -219,31 +200,51 @@ public class WizardController implements ActionListener {
 	
 	        		OREManager.getInstance().getModifier().undoChanges(repairDescriptor.getOntologyChanges());
 	        		repairDescriptor.getOntologyChanges().clear();
-					wizard.setCurrentPanel(backPanelDescriptor);
-			        refreshLeftPanel(backPanelDescriptor);
+					
+				} else {
+					backPanelDescriptor = RepairPanelDescriptor.IDENTIFIER;
 				}
-        	} else{
-        		wizard.setCurrentPanel(backPanelDescriptor);
-		        refreshLeftPanel(backPanelDescriptor);
-        	}
-        	
-        	
-        	
-        } else if(backPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
-        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor) descriptor;
-        	if(learnDescriptor.getLa() != null){
+        	}  	
+        } else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(LearningPanelDescriptor.IDENTIFIER)){
+        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor) currentPanelDescriptor;
+        	if(learnDescriptor.getLa() != null && learnDescriptor.getLa().isRunning()){
         		learnDescriptor.getLa().stop();
         		learnDescriptor.getTimer().cancel();
         	}
-        	
-        	wizard.setCurrentPanel(backPanelDescriptor);
-	        refreshLeftPanel(backPanelDescriptor);
-    	
-        }else{
-        	wizard.setCurrentPanel(backPanelDescriptor);
-            refreshLeftPanel(backPanelDescriptor);
+        } else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ClassChoosePanelDescriptor.IDENTIFIER)){
+        	if(OREManager.getInstance().getReasoner().getInconsistentClasses().size() > 0){
+        		backPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
+        	}
         }
         
+//        if(backPanelDescriptor.equals("LEARNING_PANEL")){
+//        	RepairPanelDescriptor repairDescriptor = (RepairPanelDescriptor) currentPanelDescriptor;
+//        	if(repairDescriptor.getOntologyChanges().size() > 0){
+//	        	if (JOptionPane.showConfirmDialog(wizard.getDialog(),
+//				        "All changes will be lost!", "Warning!", 
+//				        JOptionPane.YES_NO_OPTION)
+//				     == JOptionPane.YES_OPTION){
+//	
+//	        		OREManager.getInstance().getModifier().undoChanges(repairDescriptor.getOntologyChanges());
+//	        		repairDescriptor.getOntologyChanges().clear();
+//					
+//				} else {
+//					backPanelDescriptor = RepairPanelDescriptor.IDENTIFIER;
+//				}
+//        	} 
+//        	
+//        	
+//        	
+//        } else if(backPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
+//        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor) currentPanelDescriptor;
+//        	if(learnDescriptor.getLa() != null){
+//        		learnDescriptor.getLa().stop();
+//        		learnDescriptor.getTimer().cancel();
+//        	}
+//        	
+//        }
+        wizard.setCurrentPanel(backPanelDescriptor);
+        refreshLeftPanel(backPanelDescriptor);
         
     }
     
@@ -343,50 +344,7 @@ public class WizardController implements ActionListener {
         }
         
     }
-    /**
-     * Inner class to get all atomic classes in a background thread.
-     * @author Lorenz Buehmann
-     *
-     */
-    class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass> {
-		private Object nextPanelID;
-		private ClassChoosePanel owlClassPanel;
-		
-		public ConceptRetriever(Object nextPanelDescriptor) {
-
-			nextPanelID = nextPanelDescriptor;
-			owlClassPanel = ((ClassChoosePanelDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID)).getOwlClassPanel();
-		}
-
-		@Override
-		public Set<NamedClass> doInBackground() {
-			wizard.getStatusBar().showProgress(true);
-			wizard.getStatusBar().setProgressTitle("retrieving atomic classes");
-			
-			Set<NamedClass> classes = OREManager.getInstance().getPelletReasoner().getNamedClasses();
-			
-			return classes;
-		}
-
-		@Override
-		public void done() {
-			Set<NamedClass> classes = null;
-			try {
-				classes = get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			owlClassPanel.getClassesTable().addClasses(classes);
-			wizard.getStatusBar().showProgress(false);
-			wizard.getStatusBar().setProgressTitle("atomic classes loaded");
-		}
-
-	}
+    
     
     class ClassificationWorker extends SwingWorker<Void, Void>{
 		
@@ -404,7 +362,7 @@ public class WizardController implements ActionListener {
 			wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
 			statusBar.setProgressTitle("classifying ontology");
-			OREManager.getInstance().getPelletReasoner().classify();
+			OREManager.getInstance().getReasoner().classify();
 
 			return null;
 		}

@@ -141,10 +141,10 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString(OREManager.getInstance().getCurrentClass2Learn()
-					.toString(), 320, 10);
-			g2D.setColor(Color.ORANGE);
-			g2D.fillOval(310, 20, 9, 9);
+			g2D.drawString(ManchesterSyntaxRenderer.renderSimple(OREManager.getInstance().getCurrentClass2Learn())
+					, 320, 10);
+//			g2D.setColor(Color.ORANGE);
+//			g2D.fillOval(310, 20, 9, 9);
 			g2D.setColor(Color.black);
 			int p = 30;
 
@@ -154,11 +154,11 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			g2D.setColor(Color.BLACK);
 			g2D.drawString("individuals covered by", 320, p);
 			g2D.setColor(Color.ORANGE);
-			g2D.fillOval(455, p - 9, 9, 9);
+			g2D.fillOval(460, p - 9, 9, 9);
 			g2D.setColor(Color.BLACK);
-			g2D.drawString("and", 485, p);
+			g2D.drawString("and", 475, p);
 			g2D.setColor(Color.YELLOW);
-			g2D.fillOval(525, p - 9, 9, 9);
+			g2D.fillOval(505, p - 9, 9, 9);
 			g2D.setColor(Color.BLACK);
 			p = p + 20;
 			g2D.drawString("(OK)", 320, p);
@@ -170,7 +170,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			g2D.setColor(Color.BLACK);
 			g2D.drawString("individuals covered by", 320, p);
 			g2D.setColor(Color.ORANGE);
-			g2D.fillOval(455, p - 9, 9, 9);
+			g2D.fillOval(460, p - 9, 9, 9);
 			g2D.setColor(Color.BLACK);
 			p = p + 20;
 			g2D.drawString("(potential problem)", 320, p);
@@ -181,7 +181,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			g2D.setColor(Color.BLACK);
 			g2D.drawString("individuals covered by", 320, p);
 			g2D.setColor(Color.YELLOW);
-			g2D.fillOval(455, p - 9, 9, 9);
+			g2D.fillOval(460, p - 9, 9, 9);
 			g2D.setColor(Color.BLACK);
 			p = p + 20;
 			g2D.drawString("(potential problem)", 320, p);

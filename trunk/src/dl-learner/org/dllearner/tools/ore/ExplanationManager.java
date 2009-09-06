@@ -51,7 +51,7 @@ public class ExplanationManager implements OREManagerListener{
 	
 	private ExplanationManager(OREManager oreMan) {
 		OREManager.getInstance().addListener(this);
-		this.reasoner = oreMan.getPelletReasoner().getReasoner();
+		this.reasoner = oreMan.getReasoner().getReasoner();
 		this.manager = reasoner.getManager();
 		this.ontology = reasoner.getLoadedOntologies().iterator().next();
 		
@@ -116,6 +116,14 @@ public class ExplanationManager implements OREManagerListener{
 			explanations = gen.getExplanations(entailment, maxExplantionCount);
 		}
 
+		return explanations;
+	}
+	
+	public Set<Explanation> getEntailmentExplanations(OWLAxiom entailment){
+		boolean before = gen.isLaconicMode();
+		gen.setComputeLaconicExplanations(false);
+		Set<Explanation> explanations = gen.getExplanations(entailment);
+		gen.setComputeLaconicExplanations(before);
 		return explanations;
 	}
 	
@@ -238,8 +246,8 @@ public class ExplanationManager implements OREManagerListener{
 
 	@Override
 	public void activeOntologyChanged() {
-		ontology = OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies();
-		reasoner = OREManager.getInstance().getPelletReasoner().getReasoner();
+		ontology = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
+		reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		gen = new CachedExplanationGenerator(ontology, reasoner);
 		orderingMap.clear();
 	}

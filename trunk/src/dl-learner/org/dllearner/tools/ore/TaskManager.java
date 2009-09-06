@@ -34,6 +34,10 @@ public class TaskManager {
 		this.dialog = dialog;
 	}
 	
+	public JDialog getDialog(){
+		return dialog;
+	}
+	
 	public void setCurrentTask(SwingWorker<?, ?> task){
 		this.currentTask = task;
 	}

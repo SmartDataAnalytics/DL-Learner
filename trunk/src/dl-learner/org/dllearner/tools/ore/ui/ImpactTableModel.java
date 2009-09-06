@@ -45,7 +45,7 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
         lostEntailments = new HashSet<OWLAxiom>();
         addedEntailemnts = new HashSet<OWLAxiom>();
      
-        ont = OREManager.getInstance().getPelletReasoner().getOWLAPIOntologies();
+        ont = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
         
         repMan.addListener(this);
 //        impMan.addListener(this);
@@ -144,6 +144,10 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
     
     public boolean isLostEntailment(int rowIndex){
     	return lostEntailments.contains(getOWLAxiomAtRow(rowIndex));
+    }
+    
+    public boolean isLostEntailment(OWLAxiom entailment){
+    	return lostEntailments.contains(entailment);
     }
 
     

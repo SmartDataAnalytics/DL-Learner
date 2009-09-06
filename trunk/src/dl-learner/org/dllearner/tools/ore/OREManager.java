@@ -24,7 +24,6 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -36,26 +35,25 @@ import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 
 public class OREManager {
 
-	
 	private static OREManager instance;
-	
+
 	private ComponentManager cm;
-	
-	private PelletReasoner pelletReasoner;
+
+	private PelletReasoner reasoner;
 	private ClassLearningProblem lp;
 	private CELOE la;
 	private KnowledgeSource ks;
-	
+
 	private String baseURI;
 	private Map<String, String> prefixes;
-	
+
 	private NamedClass currentClass2Learn;
 	private EvaluatedDescriptionClass learnedClassDescription;
-	
+
 	private double noisePercentage;
 	private int maxExecutionTimeInSeconds = 10;
 	private int maxNrOfResults = 10;
-	
+
 	private List<OREManagerListener> listeners;
 
 	private OntologyModifier modifier;
@@ -98,7 +96,7 @@ public class OREManager {
 	
 	public void setLearningProblem(){
 		
-		lp = cm.learningProblem(ClassLearningProblem.class, pelletReasoner);
+		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		
 		try {
 			lp.getConfigurator().setClassToDescribe(getClass2LearnAsURL());
@@ -112,7 +110,7 @@ public class OREManager {
 	public void setLearningAlgorithm(){
 		
 		try {
-			la = cm.learningAlgorithm(CELOE.class, lp, pelletReasoner);
+			la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 			la.getConfigurator().setUseNegation(false);
 			la.getConfigurator().setNoisePercentage(noisePercentage);
@@ -136,23 +134,26 @@ public class OREManager {
 	
 	
 	public void initPelletReasoner(){
-		pelletReasoner = cm.reasoner(PelletReasoner.class, ks);
+		reasoner = cm.reasoner(PelletReasoner.class, ks);
 		try {
-			pelletReasoner.init();
+			reasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		pelletReasoner.loadOntologies();
-		baseURI = pelletReasoner.getBaseURI();
-		prefixes = pelletReasoner.getPrefixes();
-		modifier = new OntologyModifier(pelletReasoner);
+		reasoner.loadOntologies();
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
+		modifier = new OntologyModifier(reasoner);
 		fireActiveOntologyChanged();
 	}
 	
 	public void loadOntology(){
-		pelletReasoner.loadOntologies();
-		
+		reasoner.loadOntologies();	
+	}
+	
+	public void makeOWAToCWA(){
+		reasoner.dematerialise();
 	}
 	
 	public void addListener(OREManagerListener listener){
@@ -164,11 +165,11 @@ public class OREManager {
 	}
 	
 	public boolean consistentOntology() throws InconsistentOntologyException{
-		return pelletReasoner.isConsistent();
+		return reasoner.isConsistent();
 	}
 	
-	public PelletReasoner getPelletReasoner(){
-		return pelletReasoner;
+	public PelletReasoner getReasoner(){
+		return reasoner;
 	}
 	
 	private void fireActiveOntologyChanged(){
@@ -176,17 +177,14 @@ public class OREManager {
 			listener.activeOntologyChanged();
 		}
 	}
-	
 		
 	public OntologyModifier getModifier() {
 		return modifier;
 	}
 
-
 	public EvaluatedDescriptionClass getNewClassDescription() {
 		return learnedClassDescription;
 	}
-
 
 	public String getBaseURI() {
 		return baseURI;
@@ -209,7 +207,7 @@ public class OREManager {
 	}
 	
 	public SortedSet<Individual> getPositiveFailureExamples(){
-		SortedSet<Individual> posNotCovered = pelletReasoner.getIndividuals(currentClass2Learn);
+		SortedSet<Individual> posNotCovered = reasoner.getIndividuals(currentClass2Learn);
 		posNotCovered.removeAll(learnedClassDescription.getCoveredInstances());
 		return posNotCovered;
 	}
@@ -233,9 +231,7 @@ public class OREManager {
 	public int getMaxNrOfResults(){
 		return maxNrOfResults;
 	}
-	
-	
-	
+		
 	/**
 	 * Sets the class that has to be learned.
 	 * @param oldClass class that is chosen to be (re)learned
@@ -281,9 +277,6 @@ public class OREManager {
 		return la;
 	}
 
-
-	
-	
 	/**
 	 * Retrieves description parts that might cause inconsistency - for negative examples only.
 	 * @param ind
@@ -294,7 +287,7 @@ public class OREManager {
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-		if(pelletReasoner.hasType(desc, ind)){
+		if(reasoner.hasType(desc, ind)){
 			
 			if(children.size() >= 2){
 				
@@ -304,7 +297,7 @@ public class OREManager {
 					}
 				} else if(desc instanceof Union){
 					for(Description d: children){
-						if(pelletReasoner.hasType(d, ind)){
+						if(reasoner.hasType(d, ind)){
 							criticals.addAll(getNegCriticalDescriptions(ind, d));
 						}
 					}
@@ -328,7 +321,7 @@ public class OREManager {
 		List<Description> children = desc.getChildren();
 		
 //		try {
-			if(pelletReasoner.hasType(desc, ind)){
+			if(reasoner.hasType(desc, ind)){
 				
 				if(children.size() >= 2){
 					
@@ -344,14 +337,14 @@ public class OREManager {
 					} else if(desc instanceof Union){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							if(pelletReasoner.hasType(desc.getChild(i), ind)){
+							if(reasoner.hasType(desc.getChild(i), ind)){
 								criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(i)));
 							} else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("or"));
 						}
-						if(pelletReasoner.hasType(desc.getChild(children.size()-1), ind)){
+						if(reasoner.hasType(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						} else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
@@ -387,7 +380,7 @@ public class OREManager {
 		List<Description> children = desc.getChildren();
 		
 //		try {
-			if(!pelletReasoner.hasType(desc, ind)){
+			if(!reasoner.hasType(desc, ind)){
 				
 				if(children.size() >= 2){
 					
@@ -402,14 +395,14 @@ public class OREManager {
 					} else if(desc instanceof Intersection){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							if(!pelletReasoner.hasType(desc.getChild(i), ind)){
+							if(!reasoner.hasType(desc.getChild(i), ind)){
 								criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(i)));
 							} else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("and"));
 						}
-						if(!pelletReasoner.hasType(desc.getChild(children.size()-1), ind)){
+						if(!reasoner.hasType(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
 						} else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
@@ -435,9 +428,9 @@ public class OREManager {
 	 * @param objRestr
 	 * @param ind
 	 */
-	public Set<Individual> getIndividualsInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
+	public Set<Individual> getIndividualsInPropertyRange(Description desc, Individual ind){
 		
-		Set<Individual> individuals = pelletReasoner.getIndividuals(objRestr.getChild(0));
+		Set<Individual> individuals = reasoner.getIndividuals(desc);
 		individuals.remove(ind);
 		
 		return individuals;
@@ -448,23 +441,19 @@ public class OREManager {
 	 * @param objRestr
 	 * @param ind
 	 */
-	public Set<Individual> getIndividualsNotInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
+	public Set<Individual> getIndividualsNotInPropertyRange(Description desc, Individual ind){
 		
 
 		Set<Individual> allIndividuals = new HashSet<Individual>();
 		
-		for(Individual i : pelletReasoner.getIndividuals()){
+		for(Individual i : reasoner.getIndividuals()){
 			
-//			try {
-				if(!pelletReasoner.hasType(objRestr.getChild(0), i)){
+				if(!reasoner.hasType(desc, i)){
 					allIndividuals.add(i);
 				}
-//			} catch (ReasoningMethodUnsupportedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+
 		}
-		
+		allIndividuals.remove(ind);
 	
 		return allIndividuals;
 	}
@@ -476,8 +465,8 @@ public class OREManager {
 	 */
 	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : pelletReasoner.getNamedClasses()){
-			if(!pelletReasoner.hasType(nc, ind)){
+		for(NamedClass nc : reasoner.getNamedClasses()){
+			if(!reasoner.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
@@ -493,8 +482,8 @@ public class OREManager {
 	 */
 	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : pelletReasoner.getNamedClasses()){
-			if(pelletReasoner.hasType(nc, ind)){
+		for(NamedClass nc : reasoner.getNamedClasses()){
+			if(reasoner.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
@@ -502,8 +491,7 @@ public class OREManager {
 			
 		return moveClasses;
 	}
-	
-	
+		
 	/**
 	 * Get the complement classes where individual is asserted to.
 	 * @param desc
@@ -513,19 +501,16 @@ public class OREManager {
 
 		Set<NamedClass> complements = new HashSet<NamedClass>();
 		
-		for(NamedClass nc : pelletReasoner.getNamedClasses()){
+		for(NamedClass nc : reasoner.getNamedClasses()){
 			if(!(nc.toString().endsWith("Thing"))){
-				if(pelletReasoner.hasType(nc, ind)){
+				if(reasoner.hasType(nc, ind)){
 					if(modifier.isComplement(desc, nc)){
 						complements.add(nc);
 					}
 				}
 			}
-		}
-		
-		
+		}	
 		return complements;
 	}
-	
 	
 }
