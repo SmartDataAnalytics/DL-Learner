@@ -2,39 +2,30 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.TitledBorder;
 
-import org.protege.editor.core.ui.util.ComponentFactory;
-import org.protege.editor.owl.ui.OWLAxiomTypeFramePanel;
+import org.protege.editor.core.PropertyUtil;
+import org.protege.editor.core.ProtegeProperties;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.metrics.AxiomCountMetric;
 import org.semanticweb.owl.metrics.AxiomTypeMetric;
@@ -91,6 +82,7 @@ public class MetricsPanel extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
         initialiseOWLView();
         createPopupMenu();
     }
@@ -136,11 +128,11 @@ public class MetricsPanel extends JPanel {
         metricManagerMap = new LinkedHashMap<String, OWLMetricManager>();
         tableModelMap = new HashMap<OWLMetricManager, MetricsTableModel>();
         createBasicMetrics();
-        createClassAxiomMetrics();
-        createObjectPropertyAxiomMetrics();
-        createDataPropertyAxiomMetrics();
-        createIndividualAxiomMetrics();
-        createAnnotationAxiomMetrics();
+//        createClassAxiomMetrics();
+//        createObjectPropertyAxiomMetrics();
+//        createDataPropertyAxiomMetrics();
+//        createIndividualAxiomMetrics();
+//        createAnnotationAxiomMetrics();
         createUI();
         updateView(manager.getOntologies().iterator().next());
         for(OWLMetricManager man : metricManagerMap.values()) {
@@ -153,8 +145,10 @@ public class MetricsPanel extends JPanel {
 
 
     private void createUI() {
+    	
         setLayout(new BorderLayout());
-        Box box = new Box(BoxLayout.Y_AXIS);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         for (String metricsSet : metricManagerMap.keySet()) {
             MetricsTableModel tableModel = new MetricsTableModel(metricManagerMap.get(metricsSet));
             tableModelMap.put(metricManagerMap.get(metricsSet), tableModel);
@@ -162,83 +156,23 @@ public class MetricsPanel extends JPanel {
             table.setGridColor(Color.LIGHT_GRAY);
             table.setRowHeight(table.getRowHeight() + 4);
             table.setShowGrid(true);
+           
             table.getColumnModel().getColumn(1).setMaxWidth(150);
             table.getColumnModel().setColumnMargin(2);
-            table.addMouseListener(new MouseAdapter() {
-
-                public void mousePressed(MouseEvent e) {
-                    if(e.isPopupTrigger()) {
-                        handleTablePopupRequest(table, e);
-                    }
-                }
-
-
-                public void mouseReleased(MouseEvent e) {
-                    if(e.isPopupTrigger()) {
-                        handleTablePopupRequest(table, e);
-                    }
-                }
-
-                private void handleTablePopupRequest(JTable table, MouseEvent e) {
-                    int row = table.rowAtPoint(e.getPoint());
-                    int col = table.columnAtPoint(e.getPoint());
-                    if(row == -1 || col == -1) {
-                        return;
-                    }
-                    MetricsTableModel model = (MetricsTableModel) table.getModel();
-                    for(OWLMetricManager man : tableModelMap.keySet()) {
-                        if(tableModelMap.get(man).equals(model)) {
-                            OWLMetric<?> metric = man.getMetrics().get(row);
-                            if(metric instanceof AxiomCountMetric) {
-                                lastMetric = (AxiomCountMetric) metric;
-                                popupMenu.show(table, e.getX(), e.getY());
-                            }
-                            break;
-                        }
-                    }
-
-                }
-            });
+            table.setFont(getFont().deriveFont(Font.BOLD, 12.0f));
+            table.setForeground(PropertyUtil.getColor(ProtegeProperties.getInstance().getProperty(ProtegeProperties.PROPERTY_COLOR_KEY),
+                                          Color.GRAY));
 
             final JPanel tablePanel = new JPanel(new BorderLayout());
-            tablePanel.addMouseListener(new MouseAdapter() {
-
-                public void mousePressed(MouseEvent e) {
-                    if(e.isPopupTrigger()) {
-                        showMenu(e);
-                    }
-                }
-
-
-                public void mouseReleased(MouseEvent e) {
-                    if(e.isPopupTrigger()) {
-                        showMenu(e);
-                    }
-                }
-
-                private void showMenu(MouseEvent e) {
-                    JPopupMenu menu = new JPopupMenu();
-                    menu.add(new AbstractAction("Copy metrics to clipboard") {
-
-                        /**
-						 * 
-						 */
-						private static final long serialVersionUID = 6638146469347852653L;
-
-						public void actionPerformed(ActionEvent e) {
-                            exportCSV();
-                        }
-                    });
-                    menu.show(tablePanel, e.getX(), e.getY());
-                }
-            });
+            
             tablePanel.add(table);
-            tablePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(2, 2, 14, 2),
-                                                                    ComponentFactory.createTitledBorder(metricsSet)));
+            tablePanel.setFont(getFont().deriveFont(Font.BOLD, 12.0f));
+//            tablePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(2, 2, 14, 2),
+//                                                                    ComponentFactory.createTitledBorder(metricsSet)));
             table.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            box.add(tablePanel);
+            panel.add(tablePanel);
         }
-        JScrollPane sp = new JScrollPane(box);
+        JScrollPane sp = new JScrollPane(panel);
         sp.setOpaque(false);
         add(sp);
     }
@@ -353,6 +287,11 @@ public class MetricsPanel extends JPanel {
         for (OWLMetricManager man : metricManagerMap.values()) {
             man.setOntology(activeOntology);
         }
+        TitledBorder border = new TitledBorder(activeOntology.getURI().toString());
+        border.setTitleFont(getFont().deriveFont(Font.BOLD, 12.0f));
+        border.setTitleColor(PropertyUtil.getColor(ProtegeProperties.getInstance().getProperty(ProtegeProperties.PROPERTY_COLOR_KEY),
+                Color.GRAY));
+        setBorder(border);
         repaint();
     }
 

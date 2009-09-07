@@ -49,8 +49,9 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     /**
      * Information string for class choose panel.
      */
-    public static final String INFORMATION = "In this panel all atomic classes in the ontology are shown in the list above. " 
-    										 + "Select one of them which should be (re)learned from, then press \"Next-Button\"";
+    public static final String INFORMATION = "As you can see, all atomic classes of the ontology are shown in the list above. " 
+    										 + "Select one of them for which you want to learn equivalent class expressions," +
+    										 	" then press <Next>";
     
     private ClassChoosePanel owlClassPanel;
     

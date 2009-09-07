@@ -53,6 +53,7 @@ public class ClassChoosePanel extends JPanel{
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
 		add(contentPanel, BorderLayout.CENTER);
+	
 	}
 
 	private JPanel getContentPanel() {
@@ -62,7 +63,7 @@ public class ClassChoosePanel extends JPanel{
 		JScrollPane scroll = new JScrollPane(classesTable);
 		contentPanel.add(scroll);
 		scroll.setPreferredSize(new Dimension(400, 400));
-
+		
 		return contentPanel;
 	}
 	

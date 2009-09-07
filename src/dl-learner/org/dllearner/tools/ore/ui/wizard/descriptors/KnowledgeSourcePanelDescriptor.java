@@ -48,8 +48,8 @@ import org.protege.editor.core.ui.error.ErrorLogPanel;
 public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
-    public static final String INFORMATION = "Select the type of knowledgesource you want to work with and then enter the URI."
-    									     + " After all press \"Next\"-button";
+    public static final String INFORMATION = "Choose an OWL-ontology from file system or URI. Your are also able to extract a fragment " +
+    										"from a SPARQL-endpoint. After all press <Next>";
     
     private KnowledgeSourcePanel knowledgePanel;
     
@@ -99,9 +99,11 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     public void loadOntology(URI uri){
     	OREManager.getInstance().setCurrentKnowledgeSource(uri);
+    	
     	RecentManager.getInstance().addURI(uri);
     	RecentManager.getInstance().serialize();
     	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+    	
     }
     
     private void handleOpenFromURI() {
@@ -166,7 +168,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 				uri);
 		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 	}
-    @SuppressWarnings(value = { "unused" })
+    
     private void updateMetrics(){
     	knowledgePanel.updateMetrics();
     }
@@ -217,7 +219,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			statusBar.setProgressTitle("Done");
 			getWizard().getDialog().setCursor(null);
 			getWizard().setNextFinishButtonEnabled(true);
-//			updateMetrics();
+			updateMetrics();
 		}
 	}
 }

@@ -57,7 +57,10 @@ import org.semanticweb.owl.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owl.model.SWRLRule;
 
 
-
+/*
+ * This class computes the oplus closure provided in 'Laconic and Precise Justifications in OWL' from 
+ * Matthew Horridge, Bijan Parsia and Ulrike Sattler. A set of axioms is into smaller and weaker axioms.
+ */
 public class OPlus
     implements OWLAxiomVisitorEx<Set<OWLAxiom>>
 {

@@ -23,6 +23,7 @@ package org.dllearner.tools.ore.ui.wizard;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Font;
@@ -435,7 +436,9 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         //setLayout(new GridBagLayout());
         infoScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         infoScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        informationsField.setBackground(UIManager.getDefaults().getColor("control"));
+        Color color = UIManager.getColor("Panel.background");
+        informationsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
+        informationsField.setOpaque(true);
         informationsField.setColumns(80);
         informationsField.setEditable(false);
         informationsField.setLineWrap(true);
@@ -448,7 +451,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         JPanel buttonInformationPanel = new JPanel();
         buttonInformationPanel.setLayout(new BorderLayout());
         buttonInformationPanel.add(buttonPanel, BorderLayout.SOUTH);
-//        buttonInformationPanel.add(informationPanel, BorderLayout.NORTH);
+        buttonInformationPanel.add(informationPanel, BorderLayout.NORTH);
         
         wizardDialog.getContentPane().add(buttonInformationPanel, java.awt.BorderLayout.SOUTH);
         wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);

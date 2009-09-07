@@ -51,8 +51,8 @@ import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
 public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
     
     public static final String IDENTIFIER = "LEARNING_PANEL";
-    public static final String INFORMATION = "In this panel you can start the learning algorithm. While it is running, " 
-	 										+ "temporary results are shown in the list above. Select one of them and press Next";
+    public static final String INFORMATION = "Press <Start> to start learning. While it is running, " 
+	 										+ "temporary results are shown in the list above. Select one of them and press <Next>";
     
     private LearningPanel learnPanel;
     private LearningTask learningTask;
@@ -103,7 +103,11 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //		Description de = new NamedClass("http://example.com/father#male");
 		
 		if (!e.getValueIsAdjusting() && (learningTask.isDone() || learningTask.isCancelled())){
-			OREManager.getInstance().setNewClassDescription(learnPanel.getResultTable().getSelectedValue());
+			EvaluatedDescriptionClass selectedClassExpression = learnPanel.getResultTable().getSelectedValue();
+//			if(!selectedClassExpression.isConsistent()){
+//				learnPanel.add(new JLabel("Selected class expression may lead to an inconsistent knowledgebase."));
+//			}
+			OREManager.getInstance().setNewClassDescription(selectedClassExpression);
 			
 			learnPanel.updateCurrentGraphicalCoveragePanel(OREManager.getInstance().getNewClassDescription());
 		}
@@ -196,7 +200,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			learnPanel.getResultTable().clear();
 			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			getWizard().getStatusBar().showProgress(true);
-			getWizard().getStatusBar().setProgressTitle("learning class expressions");
+			getWizard().getStatusBar().setProgressTitle("Learning equivalent class expressions");
 
 			la = OREManager.getInstance().getLa();
 			timer = new Timer();
@@ -231,7 +235,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			}
 			getWizard().getDialog().setCursor(null);
 			getWizard().getStatusBar().showProgress(false);
-			getWizard().getStatusBar().setProgressTitle("class expressions successfully learned");
+			getWizard().getStatusBar().setProgressTitle("Done");
 			learnPanel.getStartButton().setEnabled(true);
 			learnPanel.getStopButton().setEnabled(false);
 			updateList(result);
