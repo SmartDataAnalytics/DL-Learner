@@ -12,8 +12,7 @@ public class TaskManager {
 	private static TaskManager instance;
 	
 	private SwingWorker<?, ?> currentTask;
-	
-	private Thread currentThread;
+
 	
 	private StatusBar statusBar;
 	
@@ -30,6 +29,10 @@ public class TaskManager {
 		this.statusBar = statusBar;
 	}
 	
+	public StatusBar getStatusBar(){
+		return statusBar;
+	}
+	
 	public void setDialog(JDialog dialog){
 		this.dialog = dialog;
 	}
@@ -42,10 +45,6 @@ public class TaskManager {
 		this.currentTask = task;
 	}
 	
-	public void setCurrentThread(Thread t){
-		this.currentThread = t;
-	}
-	
 	public void cancelCurrentTask(){
 		if(currentTask != null && !currentTask.isCancelled() && !currentTask.isDone()){
 			currentTask.cancel(true);
@@ -54,8 +53,7 @@ public class TaskManager {
 //		dialog.setCursor(null);
 	}
 	
-	public synchronized void cancelCurrentThread(){currentThread.stop();
-	}
+
 	
 	public void setTaskStarted(String message){
 		dialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

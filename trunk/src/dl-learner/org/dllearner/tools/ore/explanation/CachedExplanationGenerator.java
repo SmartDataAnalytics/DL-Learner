@@ -10,6 +10,7 @@ import java.util.Set;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
@@ -128,6 +129,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 			}
 			axiom2Module.put(entailment, module);
 			regularExpGen = new PelletExplanationGenerator(manager, Collections.singleton(module));
+			regularExpGen.setProgressMonitor(TaskManager.getInstance().getStatusBar());
 			if(limit == -1){
 				explanations = regularExpGen.getExplanations(entailment);
 			} else {

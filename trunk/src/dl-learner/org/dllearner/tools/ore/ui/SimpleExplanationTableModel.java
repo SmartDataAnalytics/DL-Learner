@@ -37,9 +37,16 @@ public class SimpleExplanationTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
-		int depth2Root = expMan.getOrdering(exp).get(rowIndex).values().iterator().next();
-       return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
+		OWLAxiom ax;
+		if(exp.getAxioms().size() > 1){
+			ax = getOWLAxiomAtRow(rowIndex);
+			int depth2Root = expMan.getOrdering(exp).get(rowIndex).values().iterator().next();
+			return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
+		} else {
+			ax = exp.getAxioms().iterator().next();
+			return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), 0);
+		}
+       
 	}
 	
 	public OWLAxiom getOWLAxiomAtRow(int rowIndex){

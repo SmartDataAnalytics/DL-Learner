@@ -25,6 +25,11 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 
+/*
+ * This class computes laconic explanations for a given entailment. The algorithm is adapted from the paper
+ * 'Laconic and Precise Justifications in OWL' from Matthew Horridge, Bijan Parsia and Ulrike Sattler.
+ * 
+ */
 public class LaconicExplanationGenerator
 {
 

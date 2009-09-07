@@ -20,6 +20,7 @@ import com.clarkparsia.explanation.GlassBoxExplanation;
 import com.clarkparsia.explanation.HSTExplanationGenerator;
 import com.clarkparsia.explanation.SatisfiabilityConverter;
 import com.clarkparsia.explanation.TransactionAwareSingleExpGen;
+import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
 
 public class PelletExplanationGenerator implements ExplanationGenerator{
 	static {
@@ -108,6 +109,10 @@ public class PelletExplanationGenerator implements ExplanationGenerator{
 			explanations.add(new Explanation(entailment, axioms));
 		}
     	return explanations;
+	}
+	
+	public void setProgressMonitor(ExplanationProgressMonitor progressMonitor){
+		expGen.setProgressMonitor(progressMonitor);
 	}
 	
 	public static void main(String[] args) throws OWLOntologyCreationException{

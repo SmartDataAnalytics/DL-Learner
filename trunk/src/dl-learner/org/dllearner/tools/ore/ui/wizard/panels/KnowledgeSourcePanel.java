@@ -33,6 +33,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.dllearner.tools.ore.OREManager;
@@ -61,6 +62,8 @@ public class KnowledgeSourcePanel extends JPanel{
 	private GridBagConstraints c;
 	
 	private MetricsPanel metricsPanel;
+	
+	private JLabel ontologyName;
 
 	
 	
@@ -74,11 +77,12 @@ public class KnowledgeSourcePanel extends JPanel{
 		
 		c.gridx = 0;
 		c.gridy = 0;
-		c.gridwidth = 2;
+		c.gridwidth = 1;
 		c.gridheight = 1;
 	    c.fill = GridBagConstraints.HORIZONTAL;
 	    add(contentPanel, c);
 //	    addMetricsPanel();
+	   
 
 	}
 
@@ -137,21 +141,27 @@ public class KnowledgeSourcePanel extends JPanel{
             box.add(recentLinkBox);
         }
 
+        metricsPanel = new MetricsPanel();
+        box.add(Box.createVerticalStrut(4 * strutHeight));
+        box.add(metricsPanel);
         panel.add(box);
+        
         
 		return panel;
 	}
 	
 	public void addMetricsPanel() {
-		c.gridx = 2;
-		c.gridy = 0;
+		c.gridx = 0;
+		c.gridy = 1;
 		c.gridwidth = 1;
-		c.gridheight = 2;
-		c.weightx = 0.1;
-		c.weighty = 0.8;
+		c.gridheight = 1;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		
 		
 		metricsPanel = new MetricsPanel();
-		c.fill = GridBagConstraints.VERTICAL;
+		
 		add(metricsPanel, c);
 	}
 	

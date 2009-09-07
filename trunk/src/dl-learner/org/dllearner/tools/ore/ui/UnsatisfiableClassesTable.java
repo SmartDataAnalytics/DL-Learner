@@ -3,7 +3,6 @@ package org.dllearner.tools.ore.ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,33 +36,33 @@ public class UnsatisfiableClassesTable extends JXTable {
 		getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-		addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				int row = rowAtPoint(e.getPoint());
-				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
-					OWLClass cl = (OWLClass) getValueAt(row, 1);
-					if (ExplanationManager
-							.getInstance(OREManager.getInstance())
-							.getDerivedClasses().contains(cl)) {
-						showPopupMenu(e);
-					}
-				}
-
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				int row = rowAtPoint(e.getPoint());
-				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
-					OWLClass cl = (OWLClass) getValueAt(row, 1);
-					if (ExplanationManager
-							.getInstance(OREManager.getInstance())
-							.getDerivedClasses().contains(cl)) {
-						showPopupMenu(e);
-					}
-				}
-			}
-
-		});
+//		addMouseListener(new MouseAdapter() {
+//			public void mousePressed(MouseEvent e) {
+//				int row = rowAtPoint(e.getPoint());
+//				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
+//					OWLClass cl = (OWLClass) getValueAt(row, 1);
+//					if (ExplanationManager
+//							.getInstance(OREManager.getInstance())
+//							.getDerivedClasses().contains(cl)) {
+//						showPopupMenu(e);
+//					}
+//				}
+//
+//			}
+//
+//			public void mouseReleased(MouseEvent e) {
+//				int row = rowAtPoint(e.getPoint());
+//				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
+//					OWLClass cl = (OWLClass) getValueAt(row, 1);
+//					if (ExplanationManager
+//							.getInstance(OREManager.getInstance())
+//							.getDerivedClasses().contains(cl)) {
+//						showPopupMenu(e);
+//					}
+//				}
+//			}
+//
+//		});
 	}
 	
 	private void showPopupMenu(MouseEvent e){

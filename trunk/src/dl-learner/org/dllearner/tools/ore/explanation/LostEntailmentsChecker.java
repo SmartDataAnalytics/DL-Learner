@@ -1,7 +1,6 @@
 package org.dllearner.tools.ore.explanation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +24,6 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
-import com.clarkparsia.explanation.PelletExplanation;
 import com.clarkparsia.modularity.IncrementalClassifier;
 
 public class LostEntailmentsChecker {
@@ -227,9 +225,7 @@ public class LostEntailmentsChecker {
 		}
 		
 		for(OWLAxiom ax : possibleLosts){
-			try {System.out.println(ax + " is entailed " + reasoner.isEntailed(ax));
-			PelletExplanation exp = new PelletExplanation(manager, Collections.singleton(ontology), false);
-			System.out.println(exp.getEntailmentExplanation(ax));
+			try {
 				manager.applyChanges(changes);
 				if(!reasoner.isEntailed(ax)){
 					realLosts.add(ax);

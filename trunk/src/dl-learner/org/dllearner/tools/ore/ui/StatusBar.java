@@ -12,6 +12,7 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -23,8 +24,11 @@ import javax.swing.SwingUtilities;
 
 import org.dllearner.tools.ore.TaskManager;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
+import org.semanticweb.owl.model.OWLAxiom;
 
-public class StatusBar extends JPanel implements ProgressMonitor{
+import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
+
+public class StatusBar extends JPanel implements ProgressMonitor, ExplanationProgressMonitor{
 	/**
 	 * 
 	 */
@@ -36,6 +40,7 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 	private int		progressPercent	= -1;
 	private String progressMessage;
 	private boolean isIndeterminateMode;
+	private boolean isCanceled = false;
 
 	public StatusBar() {
 		infoLabel = new JLabel("");
@@ -54,8 +59,8 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TaskManager.getInstance().cancelCurrentThread();
 				
+				isCanceled = true;
 			}
 		});
 		rB.setToolTipText("Abort");
@@ -75,6 +80,7 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 	}
 
 	public void showProgress(boolean b) {
+		isCanceled = false;
 		isIndeterminateMode = b;
 		SwingUtilities.invokeLater(new Runnable() {
 			
@@ -139,7 +145,7 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 
 	@Override
 	public boolean isCanceled() {
-		return false;
+		return isCanceled;
 	}
 
 	@Override
@@ -204,6 +210,23 @@ public class StatusBar extends JPanel implements ProgressMonitor{
 			}
 			
 		});
+	}
+
+	@Override
+	public void foundAllExplanations() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void foundExplanation(Set<OWLAxiom> explanation) {
+		System.out.println(explanation);
+		
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return isCanceled;
 	}
 	
 	

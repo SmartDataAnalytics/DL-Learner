@@ -114,6 +114,7 @@ public class LearningPanel extends JPanel{
 		stopButton = new JButton();
 		buttonPanel.add(stopButton);
 		stopButton.setText("Stop");
+		stopButton.setEnabled(false);
 
 //		add(buttonPanel, c);
 		

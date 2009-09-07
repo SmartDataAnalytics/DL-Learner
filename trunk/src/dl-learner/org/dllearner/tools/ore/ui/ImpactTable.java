@@ -140,7 +140,7 @@ public class ImpactTable extends JXTable {
 			ExplanationManager expMan = ExplanationManager.getInstance(oreMan);
 			OWLOntologyManager man = oreMan.getReasoner().getOWLOntologyManager();
 			List<OWLOntologyChange>repairPlan = repMan.getRepairPlan();
-		
+			
 			StringBuilder sb = new StringBuilder();
 			sb.append(ManchesterSyntaxRenderer.renderSimple(entailment));
 			if(((ImpactTableModel)getModel()).isLostEntailment(entailment)){
@@ -173,7 +173,7 @@ public class ImpactTable extends JXTable {
 			setLayout(new BorderLayout());
 			
 			explanationsPanel = new Box(1);
-		
+			
 			int counter = 1;
 			for(Explanation exp : explanations){
 				ExplanationTablePanel panel = new ExplanationTablePanel(new SimpleExplanationTable(exp), counter);
