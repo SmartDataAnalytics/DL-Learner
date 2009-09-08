@@ -5,9 +5,12 @@ import java.util.StringTokenizer;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.tools.ore.ExplanationManager;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObject;
@@ -84,7 +87,18 @@ public class ManchesterSyntaxRenderer {
 		String token;
 		while(st.hasMoreTokens()){
 			token = st.nextToken();
+			boolean unsatClass = false;
+			for(OWLClass cl : ExplanationManager.getInstance(OREManager.getInstance()).getUnsatisfiableClasses()){
+				if(cl.toString().equals(token)){
+					unsatClass = true;
+					break;
+				}
+			}
 			String color = "black";
+			if(unsatClass){
+				color = "red";
+			} 
+			
 			boolean isReserved = false;
 			for(Keyword key : Keyword.values()){
 				if(token.equals(key.getLabel())){
@@ -92,7 +106,7 @@ public class ManchesterSyntaxRenderer {
 					isReserved = true;break;
 				} 
 			}
-			if(isReserved){
+			if(isReserved || unsatClass){
 				bf.append("<b><font color=" + color + ">" + token + " </font></b>");
 			} else {
 				bf.append(" " + token + " ");

@@ -21,6 +21,7 @@ public class RepairPlanPanel extends JPanel {
 	private static final long serialVersionUID = 537629900742120594L;
 	private RepairManager repMan;
 	private JButton undoButton;
+	private JButton applyButton;
 
 	public RepairPlanPanel() {
 		this.repMan = RepairManager.getInstance(OREManager.getInstance());
@@ -42,10 +43,11 @@ public class RepairPlanPanel extends JPanel {
 				
 			}
 		});
+		undoButton.setToolTipText("Undo former applied changes.");
 		undoButton.setEnabled(false);
 		buttonPanel.add(undoButton);
 		
-		buttonPanel.add(new JButton(new AbstractAction("Apply") {
+		applyButton = new JButton(new AbstractAction("Apply") {
 
 			/**
 			 * 
@@ -56,7 +58,9 @@ public class RepairPlanPanel extends JPanel {
 				computeRepairPlan();
 			}
 
-		}));
+		});
+		applyButton.setToolTipText("Apply changes in repairplan.");
+		buttonPanel.add(applyButton);
 
 		JScrollPane repScr = new JScrollPane(new RepairTable());
 		repScr.setBackground(null);

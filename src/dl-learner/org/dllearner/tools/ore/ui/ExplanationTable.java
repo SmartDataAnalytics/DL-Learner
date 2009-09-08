@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -40,6 +41,16 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	
 	private RepairManager repMan;
 	
+	protected String[] columnToolTips = {
+		    null, // "First Name" assumed obvious
+		     // "Last Name" assumed obvious
+		    "The number of already computed explanations where the axiom occurs.",
+		    "TODO",
+		    "If checked, the axiom is selected to remove from the ontology.",
+		    "Edit the axiom."
+		};
+
+	
 	public ExplanationTable(Explanation exp, OWLClass cl) {
 		
 		repMan = RepairManager.getInstance(OREManager.getInstance());
@@ -54,10 +65,11 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		column5.setCellEditor(new ButtonCellEditor());
 		column5.setResizable(false);
 		setRowHeight(getRowHeight() + 4);
-		getColumn(1).setMaxWidth(30);
-		getColumn(2).setMaxWidth(30);
+		getColumn(1).setMaxWidth(60);
+		getColumn(2).setMaxWidth(60);
 		getColumn(3).setMaxWidth(30);
 		getColumn(4).setMaxWidth(30);
+		
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -111,6 +123,26 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 				}
 			}
 		});
+	}
+	
+	@Override
+	protected JTableHeader createDefaultTableHeader() {
+		return new JTableHeader(columnModel) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -3386641672808329591L;
+
+			public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int index = columnModel.getColumnIndexAtX(p.x);
+                int realIndex = 
+                        columnModel.getColumn(index).getModelIndex();
+                return columnToolTips[realIndex];
+            }
+        };
+
 	}
 	
 	private void changeSelection() {
@@ -182,23 +214,19 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		}
 	}
 
-
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
-		repaint();
-		
+		repaint();	
 	}
 
 	@Override
 	public void repairPlanChanged() {
 		repaint();
-		
 	}
 
 	@Override
 	public void dispose() throws Exception {
 		repMan.removeListener(this);
-		
 	}
 	
 

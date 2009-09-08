@@ -326,6 +326,9 @@ public class LaconicExplanationGenerator
     	parts.remove(part);System.out.println("removed part: " + part);
     	for(OWLAxiom pa : parts){
     		System.out.println("Part : " + pa + "has source : " + oPlus.getAxiomsMap().get(pa));
+    		if(oPlus.getAxiomsMap().get(pa).size() == 1){
+    			System.out.println("important: " + pa);
+    		}
     	}
     	
     	return rebuildAxioms(parts);
@@ -333,7 +336,7 @@ public class LaconicExplanationGenerator
     
     private Set<OWLAxiom> rebuildAxioms(Set<OWLAxiom> axioms){
 		Map<OWLAxiom, Set<OWLAxiom>> sourceAxioms2OPlus = new HashMap<OWLAxiom, Set<OWLAxiom>>();
-
+	
 		for (OWLAxiom ax : axioms) {
 			if (ontology.containsAxiom(ax)) {
 				sourceAxioms2OPlus.put(ax, computeOPlus(Collections
@@ -343,26 +346,28 @@ public class LaconicExplanationGenerator
 
     	Map<OWLClass, Map<OWLAxiom, Set<OWLSubClassAxiom>>> lhs2SubClassAxiom = new HashMap<OWLClass, Map<OWLAxiom, Set<OWLSubClassAxiom>>>();
 		Set<OWLAxiom> reconstituedAxioms = new HashSet<OWLAxiom>();
-		for (OWLAxiom laconicAx : axioms) {System.out.println("Laconic Axiom: "+ laconicAx);
+		for (OWLAxiom laconicAx : axioms) {
+			
+			
 			if (laconicAx instanceof OWLSubClassAxiom) {
 				OWLSubClassAxiom subAx = (OWLSubClassAxiom) laconicAx;
-				if (subAx.getSubClass().isAnonymous()) {System.out.println(" has anomymous subclass ");System.out.println("has source axioms: " +oPlus.getAxiomsMap().get(subAx));
-					reconstituedAxioms.add(subAx);System.out.println("adding to rebuildet axioms");
-				} else {System.out.println("has no anonymous subclass");
+				if (subAx.getSubClass().isAnonymous()) {
+					reconstituedAxioms.add(subAx);
+				} else {
 					Map<OWLAxiom, Set<OWLSubClassAxiom>> source2AxiomMap = lhs2SubClassAxiom.get(subAx.getSubClass().asOWLClass());
 					if (source2AxiomMap == null) {
 						source2AxiomMap = new HashMap<OWLAxiom, Set<OWLSubClassAxiom>>();
 						lhs2SubClassAxiom.put(subAx.getSubClass().asOWLClass(), source2AxiomMap);
 					}
 
-					for (OWLAxiom sourceAxiom : sourceAxioms2OPlus.keySet()) {System.out.println("source axiom: " + sourceAxiom);
+					for (OWLAxiom sourceAxiom : sourceAxioms2OPlus.keySet()) {
 						if ((sourceAxioms2OPlus.get(sourceAxiom)).contains(subAx)) {
 							Set<OWLSubClassAxiom> subClassAxioms = source2AxiomMap.get(sourceAxiom);
 							if (subClassAxioms == null) {
 								subClassAxioms = new HashSet<OWLSubClassAxiom>();
 								source2AxiomMap.put(sourceAxiom, subClassAxioms);
 							}
-							subClassAxioms.add(subAx);System.out.println("-->subclass axioms: " + subClassAxioms);
+							subClassAxioms.add(subAx);
 						}
 					}
 				}
