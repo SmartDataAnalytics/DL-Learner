@@ -105,23 +105,23 @@ public class OPlus
     {
         for(OWLAxiom axiom : axioms){
         	
-        	Set<OWLAxiom> existing = (Set<OWLAxiom>)axiomsMap.get(axiom);
-            if(existing == null)
-            {
-                existing = new HashSet<OWLAxiom>();
-                axiomsMap.put(axiom, existing);
-            }
-            existing.add(source);     
-//            if(!axiom.equals(source))
+//        	Set<OWLAxiom> existing = (Set<OWLAxiom>)axiomsMap.get(axiom);
+//            if(existing == null)
 //            {
-//                Set<OWLAxiom> existing = (Set<OWLAxiom>)axiomsMap.get(axiom);
-//                if(existing == null)
-//                {
-//                    existing = new HashSet<OWLAxiom>();
-//                    axiomsMap.put(axiom, existing);
-//                }
-//                existing.add(source);
+//                existing = new HashSet<OWLAxiom>();
+//                axiomsMap.put(axiom, existing);
 //            }
+//            existing.add(source);     
+            if(!axiom.equals(source))
+            {
+                Set<OWLAxiom> existing = (Set<OWLAxiom>)axiomsMap.get(axiom);
+                if(existing == null)
+                {
+                    existing = new HashSet<OWLAxiom>();
+                    axiomsMap.put(axiom, existing);
+                }
+                existing.add(source);
+            }
         } 
         return axioms;
     }

@@ -22,11 +22,11 @@ public class ExplanationTablePanel extends JPanel{
 	public ExplanationTablePanel(JXTable explanationTable, int explanationNumber){
 		this.explanationTable = explanationTable;
 		this.explanationNumber = explanationNumber;
-		createGUI();
+		createUI();
 		
 	}
 	
-	private void createGUI(){
+	private void createUI(){
 		setLayout(new BorderLayout(2, 2));
 		JLabel label = new JLabel(new StringBuilder().append("Explanation ").append(explanationNumber).toString());
 		add(label, BorderLayout.NORTH);
@@ -34,6 +34,7 @@ public class ExplanationTablePanel extends JPanel{
 		Border emptyBorder = BorderFactory.createEmptyBorder(0, 20, 0, 0);
 		Border lineBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
 		tablePanel.setBorder(BorderFactory.createCompoundBorder(emptyBorder, lineBorder));
+		tablePanel.add(explanationTable.getTableHeader(), BorderLayout.NORTH);
 		tablePanel.add(explanationTable);
 		add(tablePanel);
 		

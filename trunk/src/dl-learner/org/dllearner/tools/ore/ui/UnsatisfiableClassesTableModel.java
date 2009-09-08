@@ -40,7 +40,11 @@ public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return unsatClasses.get(rowIndex);	
+		if(columnIndex == 0){
+			return unsatClasses.get(rowIndex);
+		} else {
+			return "<html><b><font color=\"red\">" + unsatClasses.get(rowIndex).toString() + " </font></b></html>";
+		}
 	}
 		
 	public void addUnsatClasses(List<OWLClass> unsatClasses){
@@ -52,6 +56,10 @@ public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 	public void clear(){
 		this.unsatClasses.clear();
 		fireTableDataChanged();
+	}
+	
+	public OWLClass getClassAt(int rowIndex){
+		return unsatClasses.get(rowIndex);
 	}
 
 }

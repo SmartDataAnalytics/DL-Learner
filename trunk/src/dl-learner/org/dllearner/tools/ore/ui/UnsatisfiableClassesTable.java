@@ -2,13 +2,8 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.JPopupMenu;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
@@ -32,8 +27,9 @@ public class UnsatisfiableClassesTable extends JXTable {
 		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
 		getColumn(0).setMaxWidth(20);
-		
+		setRowHeight(getRowHeight() + 4);
 		getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
+		
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 //		addMouseListener(new MouseAdapter() {
@@ -65,20 +61,20 @@ public class UnsatisfiableClassesTable extends JXTable {
 //		});
 	}
 	
-	private void showPopupMenu(MouseEvent e){
-		JPopupMenu menu = new JPopupMenu();
-        menu.add(new AbstractAction("Why is derived class?") {
-        	final UnsatisfiableClassesTable table = UnsatisfiableClassesTable.this;
-            
-            public void actionPerformed(ActionEvent e)
-            {
-                
-            }
-
-            
-        });
-        menu.show(this, e.getX(), e.getY());
-	}
+//	private void showPopupMenu(MouseEvent e){
+//		JPopupMenu menu = new JPopupMenu();
+//        menu.add(new AbstractAction("Why is derived class?") {
+//        	final UnsatisfiableClassesTable table = UnsatisfiableClassesTable.this;
+//            
+//            public void actionPerformed(ActionEvent e)
+//            {
+//                
+//            }
+//
+//            
+//        });
+//        menu.show(this, e.getX(), e.getY());
+//	}
 	@Override
 	public Dimension getPreferredScrollableViewportSize()
 	{
@@ -99,7 +95,7 @@ public class UnsatisfiableClassesTable extends JXTable {
 		List<OWLClass> selectedClasses = new ArrayList<OWLClass>(getSelectedRows().length);
 		int[] rows = getSelectedRows();
 		for(int i = 0; i < rows.length; i++){
-			selectedClasses.add((OWLClass)((UnsatisfiableClassesTableModel)getModel()).getValueAt(rows[i], 0));
+			selectedClasses.add(((UnsatisfiableClassesTableModel)getModel()).getClassAt(rows[i]));
 		}
 		
 		return selectedClasses;

@@ -135,6 +135,19 @@ public class ExplanationTableModel extends AbstractTableModel {
 		return expMan.getOrdering(exp).get(rowIndex).keySet().iterator().next();
 	}
 	
+	@Override
+	public String getColumnName(int column) {
+		if(column == 0){
+			return "Axiom";
+		} else if(column == 1){
+			return "Arity";
+		} else if(column == 2){
+			return "Usage";
+		} else {
+			return "";
+		}
+	}
+	
 	
 
 }

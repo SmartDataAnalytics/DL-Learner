@@ -3,6 +3,7 @@ package org.dllearner.tools.ore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,6 +89,13 @@ public class ExplanationManager implements OREManagerListener{
 		} else {
 			return Collections.<OWLClass>emptySet();
 		}
+	}
+	
+	public Set<OWLClass> getUnsatisfiableClasses(){
+		Set<OWLClass> unsat = new HashSet<OWLClass>();
+		unsat.addAll(rootFinder.getRootClasses());
+		unsat.addAll(rootFinder.getDerivedClasses());
+		return unsat;
 	}
 	
 	public Set<Explanation> getUnsatisfiableExplanations(OWLClass unsat) {
