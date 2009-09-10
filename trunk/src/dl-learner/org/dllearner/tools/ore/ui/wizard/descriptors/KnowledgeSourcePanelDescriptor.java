@@ -52,8 +52,8 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
-    public static final String INFORMATION = "Choose an OWL-ontology from filesystem or URI. Your are also able to extract a fragment " +
-    										"from a SPARQL-endpoint. After all press <Next>";
+    public static final String INFORMATION = "Choose an OWL-ontology from filesystem or URI. Your can also extract a fragment " +
+    										"from a SPARQL endpoint. When finished, press <Next>.";
     
     private KnowledgeSourcePanel knowledgePanel;
     
@@ -172,6 +172,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	}
 	
 	private void handleOpenFromRecent(URI uri){
+		currentURI = uri;
 		OREManager.getInstance().setCurrentKnowledgeSource(
 				uri);
 		new OntologyLoadingTask(getWizard().getStatusBar()).execute();

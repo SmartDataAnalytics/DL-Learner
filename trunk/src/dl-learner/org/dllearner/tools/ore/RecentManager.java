@@ -39,8 +39,6 @@ public class RecentManager {
 	}
 	
 	public List<URI> getURIs(){
-		uriList.clear();
-		deserialize();
 		return uriList;
 	}
 	
@@ -62,7 +60,7 @@ public class RecentManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void deserialize() {
+	public void deserialize() {
 		try {
 			FileInputStream fileStream = new FileInputStream(file);
 			ObjectInputStream inputStream = new ObjectInputStream(
@@ -77,7 +75,7 @@ public class RecentManager {
 				inputStream.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Can't read recent successfully opened URIs. Starting with empty list.");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
