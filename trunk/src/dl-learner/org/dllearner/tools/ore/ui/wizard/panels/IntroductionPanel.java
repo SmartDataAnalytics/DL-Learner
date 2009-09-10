@@ -79,20 +79,23 @@ public class IntroductionPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(12, 6, 12, 12));
         jScrollPane1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         jScrollPane1.setViewportBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        instructionsField.setBackground(UIManager.getDefaults().getColor("control"));
+        Color color = UIManager.getColor("Panel.background");
+        instructionsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
+        instructionsField.setOpaque(true);
         instructionsField.setColumns(20);
         instructionsField.setEditable(false);
         instructionsField.setLineWrap(true);
         instructionsField.setRows(5);
+       
         instructionsField.setFont(new Font("Serif", Font.PLAIN, 14));
-        instructionsField.setText("This is an test of a wizard dialog, which allows a knowledge engineer to select " 
-        							+ "a class of an ontology which should be (re)learned.\n" 
-        							+ "On the next page, choose a OWL file or a SPARQL-URL, that contains an ontology. After that " 
-        							+ "you might be able to select a class in the ontology to learn. When the class you selected is learned" 
-        							+ ", you are able to add the axiom to the ontology and after all you might be able to repair if necessary. ");
+        instructionsField.setText("This is a tool for debugging end enriching OWL-ontologies. " 
+        							+ "You are able to check ontologies for inconsistency and unsatisfiable classes.\n" 
+        							+ "If some of that is detected, helpful explanations can be generated to find out the relevant axioms. " 
+        							+ "Another feature is to get equivalent class expressions for atomic classes, using an intelligent and efficient\n" 
+        							+ "machine learning algorithm. TODO...Jens ");
         instructionsField.setWrapStyleWord(true);
         jScrollPane1.setViewportView(instructionsField);
-              
+           
         welcomeTitle = new JLabel();
         welcomeTitle.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 0, 0)));
         welcomeTitle.setFont(new java.awt.Font("MS Sans Serif", Font.BOLD, 14));

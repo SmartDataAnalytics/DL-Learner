@@ -257,16 +257,19 @@ public class WizardController implements ActionListener {
         	wizard.setLeftPanel(1);
         }
     	if(panelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL") || panelDescriptor.equals("CLASS_CHOOSE_SPARQL_PANEL")){
-        	wizard.setLeftPanel(2);
-        }
-    	if(panelDescriptor.equals("LEARNING_PANEL")){
         	wizard.setLeftPanel(3);
         }
-    	if(panelDescriptor.equals("REPAIR_PANEL")){
+    	if(panelDescriptor.equals("LEARNING_PANEL")){
         	wizard.setLeftPanel(4);
         }
-    	if(panelDescriptor.equals("SAVE_PANEL")){
+    	if(panelDescriptor.equals("REPAIR_PANEL")){
         	wizard.setLeftPanel(5);
+        }
+    	if(panelDescriptor.equals("SAVE_PANEL")){
+        	wizard.setLeftPanel(6);
+        }
+    	if(panelDescriptor.equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)){
+        	wizard.setLeftPanel(2);
         }
     	
     	

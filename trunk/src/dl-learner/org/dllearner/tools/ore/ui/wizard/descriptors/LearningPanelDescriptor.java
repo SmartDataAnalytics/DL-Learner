@@ -38,6 +38,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
 
@@ -48,7 +49,7 @@ import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
  * @author Lorenz Buehmann
  *
  */
-public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
+public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, OREManagerListener{
     
     public static final String IDENTIFIER = "LEARNING_PANEL";
     public static final String INFORMATION = "Press <Start> to start learning. While it is running, " 
@@ -264,5 +265,12 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 	
 
+	}
+
+
+	@Override
+	public void activeOntologyChanged() {
+		learnPanel.getResultTable().clear();
+		
 	}
 }

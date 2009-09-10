@@ -68,6 +68,8 @@ public class KnowledgeSourcePanel extends JPanel{
 	
 	
 	public KnowledgeSourcePanel() {
+		
+		openFromRecentLinks = new ArrayList<LinkLabel>();
 //		setBackground(Color.WHITE);
 		new LeftPanel(1);
 		contentPanel = getContentPanel();
@@ -129,7 +131,7 @@ public class KnowledgeSourcePanel extends JPanel{
                     getFont().deriveFont(Font.BOLD),
                     Color.GRAY), BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
-            openFromRecentLinks = new ArrayList<LinkLabel>();
+            
             LinkLabel link;
             for (final URI uri : RecentManager.getInstance().getURIs()) {
             	link = new LinkLabel(uri.toString());

@@ -44,17 +44,19 @@ public class LeftPanel extends JPanel{
 	 */
 	public LeftPanel(int i){
 		
-		jLabel = new JLabel[6];
+		jLabel = new JLabel[7];
 		setBackground(new java.awt.Color(255, 255, 255));
     	JPanel panel2 = new JPanel();
     	panel2.setBackground(new java.awt.Color(255, 255, 255));
     	panel2.setLayout(new GridLayout(5, 1, 0, 10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
-		jLabel[2] = new JLabel("3. Choose Class");
-		jLabel[3] = new JLabel("4. Learn");
-		jLabel[4] = new JLabel("5. Repair");
-		jLabel[5] = new JLabel("6. Save/Exit");
+		jLabel[2] = new JLabel("3. Debugging");
+		jLabel[3] = new JLabel("4. Choose Class");
+		jLabel[4] = new JLabel("5. Learn");
+		jLabel[5] = new JLabel("6. Repair");
+		jLabel[6] = new JLabel("7. Save/Exit");
+		
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		
 		for(JLabel current : jLabel){
@@ -76,13 +78,14 @@ public class LeftPanel extends JPanel{
 		setBackground(new java.awt.Color(255, 255, 255));
     	JPanel panel2 = new JPanel();
     	panel2.setBackground(new java.awt.Color(255, 255, 255));
-    	panel2.setLayout(new GridLayout(6, 1, 0, 10));
+    	panel2.setLayout(new GridLayout(7, 1, 0, 10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
-		jLabel[2] = new JLabel("3. Choose Class");
-		jLabel[3] = new JLabel("4. Learning");
-		jLabel[4] = new JLabel("5. Repair");
-		jLabel[5] = new JLabel("6. Save/Exit");
+		jLabel[2] = new JLabel("3. Debugging");
+		jLabel[3] = new JLabel("4. Choose Class");
+		jLabel[4] = new JLabel("5. Learn");
+		jLabel[5] = new JLabel("6. Repair");
+		jLabel[6] = new JLabel("7. Save/Exit");
 		
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		

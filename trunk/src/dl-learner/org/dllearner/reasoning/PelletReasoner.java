@@ -161,7 +161,7 @@ public class PelletReasoner extends ReasonerComponent {
 		this.configurator = new PelletReasonerConfigurator(this);
 	}
 	
-	public void loadOntologies() {
+	public void loadOntologies() throws URISyntaxException, OWLOntologyCreationException {
 		Comparator<OWLNamedObject> namedObjectComparator = new Comparator<OWLNamedObject>() {
 			public int compare(OWLNamedObject o1, OWLNamedObject o2) {
 				return o1.getURI().compareTo(o2.getURI());
@@ -188,7 +188,7 @@ public class PelletReasoner extends ReasonerComponent {
 					url = ((OWLFile) source).getURL();
 				}
 
-				try {
+//				try {
 
 					if (source instanceof OWLAPIOntology) {
 						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
@@ -258,11 +258,11 @@ public class PelletReasoner extends ReasonerComponent {
 						individuals.add(new Individual(owlIndividual.getURI().toString()));
 					}		
 
-				} catch (OWLOntologyCreationException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
+//				} catch (OWLOntologyCreationException e) {
+//					e.printStackTrace();
+//				} catch (URISyntaxException e) {
+//					e.printStackTrace();
+//				}
 				// all other sources are converted to KB and then to an
 				// OWL API ontology
 			} else {

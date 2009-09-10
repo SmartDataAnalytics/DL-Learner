@@ -2,6 +2,7 @@ package org.dllearner.tools.ore;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +33,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 
 public class OREManager {
 
@@ -133,7 +135,7 @@ public class OREManager {
 	}
 	
 	
-	public void initPelletReasoner(){
+	public void initPelletReasoner() throws URISyntaxException, OWLOntologyCreationException{
 		reasoner = cm.reasoner(PelletReasoner.class, ks);
 		try {
 			reasoner.init();
@@ -148,7 +150,7 @@ public class OREManager {
 		fireActiveOntologyChanged();
 	}
 	
-	public void loadOntology(){
+	public void loadOntology() throws OWLOntologyCreationException, URISyntaxException{
 		reasoner.loadOntologies();	
 	}
 	

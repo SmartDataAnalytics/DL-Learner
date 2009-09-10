@@ -25,20 +25,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RecentManager;
-import org.dllearner.tools.ore.ui.ExtractFromSparqlPanel;
+import org.dllearner.tools.ore.ui.ExtractFromSparqlDialog;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;
 import org.protege.editor.core.ui.OpenFromURIPanel;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
+import org.semanticweb.owl.io.UnparsableOntologyException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 
 /**
  * Wizard panel descriptor where knowledge source is selected.
@@ -52,6 +56,8 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     										"from a SPARQL-endpoint. After all press <Next>";
     
     private KnowledgeSourcePanel knowledgePanel;
+    
+    private URI currentURI;
     
     public KnowledgeSourcePanelDescriptor() {
         
@@ -99,9 +105,8 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     public void loadOntology(URI uri){
     	OREManager.getInstance().setCurrentKnowledgeSource(uri);
+    	currentURI = uri;
     	
-    	RecentManager.getInstance().addURI(uri);
-    	RecentManager.getInstance().serialize();
     	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
     	
     }
@@ -157,10 +162,13 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	}
 	
 	private void handleLoadFromSparqlEndpoint(){
+		ExtractFromSparqlDialog dialog = new ExtractFromSparqlDialog(getWizard().getDialog());
+		int ret = dialog.showDialog();
+		if(ret == ExtractFromSparqlDialog.OK_RETURN_CODE){
+			OREManager.getInstance().setCurrentKnowledgeSource(dialog.getKnowledgeSource());
+			new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+		}
 		
-		OREManager.getInstance().setCurrentKnowledgeSource(
-				ExtractFromSparqlPanel.showDialog());
-		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 	}
 	
 	private void handleOpenFromRecent(URI uri){
@@ -195,31 +203,69 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			statusBar.setProgressTitle("Loading ontology");
 			try{
 	        	oreMan.initPelletReasoner();
+	        	RecentManager.getInstance().addURI(currentURI);
+	        	RecentManager.getInstance().serialize();
+	        	if(oreMan.consistentOntology()){
+					statusBar.setProgressTitle("Classifying ontology");
+					oreMan.getReasoner().classify();
+		        	statusBar.setProgressTitle("Realising ontology");
+		        	oreMan.getReasoner().realise();
+				}
 	        	
-			} catch(Throwable e){
+			} catch(URISyntaxException e){
+				
+				cancel(true);
 				statusBar.showProgress(false);
-				statusBar.setProgressTitle("Error occured");
+				statusBar.setProgressTitle("");
 				getWizard().getDialog().setCursor(null);
-				 ErrorLogPanel.showErrorDialog(e);
+				JOptionPane.showMessageDialog(getWizard().getDialog(),
+					    "Error loading ontology. Please check URI and try again.",
+					    "Ontology loading error",
+					    JOptionPane.ERROR_MESSAGE);
+
+				
+
+//				 ErrorLogPanel.showErrorDialog(e);
 				 return null;
 
+			} catch(OWLOntologyCreationException e){
+				
+				cancel(true);
+				statusBar.showProgress(false);
+				statusBar.setProgressTitle("");
+				getWizard().getDialog().setCursor(null);
+				if(e.getClass().equals(UnparsableOntologyException.class)){
+					JOptionPane.showMessageDialog(getWizard().getDialog(),
+						    "Error loading ontology. A syntax error in the ontology has been detected.",
+						    "Ontology loading error",
+						    JOptionPane.ERROR_MESSAGE);
+				} else {// if(e.getCause() instanceof FileNotFoundException){
+					JOptionPane.showMessageDialog(getWizard().getDialog(),
+						    "Error loading ontology. File is not existing at given URI. Please check whether you " +
+						    "have entered the correct location and then try again.",
+						    "Ontology loading error",
+						    JOptionPane.ERROR_MESSAGE);
+				}
+				
+
+				
+
+//				 ErrorLogPanel.showErrorDialog(e);
+//				 return null;
 			}
-			if(oreMan.consistentOntology()){
-				statusBar.setProgressTitle("Classifying ontology");
-				oreMan.getReasoner().classify();
-	        	statusBar.setProgressTitle("Realising ontology");
-	        	oreMan.getReasoner().realise();
-			}
+			
 			return null;
 		}
 
 		@Override
 		public void done() {
-			statusBar.showProgress(false);
-			statusBar.setProgressTitle("Done");
-			getWizard().getDialog().setCursor(null);
-			getWizard().setNextFinishButtonEnabled(true);
-			updateMetrics();
+			if(!isCancelled()){
+				statusBar.showProgress(false);
+				statusBar.setProgressTitle("Done");
+				getWizard().getDialog().setCursor(null);
+				getWizard().setNextFinishButtonEnabled(true);
+				updateMetrics();
+			}
 		}
 	}
 }
