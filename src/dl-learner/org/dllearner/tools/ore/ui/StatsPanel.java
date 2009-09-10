@@ -156,11 +156,11 @@ public class StatsPanel extends JPanel{
 				
 		Set<String> newClassesString = new HashSet<String>();
 		for (NamedClass nc : OREManager.getInstance().getReasoner().getTypes(ind)){
-			newClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
+			newClassesString.add(ManchesterSyntaxRenderer.renderSimple(nc));
 		}
 		Set<String> oldClassesString = new HashSet<String>();
 		for (NamedClass nc : oldClasses){
-			oldClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
+			oldClassesString.add(ManchesterSyntaxRenderer.renderSimple(nc));
 		}
 		for (String nc : oldClassesString){
 			if (!newClassesString.contains(nc)){

@@ -322,13 +322,17 @@ public class LaconicExplanationGenerator
     }
     
     public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
-    	Set<OWLAxiom> parts = computeOPlus(Collections.singleton(source));System.out.println("Parts: " + parts);
-    	parts.remove(part);System.out.println("removed part: " + part);
+    	Set<OWLAxiom> parts = computeOPlus(Collections.singleton(source));
+    	for(OWLAxiom par : parts){
+    		System.out.println("has Part: " + par);
+    	}
+//    	parts.remove(part);System.out.println("removed part: " + part);
     	for(OWLAxiom pa : parts){
-    		System.out.println("Part : " + pa + "has source : " + oPlus.getAxiomsMap().get(pa));
-    		if(oPlus.getAxiomsMap().get(pa).size() == 1){
-    			System.out.println("important: " + pa);
+    		System.out.println("\nPart: " + pa);
+    		for(OWLAxiom ax :  oPlus.getAxiomsMap().get(pa)){
+    			System.out.println("has source : " + ax);
     		}
+    		
     	}
     	
     	return rebuildAxioms(parts);
@@ -346,7 +350,7 @@ public class LaconicExplanationGenerator
 
     	Map<OWLClass, Map<OWLAxiom, Set<OWLSubClassAxiom>>> lhs2SubClassAxiom = new HashMap<OWLClass, Map<OWLAxiom, Set<OWLSubClassAxiom>>>();
 		Set<OWLAxiom> reconstituedAxioms = new HashSet<OWLAxiom>();
-		for (OWLAxiom laconicAx : axioms) {
+		for (OWLAxiom laconicAx : axioms) {System.out.println("\n" + laconicAx);
 			
 			
 			if (laconicAx instanceof OWLSubClassAxiom) {
@@ -412,7 +416,7 @@ public class LaconicExplanationGenerator
     	Set<OWLAxiom> sourceAxioms = expGen.getSourceAxioms(laconicAx);
     	System.out.println("Source axioms: " + sourceAxioms);
     	for(OWLAxiom sourceAx : sourceAxioms){
-    		System.out.println("Rebuildet: " + expGen.getRemainingAxioms(sourceAx, laconicAx));
+    		System.out.println("\nRebuildet: " + expGen.getRemainingAxioms(sourceAx, laconicAx));
     	}
     }
 	

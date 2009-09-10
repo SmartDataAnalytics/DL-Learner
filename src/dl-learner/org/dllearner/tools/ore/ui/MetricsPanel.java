@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import javax.swing.border.TitledBorder;
 import org.protege.editor.core.PropertyUtil;
 import org.protege.editor.core.ProtegeProperties;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.io.UnparsableOntologyException;
 import org.semanticweb.owl.metrics.AxiomCountMetric;
 import org.semanticweb.owl.metrics.AxiomTypeMetric;
 import org.semanticweb.owl.metrics.DLExpressivity;
@@ -306,12 +308,21 @@ public class MetricsPanel extends JPanel {
         clipboard.setContents(new StringSelection(sb.toString()), null);
     }
     
-    public static void main(String[] args) throws OWLOntologyCreationException{
+    public static void main(String[] args) {
     	String file = "file:examples/ore/tambis.owl";
+    	URI uri2 = URI.create("file:/home/lorenz/Desktop/Finance.owl");
+    	URI uri = URI.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.ow");
   	  
-  	 
+
   	  OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-  		OWLOntology ontology = manager.loadOntology( URI.create( file ) );
+  	  try{
+  		OWLOntology ontology = manager.loadOntology( uri );
+  	  } catch (OWLOntologyCreationException e){
+  		  System.out.println(e.getClass());
+  		  System.out.println(e.getClass().equals(UnparsableOntologyException.class));
+//  		  System.out.println(e.getCause());
+  		  e.printStackTrace();
+  	  }
   		JFrame test = new JFrame();
   		test.setBounds(200, 200, 600, 200);
   		test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

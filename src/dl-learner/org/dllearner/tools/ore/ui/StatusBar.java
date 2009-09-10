@@ -22,8 +22,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
-import org.dllearner.tools.ore.TaskManager;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
+import org.protege.editor.core.ui.list.MListDeleteButton;
 import org.semanticweb.owl.model.OWLAxiom;
 
 import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
@@ -43,18 +43,19 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 	private boolean isCanceled = false;
 
 	public StatusBar() {
+		
 		infoLabel = new JLabel("");
 		progressBar = new JProgressBar();
 //		progressBar.setStringPainted(true);
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(10, 23));
-
+//		setPreferredSize(new Dimension(10, 23));
+		
 		JPanel rightPanel = new JPanel(new BorderLayout());
 		rightPanel.add(new JLabel(new AngledLinesWindowsCornerIcon()),
 				BorderLayout.SOUTH);
 		rightPanel.setOpaque(false);
 		JPanel leftPanel = new JPanel(new FlowLayout());
-		CancelButton rB = new CancelButton("");
+		CancelButton rB = new CancelButton("", getHeight());
 		rB.addActionListener(new ActionListener() {
 			
 			@Override
@@ -65,6 +66,7 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 		});
 		rB.setToolTipText("Abort");
 		leftPanel.add(rB);
+		
 		leftPanel.add(progressBar);
 		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
 		leftPanel.add(infoLabel);
@@ -275,14 +277,16 @@ class CancelButton extends JButton {
 	 * 
 	 */
 	private static final long serialVersionUID = -8903797519798252577L;
-	public CancelButton(String label) {
+	public CancelButton(String label, int siz) {
 	    super(label);
 
 	// These statements enlarge the button so that it 
 	// becomes a circle rather than an oval.
 	    Dimension size = getPreferredSize();
-	    size.width = size.height = Math.max(size.width, 
-	      size.height);
+	    size.width = size.height = Math.min(size.width, 
+	      size.height) + 5;
+	   
+	   
 	    setPreferredSize(size);
 
 	// This call causes the JButton not to paint 
@@ -298,14 +302,16 @@ class CancelButton extends JButton {
 	   // a property of the RoundButton class.
 	      g.setColor(Color.YELLOW);
 	    } else {
-	      g.setColor(Color.lightGray);
+	      g.setColor(Color.RED);//lightGray);
 	    }
 	    g.fillOval(0, 0, getSize().width-1, 
 	      getSize().height-1);
-	    
-	    g.setColor(Color.white);
-        g.drawLine(2, 2, 9 , 9);
-        g.drawLine(2, 9, 9 , 2);
+//	    double height = Math.sin(45) * (getSize().width-1)/2;
+//	    double width = Math.cos(45) * (getSize().width-1)/2;
+//	    g.setColor(Color.white);
+//	    g.drawLine(0, 0, (int)width, (int)height);
+//        g.drawLine(3, 3, getSize().width-3 , getSize().height-3);
+//        g.drawLine(3, 11, 11 , 3);
 
 	// This call will paint the label and the 
 	   // focus rectangle.

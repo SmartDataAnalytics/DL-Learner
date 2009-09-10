@@ -47,12 +47,12 @@ public class OREApplication {
     
 	/**
 	 * main method.
-	 * @param args possible is to use OWL-File as parameter
+	 * @param args possible is to use URI as parameter
 	 */
     public static void main(String[] args) {
     	try {
-			UIManager.setLookAndFeel(
-			        UIManager.getSystemLookAndFeelClassName());
+//    		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -110,8 +110,9 @@ public class OREApplication {
 			
 			@Override
 			public void run() {
+				System.out.println("Starting application...");
 				int ret = wizard.showModalDialog(); 
-				System.out.println("Dialog return code is (0=Finish,1=Cancel,2=Error): " + ret);
+				System.out.println("Exited ORE application");
 				System.exit(0);
 				
 			}

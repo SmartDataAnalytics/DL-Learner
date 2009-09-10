@@ -429,6 +429,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
         buttonPanel.add(statusBar, BorderLayout.SOUTH);
         JPanel informationPanel = new JPanel();
+        informationPanel.setLayout(new BorderLayout());
         JScrollPane infoScrollPane = new JScrollPane();
         informationsField = new JTextArea();
         
@@ -446,7 +447,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         informationsField.setFont(new Font("Serif", Font.PLAIN, 14));
         informationsField.setWrapStyleWord(true);
         infoScrollPane.setViewportView(informationsField);
-        informationPanel.add(infoScrollPane);
+        informationPanel.add(infoScrollPane, BorderLayout.EAST);
         
         JPanel buttonInformationPanel = new JPanel();
         buttonInformationPanel.setLayout(new BorderLayout());

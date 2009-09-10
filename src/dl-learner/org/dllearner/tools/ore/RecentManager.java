@@ -70,7 +70,9 @@ public class RecentManager {
 
 			try {
 				List<URI> list = (List<URI>) inputStream.readObject();
-				uriList.addAll(list);
+				if(list != null){
+					uriList.addAll(list);
+				}
 			} finally {
 				inputStream.close();
 			}
