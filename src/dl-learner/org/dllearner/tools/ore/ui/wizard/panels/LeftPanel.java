@@ -48,7 +48,7 @@ public class LeftPanel extends JPanel{
 		setBackground(new java.awt.Color(255, 255, 255));
     	JPanel panel2 = new JPanel();
     	panel2.setBackground(new java.awt.Color(255, 255, 255));
-    	panel2.setLayout(new GridLayout(5, 1, 0, 10));
+    	panel2.setLayout(new GridLayout(7, 1, 0, 10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
 		jLabel[2] = new JLabel("3. Debugging");
