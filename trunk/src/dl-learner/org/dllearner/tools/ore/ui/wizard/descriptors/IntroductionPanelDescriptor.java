@@ -32,7 +32,7 @@ import org.dllearner.tools.ore.ui.wizard.panels.IntroductionPanel;
 public class IntroductionPanelDescriptor extends WizardPanelDescriptor {
     
     public static final String IDENTIFIER = "INTRODUCTION_PANEL";
-    public static final String INFORMATION = "Press \"Next\" button to go on";
+    public static final String INFORMATION = "";
 
        
     public IntroductionPanelDescriptor() {
