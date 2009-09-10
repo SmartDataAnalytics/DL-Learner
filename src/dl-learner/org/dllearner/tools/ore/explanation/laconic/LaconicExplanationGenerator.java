@@ -6,9 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.explanation.ExplanationException;
+import org.dllearner.tools.ore.explanation.HSTExplanationGenerator;
 import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -25,6 +28,9 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 
+import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
+import com.clarkparsia.explanation.util.SilentExplanationProgressMonitor;
+
 /*
  * This class computes laconic explanations for a given entailment. The algorithm is adapted from the paper
  * 'Laconic and Precise Justifications in OWL' from Matthew Horridge, Bijan Parsia and Ulrike Sattler.
@@ -39,6 +45,11 @@ public class LaconicExplanationGenerator
     private Set<Explanation> lastRegularExplanations;
     private Set<Explanation> allPreviouslyFoundExplanations;
     private OPlus oPlus;
+    
+    public static final Logger log = Logger.getLogger(LaconicExplanationGenerator.class
+            .getName());
+    
+    private ExplanationProgressMonitor progressMonitor = new SilentExplanationProgressMonitor();
     
     public LaconicExplanationGenerator(OWLOntologyManager manager,
 			OWLReasonerFactory reasonerFactory, Set<OWLOntology> ontologies) {
@@ -82,6 +93,11 @@ public class LaconicExplanationGenerator
     	return lastRegularExplanations;
     }
     
+    public void setProgressMonitor(ExplanationProgressMonitor mon){
+    	this.progressMonitor = mon;
+    	pelletExplanation.setProgressMonitor(progressMonitor);
+    }
+    
     /**
      * Computes the precise explanations
      * @param entailment
@@ -89,15 +105,15 @@ public class LaconicExplanationGenerator
      * @return
      * @throws OWLException
      */
-	public Set<Explanation> computePreciseJusts(OWLAxiom entailment, int limit)
+	private Set<Explanation> computePreciseJusts(OWLAxiom entailment, int limit)
 			throws OWLException {
 
 		Set<Explanation> regularExplanations = pelletExplanation
 				.getExplanations((OWLAxiom) entailment);
 
-		System.out.println(new StringBuilder().append(
-				"Got regular justifications: ").append(regularExplanations.size())
-				.toString());
+		if (log.isLoggable(Level.CONFIG)){
+            log.config("Found " + regularExplanations.size() + " regular explanations");
+		}
 		lastRegularExplanations.clear();
 		lastRegularExplanations.addAll(regularExplanations);
 		allPreviouslyFoundExplanations = new HashSet<Explanation>();
@@ -105,11 +121,13 @@ public class LaconicExplanationGenerator
 		Set<Explanation> nonLaconicExplanations = new HashSet<Explanation>();
 		Set<Explanation> laconicExplanations = new HashSet<Explanation>();
 		Set<OWLAxiom> axiomsInPreviousOntology = new HashSet<OWLAxiom>();
-		long counter = 0L;
+		
 		for (;;) {
-			counter++;
-			System.out.println(new StringBuilder().append("Count ").append(
-					counter).toString());
+			if (progressMonitor.isCancelled()) {
+	            return laconicExplanations;
+	        }
+		
+			
 			Set<OWLAxiom> unionOfAllExplanations = new HashSet<OWLAxiom>();
 			for (Explanation expl : allPreviouslyFoundExplanations) {
 				unionOfAllExplanations.addAll(expl.getAxioms());
@@ -129,8 +147,9 @@ public class LaconicExplanationGenerator
 
 			if (extendedOntology.getLogicalAxioms().equals(
 					axiomsInPreviousOntology)) {
-				System.out
-						.println("\t ***** No change in ontology. Early termination.");
+				if (log.isLoggable(Level.CONFIG)){
+		            log.config("");
+				}
 				break;
 			}
 			// man2.saveOntology(extendedOnt,
@@ -283,7 +302,7 @@ public class LaconicExplanationGenerator
 			throws ExplanationException {
 		Set<Explanation> explanations;
 		try {
-			explanations = computePreciseJusts(entailment, 2147483647);
+			explanations = computePreciseJusts(entailment, Integer.MAX_VALUE);
 		} catch (OWLException e) {
 			throw new ExplanationException(e);
 		}
@@ -292,6 +311,8 @@ public class LaconicExplanationGenerator
 
 	public Set<Explanation> getExplanations(OWLAxiom entailment, int limit)
 			throws ExplanationException {
+		 if (log.isLoggable(Level.CONFIG))
+	            log.config("Get " + (limit == Integer.MAX_VALUE ? "all" : limit) + " explanation(s) for: " + entailment);
 		Set<Explanation> explanations;
 		try {
 			explanations = computePreciseJusts(entailment, limit);

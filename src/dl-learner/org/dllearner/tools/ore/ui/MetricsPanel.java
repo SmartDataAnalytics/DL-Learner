@@ -289,7 +289,7 @@ public class MetricsPanel extends JPanel {
         for (OWLMetricManager man : metricManagerMap.values()) {
             man.setOntology(activeOntology);
         }
-        TitledBorder border = new TitledBorder(activeOntology.getURI().toString());
+        TitledBorder border = new TitledBorder(activeOntology.getURI().toString() + " successfully loaded");
         border.setTitleFont(getFont().deriveFont(Font.BOLD, 12.0f));
         border.setTitleColor(PropertyUtil.getColor(ProtegeProperties.getInstance().getProperty(ProtegeProperties.PROPERTY_COLOR_KEY),
                 Color.GRAY));
