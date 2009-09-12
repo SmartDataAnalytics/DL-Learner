@@ -49,6 +49,11 @@ public class SimpleExplanationTableModel extends AbstractTableModel {
        
 	}
 	
+	@Override
+	public String getColumnName(int column) {
+		return "Axiom";
+	}
+	
 	public OWLAxiom getOWLAxiomAtRow(int rowIndex){
 		return expMan.getOrdering(exp).get(rowIndex).keySet().iterator().next();
 	}

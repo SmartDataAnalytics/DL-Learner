@@ -1,5 +1,8 @@
 package org.dllearner.tools.ore.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ExplanationManager;
@@ -11,6 +14,7 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.RemoveAxiom;
 
 public class ExplanationTableModel extends AbstractTableModel {
@@ -71,36 +75,33 @@ public class ExplanationTableModel extends AbstractTableModel {
 			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 			if(impMan.isSelected(ax)){
 				impMan.removeSelection(ax);
-				if(expMan.isLaconicMode()){
+				if(expMan.isLaconicMode() && !ont.containsAxiom(ax)){
+					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
 						impMan.removeSelection(source);
-						repMan.removeFromRepairPlan(new RemoveAxiom(ont, source));
-						for(OWLAxiom rem : expMan.getRemainingAxioms(source, ax)){
-							repMan.removeFromRepairPlan(new AddAxiom(ont, rem));
+						changes.add(new RemoveAxiom(ont, source));
+						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
+							changes.add(new AddAxiom(ont, remain));
 						}
-						
-//						repMan.removeAxiom2Remove(source);
-//						repMan.removeAxioms2Keep(expMan.getRemainingAxioms(source, ax));
 					}
+					repMan.removeFromRepairPlan(changes);
 				} else {
-//					repMan.removeAxiom2Remove(ax);
 					repMan.removeFromRepairPlan(new RemoveAxiom(ont, ax));
 				}
 			} else {
 				impMan.addSelection(ax);
-				if(expMan.isLaconicMode()){
+				if(expMan.isLaconicMode() && !ont.containsAxiom(ax)){
+					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
 						impMan.addSelection(source);
-						repMan.addToRepairPlan(new RemoveAxiom(ont, source));
-						for(OWLAxiom rem : expMan.getRemainingAxioms(source, ax)){
-							repMan.addToRepairPlan(new AddAxiom(ont, rem));
+						changes.add(new RemoveAxiom(ont, source));
+						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
+							changes.add(new AddAxiom(ont, remain));
 						}
 						
-//						repMan.addAxiom2Remove(source);
-//						repMan.addAxioms2Keep(expMan.getRemainingAxioms(source, ax));
-					}		
+					}
+					repMan.addToRepairPlan(changes);
 				} else {
-//					repMan.addAxiom2Remove(ax);	
 					repMan.addToRepairPlan(new RemoveAxiom(ont, ax));
 				}
 				

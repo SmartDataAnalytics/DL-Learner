@@ -38,6 +38,8 @@ public abstract class BaseDescriptionGenerator
 	private OWLDataFactory factory;
     private static TopTester topChecker = new TopTester();
     private static BottomTester bottomChecker = new BottomTester();
+    
+    
 
     public BaseDescriptionGenerator(OWLDataFactory factory)
     {
@@ -176,10 +178,13 @@ public abstract class BaseDescriptionGenerator
         Set<OWLDescription> descs = new HashSet<OWLDescription>();
         descs.add(desc);
         
-        for(OWLDescription filler : factory.getOWLObjectOneOf(new OWLIndividual[] {(OWLIndividual)desc.getValue()}).accept(this)){ 
-        	descs.add(factory.getOWLObjectSomeRestriction((OWLObjectPropertyExpression)desc.getProperty(), filler));
+//        for(OWLDescription filler : factory.getOWLObjectOneOf(new OWLIndividual[] {(OWLIndividual)desc.getValue()}).accept(this)){ 
+//        	descs.add(factory.getOWLObjectSomeRestriction((OWLObjectPropertyExpression)desc.getProperty(), filler));
+//        }
+        OWLDescription d = factory.getOWLObjectSomeRestriction((OWLObjectPropertyExpression)desc.getProperty(), getLimit());
+        if(!isNothing(d)){
+        	descs.add(d);
         }
-            
 
         descs.add(getLimit());
         return descs;

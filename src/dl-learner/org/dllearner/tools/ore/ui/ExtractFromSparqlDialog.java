@@ -66,6 +66,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	private int returnCode;
 	
 	private JButton okButton = null;
+	@SuppressWarnings("unused")
 	private JButton cancelButton = null;
 	
 	private JComboBox comboBox;
@@ -102,15 +103,6 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		//add predifined endpoints
 		addPredifinedEndpoints();
 		positionErrorDialog(owner);
-	}
-
-	private void positionErrorDialog(Dialog owner) {
-		if (owner == null || !owner.isVisible()) {
-			Dimension screenDimension = Toolkit.getDefaultToolkit()
-					.getScreenSize();
-			setLocation(screenDimension.width / 2 - getSize().width / 2,
-					screenDimension.height / 2 - getSize().height / 2);
-		}
 	}
 	 
 	private void createControls() {
@@ -238,16 +230,19 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	
 	private void addPredifinedEndpoints(){
 		endpointToDefaultGraph = new HashMap<URL, List<String>>();
-//		endpointToDefaultGraph.put(SparqlEndpoint.getEndpointDBpedia().getURL(), SparqlEndpoint.getEndpointDBpedia().getDefaultGraphURIs());
-//		endpointToDefaultGraph.put(SparqlEndpoint.getEndpointDOAPspace().getURL(), SparqlEndpoint.getEndpointDOAPspace().getDefaultGraphURIs());
 		for(SparqlEndpoint endpoint : SparqlEndpoint.listEndpoints()){
 			endpointToDefaultGraph.put(endpoint.getURL(), endpoint.getDefaultGraphURIs());
-		}
-		
+		}		
 		for(URL url : endpointToDefaultGraph.keySet()){
 			comboBox.addItem(url.toString());
+		}		
+	}
+	
+	private void positionErrorDialog(Dialog owner) {
+		if (owner == null || !owner.isVisible()) {
+			Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+			setLocation(screenDimension.width / 2 - getSize().width / 2, screenDimension.height / 2 - getSize().height / 2);
 		}
-		
 	}
 	 
 
@@ -260,8 +255,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		optionsPanel.setVisible(true);
 		//  Cause the new layout to take effect
 		invalidate ();
-		validate ();
-	
+		validate ();	
 	}
 
 	private void collapseOptionsPanel(){
@@ -273,8 +267,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		optionsPanel.setVisible(false);
 		//  Cause the new layout to take effect
 		invalidate ();
-		validate ();
-		
+		validate ();		
 	}
 	 
 	 private JButton createButton (String label, char mnemonic)  {
@@ -302,9 +295,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		 setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);	 
 		 return returnCode;
 	 }
-	 
-
-	
+	 	
 	private void extract() {
 		if(urlIsConnectable()){
 			message.setText("");
@@ -314,8 +305,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			extractTask.execute();
 		} else {
 			message.setText("<html><font color=\"red\">Could not connect to endpoint</html>");
-		}
-		
+		}		
 	}
 	
 	private boolean urlIsConnectable()
@@ -444,7 +434,6 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		}
 	}
 	
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Extract")){
@@ -489,36 +478,28 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			 if(mon.isCanceled()){
 				 extractTask.cancel(true);
 			 }
-		 }
-		
+		 }		
 	}
 
 	@Override
 	public void changedUpdate(DocumentEvent e) {
-		setExtractButtonEnabledToValidInput();
-		
+		setExtractButtonEnabledToValidInput();		
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {
-		setExtractButtonEnabledToValidInput();
-		
+		setExtractButtonEnabledToValidInput();		
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
-		setExtractButtonEnabledToValidInput();
-		
+		setExtractButtonEnabledToValidInput();	
 	}
 	
-
 	public static void main(String[] args){
 		ExtractFromSparqlDialog dialog = new ExtractFromSparqlDialog(null);
 		dialog.showDialog();
-	}
-	
-	
-
+	}		
 }
 
 

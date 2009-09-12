@@ -92,6 +92,12 @@ public class LostEntailmentsChecker {
 			}
 			lostEntailments = SetUtils.difference(entailmentsBefore, entailmentsAfter);
 			addedEntailents = SetUtils.difference(entailmentsAfter, entailmentsBefore);
+			
+			for(OWLOntologyChange change : changes){
+				if(change instanceof RemoveAxiom){
+					lostEntailments.remove(change.getAxiom());
+				}
+			}
 			impact.add(0, lostEntailments);
 			impact.add(1, addedEntailents);
 			manager.applyChanges(getInverseChanges(changes));
@@ -103,6 +109,7 @@ public class LostEntailmentsChecker {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	
 		return impact;
 	}

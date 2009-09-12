@@ -3,12 +3,6 @@ package org.dllearner.tools.ore.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.io.FileNotFoundException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,11 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
@@ -28,19 +19,13 @@ import javax.swing.border.TitledBorder;
 import org.protege.editor.core.PropertyUtil;
 import org.protege.editor.core.ProtegeProperties;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.io.UnparsableOntologyException;
-import org.semanticweb.owl.metrics.AxiomCountMetric;
-import org.semanticweb.owl.metrics.AxiomTypeMetric;
 import org.semanticweb.owl.metrics.DLExpressivity;
-import org.semanticweb.owl.metrics.GCICount;
-import org.semanticweb.owl.metrics.HiddenGCICount;
 import org.semanticweb.owl.metrics.OWLMetric;
 import org.semanticweb.owl.metrics.OWLMetricManager;
 import org.semanticweb.owl.metrics.ReferencedClassCount;
 import org.semanticweb.owl.metrics.ReferencedDataPropertyCount;
 import org.semanticweb.owl.metrics.ReferencedIndividualCount;
 import org.semanticweb.owl.metrics.ReferencedObjectPropertyCount;
-import org.semanticweb.owl.model.AxiomType;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
@@ -68,9 +53,6 @@ public class MetricsPanel extends JPanel {
     
     private OWLOntologyManager manager;
 
-    private JPopupMenu popupMenu;
-
-    private AxiomCountMetric lastMetric;
 
     public MetricsPanel() {
     	this.manager = OWLManager.createOWLOntologyManager();
@@ -86,55 +68,12 @@ public class MetricsPanel extends JPanel {
 		}
 		
         initialiseOWLView();
-        createPopupMenu();
     }
-
-
-    private void createPopupMenu() {
-        popupMenu = new JPopupMenu();
-        popupMenu.add(new AbstractAction("Show axioms") {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public void actionPerformed(ActionEvent e) {
-//                showAxiomTypeDialog();
-
-            }
-        });
-    }
-
-
-//    private void showAxiomTypeDialog() {
-//        Set<? extends OWLAxiom> axioms = lastMetric.getAxioms();
-//        final OWLAxiomTypeFramePanel panel = new OWLAxiomTypeFramePanel(owlEditorKit);
-//        Set<OWLAxiom> axs = new HashSet<OWLAxiom>(axioms);
-//        panel.setRoot(axs);
-//        panel.setPreferredSize(new Dimension(800, 300));
-//        JOptionPane op = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-//        JDialog dlg = op.createDialog(this, lastMetric.getName());
-//        dlg.setResizable(true);
-//        dlg.addWindowListener(new WindowAdapter() {
-//
-//            public void windowClosed(WindowEvent e) {
-//                panel.dispose();
-//            }
-//        });
-//        dlg.setModal(false);
-//        dlg.setVisible(true);
-//    }
-
 
     protected void initialiseOWLView() {
         metricManagerMap = new LinkedHashMap<String, OWLMetricManager>();
         tableModelMap = new HashMap<OWLMetricManager, MetricsTableModel>();
         createBasicMetrics();
-//        createClassAxiomMetrics();
-//        createObjectPropertyAxiomMetrics();
-//        createDataPropertyAxiomMetrics();
-//        createIndividualAxiomMetrics();
-//        createAnnotationAxiomMetrics();
         createUI();
         updateView(manager.getOntologies().iterator().next());
         for(OWLMetricManager man : metricManagerMap.values()) {
@@ -144,7 +83,6 @@ public class MetricsPanel extends JPanel {
             }
         }
     }
-
 
     private void createUI() {
     	
@@ -193,98 +131,6 @@ public class MetricsPanel extends JPanel {
         metricManagerMap.put("Metrics", metricManager);
     }
 
-
-    private void createClassAxiomMetrics() {
-        List<OWLMetric> metrics = new ArrayList<OWLMetric>();
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.SUBCLASS));
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.EQUIVALENT_CLASSES));
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.DISJOINT_CLASSES));
-        metrics.add(new GCICount(manager));
-        metrics.add(new HiddenGCICount(manager));
-        OWLMetricManager metricManager = new OWLMetricManager(metrics);
-        metricManagerMap.put("Class axioms", metricManager);
-    }
-
-
-    private void createObjectPropertyAxiomMetrics() {
-        List<OWLMetric> metrics = new ArrayList<OWLMetric>();
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.SUB_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.EQUIVALENT_OBJECT_PROPERTIES));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.INVERSE_OBJECT_PROPERTIES));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.DISJOINT_OBJECT_PROPERTIES));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.FUNCTIONAL_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.TRANSITIVE_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.SYMMETRIC_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.ANTI_SYMMETRIC_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.REFLEXIVE_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.IRREFLEXIVE_OBJECT_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.OBJECT_PROPERTY_DOMAIN));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.OBJECT_PROPERTY_RANGE));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.PROPERTY_CHAIN_SUB_PROPERTY));
-        OWLMetricManager metricManager = new OWLMetricManager(metrics);
-        metricManagerMap.put("Object property axioms", metricManager);
-    }
-
-
-    private void createDataPropertyAxiomMetrics() {
-        List<OWLMetric> metrics = new ArrayList<OWLMetric>();
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.SUB_DATA_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.EQUIVALENT_DATA_PROPERTIES));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.DISJOINT_DATA_PROPERTIES));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.FUNCTIONAL_DATA_PROPERTY));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.DATA_PROPERTY_DOMAIN));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.DATA_PROPERTY_RANGE));        
-        OWLMetricManager metricManager = new OWLMetricManager(metrics);
-        metricManagerMap.put("Data property axioms", metricManager);
-    }
-
-
-    private void createIndividualAxiomMetrics() {
-        List<OWLMetric> metrics = new ArrayList<OWLMetric>();
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.CLASS_ASSERTION));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.OBJECT_PROPERTY_ASSERTION));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.DATA_PROPERTY_ASSERTION));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.NEGATIVE_OBJECT_PROPERTY_ASSERTION));
-        metrics.add(new AxiomTypeMetric(manager,
-                                        AxiomType.NEGATIVE_DATA_PROPERTY_ASSERTION));
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.SAME_INDIVIDUAL));
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.DIFFERENT_INDIVIDUALS));
-        OWLMetricManager metricManager = new OWLMetricManager(metrics);
-        metricManagerMap.put("Individual axioms", metricManager);
-    }
-
-
-    private void createAnnotationAxiomMetrics() {
-        List<OWLMetric> metrics = new ArrayList<OWLMetric>();
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.ENTITY_ANNOTATION));
-        metrics.add(new AxiomTypeMetric(manager, AxiomType.AXIOM_ANNOTATION));
-        OWLMetricManager metricManager = new OWLMetricManager(metrics);
-        metricManagerMap.put("Annotation axioms", metricManager);
-    }
-    
-
     public void updateView(OWLOntology activeOntology) {
         for (OWLMetricManager man : metricManagerMap.values()) {
             man.setOntology(activeOntology);
@@ -296,39 +142,5 @@ public class MetricsPanel extends JPanel {
         setBorder(border);
         repaint();
     }
-
-    
-
-    private void exportCSV() {
-        StringBuilder sb = new StringBuilder();
-        for(OWLMetricManager man : metricManagerMap.values()) {
-            sb.append(man.toString());
-        }
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(new StringSelection(sb.toString()), null);
-    }
-    
-    public static void main(String[] args) {
-    	String file = "file:examples/ore/tambis.owl";
-    	URI uri2 = URI.create("file:/home/lorenz/Desktop/Finance.owl");
-    	URI uri = URI.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.ow");
-  	  
-
-  	  OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-  	  try{
-  		OWLOntology ontology = manager.loadOntology( uri );
-  	  } catch (OWLOntologyCreationException e){
-  		  System.out.println(e.getClass());
-  		  System.out.println(e.getClass().equals(UnparsableOntologyException.class));
-//  		  System.out.println(e.getCause());
-  		  e.printStackTrace();
-  	  }
-  		JFrame test = new JFrame();
-  		test.setBounds(200, 200, 600, 200);
-  		test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  		test.add(new MetricsPanel());
-  		test.setVisible(true);
-  		
-  		
-    }
+ 
 }

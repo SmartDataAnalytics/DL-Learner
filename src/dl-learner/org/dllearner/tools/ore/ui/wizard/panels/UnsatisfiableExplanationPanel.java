@@ -43,10 +43,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private JSplitPane splitPane;
-	private JSplitPane statsSplitPane;
-	
+
 	private UnsatisfiableClassesTable unsatClassesTable;
 	private JScrollPane unsatClassesScrollPane;
 	
@@ -70,21 +67,50 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	
 	public UnsatisfiableExplanationPanel(){
 		expMan = ExplanationManager.getInstance(OREManager.getInstance());
-		
+		createUI();
+	}
+	
+	private void createUI(){
 		setLayout(new BorderLayout());
-
-		Dimension minimumSize = new Dimension(400, 400);
-
-		unsatClassesTable = new UnsatisfiableClassesTable();
-		unsatClassesScrollPane = new JScrollPane(unsatClassesTable);
-		unsatClassesScrollPane.setPreferredSize(minimumSize);
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		mainSplitPane.setOneTouchExpandable(true);
+		mainSplitPane.setDividerLocation(200);
+		mainSplitPane.setBorder(null);
+		
+		mainSplitPane.setLeftComponent(createUnsatClassesPanel());
+		mainSplitPane.setRightComponent(createDebuggingPanel());
+		
+		add(mainSplitPane);		
+	}
+	
+	private JComponent createUnsatClassesPanel(){
 		JPanel unsatClassesHolder = new JPanel();
 		unsatClassesHolder.setLayout(new BorderLayout());
+		
 		JLabel title = new JLabel("Unsatisfiable classes");
 		title.setFont(getFont().deriveFont(Font.BOLD));
 		unsatClassesHolder.add(title, BorderLayout.PAGE_START);
+		
+		unsatClassesTable = new UnsatisfiableClassesTable();
+		unsatClassesScrollPane = new JScrollPane(unsatClassesTable);
+		unsatClassesScrollPane.setPreferredSize(new Dimension(400, 400));	
 		unsatClassesHolder.add(unsatClassesScrollPane, BorderLayout.CENTER);
+		
+		return unsatClassesHolder;
+	}
+	
+	private JComponent createDebuggingPanel(){
+		JSplitPane debuggingSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		debuggingSplitPane.setDividerLocation(500);
+		debuggingSplitPane.setOneTouchExpandable(true);
 
+		debuggingSplitPane.setTopComponent(createExplanationPanel());
+		debuggingSplitPane.setBottomComponent(createImpactRepairPanel());
+		
+		return debuggingSplitPane;
+	}
+	
+	private JComponent createExplanationPanel(){
 		explanationsPanel = new Box(1);
 		
 		explanationPanels = new HashSet<ExplanationTablePanel>();
@@ -92,29 +118,24 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		JPanel pan = new JPanel(new BorderLayout());
 		pan.add(explanationsPanel, BorderLayout.NORTH);
 		explanationsScrollPane = new JScrollPane(pan);
-		explanationsScrollPane.setPreferredSize(minimumSize);
-		explanationsScrollPane.setBorder(BorderFactory
-				.createLineBorder(Color.LIGHT_GRAY));
+//		explanationsScrollPane.setPreferredSize(minimumSize);
+		explanationsScrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		explanationsScrollPane.getViewport().setOpaque(true);
 		explanationsScrollPane.getViewport().setBackground(null);
 		explanationsScrollPane.setOpaque(true);
-		
-		
-		GridBagLayout layout = new GridBagLayout();
-		buttonPanel = new JPanel();
-		buttonPanel.setLayout(layout);
-		
+			
 		regularButton = new JRadioButton("Show regular explanations", true);
 		regularButton.setActionCommand("regular");
 		regularButton.setSelected(true);
 		laconicButton = new JRadioButton("Show precise explanations");
 		laconicButton.setActionCommand("laconic");
-		
-		
+			
 		explanationType = new ButtonGroup();
 		explanationType.add(regularButton);
 		explanationType.add(laconicButton);
 		
+		buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridBagLayout());
 		buttonPanel.add(regularButton, new GridBagConstraints(0, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 2, 30), 0, 0));
 		buttonPanel.add(laconicButton, new GridBagConstraints(0, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 30), 0, 0));
 		
@@ -125,11 +146,11 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		maxExplanationsSelector.setEnabled(true);
 	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
 	    maxExplanationsSelector.setModel(spinnerModel);
+	    maxExplanationsSelector.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
 	    
 	    computeAllExplanationsRadioButton = new JRadioButton("compute all explanations");
 	    computeAllExplanationsRadioButton.setActionCommand("all");
-	    
-	        
+	            
 	    computeMaxExplanationsRadioButton = new JRadioButton("limit explanation count to:");
 	    computeMaxExplanationsRadioButton.setActionCommand("max");
 	    computeMaxExplanationsRadioButton.setSelected(true);
@@ -138,59 +159,42 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	    limitButtonGroup.add(computeAllExplanationsRadioButton);
 	    limitButtonGroup.add(computeMaxExplanationsRadioButton);
 	       
-	        buttonPanel.add(computeAllExplanationsRadioButton, new GridBagConstraints(1, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
-	        buttonPanel.add(computeMaxExplanationsRadioButton, new GridBagConstraints(1, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
-	        
+	    buttonPanel.add(computeAllExplanationsRadioButton, new GridBagConstraints(1, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
+	    buttonPanel.add(computeMaxExplanationsRadioButton, new GridBagConstraints(1, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
+	    buttonPanel.add(maxExplanationsSelector, new GridBagConstraints(3, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
+	  
 	       
-	        buttonPanel.add(maxExplanationsSelector, new GridBagConstraints(3, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
-	        maxExplanationsSelector.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
-	       
-	        
-
 		buttonExplanationsPanel = new JPanel();
 		buttonExplanationsPanel.setLayout(new BorderLayout());
-		buttonExplanationsPanel
-				.add(explanationsScrollPane, BorderLayout.CENTER);
+		buttonExplanationsPanel.add(explanationsScrollPane, BorderLayout.CENTER);
 		buttonExplanationsPanel.add(buttonPanelHolder, BorderLayout.NORTH);
-
-		statsSplitPane = new JSplitPane(0);
-		statsSplitPane.setResizeWeight(1.0D);
-		statsSplitPane.setTopComponent(buttonExplanationsPanel);
 		
-		//repair panel
+		return buttonExplanationsPanel;
+
+	}
+	
+	private JComponent createImpactRepairPanel(){
 		JPanel impactRepairPanel = new JPanel();
 		impactRepairPanel.setLayout(new BorderLayout());
 		impactRepairPanel.add(new JLabel("Repair plan"), BorderLayout.NORTH);
+		
 		JSplitPane impRepSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		impRepSplit.setOneTouchExpandable(true);
 		impRepSplit.setDividerLocation(600);
 		impRepSplit.setBorder(null);
 		impactRepairPanel.add(impRepSplit);
 		
+		JScrollPane impScr = new JScrollPane(new ImpactTable());
 		JPanel impactPanel = new JPanel();
 		impactPanel.setLayout(new BorderLayout());
 		impactPanel.add(new JLabel("Impact"), BorderLayout.NORTH);
-		JScrollPane impScr = new JScrollPane(new ImpactTable());
 		impactPanel.add(impScr);
 		impRepSplit.setRightComponent(impactPanel);
 		
 		RepairPlanPanel repairPanel = new RepairPlanPanel(); 
 		impRepSplit.setLeftComponent(repairPanel);
 		
-		
-		statsSplitPane.setBottomComponent(impactRepairPanel);
-		
-		statsSplitPane.setBorder(null);
-		statsSplitPane.setDividerLocation(500);
-		statsSplitPane.setOneTouchExpandable(true);
-
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, unsatClassesHolder, //unsatClassesScrollPane,
-				statsSplitPane);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(200);
-		splitPane.setBorder(null);
-
-		add(splitPane);
+		return impactRepairPanel;
 	}
 	
 	public void fillUnsatClassesTable(List<OWLClass> unsatClasses) {

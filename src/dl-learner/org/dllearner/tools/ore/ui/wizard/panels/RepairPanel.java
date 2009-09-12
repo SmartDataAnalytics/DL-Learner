@@ -58,27 +58,31 @@ public class RepairPanel extends JPanel{
 	private JButton negDeleteButton;
 	private JButton negAddButton;
 	
+	private GridBagConstraints c;
+	
 	
 	public RepairPanel() {
-		
+		createUI();
+	}
+	
+	private void createUI(){
 		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
-		add(getPosPanel(), c);
+		createPosPanel();
 		c.gridx = 1;
-		add(getNegPanel(), c);
-		
+		createNegPanel();
 	}
 	
-	private JPanel getPosPanel(){
+	private void createPosPanel(){
 		posPanel = new JPanel();
 		posPanel.setName("positive");
 		posPanel.setLayout(new GridBagLayout());
 		posPanel.setBorder(new TitledBorder("Positive examples"));
 		
-		GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setName("positive");
@@ -92,33 +96,33 @@ public class RepairPanel extends JPanel{
 		posRepairButton = new JButton("Repair");
 		posRepairButton.setActionCommand("posRepair");
 		buttonPanel.add(posRepairButton);
-		c.anchor = GridBagConstraints.NORTH;
-		posPanel.add(buttonPanel, c);
+		gbc.anchor = GridBagConstraints.NORTH;
+		posPanel.add(buttonPanel, gbc);
 		
 		posTable = new IndividualsTable();
 		posScrollPane = new JScrollPane(posTable);
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1;
-		c.weighty = 1;
-		posPanel.add(posScrollPane, c);
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		posPanel.add(posScrollPane, gbc);
 		
-		return posPanel;
+		add(posPanel, c);
 	}
 	
-	private JPanel getNegPanel(){
+	private void createNegPanel(){
 		negPanel = new JPanel();
 		negPanel.setName("negative");
 		negPanel.setLayout(new GridBagLayout());
 		negPanel.setBorder(new TitledBorder("Negative examples"));
 		
-		GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints gbc = new GridBagConstraints();
 			
 		negTable = new IndividualsTable();
 		negScrollPane = new JScrollPane(negTable);
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1;
-		c.weighty = 1;
-		negPanel.add(negScrollPane, c);
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		negPanel.add(negScrollPane, gbc);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setName("negative");
@@ -132,13 +136,13 @@ public class RepairPanel extends JPanel{
 		negRepairButton = new JButton("Repair");
 		negRepairButton.setActionCommand("negRepair");
 		buttonPanel.add(negRepairButton);
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0;
-		c.weighty = 0;
-		c.anchor = GridBagConstraints.NORTH;
-		negPanel.add(buttonPanel, c);
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.anchor = GridBagConstraints.NORTH;
+		negPanel.add(buttonPanel, gbc);
 		
-		return negPanel;
+		add(negPanel, c);
 	}
 	
 	/**

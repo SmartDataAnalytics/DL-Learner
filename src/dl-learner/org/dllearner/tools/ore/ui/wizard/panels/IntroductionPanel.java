@@ -47,19 +47,28 @@ public class IntroductionPanel extends JPanel {
     private JScrollPane jScrollPane1;
         
     private JLabel welcomeTitle;
+    
+    private final String introductionText = "This is a tool for debugging end enriching OWL-ontologies. " 
+		+ "You are able to check ontologies for inconsistency and unsatisfiable classes. " 
+		+ "If some of that is detected, helpful explanations can be generated to find out the relevant axioms. " 
+		+ "Another feature is to get equivalent class expressions for atomic classes, using an intelligent and efficient " 
+		+ "machine learning algorithm. TODO...Jens ";
 
      
     
     
     public IntroductionPanel() {
+    	createUI();
+    }
+    
+    private void createUI(){
     	setLayout(new GridBagLayout());
     	GridBagConstraints c = new GridBagConstraints();
     	c.gridwidth = GridBagConstraints.REMAINDER;
     	c.fill = GridBagConstraints.HORIZONTAL;
     	c.weightx = 1.0;
     	c.anchor = GridBagConstraints.NORTH;
-    	
-    	
+    	 	
         //setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(12, 6, 12, 12));
         
@@ -81,11 +90,7 @@ public class IntroductionPanel extends JPanel {
         instructionsField.setLineWrap(true);
         instructionsField.setRows(5);    
         instructionsField.setFont(new Font("Serif", Font.PLAIN, 14));
-        instructionsField.setText("This is a tool for debugging end enriching OWL-ontologies. " 
-        							+ "You are able to check ontologies for inconsistency and unsatisfiable classes. " 
-        							+ "If some of that is detected, helpful explanations can be generated to find out the relevant axioms. " 
-        							+ "Another feature is to get equivalent class expressions for atomic classes, using an intelligent and efficient " 
-        							+ "machine learning algorithm. TODO...Jens ");
+        instructionsField.setText(introductionText);
         instructionsField.setWrapStyleWord(true);
         jScrollPane1.setViewportView(instructionsField);
         add(jScrollPane1, c);

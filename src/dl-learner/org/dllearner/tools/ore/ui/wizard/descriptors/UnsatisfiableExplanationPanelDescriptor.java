@@ -51,7 +51,6 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	
 	public UnsatisfiableExplanationPanelDescriptor(){
 		setPanelDescriptorIdentifier(IDENTIFIER);	
-//		init();
 	}
 	
 	public void init() {
@@ -68,7 +67,6 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		panel.addChangeListener(this);
 		
 		setPanelComponent(panel);
-//		getWizard().updatePanel(panel, this.IDENTIFIER);
 	}
 	
     private void showExplanations(){
@@ -300,7 +298,5 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 				});
 			}
 	 }
-	 
-
 
 }

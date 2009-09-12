@@ -49,9 +49,6 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		lastRequestedRegularSize = new HashMap<OWLAxiom, Integer>();
 		lastRequestedLaconicSize = new HashMap<OWLAxiom, Integer>();
 		RepairManager.getInstance(OREManager.getInstance()).addListener(this);
-//		regularExpGen = new PelletExplanation(manager, Collections.singleton(ontology));
-//		laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(ontology));
-
 	}
 	
 	public void setComputeLaconicExplanations(boolean laconic){
@@ -63,14 +60,12 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 	}
 
 	@Override
-	public Explanation getExplanation(OWLAxiom entailment){
-		
+	public Explanation getExplanation(OWLAxiom entailment){		
 		return getExplanations(entailment, 1).iterator().next();
 	}
 
 	@Override
-	public Set<Explanation> getExplanations(OWLAxiom entailment){
-		
+	public Set<Explanation> getExplanations(OWLAxiom entailment){		
 		return getExplanations(entailment, -1);
 	}
 
@@ -105,6 +100,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 			}
 			axiom2Module.put(entailment, module);
 			laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(module));
+			laconicExpGen.setProgressMonitor(TaskManager.getInstance().getStatusBar());
 			if(limit == -1){
 				explanations = laconicExpGen.getExplanations(entailment);
 			} else {
