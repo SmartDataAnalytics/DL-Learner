@@ -73,27 +73,13 @@ public class LeftPanel extends JPanel{
 	 * @param i number of the step
 	 */
 	public void set(int i){
-		removeAll();
-	
-		setBackground(new java.awt.Color(255, 255, 255));
-    	JPanel panel2 = new JPanel();
-    	panel2.setBackground(new java.awt.Color(255, 255, 255));
-    	panel2.setLayout(new GridLayout(7, 1, 0, 10));
-    	jLabel[0] = new JLabel("1. Introduction");
-		jLabel[1] = new JLabel("2. Knowledge Source");
-		jLabel[2] = new JLabel("3. Debugging");
-		jLabel[3] = new JLabel("4. Choose Class");
-		jLabel[4] = new JLabel("5. Learn");
-		jLabel[5] = new JLabel("6. Repair");
-		jLabel[6] = new JLabel("7. Save/Exit");
+		
+		for(int j = 0; j < jLabel.length; j++){
+			jLabel[j].setFont(jLabel[j].getFont().deriveFont(Font.PLAIN));
+		}
 		
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
-		
-		for(JLabel current : jLabel){
-			panel2.add(current);
-		}
-		setLayout(new BorderLayout());
-		add(panel2, BorderLayout.NORTH);
+		validate();
 	}
 	
 }

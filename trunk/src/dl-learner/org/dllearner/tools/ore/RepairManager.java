@@ -64,8 +64,18 @@ public class RepairManager implements OREManagerListener{
 		fireRepairPlanChanged();
 	}
 	
+	public void addToRepairPlan(List<OWLOntologyChange> changes){
+		repairPlan.addAll(changes);
+		fireRepairPlanChanged();
+	}
+	
 	public void removeFromRepairPlan(OWLOntologyChange change){
 		repairPlan.remove(change);
+		fireRepairPlanChanged();
+	}
+	
+	public void removeFromRepairPlan(List<OWLOntologyChange> changes){
+		repairPlan.removeAll(changes);
 		fireRepairPlanChanged();
 	}
 	

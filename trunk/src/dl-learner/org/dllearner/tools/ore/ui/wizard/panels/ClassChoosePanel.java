@@ -20,8 +20,9 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,31 +41,23 @@ public class ClassChoosePanel extends JPanel{
 
 	private ClassesTable classesTable;
 	
-	private JPanel contentPanel;
-
 	/**
 	 * Constructor.
 	 */
-
 	public ClassChoosePanel() {
-		
-		super();
-		
-		contentPanel = getContentPanel();
-		setLayout(new java.awt.BorderLayout());
-		add(contentPanel, BorderLayout.CENTER);
-	
+		createUI();
 	}
-
-	private JPanel getContentPanel() {
-		contentPanel = new JPanel();
+	
+	private void createUI(){
+		setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 1.0;
 		classesTable = new ClassesTable();
 		JScrollPane scroll = new JScrollPane(classesTable);
-		contentPanel.add(scroll);
 		scroll.setPreferredSize(new Dimension(400, 400));
-		
-		return contentPanel;
+		add(scroll, c);
 	}
 	
 	/**

@@ -37,14 +37,14 @@ public class PelletBug {
 	       PelletExplanation expGen = new PelletExplanation(manager, Collections.singleton(ontology));
 	       System.out.println(reasoner.isEntailed(axiom));
 	       
-//	       System.out.println(expGen.getEntailmentExplanations(axiom));
-//	       
-//	       OWLDataRange range = factory.getTopDataType();
-//	       OWLDataSomeRestriction dataSome = factory.getOWLDataSomeRestriction(property, range);
-//	       OWLSubClassAxiom subClass = factory.getOWLSubClassAxiom(dataSome, domain);      
-//	       
-//	       System.out.println(reasoner.isEntailed(subClass));
-//	       System.out.println(expGen.getEntailmentExplanations(subClass));
+	       System.out.println(expGen.getEntailmentExplanations(axiom));
+	       
+	       OWLDataRange range = factory.getTopDataType();
+	       OWLDataSomeRestriction dataSome = factory.getOWLDataSomeRestriction(property, range);
+	       OWLSubClassAxiom subClass = factory.getOWLSubClassAxiom(dataSome, domain);      
+	       
+	       System.out.println(reasoner.isEntailed(subClass));
+	       System.out.println(expGen.getEntailmentExplanations(subClass));
 	      
 	   } 
 }

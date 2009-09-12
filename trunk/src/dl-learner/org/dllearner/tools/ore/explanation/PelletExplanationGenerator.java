@@ -17,7 +17,6 @@ import org.semanticweb.reasonerfactory.pellet.PelletReasonerFactory;
 
 import com.clarkparsia.explanation.BlackBoxExplanation;
 import com.clarkparsia.explanation.GlassBoxExplanation;
-import com.clarkparsia.explanation.HSTExplanationGenerator;
 import com.clarkparsia.explanation.SatisfiabilityConverter;
 import com.clarkparsia.explanation.TransactionAwareSingleExpGen;
 import com.clarkparsia.explanation.util.ExplanationProgressMonitor;

@@ -22,12 +22,15 @@ package org.dllearner.tools.ore;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.dllearner.tools.ore.ui.wizard.Wizard;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
@@ -44,12 +47,21 @@ import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
  *
  */
 public class OREApplication {
+	
     
 	/**
 	 * main method.
 	 * @param args possible is to use URI as parameter
 	 */
     public static void main(String[] args) {
+    	try {
+			PropertyConfigurator.configure(new URL("file:src/dl-learner/org/dllearner/tools/ore/log4j.properties"));
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    	
+    	
     	try {
 //    		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -111,7 +123,7 @@ public class OREApplication {
 			@Override
 			public void run() {
 				System.out.println("Starting application...");
-				int ret = wizard.showModalDialog(); 
+				wizard.showModalDialog(); 
 				System.out.println("Exited ORE application");
 				System.exit(0);
 				

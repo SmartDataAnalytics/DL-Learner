@@ -20,10 +20,8 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.net.URI;
@@ -33,7 +31,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.dllearner.tools.ore.OREManager;
@@ -50,54 +47,30 @@ public class KnowledgeSourcePanel extends JPanel{
 
 	private static final long serialVersionUID = -3997200565180270088L;
 
-	
-	private JPanel contentPanel;
-
 	private Box box;
+	
 	private LinkLabel openFromFileLink;
 	private LinkLabel openFromURILink;
 	private LinkLabel loadFromSparqlEndpointLink;
+	
 	private List<LinkLabel> openFromRecentLinks;
 	private Box recentLinkBox;
-	private GridBagConstraints c;
 	
 	private MetricsPanel metricsPanel;
 	
-	private JLabel ontologyName;
-
-	
-	
-	public KnowledgeSourcePanel() {
-		
+	public KnowledgeSourcePanel() {		
 		openFromRecentLinks = new ArrayList<LinkLabel>();
-//		setBackground(Color.WHITE);
-		new LeftPanel(1);
-		contentPanel = getContentPanel();
-
-		setLayout(new GridBagLayout());
-		c = new GridBagConstraints();
-		
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-	    c.fill = GridBagConstraints.HORIZONTAL;
-	    add(contentPanel, c);
-//	    addMetricsPanel();
-	   
-
+		createUI();
 	}
-
-	private JPanel getContentPanel() {
-
-		JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-       
-        int strutHeight = 10;
- 
+	
+	private void createUI(){
+		setLayout(new GridBagLayout());
+		
+		int strutHeight = 10;
+		 
         box = new Box(BoxLayout.Y_AXIS);
         box.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 0));
-        panel.add(box);
+        add(box);
         
         openFromFileLink = new LinkLabel("Open OWL-Ontology from filesystem");
         openFromFileLink.setName("openFromFileLink");
@@ -116,10 +89,7 @@ public class KnowledgeSourcePanel extends JPanel{
         box.add(loadFromSparqlEndpointLink);
         
         box.add(Box.createVerticalStrut(2 * strutHeight));
-        
-        
-        
-        
+     
         if (RecentManager.getInstance().getURIs().size() > 0) {
             recentLinkBox = new Box(BoxLayout.Y_AXIS);
 
@@ -142,33 +112,16 @@ public class KnowledgeSourcePanel extends JPanel{
             }
             box.add(recentLinkBox);
         }
-
+        
         metricsPanel = new MetricsPanel();
+        metricsPanel.setVisible(false);
         box.add(Box.createVerticalStrut(4 * strutHeight));
         box.add(metricsPanel);
-        panel.add(box);
-        
-        
-		return panel;
-	}
-	
-	public void addMetricsPanel() {
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		
-		
-		metricsPanel = new MetricsPanel();
-		
-		add(metricsPanel, c);
 	}
 	
 	public void updateMetrics(){
 		metricsPanel.updateView(OREManager.getInstance().getReasoner().getOWLAPIOntologies());
+		metricsPanel.setVisible(true);
 	}
 	
 	public void addListeners(ActionListener aL) {
@@ -177,9 +130,6 @@ public class KnowledgeSourcePanel extends JPanel{
 		loadFromSparqlEndpointLink.addLinkListener(aL);
 		for(LinkLabel link : openFromRecentLinks){
 			link.addLinkListener(aL);
-		}
-		
-    }
-	
-	
+		}		
+    }	
 }

@@ -3,21 +3,16 @@ package org.dllearner.tools.ore.ui;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 
-public class SparqlExtractOptionsPanel extends JPanel implements ActionListener {
+public class SparqlExtractOptionsPanel extends JPanel{
 
 	/**
 	 * 
@@ -34,22 +29,10 @@ public class SparqlExtractOptionsPanel extends JPanel implements ActionListener 
 	private JCheckBox getAllSuperClassesCheckBox;
 	private JCheckBox useLitsCheckBox;
 	
-	private JToggleButton advancedButton;
-	private JPanel advancedPanel;
-	
-	
-	private Icon untoggledIcon;
-	private Icon toggledIcon;
-	
-	
 	public SparqlExtractOptionsPanel(){
-		
-		untoggledIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/untoggled.gif");
-		toggledIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/toggled.gif");
 		createUI();
 		setDefaults();
-		setToolTips();
-		
+		setToolTips();	
 	}
 	
 	private void createUI(){
@@ -151,15 +134,6 @@ public class SparqlExtractOptionsPanel extends JPanel implements ActionListener 
 		c.gridy = 8;
 		add(useLitsCheckBox, c);
 		
-		
-		c.gridx = 0;
-		c.gridy = 9;
-		advancedButton = new JToggleButton("Advanced settings");
-		advancedButton.setActionCommand("untoggled");
-		advancedButton.setIcon(untoggledIcon);
-		advancedButton.addActionListener(this);
-//		add(advancedButton, c);
-		
 	}
 	
 	public int getRecursionDepthValue(){
@@ -222,29 +196,12 @@ public class SparqlExtractOptionsPanel extends JPanel implements ActionListener 
 		useLitsCheckBox.setToolTipText("use Literals in SPARQL query");
 	}
 	
-	private void showAdvancedPanel(){
-		advancedPanel = new JPanel();
-		
-	}
-	
 	public static void main(String[] args){
 		JFrame frame = new JFrame();
 		frame.add(new SparqlExtractOptionsPanel());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(400, 400));
 		frame.setVisible(true);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals("untoggled")){
-			advancedButton.setIcon(toggledIcon);
-			advancedButton.setActionCommand("toggled");
-		} else {
-			advancedButton.setIcon(untoggledIcon);
-			advancedButton.setActionCommand("untoggled");
-		}
-		
 	}
 
 }

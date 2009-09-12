@@ -33,10 +33,10 @@ public class LaconicTest {
 	
 	public static void main(String[] args) {
 
-//		test();
+		test();
 		miniTest();
-//		miniEconomyTest();
-//		universityTest();
+		miniEconomyTest();
+		universityTest();
 	}
 
 	public static void test(){
@@ -55,7 +55,6 @@ public class LaconicTest {
 				OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
 						.create(file));
 				
-				Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
 				Reasoner reasoner = resonerFact.createReasoner(manager);
 				reasoner.loadOntologies(Collections.singleton(ontology));
 				System.out.println(reasoner.getInconsistentClasses());
