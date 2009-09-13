@@ -32,9 +32,7 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
                                 -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; }
                                 
 /* button-click-feeling for links, by offsetting top position */
-#prev:active, #next:active, 
-#stop:active, #mute:active
-#playPause:active,            { position: relative; top: 2px; }
+#playerControls a:active      { position: relative; top: 2px; }
 #playlist .delete:active, 
 #playlist .moveUp:active, 
 #playlist .moveDown:active    { top: 6px; }

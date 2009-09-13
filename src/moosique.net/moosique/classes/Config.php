@@ -14,7 +14,7 @@ class Config {
    * the config values and hand them to $this->config
    */
   function __construct() {
-    $this->config = parse_ini_file('config.ini', true);
+    $this->config = parse_ini_file(dirname(__FILE__) . '/../config.ini', true);
 
     // we activate the debugger output if debugging is active
     if ($this->getConfig('debug') == 1)  {

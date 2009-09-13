@@ -9,7 +9,11 @@ class View extends Config {
     parent::__construct(); // init config
         
     if (empty($data)) {
-      $this->html = '<h2>Nothing found.</h2>';
+      switch($searchType) {
+        case 'artistSearch' : $this->html = '<h2>No Artists found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+        case 'tagSearch' : $this->html = '<h2>No Tags found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+        case 'songSearch' : $this->html = '<h2>No Songs found for &raquo;' . $_GET['searchValue'] . '&laquo;.</h2>'; break;
+      }
     } else {
       $this->html = '';
       $this->createOutput($searchType, $data);
@@ -21,26 +25,27 @@ class View extends Config {
    */ 
   private function createOutput($searchType, $data) {
     $mergedArray = array();
-
+    
+    $this->html .= $this->displaySearchHeader($searchType);
+    
     switch ($searchType) {
       case 'artistSearch' :
         $mergedArray = $this->mergeArray($data, 'artist');      
         // remove double-values recursively
         $mergedArray = $this->arrayUnique($mergedArray);
         // create the HTML-Output
-        $this->artistSearchHTML($mergedArray);
+        $this->html .= $this->artistSearchHTML($mergedArray);
       break;
       
       case 'tagSearch' :
         $mergedArray = $this->mergeArray($data, 'tag');
-        $this->tagSearchHTML($mergedArray);
+        $this->html .= $this->tagSearchHTML($mergedArray);
       break;
       
       case 'songSearch' :
         $mergedArray = $this->mergeArray($data, 'track');
         $mergedArray = $this->arrayUnique($mergedArray);
-        $this->debugger->log($mergedArray, "MERGEDSONGARRAY");
-        $this->songSearchHTML($mergedArray);
+        $this->html .= $this->songSearchHTML($mergedArray);
       break;
       
       case 'albumPlaylist' :
@@ -48,17 +53,14 @@ class View extends Config {
         $mergedArray = $this->object2array($playlistObject);
         // prepend the album stream-information
         $mergedArray['albumID'] = $data['albumID'];
-        $this->albumPlaylistHTML($mergedArray);
+        $this->html = $this->albumPlaylistHTML($mergedArray);
       break;
 
       case 'trackPlaylist' :
-        $this->debugger->log($data, 'DATA');
         $playlistObject = simplexml_load_file($data['playlist']);
         $mergedArray = $this->object2array($playlistObject);
-        $this->debugger->log($mergedArray, "PLAYLIST");
         $mergedArray['albumID'] = $data['albumID'];
-        $this->trackPlaylistHTML($mergedArray);
-
+        $this->html = $this->trackPlaylistHTML($mergedArray);
       break;
     }
   }
@@ -145,7 +147,7 @@ class View extends Config {
       
     }
     $output .= '</ul></div>';
-    $this->html .= $output;
+    return $output;
   }
   
   /**
@@ -155,9 +157,8 @@ class View extends Config {
    */
   private function tagSearchHTML($array) {
     $output = '<div class="tagSearch">';
-    $output .= $this->displayLimitInfo();
-
     foreach ($array as $key => $tag) {
+
       $numberOfAlbums = sizeof($this->getValue($tag['record']));
       $output .= '<h3>Albums tagged with <em>' 
                . str_replace('http://dbtune.org/jamendo/tag/', '', $key) 
@@ -229,11 +230,8 @@ class View extends Config {
       $output .= '</ul>';
     }
     $output .= '</div>';
-    $this->html .= $output;
+    return $output;
   }
-  
-  
-  
   
 
   private function songSearchHTML($array) {
@@ -301,23 +299,17 @@ class View extends Config {
         }
         // remove the uri, we only want to have the tag-name
         $tags = str_replace('http://dbtune.org/jamendo/tag/', '', $tags);
-      } else {
-        $this->debugger->log($song['tag'], 'TAGS');
-      }
-    
+      } 
+      
       $output .= sprintf($template,
         $class, $artistName . ' - ' . $songTitle, $image, $tags, $addToPlaylist
       );
     }
     $output .= '</ul></div>';
-    $this->html .= $output;
+    return $output;
   }
 
-   
-  private function allSearchHTML($array) {      
 
-  }
-  
   
   /** 
    * If there is a global Limit for shown results set, this
@@ -325,20 +317,27 @@ class View extends Config {
    * 
    * @return String Information about gloabl Search-Limit
    */
-  private function displayLimitInfo() {
+  private function displaySearchHeader($searchType) {
     $info = '';
+    switch($searchType) {
+      case 'artistSearch' : $info .= '<h2>Artist-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+      case 'tagSearch'    : $info .= '<h2>Tag-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+      case 'songSearch'   : $info .= '<h2>Song-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+      default             : $info = ''; break;
+    }
+
+    /* Don't show this info
     if ($this->getConfig('globalLimit') == 1) {
       $info .= '<p class="note">Please note: the maximum number of shown search results is '
             . $this->getConfig('maxResults') . '.</p>';
     }
-    $info .= '<h2>Search results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
+    */
+
     return $info;
   }
   
   
-  
-  
-  
+    
   private function trackPlaylistHTML($array) {
     $albumID = $array['albumID'];
     $output = '';
@@ -346,16 +345,10 @@ class View extends Config {
       $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
                . '" class="htrack">'
                . $track['creator'] . ' - ' . $track['title']
-               . '</a>'
-               . '<a href="#" class="moveUp" title="Move up">&uarr;</a>'
-               . '<a href="#" class="moveDown" title="Move down">&darr;</a>'
-               . '<a href="#" class="delete" title="Delete from playlist">X</a>'
-               . '</li>';  
+               . '</a></li>';  
     }
-    $this->html .= $output;
+    return $output;
   }
-  
-  
   
   
   
@@ -369,14 +362,10 @@ class View extends Config {
         $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
                  . '" class="htrack">'
                  . $track['creator'] . ' - ' . $track['title']
-                 . '</a>'
-                 . '<a href="#" class="moveUp" title="Move up">&uarr;</a>'
-                 . '<a href="#" class="moveDown" title="Move down">&darr;</a>'
-                 . '<a href="#" class="delete" title="Delete from playlist">X</a>'
-                 . '</li>';  
+                 . '</a></li>';  
       }
     }
-    $this->html .= $output;
+    return $output;
   }
   
   /**
@@ -389,10 +378,8 @@ class View extends Config {
   }
   
   /**
-   * This function returns an array or a string,
-   * depending on the number of arrayItems for the 
-   * given array, searches only in the 'value' subarray
-   * returned by the Dllearner
+   * This function returns an array or a string, depending on the number of arrayItems for the 
+   * given array, searches only in the 'value' subarray returned by the Dllearner
    * 
    * @param Array $array The Array to get Values from
    * @return String or Array with the value 
@@ -438,9 +425,7 @@ class View extends Config {
 
 
   /**
-   * Like the php-function array_unique, but for
-   * multidimensional arrays, calls itself recursively
-   * 
+   * Like the php-function array_unique, but for multidimensional arrays, calls itself recursively
    * 
    * 
    * @return Array (Multidimensional) array without double entries 

@@ -55,13 +55,13 @@ class DllearnerConnection extends Config {
          * still exists in the browser -- kill the session, and 
          * create a new ID and try again
          */
-        $this->debugger->log($e->getMessage(), 'Error creating ID for connection to the DL-Learner Webservice, trying again...');
+        if ($this->debugger) $this->debugger->log($e->getMessage(), 'Error creating ID for connection to the DL-Learner Webservice, trying again...');
         session_destroy();
         $_SESSION['sessionID'] = $this->client->generateID();
         try { 
           $this->knowledgeSourceID = $this->client->addKnowledgeSource($_SESSION['sessionID'], 'sparql', $this->endpoint);  
         } catch (Exception $e) { // if this happens again, we are _really_ not able to connect 
-          $this->debugger->log($e->getMessage(), 'Could not register at the DL-Learner Webservice.');
+          if ($this->debugger) $this->debugger->log($e->getMessage(), 'Could not register at the DL-Learner Webservice.');
           exit;
         }
       }
@@ -131,14 +131,15 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryBoolean($_SESSION['sessionID'], $learnID, 'useHasValueConstructor', $learnConfig['useHasValueConstructor']);
 
     // TODO replacement not working?
+    /*
     $this->client->applyConfigEntryStringArray($_SESSION['sessionID'], $learnID, 'replacePredicate', array(
       "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag",
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#Type")
     );
-    
+    */
     $this->client->initAll($_SESSION['sessionID']);
 
-    $concepts = $this->client->learnDescriptionsEvaluated($_SESSION['sessionID'], 10);
+    $concepts = $this->client->learnDescriptionsEvaluated($_SESSION['sessionID'], 5);
     
     $concepts = json_decode($concepts);
     

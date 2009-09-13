@@ -1,6 +1,6 @@
 <?php
 
-$text = file_get_contents('allTags.txt');
+$text = file_get_contents('../data/allTags.txt');
 $array = explode("\n", $text);
 
 

@@ -18,13 +18,9 @@ function compress($buffer) {
  
 /* the javascript-files to include and compress */
 include('mootools-1.2.3-core-yc.js');
-include('player.js');
-include('interface.js');
-include('request.js');
-
-
-// Since we include the IE6-Fixes with a CC, we don't 
-// add and compress them here
+include('moosique.js');
+// include('debug.js'); /* no debugging for production */
+include('start.js');
  
 ob_end_flush();
 ?>

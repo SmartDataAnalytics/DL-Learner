@@ -1,6 +1,6 @@
 <?php
 
-$array = explode("\n", file_get_contents('tagsWeUse.txt'));
+$array = explode("\n", file_get_contents('../data/tagsWeUse.txt'));
 
 $output = '';
 $tagsOnly = array();
