@@ -25,11 +25,11 @@
       <ol>
         <li>
           <select name="searchType" id="searchType">
-            <?php /* <option value="allSearch">Everything</option> */ ?>
+            <option value="allSearch">All</option>
             <option value="artistSearch">Artist</option>
             <option value="tagSearch">Tag</option>
             <option value="songSearch">Song</option>
-            <?php /* <option value="lastfm">Last.fm-User</option> */ ?>
+            <?php /* TODO <option value="lastfm">Last.fm-User</option> */ ?>
           </select>
           <input id="searchValue" name="searchValue" type="text" />
           <input id="searchSubmit" name="searchSubmit" value="Search" title="Search" type="submit" />
@@ -58,17 +58,39 @@
         <h2>Welcome to moosique.net!</h2>
         <p>
           Want to listen to some good free music? Just enter an artist or song 
-          name or search for music using tags <!-- or enter your last.fm username --> and let the moogic
+          name or search for music using tags and let the moogic
           happen. By listening to songs you like, the system will automatically learn about
           your musical taste and generate recommendations. You can find them in the tab &raquo;Recommendations&laquo;.
         </p>
         <p>
-          You can find information about the song currently playing in the tab &raquo;Information&laquo; and view
-          your Playlist and control the Player in the Tab &raquo;Player&laquo;.
+          You can find information about the song currently playing in the tab &raquo;Info&laquo; and edit and view
+          your current Playlist in the &raquo;Playlist&laquo;-Tab.
         </p>
         <p>
           Now get started and add something to the Playlist!
         </p>
+        
+        <pre>
+          <?php
+          
+          // recently Heard == posExamples testing 
+          
+          if (!empty($_COOKIE['moosique'])) {
+            $recent = json_decode(stripslashes($_COOKIE['moosique']))->recentlyListened;
+            $posExamples = array();
+            foreach($recent as $link) {
+              preg_match_all('#<a\s*(?:rel=[\'"]([^\'"]+)[\'"])?.*?>((?:(?!</a>).)*)</a>#i', $link, $record);
+              array_push($posExamples, $record[1][0]);
+            }
+          }
+          
+          print_r(array_unique($posExamples));
+          
+          ?>
+        
+          
+        </pre>
+        
       </div>
       <div id="results">
         
@@ -79,11 +101,6 @@
       <h2>Recommended Songs</h2>
       <p>These are the automatically generated recommendations. Click on a song to add it to your playlist.</p>
       <ol id="recommended">
-        <li></li>
-      </ol>
-      <h2>Recently Listened to</h2>
-      <p>These are the songs you recently listened to. Click on a song to re-enqueue it to your current playlist. (NOT WORKING YET!)</p>
-      <ol id="recently">
         <li></li>
       </ol>
     </div>
@@ -103,14 +120,19 @@
     </div>
     
     <div id="player">
-      <h3>Playlist</h3>
+      <h2>Playlist</h2>
       <p>
         You can delete entries from the playlist by clicking the small x on the left and change their order by clicking on the small up- and down-arrows.<br />
       </p>   
       <ol id="playlist">
         <li></li>  
       </ol>
-    
+      
+      <h2>Recently Listened to</h2>
+      <p>These are the songs you recently listened to. Click on a song to re-enqueue it to your current playlist.</p>
+      <ol id="recently">
+        <li></li>
+      </ol>
     </div>
 
     <div id="help">
@@ -124,10 +146,22 @@
     <a href="http://mediaplayer.yahoo.com/">Yahoo! Media Player</a> | 
     <a href="http://aksw.org/Projects/DLLearner">DL-Learner</a>      
   </div>
-  
 </div> <!-- end container -->
 
+<?php
+  include('moosique/classes/Config.php');
+  $c = new Config();
+  if ($c->getConfig('debug') == 1) /* debugging active */ {
+?>
+<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
+<script type="text/javascript" src="js/mootools-1.2.3-core-nc.js"></script>
+<script type="text/javascript" src="js/moosique.js"></script>
+<script type="text/javascript" src="js/debug.js"></script>
+<script type="text/javascript" src="js/start.js"></script>
+
+<?php } else /* compress for production and dont include debugger */ { ?>
 <script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
 <script type="text/javascript" src="js/"></script>
+<?php } ?>
 </body>
 </html>

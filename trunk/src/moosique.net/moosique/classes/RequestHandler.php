@@ -48,36 +48,45 @@ class RequestHandler extends Config {
       
       // a search for "everything" causes 3 searches for artist, tags and songs
       if ($_GET['searchType'] == 'allSearch') {
+        
+        // TODO doing 3times the same thing is ugly, build function doing this
+        
         // Artists
         $sparql = new SparqlQueryBuilder($search, 'artistSearch', 20);
         $query = $sparql->getQuery();
         $json = $this->connection->sparqlQuery($query);
         $result = json_decode($json);
-        $resultObjectArtist = $result->results->bindings;
-        
+        $artistObject = $result->results->bindings;
+        $artistView = new View('artistSearch', $artistObject);
+        $artistResponse = $artistView->getHTML();
+
         // Tags
         $sparql = new SparqlQueryBuilder($search, 'tagSearch', 20);
         $query = $sparql->getQuery();
         $json = $this->connection->sparqlQuery($query);
         $result = json_decode($json);
-        $resultObjectTag = $result->results->bindings;
+        $tagObject = $result->results->bindings;
+        $tagView = new View('tagSearch', $tagObject);
+        $tagResponse = $tagView->getHTML();
+
         
         // Songs
         $sparql = new SparqlQueryBuilder($search, 'songSearch', 20);
         $query = $sparql->getQuery();
         $json = $this->connection->sparqlQuery($query);
         $result = json_decode($json);
-        $resultObjectSong = $result->results->bindings;
-        
-        // TODO merge results, build an output
-        
+        $songObject = $result->results->bindings;
+        $songView = new View('songSearch', $songObject);
+        $songResponse = $songView->getHTML();
+
+        // merge results, and return it
+        return $artistResponse . $tagResponse . $songResponse;        
         
       } else { // normal tag/artist/song-search
         
         $sparql = new SparqlQueryBuilder($search, $_GET['searchType']);
         $query = $sparql->getQuery();
         
-        $this->debugger->log($query, "Query built");
       
         // sparql-query to dellearner
         $json = $this->connection->sparqlQuery($query);
