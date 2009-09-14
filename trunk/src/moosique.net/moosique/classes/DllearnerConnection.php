@@ -121,8 +121,9 @@ class DllearnerConnection extends Config {
 
     // set the instances and pos examples
     $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'instances', $instances);
-    $this->client->setPositiveExamples($id, $positiveExamples);
     $this->client->setLearningProblem($id, $conf['problem']);
+
+    $this->client->setPositiveExamples($id, $positiveExamples);
     
     // recursion-depth and fragment saving
     $this->client->applyConfigEntryInt($id, $this->knowledgeSourceID, 'recursionDepth', $conf['recursionDepth']);
@@ -134,21 +135,19 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryInt($id, $learnID, 'valueFrequencyThreshold', $conf['valueFrequencyThreshold']);
     $this->client->applyConfigEntryBoolean($id, $learnID, 'useHasValueConstructor', $conf['useHasValueConstructor']);
 
-    // TODO replacement not working?
-    /*
-    $this->client->applyConfigEntryStringArray($id, $learnID, 'replacePredicate', array(
+    $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'replacePredicate', array(
       "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag",
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#Type")
     );
-    */
+
     $this->client->initAll($id);
     
     
     $concepts = false;
-/*
-    $concepts = $this->client->learnDescriptionsEvaluated($id, 5);
+
+    $concepts = $this->client->learnDescriptionsEvaluated($id);
     $concepts = json_decode($concepts);
-*/    
+    
     return $concepts;
     
   }
