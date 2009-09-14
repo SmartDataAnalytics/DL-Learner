@@ -67,7 +67,7 @@ echo 'start learning ... ';
 // get only concept
 // $concept = $client->learn($id, "manchester");
 // get concept and additional information in JSON syntax
-$concept = $client->learnDescriptionsEvaluated($id, 5);
+$concept = $client->learnDescriptionsEvaluatedLimit($id, 5);
 echo 'OK <br />';
 
 echo 'solution: <pre>';
