@@ -172,7 +172,7 @@ public class LaconicExplanationGenerator
 						nonLaconicExplanations.add(currentExplanation);
 					}
 					if (laconicExplanations.size() == limit) {
-						return laconicExplanations;//retrieveAxioms(laconicJusts);
+						return laconicExplanations;//retrieveAxioms(laconicExplanations);
 					}
 				}
 			}
@@ -189,7 +189,7 @@ public class LaconicExplanationGenerator
 			}
 		}
 
-		return explanations;//retrieveAxioms(explanations);
+		return laconicExplanations;//retrieveAxioms(explanations);
 	}
     
     public boolean isLaconic(Explanation explanation)
@@ -205,12 +205,10 @@ public class LaconicExplanationGenerator
 
 			PelletExplanationGenerator expGen2 = new PelletExplanationGenerator(manager,
 					Collections.singleton(justificationSigmaClosureOnt));
-//			Set<Set<OWLAxiom>> exps = expGen2.getEntailmentExplanations(
-//					entailment, 2);
-			Explanation expl = expGen2.getExplanation(explanation.getEntailment());
+			Set<Explanation> exps = expGen2.getExplanations(
+					explanation.getEntailment(), 2);
 
-//			laconic = Collections.singleton(justification).equals(exps);
-			laconic = explanation.equals(expl);
+			laconic = Collections.singleton(explanation).equals(exps);
 
 		} catch (OWLOntologyCreationException e) {
 			throw new ExplanationException(e);
@@ -337,13 +335,13 @@ public class LaconicExplanationGenerator
     
     public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
     	Set<OWLAxiom> parts = computeOPlus(Collections.singleton(source));
-    	for(OWLAxiom ax : parts){
+//    	for(OWLAxiom ax : parts){
 //    		System.out.println("Part: " + ax);
-    		for(OWLAxiom a : oPlus.getAxiomsMap().get(ax)){
+//    		for(OWLAxiom a : oPlus.getAxiomsMap().get(ax)){
 //    			System.out.println("has source: " + a);
-    		}
-    		
-    	}
+//    		}
+//    		
+//    	}
     	
     	for(OWLAxiom par : parts){
 //    		System.out.println("has Part: " + par);

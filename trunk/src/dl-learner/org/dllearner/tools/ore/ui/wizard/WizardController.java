@@ -21,16 +21,13 @@
 package org.dllearner.tools.ore.ui.wizard;
 
 
-import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
@@ -347,37 +344,5 @@ public class WizardController implements ActionListener {
         }
         
     }
-    
-    
-    class ClassificationWorker extends SwingWorker<Void, Void>{
-		
-		private StatusBar statusBar;
-		
-		public ClassificationWorker(StatusBar statusBar) {
-			this.statusBar = statusBar;
-//			OREManager.getInstance().getPelletReasoner().addProgressMonitor(new ClassificationProgressMonitor());
-			
-		}
-
-		@Override
-		public Void doInBackground() {
-			statusBar.showProgress(true);
-			wizard.getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			
-			statusBar.setProgressTitle("classifying ontology");
-			OREManager.getInstance().getReasoner().classify();
-
-			return null;
-		}
-
-		@Override
-		public void done() {
-			wizard.getDialog().setCursor(null);
-			statusBar.showProgress(false);
-			statusBar.setProgressTitle("");
-		}
-
-	}
-    
     
 }

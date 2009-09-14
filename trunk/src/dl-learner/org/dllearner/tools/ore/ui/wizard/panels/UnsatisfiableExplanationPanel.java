@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -120,9 +121,9 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsScrollPane = new JScrollPane(pan);
 //		explanationsScrollPane.setPreferredSize(minimumSize);
 		explanationsScrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-		explanationsScrollPane.getViewport().setOpaque(true);
+		explanationsScrollPane.getViewport().setOpaque(false);
 		explanationsScrollPane.getViewport().setBackground(null);
-		explanationsScrollPane.setOpaque(true);
+		explanationsScrollPane.setOpaque(false);
 			
 		regularButton = new JRadioButton("Show regular explanations", true);
 		regularButton.setActionCommand("regular");
@@ -261,5 +262,28 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	
 	public UnsatisfiableClassesTable getUnsatTable(){
 		return unsatClassesTable;
+	}
+	
+	public static void main(String[] args){
+		JFrame frame = new JFrame();
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JSplitPane pane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		pane1.setDividerLocation(200);
+		JSplitPane pane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		pane2.setDividerLocation(200);
+		JSplitPane pane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		pane1.setLeftComponent(new JPanel());
+		pane1.setRightComponent(pane2);
+		pane2.setTopComponent(new JPanel());
+		pane2.setBottomComponent(pane3);
+		pane3.setLeftComponent(new JPanel());
+		pane3.setRightComponent(new JPanel());
+		panel.add(pane1);
+		frame.add(panel);
+		frame.setSize(400, 400);
+		frame.setVisible(true);
+		
+		
 	}
 }

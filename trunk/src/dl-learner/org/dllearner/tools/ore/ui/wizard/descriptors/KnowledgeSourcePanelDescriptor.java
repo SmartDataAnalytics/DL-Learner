@@ -20,7 +20,6 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -34,6 +33,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RecentManager;
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.ExtractFromSparqlDialog;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.StatusBar;
@@ -106,7 +106,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     public void loadOntology(URI uri){
     	OREManager.getInstance().setCurrentKnowledgeSource(uri);
     	currentURI = uri;
-    	
+    	TaskManager.getInstance().setTaskStarted("Loading ontology");
     	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
     	
     }
@@ -172,10 +172,11 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	}
 	
 	private void handleOpenFromRecent(URI uri){
-		currentURI = uri;
-		OREManager.getInstance().setCurrentKnowledgeSource(
-				uri);
-		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+//		currentURI = uri;
+//		OREManager.getInstance().setCurrentKnowledgeSource(
+//				uri);
+//		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+		loadOntology(uri);
 	}
     
     private void updateMetrics(){
@@ -199,9 +200,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		@Override
 		public Void doInBackground() {
 			getWizard().setNextFinishButtonEnabled(false);
-			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			statusBar.showProgress(true);
-			statusBar.setProgressTitle("Loading ontology");
+			
 			try{
 	        	oreMan.initPelletReasoner();
 	        	RecentManager.getInstance().addURI(currentURI);
@@ -261,9 +260,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		@Override
 		public void done() {
 			if(!isCancelled()){
-				statusBar.showProgress(false);
-				statusBar.setProgressTitle("Done");
-				getWizard().getDialog().setCursor(null);
+				TaskManager.getInstance().setTaskFinished();
 				getWizard().setNextFinishButtonEnabled(true);
 				updateMetrics();
 			}
