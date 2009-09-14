@@ -21,6 +21,7 @@ import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.inference.OWLReasonerFactory;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.AxiomType;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataAllRestriction;
 import org.semanticweb.owl.model.OWLDataExactCardinalityRestriction;
@@ -76,6 +77,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
     
     private Map<OWLClass, Set<OWLClass>> child2Parents;
     private Map<OWLClass, Set<OWLClass>> parent2Children;
+    
+    private Map<OWLClass, Map<OWLAxiom, Set<OWLClass>>> class2Dependency;
 	
 	public RootFinder(){
 		
@@ -97,6 +100,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		
 		child2Parents = new HashMap<OWLClass, Set<OWLClass>>();
 		parent2Children = new HashMap<OWLClass, Set<OWLClass>>();
+		
+		class2Dependency = new HashMap<OWLClass, Map<OWLAxiom, Set<OWLClass>>>();
 		
 		OREManager.getInstance().addListener(this);
 		RepairManager.getInstance(OREManager.getInstance()).addListener(this);

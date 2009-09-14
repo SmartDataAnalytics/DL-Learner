@@ -111,7 +111,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 
 		this.setPreferredSize(new Dimension(540, 260));
 		
-		this.repaint();
+//		this.repaint();
 		darkGreen = new Color(0, 100, 0);
 		darkRed = new Color(205, 0, 0);
 		random = new Random();

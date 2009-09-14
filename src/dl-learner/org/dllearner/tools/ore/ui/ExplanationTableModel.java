@@ -1,14 +1,26 @@
 package org.dllearner.tools.ore.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -89,18 +101,24 @@ public class ExplanationTableModel extends AbstractTableModel {
 					repMan.removeFromRepairPlan(new RemoveAxiom(ont, ax));
 				}
 			} else {
-				impMan.addSelection(ax);
+//				impMan.addSelection(ax);
 				if(expMan.isLaconicMode() && !ont.containsAxiom(ax)){
-					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
-						impMan.addSelection(source);
-						changes.add(new RemoveAxiom(ont, source));
-						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
-							changes.add(new AddAxiom(ont, remain));
-						}
-						
+//					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+//					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
+//						impMan.addSelection(source);
+//						changes.add(new RemoveAxiom(ont, source));
+//						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
+//							changes.add(new AddAxiom(ont, remain));
+//						}
+//						
+//					}
+					RemainingAxiomsDialog dialog = new RemainingAxiomsDialog(ax, ont);
+					int ret = dialog.showDialog();
+					if(ret == RemainingAxiomsDialog.OK_RETURN_CODE){
+						impMan.addSelection(ax);
+						repMan.addToRepairPlan(dialog.getChanges());
 					}
-					repMan.addToRepairPlan(changes);
+					
 				} else {
 					repMan.addToRepairPlan(new RemoveAxiom(ont, ax));
 				}
@@ -127,8 +145,9 @@ public class ExplanationTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex == 3 || columnIndex == 4)
+		if(columnIndex == 3 || columnIndex == 4){
 			return true;
+		}
 		return false;
 	}
 	
@@ -149,6 +168,4 @@ public class ExplanationTableModel extends AbstractTableModel {
 		}
 	}
 	
-	
-
 }

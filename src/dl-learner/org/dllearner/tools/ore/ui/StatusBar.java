@@ -14,7 +14,9 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,7 +25,6 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
-import org.protege.editor.core.ui.list.MListDeleteButton;
 import org.semanticweb.owl.model.OWLAxiom;
 
 import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
@@ -65,7 +66,9 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 			}
 		});
 		rB.setToolTipText("Abort");
-		leftPanel.add(rB);
+//		leftPanel.add(rB);
+		
+		leftPanel.add(new Cancel());
 		
 		leftPanel.add(progressBar);
 		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
@@ -337,5 +340,29 @@ class CancelButton extends JButton {
 	    }
 	    return shape.contains(x, y);
 	  }
+	  
+	
+}
+
+class Cancel extends JButton {
+
+	public Cancel() {
+		super();
+		setIcon(new ImageIcon(
+				"src/dl-learner/org/dllearner/tools/ore/close.png"));
+		setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		setHorizontalAlignment(JButton.LEADING); // optional
+		setBorderPainted(false);
+		setContentAreaFilled(false);
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		if(getModel().isArmed()){
+			g.setColor(Color.YELLOW);
+		}
+		super.paintComponent(g);
+	}
+
 }
 

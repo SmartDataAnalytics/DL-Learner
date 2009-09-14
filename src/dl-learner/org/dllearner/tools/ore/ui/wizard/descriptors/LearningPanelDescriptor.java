@@ -20,7 +20,6 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -39,6 +38,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
+import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
 
@@ -122,6 +122,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
+			TaskManager.getInstance().setTaskStarted("Learning equivalent class expressions");
 			learnPanel.getStartButton().setEnabled(false);
 	        learnPanel.getStopButton().setEnabled(true);
 	        OREManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
@@ -139,7 +140,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	        timer.cancel();
 			learnPanel.getStartButton().setEnabled(true);
 			getWizard().getStatusBar().showProgress(false);
-			getWizard().getStatusBar().setProgressTitle("learning stopped");
+			getWizard().getStatusBar().setProgressTitle("Learning stopped");
 	        
 		}
 		
@@ -199,9 +200,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@Override
 		public List<? extends EvaluatedDescription> doInBackground() {
 			learnPanel.getResultTable().clear();
-			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			getWizard().getStatusBar().showProgress(true);
-			getWizard().getStatusBar().setProgressTitle("Learning equivalent class expressions");
+			
 
 			la = OREManager.getInstance().getLa();
 			timer = new Timer();
@@ -240,6 +239,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			learnPanel.getStartButton().setEnabled(true);
 			learnPanel.getStopButton().setEnabled(false);
 			updateList(result);
+			TaskManager.getInstance().setTaskFinished();
 
 		}
 

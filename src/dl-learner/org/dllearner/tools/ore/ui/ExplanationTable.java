@@ -57,7 +57,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		
 		repMan.addListener(this);
 		setBackground(Color.WHITE);
-		setHighlighters(HighlighterFactory.createAlternateStriping());
+//		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ExplanationTableModel(exp,	cl));
 		TableColumn column5 = getColumn(4);
