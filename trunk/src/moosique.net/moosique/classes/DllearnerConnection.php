@@ -24,7 +24,7 @@ class DllearnerConnection extends Config {
     // load WSDL files (has to be done due to a Java web service bug)
     include('Utilities.php');
     ini_set('soap.wsdl_cache_enabled', '0');
-    Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
+    // Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
     $this->connect();
 	}
   
@@ -135,9 +135,8 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryInt($id, $learnID, 'valueFrequencyThreshold', $conf['valueFrequencyThreshold']);
     $this->client->applyConfigEntryBoolean($id, $learnID, 'useHasValueConstructor', $conf['useHasValueConstructor']);
 
-    $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'replacePredicate', array(
-      "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag",
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Type")
+    $this->client->applyConfigEntryStringTupleList($id, $this->knowledgeSourceID, 'replacePredicate', array(
+      "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag"), array("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
     );
 
     $this->client->initAll($id);

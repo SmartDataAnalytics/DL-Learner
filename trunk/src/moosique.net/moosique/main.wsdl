@@ -206,6 +206,14 @@
 <part xmlns:ns10="http://jaxb.dev.java.net/array" name="arg3" type="ns10:stringArray"></part>
 </message>
 <message name="applyConfigEntryStringArrayResponse"></message>
+<message name="applyConfigEntryStringTupleList">
+<part name="arg0" type="xsd:int"></part>
+<part name="arg1" type="xsd:int"></part>
+<part name="arg2" type="xsd:string"></part>
+<part xmlns:ns11="http://jaxb.dev.java.net/array" name="arg3" type="ns11:stringArray"></part>
+<part xmlns:ns12="http://jaxb.dev.java.net/array" name="arg4" type="ns12:stringArray"></part>
+</message>
+<message name="applyConfigEntryStringTupleListResponse"></message>
 <message name="applyConfigEntryBoolean">
 <part name="arg0" type="xsd:int"></part>
 <part name="arg1" type="xsd:int"></part>
@@ -219,7 +227,7 @@
 <part name="arg2" type="xsd:string"></part>
 </message>
 <message name="getConfigOptionValueStringArrayResponse">
-<part xmlns:ns11="http://jaxb.dev.java.net/array" name="return" type="ns11:stringArray"></part>
+<part xmlns:ns13="http://jaxb.dev.java.net/array" name="return" type="ns13:stringArray"></part>
 </message>
 <message name="ConfigOptionTypeException">
 <part name="fault" element="tns:ConfigOptionTypeException"></part>
@@ -268,7 +276,7 @@
 <part name="arg0" type="xsd:int"></part>
 </message>
 <message name="getAtomicConceptsResponse">
-<part xmlns:ns12="http://jaxb.dev.java.net/array" name="return" type="ns12:stringArray"></part>
+<part xmlns:ns14="http://jaxb.dev.java.net/array" name="return" type="ns14:stringArray"></part>
 </message>
 <message name="getSubsumptionHierarchy">
 <part name="arg0" type="xsd:int"></part>
@@ -281,7 +289,7 @@
 <part name="arg1" type="xsd:string"></part>
 </message>
 <message name="retrievalResponse">
-<part xmlns:ns13="http://jaxb.dev.java.net/array" name="return" type="ns13:stringArray"></part>
+<part xmlns:ns15="http://jaxb.dev.java.net/array" name="return" type="ns15:stringArray"></part>
 </message>
 <message name="ParseException">
 <part name="fault" element="tns:ParseException"></part>
@@ -296,20 +304,20 @@
 <part name="arg0" type="xsd:int"></part>
 </message>
 <message name="getAtomicRolesResponse">
-<part xmlns:ns14="http://jaxb.dev.java.net/array" name="return" type="ns14:stringArray"></part>
+<part xmlns:ns16="http://jaxb.dev.java.net/array" name="return" type="ns16:stringArray"></part>
 </message>
 <message name="getInstances">
 <part name="arg0" type="xsd:int"></part>
 </message>
 <message name="getInstancesResponse">
-<part xmlns:ns15="http://jaxb.dev.java.net/array" name="return" type="ns15:stringArray"></part>
+<part xmlns:ns17="http://jaxb.dev.java.net/array" name="return" type="ns17:stringArray"></part>
 </message>
 <message name="getIndividualsForARole">
 <part name="arg0" type="xsd:int"></part>
 <part name="arg1" type="xsd:string"></part>
 </message>
 <message name="getIndividualsForARoleResponse">
-<part xmlns:ns16="http://jaxb.dev.java.net/array" name="return" type="ns16:stringArray"></part>
+<part xmlns:ns18="http://jaxb.dev.java.net/array" name="return" type="ns18:stringArray"></part>
 </message>
 <message name="getAsJSON">
 <part name="arg0" type="xsd:int"></part>
@@ -369,14 +377,14 @@
 <part name="arg1" type="xsd:int"></part>
 </message>
 <message name="getConceptDepthResponse">
-<part xmlns:ns17="http://jaxb.dev.java.net/array" name="return" type="ns17:intArray"></part>
+<part xmlns:ns19="http://jaxb.dev.java.net/array" name="return" type="ns19:intArray"></part>
 </message>
 <message name="getConceptArity">
 <part name="arg0" type="xsd:int"></part>
 <part name="arg1" type="xsd:int"></part>
 </message>
 <message name="getConceptArityResponse">
-<part xmlns:ns18="http://jaxb.dev.java.net/array" name="return" type="ns18:intArray"></part>
+<part xmlns:ns20="http://jaxb.dev.java.net/array" name="return" type="ns20:intArray"></part>
 </message>
 <message name="SparqlRetrieval">
 <part name="arg0" type="xsd:string"></part>
@@ -396,13 +404,13 @@
 <message name="getNegativeExamples">
 <part name="arg0" type="xsd:int"></part>
 <part name="arg1" type="xsd:int"></part>
-<part xmlns:ns19="http://jaxb.dev.java.net/array" name="arg2" type="ns19:stringArray"></part>
+<part xmlns:ns21="http://jaxb.dev.java.net/array" name="arg2" type="ns21:stringArray"></part>
 <part name="arg3" type="xsd:int"></part>
 <part name="arg4" type="xsd:string"></part>
-<part xmlns:ns20="http://jaxb.dev.java.net/array" name="arg5" type="ns20:stringArray"></part>
+<part xmlns:ns22="http://jaxb.dev.java.net/array" name="arg5" type="ns22:stringArray"></part>
 </message>
 <message name="getNegativeExamplesResponse">
-<part xmlns:ns21="http://jaxb.dev.java.net/array" name="return" type="ns21:stringArray"></part>
+<part xmlns:ns23="http://jaxb.dev.java.net/array" name="return" type="ns23:stringArray"></part>
 </message>
 <portType name="DLLearnerWebService">
 <operation name="init" parameterOrder="arg0 arg1">
@@ -568,6 +576,12 @@
 <operation name="applyConfigEntryStringArray" parameterOrder="arg0 arg1 arg2 arg3">
 <input message="tns:applyConfigEntryStringArray"></input>
 <output message="tns:applyConfigEntryStringArrayResponse"></output>
+<fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+<fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
+</operation>
+<operation name="applyConfigEntryStringTupleList" parameterOrder="arg0 arg1 arg2 arg3 arg4">
+<input message="tns:applyConfigEntryStringTupleList"></input>
+<output message="tns:applyConfigEntryStringTupleListResponse"></output>
 <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
 <fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
 </operation>
@@ -1108,6 +1122,21 @@
 </fault>
 </operation>
 <operation name="applyConfigEntryStringArray">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+</input>
+<output>
+<soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+</output>
+<fault name="ClientNotKnownException">
+<soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+</fault>
+<fault name="UnknownComponentException">
+<soap:fault name="UnknownComponentException" use="literal"></soap:fault>
+</fault>
+</operation>
+<operation name="applyConfigEntryStringTupleList">
 <soap:operation soapAction=""></soap:operation>
 <input>
 <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
