@@ -88,6 +88,10 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 		fireImpactListChanged();
 	}
 	
+	public void addSelection(List<OWLAxiom> axioms){
+		selectedAxioms.addAll(axioms);
+	}
+	
 	public void removeSelection(OWLAxiom ax){
 		selectedAxioms.remove(ax);
 		fireImpactListChanged();

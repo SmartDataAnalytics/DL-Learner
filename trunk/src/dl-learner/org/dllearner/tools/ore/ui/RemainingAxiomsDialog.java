@@ -15,9 +15,11 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.dllearner.tools.ore.ExplanationManager;
+import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.semanticweb.owl.model.AddAxiom;
@@ -51,6 +53,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 		private List<OWLAxiom> sourceAxioms;
 		
 		private ExplanationManager expMan;
+		private ImpactManager impMan;
 		
 		private OWLOntology ontology;
 		
@@ -58,7 +61,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 		public RemainingAxiomsDialog(OWLAxiom laconicAxiom, OWLOntology ont){
 			super(TaskManager.getInstance().getDialog(), "Selected part of axiom in ontology", true);
 			setLayout(new BorderLayout());
-			
+			add(new JLabel("You selected an axiom which is only part of some axioms in the ontology"), BorderLayout.NORTH);
 			createControls();
 			
 			this.ontology = ont;
@@ -67,6 +70,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 			explanationsPanel = new Box(1);
 			
 			expMan = ExplanationManager.getInstance(OREManager.getInstance());
+			impMan = ImpactManager.getInstance(OREManager.getInstance());
 			
 			changes = new ArrayList<OWLOntologyChange>();
 			sourceAxioms = new ArrayList<OWLAxiom>();
@@ -83,7 +87,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 				
 			}
 			
-			add(explanationsPanel, BorderLayout.NORTH);
+			add(explanationsPanel, BorderLayout.CENTER);
 			
 	
 		}
@@ -154,6 +158,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Ok")) {
 			returnCode = OK_RETURN_CODE;
+			impMan.addSelection(sourceAxioms);
 			closeDialog();
 		} else {
 			returnCode = CANCEL_RETURN_CODE;

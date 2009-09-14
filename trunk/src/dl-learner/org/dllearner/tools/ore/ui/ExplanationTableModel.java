@@ -1,26 +1,14 @@
 package org.dllearner.tools.ore.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
-import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -64,16 +52,16 @@ public class ExplanationTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 		if(columnIndex == 0){
-			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 			int depth2Root = expMan.getOrdering(exp).get(rowIndex).values().iterator().next();
            return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
 		} else if(columnIndex == 1){
-			return expMan.getArity(unsat, getOWLAxiomAtRow(rowIndex));
+			return expMan.getGlobalArity(ax);//getArity(unsat, getOWLAxiomAtRow(rowIndex));
 		} else if(columnIndex == 2) {
-			return expMan.getUsage(getOWLAxiomAtRow(rowIndex)).size();
+			return expMan.getUsage(ax).size();
 		} else if(columnIndex == 3){
-			return Boolean.valueOf(impMan.isSelected(getOWLAxiomAtRow(rowIndex)));
+			return Boolean.valueOf(impMan.isSelected(ax));
 		} else {
 			return "rewrite";
 		}
@@ -116,7 +104,8 @@ public class ExplanationTableModel extends AbstractTableModel {
 					int ret = dialog.showDialog();
 					if(ret == RemainingAxiomsDialog.OK_RETURN_CODE){
 						impMan.addSelection(ax);
-						repMan.addToRepairPlan(dialog.getChanges());
+						List<OWLOntologyChange> changes = dialog.getChanges();
+						repMan.addToRepairPlan(changes);
 					}
 					
 				} else {

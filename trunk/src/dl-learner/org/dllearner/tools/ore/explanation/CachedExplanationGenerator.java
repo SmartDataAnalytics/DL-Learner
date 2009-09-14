@@ -68,6 +68,24 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 	public Set<Explanation> getExplanations(OWLAxiom entailment){		
 		return getExplanations(entailment, -1);
 	}
+	
+	public int getArity(OWLAxiom axiom){
+		int arity = 0;
+		Map<OWLAxiom, Set<Explanation>> cache;
+		if(laconicMode == true){
+			cache = laconicExplanationCache;
+		} else {
+			cache = regularExplanationCache;
+		}
+		for(Set<Explanation> explanations : cache.values()){
+			for(Explanation exp : explanations){
+				if(exp.getAxioms().contains(axiom)){
+					arity++;
+				}
+			}
+		}
+		return arity;
+	}
 
 	@Override
 	public Set<Explanation> getExplanations(OWLAxiom entailment, int limit){
