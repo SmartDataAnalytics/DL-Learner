@@ -19,7 +19,6 @@ import com.clarkparsia.explanation.PelletExplanation;
 import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 
 
-@SuppressWarnings("unused")
 public class ExplanationTest {
 
 //	private static final String	file	= "file:examples/ore/inconsistent.owl";

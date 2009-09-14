@@ -188,6 +188,10 @@ public class ExplanationManager implements OREManagerListener{
 		return arity;
 	}
 	
+	public int getGlobalArity(OWLAxiom ax){
+		return gen.getArity(ax);
+	}
+	
 	public void setLaconicMode(boolean laconic){
 		gen.setComputeLaconicExplanations(laconic);
 		fireExplanationTypeChanged();
