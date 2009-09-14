@@ -179,7 +179,7 @@ public class LaconicExplanationGenerator
 
 		}
 		Set<Explanation> explanations = new HashSet<Explanation>();
-		for (Explanation explanation : allPreviouslyFoundExplanations) {
+		for (Explanation explanation : allPreviouslyFoundExplanations) {System.out.println(explanation);
 			if (!nonLaconicExplanations.contains(explanation)) {
 				if (laconicExplanations.contains(explanation)) {
 					explanations.add(explanation);
@@ -189,7 +189,7 @@ public class LaconicExplanationGenerator
 			}
 		}
 
-		return laconicExplanations;//retrieveAxioms(explanations);
+		return explanations;//retrieveAxioms(explanations);
 	}
     
     public boolean isLaconic(Explanation explanation)
