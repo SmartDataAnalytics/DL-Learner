@@ -37,13 +37,24 @@ for ($i = 0; $i < $howManyRandomRecords; $i++) {
   
 }
 
+$instances = array(  
+  "http://dbtune.org/jamendo/record/1128",
+  "http://dbtune.org/jamendo/record/8620",
+  "http://dbtune.org/jamendo/record/8654",
+  "http://dbtune.org/jamendo/record/10031",
+  "http://dbtune.org/jamendo/record/1465",
+  "http://dbtune.org/jamendo/record/1568",
+  "http://dbtune.org/jamendo/record/1668",
+  "http://dbtune.org/jamendo/record/1769",
+  "http://dbtune.org/jamendo/record/1869",
+  "http://dbtune.org/jamendo/record/1970"
+);
+
 echo '<pre>';
 print_r($instances);
 print_r($c->getLearningConfig());
+print_r($posExamples);
+print_r($c->learn($instances, $posExamples, 'file:/Users/nebelschwade/Sites/moosique.net/moosique/testing/rocksubset.owl'));
+
 echo '</pre>';
-
-
-echo $c->learn($instances, $posExamples, 'file:/Users/nebelschwade/Sites/moosique.net/moosique/testing/moreThan80.owl');
-
-
 ?>

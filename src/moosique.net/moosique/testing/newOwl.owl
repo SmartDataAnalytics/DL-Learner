@@ -395,6 +395,24 @@
 
 
 
+###  http://dbtune.org/jamendo/tag/stoner
+
+:stoner rdf:type owl:Class ;
+        
+        owl:equivalentClass :stonerrock ;
+        
+        rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/stonerrock
+
+:stonerrock rdf:type owl:Class ;
+            
+            rdfs:subClassOf :rock .
+
+
+
 ###  http://dbtune.org/jamendo/tag/techno
 
 :techno rdf:type owl:Class ;
