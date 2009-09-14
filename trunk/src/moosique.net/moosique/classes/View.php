@@ -117,14 +117,12 @@ class View extends Config {
       }
       /* Optional Values could be empty */
       // artist-Image if avaiable
-      $image = '';
+      $image = '<img src="img/noimage.png" alt="No image found..." />';
       if (!empty($artist['artistImage'])) {
         $image = '<img src="' . $this->getValue($artist['artistImage']) . '" alt="' 
                . $this->getValue($artist['artistName']) . '" />';
-      } else {
-        $image = '<img src="img/noArtistImage.png" alt="' 
-               . $this->getValue($artist['artistName']) . '" />';
       }
+      
       // homepagelink if avaiable
       $homepage = '';
       if (!empty($artist['artistHomepage'])) {
@@ -210,6 +208,7 @@ class View extends Config {
                        . 'rel="' . $record . '">Click here to add this album to your playlist.</a></li>';
                        
         /* The album cover is optional, so it could be empty */
+        $image = '<img src="img/noimage.png" alt="No image found..." />';
         if (!empty($tag['cover'])) {
         $covers = $this->getValue($tag['cover']);
           if (is_array($covers)) {
@@ -279,8 +278,9 @@ class View extends Config {
     
       $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
                      . $artistName . ' - ' . $songTitle . '">Click here to add this song to your playlist</a></li>';
-                   
-      /* The album cover is optional, so it could be empty */
+      
+      // Artist-Image is optional             
+      $image = '<img src="img/noimage.png" alt="No image found..." />';
       if (!empty($song['artistImage'])) {
       $images = $this->getValue($song['artistImage']);
         if (is_array($images)) {

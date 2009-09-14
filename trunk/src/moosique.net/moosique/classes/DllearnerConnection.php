@@ -20,6 +20,7 @@ class DllearnerConnection extends Config {
 	  parent::__construct(); // init config
     // we use jamendo as the default sparql-endpoint
     $this->setEndpoint($this->getConfigUrl('jamendo'));
+    
     // load WSDL files (has to be done due to a Java web service bug)
     include('Utilities.php');
     ini_set('soap.wsdl_cache_enabled', '0');
@@ -111,38 +112,43 @@ class DllearnerConnection extends Config {
    *
    */
   public function learn($instances, $positiveExamples, $owlfile) {
-    $learnConfig = $this->getLearningConfig();
-    $this->client->addKnowledgeSource($_SESSION['sessionID'], 'owlfile', $owlfile);
+    $id = $_SESSION['sessionID'];
+    $conf = $this->getLearningConfig();
+    
+    // TODO? use this as knowledgesource ID?
+    $this->client->addKnowledgeSource($id, 'owlfile', $owlfile);
+    $this->client->setReasoner($id, $conf['reasoner']);
 
-    $this->client->setReasoner($_SESSION['sessionID'], $learnConfig['reasoner']);
-    $this->client->setLearningProblem($_SESSION['sessionID'], $learnConfig['problem']);
+    // set the instances and pos examples
+    $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'instances', $instances);
+    $this->client->setPositiveExamples($id, $positiveExamples);
+    $this->client->setLearningProblem($id, $conf['problem']);
     
-    // set the instances, randomly chosen ones added    
-    $this->client->applyConfigEntryStringArray($_SESSION['sessionID'], $this->knowledgeSourceID, 'instances', $instances);
-    $this->client->setPositiveExamples($_SESSION['sessionID'], $positiveExamples);
-    
-    
-    $this->client->applyConfigEntryInt($_SESSION['sessionID'], $this->knowledgeSourceID, 'recursionDepth', $learnConfig['recursionDepth']);
-    $this->client->applyConfigEntryBoolean($_SESSION['sessionID'], $this->knowledgeSourceID, 'saveExtractedFragment', $learnConfig['saveExtractedFragment']);
-    
-    $learnID = $this->client->setLearningAlgorithm($_SESSION['sessionID'], $learnConfig['algorithm']);
-    $this->client->applyConfigEntryInt($_SESSION['sessionID'], $learnID, 'maxExecutionTimeInSeconds', $learnConfig['maxExecutionTimeInSeconds']);
-    $this->client->applyConfigEntryInt($_SESSION['sessionID'], $learnID, 'valueFrequencyThreshold', $learnConfig['valueFrequencyThreshold']);
-    $this->client->applyConfigEntryBoolean($_SESSION['sessionID'], $learnID, 'useHasValueConstructor', $learnConfig['useHasValueConstructor']);
+    // recursion-depth and fragment saving
+    $this->client->applyConfigEntryInt($id, $this->knowledgeSourceID, 'recursionDepth', $conf['recursionDepth']);
+    $this->client->applyConfigEntryBoolean($id, $this->knowledgeSourceID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
+
+    // algorithm config
+    $learnID = $this->client->setLearningAlgorithm($id, $conf['algorithm']);
+    $this->client->applyConfigEntryInt($id, $learnID, 'maxExecutionTimeInSeconds', $conf['maxExecutionTimeInSeconds']);
+    $this->client->applyConfigEntryInt($id, $learnID, 'valueFrequencyThreshold', $conf['valueFrequencyThreshold']);
+    $this->client->applyConfigEntryBoolean($id, $learnID, 'useHasValueConstructor', $conf['useHasValueConstructor']);
 
     // TODO replacement not working?
     /*
-    $this->client->applyConfigEntryStringArray($_SESSION['sessionID'], $learnID, 'replacePredicate', array(
+    $this->client->applyConfigEntryStringArray($id, $learnID, 'replacePredicate', array(
       "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag",
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#Type")
     );
     */
-    $this->client->initAll($_SESSION['sessionID']);
-
-    $concepts = $this->client->learnDescriptionsEvaluated($_SESSION['sessionID'], 5);
+    $this->client->initAll($id);
     
+    
+    $concepts = false;
+/*
+    $concepts = $this->client->learnDescriptionsEvaluated($id, 5);
     $concepts = json_decode($concepts);
-    
+*/    
     return $concepts;
     
   }

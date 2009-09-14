@@ -74,7 +74,7 @@
           <?php
           
           // recently Heard == posExamples testing 
-          
+          /*
           if (!empty($_COOKIE['moosique'])) {
             $recent = json_decode(stripslashes($_COOKIE['moosique']))->recentlyListened;
             $posExamples = array();
@@ -85,10 +85,8 @@
           }
           
           print_r(array_unique($posExamples));
-          
+          */
           ?>
-        
-          
         </pre>
         
       </div>

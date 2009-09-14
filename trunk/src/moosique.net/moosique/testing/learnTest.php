@@ -1,24 +1,23 @@
 <?php
 session_start();
 
-require('classes/Config.php'); 
-require('classes/DllearnerConnection.php');
+require('../classes/Config.php'); 
+require('../classes/DllearnerConnection.php');
 
 $c = new DllearnerConnection();
 
 // Instances are the positive Examples mixed up with some
 // other examples, thus random records
 $instances = array();
-$numberOfInstaces = 6;
+$numberOfInstaces = 10;
 
 // some stoner records
 $posExamples = array(
   "http://dbtune.org/jamendo/record/1128",
   "http://dbtune.org/jamendo/record/8620",
   "http://dbtune.org/jamendo/record/8654",
+  "http://dbtune.org/jamendo/record/10031"
 );
-
-/* "http://dbtune.org/jamendo/record/10031" */
 
 // take the last 1/3 of total as positive examples
 $howManyPosExamples = round($numberOfInstaces/3);
@@ -38,16 +37,13 @@ for ($i = 0; $i < $howManyRandomRecords; $i++) {
   
 }
 
-// randomizing, just for fun :-)
-shuffle($instances);
-
-
 echo '<pre>';
 print_r($instances);
+print_r($c->getLearningConfig());
 echo '</pre>';
 
 
-echo $c->learn($instances, $posExamples, 'http://localhost/moosique.net/moosique/jamendo.owl');
+echo $c->learn($instances, $posExamples, 'file:/Users/nebelschwade/Sites/moosique.net/moosique/testing/moreThan80.owl');
 
 
 ?>
