@@ -64,6 +64,7 @@ import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 
 /**
@@ -623,6 +624,26 @@ public class DLLearnerWS {
 		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
 		applyConfigEntry(sessionID, componentID,optionName,stringSet);
 	}
+	
+	/**
+	 * 
+	 * @param sessionID The session ID.
+	 * @param componentID The componentID.
+	 * @param optionName The name of the configuration option.
+	 * @param value
+	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
+	 * @throws UnknownComponentException
+	 */
+	@WebMethod
+	public void applyConfigEntryStringTupleList(int sessionID, int componentID, String optionName, String[] keys, String[] values) throws ClientNotKnownException, UnknownComponentException {
+		List<StringTuple> tuples = new LinkedList<StringTuple>();
+		for(int i=0; i<keys.length; i++) {
+			StringTuple st = new StringTuple(keys[i],values[i]);
+			tuples.add(st);
+		}
+//		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
+		applyConfigEntry(sessionID, componentID, optionName, tuples);
+	}	
 	
 	/**
 	 * 
