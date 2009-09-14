@@ -109,6 +109,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 					}
 					
 				} else {
+					impMan.addSelection(ax);
 					repMan.addToRepairPlan(new RemoveAxiom(ont, ax));
 				}
 				

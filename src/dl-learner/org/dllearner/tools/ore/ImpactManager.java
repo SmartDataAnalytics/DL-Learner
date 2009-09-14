@@ -135,8 +135,5 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 		fireImpactListChanged();
 		
 	}
-	
-	
-	
 
 }
