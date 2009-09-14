@@ -1,0 +1,454 @@
+@prefix : <http://dbtune.org/jamendo/tag/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl2xml: <http://www.w3.org/2006/12/owl2-xml#> .
+@prefix mo: <http://purl.org/ontology/mo/> .
+@prefix tag: <http://dbtune.org/jamendo/tag/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@base <http://dbtune.org/jamendo/tag/> .
+
+<http://dbtune.org/jamendo/tag/> rdf:type owl:Ontology .
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://dbtune.org/jamendo/tag/acoustique
+
+:acoustique rdf:type owl:Class ;
+            
+            rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/alternatif
+
+:alternatif rdf:type owl:Class ;
+            
+            rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/ambiance
+
+:ambiance rdf:type owl:Class ;
+          
+          owl:equivalentClass :ambient ;
+          
+          rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/ambient
+
+:ambient rdf:type owl:Class ;
+         
+         owl:equivalentClass :downtempo ;
+         
+         rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/blues
+
+:blues rdf:type owl:Class ;
+       
+       rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/breakbeat
+
+:breakbeat rdf:type owl:Class ;
+           
+           rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/chanson
+
+:chanson rdf:type owl:Class ;
+         
+         owl:equivalentClass :chansons ;
+         
+         rdfs:subClassOf :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/chansonfrancaise
+
+:chansonfrancaise rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf :chanson .
+
+
+
+###  http://dbtune.org/jamendo/tag/chansons
+
+:chansons rdf:type owl:Class ;
+          
+          rdfs:subClassOf :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/chill
+
+:chill rdf:type owl:Class ;
+       
+       owl:equivalentClass :chillout ;
+       
+       rdfs:subClassOf :ambient .
+
+
+
+###  http://dbtune.org/jamendo/tag/chillout
+
+:chillout rdf:type owl:Class ;
+          
+          rdfs:subClassOf :ambient .
+
+
+
+###  http://dbtune.org/jamendo/tag/dance
+
+:dance rdf:type owl:Class ;
+       
+       rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/downtempo
+
+:downtempo rdf:type owl:Class ;
+           
+           rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/dub
+
+:dub rdf:type owl:Class ;
+     
+     rdfs:subClassOf :reggae .
+
+
+
+###  http://dbtune.org/jamendo/tag/electro
+
+:electro rdf:type owl:Class ;
+         
+         rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/experimental
+
+:experimental rdf:type owl:Class ;
+              
+              rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/folk
+
+:folk rdf:type owl:Class ;
+      
+      rdfs:subClassOf :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/funk
+
+:funk rdf:type owl:Class ;
+      
+      rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/fusion
+
+:fusion rdf:type owl:Class ;
+        
+        rdfs:subClassOf :jazz .
+
+
+
+###  http://dbtune.org/jamendo/tag/grunge
+
+:grunge rdf:type owl:Class ;
+        
+        rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/hardcore
+
+:hardcore rdf:type owl:Class ;
+          
+          rdfs:subClassOf :breakbeat ,
+                          :metal .
+
+
+
+###  http://dbtune.org/jamendo/tag/hardrock
+
+:hardrock rdf:type owl:Class ;
+          
+          rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/heavy
+
+:heavy rdf:type owl:Class ;
+       
+       rdfs:subClassOf :metal .
+
+
+
+###  http://dbtune.org/jamendo/tag/hiphop
+
+:hiphop rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/house
+
+:house rdf:type owl:Class ;
+       
+       rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/idm
+
+:idm rdf:type owl:Class ;
+     
+     rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/indie
+
+:indie rdf:type owl:Class ;
+       
+       rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/industriel
+
+:industriel rdf:type owl:Class ;
+            
+            rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/instrumental
+
+:instrumental rdf:type owl:Class ;
+              
+              rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/jazz
+
+:jazz rdf:type owl:Class ;
+      
+      rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/lounge
+
+:lounge rdf:type owl:Class ;
+        
+        rdfs:subClassOf :ambient .
+
+
+
+###  http://dbtune.org/jamendo/tag/metal
+
+:metal rdf:type owl:Class ;
+       
+       rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/musiquedefilm
+
+:musiquedefilm rdf:type owl:Class ;
+               
+               rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/newage
+
+:newage rdf:type owl:Class ;
+        
+        rdfs:subClassOf :ambient ,
+                        :indie ,
+                        :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/noise
+
+:noise rdf:type owl:Class ;
+       
+       rdfs:subClassOf :electro ,
+                       :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/pop
+
+:pop rdf:type owl:Class ;
+     
+     rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/poprock
+
+:poprock rdf:type owl:Class ;
+         
+         rdfs:subClassOf :pop ,
+                         :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/postrock
+
+:postrock rdf:type owl:Class ;
+          
+          rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/psychedelique
+
+:psychedelique rdf:type owl:Class ;
+               
+               rdfs:subClassOf :electro ,
+                               :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/punk
+
+:punk rdf:type owl:Class ;
+      
+      owl:equivalentClass :punkrock ;
+      
+      rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/punkrock
+
+:punkrock rdf:type owl:Class ;
+          
+          rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/rap
+
+:rap rdf:type owl:Class ;
+     
+     rdfs:subClassOf :hiphop .
+
+
+
+###  http://dbtune.org/jamendo/tag/reggae
+
+:reggae rdf:type owl:Class ;
+        
+        rdfs:subClassOf :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/rock
+
+:rock rdf:type owl:Class ;
+      
+      rdfs:subClassOf mo:Record .
+
+
+
+###  http://dbtune.org/jamendo/tag/ska
+
+:ska rdf:type owl:Class ;
+     
+     rdfs:subClassOf :punk ,
+                     :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/techno
+
+:techno rdf:type owl:Class ;
+        
+        rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/trance
+
+:trance rdf:type owl:Class ;
+        
+        rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/trash
+
+:trash rdf:type owl:Class ;
+       
+       rdfs:subClassOf :heavy .
+
+
+
+###  http://dbtune.org/jamendo/tag/triphop
+
+:triphop rdf:type owl:Class ;
+         
+         rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/world
+
+:world rdf:type owl:Class ;
+       
+       rdfs:subClassOf mo:Record .
+
+
+
+###  http://purl.org/ontology/mo/Record
+
+mo:Record rdf:type owl:Class ;
+          
+          rdfs:subClassOf owl:Thing .
+
+
+
+###  http://www.w3.org/2002/07/owl#Thing
+
+owl:Thing rdf:type owl:Class .
+
+
+
+
+###  Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net
+
