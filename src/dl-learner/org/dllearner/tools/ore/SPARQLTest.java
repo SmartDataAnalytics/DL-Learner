@@ -96,13 +96,11 @@ public class SPARQLTest {
 			SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
 			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
 			ks.getConfigurator().setInstances(instances);
-			ks.getConfigurator().setPredefinedFilter("YAGO");
-//			ks.getConfigurator().setSaveExtractedFragment(true);
+//			ks.getConfigurator().setPredefinedFilter("YAGO");
 			ks.init();
 			ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
 			reasoner.init();
 			ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-//			lp.getConfigurator().setPositiveExamples(posExamples);
 			lp.getConfigurator().setClassToDescribe(new URL(exampleClass));
 			lp.init();
 			LearningAlgorithm la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
