@@ -1,6 +1,7 @@
 package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -50,7 +51,6 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 public class ExtractFromSparqlDialog extends JDialog implements ActionListener, PropertyChangeListener, DocumentListener {
@@ -94,7 +94,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	private Map<URL, List<String>> endpointToDefaultGraph;
 	
 	public ExtractFromSparqlDialog(Dialog owner) {
-		super(owner, "Extract fragment from Sparql-endpoint", true);
+		super(owner, "Extract fragment from SPARQL endpoint", true);
 
 		// Create the controls
 		createControls();
@@ -143,7 +143,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 
 		JPanel endPointHolderPanel = new JPanel();
 		endPointHolderPanel.setLayout(new GridLayout(0, 1));
-		endPointHolderPanel.setBorder(new TitledBorder("Sparql endpoint"));
+		endPointHolderPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		comboBox = new JComboBox();
 		comboBox.setEditable(true);
 		comboBox.setActionCommand("endpoints");
@@ -160,7 +160,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 
 		JPanel classHolderPanel = new JPanel();
 		classHolderPanel.setLayout(new GridLayout(0, 1));
-		classHolderPanel.setBorder(new TitledBorder("Class to learn"));
+		classHolderPanel.setBorder(new TitledBorder("Class to investigate"));
 		asLabelButton = new JRadioButton("label");
 		asURLButton = new JRadioButton("URI");
 		asURLButton.setSelected(true);
@@ -297,21 +297,27 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	 }
 	 	
 	private void extract() {
-		if(urlIsConnectable()){
-			message.setText("");
-			mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
-			extractTask = new OntologyExtractingTask(mon);
-			extractTask.addPropertyChangeListener(this);
-			extractTask.execute();
-		} else {
-			message.setText("<html><font color=\"red\">Could not connect to endpoint</html>");
-		}		
+		message.setText("Checking SPARQL endpoint availability");
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+		mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
+		
+		extractTask = new OntologyExtractingTask(this, mon);
+		extractTask.addPropertyChangeListener(this);
+		extractTask.execute();
+
 	}
 	
 	private boolean urlIsConnectable()
-	{
+	{	
+		
+	
 		URL url = null;
 		try {
+//			List<String> defaultGraphURIS = new ArrayList<String>(1);
+//			defaultGraphURIS.add(defaultGraphField.getText());	
+//			SparqlEndpoint endpoint = new SparqlEndpoint(new URL(comboBox.getSelectedItem().toString()), defaultGraphURIS, Collections.<String>emptyList());
+//			url = new URL(endpoint.getHTTPRequest() + "SELECT * WHERE {?s ?p ?o} LIMIT 1");
 			url = new URL((String)comboBox.getSelectedItem());
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
@@ -368,13 +374,23 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	class OntologyExtractingTask extends SwingWorker<Void, Void>{
 		
 		private ProgressMonitor mon;
+		private JDialog dialog;
 		
-		public OntologyExtractingTask(ProgressMonitor mon) {		
-			this.mon = mon;			
+		public OntologyExtractingTask(JDialog dialog, ProgressMonitor mon) {		
+			this.mon = mon;
+			this.dialog = dialog;
 		}
 
 		@Override
 		public Void doInBackground() {
+			if(urlIsConnectable()){
+				message.setText("Successfully connected to SPARQL endpoint");
+				
+			} else {
+				message.setText("<html><font color=\"red\">Could not connect to SPARQL endpoint</html>");
+				cancel(true);
+			}	
+			
 			ComponentManager cm = ComponentManager.getInstance();
 			URL endpointURL = null;
 			try {
@@ -387,27 +403,33 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			defaultGraphURIS.add(defaultGraphField.getText());
 			SparqlEndpoint endpoint = new SparqlEndpoint(endpointURL, defaultGraphURIS, Collections.<String>emptyList());
 			task = new SPARQLTasks(endpoint);
-			String classKBString;
+			String concept;
 			if(asLabelButton.isSelected()){
-				classKBString = "\"" + getClassFromLabel() + "\"";
+				concept = getClassFromLabel();
 			} else {
-				classKBString = "\"" + classField.getText() +"\"";
+				concept = classField.getText();
 			}
+//			String classKBString;
+//			if(asLabelButton.isSelected()){
+//				classKBString = "\"" + getClassFromLabel() + "\"";
+//			} else {
+//				classKBString = "\"" + classField.getText() +"\"";
+//			}
 		
-			AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(
-					task);
-			pos.makePositiveExamplesFromConcept(classKBString);
+//			AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(
+//					task);
+//			pos.makePositiveExamplesFromConcept(classKBString);
 
-			SortedSet<String> allPosExamples = pos.getPosExamples();
+			SortedSet<String> allPosExamples = getPosExamples(concept);//pos.getPosExamples();
 			SortedSet<String> posExamples = SetManipulation.stableShrink(
 					allPosExamples, 20);
-			
+			System.out.println(posExamples);
 			SortedSet<String> instances = new TreeSet<String>(posExamples);
 
 			ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
-			ks.getConfigurator().setUrl(SparqlEndpoint.getEndpointDBpedia().getURL());
+			ks.getConfigurator().setUrl(endpoint.getURL());
 			ks.getConfigurator().setInstances(instances);
-			ks.getConfigurator().setPredefinedFilter("YAGO");
+//			ks.getConfigurator().setPredefinedFilter("YAGO");
 			ks.getConfigurator().setBreakSuperClassRetrievalAfter(optionsPanel.getBreakSuperClassRetrievalAfterValue());
 			ks.getConfigurator().setRecursionDepth(optionsPanel.getRecursionDepthValue());
 			ks.getConfigurator().setUseCache(optionsPanel.isUseCache());
@@ -418,7 +440,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			ks.getConfigurator().setGetPropertyInformation(optionsPanel.isGetPropertyInformation());
 			ks.getConfigurator().setCloseAfterRecursion(optionsPanel.isCloseAfterRecursion());
 			ks.addProgressMonitor(mon);
-
+			ks.getConfigurator().setSaveExtractedFragment(true);
 			ks.init();
 
 			return null;
@@ -426,11 +448,24 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 
 		@Override
 		public void done() {
-			
+			dialog.setCursor(null);
 			if(!isCancelled() && ks != null){
 				okButton.setEnabled(true);
 				message.setText("<html><font color=\"green\">Fragment successfully extracted</html>");
+				
 			}
+		}
+		
+		private SortedSet<String> getPosExamples(String concept){
+			SortedSet<String> examples = new TreeSet<String>();
+			SortedSet<String> superClasses = task.getSuperClasses(concept, 2);
+			
+			for (String sup : superClasses) {
+				examples.addAll(task.retrieveInstancesForClassDescription("\""
+						+ sup + "\"", 20));
+
+			}
+			return examples;
 		}
 	}
 	

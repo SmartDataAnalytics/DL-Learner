@@ -32,12 +32,13 @@ public class LaconicTest {
 	
 	
 	public static void main(String[] args) {
-
-		test();
-		miniTest();
+	
+//		test();
+//		miniTest();
 		miniEconomyTest();
-		universityTest();
+//		universityTest();
 	}
+	
 
 	public static void test(){
 		String	file	= "file:/home/lorenz/neu.owl";
@@ -66,9 +67,6 @@ public class LaconicTest {
 			} catch (OWLOntologyCreationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (OWLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 	}
 	
@@ -78,60 +76,34 @@ public class LaconicTest {
 		try {
 			
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
-			PrintWriter pw = new PrintWriter(System.out);
-			renderer.startRendering(pw);
 			
-			
-
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
 					.create(file));
-			Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
-			ontologies.add(ontology);
+			
 			PelletReasonerFactory resonerFact = new PelletReasonerFactory();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
-			
-			////////////////////HermiT test
-//			HermiTReasonerFactory f = new HermiTReasonerFactory();
-//			HermitReasoner re = (HermitReasoner) f.createReasoner(manager);
-//			re.loadOntologies(ontologies);
-//			Timer t1 = new Timer("classifying");
-//			t1.start();
-//			re.classify();
-//			t1.stop();
-//			re.realise();
-//			System.out.println("HermiT" + re.getInconsistentClasses());
-			//////////////////////////////
 		
 			Reasoner reasoner = resonerFact.createReasoner(manager);
-			reasoner.loadOntologies(ontologies);
-			SwingProgressMonitor monitor = new SwingProgressMonitor();
-			reasoner.getKB().getTaxonomyBuilder().setProgressMonitor(monitor);
+			reasoner.loadOntology(ontology);
+			
 			reasoner.classify();
 			System.out.println(reasoner.getInconsistentClasses());
 		
 			
 			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(
-					manager, resonerFact, ontologies);
-			
-
-						
-			
+					manager, resonerFact, Collections.singleton(ontology));
 			
 			Set<OWLClass> unsatClasses = reasoner.getInconsistentClasses();
 			OWLSubClassAxiom unsatAxiom;
-			unsatAxiom = dataFactory.getOWLSubClassAxiom(dataFactory.getOWLClass(URI.create("http://reliant.teknowledge.com/DAML/Economy.owl#Cassava")),
-					dataFactory.getOWLNothing());
-//			for (OWLClass unsat : unsatClasses) {
-//				unsatAxiom = dataFactory.getOWLSubClassAxiom(unsat, dataFactory
-//						.getOWLNothing());
-//				Set<Set<OWLAxiom>> preciseJusts = expGen
-//						.getExplanations(unsatAxiom);
-//				renderer.render(unsatAxiom, preciseJusts);
-//			}
-			Set<Explanation> preciseJusts = expGen.getExplanations(unsatAxiom);
-//			renderer.render(unsatAxiom, preciseJusts);
-			renderer.endRendering();
+
+			for (OWLClass unsat : unsatClasses) {
+				unsatAxiom = dataFactory.getOWLSubClassAxiom(unsat, dataFactory
+						.getOWLNothing());
+				Set<Explanation> explanations = expGen
+						.getExplanations(unsatAxiom);
+				System.out.println(explanations);
+			}
+
 
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block

@@ -32,7 +32,7 @@ public class RecentManager {
 	}
 	
 	public void addURI(URI uri){
-		if(!uriList.contains(uri)){
+		if(uri != null && !uriList.contains(uri)){
 			uriList.add(uri);
 		}
 		
