@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
@@ -24,6 +26,7 @@ import uk.ac.manchester.cs.owl.modularity.ModuleType;
 
 import com.clarkparsia.modularity.ModularityUtils;
 import com.clarkparsia.owlapi.OntologyUtils;
+
 
 public class CachedExplanationGenerator implements ExplanationGenerator, RepairManagerListener{
 	
@@ -85,6 +88,33 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 			}
 		}
 		return arity;
+	}
+	
+	public double getInconsistencyValue(OWLAxiom ax){
+		double value = 0;
+		Map<OWLAxiom, Set<Explanation>> cache;
+		if(laconicMode == true){
+			cache = laconicExplanationCache;
+		} else {
+			cache = regularExplanationCache;
+		}
+		SortedSet<Explanation> sorted = new TreeSet<Explanation>();
+		for(Set<Explanation> explanations : cache.values()){
+			for(Explanation exp : explanations){			
+				if(exp.getAxioms().contains(ax)){
+					sorted.add(exp);
+				}
+			}
+		}
+		for(Explanation exp : sorted){
+			if(exp.getAxioms().size() == 1){
+				return 1;
+			} else {
+				value += 1.0/exp.getAxioms().size() * (1 - value);
+			}
+		}
+		return Math.min(1, value);
+		
 	}
 
 	@Override

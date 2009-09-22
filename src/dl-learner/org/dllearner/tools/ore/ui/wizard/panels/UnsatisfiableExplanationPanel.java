@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,8 +61,10 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	private JRadioButton computeAllExplanationsRadioButton;
     private  JRadioButton computeMaxExplanationsRadioButton;
 	private JSpinner maxExplanationsSelector;
+	private JCheckBox strikeOutBox;
 	
 	private Set<ExplanationTablePanel> explanationPanels;
+	private Set<ExplanationTable> explanationTables;
 
 	
 	private ExplanationManager expMan;
@@ -115,6 +118,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsPanel = new Box(1);
 		
 		explanationPanels = new HashSet<ExplanationTablePanel>();
+		explanationTables = new HashSet<ExplanationTable>();
 
 		JPanel pan = new JPanel(new BorderLayout());
 		pan.add(explanationsPanel, BorderLayout.NORTH);
@@ -149,11 +153,11 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	    maxExplanationsSelector.setModel(spinnerModel);
 	    maxExplanationsSelector.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
 	    
-	    computeAllExplanationsRadioButton = new JRadioButton("compute all explanations");
+	    computeAllExplanationsRadioButton = new JRadioButton("Compute all explanations");
 	    computeAllExplanationsRadioButton.setActionCommand("all");
 	            
-	    computeMaxExplanationsRadioButton = new JRadioButton("limit explanation count to:");
-	    computeMaxExplanationsRadioButton.setActionCommand("max");
+	    computeMaxExplanationsRadioButton = new JRadioButton("Limit explanation count to:");
+	    computeMaxExplanationsRadioButton.setActionCommand("MAX");
 	    computeMaxExplanationsRadioButton.setSelected(true);
 	    
 	    ButtonGroup limitButtonGroup = new ButtonGroup();
@@ -164,6 +168,9 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	    buttonPanel.add(computeMaxExplanationsRadioButton, new GridBagConstraints(1, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
 	    buttonPanel.add(maxExplanationsSelector, new GridBagConstraints(3, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
 	  
+	    strikeOutBox = new JCheckBox("Strike out irrelevant parts");
+	    strikeOutBox.setActionCommand("strike");
+	    buttonPanel.add(strikeOutBox, new GridBagConstraints(3, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
 	       
 		buttonExplanationsPanel = new JPanel();
 		buttonExplanationsPanel.setLayout(new BorderLayout());
@@ -185,7 +192,8 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		impRepSplit.setBorder(null);
 		impactRepairPanel.add(impRepSplit);
 		
-		JScrollPane impScr = new JScrollPane(new ImpactTable());
+		ImpactTable impactTable = new ImpactTable();
+		JScrollPane impScr = new JScrollPane(impactTable);
 		JPanel impactPanel = new JPanel();
 		impactPanel.setLayout(new BorderLayout());
 		impactPanel.add(new JLabel("Impact"), BorderLayout.NORTH);
@@ -226,6 +234,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		int counter = 1;
 		for(Explanation exp : explanations){
 			ExplanationTable expTable = new ExplanationTable(exp, unsat);
+			explanationTables.add(expTable);
 			ExplanationTablePanel panel = new ExplanationTablePanel(expTable, counter);
 			explanationHolderPanel.add(panel);
 			explanationHolderPanel.add(Box.createVerticalStrut(5));
@@ -244,12 +253,19 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	public void setMaxExplanationsMode(boolean value){
 		maxExplanationsSelector.setEnabled(value);	
 	}
+	
+	public void strikeOutIrrelevantParts(boolean strikeOut){
+		for(ExplanationTable table : explanationTables){
+			table.strikeOut(strikeOut);
+		}	
+	}
 
 	public void addActionListeners(ActionListener aL) {
 		regularButton.addActionListener(aL);
 		laconicButton.addActionListener(aL);
 		computeAllExplanationsRadioButton.addActionListener(aL);
 		computeMaxExplanationsRadioButton.addActionListener(aL);	
+		strikeOutBox.addActionListener(aL);
 	}
 	
 	public void addListSelectionListener(ListSelectionListener l){

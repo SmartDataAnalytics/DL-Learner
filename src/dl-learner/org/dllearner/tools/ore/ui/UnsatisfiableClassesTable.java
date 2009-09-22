@@ -21,13 +21,12 @@ public class UnsatisfiableClassesTable extends JXTable {
 	public UnsatisfiableClassesTable(){
 		ExplanationManager expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		setBackground(Color.WHITE);
-		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setModel(new UnsatisfiableClassesTableModel());
 		setEditable(false);
 		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
 		getColumn(0).setMaxWidth(20);
-		setRowHeight(getRowHeight() + 4);
+		setRowHeight(getRowHeight() + 5);
 		getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
 		
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

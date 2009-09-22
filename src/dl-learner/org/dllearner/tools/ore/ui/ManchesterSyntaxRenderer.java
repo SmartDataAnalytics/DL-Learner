@@ -7,11 +7,13 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObject;
 
@@ -68,7 +70,7 @@ public class ManchesterSyntaxRenderer {
 		return render(ind);
 	}
 	
-	public static String render(OWLAxiom value, boolean striked, int depth){
+	public static String render(OWLAxiom value, boolean removed, int depth){
 		value.accept(renderer);
 		writer.flush();
 		String renderedString = buffer.toString();
@@ -79,7 +81,7 @@ public class ManchesterSyntaxRenderer {
 		for(int i = 0; i < depth; i++){
 			bf.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 		}
-		if(striked){
+		if(removed){
 			bf.append("<strike>");
 		}
 		
@@ -112,7 +114,83 @@ public class ManchesterSyntaxRenderer {
 				bf.append(" " + token + " ");
 			}
 		}
-		if(striked){
+		if(removed){
+			bf.append("</strike>");
+		}
+		bf.append("</html>");
+		renderedString = bf.toString();
+		buffer.getBuffer().delete(0, buffer.toString().length());
+		return renderedString;
+	}
+	
+	public static String render(OWLAxiom value, boolean removed, int depth, Explanation explanation){
+		value.accept(renderer);
+		writer.flush();
+		String renderedString = buffer.toString();
+		StringTokenizer st = new StringTokenizer(renderedString);
+		StringBuffer bf = new StringBuffer();
+		
+		bf.append("<html>");
+		for(int i = 0; i < depth; i++){
+			bf.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		}
+		if(removed){
+			bf.append("<strike>");
+		}
+		
+		
+		String token;
+		while(st.hasMoreTokens()){
+			token = st.nextToken();
+			boolean unsatClass = false;
+			for(OWLClass cl : ExplanationManager.getInstance(OREManager.getInstance()).getUnsatisfiableClasses()){
+				if(cl.toString().equals(token)){
+					unsatClass = true;
+					break;
+				}
+			}
+			String color = "black";
+			if(unsatClass){
+				color = "red";
+			} 
+			
+			boolean isReserved = false;
+			for(Keyword key : Keyword.values()){
+				if(token.equals(key.getLabel())){
+					color = key.getColor();
+					isReserved = true;break;
+				} 
+			}
+			boolean isRelevant = false;
+			if(!isReserved){
+				for(OWLAxiom ax : explanation.getAxioms()){
+					for(OWLEntity ent : ax.getSignature()){
+						if(token.equals(ent.toString())){
+							isRelevant = true;break;
+						}
+					}
+					
+				}
+			} else {
+				isRelevant = true;
+			}
+			if(isReserved || unsatClass){
+				if(isRelevant){
+					bf.append("<b><font color=" + color + ">" + token + " </font></b>");
+				} else {
+					bf.append("<strike<b><font color=" + color + ">" + token + " </font></b></strike>");
+				}
+				
+			} else {
+				if(isRelevant){
+					bf.append(" " + token + " ");
+				} else {
+					bf.append("<strike> " + token + " </strike>");
+				}
+				
+			}
+		}
+		if(removed){
 			bf.append("</strike>");
 		}
 		bf.append("</html>");
