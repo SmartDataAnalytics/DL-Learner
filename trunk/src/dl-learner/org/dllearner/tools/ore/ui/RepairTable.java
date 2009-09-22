@@ -35,7 +35,9 @@ public class RepairTable extends JXTable {
 		setGridColor(Color.LIGHT_GRAY);
 		setTableHeader(null);
 		setRowHeight(getRowHeight() + 5);
+		setRowHeightEnabled(true);
 		getColumn(0).setMaxWidth(30);
+		getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
 		getColumn(2).setMaxWidth(40);
 		getColumn(2).setCellRenderer(new TableCellRenderer() {
 

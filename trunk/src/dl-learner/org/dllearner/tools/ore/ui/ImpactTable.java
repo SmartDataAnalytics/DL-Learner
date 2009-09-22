@@ -41,7 +41,8 @@ public class ImpactTable extends JXTable {
 	    setShowHorizontalLines(true);
 	    setGridColor(Color.LIGHT_GRAY);
 	    setTableHeader(null);
-	    getColumnModel().getColumn(1).setCellRenderer(new OWLSyntaxTableCellRenderer());
+	    setRowHeightEnabled(true);
+	    getColumnModel().getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
 	    setRowHeight(getRowHeight() + 5);
 	    getColumn(0).setMaxWidth(50);
 	    getColumn(2).setMaxWidth(60);
@@ -189,5 +190,8 @@ public class ImpactTable extends JXTable {
 
 		}
 	}
+	
+	
+
 	
 }

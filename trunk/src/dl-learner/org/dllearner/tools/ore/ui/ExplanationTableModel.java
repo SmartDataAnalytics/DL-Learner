@@ -28,21 +28,21 @@ public class ExplanationTableModel extends AbstractTableModel {
 	private ExplanationManager expMan;
 	private ImpactManager impMan;
 	private RepairManager repMan;
-	private OWLClass unsat;
 	private OWLOntology ont;
+	private boolean strikeOutIrrelevantParts;
+	private Explanation laconicExplanation;
 	
 	public ExplanationTableModel(Explanation exp, OWLClass cl){
 		this.exp = exp;
 		this.expMan = ExplanationManager.getInstance(OREManager.getInstance());
 		this.impMan = ImpactManager.getInstance(OREManager.getInstance());
 		this.repMan = RepairManager.getInstance(OREManager.getInstance());
-		this.unsat = cl;
 		this.ont = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
 	}
 	
 	@Override
 	public int getColumnCount() {
-		return 5;
+		return 6;
 	}
 
 	@Override
@@ -55,23 +55,27 @@ public class ExplanationTableModel extends AbstractTableModel {
 		OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 		if(columnIndex == 0){
 			int depth2Root = expMan.getOrdering(exp).get(rowIndex).values().iterator().next();
-           return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
+			if(strikeOutIrrelevantParts){			
+				return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root, laconicExplanation);				
+			} else {
+				return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
+			}        
 		} else if(columnIndex == 1){
-			return expMan.getGlobalArity(ax);//getArity(unsat, getOWLAxiomAtRow(rowIndex));
+			return expMan.getGlobalArity(ax);
 		} else if(columnIndex == 2) {
 			return expMan.getUsage(ax).size();
 		} else if(columnIndex == 3){
+			return expMan.getInconsistencyValue(ax);
+		} else if(columnIndex == 4){
 			return Boolean.valueOf(impMan.isSelected(ax));
 		} else {
 			return "rewrite";
-		}
-		
+		}	
 	}
-	
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		if(columnIndex == 3){
+		if(columnIndex == 4){
 			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 			if(impMan.isSelected(ax)){
 				impMan.removeSelection(ax);
@@ -127,6 +131,8 @@ public class ExplanationTableModel extends AbstractTableModel {
 		} else if(columnIndex == 2){
 			return int.class;
 		} else if(columnIndex == 3){
+			return double.class;
+		} else if(columnIndex == 4){
 			return Boolean.class;
 		} else {
 			return String.class;
@@ -135,7 +141,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex == 3 || columnIndex == 4){
+		if(columnIndex == 4 || columnIndex == 5){
 			return true;
 		}
 		return false;
@@ -143,6 +149,14 @@ public class ExplanationTableModel extends AbstractTableModel {
 	
 	public OWLAxiom getOWLAxiomAtRow(int rowIndex){
 		return expMan.getOrdering(exp).get(rowIndex).keySet().iterator().next();
+	}
+	
+	public void setStriked(boolean strikeOut){
+		this.strikeOutIrrelevantParts = strikeOut;
+		if(strikeOut){
+			laconicExplanation = expMan.getLaconicExplanation(exp);
+		}
+		fireTableDataChanged();
 	}
 	
 	@Override
@@ -153,6 +167,8 @@ public class ExplanationTableModel extends AbstractTableModel {
 			return "Arity";
 		} else if(column == 2){
 			return "Usage";
+		} else if(column == 3){
+			return "";
 		} else {
 			return "";
 		}

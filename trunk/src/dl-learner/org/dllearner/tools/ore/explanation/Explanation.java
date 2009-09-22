@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import org.semanticweb.owl.model.OWLAxiom;
 
-public class Explanation {
+public class Explanation implements Comparable<Explanation> {
 
 	private Set<OWLAxiom> axioms;
 	private OWLAxiom entailment;
@@ -50,6 +50,17 @@ public class Explanation {
 	@Override
 	public int hashCode() {
 		return entailment.hashCode() + axioms.hashCode();
+	}
+
+	@Override
+	public int compareTo(Explanation o) {
+		if(axioms.size() == o.axioms.size()){
+			return 1;
+		} else if(axioms.size() > o.axioms.size()){
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 	
 	

@@ -305,7 +305,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		extractTask = new OntologyExtractingTask(this, mon);
 		extractTask.addPropertyChangeListener(this);
 		extractTask.execute();
-
+		
 	}
 	
 	private boolean urlIsConnectable()
@@ -429,18 +429,17 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
 			ks.getConfigurator().setUrl(endpoint.getURL());
 			ks.getConfigurator().setInstances(instances);
-//			ks.getConfigurator().setPredefinedFilter("YAGO");
+			ks.getConfigurator().setPredefinedFilter("YAGO");
 			ks.getConfigurator().setBreakSuperClassRetrievalAfter(optionsPanel.getBreakSuperClassRetrievalAfterValue());
 			ks.getConfigurator().setRecursionDepth(optionsPanel.getRecursionDepthValue());
 			ks.getConfigurator().setUseCache(optionsPanel.isUseCache());
 			ks.getConfigurator().setGetAllSuperClasses(optionsPanel.isGetAllSuperClasses());
 			ks.getConfigurator().setDissolveBlankNodes(optionsPanel.isDissolveBlankNodes());
 			ks.getConfigurator().setUseImprovedSparqlTupelAquisitor(optionsPanel.isUseImprovedSparqlTupelAquisitor());
-			ks.getConfigurator().setUseLits(optionsPanel.isUseLiterals());
+			ks.getConfigurator().setUseLits(false);//optionsPanel.isUseLiterals());
 			ks.getConfigurator().setGetPropertyInformation(optionsPanel.isGetPropertyInformation());
 			ks.getConfigurator().setCloseAfterRecursion(optionsPanel.isCloseAfterRecursion());
 			ks.addProgressMonitor(mon);
-			ks.getConfigurator().setSaveExtractedFragment(true);
 			ks.init();
 
 			return null;

@@ -27,7 +27,6 @@ import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.protege.editor.core.Disposable;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
@@ -42,9 +41,9 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	private RepairManager repMan;
 	
 	protected String[] columnToolTips = {
-		    null, // "First Name" assumed obvious
-		     // "Last Name" assumed obvious
+		    null, 
 		    "The number of already computed explanations where the axiom occurs.",
+		    "TODO",
 		    "TODO",
 		    "If checked, the axiom is selected to remove from the ontology.",
 		    "Edit the axiom."
@@ -57,19 +56,20 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		
 		repMan.addListener(this);
 		setBackground(Color.WHITE);
-//		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ExplanationTableModel(exp,	cl));
-		TableColumn column5 = getColumn(4);
-		column5.setCellRenderer(new ButtonCellRenderer());
-		column5.setCellEditor(new ButtonCellEditor());
-		column5.setResizable(false);
+		TableColumn column6 = getColumn(5);
+		column6.setCellRenderer(new ButtonCellRenderer());
+		column6.setCellEditor(new ButtonCellEditor());
+		column6.setResizable(false);
 		setRowHeight(getRowHeight() + 4);
+		setRowHeightEnabled(true);
+		getColumn(0).setCellRenderer(new MultiLineTableCellRenderer());
 		getColumn(1).setMaxWidth(60);
 		getColumn(2).setMaxWidth(60);
-		getColumn(3).setMaxWidth(30);
+		getColumn(3).setMaxWidth(60);
 		getColumn(4).setMaxWidth(30);
-		
+		getColumn(5).setMaxWidth(30);
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -143,6 +143,10 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
             }
         };
 
+	}
+	
+	public void strikeOut(boolean strikeOut){
+		((ExplanationTableModel)getModel()).setStriked(strikeOut);
 	}
 	
 	private void changeSelection() {

@@ -11,13 +11,19 @@ import java.util.Set;
 import org.dllearner.tools.ore.explanation.AxiomUsageChecker;
 import org.dllearner.tools.ore.explanation.CachedExplanationGenerator;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.dllearner.tools.ore.explanation.ExplanationException;
 import org.dllearner.tools.ore.explanation.RootFinder;
+import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
+import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 
@@ -159,6 +165,27 @@ public class ExplanationManager implements OREManagerListener{
 		return usageChecker.getUsage(axiom);
 	}
 	
+	public Explanation getLaconicExplanation(Explanation explanation){
+		Explanation exp = null;
+		try {
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			PelletReasonerFactory reasonerFactory = new PelletReasonerFactory();
+			OWLOntology ontology = manager.createOntology(explanation.getAxioms());
+			LaconicExplanationGenerator gen = new LaconicExplanationGenerator(manager, reasonerFactory, Collections.singleton(ontology));
+			exp = gen.getExplanations(explanation.getEntailment(), 1).iterator().next();
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExplanationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return exp;
+	}
+	
 	
 	
 	private ArrayList<Map<OWLAxiom, Integer>> getTree2List(Tree<OWLAxiom> tree){
@@ -190,6 +217,11 @@ public class ExplanationManager implements OREManagerListener{
 	
 	public int getGlobalArity(OWLAxiom ax){
 		return gen.getArity(ax);
+	}
+	
+	public double getInconsistencyValue(OWLAxiom ax){
+		
+		return Math.round( gen.getInconsistencyValue(ax) * 100. ) / 100.;
 	}
 	
 	public void setLaconicMode(boolean laconic){

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.swing.AbstractButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -110,6 +111,10 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		} else if (e.getActionCommand().equals("max")){
 			expMan.setComputeAllExplanationsMode(false);
 			panel.setMaxExplanationsMode(true);
+		} else if(e.getActionCommand().equals("strike")){
+			AbstractButton abstractButton = (AbstractButton) e.getSource();
+	        boolean selected = abstractButton.getModel().isSelected();
+	        panel.strikeOutIrrelevantParts(selected);
 		}
 		
 		
