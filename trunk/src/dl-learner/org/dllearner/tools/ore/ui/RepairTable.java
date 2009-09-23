@@ -104,6 +104,23 @@ public class RepairTable extends JXTable {
 		});
 
 	}
+	
+	@Override
+	public String getToolTipText(MouseEvent event) {
+		int rowIndex = rowAtPoint(event.getPoint());
+		int columnIndex = columnAtPoint(event.getPoint());
+		if(columnIndex == 0){
+			if(getValueAt(rowIndex, 0).equals("–")){
+				return "Remove from ontology";
+			} else {
+				return "Add to ontology";
+			}
+		} else if(columnIndex == 2){
+			return "Remove from repair plan";
+		} else {
+			return super.getToolTipText(event);
+		}
+	}
 
 	private void handleKeyPressed(KeyEvent e) {
 		int selRow = getSelectedRow();

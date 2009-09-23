@@ -57,7 +57,6 @@ public class OREApplication {
     	try {
 			PropertyConfigurator.configure(new URL("file:src/dl-learner/org/dllearner/tools/ore/log4j.properties"));
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
     	
@@ -122,11 +121,7 @@ public class OREApplication {
 			
 			@Override
 			public void run() {
-				System.out.println("Starting application...");
 				wizard.showModalDialog(); 
-				System.out.println("Exited ORE application");
-				System.exit(0);
-				
 			}
 		});
         

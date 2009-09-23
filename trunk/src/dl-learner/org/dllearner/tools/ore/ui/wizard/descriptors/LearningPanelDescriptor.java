@@ -103,7 +103,8 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //				range);
 //		Description de = new NamedClass("http://example.com/father#male");
 		
-		if (!e.getValueIsAdjusting() && (learningTask.isDone() || learningTask.isCancelled())){
+		if (!e.getValueIsAdjusting() && learnPanel.getResultTable().getSelectedRow() >= 0 && 
+				(learningTask.isDone() || learningTask.isCancelled())){
 			EvaluatedDescriptionClass selectedClassExpression = learnPanel.getResultTable().getSelectedValue();
 //			if(!selectedClassExpression.isConsistent()){
 //				learnPanel.add(new JLabel("Selected class expression may lead to an inconsistent knowledgebase."));

@@ -102,8 +102,10 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("regular")) {
 			expMan.setLaconicMode(false);
+			panel.setStrikeEnabled(true);
 		} else if (e.getActionCommand().equals("laconic")) {
 			expMan.setLaconicMode(true);
+			panel.setStrikeEnabled(false);
 		} else if (e.getActionCommand().equals("all")){
 			conditionalWarning("Computing all explanations might take a long time!", getWizard().getDialog());
 			expMan.setComputeAllExplanationsMode(true);
@@ -208,7 +210,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 			@Override
 			public Void doInBackground() {
 				statusBar.showProgress(true);
-				statusBar.setProgressTitle("Computing explanations");
+				statusBar.setProgressTitle("Computing explanations...");
 				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				for(OWLClass unsat : panel.getUnsatTable().getSelectedClasses()){
 					expMan.getUnsatisfiableExplanations(unsat);
@@ -264,7 +266,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 			public Void doInBackground() {
 				
 				statusBar.showProgress(true);
-				statusBar.setProgressTitle("Computing root derived class");
+				statusBar.setProgressTitle("Computing root and derived classes...");
 				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				expMan.getRootUnsatisfiableClasses();
 				expMan.getDerivedClasses();

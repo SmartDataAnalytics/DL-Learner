@@ -34,15 +34,13 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -100,7 +98,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
        
     private WizardModel wizardModel;
     private WizardController wizardController;
-    private JDialog wizardDialog;
+    private JFrame wizardDialog;
         
     private JPanel cardPanel;
     private CardLayout cardLayout;
@@ -108,7 +106,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     private JButton backButton;
     private JButton nextButton;
     private JButton cancelButton;
-    private JTextArea informationsField;
+    private JTextPane informationsField;
     private StatusBar statusBar;
     
     private int returnCode;
@@ -129,7 +127,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      */    
     public Wizard(Dialog owner) {
         wizardModel = new WizardModel();
-        wizardDialog = new JDialog(owner);         
+        wizardDialog = new JFrame();         
         initComponents();
     }
  
@@ -140,7 +138,14 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      */    
     public Wizard(Frame owner) {
         wizardModel = new WizardModel();
-        wizardDialog = new JDialog(owner);         
+        wizardDialog = new JFrame();     
+        wizardDialog.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+            	System.out.println("Exited application");
+            	wizardDialog.dispose();
+            }
+          });
+        
         initComponents();
     }
     
@@ -151,7 +156,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * the event that you want to change any of the JDialog parameters manually.
      * @return The JDialog instance that this class created.
      */    
-    public JDialog getDialog() {
+    public JFrame getDialog() {
         return wizardDialog;
     }
     
@@ -185,15 +190,15 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * @param b the modality of the dialog
      */    
     public void setModal(boolean b) {
-        wizardDialog.setModal(b);
+//        wizardDialog.setModal(b);
     }
     
     /**
      * Returns the modality of the dialog.
      * @return A boolean indicating whether or not the generated javax.swing.JDialog is modal.
      */    
-    public boolean isModal() {
-        return wizardDialog.isModal();
+    public boolean isModal() {return false;
+//        return wizardDialog.isModal();
     }
     
     /**
@@ -203,11 +208,8 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * constants at the beginning of the class.
      */    
     public int showModalDialog() {
-        
-        wizardDialog.setModal(true);
-        //wizardDialog.pack();
+       System.out.println("Starting application");
        wizardDialog.setVisible(true);
-        
         
         return returnCode;
     }
@@ -367,6 +369,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      */    
     public void close(int code) {
         returnCode = code;
+        System.out.println("Exited application");
         wizardDialog.dispose();
     }
     
@@ -428,35 +431,22 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         buttonBox.add(cancelButton);
         
         buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
-        buttonPanel.add(statusBar, BorderLayout.SOUTH);
-        JPanel informationPanel = new JPanel();
-        informationPanel.setLayout(new BorderLayout());
-        JScrollPane infoScrollPane = new JScrollPane();
-        informationsField = new JTextArea();
-        
-        
-        //setLayout(new GridBagLayout());
-        infoScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        infoScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        buttonPanel.add(statusBar, BorderLayout.SOUTH);   
+
         Color color = UIManager.getColor("Panel.background");
+        informationsField = new JTextPane();
         informationsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
         informationsField.setOpaque(true);
-        informationsField.setColumns(80);
         informationsField.setEditable(false);
-        informationsField.setLineWrap(true);
-        informationsField.setRows(3);
         informationsField.setFont(new Font("Serif", Font.PLAIN, 14));
-        informationsField.setWrapStyleWord(true);
-        infoScrollPane.setViewportView(informationsField);
-        informationPanel.add(infoScrollPane, BorderLayout.EAST);
+              
+        wizardDialog.getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
         
-        JPanel buttonInformationPanel = new JPanel();
-        buttonInformationPanel.setLayout(new BorderLayout());
-        buttonInformationPanel.add(buttonPanel, BorderLayout.SOUTH);
-        buttonInformationPanel.add(informationPanel, BorderLayout.NORTH);
-        
-        wizardDialog.getContentPane().add(buttonInformationPanel, java.awt.BorderLayout.SOUTH);
-        wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
+        JPanel infoMainHolder = new JPanel();
+        infoMainHolder.setLayout(new BorderLayout());
+        infoMainHolder.add(informationsField, BorderLayout.SOUTH);
+        infoMainHolder.add(cardPanel, BorderLayout.CENTER);
+        wizardDialog.getContentPane().add(infoMainHolder, java.awt.BorderLayout.CENTER);
         
         leftPanel = new LeftPanel(0);
         wizardDialog.getContentPane().add(leftPanel, BorderLayout.WEST);
@@ -492,16 +482,14 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 	 * @param i the number of the panel
 	 */
 	public void setLeftPanel(int i) {
-		((LeftPanel) (wizardDialog.getContentPane().getComponent(2))).set(i);
-		
-		
+		((LeftPanel) (wizardDialog.getContentPane().getComponent(2))).set(i);		
 	}
 	
 	/**
 	 * Returns the information field.
-	 * @return JTextArea
+	 * @return JTextPane
 	 */
-	public JTextArea getInformationField(){
+	public JTextPane getInformationField(){
 		return informationsField;
 	}
 
@@ -513,9 +501,5 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 	public void setStatusBarTitle(){
 		statusBar.setProgressMessage("test");
 	}
-
-
-
-   
 
 }

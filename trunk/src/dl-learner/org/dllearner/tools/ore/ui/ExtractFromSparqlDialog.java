@@ -2,7 +2,6 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -93,7 +93,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	
 	private Map<URL, List<String>> endpointToDefaultGraph;
 	
-	public ExtractFromSparqlDialog(Dialog owner) {
+	public ExtractFromSparqlDialog(JFrame owner) {
 		super(owner, "Extract fragment from SPARQL endpoint", true);
 
 		// Create the controls
@@ -238,7 +238,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		}		
 	}
 	
-	private void positionErrorDialog(Dialog owner) {
+	private void positionErrorDialog(JFrame owner) {
 		if (owner == null || !owner.isVisible()) {
 			Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
 			setLocation(screenDimension.width / 2 - getSize().width / 2, screenDimension.height / 2 - getSize().height / 2);
