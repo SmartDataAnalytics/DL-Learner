@@ -29,8 +29,7 @@ import java.awt.GridBagLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.UIManager;
 
 /**
@@ -43,57 +42,54 @@ public class IntroductionPanel extends JPanel {
 	private static final long serialVersionUID = 7184544803724152044L;
 	
 	
-	private JTextArea instructionsField;
-    private JScrollPane jScrollPane1;
+	private JTextPane instructionsField;
         
     private JLabel welcomeTitle;
     
-    private final String introductionText = "This is a tool for debugging end enriching OWL-ontologies. " 
-		+ "You are able to check ontologies for inconsistency and unsatisfiable classes. " 
-		+ "If some of that is detected, helpful explanations can be generated to find out the relevant axioms. " 
-		+ "Another feature is to get equivalent class expressions for atomic classes, using an intelligent and efficient " 
-		+ "machine learning algorithm. TODO...Jens ";
+    private final String titleText = "<html>Welcome to the DL-Learner ORE (Ontology Repair and Enrichment) Tool!<br>(Version 0.1)</html>";
 
-     
-    
+    private final String introductionText = "<html>ORE is a tool for debugging and enriching OWL ontologies. It has the following features: " +
+    		"<UL>" + 
+    		"<LI>detection of inconsistencies" +
+    		"<LI>displaying explanations for those inconsistencies" +
+    		"<LI>intelligent resolution of inconsistencies" +
+    		"<LI>enrichment of an ontology by learning definitions and super class axioms" +
+    		"<LI>guiding the user through potential consequences of adding those axioms" +
+    		"</UL>" + 
+    		"In a later version, the tool will also support the detection of various potential modelling problems." +
+    		"ORE uses a wizard-style concept. On the left, you can see different steps in the wizard, where the current step is in bold. " +
+    		"Each step contains an explanation of it in the main window. The wizard may omit steps if they are not necessary, e.g. " +
+    		"if you load a consistent ontology, then the \"Debugging\" dialogue is skipped." +
+    		"Please read the <a href=\"http://dl-learner.org/wiki/ORE\">the ORE wiki page</a> and view the <a href=\"...\">screencast</a> to get started.</html>"; 
     
     public IntroductionPanel() {
     	createUI();
     }
     
     private void createUI(){
+    	setBorder(BorderFactory.createEmptyBorder(12, 6, 12, 12));
     	setLayout(new GridBagLayout());
     	GridBagConstraints c = new GridBagConstraints();
     	c.gridwidth = GridBagConstraints.REMAINDER;
     	c.fill = GridBagConstraints.HORIZONTAL;
     	c.weightx = 1.0;
     	c.anchor = GridBagConstraints.NORTH;
-    	 	
-        //setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(12, 6, 12, 12));
-        
+    	 	   
         welcomeTitle = new JLabel();
         welcomeTitle.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 0, 0)));
         welcomeTitle.setFont(new java.awt.Font("MS Sans Serif", Font.BOLD, 14));
-        welcomeTitle.setText("Welcome to the DL-Learner ORE-Tool!");
+        welcomeTitle.setText(titleText);
         add(welcomeTitle, c);
         
-        jScrollPane1 = new JScrollPane();
-        jScrollPane1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        jScrollPane1.setViewportBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        instructionsField = new JTextArea();
+        instructionsField = new JTextPane();
+        instructionsField.setContentType("text/html");
         Color color = UIManager.getColor("Panel.background");
         instructionsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
         instructionsField.setOpaque(true);
-        instructionsField.setColumns(20);
         instructionsField.setEditable(false);
-        instructionsField.setLineWrap(true);
-        instructionsField.setRows(5);    
         instructionsField.setFont(new Font("Serif", Font.PLAIN, 14));
         instructionsField.setText(introductionText);
-        instructionsField.setWrapStyleWord(true);
-        jScrollPane1.setViewportView(instructionsField);
-        add(jScrollPane1, c);
+        add(instructionsField, c);
         
         c.weighty = 1.0;
         add(new JLabel(), c);

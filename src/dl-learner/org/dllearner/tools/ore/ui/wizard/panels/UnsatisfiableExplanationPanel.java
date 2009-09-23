@@ -228,6 +228,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	}
 	
 	public void addExplanations(Set<Explanation> explanations, OWLClass unsat){
+		explanationTables.clear();
 		Box explanationHolderPanel = new Box(1);
 		
 		explanationHolderPanel.setBorder(new TitledBorder(unsat + " is unsatisfiable"));
@@ -258,6 +259,10 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		for(ExplanationTable table : explanationTables){
 			table.strikeOut(strikeOut);
 		}	
+	}
+	
+	public void setStrikeEnabled(boolean enabled){
+		strikeOutBox.setEnabled(enabled);
 	}
 
 	public void addActionListeners(ActionListener aL) {

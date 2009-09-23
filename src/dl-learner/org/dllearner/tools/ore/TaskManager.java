@@ -2,7 +2,7 @@ package org.dllearner.tools.ore;
 
 import java.awt.Cursor;
 
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import org.dllearner.tools.ore.ui.StatusBar;
@@ -15,8 +15,7 @@ public class TaskManager {
 
 	
 	private StatusBar statusBar;
-	
-	private JDialog dialog;
+	private JFrame dialog;
 	
 	public static synchronized TaskManager getInstance(){
 		if(instance == null){
@@ -33,11 +32,11 @@ public class TaskManager {
 		return statusBar;
 	}
 	
-	public void setDialog(JDialog dialog){
+	public void setDialog(JFrame dialog){
 		this.dialog = dialog;
 	}
 	
-	public JDialog getDialog(){
+	public JFrame getDialog(){
 		return dialog;
 	}
 	

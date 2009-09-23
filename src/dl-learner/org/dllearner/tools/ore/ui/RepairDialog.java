@@ -36,6 +36,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -95,7 +96,7 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 	private Individual ind;
 	
 	
-	public RepairDialog(Individual ind, JDialog dialog, String mode){
+	public RepairDialog(Individual ind, JFrame dialog, String mode){
 		super(dialog, true);
 		final Component dialogd = this.getParent();
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
