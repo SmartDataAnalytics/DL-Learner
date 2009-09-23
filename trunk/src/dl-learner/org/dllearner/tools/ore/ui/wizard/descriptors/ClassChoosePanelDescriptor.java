@@ -20,7 +20,9 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -49,7 +51,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     /**
      * Information string for class choose panel.
      */
-    public static final String INFORMATION = "As you can see, all atomic classes of the ontology are shown in the list above. " 
+    public static final String INFORMATION = "Above all atomic classes which have at least one individual are listed. " 
     										 + "Select one of them for which you want to learn equivalent class expressions," +
     										 	" then press <Next>";
     
@@ -113,7 +115,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	}
 	
 	public void refill(){
-		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes");
+		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
 		new ClassRetrievingTask().execute();
 	}
 	
@@ -125,8 +127,18 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     class ClassRetrievingTask extends SwingWorker<Set<NamedClass>, NamedClass> {
 
 		@Override
-		public Set<NamedClass> doInBackground() {		
-			Set<NamedClass> classes = OREManager.getInstance().getReasoner().getNamedClasses();
+		public Set<NamedClass> doInBackground() {
+			OREManager.getInstance().makeOWAToCWA();
+			Set<NamedClass> classes = new TreeSet<NamedClass>(OREManager.getInstance().getReasoner().getNamedClasses());
+			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
+			Iterator<NamedClass> iter = classes.iterator();
+			while(iter.hasNext()){
+				NamedClass nc = iter.next();
+				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
+				if(instanceCount == 0){
+					iter.remove();
+				}
+			}
 			return classes;
 		}
 
