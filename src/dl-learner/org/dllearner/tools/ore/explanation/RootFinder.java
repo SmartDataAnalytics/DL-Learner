@@ -67,6 +67,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	
 	private Set<OWLClass> rootClasses;
 	private Set<OWLClass> derivedClasses;
+	private Set<OWLClass> unsatClasses;
 	
 	private boolean ontologyChanged = true;
 	
@@ -94,6 +95,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		}
 		rootClasses = new HashSet<OWLClass>();
 		derivedClasses = new HashSet<OWLClass>();
+		unsatClasses = new HashSet<OWLClass>();
+		
 		depend2Classes = new HashSet<OWLClass>();
 		depth2UniversalRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectAllRestriction>>();
 		depth2ExistsRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectPropertyExpression>>();
@@ -138,6 +141,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 //		} catch (OWLOntologyChangeException e) {
 //			e.printStackTrace();
 //		}
+		unsatClasses.clear();
 		rootClasses.clear();
 		derivedClasses.clear();
 		depend2Classes.clear();
@@ -147,14 +151,16 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		parent2Children.clear();
 		computePossibleRoots();
 		pruneRoots();
+		derivedClasses.addAll(unsatClasses);
 		derivedClasses.removeAll(rootClasses);
 		
 		rootClasses.remove(manager.getOWLDataFactory().getOWLNothing());
 	}
 	
 	private void computePossibleRoots(){
-			derivedClasses.addAll(reasoner.getInconsistentClasses());
-			for(OWLClass cls : derivedClasses){
+		unsatClasses.addAll(reasoner.getInconsistentClasses());
+		
+			for(OWLClass cls : unsatClasses){
 				reset();
 				for(OWLDescription equi : cls.getEquivalentClasses(ontology)){
 					equi.accept(this);
@@ -243,7 +249,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 				filler.accept(this);
 				depth--;
 			} else {
-				if(!reasoner.isSatisfiable(filler)){
+				if(unsatClasses.contains(filler.asOWLClass())){
 					depend2Classes.add(filler.asOWLClass());
 					if(restr instanceof OWLObjectAllRestriction){
 						addAllRestrictionProperty((OWLObjectAllRestriction) restr);
@@ -276,13 +282,10 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	
 	
 	@Override
-	public void visit(OWLClass cls) {
-		
-		
-			if(!reasoner.isSatisfiable(cls)) {
+	public void visit(OWLClass cls) {	
+			if(unsatClasses.contains(cls)) {
 				depend2Classes.add(cls);
 			}
-			
 	}
 
 	@Override
@@ -292,7 +295,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 			for(OWLDescription op : and.getOperands()) {
 				if(op.isAnonymous()){
 					op.accept(this);
-				} else if(!reasoner.isSatisfiable(op)) {
+				} else if(unsatClasses.contains(op.asOWLClass())) {
 					depend2Classes.add(op.asOWLClass());				
 				}
 			}
@@ -301,21 +304,22 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 
 	@Override
 	public void visit(OWLObjectUnionOf or) {
-		
-		
-			for(OWLDescription op : or.getOperands()){
-				if(reasoner.isSatisfiable(op)){
-					return;
-				}
+
+		// check whether one of the union operands is satisfiable
+		for (OWLDescription op : or.getOperands()) {
+			if (!unsatClasses.contains(op)) {
+				return;
 			}
-			for(OWLDescription op : or.getOperands()){
-				if(op.isAnonymous()){
-					op.accept(this);
-				} else {
-					depend2Classes.add(op.asOWLClass());
-				}
+		}
+		// all operands are unsatisfiable
+		for (OWLDescription op : or.getOperands()) {
+			if (op.isAnonymous()) {
+				op.accept(this);
+			} else {
+				depend2Classes.add(op.asOWLClass());
 			}
-		
+		}
+
 	}
 	
 	@Override

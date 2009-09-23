@@ -88,15 +88,8 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     
     @Override
 	public void aboutToDisplayPanel() {
-//    	new RootDerivedTask(getWizard().getStatusBar()).execute();
         getWizard().getInformationField().setText(INFORMATION);
-        
     }
-
-	@Override
-	public void displayingPanel() {
-		new RootDerivedTask(getWizard().getStatusBar()).execute();
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -136,7 +129,9 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		
 	}
 	
-	
+	public void fillUnsatisfiableClassesList(){
+		new RootDerivedTask(getWizard().getStatusBar()).execute();
+	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {

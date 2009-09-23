@@ -152,17 +152,17 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
        
    
     /**
-     * Returns an instance of the JDialog that this class created. This is useful in
-     * the event that you want to change any of the JDialog parameters manually.
-     * @return The JDialog instance that this class created.
+     * Returns an instance of the JFrame that this class created. This is useful in
+     * the event that you want to change any of the JFrame parameters manually.
+     * @return The JFrame instance that this class created.
      */    
     public JFrame getDialog() {
         return wizardDialog;
     }
     
     /**
-     * Returns the owner of the generated javax.swing.JDialog.
-     * @return The owner (java.awt.Frame or java.awt.Dialog) of the javax.swing.JDialog generated
+     * Returns the owner of the generated javax.swing.JFrame.
+     * @return The owner (java.awt.Frame or java.awt.Dialog) of the javax.swing.JFrame generated
      * by this class.
      */    
     public Component getOwner() {
@@ -170,7 +170,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     }
     
     /**
-     * Sets the title of the generated javax.swing.JDialog.
+     * Sets the title of the generated javax.swing.JFrame.
      * @param s The title of the dialog.
      */    
     public void setTitle(String s) {
@@ -186,7 +186,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     }
     
     /**
-     * Sets the modality of the generated javax.swing.JDialog.
+     * Sets the modality of the generated javax.swing.JFrame.
      * @param b the modality of the dialog
      */    
     public void setModal(boolean b) {
@@ -195,7 +195,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     
     /**
      * Returns the modality of the dialog.
-     * @return A boolean indicating whether or not the generated javax.swing.JDialog is modal.
+     * @return A boolean indicating whether or not the generated javax.swing.JFrame is modal.
      */    
     public boolean isModal() {return false;
 //        return wizardDialog.isModal();
@@ -246,11 +246,6 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         wizardModel.registerPanel(id, panel);
         
     }  
-    
-    public void updatePanel(JPanel panel, Object id){
-    	cardPanel.remove(4);
-    	cardPanel.add(panel, id);
-    }
     
     /**
      * Displays the panel identified by the object passed in. This is the same Object-based
@@ -374,7 +369,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     }
     
     /**
-     * This method initializes the components for the wizard dialog: it creates a JDialog
+     * This method initializes the components for the wizard dialog: it creates a JFrame
      * as a CardLayout panel surrounded by a small amount of space on each side, as well
      * as three buttons at the bottom.
      */

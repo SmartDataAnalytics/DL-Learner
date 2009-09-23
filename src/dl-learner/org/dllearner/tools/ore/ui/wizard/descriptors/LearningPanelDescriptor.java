@@ -76,7 +76,12 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return RepairPanelDescriptor.IDENTIFIER;
+    	EvaluatedDescriptionClass newClassDesc = OREManager.getInstance().getNewClassDescription();
+    	if(newClassDesc != null && newClassDesc.getAccuracy() == 1.0){
+    		return SavePanelDescriptor.IDENTIFIER;
+    	} else {
+    		return RepairPanelDescriptor.IDENTIFIER;
+    	}
     }
     
     @Override
