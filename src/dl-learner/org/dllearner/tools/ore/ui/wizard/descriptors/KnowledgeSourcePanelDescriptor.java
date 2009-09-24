@@ -106,7 +106,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     public void loadOntology(URI uri){
     	OREManager.getInstance().setCurrentKnowledgeSource(uri);
     	currentURI = uri;
-    	TaskManager.getInstance().setTaskStarted("Loading ontology");
+    	TaskManager.getInstance().setTaskStarted("Loading ontology...");
     	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
     	
     }
@@ -172,10 +172,6 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	}
 	
 	private void handleOpenFromRecent(URI uri){
-//		currentURI = uri;
-//		OREManager.getInstance().setCurrentKnowledgeSource(
-//				uri);
-//		new OntologyLoadingTask(getWizard().getStatusBar()).execute();
 		loadOntology(uri);
 	}
     
@@ -206,9 +202,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	        	RecentManager.getInstance().addURI(currentURI);
 	        	RecentManager.getInstance().serialize();
 	        	if(oreMan.consistentOntology()){
-					statusBar.setProgressTitle("Classifying ontology");
+					statusBar.setMessage("Classifying ontology...");
 					oreMan.getReasoner().classify();
-		        	statusBar.setProgressTitle("Realising ontology");
+		        	statusBar.setMessage("Realising ontology...");
 		        	oreMan.getReasoner().realise();
 				}
 	        	

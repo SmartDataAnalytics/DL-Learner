@@ -143,6 +143,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
             public void windowClosing(WindowEvent e) {
             	System.out.println("Exited application");
             	wizardDialog.dispose();
+            	System.exit(0);
             }
           });
         
@@ -366,6 +367,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         returnCode = code;
         System.out.println("Exited application");
         wizardDialog.dispose();
+        System.exit(0);
     }
     
     /**

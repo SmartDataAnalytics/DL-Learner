@@ -85,6 +85,17 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		mainSplitPane.setRightComponent(createDebuggingPanel());
 		
 		add(mainSplitPane);		
+		
+		
+//		String layoutDef = "(ROW unsat (COLUMN explanation (ROW repair impact)))";
+//		MultiSplitLayout.Node modelRoot = MultiSplitLayout.parseModel(layoutDef);
+//		JXMultiSplitPane mainSplitPane = new JXMultiSplitPane();
+//		mainSplitPane.setModel(modelRoot);
+//		mainSplitPane.add(createUnsatClassesPanel(), "unsat");
+//		mainSplitPane.add(createExplanationPanel(), "explanation");
+//		mainSplitPane.add(createRepairPanel(), "repair");
+//		mainSplitPane.add(createImpactPanel(), "impact");
+//		add(mainSplitPane);
 	}
 	
 	private JComponent createUnsatClassesPanel(){
@@ -204,6 +215,20 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		impRepSplit.setLeftComponent(repairPanel);
 		
 		return impactRepairPanel;
+	}
+	
+	private JComponent createRepairPanel(){
+		return new RepairPlanPanel();
+	}
+	
+	private JComponent createImpactPanel(){
+		ImpactTable impactTable = new ImpactTable();
+		JScrollPane impScr = new JScrollPane(impactTable);
+		JPanel impactPanel = new JPanel();
+		impactPanel.setLayout(new BorderLayout());
+		impactPanel.add(new JLabel("Impact"), BorderLayout.NORTH);
+		impactPanel.add(impScr);
+		return impactPanel;
 	}
 	
 	public void fillUnsatClassesTable(List<OWLClass> unsatClasses) {

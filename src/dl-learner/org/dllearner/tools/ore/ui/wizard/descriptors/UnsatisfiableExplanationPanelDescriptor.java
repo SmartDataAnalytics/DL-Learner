@@ -2,7 +2,6 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
-import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel;
 import org.semanticweb.owl.model.OWLClass;
@@ -71,9 +69,8 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	}
 	
     private void showExplanations(){
-    	ExplanationTask task = new ExplanationTask(getWizard().getStatusBar());
-    	TaskManager.getInstance().setCurrentTask(task);
-    	task.execute();
+    	TaskManager.getInstance().setTaskStarted("Computing explanations...");
+    	new ExplanationTask().execute();
     }
     
     @Override
@@ -124,13 +121,14 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	@Override
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		panel.clearExplanationsPanel();	
-		new RootDerivedTask(getWizard().getStatusBar()).execute();
+		new RootDerivedTask().execute();
 		panel.repaint();
 		
 	}
 	
 	public void fillUnsatisfiableClassesList(){
-		new RootDerivedTask(getWizard().getStatusBar()).execute();
+		TaskManager.getInstance().setTaskStarted("Computing root and derived classes...");
+		new RootDerivedTask().execute();
 	}
 
 	@Override
@@ -194,38 +192,21 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 
 	 class ExplanationTask extends SwingWorker<Void, Void>{
 			
-			private StatusBar statusBar;
-		
-			
-			public ExplanationTask(StatusBar statusBar) {
-				this.statusBar = statusBar;
-				
-			}
 
 			@Override
-			public Void doInBackground() {
-				statusBar.showProgress(true);
-				statusBar.setProgressTitle("Computing explanations...");
-				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			public Void doInBackground() {				
 				for(OWLClass unsat : panel.getUnsatTable().getSelectedClasses()){
 					expMan.getUnsatisfiableExplanations(unsat);
-				}
-				
+				}				
 				return null;
 			}
 
 			@Override
 			public void done() {
 				if(!isCancelled()){
-					showExplanations();
-					statusBar.setProgressTitle("Done");
+					showExplanations();				
 				}
-				
-				statusBar.showProgress(false);
-				getWizard().getDialog().setCursor(null);
-				
-			
-				
+				TaskManager.getInstance().setTaskFinished();			
 			}
 			
 			private void showExplanations(){
@@ -234,12 +215,10 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 					
 					@Override
 					public void run() {
-
 						panel.clearExplanationsPanel();
 						for(OWLClass unsat : panel.getUnsatTable().getSelectedClasses()){
 							panel.addExplanations(expMan.getUnsatisfiableExplanations(unsat), unsat);
-						}
-						
+						}					
 						panel.validate();
 					}
 				});
@@ -249,20 +228,10 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		}
 	 
 	 class RootDerivedTask extends SwingWorker<Void, Void>{
-			
-			private StatusBar statusBar;
-			
-			public RootDerivedTask(StatusBar statusBar) {
-				this.statusBar = statusBar;
-				
-			}
 
 			@Override
 			public Void doInBackground() {
 				
-				statusBar.showProgress(true);
-				statusBar.setProgressTitle("Computing root and derived classes...");
-				getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				expMan.getRootUnsatisfiableClasses();
 				expMan.getDerivedClasses();
 				return null;
@@ -270,9 +239,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 
 			@Override
 			public void done() {
-				statusBar.showProgress(false);
-				statusBar.setProgressTitle("Done");
-				getWizard().getDialog().setCursor(null);
+				TaskManager.getInstance().setTaskFinished();
 				if(!isCancelled()){
 					fillUnsatClassesTable();
 				}

@@ -3,7 +3,6 @@ package org.dllearner.tools.ore.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -36,20 +35,16 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 	private static final long serialVersionUID = 1L;
 	private JLabel infoLabel;
 	private JProgressBar progressBar;
-	private int		progress		= 0;
-	private int		progressLength	= 0;
-	private int		progressPercent	= -1;
-	private String progressMessage;
+
 	private boolean isIndeterminateMode;
 	private boolean isCanceled = false;
 
 	public StatusBar() {
+		setLayout(new BorderLayout());
 		
 		infoLabel = new JLabel("");
 		progressBar = new JProgressBar();
-//		progressBar.setStringPainted(true);
-		setLayout(new BorderLayout());
-//		setPreferredSize(new Dimension(10, 23));
+		
 		
 		JPanel rightPanel = new JPanel(new BorderLayout());
 		rightPanel.add(new JLabel(new AngledLinesWindowsCornerIcon()),
@@ -68,7 +63,17 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 		rB.setToolTipText("Abort");
 //		leftPanel.add(rB);
 		
-		leftPanel.add(new Cancel());
+		Cancel cancelButton = new Cancel();
+		cancelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				isCanceled = true;
+				System.out.println("Task canceled");
+			}
+		});
+		cancelButton.setToolTipText("Abort current task");
+		leftPanel.add(cancelButton);
 		
 		leftPanel.add(progressBar);
 		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
@@ -125,97 +130,7 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 
 	}
 
-	@Override
-	public int getProgress() {
-		return progress;
-	}
-
-	@Override
-	public int getProgressPercent() {
-		return progressPercent;
-	}
-
-	@Override
-	public void incrementProgress() {
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				setProgress(progress + 1);
-				
-			}
-		});
-		
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return isCanceled;
-	}
-
-	@Override
-	public void setProgress(int progress) {
-		this.progress = progress;
-		updateProgress();
-		
-	}
-
-	@Override
-	public void setProgressLength(int length) {
-		progressLength = length;
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				progressBar.setMaximum(progressLength);
-				
-			}
-		});
-		
 	
-		
-		
-		
-	}
-
-	@Override
-	public void setProgressMessage(String message) {
-		progressMessage = message;
-		infoLabel.setText(message);
-		
-		
-	}
-
-	@Override
-	public void setProgressTitle(String title) {
-		infoLabel.setText(title);
-		
-	}
-
-	@Override
-	public void taskFinished() {
-		setCursor(null);
-		
-	}
-
-	@Override
-	public void taskStarted() {
-		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
-	}
-	
-	private void updateProgress(){
-		SwingUtilities.invokeLater(new Runnable(){
-
-			@Override
-			public void run() {
-				progressBar.setValue(progress);
-				
-				
-			}
-			
-		});
-	}
 
 	@Override
 	public void foundAllExplanations() {
@@ -232,6 +147,65 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 	@Override
 	public boolean isCancelled() {
 		return isCanceled;
+	}
+
+	@Override
+	public int getProgress() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getProgressPercent() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void incrementProgress() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isCanceled() {
+		return isCanceled;
+	}
+
+	@Override
+	public void setProgress(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setProgressLength(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setProgressMessage(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setProgressTitle(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void taskFinished() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void taskStarted() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
@@ -345,6 +319,11 @@ class CancelButton extends JButton {
 }
 
 class Cancel extends JButton {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4624954971172916869L;
 
 	public Cancel() {
 		super();

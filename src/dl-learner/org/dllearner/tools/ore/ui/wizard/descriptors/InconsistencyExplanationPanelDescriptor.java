@@ -45,8 +45,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     
     private void showExplanations(){
     	ExplanationTask task = new ExplanationTask();
-    	TaskManager.getInstance().setCurrentTask(task);
-    	TaskManager.getInstance().setTaskStarted("Computing explanations");
+    	TaskManager.getInstance().setTaskStarted("Computing explanations...");
     	task.execute(); 	
     }
     
@@ -115,6 +114,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 			if(!isCancelled()){
 				showExplanations();	
 			}
+			TaskManager.getInstance().setTaskFinished();
 		}
 		
 		private void showExplanations(){

@@ -25,6 +25,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -32,7 +33,12 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
+import org.mindswap.pellet.utils.SetUtils;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 
 public class OREManager {
@@ -144,6 +150,7 @@ public class OREManager {
 			e.printStackTrace();
 		}
 		reasoner.loadOntologies();
+		reasoner.addProgressMonitor(TaskManager.getInstance().getStatusBar());
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 		modifier = new OntologyModifier(reasoner);
@@ -447,7 +454,6 @@ public class OREManager {
 		
 
 		Set<Individual> allIndividuals = new HashSet<Individual>();
-		
 		for(Individual i : reasoner.getIndividuals()){
 			
 				if(!reasoner.hasType(desc, i)){
@@ -456,8 +462,34 @@ public class OREManager {
 
 		}
 		allIndividuals.remove(ind);
+		System.out.println();
 	
 		return allIndividuals;
+	}
+	
+	public boolean isAssertable(ObjectPropertyExpression role, Individual ind){
+		OWLDataFactory factory = reasoner.getOWLOntologyManager().getOWLDataFactory();
+		OWLObjectProperty property = factory.getOWLObjectProperty(URI.create(role.getName()));
+		
+		//get the objectproperty domains
+		Set<OWLDescription> domains = SetUtils.union(getReasoner().getReasoner().getDomains(property));
+		
+		//get the classes where the individual belongs to
+		Set<NamedClass> classes = reasoner.getTypes(ind);
+		
+		//get the complements of the classes, the individual belongs to
+		Set<Description> complements = new HashSet<Description>();
+		for(NamedClass nc : classes){
+			complements.addAll(reasoner.getComplementClasses(nc));
+		}
+		
+		for(OWLDescription domain : domains){
+			if(complements.contains(OWLAPIConverter.convertClass(domain.asOWLClass()))){
+				System.out.println(domain);
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**

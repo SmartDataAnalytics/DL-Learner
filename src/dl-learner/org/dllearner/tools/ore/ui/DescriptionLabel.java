@@ -133,7 +133,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 						menu.add(new RemoveAllPropertyAssertionsToMenuItem(((ObjectSomeRestriction) desc).getRole(), ((ObjectSomeRestriction) desc).getChild(0)));				//2.b remove property assertions with objects in range
 					}
 				} else if(desc instanceof ObjectAllRestriction){														//3. description is a object all restriction
-					if (!(desc.getChild(0) instanceof Thing)) {
+					if (!(desc.getChild(0) instanceof Thing)) {System.out.println(ore.isAssertable(((ObjectAllRestriction)desc).getRole(), ind));
 						JMenu dme = new JMenu("add property assertion " + ((ObjectAllRestriction) desc).getRole().toKBSyntaxString(baseURI, prefixes)	//3.a add property assertion with object not in range
 								+ " with object ...");
 						for (Individual i : ore.getIndividualsNotInPropertyRange(desc.getChild(0), ind)){
