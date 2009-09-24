@@ -20,8 +20,18 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.IntroductionPanel;
+
+import edu.stanford.ejalbert.BrowserLauncher;
+import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
+import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 
 
 /**
@@ -29,14 +39,28 @@ import org.dllearner.tools.ore.ui.wizard.panels.IntroductionPanel;
  * @author Lorenz Buehmann
  *
  */
-public class IntroductionPanelDescriptor extends WizardPanelDescriptor {
+public class IntroductionPanelDescriptor extends WizardPanelDescriptor implements HyperlinkListener{
     
     public static final String IDENTIFIER = "INTRODUCTION_PANEL";
     public static final String INFORMATION = "";
 
+    private  BrowserLauncher launcher;
        
     public IntroductionPanelDescriptor() {
-        super(IDENTIFIER, new IntroductionPanel());
+    	IntroductionPanel panel = new IntroductionPanel();
+        panel.addHyperLinkListener(this);
+        setPanelComponent(panel);
+        setPanelDescriptorIdentifier(IDENTIFIER);
+        
+        try {
+			launcher = new BrowserLauncher();
+		} catch (BrowserLaunchingInitializingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedOperatingSystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     @Override
@@ -53,6 +77,20 @@ public class IntroductionPanelDescriptor extends WizardPanelDescriptor {
 	public void aboutToDisplayPanel() {
         getWizard().getInformationField().setText(INFORMATION);
     }
-   
+
+	@Override
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		
+		if(event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) { 
+			 URL url;
+			try {
+				url = new URL(event.getDescription());
+				launcher.openURLinBrowser(url.toString());		
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+	}
     
 }
