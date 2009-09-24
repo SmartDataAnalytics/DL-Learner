@@ -22,7 +22,6 @@ package org.dllearner.tools.ore.ui.wizard.panels;
 
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -78,7 +77,6 @@ public class IntroductionPanel extends JPanel {
     	 	   
         welcomeTitle = new JLabel();
         welcomeTitle.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 0, 0)));
-        welcomeTitle.setFont(new java.awt.Font("MS Sans Serif", Font.BOLD, 14));
         welcomeTitle.setText(titleText);
         add(welcomeTitle, c);
         
@@ -88,7 +86,6 @@ public class IntroductionPanel extends JPanel {
         instructionsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
         instructionsField.setOpaque(true);
         instructionsField.setEditable(false);
-        instructionsField.setFont(new Font("Serif", Font.PLAIN, 14));
         instructionsField.setText(introductionText);
         add(instructionsField, c);
         

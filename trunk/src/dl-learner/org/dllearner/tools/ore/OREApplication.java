@@ -21,14 +21,20 @@
 package org.dllearner.tools.ore;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.FontUIResource;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.dllearner.tools.ore.ui.wizard.Wizard;
@@ -64,6 +70,25 @@ public class OREApplication {
     	try {
 //    		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIDefaults def = UIManager.getLookAndFeelDefaults();
+			Vector<?> vec = new Vector<Object>(def.keySet());
+			Collections.sort(vec, new Comparator<Object>() {
+
+			  public int compare(Object arg0, Object arg1) {
+			    return arg0.toString().compareTo(arg1.toString());
+			  }
+
+			});
+
+			for (Object obj : vec) {
+				if(obj.toString().endsWith(".font")){
+					FontUIResource fur = (FontUIResource)UIManager.get(obj);
+					Font f = new Font("Verdana", Font.PLAIN, fur.getSize());
+					UIManager.put(obj, new FontUIResource(f));
+				}
+			}
+			
+			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -26,7 +26,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
@@ -435,7 +434,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         informationsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
         informationsField.setOpaque(true);
         informationsField.setEditable(false);
-        informationsField.setFont(new Font("Serif", Font.PLAIN, 14));
+       
               
         wizardDialog.getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
         
