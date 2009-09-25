@@ -21,13 +21,15 @@
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JSpinner;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -136,30 +138,81 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	
 	public void refill(){
 		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
-		new ClassRetrievingTask(1).execute();
+		new ClassRetrievingTask().execute();
 	}
 	
 	public void fillClassesList(int minInstanceCount){
-		classChoosePanel.getClassesTable().clear();
-		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
-		new ClassRetrievingTask(minInstanceCount).execute();
+		SortedSet<NamedClass> classes = new TreeSet<NamedClass>();
+		for(Integer instanceCount  : instanceCountToClasses.keySet()){
+			if(instanceCount.intValue() >= minInstanceCount){
+				classes.addAll(instanceCountToClasses.get(instanceCount));
+			}
+		}
+		classChoosePanel.getClassesTable().addClasses(classes);
+//		classChoosePanel.getClassesTable().clear();
+//		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
+//		new ClassRetrievingTask(minInstanceCount).execute();
 	}
 	
-	/**
+//	/**
+//     * Inner class to get all atomic classes in a background thread.
+//     * @author Lorenz Buehmann
+//     *
+//     */
+//    class ClassRetrievingTask extends SwingWorker<Set<NamedClass>, NamedClass> {
+//    	
+//    	private int minInstanceCount;
+//    	
+//    	public ClassRetrievingTask(int minInstanceCount){
+//    		this.minInstanceCount = minInstanceCount;
+//    	}
+//
+//		@Override
+//		public Set<NamedClass> doInBackground() {
+//			OREManager.getInstance().makeOWAToCWA();
+//			Set<NamedClass> classes = new TreeSet<NamedClass>(OREManager.getInstance().getReasoner().getNamedClasses());
+//			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
+//			Iterator<NamedClass> iter = classes.iterator();
+//			while(iter.hasNext()){
+//				NamedClass nc = iter.next();
+//				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
+//				if(instanceCount < minInstanceCount){
+//					iter.remove();
+//				}
+//			}
+//			
+//			return classes;
+//		}
+//
+//		@Override
+//		public void done() {
+//			Set<NamedClass> classes = null;
+//			try {
+//				classes = get();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//			classChoosePanel.getClassesTable().addClasses(classes);
+//			TaskManager.getInstance().setTaskFinished();
+//		}
+//
+//	}
+    
+    /**
      * Inner class to get all atomic classes in a background thread.
      * @author Lorenz Buehmann
      *
      */
-    class ClassRetrievingTask extends SwingWorker<Set<NamedClass>, NamedClass> {
+    class ClassRetrievingTask extends SwingWorker<Void, Void> {
     	
-    	private int minInstanceCount;
-    	
-    	public ClassRetrievingTask(int minInstanceCount){
-    		this.minInstanceCount = minInstanceCount;
-    	}
 
 		@Override
-		public Set<NamedClass> doInBackground() {
+		public Void doInBackground() {
 			OREManager.getInstance().makeOWAToCWA();
 			Set<NamedClass> classes = new TreeSet<NamedClass>(OREManager.getInstance().getReasoner().getNamedClasses());
 			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
@@ -167,32 +220,27 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 			while(iter.hasNext()){
 				NamedClass nc = iter.next();
 				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
-				if(instanceCount < minInstanceCount){
-					iter.remove();
+				Set<NamedClass> temp = instanceCountToClasses.get(new Integer(instanceCount));
+				if(temp == null) {
+					temp = new HashSet<NamedClass>();
+					temp.add(nc);
+					instanceCountToClasses.put(new Integer(instanceCount), temp);
 				}
-			}
-			return classes;
+				temp.add(nc);				
+			}			
+			return null;
 		}
 
 		@Override
 		public void done() {
-			Set<NamedClass> classes = null;
-			try {
-				classes = get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			classChoosePanel.getClassesTable().addClasses(classes);
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					fillClassesList(1);				
+				}
+			});		
 			TaskManager.getInstance().setTaskFinished();
 		}
-
 	}
-
-	
-
 }
