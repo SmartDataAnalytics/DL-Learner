@@ -128,14 +128,23 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
-			TaskManager.getInstance().setTaskStarted("Learning equivalent class expressions");
+			String learningType = "";
+			if(learnPanel.getOptionsPanel().isEquivalentClassesTypeSelected()){
+				OREManager.getInstance().setLearningType("equivalence");
+				learningType = "equivalent";
+			} else {
+				learningType = "super";
+				OREManager.getInstance().setLearningType("superClass");
+			}
+			TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...");
 			learnPanel.getStartButton().setEnabled(false);
 	        learnPanel.getStopButton().setEnabled(true);
 	        OREManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
 	        OREManager.getInstance().setMaxExecutionTimeInSeconds(learnPanel.getOptionsPanel().getMaxExecutionTime());
 	        OREManager.getInstance().setMaxNrOfResults(learnPanel.getOptionsPanel().getNrOfConcepts());
-	        
-	        OREManager.getInstance().setLearningAlgorithm();
+	        OREManager.getInstance().setThreshold(learnPanel.getOptionsPanel().getThreshold());
+	        learnPanel.getResultTable().clear();
+	       
 	       
 	        learningTask = new LearningTask();
 	        learningTask.execute();
@@ -205,24 +214,29 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@SuppressWarnings("unchecked")
 		@Override
 		public List<? extends EvaluatedDescription> doInBackground() {
-			learnPanel.getResultTable().clear();
 			
+			OREManager.getInstance().setLearningProblem();
+		    OREManager.getInstance().setLearningAlgorithm();
 
 			la = OREManager.getInstance().getLa();
+			
+			 
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
 
 				@Override
 				public void run() {
 					if(!isCancelled() && la.isRunning()){
-						publish(la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 0.0, true));
+						publish(la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
+								OREManager.getInstance().getThreshold(), true));
 					}
 				}
 				
 			}, 1000, 2000);
 			OREManager.getInstance().start();
 	
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 0.0, true);
+			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions
+								(OREManager.getInstance().getMaxNrOfResults(), OREManager.getInstance().getThreshold(), true);
 			
 			return result;
 		}

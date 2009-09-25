@@ -140,7 +140,7 @@ public class WizardController implements ActionListener {
 			((ClassChoosePanelDescriptor) nextDescriptor).refill();
 		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ClassChoosePanelDescriptor.IDENTIFIER)) {
 //			ore.makeOWAToCWA();
-			ore.setLearningProblem();
+//			ore.setLearningProblem();
 			LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model
 					.getPanelHashMap().get(nextPanelDescriptor));
 			learnDescriptor.setPanelDefaults();

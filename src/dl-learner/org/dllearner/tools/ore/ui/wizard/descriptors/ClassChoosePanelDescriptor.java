@@ -25,8 +25,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JSpinner;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
@@ -42,7 +46,7 @@ import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
  * @author Lorenz Buehmann
  *
  */
-public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements javax.swing.event.ListSelectionListener{
+public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements ListSelectionListener, ChangeListener{
     
 	/**
 	 * Identification string for class choose panel.
@@ -63,6 +67,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     public ClassChoosePanelDescriptor() {
         owlClassPanel = new ClassChoosePanel();
         owlClassPanel.addSelectionListener(this);
+        owlClassPanel.addChangeListener(this);
              
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(owlClassPanel);
@@ -96,6 +101,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		}
 	}
 	
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		JSpinner spinner = (JSpinner)e.getSource();
+		fillClassesList(((Integer)spinner.getValue()).intValue());
+	}
+	
 	private void setNextButtonAccordingToConceptSelected() {
         
     	if (owlClassPanel.getClassesTable().getSelectedRow() >= 0){
@@ -116,7 +127,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	
 	public void refill(){
 		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
-		new ClassRetrievingTask().execute();
+		new ClassRetrievingTask(1).execute();
+	}
+	
+	public void fillClassesList(int minInstanceCount){
+		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
+		new ClassRetrievingTask(minInstanceCount).execute();
 	}
 	
 	/**
@@ -125,6 +141,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
      *
      */
     class ClassRetrievingTask extends SwingWorker<Set<NamedClass>, NamedClass> {
+    	
+    	private int minInstanceCount;
+    	
+    	public ClassRetrievingTask(int minInstanceCount){
+    		this.minInstanceCount = minInstanceCount;
+    	}
 
 		@Override
 		public Set<NamedClass> doInBackground() {
@@ -135,7 +157,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 			while(iter.hasNext()){
 				NamedClass nc = iter.next();
 				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
-				if(instanceCount == 0){
+				if(instanceCount < minInstanceCount){
 					iter.remove();
 				}
 			}
@@ -160,5 +182,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		}
 
 	}
+
+	
 
 }

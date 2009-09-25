@@ -27,6 +27,8 @@ import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 /**
  * Navigation panel where it's shown the actual wizard step and former and following steps.
@@ -37,7 +39,7 @@ public class LeftPanel extends JPanel{
 
 	private static final long serialVersionUID = -1205252523136710091L;
 	private JLabel[] jLabel;
-	
+//	private ImageIcon currentStepIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/untoggled.gif");
 	/**
 	 * Constructor instantiating JLabels with wizard step names.
 	 * @param i step number printed bold
@@ -45,9 +47,9 @@ public class LeftPanel extends JPanel{
 	public LeftPanel(int i){
 		
 		jLabel = new JLabel[7];
-		setBackground(new java.awt.Color(255, 255, 255));
+//		setBackground(new java.awt.Color(255, 255, 255));
     	JPanel panel2 = new JPanel();
-    	panel2.setBackground(new java.awt.Color(255, 255, 255));
+//    	panel2.setBackground(new java.awt.Color(255, 255, 255));
     	panel2.setLayout(new GridLayout(7, 1, 0, 10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
@@ -65,6 +67,11 @@ public class LeftPanel extends JPanel{
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(165, 500));
 		add(panel2, BorderLayout.NORTH);
+		JPanel holderPanel = new JPanel();
+		holderPanel.setLayout(new BorderLayout());
+		holderPanel.add(panel2, BorderLayout.NORTH);
+		add(holderPanel);
+		add(new JSeparator(SwingConstants.VERTICAL), BorderLayout.EAST);
 		
 	}
 	
@@ -77,7 +84,7 @@ public class LeftPanel extends JPanel{
 		for(int j = 0; j < jLabel.length; j++){
 			jLabel[j].setFont(jLabel[j].getFont().deriveFont(Font.PLAIN));
 		}
-		
+//		jLabel[i].setIcon(currentStepIcon);
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		validate();
 	}

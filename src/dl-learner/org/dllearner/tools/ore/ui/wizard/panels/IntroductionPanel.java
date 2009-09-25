@@ -46,7 +46,7 @@ public class IntroductionPanel extends JPanel {
         
     private JLabel welcomeTitle;
     
-    private final String titleText = "<html>Welcome to the DL-Learner ORE (Ontology Repair and Enrichment) Tool!<br>(Version 0.1)</html>";
+    private final String titleText = "<html><b>Welcome to the DL-Learner ORE (Ontology Repair and Enrichment) Tool!<br>(Version 0.1)</b></html>";
 
     private final String introductionText = "<html><p>ORE is a tool for debugging and enriching OWL ontologies. It has the following features: </p>" +
     		"<UL>" + 
@@ -56,8 +56,8 @@ public class IntroductionPanel extends JPanel {
     		"<LI>enrichment of an ontology by learning definitions and super class axioms" +
     		"<LI>guiding the user through potential consequences of adding those axioms" +
     		"</UL>" + 
-    		"<p>In a later version, the tool will also support the detection of various potential modelling problems.</p>" +
-    		"<p>ORE uses a wizard-style concept. On the left, you can see different steps in the wizard, where the current step is in bold. " +
+    		"<p >In a later version, the tool will also support the detection of various potential modelling problems.</p>" +
+    		"<p style=\"max-width:400px;\">ORE uses a wizard-style concept. On the left, you can see different steps in the wizard, where the current step is in bold. " +
     		"Each step contains an explanation of it in the main window. The wizard may omit steps if they are not necessary, e.g. " +
     		"if you load a consistent ontology, then the \"Debugging\" dialogue is skipped.</p>" +
     		"<p>Please read the <a href=\"http://dl-learner.org/wiki/ORE\">the ORE wiki page</a> and view the <a href=\"...\">screencast</a> to get started.</p></html>"; 

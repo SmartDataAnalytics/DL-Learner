@@ -24,8 +24,12 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ui.ClassesTable;
@@ -40,6 +44,7 @@ public class ClassChoosePanel extends JPanel{
 	private static final long serialVersionUID = 3026319637264844550L;
 
 	private ClassesTable classesTable;
+	private JSpinner minInstanceCountSpinner;
 	
 	/**
 	 * Constructor.
@@ -51,6 +56,18 @@ public class ClassChoosePanel extends JPanel{
 	private void createUI(){
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		
+		JPanel minInstancesCountPanel = new JPanel();
+		minInstancesCountPanel.add(new JLabel("Showing classes with at least "));
+		minInstanceCountSpinner = new JSpinner();
+		minInstanceCountSpinner.setEnabled(true);
+	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
+	    minInstanceCountSpinner.setModel(spinnerModel);
+	    minInstancesCountPanel.add(minInstanceCountSpinner);
+	    minInstancesCountPanel.add(new JLabel(" instances"));
+	    add(minInstancesCountPanel, c);
+		
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 1.0;
@@ -66,6 +83,10 @@ public class ClassChoosePanel extends JPanel{
 	 */
 	public void addSelectionListener(ListSelectionListener l){
 		classesTable.getSelectionModel().addListSelectionListener(l);
+	}
+	
+	public void addChangeListener(ChangeListener cL){
+		minInstanceCountSpinner.addChangeListener(cL);
 	}
         
 	/**
