@@ -20,9 +20,11 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.awt.Cursor;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -80,16 +82,21 @@ public class IntroductionPanelDescriptor extends WizardPanelDescriptor implement
 
 	@Override
 	public void hyperlinkUpdate(HyperlinkEvent event) {
-		
-		if(event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) { 
-			 URL url;
+		if (event.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+			((JEditorPane) event.getSource()).setCursor(Cursor
+					.getPredefinedCursor(Cursor.HAND_CURSOR));
+		} else if (event.getEventType() == HyperlinkEvent.EventType.EXITED) {
+			((JEditorPane) event.getSource()).setCursor(Cursor
+					.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		} else if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			URL url;
 			try {
 				url = new URL(event.getDescription());
-				launcher.openURLinBrowser(url.toString());		
+				launcher.openURLinBrowser(url.toString());
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}			
+			}
 		}
 	}
     

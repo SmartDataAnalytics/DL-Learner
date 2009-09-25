@@ -52,7 +52,7 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
-    public static final String INFORMATION = "Choose an OWL-ontology from filesystem or URI. Your can also extract a fragment " +
+    public static final String INFORMATION = "Choose an OWL-ontology from filesystem or URI. You can also extract a fragment " +
     										"from a SPARQL endpoint. When finished, press <Next>.";
     
     private KnowledgeSourcePanel knowledgePanel;

@@ -57,10 +57,13 @@ public class OREManager {
 
 	private NamedClass currentClass2Learn;
 	private EvaluatedDescriptionClass learnedClassDescription;
+	
+	private String learningType;
 
 	private double noisePercentage;
-	private int maxExecutionTimeInSeconds = 10;
-	private int maxNrOfResults = 10;
+	private int maxExecutionTimeInSeconds;
+	private int maxNrOfResults;
+	private double threshold;
 
 	private List<OREManagerListener> listeners;
 
@@ -105,9 +108,10 @@ public class OREManager {
 	public void setLearningProblem(){
 		
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		
+		cm.applyConfigEntry(lp, "type", learningType);
 		try {
 			lp.getConfigurator().setClassToDescribe(getClass2LearnAsURL());
+			
 			lp.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
@@ -123,8 +127,7 @@ public class OREManager {
 			la.getConfigurator().setUseNegation(false);
 			la.getConfigurator().setNoisePercentage(noisePercentage);
 			la.getConfigurator().setMaxNrOfResults(maxNrOfResults);
-			
-			
+					
 		} catch (LearningProblemUnsupportedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -239,6 +242,18 @@ public class OREManager {
 	
 	public int getMaxNrOfResults(){
 		return maxNrOfResults;
+	}
+	
+	public void setThreshold(double threshold){
+		this.threshold = threshold;
+	}
+	
+	public double getThreshold(){
+		return threshold;
+	}
+	
+	public void setLearningType(String learningType){
+		this.learningType = learningType;
 	}
 		
 	/**

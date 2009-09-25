@@ -37,8 +37,8 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
+import org.dllearner.tools.ore.ui.LearningOptionsPanel;
 import org.dllearner.tools.ore.ui.ResultTable;
-import org.dllearner.tools.protege.OptionPanel;
 
 
 /**
@@ -60,7 +60,7 @@ public class LearningPanel extends JPanel{
 	private JPanel buttonSliderPanel;
 	
 	private GraphicalCoveragePanel graphicPanel;
-	private OptionPanel optionsPanel;
+	private LearningOptionsPanel optionsPanel;
 	
 	private GridBagConstraints c;
 
@@ -126,7 +126,7 @@ public class LearningPanel extends JPanel{
 		stopButton.setText("Stop");
 		stopButton.setEnabled(false);
 
-		optionsPanel = new OptionPanel();
+		optionsPanel = new LearningOptionsPanel();
 		optionsPanel.setBorder(new TitledBorder("Options"));
 		buttonSliderPanel.add(optionsPanel, new GridBagConstraints(0, 1,
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -178,7 +178,7 @@ public class LearningPanel extends JPanel{
 		this.graphicPanel.setNewClassDescription(desc);	
 	}
 	
-	public OptionPanel getOptionsPanel(){
+	public LearningOptionsPanel getOptionsPanel(){
 		return optionsPanel;
 	}
 	
@@ -192,9 +192,4 @@ public class LearningPanel extends JPanel{
 		frame.setVisible(true);
 	}	
 }  
-    
  
-
-
-	
-
