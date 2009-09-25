@@ -182,6 +182,11 @@ public class LearningPanel extends JPanel{
 		return optionsPanel;
 	}
 	
+	public void reset(){
+		graphicPanel.clear();
+		resultTable.clear();
+	}
+	
 	public static void main(String[] args){
 		OREManager.getInstance().setCurrentClass2Learn(new NamedClass("dummy"));
 		JFrame frame = new JFrame();

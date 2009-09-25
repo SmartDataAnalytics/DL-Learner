@@ -119,6 +119,7 @@ public class WizardController implements ActionListener {
 					unsatDescriptor.fillUnsatisfiableClassesList();
 				} else {
 					nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+					((ClassChoosePanelDescriptor) nextDescriptor).resetPanel();
 					((ClassChoosePanelDescriptor) nextDescriptor).refill();
 				}
 			}
@@ -133,6 +134,7 @@ public class WizardController implements ActionListener {
 				nextPanelDescriptor = UnsatisfiableExplanationPanelDescriptor.IDENTIFIER;
 			} else {
 				nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
+				((ClassChoosePanelDescriptor) nextDescriptor).resetPanel();
 				((ClassChoosePanelDescriptor) nextDescriptor).refill();
 			}
 		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)) {
@@ -143,9 +145,13 @@ public class WizardController implements ActionListener {
 //			ore.setLearningProblem();
 			LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model
 					.getPanelHashMap().get(nextPanelDescriptor));
-			learnDescriptor.setPanelDefaults();
+			learnDescriptor.resetPanel();
 
-		} 
+		}  else if(nextPanelDescriptor.equals(ClassChoosePanelDescriptor.IDENTIFIER)){
+			ClassChoosePanelDescriptor classChoose = ((ClassChoosePanelDescriptor) model
+					.getPanelHashMap().get(nextPanelDescriptor));
+			classChoose.resetPanel();
+		}
 //		else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(LearningPanelDescriptor.IDENTIFIER)){
 //			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
 //				nextPanelDescriptor = SavePanelDescriptor.IDENTIFIER;

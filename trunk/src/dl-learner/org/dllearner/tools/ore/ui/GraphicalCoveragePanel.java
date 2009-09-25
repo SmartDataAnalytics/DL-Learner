@@ -471,6 +471,15 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 		
 	}
 	
+	public void clear(){
+		newConcept = new Ellipse2D.Double(0, 0, 0, 0);
+		posCovIndVector.clear();
+		posNotCovIndVector.clear();
+		additionalIndividuals.clear();
+		points.clear();
+		getParent().repaint();
+	}
+	
 
 
 	public void computeIndividualPoints() {

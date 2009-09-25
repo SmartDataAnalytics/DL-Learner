@@ -96,5 +96,10 @@ public class ClassChoosePanel extends JPanel{
     public ClassesTable getClassesTable(){
     	return classesTable;
     }
+    
+    public void reset(){
+    	classesTable.clear();
+    	minInstanceCountSpinner.setValue(new Integer(1));
+    }
 
 }
