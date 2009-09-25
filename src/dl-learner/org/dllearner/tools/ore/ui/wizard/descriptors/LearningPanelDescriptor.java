@@ -143,7 +143,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	        OREManager.getInstance().setMaxExecutionTimeInSeconds(learnPanel.getOptionsPanel().getMaxExecutionTime());
 	        OREManager.getInstance().setMaxNrOfResults(learnPanel.getOptionsPanel().getNrOfConcepts());
 	        OREManager.getInstance().setThreshold(learnPanel.getOptionsPanel().getThreshold());
-	        learnPanel.getResultTable().clear();
+	        learnPanel.reset();
 	       
 	       
 	        learningTask = new LearningTask();
@@ -196,10 +196,10 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	}
 	
 	/**
-	 * Clear list and loading message.
+	 * Clear list and coverage panel.
 	 */
-	public void setPanelDefaults(){
-		learnPanel.getResultTable().clear();
+	public void resetPanel(){
+		learnPanel.reset();
 	}
 
 

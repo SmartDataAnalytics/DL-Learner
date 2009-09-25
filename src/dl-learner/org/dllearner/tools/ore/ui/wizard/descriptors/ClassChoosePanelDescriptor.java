@@ -20,7 +20,9 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
@@ -59,18 +61,21 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     										 + "Select one of them for which you want to learn equivalent class expressions," +
     										 	" then press <Next>";
     
-    private ClassChoosePanel owlClassPanel;
+    private ClassChoosePanel classChoosePanel;
+    private Map<Integer, Set<NamedClass>> instanceCountToClasses;
     
     /**
      * Constructor creates new panel and adds listener to list.
      */
     public ClassChoosePanelDescriptor() {
-        owlClassPanel = new ClassChoosePanel();
-        owlClassPanel.addSelectionListener(this);
-        owlClassPanel.addChangeListener(this);
+        classChoosePanel = new ClassChoosePanel();
+        classChoosePanel.addSelectionListener(this);
+        classChoosePanel.addChangeListener(this);
              
         setPanelDescriptorIdentifier(IDENTIFIER);
-        setPanelComponent(owlClassPanel);
+        setPanelComponent(classChoosePanel);
+        
+        instanceCountToClasses = new HashMap<Integer, Set<NamedClass>>();
       
     }
     
@@ -96,8 +101,8 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
      */
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
-		if (!e.getValueIsAdjusting() && owlClassPanel.getClassesTable().getSelectedRow() >= 0) {
-			 OREManager.getInstance().setCurrentClass2Learn((NamedClass) owlClassPanel.getClassesTable().getSelectedValue());
+		if (!e.getValueIsAdjusting() && classChoosePanel.getClassesTable().getSelectedRow() >= 0) {
+			 OREManager.getInstance().setCurrentClass2Learn((NamedClass) classChoosePanel.getClassesTable().getSelectedValue());
 		}
 	}
 	
@@ -109,7 +114,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	
 	private void setNextButtonAccordingToConceptSelected() {
         
-    	if (owlClassPanel.getClassesTable().getSelectedRow() >= 0){
+    	if (classChoosePanel.getClassesTable().getSelectedRow() >= 0){
     		getWizard().setNextFinishButtonEnabled(true);
     	}else{
     		getWizard().setNextFinishButtonEnabled(false);
@@ -122,7 +127,11 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	 * @return extended JPanel
 	 */
 	public ClassChoosePanel getOwlClassPanel() {
-		return owlClassPanel;
+		return classChoosePanel;
+	}
+	
+	public void resetPanel(){
+		classChoosePanel.reset();
 	}
 	
 	public void refill(){
@@ -131,6 +140,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	}
 	
 	public void fillClassesList(int minInstanceCount){
+		classChoosePanel.getClassesTable().clear();
 		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
 		new ClassRetrievingTask(minInstanceCount).execute();
 	}
@@ -177,7 +187,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 				e.printStackTrace();
 			}
 			
-			owlClassPanel.getClassesTable().addClasses(classes);
+			classChoosePanel.getClassesTable().addClasses(classes);
 			TaskManager.getInstance().setTaskFinished();
 		}
 

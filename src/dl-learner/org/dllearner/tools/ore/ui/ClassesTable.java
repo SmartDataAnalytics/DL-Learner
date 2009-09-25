@@ -50,4 +50,8 @@ public class ClassesTable extends JXTable {
 	public NamedClass getSelectedValue(){
 		return ((ClassesTableModel)getModel()).getSelectedValue(getSelectedRow());
 	}
+	
+	public void clear(){
+		((ClassesTableModel)getModel()).clear();
+	}
 }
