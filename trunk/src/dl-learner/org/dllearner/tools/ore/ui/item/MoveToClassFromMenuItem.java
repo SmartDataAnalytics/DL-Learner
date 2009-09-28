@@ -7,6 +7,10 @@ import org.dllearner.tools.ore.ui.ManchesterSyntaxRenderer;
 
 public class MoveToClassFromMenuItem extends JMenuItem {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3577226441483461020L;
 	private Description source;
 	private Description destination;
 	

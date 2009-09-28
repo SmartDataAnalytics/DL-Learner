@@ -8,7 +8,6 @@ import java.util.List;
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
 import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.semanticweb.owl.model.OWLClass;
 
 public class UnsatisfiableClassesTable extends JXTable {
@@ -26,7 +25,7 @@ public class UnsatisfiableClassesTable extends JXTable {
 		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
 		getColumn(0).setMaxWidth(20);
-		setRowHeight(getRowHeight() + 5);
+		setRowHeight(getRowHeight() + 2);
 		getColumn(0).setCellRenderer(new UnsatClassesTableCellRenderer(expMan));
 		
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

@@ -15,6 +15,8 @@ public class ResultTable extends JXTable {
 	 * 
 	 */
 	private static final long serialVersionUID = -497294373160119210L;
+	
+	private EvaluatedDescriptionClass old = null;
 
 	public ResultTable(){
 		setBackground(Color.WHITE);
@@ -42,12 +44,25 @@ public class ResultTable extends JXTable {
 				
 	}
 	
+	
+	
 	public void clear(){
 		((ResultTableModel)getModel()).clear();
 	}
 	
 	public void addResults(List<EvaluatedDescriptionClass> resultList){
+		
+		if(getSelectedRow() >= 0){
+			old = getSelectedValue();
+		}
 		((ResultTableModel)getModel()).addResults(resultList);
+		if(old != null){
+			int newRowIndex = ((ResultTableModel)getModel()).getSelectionIndex(old);
+			if(newRowIndex >= 0){
+				getSelectionModel().setSelectionInterval(newRowIndex, newRowIndex);
+			}
+			
+		}
 	}
 	
 	public EvaluatedDescriptionClass getSelectedValue(){	

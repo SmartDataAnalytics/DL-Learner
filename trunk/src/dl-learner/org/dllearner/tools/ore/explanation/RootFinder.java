@@ -55,6 +55,11 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLQuantifiedRestriction;
 import org.semanticweb.owl.model.RemoveAxiom;
 
+import uk.ac.manchester.cs.owl.modularity.ModuleType;
+
+import com.clarkparsia.modularity.ModularityUtils;
+import com.clarkparsia.owlapi.OntologyUtils;
+
 public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OWLOntologyChangeListener, RepairManagerListener{
 
 	private OWLOntologyManager manager;
@@ -187,7 +192,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 	
 	private void pruneRoots() {
-
+System.out.println("Pruning root classes");
 		try {
 			Set<OWLClass> roots = new HashSet<OWLClass>(rootClasses);
 			List<OWLOntologyChange> appliedChanges = new ArrayList<OWLOntologyChange>();
@@ -214,8 +219,11 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 				appliedChanges.add(add);
 			}
 			OWLReasoner checker = reasonerFactory.createReasoner(manager);
-			checker.loadOntologies(Collections.singleton(ontology));
+//			checker.loadOntologies(Collections.singleton(ontology));
 			for (OWLClass root : new ArrayList<OWLClass>(roots)) {
+				checker.clearOntologies();
+				checker.loadOntologies(Collections.singleton(OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule
+						(ontology, root.getSignature(), ModuleType.TOP_OF_BOT))));
 				if (!potentialRoots.contains(root) && checker.isSatisfiable(root)) {
 					rootClasses.remove(root);
 				}
