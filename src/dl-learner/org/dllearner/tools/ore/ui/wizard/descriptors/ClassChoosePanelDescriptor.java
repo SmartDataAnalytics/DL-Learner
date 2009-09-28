@@ -149,60 +149,8 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 			}
 		}
 		classChoosePanel.getClassesTable().addClasses(classes);
-//		classChoosePanel.getClassesTable().clear();
-//		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
-//		new ClassRetrievingTask(minInstanceCount).execute();
 	}
-	
-//	/**
-//     * Inner class to get all atomic classes in a background thread.
-//     * @author Lorenz Buehmann
-//     *
-//     */
-//    class ClassRetrievingTask extends SwingWorker<Set<NamedClass>, NamedClass> {
-//    	
-//    	private int minInstanceCount;
-//    	
-//    	public ClassRetrievingTask(int minInstanceCount){
-//    		this.minInstanceCount = minInstanceCount;
-//    	}
-//
-//		@Override
-//		public Set<NamedClass> doInBackground() {
-//			OREManager.getInstance().makeOWAToCWA();
-//			Set<NamedClass> classes = new TreeSet<NamedClass>(OREManager.getInstance().getReasoner().getNamedClasses());
-//			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
-//			Iterator<NamedClass> iter = classes.iterator();
-//			while(iter.hasNext()){
-//				NamedClass nc = iter.next();
-//				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
-//				if(instanceCount < minInstanceCount){
-//					iter.remove();
-//				}
-//			}
-//			
-//			return classes;
-//		}
-//
-//		@Override
-//		public void done() {
-//			Set<NamedClass> classes = null;
-//			try {
-//				classes = get();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			
-//			classChoosePanel.getClassesTable().addClasses(classes);
-//			TaskManager.getInstance().setTaskFinished();
-//		}
-//
-//	}
-    
+  
     /**
      * Inner class to get all atomic classes in a background thread.
      * @author Lorenz Buehmann
@@ -213,6 +161,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 
 		@Override
 		public Void doInBackground() {
+			instanceCountToClasses.clear();
 			OREManager.getInstance().makeOWAToCWA();
 			Set<NamedClass> classes = new TreeSet<NamedClass>(OREManager.getInstance().getReasoner().getNamedClasses());
 			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
@@ -237,10 +186,10 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 				
 				@Override
 				public void run() {
-					fillClassesList(1);				
+					fillClassesList(1);		
+					TaskManager.getInstance().setTaskFinished();
 				}
-			});		
-			TaskManager.getInstance().setTaskFinished();
+			});					
 		}
 	}
 }

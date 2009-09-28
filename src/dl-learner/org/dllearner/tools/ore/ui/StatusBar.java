@@ -10,6 +10,8 @@ import java.awt.Shape;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.Set;
 
@@ -140,7 +142,6 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 
 	@Override
 	public void foundExplanation(Set<OWLAxiom> explanation) {
-		System.out.println(explanation);
 		
 	}
 
@@ -333,15 +334,23 @@ class Cancel extends JButton {
 		setHorizontalAlignment(JButton.LEADING); // optional
 		setBorderPainted(false);
 		setContentAreaFilled(false);
+		
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				setBorderPainted(true);
+				setContentAreaFilled(true);
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setBorderPainted(false);
+				setContentAreaFilled(false);
+			}
+		});
 	}
 	
-	@Override
-	protected void paintComponent(Graphics g) {
-		if(getModel().isArmed()){
-			g.setColor(Color.YELLOW);
-		}
-		super.paintComponent(g);
-	}
+	
 
 }
 

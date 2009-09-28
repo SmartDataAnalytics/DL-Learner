@@ -41,8 +41,7 @@ public class MultiLineTableCellRenderer extends JTextPane implements TableCellRe
 
 		private StyledDocument doc;
 		Style style;
-        public MultiLineTableCellRenderer()
-        {
+        public MultiLineTableCellRenderer() {
             super();
 
             

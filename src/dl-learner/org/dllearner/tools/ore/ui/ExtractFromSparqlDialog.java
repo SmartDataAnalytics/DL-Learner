@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -143,24 +145,26 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 
 		JPanel endPointHolderPanel = new JPanel();
 		endPointHolderPanel.setLayout(new GridLayout(0, 1));
-		endPointHolderPanel.setBorder(new TitledBorder("SPARQL endpoint"));
+//		endPointHolderPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		comboBox = new JComboBox();
 		comboBox.setEditable(true);
 		comboBox.setActionCommand("endpoints");
 		comboBox.addActionListener(this);
-		
 		((JTextComponent)comboBox.getEditor().getEditorComponent()).getDocument().addDocumentListener(this);
 		AutoCompleteDecorator.decorate(this.comboBox);
+		
 		endPointHolderPanel.add(new JLabel("URL"));
 		endPointHolderPanel.add(comboBox);
 		defaultGraphField = new JTextField();
 		endPointHolderPanel.add(new JLabel("Default graph URI (optional)"));
 		endPointHolderPanel.add(defaultGraphField);
-		panel.add(endPointHolderPanel, c);
+		HelpablePanel endPointHelpPanel = new HelpablePanel(endPointHolderPanel);
+		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
+		panel.add(endPointHelpPanel, c);
 
 		JPanel classHolderPanel = new JPanel();
 		classHolderPanel.setLayout(new GridLayout(0, 1));
-		classHolderPanel.setBorder(new TitledBorder("Class to investigate"));
+//		classHolderPanel.setBorder(new TitledBorder("Class to investigate"));
 		asLabelButton = new JRadioButton("label");
 		asURLButton = new JRadioButton("URI");
 		asURLButton.setSelected(true);
@@ -171,12 +175,14 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		buttonPanel.add(new JLabel("input type:"));
 		buttonPanel.add(asURLButton);
 		buttonPanel.add(asLabelButton);
-
+		
 		classHolderPanel.add(buttonPanel);
 		classField = new JTextField();
 		classField.getDocument().addDocumentListener(this);
 		classHolderPanel.add(classField);
-		panel.add(classHolderPanel, c);
+		HelpablePanel classHelpPanel = new HelpablePanel(classHolderPanel);
+		classHelpPanel.setBorder(new TitledBorder("Class to investigate"));
+		panel.add(classHelpPanel, c);
 
 		
 
@@ -204,6 +210,18 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		optionsButton.setHorizontalAlignment(JButton.LEADING); // optional
 		optionsButton.setBorderPainted(false);
 		optionsButton.setContentAreaFilled(false);
+		optionsButton.addMouseListener(new MouseAdapter() {
+			public void mouseEntered(MouseEvent e) {
+				optionsButton.setBorderPainted(true);
+				optionsButton.setContentAreaFilled(true);
+			};
+			@Override
+			public void mouseExited(MouseEvent e) {
+				optionsButton.setBorderPainted(false);
+				optionsButton.setContentAreaFilled(false);
+			}
+		
+		});
 		c.fill = GridBagConstraints.NONE;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(optionsButton, c);

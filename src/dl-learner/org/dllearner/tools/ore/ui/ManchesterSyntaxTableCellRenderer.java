@@ -14,22 +14,23 @@ import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObject;
 
+import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
+
 import com.clarkparsia.explanation.io.manchester.Keyword;
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
 import com.clarkparsia.explanation.io.manchester.TextBlockWriter;
 
 public class ManchesterSyntaxTableCellRenderer extends DefaultTableCellRenderer {
 
 	private StringWriter buffer;
 	private TextBlockWriter writer;
-	private ManchesterSyntaxObjectRenderer renderer;
+	private ManchesterOWLSyntaxObjectRenderer renderer;
 	
 	public ManchesterSyntaxTableCellRenderer(){
 		buffer = new StringWriter();
 		writer = new TextBlockWriter(buffer);
-		renderer = new ManchesterSyntaxObjectRenderer(writer);
-		renderer.setWrapLines( false );
-		renderer.setSmartIndent( true );
+		renderer = new ManchesterOWLSyntaxObjectRenderer(writer);
+//		renderer.setWrapLines( false );
+//		renderer.setSmartIndent( true );
 	}
 	
 	@Override

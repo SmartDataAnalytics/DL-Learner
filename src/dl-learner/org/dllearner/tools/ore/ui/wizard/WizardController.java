@@ -290,7 +290,7 @@ public class WizardController implements ActionListener {
     
     private int showInconsistentOntologyWarning(){
 		String infoString = "<html>Can not do reasoning with inconsistent ontologies, " +
-				"since everything is equivalent to OWL:nothing" +
+				"since everything is equivalent to OWL:Nothing" +
 				"<UL>" +
 				"<LI>Press 'Yes' and try to repair the ontology" +
 				"<LI>Press 'No' and choose another ontology or exit" +

@@ -90,10 +90,12 @@ public class ManchesterSyntaxRenderer {
 		while(st.hasMoreTokens()){
 			token = st.nextToken();
 			boolean unsatClass = false;
-			for(OWLClass cl : ExplanationManager.getInstance(OREManager.getInstance()).getUnsatisfiableClasses()){
-				if(cl.toString().equals(token)){
-					unsatClass = true;
-					break;
+			if(OREManager.getInstance().consistentOntology()){
+				for(OWLClass cl : ExplanationManager.getInstance(OREManager.getInstance()).getUnsatisfiableClasses()){
+					if(cl.toString().equals(token)){
+						unsatClass = true;
+						break;
+					}
 				}
 			}
 			String color = "black";

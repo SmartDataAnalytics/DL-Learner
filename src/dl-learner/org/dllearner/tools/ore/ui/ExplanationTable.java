@@ -11,12 +11,15 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -70,6 +73,16 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		getColumn(3).setMaxWidth(60);
 		getColumn(4).setMaxWidth(30);
 		getColumn(5).setMaxWidth(30);
+		getColumn(4).setHeaderRenderer(new TableCellRenderer() {
+			
+			@Override
+			public Component getTableCellRendererComponent(JTable arg0, Object value,
+					boolean arg2, boolean arg3, int arg4, int arg5) {
+				JButton b = new JButton((Icon)value);
+				return b;
+			}
+		});
+		getColumn(4).setHeaderValue(new ImageIcon("src/dl-learner/org/dllearner/tools/ore/DeleteCross.gif"));
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -215,6 +228,24 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			fireEditingStopped();
+		}
+	}
+	
+	class IconRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1729370486474583609L;
+
+		public Component getTableCellRendererComponent(JTable table,
+				Object obj, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+
+			setIcon((Icon) obj);
+
+			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+			setHorizontalAlignment(JLabel.CENTER);
+			return this;
 		}
 	}
 
