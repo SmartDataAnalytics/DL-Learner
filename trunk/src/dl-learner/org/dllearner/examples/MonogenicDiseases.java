@@ -26,15 +26,23 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.Datatype;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
+import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
+import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.ini4j.IniFile;
 
@@ -49,6 +57,7 @@ public class MonogenicDiseases {
 	
 	private static URI ontologyURI = URI.create("http://dl-learner.org/mutation");
 	private static File owlFile = new File("examples/mutation/mutation.owl");
+	private static File confFile = new File("examples/mutation/mutation.conf");
 	
 	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException {
 		
@@ -97,7 +106,48 @@ public class MonogenicDiseases {
 		NamedClass protHydroDecClass = new NamedClass(getURI("ProteinHydroDecreasingMutation"));
 		kb.addAxiom(new SubClassAxiom(protHydroIncClass, mutationClass));
 		kb.addAxiom(new SubClassAxiom(protHydroUnchangedClass, mutationClass));
-		kb.addAxiom(new SubClassAxiom(protHydroDecClass, mutationClass));		
+		kb.addAxiom(new SubClassAxiom(protHydroDecClass, mutationClass));
+		
+		// polarity
+		NamedClass protPolIncClass = new NamedClass(getURI("ProteinPolarityIncreasingMutation"));
+		NamedClass protPolUnchangedClass = new NamedClass(getURI("ProteinPolarityUnchangedMutation"));
+		NamedClass protPolDecClass = new NamedClass(getURI("ProteinPolarityDecreasingMutation"));
+		kb.addAxiom(new SubClassAxiom(protPolIncClass, mutationClass));
+		kb.addAxiom(new SubClassAxiom(protPolUnchangedClass, mutationClass));
+		kb.addAxiom(new SubClassAxiom(protPolDecClass, mutationClass));		
+		
+		// score
+		DatatypeProperty scoreProp = new DatatypeProperty(getURI("modifScore"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(scoreProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(scoreProp, Datatype.DOUBLE));
+		
+		// g_p
+		NamedClass gpIncClass = new NamedClass(getURI("GPIncreasingMutation"));
+		NamedClass gpUnchangedClass = new NamedClass(getURI("GPUnchangedMutation"));
+		NamedClass gpDecClass = new NamedClass(getURI("GPDecreasingMutation"));
+		kb.addAxiom(new SubClassAxiom(gpIncClass, mutationClass));
+		kb.addAxiom(new SubClassAxiom(gpUnchangedClass, mutationClass));
+		kb.addAxiom(new SubClassAxiom(gpDecClass, mutationClass));		
+		
+		// conservation_wt
+		DatatypeProperty conservationWTProp = new DatatypeProperty(getURI("convservationWT"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(conservationWTProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(conservationWTProp, Datatype.DOUBLE));		
+		
+		// conservation_mut
+		DatatypeProperty conservationMutProp = new DatatypeProperty(getURI("convservationMut"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(conservationMutProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(conservationMutProp, Datatype.DOUBLE));		
+		
+		// freq_at_pos
+		DatatypeProperty freqAtPosProp = new DatatypeProperty(getURI("freqAtPos"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(freqAtPosProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(freqAtPosProp, Datatype.DOUBLE));			
+		
+		// cluster_5res_size
+		DatatypeProperty cluster5ResSizeProp = new DatatypeProperty(getURI("cluster_5res_size"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster5ResSizeProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster5ResSizeProp, Datatype.DOUBLE));		
 		
 		// select all data
 		Statement stmt = conn.createStatement();
@@ -125,10 +175,39 @@ public class MonogenicDiseases {
 				kb.addAxiom(new ClassAssertionAxiom(protChargeChangedClass, mutationInd));
 			}		
 
-			// size change is represented via 3 classes
+			// hydro...
 			String modifHydro = rs.getString("modif_hydrophobicity");
 			convertThreeValuedColumn(kb, mutationInd, modifHydro, protHydroIncClass, protHydroUnchangedClass, protHydroDecClass);
-									
+					
+			// polarity
+			String modifPolarity = rs.getString("modif_polarity");
+			convertThreeValuedColumn(kb, mutationInd, modifPolarity, protPolIncClass, protPolUnchangedClass, protPolDecClass);
+
+			// modif_score
+			double modifScore = rs.getDouble("modif_score");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(scoreProp, mutationInd, modifScore));
+			
+			// g_p
+			String gp = rs.getString("g_p");
+			convertThreeValuedColumn(kb, mutationInd, gp, gpIncClass, gpUnchangedClass, gpDecClass);			
+			
+			// modif_score
+			double conservationWT = rs.getDouble("conservation_wt");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(conservationWTProp, mutationInd, conservationWT));
+			
+			// modif_score
+			double conservationMut = rs.getDouble("conservation_mut");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(conservationMutProp, mutationInd, conservationMut));
+			
+			// freq_at_pos
+			double freqAtPos = rs.getDouble("freq_at_pos");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(freqAtPosProp, mutationInd, freqAtPos));
+						
+			// freq_at_pos
+			double cluster5ResSize = rs.getDouble("cluster_5res_size");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(cluster5ResSizeProp, mutationInd, cluster5ResSize));
+						
+			
 			count++;
 		}
 		
@@ -139,8 +218,39 @@ public class MonogenicDiseases {
 		long writeDuration = System.nanoTime() - startWriteTime;
 		System.out.println("OK (time: " + Helper.prettyPrintNanoSeconds(writeDuration) + "; file size: " + owlFile.length()/1024 + " KB).");		
 		
+		// selecting examples
+		// -> only a fraction of examples are selected as positive/negative
+		rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE " //lower(phenotype) not like 'polymorphism' AND "
+			+ " (gain_contact is not null) && (gain_contact != 0)");
+		List<Individual> posExamples = new LinkedList<Individual>();
+		List<Individual> negExamples = new LinkedList<Individual>();
+		while(rs.next()) {
+			int mutationID = rs.getInt("id");
+			String phenotype = rs.getString("phenotype");
+			if(phenotype.toLowerCase().contains("polymorphism")) {
+				negExamples.add(new Individual(getURI("mutation" + mutationID)));
+			} else {
+				posExamples.add(new Individual(getURI("mutation" + mutationID)));
+			}
+		}
+		
+		// writing conf file
+		Files.clearFile(confFile);
+		String confHeader = "import(\"" + owlFile.getName() + "\");\n\n";
+		confHeader += "reasoner = fastInstanceChecker;\n";
+		confHeader += "algorithm = refexamples;\n";
+		confHeader += "refexamples.noisePercentage = 31;\n";
+		confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
+		confHeader += "refexamples.writeSearchTree = false;\n";
+		confHeader += "refexamples.searchTreeFile = \"log/mutation/searchTree.log\";\n";
+		confHeader += "\n";
+		Files.appendFile(confFile, confHeader);
+		Carcinogenesis.appendPosExamples(confFile, posExamples);
+		Carcinogenesis.appendNegExamples(confFile, negExamples);		
+		
 		long runTime = System.nanoTime() - startTime;
 		System.out.println("Database successfully converted in " + Helper.prettyPrintNanoSeconds(runTime) + ".");
+		
 	}
 	
 	// a table column with values "+", "=", "-" is converted to subclasses
