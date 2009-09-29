@@ -31,6 +31,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.JPanel;
+
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -44,7 +46,7 @@ import org.dllearner.tools.protege.IndividualPoint;
  * @author Christian Koetteritzsch
  * 
  */
-public class GraphicalCoveragePanel extends HelpablePanel implements MouseMotionListener{
+public class GraphicalCoveragePanel extends JPanel implements MouseMotionListener{
 
 	private static final long serialVersionUID = 855436961912515267L;
 	private static final int HEIGHT = 200;

@@ -32,7 +32,7 @@ import javax.swing.JSlider;
  * @author Christian Koetteritzsch
  *
  */
-public class LearningOptionsPanel extends HelpablePanel {
+public class LearningOptionsPanel extends JPanel{
 
 	
 	private static final long serialVersionUID = 2190682281812478244L;
@@ -57,7 +57,6 @@ public class LearningOptionsPanel extends HelpablePanel {
 	 * Constructor for the Option Panel. 
 	 */
 	public LearningOptionsPanel() {
-		super();
 		JPanel holderPanel = new JPanel();
 		holderPanel.setLayout(new BorderLayout());
 		labelPanel = new JPanel();
@@ -122,7 +121,7 @@ public class LearningOptionsPanel extends HelpablePanel {
 		learnTypePanel.add(equivalentClassButton);
 		learnTypePanel.add(superClassButton);
 		
-		holderPanel.add(BorderLayout.NORTH, learnTypePanel);
+//		holderPanel.add(BorderLayout.NORTH, learnTypePanel);
 		holderPanel.add(BorderLayout.WEST, labelPanel);
 		holderPanel.add(BorderLayout.CENTER, sliderPanel);
 		add(holderPanel, BorderLayout.CENTER);

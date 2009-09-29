@@ -23,12 +23,15 @@ package org.dllearner.tools.ore.ui.wizard.panels;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
@@ -37,6 +40,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
+import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.LearningOptionsPanel;
 import org.dllearner.tools.ore.ui.ResultTable;
 
@@ -46,7 +50,7 @@ import org.dllearner.tools.ore.ui.ResultTable;
  * @author Lorenz Buehmann
  *
  */
-public class LearningPanel extends JPanel{	
+public class ManualLearnPanel extends JPanel{	
 
 	private static final long serialVersionUID = -7411197973240429632L;
 
@@ -62,10 +66,13 @@ public class LearningPanel extends JPanel{
 	private GraphicalCoveragePanel graphicPanel;
 	private LearningOptionsPanel optionsPanel;
 	
+	private JRadioButton equivalentClassButton;
+	private JRadioButton superClassButton;
+	
 	private GridBagConstraints c;
 
 
-	public LearningPanel() {
+	public ManualLearnPanel() {
 		createUI();
 	}
 	
@@ -126,9 +133,30 @@ public class LearningPanel extends JPanel{
 		stopButton.setText("Stop");
 		stopButton.setEnabled(false);
 
+		JPanel learnTypePanel = new JPanel();
+		learnTypePanel.setLayout(new GridLayout(0, 1));
+		equivalentClassButton = new JRadioButton("Learn equivalent class expressions", true);
+		equivalentClassButton.setActionCommand("equivalent");
+		equivalentClassButton.setSelected(true);
+		superClassButton = new JRadioButton("Learn super class expressions");
+		superClassButton.setActionCommand("super");
+			
+		ButtonGroup learningType = new ButtonGroup();
+		learningType.add(equivalentClassButton);
+		learningType.add(superClassButton);
+		
+		learnTypePanel.add(equivalentClassButton);
+		learnTypePanel.add(superClassButton);
+		HelpablePanel learnTypeHelpPanel = new HelpablePanel(learnTypePanel);
+		learnTypeHelpPanel.setBorder(new TitledBorder("Learning type"));
+		buttonSliderPanel.add(learnTypeHelpPanel, new GridBagConstraints(0, 1,
+				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		
 		optionsPanel = new LearningOptionsPanel();
-		optionsPanel.setBorder(new TitledBorder("Options"));
-		buttonSliderPanel.add(optionsPanel, new GridBagConstraints(0, 1,
+		HelpablePanel optionsHelpPanel = new HelpablePanel(optionsPanel);
+		optionsHelpPanel.setBorder(new TitledBorder("Options"));
+		buttonSliderPanel.add(optionsHelpPanel, new GridBagConstraints(0, 2,
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		
@@ -143,9 +171,11 @@ public class LearningPanel extends JPanel{
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
 		graphicPanel = new GraphicalCoveragePanel("");
+		HelpablePanel coverageHelpPanel = new HelpablePanel(graphicPanel);
+		
 		JPanel graphicHolderPanel = new JPanel(new BorderLayout());
-		graphicHolderPanel.add(graphicPanel);
-		graphicHolderPanel.setBorder(new TitledBorder("Graphical coverage"));
+		graphicHolderPanel.add(coverageHelpPanel);
+		graphicHolderPanel.setBorder(new TitledBorder("Coverage"));
 
 		add(graphicHolderPanel, c);
 	}
@@ -190,7 +220,7 @@ public class LearningPanel extends JPanel{
 	public static void main(String[] args){
 		OREManager.getInstance().setCurrentClass2Learn(new NamedClass("dummy"));
 		JFrame frame = new JFrame();
-		JPanel panel = new LearningPanel();
+		JPanel panel = new ManualLearnPanel();
 		frame.add(panel);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

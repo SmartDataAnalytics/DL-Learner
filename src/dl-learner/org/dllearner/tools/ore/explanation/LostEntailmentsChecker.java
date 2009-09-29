@@ -24,7 +24,10 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
+import uk.ac.manchester.cs.owl.modularity.ModuleType;
+
 import com.clarkparsia.modularity.IncrementalClassifier;
+import com.clarkparsia.modularity.ModularityUtils;
 
 public class LostEntailmentsChecker {
 	
@@ -114,7 +117,11 @@ public class LostEntailmentsChecker {
 		return impact;
 	}
 
-	public Set<OWLAxiom> computeStructuralImpact(List<OWLOntologyChange> changes) {reasoner.refresh();
+	public Set<OWLAxiom> computeStructuralImpact(List<OWLOntologyChange> changes) {
+		System.out.println("Computing structural impact");
+		System.out.println("Refreshing reasoner");
+		reasoner.refresh();
+		System.out.println("Reasoner refreshed");
 		Set<OWLAxiom> possibleLosts = new HashSet<OWLAxiom>();
 		Set<OWLAxiom> realLosts = new HashSet<OWLAxiom>();
 		OWLAxiom axiom;
@@ -139,6 +146,7 @@ public class LostEntailmentsChecker {
 						}
 					}						
 				}else if (axiom instanceof OWLDisjointClassesAxiom) {
+					
 					Set<OWLDescription> disjointClasses = ((OWLDisjointClassesAxiom) axiom).getDescriptions();
 					boolean complex = false;
 					for (OWLDescription dis : disjointClasses) {
@@ -156,6 +164,7 @@ public class LostEntailmentsChecker {
 						for (OWLDescription dis : new ArrayList<OWLDescription>(disjoints)) {
 							if (!dis.equals(factory.getOWLNothing())) {
 								disjoints.remove(dis);
+								
 								Set<? extends OWLDescription> descendants = SetUtils.union(reasoner.getDescendantClasses(dis.asOWLClass()));
 						
 								descendants.removeAll(reasoner.getEquivalentClasses(factory.getOWLNothing()));

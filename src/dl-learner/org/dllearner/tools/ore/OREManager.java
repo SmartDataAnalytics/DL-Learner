@@ -64,6 +64,7 @@ public class OREManager {
 	private int maxExecutionTimeInSeconds;
 	private int maxNrOfResults;
 	private double threshold;
+	private int minInstanceCount;
 
 	private List<OREManagerListener> listeners;
 
@@ -266,6 +267,14 @@ public class OREManager {
 	
 	public NamedClass getCurrentClass2Learn(){
 		return currentClass2Learn;
+	}
+	
+	public void setMinInstanceCount(int instanceCount){
+		this.minInstanceCount = instanceCount;
+	}
+	
+	public int getMinInstanceCount(){
+		return minInstanceCount;
 	}
 	
 	public void init(){

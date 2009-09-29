@@ -40,7 +40,7 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
+import org.dllearner.tools.ore.ui.wizard.panels.ManualLearnPanel;
 
 
 
@@ -49,21 +49,21 @@ import org.dllearner.tools.ore.ui.wizard.panels.LearningPanel;
  * @author Lorenz Buehmann
  *
  */
-public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, OREManagerListener{
+public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, OREManagerListener{
     
-    public static final String IDENTIFIER = "LEARNING_PANEL";
+    public static final String IDENTIFIER = "MANUAL_LEARN_PANEL";
     public static final String INFORMATION = "Press <Start> to start learning. While it is running, " 
 	 										+ "temporary results are shown in the list above. Select one of them and press <Next>";
     
-    private LearningPanel learnPanel;
+    private ManualLearnPanel learnPanel;
     private LearningTask learningTask;
     private CELOE la;
     private Timer timer;
    
     
-    public LearningPanelDescriptor() {
+    public ManualLearnPanelDescriptor() {
         
-        learnPanel = new LearningPanel();
+        learnPanel = new ManualLearnPanel();
         learnPanel.addStartButtonListener(this);
         learnPanel.addStopButtonListener(this);
         learnPanel.addSelectionListener(this);

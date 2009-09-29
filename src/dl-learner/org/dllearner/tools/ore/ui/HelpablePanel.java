@@ -1,25 +1,21 @@
 package org.dllearner.tools.ore.ui;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JRadioButton;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.JTextComponent;
-
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 
 public class HelpablePanel extends JPanel {
@@ -31,10 +27,12 @@ public class HelpablePanel extends JPanel {
 	private JButton helpButton;
 	
 	private String helpText = "TODO";
-
+	private GridBagConstraints c;
 	
 	public HelpablePanel(){
-		setLayout(new BorderLayout());
+		setLayout(new GridBagLayout());
+		c = new GridBagConstraints();
+//		setLayout(new BorderLayout());
 		helpButton = new JButton(new ImageIcon(this.getClass().getResource("Help-16x16.png")));
 		helpButton.setBorderPainted(false);
 		helpButton.setContentAreaFilled(false);
@@ -67,15 +65,26 @@ public class HelpablePanel extends JPanel {
 				
 			}
 		});
-		JPanel holderPanel = new JPanel();
-		holderPanel.setLayout(new BorderLayout());
-		holderPanel.add(helpButton, BorderLayout.NORTH);
-		add(holderPanel, BorderLayout.EAST);
+//		JPanel holderPanel = new JPanel();
+//		holderPanel.setLayout(new BorderLayout());
+//		holderPanel.add(helpButton, BorderLayout.EAST);
+//		add(holderPanel, BorderLayout.NORTH);
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = 0;
+		add(helpButton, c);
 	}
 	
 	public HelpablePanel(JPanel content){
 		this();
-		add(content, BorderLayout.CENTER);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
+		add(content, c);
 	}
 	
 	public void setHelpText(String helpText){
@@ -85,27 +94,27 @@ public class HelpablePanel extends JPanel {
 	public static void main(String[] args){
 		JFrame frame = new JFrame();
 		
-		JPanel endPointHolderPanel = new JPanel();
-		endPointHolderPanel.setLayout(new GridLayout(0, 1));
-//		endPointHolderPanel.setBorder(new TitledBorder("SPARQL endpoint"));
-		JComboBox comboBox = new JComboBox();
-		comboBox.setEditable(true);
-		comboBox.setActionCommand("endpoints");
+		JPanel learnTypePanel = new JPanel();
+		learnTypePanel.setLayout(new GridLayout(0, 1));
+		JRadioButton equivalentClassButton = new JRadioButton("Learn equivalent class expressions", true);
+		equivalentClassButton.setActionCommand("equivalent");
+		equivalentClassButton.setSelected(true);
+		JRadioButton superClassButton = new JRadioButton("Learn super class expressions");
+		superClassButton.setActionCommand("super");
+			
+		ButtonGroup learningType = new ButtonGroup();
+		learningType.add(equivalentClassButton);
+		learningType.add(superClassButton);
 		
-		
-		endPointHolderPanel.add(new JLabel("URL"));
-		endPointHolderPanel.add(comboBox);
-		JTextField defaultGraphField = new JTextField();
-		endPointHolderPanel.add(new JLabel("Default graph URI (optional)"));
-		endPointHolderPanel.add(defaultGraphField);
-		HelpablePanel endPointHelpPanel = new HelpablePanel(endPointHolderPanel);
-		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
-		
+		learnTypePanel.add(equivalentClassButton);
+		learnTypePanel.add(superClassButton);
+		HelpablePanel learnTypeHelpPanel = new HelpablePanel(learnTypePanel);
+		learnTypeHelpPanel.setBorder(new TitledBorder("Learning type"));
 		
 	
 		
-		frame.add(endPointHelpPanel);
-		frame.setSize(600, 600);
+		frame.add(learnTypeHelpPanel);
+		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}

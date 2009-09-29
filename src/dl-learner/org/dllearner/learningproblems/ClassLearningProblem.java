@@ -165,7 +165,10 @@ public class ClassLearningProblem extends LearningProblem {
 		double protusion = (additionalInstances.size() + coveredInstances.size() == 0) ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
 		// for each description with less than 100% coverage, we check whether it is
 		// leads to an inconsistent knowledge base
-		boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
+		
+		// workaround due to a bug (see http://sourceforge.net/tracker/?func=detail&aid=2866610&group_id=203619&atid=986319)
+//		boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
+		boolean isConsistent = isConsistent(description);
 		
 		// we check whether the axiom already follows from the knowledge base
 		boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);
