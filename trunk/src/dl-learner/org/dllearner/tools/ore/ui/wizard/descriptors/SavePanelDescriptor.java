@@ -63,7 +63,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
     @Override
 	public Object getBackPanelDescriptor() {
     	if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
-    		return LearningPanelDescriptor.IDENTIFIER;
+    		return ManualLearnPanelDescriptor.IDENTIFIER;
     	} else {
     		return RepairPanelDescriptor.IDENTIFIER;
     	}      

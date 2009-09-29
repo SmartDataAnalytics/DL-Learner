@@ -20,6 +20,8 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,7 +52,7 @@ import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
  * @author Lorenz Buehmann
  *
  */
-public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements ListSelectionListener, ChangeListener{
+public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements ListSelectionListener, ChangeListener, ActionListener{
     
 	/**
 	 * Identification string for class choose panel.
@@ -73,6 +75,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
         classChoosePanel = new ClassChoosePanel();
         classChoosePanel.addSelectionListener(this);
         classChoosePanel.addChangeListener(this);
+        classChoosePanel.addActionsListeners(this);
              
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(classChoosePanel);
@@ -83,7 +86,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return LearningPanelDescriptor.IDENTIFIER;
+    	if(isAutoLearningMode()){
+    		return AutoLearnPanelDescriptor.IDENTIFIER;
+    	} else {
+    		return ManualLearnPanelDescriptor.IDENTIFIER;
+    	}
+        
     }
     
     @Override
@@ -116,7 +124,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	
 	private void setNextButtonAccordingToConceptSelected() {
         
-    	if (classChoosePanel.getClassesTable().getSelectedRow() >= 0){
+    	if (classChoosePanel.getClassesTable().getSelectedRow() >= 0 || classChoosePanel.isAutoLearnMode()){
     		getWizard().setNextFinishButtonEnabled(true);
     	}else{
     		getWizard().setNextFinishButtonEnabled(false);
@@ -191,5 +199,20 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 				}
 			});					
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getActionCommand().equals("auto")){
+			classChoosePanel.setAutoLearningPanel(true);
+		} else {
+			classChoosePanel.setAutoLearningPanel(false);
+		}
+		setNextButtonAccordingToConceptSelected(); 
+		
+	}
+	
+	public boolean isAutoLearningMode(){
+		return classChoosePanel.isAutoLearnMode();
 	}
 }

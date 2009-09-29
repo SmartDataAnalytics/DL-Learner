@@ -160,6 +160,7 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 
 	@Override
 	public void repairPlanChanged() {
+		TaskManager.getInstance().setTaskStarted("Computing impact...");
 		new LostEntailmentsComputingTask().execute();
 		
 	}
@@ -182,7 +183,7 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 	
 		@Override
 		public Void doInBackground() {
-			TaskManager.getInstance().setTaskStarted("Computing impact");
+			
 			impMan.computeImpactForAxiomsInRepairPlan();
 			return null;
 		}

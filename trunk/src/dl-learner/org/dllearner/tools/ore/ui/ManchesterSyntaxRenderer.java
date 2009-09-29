@@ -98,6 +98,12 @@ public class ManchesterSyntaxRenderer {
 					}
 				}
 			}
+//			for(OWLClass cl : ExplanationManager.getInstance(OREManager.getInstance()).getUnsatisfiableClasses()){
+//				if(cl.toString().equals(token)){
+//					unsatClass = true;
+//					break;
+//				}
+//			}
 			String color = "black";
 			if(unsatClass){
 				color = "red";

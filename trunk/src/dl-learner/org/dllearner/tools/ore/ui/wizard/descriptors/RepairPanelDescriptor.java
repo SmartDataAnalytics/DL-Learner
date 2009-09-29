@@ -80,7 +80,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     
     @Override
 	public Object getBackPanelDescriptor() {
-        return LearningPanelDescriptor.IDENTIFIER;
+        return ManualLearnPanelDescriptor.IDENTIFIER;
     }
     
     @Override

@@ -39,10 +39,11 @@ import javax.swing.plaf.FontUIResource;
 import org.apache.log4j.PropertyConfigurator;
 import org.dllearner.tools.ore.ui.wizard.Wizard;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.AutoLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.IntroductionPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.ManualLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
 
@@ -124,8 +125,11 @@ public class OREApplication {
         WizardPanelDescriptor descriptor5 = new ClassChoosePanelDescriptor();
         wizard.registerWizardPanel(ClassChoosePanelDescriptor.IDENTIFIER, descriptor5);
         
-        WizardPanelDescriptor descriptor6 = new LearningPanelDescriptor();
-        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor6);
+        WizardPanelDescriptor descriptor9 = new AutoLearnPanelDescriptor();
+        wizard.registerWizardPanel(AutoLearnPanelDescriptor.IDENTIFIER, descriptor9);
+        
+        WizardPanelDescriptor descriptor6 = new ManualLearnPanelDescriptor();
+        wizard.registerWizardPanel(ManualLearnPanelDescriptor.IDENTIFIER, descriptor6);
         
         WizardPanelDescriptor descriptor7 = new RepairPanelDescriptor();
         wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor7);

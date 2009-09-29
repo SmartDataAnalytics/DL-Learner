@@ -29,7 +29,7 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.descriptors.LearningPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.ManualLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
@@ -89,7 +89,7 @@ public class WizardController implements ActionListener {
         
         Object nextPanelDescriptor = currentPanelDescriptor.getNextPanelDescriptor();
         WizardPanelDescriptor nextDescriptor = model.getPanelHashMap().get(nextPanelDescriptor);
-       
+  
 		if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(
 				KnowledgeSourcePanelDescriptor.IDENTIFIER)) {
 
@@ -140,14 +140,21 @@ public class WizardController implements ActionListener {
 		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)) {
 			nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
 			((ClassChoosePanelDescriptor) nextDescriptor).refill();
-		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ClassChoosePanelDescriptor.IDENTIFIER)) {
+		} 
+//		else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ClassChoosePanelDescriptor.IDENTIFIER)) {
 //			ore.makeOWAToCWA();
 //			ore.setLearningProblem();
-			LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model
+//			LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model
+//					.getPanelHashMap().get(nextPanelDescriptor));
+//			learnDescriptor.resetPanel();
+
+		 else if(nextPanelDescriptor.equals(ManualLearnPanelDescriptor.IDENTIFIER)){
+			ManualLearnPanelDescriptor learnDescriptor = ((ManualLearnPanelDescriptor) model
 					.getPanelHashMap().get(nextPanelDescriptor));
 			learnDescriptor.resetPanel();
-
-		}  else if(nextPanelDescriptor.equals(ClassChoosePanelDescriptor.IDENTIFIER)){
+			
+			
+		} else if(nextPanelDescriptor.equals(ClassChoosePanelDescriptor.IDENTIFIER)){
 			ClassChoosePanelDescriptor classChoose = ((ClassChoosePanelDescriptor) model
 					.getPanelHashMap().get(nextPanelDescriptor));
 			classChoose.resetPanel();
@@ -217,8 +224,8 @@ public class WizardController implements ActionListener {
 					backPanelDescriptor = RepairPanelDescriptor.IDENTIFIER;
 				}
         	}  	
-        } else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(LearningPanelDescriptor.IDENTIFIER)){
-        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor) currentPanelDescriptor;
+        } else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ManualLearnPanelDescriptor.IDENTIFIER)){
+        	ManualLearnPanelDescriptor learnDescriptor = (ManualLearnPanelDescriptor) currentPanelDescriptor;
         	if(learnDescriptor.getLa() != null && learnDescriptor.getLa().isRunning()){
         		learnDescriptor.getLa().stop();
         		learnDescriptor.getTimer().cancel();
