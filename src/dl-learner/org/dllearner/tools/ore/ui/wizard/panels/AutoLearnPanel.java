@@ -4,15 +4,20 @@ import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.ClassesTable;
-import org.dllearner.tools.ore.ui.ResultTable;
+import org.dllearner.tools.ore.ui.EquivalentClassExpressionsTable;
+import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 
 public class AutoLearnPanel extends JPanel {
 
@@ -23,11 +28,14 @@ public class AutoLearnPanel extends JPanel {
 	
 	private ClassesTable classesTable;
 	
-	private JPanel subPanel;
+	private JPanel superPanel;
 	private JPanel equivalentPanel;
 	
-	private ResultTable equivalentResultsTable;
-	private ResultTable subResultsTable;
+	private EquivalentClassExpressionsTable equivalentClassResultsTable;
+	private EquivalentClassExpressionsTable superClassResultsTable;
+	
+	private GraphicalCoveragePanel equivalentClassCoveragePanel;
+	private GraphicalCoveragePanel superClassCoveragePanel;
 
 	public AutoLearnPanel(){
 		createUI();
@@ -60,16 +68,26 @@ public class AutoLearnPanel extends JPanel {
 		equivSubSplitPane.setOneTouchExpandable(true);
 		equivSubSplitPane.setDividerLocation(0.5);
 		
-		subPanel = new JPanel();
-		subResultsTable = new ResultTable();
-		subPanel.add(subResultsTable);
-		
 		equivalentPanel = new JPanel();
-		equivalentResultsTable = new ResultTable();
-		equivalentPanel.add(equivalentResultsTable);
+		equivalentClassResultsTable = new EquivalentClassExpressionsTable();
+		equivalentClassResultsTable.setName("equivalent");
+		equivalentPanel.add(new JScrollPane(equivalentClassResultsTable));
+		equivalentClassCoveragePanel = new GraphicalCoveragePanel("");
+		equivalentPanel.add(equivalentClassCoveragePanel);
+		equivalentPanel.setBorder(BorderFactory.createTitledBorder("Equivalent class expressions"));
+		
+		superPanel = new JPanel();
+		superClassResultsTable = new EquivalentClassExpressionsTable();
+		superClassResultsTable.setName("super");
+		superPanel.add(new JScrollPane(superClassResultsTable));
+		superClassCoveragePanel = new GraphicalCoveragePanel("");
+		superPanel.add(superClassCoveragePanel);
+		superPanel.setBorder(BorderFactory.createTitledBorder("Superclass expressions"));
+		
+		addTableSelectionListeners();
 		
 		equivSubSplitPane.setTopComponent(equivalentPanel);
-		equivSubSplitPane.setBottomComponent(subPanel);
+		equivSubSplitPane.setBottomComponent(superPanel);
 		
 		resultPanel.add(equivSubSplitPane);
 		return resultPanel;
@@ -79,12 +97,50 @@ public class AutoLearnPanel extends JPanel {
 		classesTable.addClasses(classes);
 	}
 	
-	public void fillSubClassExpressionsTable(List<EvaluatedDescriptionClass> resultList){
-		subResultsTable.addResults(resultList);
+	public void fillSuperClassExpressionsTable(List<EvaluatedDescriptionClass> resultList){
+		superClassResultsTable.addResults(resultList);
 	}
 	
 	public void fillEquivalentClassExpressionsTable(List<EvaluatedDescriptionClass> resultList){
-		equivalentResultsTable.addResults(resultList);
+		equivalentClassResultsTable.addResults(resultList);
+	}
+	
+	private void addTableSelectionListeners(){
+		equivalentClassResultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {		
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					
+					if (!e.getValueIsAdjusting() && equivalentClassResultsTable.getSelectedRow() >= 0){
+						
+						EvaluatedDescriptionClass selectedClassExpression = equivalentClassResultsTable.getSelectedValue();
+						OREManager.getInstance().setNewClassDescription(selectedClassExpression);
+						equivalentClassCoveragePanel.setNewClassDescription(selectedClassExpression);					
+					}				
+				}			
+			
+		});
+		
+		superClassResultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				
+				if (!e.getValueIsAdjusting() && superClassResultsTable.getSelectedRow() >= 0){
+					
+					EvaluatedDescriptionClass selectedClassExpression = superClassResultsTable.getSelectedValue();
+					OREManager.getInstance().setNewClassDescription(selectedClassExpression);
+					superClassCoveragePanel.setNewClassDescription(selectedClassExpression);					
+				}				
+			}	
+		});
+	}
+	
+	public void updateEquivalentGraphicalCoveragePanel(EvaluatedDescriptionClass desc){
+		equivalentClassCoveragePanel.setNewClassDescription(desc);
+	}
+	
+	public void updateSuperGraphicalCoveragePanel(EvaluatedDescriptionClass desc){
+		superClassCoveragePanel.setNewClassDescription(desc);
 	}
 	
 }

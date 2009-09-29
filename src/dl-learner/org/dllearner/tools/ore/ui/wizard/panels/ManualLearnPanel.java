@@ -212,6 +212,10 @@ public class ManualLearnPanel extends JPanel{
 		return optionsPanel;
 	}
 	
+	public boolean isEquivalentClassesTypeSelected(){
+		return equivalentClassButton.isSelected();
+	}
+	
 	public void reset(){
 		graphicPanel.clear();
 		resultTable.clear();

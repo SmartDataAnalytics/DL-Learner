@@ -236,6 +236,10 @@ public class OREManager {
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
+	
+	public int getMaxExecutionTimeInSeconds(){
+		return maxExecutionTimeInSeconds;
+	}
 
 	public void setMaxNrOfResults(int maxNrOfResults) {
 		this.maxNrOfResults = maxNrOfResults;
