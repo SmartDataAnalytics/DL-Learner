@@ -22,10 +22,8 @@ package org.dllearner.tools.ore.ui;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 /**
  * This Class is responsible for the Options of the DL-Learner.
@@ -45,10 +43,6 @@ public class LearningOptionsPanel extends JPanel{
 	private JSlider maxExecutionTime;
 	private JSlider nrOfConcepts;
 	private JSlider threshold;
-	
-	private JRadioButton equivalentClassButton;
-	private JRadioButton superClassButton;
-	private ButtonGroup learningType;
 	
 	private JPanel labelPanel;
 	private JPanel sliderPanel;
@@ -106,22 +100,6 @@ public class LearningOptionsPanel extends JPanel{
 		sliderPanel.add(nrOfConcepts);
 		sliderPanel.add(threshold);
 		
-		JPanel learnTypePanel = new JPanel();
-		learnTypePanel.setLayout(new GridLayout(0, 1));
-		equivalentClassButton = new JRadioButton("Learn equivalent class expressions", true);
-		equivalentClassButton.setActionCommand("equivalent");
-		equivalentClassButton.setSelected(true);
-		superClassButton = new JRadioButton("Learn super class expressions");
-		superClassButton.setActionCommand("super");
-			
-		learningType = new ButtonGroup();
-		learningType.add(equivalentClassButton);
-		learningType.add(superClassButton);
-		
-		learnTypePanel.add(equivalentClassButton);
-		learnTypePanel.add(superClassButton);
-		
-//		holderPanel.add(BorderLayout.NORTH, learnTypePanel);
 		holderPanel.add(BorderLayout.WEST, labelPanel);
 		holderPanel.add(BorderLayout.CENTER, sliderPanel);
 		add(holderPanel, BorderLayout.CENTER);
@@ -159,10 +137,6 @@ public class LearningOptionsPanel extends JPanel{
 	 */
 	public double getThreshold(){
 		return threshold.getValue()/100.0;
-	}
-	
-	public boolean isEquivalentClassesTypeSelected(){
-		return equivalentClassButton.isSelected();
 	}
 	
 }

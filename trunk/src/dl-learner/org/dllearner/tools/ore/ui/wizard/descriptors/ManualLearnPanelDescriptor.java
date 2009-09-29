@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -129,14 +130,16 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
 			String learningType = "";
-			if(learnPanel.getOptionsPanel().isEquivalentClassesTypeSelected()){
+			if(learnPanel.isEquivalentClassesTypeSelected()){
 				OREManager.getInstance().setLearningType("equivalence");
 				learningType = "equivalent";
 			} else {
 				learningType = "super";
 				OREManager.getInstance().setLearningType("superClass");
 			}
-			TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...");
+//			TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...");
+			TaskManager.getInstance().getStatusBar().setMessage("Learning " + learningType + " class expressions...");
+			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			learnPanel.getStartButton().setEnabled(false);
 	        learnPanel.getStopButton().setEnabled(true);
 	        OREManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
@@ -147,6 +150,7 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 	       
 	       
 	        learningTask = new LearningTask();
+	        learningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
 	        learningTask.execute();
 		} else{
 			
@@ -220,19 +224,21 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 
 			la = OREManager.getInstance().getLa();
 			
-			 
+			setProgress(0);
+			TaskManager.getInstance().getStatusBar().setMaximumValue(OREManager.getInstance().getMaxExecutionTimeInSeconds());
 			timer = new Timer();
+			
 			timer.schedule(new TimerTask(){
-
+				int progress = 0;
 				@Override
-				public void run() {
+				public void run() {progress += 1;setProgress(progress);
 					if(!isCancelled() && la.isRunning()){
 						publish(la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
 								OREManager.getInstance().getThreshold(), true));
 					}
 				}
 				
-			}, 1000, 2000);
+			}, 1000, 1000);
 			OREManager.getInstance().start();
 	
 			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions
@@ -253,14 +259,12 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
-			getWizard().getDialog().setCursor(null);
-			getWizard().getStatusBar().showProgress(false);
-			getWizard().getStatusBar().setProgressTitle("Done");
-			learnPanel.getStartButton().setEnabled(true);
-			learnPanel.getStopButton().setEnabled(false);
 			updateList(result);
 			TaskManager.getInstance().setTaskFinished();
-
+			setProgress(0);
+			learnPanel.getStartButton().setEnabled(true);
+			learnPanel.getStopButton().setEnabled(false);
+			
 		}
 
 		@Override
@@ -281,10 +285,7 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 				}
 			};
 			SwingUtilities.invokeLater(doUpdateList);
-
 		}
-	
-
 	}
 
 

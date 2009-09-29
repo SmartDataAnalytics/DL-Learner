@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.ui.wizard.descriptors.AutoLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
@@ -120,7 +121,7 @@ public class WizardController implements ActionListener {
 				} else {
 					nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
 					((ClassChoosePanelDescriptor) nextDescriptor).resetPanel();
-					((ClassChoosePanelDescriptor) nextDescriptor).refill();
+					
 				}
 			}
 		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(InconsistencyExplanationPanelDescriptor.IDENTIFIER)) {
@@ -135,11 +136,11 @@ public class WizardController implements ActionListener {
 			} else {
 				nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
 				((ClassChoosePanelDescriptor) nextDescriptor).resetPanel();
-				((ClassChoosePanelDescriptor) nextDescriptor).refill();
+			
 			}
 		} else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)) {
 			nextPanelDescriptor = ClassChoosePanelDescriptor.IDENTIFIER;
-			((ClassChoosePanelDescriptor) nextDescriptor).refill();
+			
 		} 
 //		else if (currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ClassChoosePanelDescriptor.IDENTIFIER)) {
 //			ore.makeOWAToCWA();
@@ -158,6 +159,8 @@ public class WizardController implements ActionListener {
 			ClassChoosePanelDescriptor classChoose = ((ClassChoosePanelDescriptor) model
 					.getPanelHashMap().get(nextPanelDescriptor));
 			classChoose.resetPanel();
+		} else if(nextPanelDescriptor.equals(AutoLearnPanelDescriptor.IDENTIFIER)){
+			((ClassChoosePanelDescriptor)currentPanelDescriptor).setAutoLearningOptions();
 		}
 //		else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(LearningPanelDescriptor.IDENTIFIER)){
 //			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){

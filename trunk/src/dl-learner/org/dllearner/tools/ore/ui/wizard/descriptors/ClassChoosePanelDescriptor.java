@@ -40,6 +40,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
@@ -52,7 +53,7 @@ import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
  * @author Lorenz Buehmann
  *
  */
-public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements ListSelectionListener, ChangeListener, ActionListener{
+public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements OREManagerListener, ListSelectionListener, ChangeListener, ActionListener{
     
 	/**
 	 * Identification string for class choose panel.
@@ -77,6 +78,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
         classChoosePanel.addChangeListener(this);
         classChoosePanel.addActionsListeners(this);
              
+        OREManager.getInstance().addListener(this);
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(classChoosePanel);
         
@@ -144,9 +146,11 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		classChoosePanel.reset();
 	}
 	
-	public void refill(){
-		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
-		new ClassRetrievingTask().execute();
+	public void retrieveClasses(){
+		if(instanceCountToClasses.isEmpty()){
+			TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
+			new ClassRetrievingTask().execute();
+		} 
 	}
 	
 	public void fillClassesList(int minInstanceCount){
@@ -207,6 +211,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 			classChoosePanel.setAutoLearningPanel(true);
 		} else {
 			classChoosePanel.setAutoLearningPanel(false);
+			retrieveClasses();
 		}
 		setNextButtonAccordingToConceptSelected(); 
 		
@@ -214,5 +219,15 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	
 	public boolean isAutoLearningMode(){
 		return classChoosePanel.isAutoLearnMode();
+	}
+	
+	public void setAutoLearningOptions(){
+		classChoosePanel.setLearningOptions();
+	}
+
+	@Override
+	public void activeOntologyChanged() {
+		instanceCountToClasses.clear();
+		
 	}
 }

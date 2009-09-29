@@ -141,8 +141,10 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
+			if(OREManager.getInstance().getCurrentClass2Learn() != null){
 			g2D.drawString(ManchesterSyntaxRenderer.renderSimple(OREManager.getInstance().getCurrentClass2Learn())
 					, 320, 10);
+			}
 //			g2D.setColor(Color.ORANGE);
 //			g2D.fillOval(310, 20, 9, 9);
 			g2D.setColor(Color.black);

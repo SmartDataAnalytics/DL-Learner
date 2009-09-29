@@ -46,6 +46,7 @@ public class TaskManager {
 		dialog.setCursor(null);
 		statusBar.setMessage("Done");
 		statusBar.showProgress(false);
+		statusBar.setProgress(0);
 	}
 	
 	

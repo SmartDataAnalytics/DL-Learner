@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -30,7 +32,7 @@ import org.semanticweb.owl.model.OWLAxiom;
 
 import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
 
-public class StatusBar extends JPanel implements ProgressMonitor, ExplanationProgressMonitor{
+public class StatusBar extends JPanel implements ProgressMonitor, ExplanationProgressMonitor, PropertyChangeListener{
 	/**
 	 * 
 	 */
@@ -207,6 +209,21 @@ public class StatusBar extends JPanel implements ProgressMonitor, ExplanationPro
 	public void taskStarted() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if ("progress" == evt.getPropertyName()) {
+		      int progress = (Integer) evt.getNewValue();
+		      progressBar.setValue(progress);
+		      
+		     
+		 }
+		
+	}
+	
+	public void setMaximumValue(int max){
+		progressBar.setMaximum(max);
 	}
 	
 	

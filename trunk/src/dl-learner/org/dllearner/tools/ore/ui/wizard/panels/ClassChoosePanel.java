@@ -38,6 +38,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.ClassesTable;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.LearningOptionsPanel;
@@ -174,10 +175,20 @@ public class ClassChoosePanel extends JPanel{
     public void reset(){
     	classesTable.clear();
     	minInstanceCountSpinner.setValue(new Integer(1));
+    	autoLearnButton.setSelected(true);
+    	setAutoLearningPanel(true);
     }
     
     public boolean isAutoLearnMode(){
     	return autoLearnButton.isSelected();
+    }
+    
+    public void setLearningOptions(){
+    	OREManager.getInstance().setMaxExecutionTimeInSeconds(learningOptionsPanel.getMaxExecutionTime());
+    	OREManager.getInstance().setMaxNrOfResults(learningOptionsPanel.getNrOfConcepts());
+    	OREManager.getInstance().setNoisePercentage(learningOptionsPanel.getMinAccuracy());
+    	OREManager.getInstance().setMinInstanceCount(((Integer)(minInstanceCountSpinner.getValue())).intValue());
+    	
     }
 
 }
