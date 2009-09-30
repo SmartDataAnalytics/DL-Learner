@@ -101,6 +101,7 @@ public class AddAllStringsAsClasses extends Rule{
 					}
 						tmp = namespace+tmp;
 						tmp = tmp.replaceAll("%", "_");
+						tmp = "c"+tmp;
 						keep.add(new RDFNodeTuple(new ResourceImpl(OWLVocabulary.RDF_TYPE),new ResourceImpl(tmp)));
 					
 				}else {
