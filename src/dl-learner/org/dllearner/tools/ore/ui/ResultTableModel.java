@@ -22,7 +22,7 @@ public class ResultTableModel extends AbstractTableModel {
 	public ResultTableModel(){
 		super();
 		resultList = new ArrayList<EvaluatedDescriptionClass>();
-		df = new DecimalFormat("00.00%");
+		df = new DecimalFormat("00%");
 	}
 	
 	public ResultTableModel(List<EvaluatedDescriptionClass> resultList){

@@ -43,7 +43,7 @@ public class ExplanationManager implements OREManagerListener{
 	private RootFinder rootFinder;
 
 	private boolean isComputeAllExplanations = false;
-	private int maxExplantionCount = 1;
+	private int maxExplanationCount = 1;
 	private boolean allExplanationWarningChecked = false;
 	
 	private Map<Explanation, List<Map<OWLAxiom, Integer>>> orderingMap;
@@ -113,7 +113,7 @@ public class ExplanationManager implements OREManagerListener{
 		if (isComputeAllExplanations) {
 			explanations = gen.getExplanations(entailment);
 		} else {
-			explanations = gen.getExplanations(entailment, maxExplantionCount);
+			explanations = gen.getExplanations(entailment, maxExplanationCount);
 		}
 
 		return explanations;
@@ -127,9 +127,9 @@ public class ExplanationManager implements OREManagerListener{
 		if (isComputeAllExplanations) {
 			explanations = gen.getExplanations(entailment);
 		} else {
-			explanations = gen.getExplanations(entailment, maxExplantionCount);
+			explanations = gen.getExplanations(entailment, maxExplanationCount);
 		}
-
+		
 		return explanations;
 	}
 	
@@ -244,12 +244,12 @@ public class ExplanationManager implements OREManagerListener{
 	}
 	
 	public void setMaxExplantionCount(int limit){
-		maxExplantionCount = limit;
+		maxExplanationCount = limit;
 		fireExplanationLimitChanged();
 	}
 	
 	public int getMaxExplantionCount(){
-		return maxExplantionCount;
+		return maxExplanationCount;
 	}
 	
 	public void addListener(ExplanationManagerListener l){

@@ -1,11 +1,17 @@
 package org.dllearner.tools.ore.ui.wizard.panels;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -36,7 +42,15 @@ public class AutoLearnPanel extends JPanel {
 	
 	private GraphicalCoveragePanel equivalentClassCoveragePanel;
 	private GraphicalCoveragePanel superClassCoveragePanel;
-
+	
+	private JLabel equivalentInconsistencyLabel;
+	private JLabel superInconsistencyLabel;
+	
+	private JButton skipButton;
+	
+	private final static String INCONSISTENY_WARNING = "<html><font color=red>" +
+														"Warning. Selected class expressions leads to an inconsistent ontology!" +
+														"</font></html>";
 	public AutoLearnPanel(){
 		createUI();
 	}
@@ -68,29 +82,78 @@ public class AutoLearnPanel extends JPanel {
 		equivSubSplitPane.setOneTouchExpandable(true);
 		equivSubSplitPane.setDividerLocation(0.5);
 		
-		equivalentPanel = new JPanel();
-		equivalentClassResultsTable = new EquivalentClassExpressionsTable();
-		equivalentClassResultsTable.setName("equivalent");
-		equivalentPanel.add(new JScrollPane(equivalentClassResultsTable));
-		equivalentClassCoveragePanel = new GraphicalCoveragePanel("");
-		equivalentPanel.add(equivalentClassCoveragePanel);
-		equivalentPanel.setBorder(BorderFactory.createTitledBorder("Equivalent class expressions"));
-		
-		superPanel = new JPanel();
-		superClassResultsTable = new EquivalentClassExpressionsTable();
-		superClassResultsTable.setName("super");
-		superPanel.add(new JScrollPane(superClassResultsTable));
-		superClassCoveragePanel = new GraphicalCoveragePanel("");
-		superPanel.add(superClassCoveragePanel);
-		superPanel.setBorder(BorderFactory.createTitledBorder("Superclass expressions"));
+		equivSubSplitPane.setTopComponent(createEquivalentPanel());
+		equivSubSplitPane.setBottomComponent(createSuperPanel());
 		
 		addTableSelectionListeners();
 		
-		equivSubSplitPane.setTopComponent(equivalentPanel);
-		equivSubSplitPane.setBottomComponent(superPanel);
+		skipButton = new JButton("Skip");
+		skipButton.setActionCommand("skip");
 		
-		resultPanel.add(equivSubSplitPane);
+		resultPanel.add(equivSubSplitPane, BorderLayout.CENTER);
+		resultPanel.add(skipButton, BorderLayout.SOUTH);
+		
 		return resultPanel;
+	}
+	
+	private JComponent createEquivalentPanel(){
+		GridBagConstraints c = new GridBagConstraints();
+		equivalentPanel = new JPanel();
+		equivalentPanel.setLayout(new GridBagLayout());
+		
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.gridy = 0;
+		equivalentClassResultsTable = new EquivalentClassExpressionsTable();
+		equivalentClassResultsTable.setName("equivalent");
+		equivalentPanel.add(new JScrollPane(equivalentClassResultsTable), c);
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = 0;
+		equivalentClassCoveragePanel = new GraphicalCoveragePanel("");
+		equivalentPanel.add(equivalentClassCoveragePanel, c);
+		equivalentPanel.setBorder(BorderFactory.createTitledBorder("Equivalent class expressions"));
+		
+		c.gridx = 0;
+		c.gridy = 1;
+		equivalentInconsistencyLabel = new JLabel(" ");
+		equivalentPanel.add(equivalentInconsistencyLabel, c);
+		
+		return equivalentPanel;
+	}
+	
+	private JComponent createSuperPanel(){
+		GridBagConstraints c = new GridBagConstraints();
+		superPanel = new JPanel();
+		superPanel.setLayout(new GridBagLayout());
+		
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.gridy = 0;
+		superClassResultsTable = new EquivalentClassExpressionsTable();
+		superClassResultsTable.setName("super");
+		superPanel.add(new JScrollPane(superClassResultsTable), c);
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = 0;
+		superClassCoveragePanel = new GraphicalCoveragePanel("");
+		superPanel.add(superClassCoveragePanel, c);
+		superPanel.setBorder(BorderFactory.createTitledBorder("Superclass expressions"));
+		
+		c.gridx = 0;
+		c.gridy = 1;
+		superInconsistencyLabel = new JLabel(" ");
+		superPanel.add(superInconsistencyLabel, c);
+		
+		return superPanel;
 	}
 	
 	public void fillClassesTable(Set<NamedClass> classes){
@@ -105,6 +168,17 @@ public class AutoLearnPanel extends JPanel {
 		equivalentClassResultsTable.addResults(resultList);
 	}
 	
+	public void addActionListener(ActionListener aL){
+		skipButton.addActionListener(aL);
+	}
+	
+	public void resetPanel(){
+		equivalentClassResultsTable.clear();
+		superClassResultsTable.clear();
+		equivalentClassCoveragePanel.clear();
+		superClassCoveragePanel.clear();
+	}
+	
 	private void addTableSelectionListeners(){
 		equivalentClassResultsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {		
 				@Override
@@ -114,7 +188,12 @@ public class AutoLearnPanel extends JPanel {
 						
 						EvaluatedDescriptionClass selectedClassExpression = equivalentClassResultsTable.getSelectedValue();
 						OREManager.getInstance().setNewClassDescription(selectedClassExpression);
-						equivalentClassCoveragePanel.setNewClassDescription(selectedClassExpression);					
+						equivalentClassCoveragePanel.setNewClassDescription(selectedClassExpression);
+						if(!selectedClassExpression.isConsistent()){
+							equivalentInconsistencyLabel.setText(INCONSISTENY_WARNING);
+						} else {
+							equivalentInconsistencyLabel.setText(" ");
+						}
 					}				
 				}			
 			
@@ -129,7 +208,12 @@ public class AutoLearnPanel extends JPanel {
 					
 					EvaluatedDescriptionClass selectedClassExpression = superClassResultsTable.getSelectedValue();
 					OREManager.getInstance().setNewClassDescription(selectedClassExpression);
-					superClassCoveragePanel.setNewClassDescription(selectedClassExpression);					
+					superClassCoveragePanel.setNewClassDescription(selectedClassExpression);
+					if(!selectedClassExpression.isConsistent()){
+						superInconsistencyLabel.setText(INCONSISTENY_WARNING);
+					} else {
+						superInconsistencyLabel.setText(" ");
+					}
 				}				
 			}	
 		});
@@ -141,6 +225,16 @@ public class AutoLearnPanel extends JPanel {
 	
 	public void updateSuperGraphicalCoveragePanel(EvaluatedDescriptionClass desc){
 		superClassCoveragePanel.setNewClassDescription(desc);
+	}
+	
+	public static void main(String[] args){
+		JFrame frame = new JFrame();
+		
+		
+		frame.add(new AutoLearnPanel());
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 	}
 	
 }

@@ -137,56 +137,11 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		JPanel pan = new JPanel(new BorderLayout());
 		pan.add(explanationsPanel, BorderLayout.NORTH);
 		explanationsScrollPane = new JScrollPane(pan);
-//		explanationsScrollPane.setPreferredSize(minimumSize);
+
 		explanationsScrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		explanationsScrollPane.getViewport().setOpaque(false);
 		explanationsScrollPane.getViewport().setBackground(null);
 		explanationsScrollPane.setOpaque(false);
-			
-//		regularButton = new JRadioButton("Show regular explanations", true);
-//		regularButton.setActionCommand("regular");
-//		regularButton.setSelected(true);
-//		laconicButton = new JRadioButton("Show precise explanations");
-//		laconicButton.setActionCommand("laconic");
-//			
-//		explanationType = new ButtonGroup();
-//		explanationType.add(regularButton);
-//		explanationType.add(laconicButton);
-//		
-//		buttonPanel = new JPanel();
-//		buttonPanel.setLayout(new GridBagLayout());
-//		buttonPanel.add(regularButton, new GridBagConstraints(0, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 2, 30), 0, 0));
-//		buttonPanel.add(laconicButton, new GridBagConstraints(0, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 30), 0, 0));
-//		HelpablePanel explanationTypeHelpPanel = new HelpablePanel(buttonPanel);
-//		explanationTypeHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-//		
-//		JPanel buttonPanelHolder = new JPanel(new BorderLayout());
-//		buttonPanelHolder.add(explanationTypeHelpPanel, "West");
-//		
-//		maxExplanationsSelector = new JSpinner();
-//		maxExplanationsSelector.setEnabled(true);
-//	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
-//	    maxExplanationsSelector.setModel(spinnerModel);
-//	    maxExplanationsSelector.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
-//	    
-//	    computeAllExplanationsRadioButton = new JRadioButton("Compute all explanations");
-//	    computeAllExplanationsRadioButton.setActionCommand("all");
-//	            
-//	    computeMaxExplanationsRadioButton = new JRadioButton("Limit explanation count to:");
-//	    computeMaxExplanationsRadioButton.setActionCommand("MAX");
-//	    computeMaxExplanationsRadioButton.setSelected(true);
-//	    
-//	    ButtonGroup limitButtonGroup = new ButtonGroup();
-//	    limitButtonGroup.add(computeAllExplanationsRadioButton);
-//	    limitButtonGroup.add(computeMaxExplanationsRadioButton);
-//	       
-////	    buttonPanel.add(computeAllExplanationsRadioButton, new GridBagConstraints(1, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
-////	    buttonPanel.add(computeMaxExplanationsRadioButton, new GridBagConstraints(1, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
-////	    buttonPanel.add(maxExplanationsSelector, new GridBagConstraints(3, 1, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
-//	  
-//	    strikeOutBox = new JCheckBox("Strike out irrelevant parts");
-//	    strikeOutBox.setActionCommand("strike");
-////	    buttonPanel.add(strikeOutBox, new GridBagConstraints(3, 0, 1, 1, 0.0D, 0.0D, 12, 2, new Insets(0, 0, 0, 0), 0, 0));
 	       
 		buttonExplanationsPanel = new JPanel();
 		buttonExplanationsPanel.setLayout(new BorderLayout());
@@ -231,7 +186,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	    computeAllExplanationsRadioButton.setActionCommand("all");
 	            
 	    computeMaxExplanationsRadioButton = new JRadioButton("Limit explanation count to:");
-	    computeMaxExplanationsRadioButton.setActionCommand("MAX");
+	    computeMaxExplanationsRadioButton.setActionCommand("max");
 	    computeMaxExplanationsRadioButton.setSelected(true);
 	    
 	    ButtonGroup limitButtonGroup = new ButtonGroup();
@@ -283,19 +238,19 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		return impactRepairPanel;
 	}
 	
-	private JComponent createRepairPanel(){
-		return new RepairPlanPanel();
-	}
-	
-	private JComponent createImpactPanel(){
-		ImpactTable impactTable = new ImpactTable();
-		JScrollPane impScr = new JScrollPane(impactTable);
-		JPanel impactPanel = new JPanel();
-		impactPanel.setLayout(new BorderLayout());
-		impactPanel.add(new JLabel("Impact"), BorderLayout.NORTH);
-		impactPanel.add(impScr);
-		return impactPanel;
-	}
+//	private JComponent createRepairPanel(){
+//		return new RepairPlanPanel();
+//	}
+//	
+//	private JComponent createImpactPanel(){
+//		ImpactTable impactTable = new ImpactTable();
+//		JScrollPane impScr = new JScrollPane(impactTable);
+//		JPanel impactPanel = new JPanel();
+//		impactPanel.setLayout(new BorderLayout());
+//		impactPanel.add(new JLabel("Impact"), BorderLayout.NORTH);
+//		impactPanel.add(impScr);
+//		return impactPanel;
+//	}
 	
 	public void fillUnsatClassesTable(List<OWLClass> unsatClasses) {
 		unsatClassesTable.addUnsatClasses(unsatClasses);
@@ -305,17 +260,6 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	public void clearExplanationsPanel() {		
 		explanationsPanel.removeAll();
 		explanationsPanel.validate();
-	}
-
-	public void addExplanation(Explanation explanation, OWLClass unsat, int counter) {
-		ExplanationTable expTable = new ExplanationTable(explanation, unsat);
-		ExplanationTablePanel panel = new ExplanationTablePanel(expTable, counter);
-		explanationsPanel.add(panel);
-		explanationsPanel.add(Box.createVerticalStrut(10));
-		explanationPanels.add(panel);
-//		explanationsPanel.add(new JSeparator());
-//		explanationsPanel.add(Box.createVerticalStrut(10));
-//		this.updateUI();
 	}
 	
 	public void addExplanations(Set<Explanation> explanations, OWLClass unsat){
