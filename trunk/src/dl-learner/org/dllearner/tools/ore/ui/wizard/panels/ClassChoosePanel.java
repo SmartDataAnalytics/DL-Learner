@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -72,29 +73,45 @@ public class ClassChoosePanel extends JPanel{
 	
 	private void createUI(){
 		setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
 		JPanel optionsPanel = new JPanel(new GridLayout(0, 1));
+		
 		autoLearnButton = new JRadioButton("Automatic learning mode");
 		autoLearnButton.setActionCommand("auto");
+		
 		manualLearnButton = new JRadioButton("Manual learning mode");
 		manualLearnButton.setActionCommand("manual");
+		
 		ButtonGroup learningType = new ButtonGroup();
 		learningType.add(manualLearnButton);
 		learningType.add(autoLearnButton);
 		autoLearnButton.setSelected(true);
 		optionsPanel.add(autoLearnButton);
 		optionsPanel.add(manualLearnButton);
+		
 		HelpablePanel optionsHelpPanel = new HelpablePanel(optionsPanel);
 		optionsHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		add(optionsHelpPanel);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		add(optionsHelpPanel, c);
+		
 		createAutoLearnPanel();
 		createManualLearnPanel();
+		
+		Dimension size = new Dimension(500, 500);
+		autoLearnPanel.setPreferredSize(size);
+		manualLearnPanel.setPreferredSize(size);
+		
 		currentPanel = autoLearnPanel;
-		add(currentPanel);
+		add(currentPanel, c);
 		
 	}
 	
 	private void createAutoLearnPanel(){
 		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
 		JPanel minInstancesCountPanel = new JPanel();
 		minInstancesCountPanel.add(new JLabel("Min. instance count per class: "));
 		minInstanceCountSpinner = new JSpinner();
@@ -102,9 +119,10 @@ public class ClassChoosePanel extends JPanel{
 	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
 	    minInstanceCountSpinner.setModel(spinnerModel);
 	    minInstancesCountPanel.add(minInstanceCountSpinner);
-	    panel.add(minInstancesCountPanel);
+	    panel.add(minInstancesCountPanel, c);
+	    
 	    learningOptionsPanel = new LearningOptionsPanel();
-		panel.add(learningOptionsPanel);
+		panel.add(learningOptionsPanel, c);
 		
 		autoLearnPanel = panel;
 	}
@@ -187,8 +205,19 @@ public class ClassChoosePanel extends JPanel{
     	OREManager.getInstance().setMaxExecutionTimeInSeconds(learningOptionsPanel.getMaxExecutionTime());
     	OREManager.getInstance().setMaxNrOfResults(learningOptionsPanel.getNrOfConcepts());
     	OREManager.getInstance().setNoisePercentage(learningOptionsPanel.getMinAccuracy());
+    	OREManager.getInstance().setThreshold(learningOptionsPanel.getThreshold());
     	OREManager.getInstance().setMinInstanceCount(((Integer)(minInstanceCountSpinner.getValue())).intValue());
     	
     }
+    
+    public static void main(String[] args){
+		JFrame frame = new JFrame();
+		
+		
+		frame.add(new ClassChoosePanel());
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
 
 }

@@ -69,7 +69,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 
 	@Override
 	public Set<Explanation> getExplanations(OWLAxiom entailment){		
-		return getExplanations(entailment, -1);
+		return getExplanations(entailment, Integer.MAX_VALUE);
 	}
 	
 	public int getArity(OWLAxiom axiom){

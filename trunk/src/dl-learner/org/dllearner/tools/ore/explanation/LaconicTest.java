@@ -8,6 +8,8 @@ import java.util.Set;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.mindswap.pellet.utils.Timer;
+import org.mindswap.pellet.utils.Timers;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
@@ -69,7 +71,7 @@ public class LaconicTest {
 	}
 	
 	public static void miniEconomyTest() {
-		String	file	= "file:examples/ore/miniEconomy.owl";
+		String	file	= "file:examples/ore/koala.owl";
 		
 		try {
 			
@@ -78,28 +80,43 @@ public class LaconicTest {
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
 					.create(file));
 			
-			PelletReasonerFactory resonerFact = new PelletReasonerFactory();
+			PelletReasonerFactory reasonerFact = new PelletReasonerFactory();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		
-			Reasoner reasoner = resonerFact.createReasoner(manager);
+			Reasoner reasoner = reasonerFact.createReasoner(manager);
 			reasoner.loadOntology(ontology);
 			
 			reasoner.classify();
-			System.out.println(reasoner.getInconsistentClasses());
-		
+			
 			
 			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(
-					manager, resonerFact, Collections.singleton(ontology));
+					manager, reasonerFact, Collections.singleton(ontology));
+			
+//			org.semanticweb.owl.explanation.api.ExplanationGenerator<OWLAxiom> copy = org.semanticweb.owl.explanation.api.
+//			ExplanationManager.createLaconicExplanationGeneratorFactory(reasonerFact).createExplanationGenerator(ontology.getAxioms());
+			
 			
 			Set<OWLClass> unsatClasses = reasoner.getInconsistentClasses();
 			OWLSubClassAxiom unsatAxiom;
-
+			Timers timers = new Timers();
 			for (OWLClass unsat : unsatClasses) {
 				unsatAxiom = dataFactory.getOWLSubClassAxiom(unsat, dataFactory
 						.getOWLNothing());
+				Timer t1 = timers.createTimer("t1");
+				Timer t2 =timers.createTimer("t2");
+				t1.start();
 				Set<Explanation> explanations = expGen
 						.getExplanations(unsatAxiom);
-				System.out.println(explanations);
+				t1.stop();
+//				System.out.println(explanations);
+				t2.start();
+//				Set<org.semanticweb.owl.explanation.api.Explanation<OWLAxiom>> expl = copy.getExplanations(unsatAxiom);
+				t2.stop();
+//				System.out.println(expl);
+				
+				for(Timer timer : timers.getTimers()){
+					System.out.println(timer.getTotal());
+				}
 			}
 
 

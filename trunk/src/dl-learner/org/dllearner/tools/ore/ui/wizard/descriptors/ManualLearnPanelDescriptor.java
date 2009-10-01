@@ -26,9 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
 
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -212,12 +210,12 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 	 * @author Lorenz Buehmann
 	 *
 	 */
-	class LearningTask extends SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
+	class LearningTask extends SwingWorker<Void, List<? extends EvaluatedDescription>> {
 		    	
     	
 		@SuppressWarnings("unchecked")
 		@Override
-		public List<? extends EvaluatedDescription> doInBackground() {
+		public Void doInBackground() {
 			
 			OREManager.getInstance().setLearningProblem();
 		    OREManager.getInstance().setLearningAlgorithm();
@@ -233,32 +231,27 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 				@Override
 				public void run() {progress += 1;setProgress(progress);
 					if(!isCancelled() && la.isRunning()){
-						publish(la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
-								OREManager.getInstance().getThreshold(), true));
+						List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
+								OREManager.getInstance().getThreshold(), true);
+						publish(result);
 					}
 				}
 				
 			}, 1000, 1000);
-			OREManager.getInstance().start();
+			la.start();
 	
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions
-								(OREManager.getInstance().getMaxNrOfResults(), OREManager.getInstance().getThreshold(), true);
 			
-			return result;
+			
+			return null;
 		}
 
 		@Override
 		public void done() {
 			
 			timer.cancel();
-			List<? extends EvaluatedDescription> result = null;
-			try {
-				result = get();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
+			
+			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
+								OREManager.getInstance().getThreshold(), true);
 			updateList(result);
 			TaskManager.getInstance().setTaskFinished();
 			setProgress(0);
@@ -269,22 +262,14 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 
 		@Override
 		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {
-					
 			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
 		}
 		
-		private void updateList(final List<? extends EvaluatedDescription> result) {
-			
-			Runnable doUpdateList = new Runnable() {
-							
-				@SuppressWarnings("unchecked")
-				public void run() {
-					learnPanel.getResultTable().addResults((List<EvaluatedDescriptionClass>) result);
-				}
-			};
-			SwingUtilities.invokeLater(doUpdateList);
+		@SuppressWarnings("unchecked")
+		private void updateList(final List<? extends EvaluatedDescription> result) {			
+			learnPanel.getResultTable().addResults((List<EvaluatedDescriptionClass>) result);
 		}
 	}
 

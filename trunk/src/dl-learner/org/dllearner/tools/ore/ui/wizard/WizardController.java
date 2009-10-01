@@ -29,6 +29,7 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.wizard.descriptors.AutoLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.IntroductionPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ManualLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
@@ -272,25 +273,25 @@ public class WizardController implements ActionListener {
     
     void refreshLeftPanel(Object panelDescriptor){
     	
-    	if(panelDescriptor.equals("INTRODUCTION_PANEL")){
+    	if(panelDescriptor.equals(IntroductionPanelDescriptor.IDENTIFIER)){
         	wizard.setLeftPanel(0);
-        }
-    	if(panelDescriptor.equals("KNOWLEDGESOURCE_CHOOSE_PANEL")){
+        } else
+    	if(panelDescriptor.equals(KnowledgeSourcePanelDescriptor.IDENTIFIER)){
         	wizard.setLeftPanel(1);
-        }
-    	if(panelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL") || panelDescriptor.equals("CLASS_CHOOSE_SPARQL_PANEL")){
+        } else 
+    	if(panelDescriptor.equals(ClassChoosePanelDescriptor.IDENTIFIER)){
         	wizard.setLeftPanel(3);
-        }
-    	if(panelDescriptor.equals("LEARNING_PANEL")){
+        } else
+    	if(panelDescriptor.equals(ManualLearnPanelDescriptor.IDENTIFIER) || panelDescriptor.equals(AutoLearnPanelDescriptor.IDENTIFIER)){
         	wizard.setLeftPanel(4);
-        }
-    	if(panelDescriptor.equals("REPAIR_PANEL")){
+        } else 
+    	if(panelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){
         	wizard.setLeftPanel(5);
-        }
-    	if(panelDescriptor.equals("SAVE_PANEL")){
+        } else
+    	if(panelDescriptor.equals(SavePanelDescriptor.IDENTIFIER)){
         	wizard.setLeftPanel(6);
-        }
-    	if(panelDescriptor.equals(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER)){
+        } else {
+    	
         	wizard.setLeftPanel(2);
         }
     	
