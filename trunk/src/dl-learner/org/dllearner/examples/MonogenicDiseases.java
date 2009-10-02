@@ -145,13 +145,83 @@ public class MonogenicDiseases {
 		kb.addAxiom(new DatatypePropertyRangeAxiom(freqAtPosProp, Datatype.DOUBLE));			
 		
 		// cluster_5res_size
-		DatatypeProperty cluster5ResSizeProp = new DatatypeProperty(getURI("cluster_5res_size"));
+		DatatypeProperty cluster5ResSizeProp = new DatatypeProperty(getURI("cluster5resSize"));
 		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster5ResSizeProp, mutationClass));
 		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster5ResSizeProp, Datatype.DOUBLE));		
 		
-		// select all data
+		// secondary_struc
+		NamedClass scHelixClass = new NamedClass(getURI("SCHelixMutation"));
+		NamedClass scSheetClass = new NamedClass(getURI("SCSheetMutation"));
+		NamedClass scUndeterminedClass = new NamedClass(getURI("SCUndeterminedMutation"));
+		kb.addAxiom(new SubClassAxiom(scHelixClass, mutationClass));
+		kb.addAxiom(new SubClassAxiom(scSheetClass, mutationClass));
+		kb.addAxiom(new SubClassAxiom(scUndeterminedClass, mutationClass));			
+		
+		// gain_contact
+		DatatypeProperty gainContactProp = new DatatypeProperty(getURI("gainContact"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(gainContactProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(gainContactProp, Datatype.DOUBLE));				
+		
+		// lost_contact
+		DatatypeProperty lostContactProp = new DatatypeProperty(getURI("lostContact"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(lostContactProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(lostContactProp, Datatype.DOUBLE));				
+			
+		// identical_contact
+		DatatypeProperty identicalContactProp = new DatatypeProperty(getURI("identicalContact"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(identicalContactProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(identicalContactProp, Datatype.DOUBLE));				
+			
+		// gain_n1_contact
+		DatatypeProperty gainN1ContactProp = new DatatypeProperty(getURI("gainN1Contact"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(gainN1ContactProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(gainN1ContactProp, Datatype.DOUBLE));				
+		
+		// lost_n1_contact
+		DatatypeProperty lostN1ContactProp = new DatatypeProperty(getURI("lostN1Contact"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(lostN1ContactProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(lostN1ContactProp, Datatype.DOUBLE));				
+			
+		// identical_n1_contact
+		DatatypeProperty identicalN1ContactProp = new DatatypeProperty(getURI("identicalN1Contact"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(identicalN1ContactProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(identicalN1ContactProp, Datatype.DOUBLE));				
+			
+		// wt_accessibility
+		DatatypeProperty wtAccessibilityProp = new DatatypeProperty(getURI("wtAccessibility"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(wtAccessibilityProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(wtAccessibilityProp, Datatype.DOUBLE));				
+					
+		// mut_accessibility
+		DatatypeProperty mutAccessibilityProp = new DatatypeProperty(getURI("mutAccessibility"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(mutAccessibilityProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(mutAccessibilityProp, Datatype.DOUBLE));				
+					
+		// cluster3d_10
+		DatatypeProperty cluster3D10Prop = new DatatypeProperty(getURI("cluster3d10"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster3D10Prop, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D10Prop, Datatype.DOUBLE));				
+				
+		// cluster3d_20
+		DatatypeProperty cluster3D20Prop = new DatatypeProperty(getURI("cluster3d20"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster3D20Prop, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D20Prop, Datatype.DOUBLE));				
+		
+		// cluster3d_30
+		DatatypeProperty cluster3D30Prop = new DatatypeProperty(getURI("cluster3d30"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(cluster3D30Prop, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(cluster3D30Prop, Datatype.DOUBLE));				
+				
+		// TODO: stability missing
+		
+		// reliability_deltag
+		DatatypeProperty reliabilityDeltagProp = new DatatypeProperty(getURI("reliabilityDeltag"));
+		kb.addAxiom(new DatatypePropertyDomainAxiom(reliabilityDeltagProp, mutationClass));
+		kb.addAxiom(new DatatypePropertyRangeAxiom(reliabilityDeltagProp, Datatype.DOUBLE));				
+			
+		// select data (restricted to pos/neg examples for efficiency)
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM " + table);
+		ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE (gain_contact is not null) && (gain_contact != 0)");
 		
 		int count = 0;
 		while(rs.next()) {
@@ -207,7 +277,70 @@ public class MonogenicDiseases {
 			double cluster5ResSize = rs.getDouble("cluster_5res_size");
 			kb.addAxiom(new DoubleDatatypePropertyAssertion(cluster5ResSizeProp, mutationInd, cluster5ResSize));
 						
+			// secondary struc
+			String secStruc = rs.getString("secondary_struc");
+			if(secStruc.equals("HELIX")) {
+				kb.addAxiom(new ClassAssertionAxiom(scHelixClass, mutationInd));
+			} else if(secStruc.equals("SHEET")) {
+				kb.addAxiom(new ClassAssertionAxiom(scSheetClass, mutationInd));
+			} else if(secStruc.equals("0")) {
+				kb.addAxiom(new ClassAssertionAxiom(scUndeterminedClass, mutationInd));
+			}
 			
+			// TODO: Wert null soll hier auch vorkommen, aber existiert in der DB nicht.
+			// gain_contact
+			double gainContact = rs.getDouble("gain_contact");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(gainContactProp, mutationInd, gainContact));
+						
+			// lost_contact
+			double lostContact = rs.getDouble("lost_contact");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(lostContactProp, mutationInd, lostContact));
+				
+			// identical_contact
+			double identicalContact = rs.getDouble("identical_contact");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(identicalContactProp, mutationInd, identicalContact));
+						
+			// gain_n1_contact
+			double gainN1Contact = rs.getDouble("gain_n1_contact");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(gainN1ContactProp, mutationInd, gainN1Contact));
+						
+			// lost_n1_contact
+			double lostN1Contact = rs.getDouble("lost_n1_contact");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(lostN1ContactProp, mutationInd, lostN1Contact));
+				
+			// identical_n1_contact
+			double identicalN1Contact = rs.getDouble("identical_n1_contact");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(identicalN1ContactProp, mutationInd, identicalN1Contact));
+						
+			// TODO Vorsicht bei 0-Werten in den weitern Feldern (klären, ob in dem
+			// Fall gar nichts geschrieben werden soll)
+			
+			// wt_accessibility
+			double wtAccessibility = rs.getDouble("wt_accessibility");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(wtAccessibilityProp, mutationInd, wtAccessibility));
+						
+			// mut_accessibility
+			double mutAccessibility = rs.getDouble("mut_accessibility");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(mutAccessibilityProp, mutationInd, mutAccessibility));
+				
+			// cluster3d_10
+			double cluster3D10 = rs.getDouble("cluster3d_10");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(cluster3D10Prop, mutationInd, cluster3D10));
+					
+			// cluster3d_20
+			double cluster3D20 = rs.getDouble("cluster3d_20");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(cluster3D20Prop, mutationInd, cluster3D20));
+			
+			// cluster3d_30
+			double cluster3D30 = rs.getDouble("cluster3d_30");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(cluster3D30Prop, mutationInd, cluster3D30));
+					
+			// TODO: stability missing
+			
+			// reliability_deltag
+			double reliabilityDeltag = rs.getDouble("reliability_deltag");
+			kb.addAxiom(new DoubleDatatypePropertyAssertion(reliabilityDeltagProp, mutationInd, reliabilityDeltag));
+							
 			count++;
 		}
 		
@@ -239,7 +372,7 @@ public class MonogenicDiseases {
 		String confHeader = "import(\"" + owlFile.getName() + "\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
 		confHeader += "algorithm = refexamples;\n";
-		confHeader += "refexamples.noisePercentage = 31;\n";
+		confHeader += "refexamples.noisePercentage = 15;\n";
 		confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/mutation/searchTree.log\";\n";
