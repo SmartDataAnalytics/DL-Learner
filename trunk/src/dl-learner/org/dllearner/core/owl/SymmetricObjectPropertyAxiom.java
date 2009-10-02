@@ -40,7 +40,6 @@ public class SymmetricObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "Symmetric(" + role.toString(baseURI, prefixes) + ")";
 	}	
 }

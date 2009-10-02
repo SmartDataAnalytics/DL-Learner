@@ -72,8 +72,7 @@ public class DifferentIndividualsAxiom extends AssertionalAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "DIFFERENT_INDIVIDUALS_AXIOM NOT IMPLEMENTED";
 	}	
 
 }

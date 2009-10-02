@@ -78,7 +78,6 @@ public class ObjectPropertyAssertion extends PropertyAssertion {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "OBJECTPROPERTYASSERTION NOT IMPLEMENTED";
 	}	
 }

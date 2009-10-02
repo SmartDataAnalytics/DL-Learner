@@ -2,6 +2,8 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
+import org.dllearner.utilities.Helper;
+
 public class InverseObjectPropertyAxiom extends PropertyAxiom {
 
 	private ObjectProperty inverseRole;
@@ -46,7 +48,6 @@ public class InverseObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "INVERSEOBJECTPROPERTYAXIOM NOT IMPLEMENTED";
 	}	
 }
