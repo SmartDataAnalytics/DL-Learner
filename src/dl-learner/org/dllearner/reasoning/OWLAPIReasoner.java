@@ -299,7 +299,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			manager.addOntologyChangeListener((org.mindswap.pellet.owlapi.Reasoner)reasoner);
 			
 			//set classification output to "none", while default is "console"
-			PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.CONSOLE;
+			PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.NONE;
 			// change log level to WARN for Pellet, because otherwise log
 			// output will be very large
 			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
