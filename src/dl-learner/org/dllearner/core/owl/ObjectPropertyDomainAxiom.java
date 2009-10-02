@@ -72,8 +72,7 @@ public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "OBJECTPROPERTYDOMAIN NOT IMPLEMENTED";
 	}	
 	
 }

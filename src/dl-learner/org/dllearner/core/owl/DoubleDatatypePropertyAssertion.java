@@ -66,7 +66,6 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "DOUBLEDATAPROPASSERTION NOT IMPLEMENTED";
 	}	
 }

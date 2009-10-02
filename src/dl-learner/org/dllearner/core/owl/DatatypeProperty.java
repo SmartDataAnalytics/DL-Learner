@@ -98,7 +98,6 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return Helper.getAbbreviatedString(name, baseURI, prefixes);
 	}	
 }

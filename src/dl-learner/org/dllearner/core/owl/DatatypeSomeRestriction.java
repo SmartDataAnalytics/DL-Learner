@@ -88,8 +88,7 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return restrictedPropertyExpression.toManchesterSyntaxString(baseURI, prefixes) + dataRange.toManchesterSyntaxString(baseURI, prefixes);
 	}
 
 	/**
