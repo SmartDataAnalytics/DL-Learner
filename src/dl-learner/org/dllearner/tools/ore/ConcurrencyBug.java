@@ -2,7 +2,6 @@ package org.dllearner.tools.ore;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Timer;
@@ -15,15 +14,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.PelletReasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLObjectAllRestriction;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLObjectSomeRestriction;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
 
 public class ConcurrencyBug {
 
@@ -53,19 +44,7 @@ public class ConcurrencyBug {
 		lp.getConfigurator().setClassToDescribe(classToDescribe);
 		lp.init();
 		
-		String NS = "http://ns.softwiki.de/req/";
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLClass customerRequirement = factory.getOWLClass(URI.create(NS +"CustomerRequirement"));
-		OWLClass comment = factory.getOWLClass(URI.create(NS + "Comment"));
-		OWLObjectProperty idDefinedBy = factory.getOWLObjectProperty(URI.create(NS + "isDefinedBy"));
-		OWLObjectProperty defines = factory.getOWLObjectProperty(URI.create(NS + "defines"));
 		
-		OWLObjectSomeRestriction some = factory.getOWLObjectSomeRestriction(defines, comment);
-		OWLObjectAllRestriction all = factory.getOWLObjectAllRestriction(idDefinedBy, some);
-		OWLSubClassAxiom sub = factory.getOWLSubClassAxiom(customerRequirement, all);
-		
-//		System.out.println(reasoner.remainsSatisfiableImpl(sub));
 		
 		final CELOE la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 		la.getConfigurator().setMaxExecutionTimeInSeconds(8);

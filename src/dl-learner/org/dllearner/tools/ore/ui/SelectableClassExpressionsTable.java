@@ -5,11 +5,12 @@ import java.util.List;
 
 import javax.swing.ListSelectionModel;
 
+import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
-public class EquivalentClassExpressionsTable extends JXTable {
+public class SelectableClassExpressionsTable extends JXTable {
 
 	/**
 	 * 
@@ -18,11 +19,11 @@ public class EquivalentClassExpressionsTable extends JXTable {
 	
 	private EvaluatedDescriptionClass old = null;
 	
-	public EquivalentClassExpressionsTable(){
+	public SelectableClassExpressionsTable(){
 		setBackground(Color.WHITE);
 		setHighlighters(HighlighterFactory.createAlternateStriping());
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		setModel(new EquivalentClassExpressionsTableModel());
+		setModel(new SelectableClassExpressionsTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		setColumnSizes();
@@ -32,8 +33,8 @@ public class EquivalentClassExpressionsTable extends JXTable {
 	}
 	
 	private void setColumnSizes(){
-		getColumn(0).setMaxWidth(100);
-		getColumn(1).setPreferredWidth(430);
+		getColumn(0).setMaxWidth(95);
+//		getColumn(1).setPreferredWidth(430);
 		getColumn(2).setMaxWidth(30);
 				
 	}
@@ -41,7 +42,7 @@ public class EquivalentClassExpressionsTable extends JXTable {
 	
 	
 	public void clear(){
-		((EquivalentClassExpressionsTableModel)getModel()).clear();
+		((SelectableClassExpressionsTableModel)getModel()).clear();
 	}
 	
 	public void addResults(List<EvaluatedDescriptionClass> resultList){
@@ -49,9 +50,9 @@ public class EquivalentClassExpressionsTable extends JXTable {
 		if(getSelectedRow() >= 0){
 			old = getSelectedValue();
 		}
-		((EquivalentClassExpressionsTableModel)getModel()).addResults(resultList);
+		((SelectableClassExpressionsTableModel)getModel()).addResults(resultList);
 		if(old != null){
-			int newRowIndex = ((EquivalentClassExpressionsTableModel)getModel()).getSelectionIndex(old);
+			int newRowIndex = ((SelectableClassExpressionsTableModel)getModel()).getSelectionIndex(old);
 			if(newRowIndex >= 0){
 				getSelectionModel().setSelectionInterval(newRowIndex, newRowIndex);
 			}
@@ -60,7 +61,11 @@ public class EquivalentClassExpressionsTable extends JXTable {
 	}
 	
 	public EvaluatedDescriptionClass getSelectedValue(){	
-		return ((EquivalentClassExpressionsTableModel)getModel()).getSelectedValue(getSelectedRow());
+		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedValue(getSelectedRow());
+	}
+	
+	public List<Description> getSelecetdDescriptions(){
+		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedDescriptions();
 	}
 
 }

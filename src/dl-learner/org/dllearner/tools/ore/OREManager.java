@@ -65,6 +65,13 @@ public class OREManager {
 	private int maxNrOfResults;
 	private double threshold;
 	private int minInstanceCount;
+	
+	public static final int AUTO_LEARN_MODE = 0;
+    public static final int MANUAL_LEARN_MODE = 1;
+    
+    private int learnMode = 0;
+    
+    private List<Description> newDescriptions;
 
 	private List<OREManagerListener> listeners;
 
@@ -281,6 +288,14 @@ public class OREManager {
 		return minInstanceCount;
 	}
 	
+	public void setLearningMode(int mode){
+		learnMode = mode;
+	}
+	
+	public int getLearningMode(){
+		return learnMode;
+	}
+	
 	public void init(){
 		
 		this.setLearningProblem();
@@ -312,6 +327,14 @@ public class OREManager {
 	
 	public CELOE getLa() {
 		return la;
+	}
+	
+	public void setNewDescriptions(List<Description> descriptions){
+		newDescriptions = descriptions;
+	}
+	
+	public List<Description> getNewDescriptions(){
+		return newDescriptions;
 	}
 
 	/**

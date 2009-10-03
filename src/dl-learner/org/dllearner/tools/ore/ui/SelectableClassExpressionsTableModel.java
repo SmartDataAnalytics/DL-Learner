@@ -9,7 +9,7 @@ import javax.swing.table.AbstractTableModel;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
-public class EquivalentClassExpressionsTableModel extends AbstractTableModel {
+public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 
 	/**
 	 * 
@@ -20,14 +20,14 @@ public class EquivalentClassExpressionsTableModel extends AbstractTableModel {
 	private DecimalFormat df;
 	private List<Boolean> selectionList;
 
-	public EquivalentClassExpressionsTableModel(){
+	public SelectableClassExpressionsTableModel(){
 		super();
 		resultList = new ArrayList<EvaluatedDescriptionClass>();
 		selectionList = new ArrayList<Boolean>();
 		df = new DecimalFormat("00%");
 	}
 	
-	public EquivalentClassExpressionsTableModel(List<EvaluatedDescriptionClass> resultList){
+	public SelectableClassExpressionsTableModel(List<EvaluatedDescriptionClass> resultList){
 		this.resultList = resultList;
 	}
 
@@ -109,6 +109,17 @@ public class EquivalentClassExpressionsTableModel extends AbstractTableModel {
 	
 	public int getSelectionIndex(EvaluatedDescriptionClass e){
 		return resultList.indexOf(e);
+	}
+	
+	public List<Description> getSelectedDescriptions(){
+		List<Description> selected = new ArrayList<Description>();
+		for(int i = 0; i < selectionList.size(); i++){
+			if(selectionList.get(i).equals(Boolean.TRUE)){
+				selected.add(resultList.get(i).getDescription());
+			}
+		}
+		
+		return selected;
 	}
 
 }

@@ -27,7 +27,7 @@ public class RepairPlanPanel extends JPanel {
 		this.repMan = RepairManager.getInstance(OREManager.getInstance());
 		
 		setLayout(new BorderLayout());
-		add(new JLabel("Axioms"), BorderLayout.NORTH);
+		add(new JLabel("Repair plan"), BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel(new FlowLayout(2));
 		add(buttonPanel, "South");
 		undoButton = new JButton(new AbstractAction("Undo") {

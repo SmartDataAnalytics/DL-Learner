@@ -162,6 +162,10 @@ public class WizardController implements ActionListener {
 			classChoose.resetPanel();
 		} else if(nextPanelDescriptor.equals(AutoLearnPanelDescriptor.IDENTIFIER)){
 			((ClassChoosePanelDescriptor)currentPanelDescriptor).setAutoLearningOptions();
+			AutoLearnPanelDescriptor learnDescriptor = ((AutoLearnPanelDescriptor) model
+					.getPanelHashMap().get(nextPanelDescriptor));
+			learnDescriptor.resetPanel();
+			learnDescriptor.fillClassesTable();
 		}
 //		else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(LearningPanelDescriptor.IDENTIFIER)){
 //			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
