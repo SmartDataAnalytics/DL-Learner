@@ -254,6 +254,8 @@ public abstract class LearningAlgorithm extends Component {
 				// be in the search of the learning algorith, which leads to
 				// unpredictable behaviour)
 				Description d = ed.getDescription().clone();
+				
+				//commented out because reasoner is called. leads in swing applications sometimes to exceptions
 //				ConceptTransformation.replaceRange(d, reasoner);
 				ed.setDescription(d);
 				

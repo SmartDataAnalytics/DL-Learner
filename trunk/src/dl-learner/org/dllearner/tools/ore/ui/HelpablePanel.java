@@ -1,5 +1,7 @@
 package org.dllearner.tools.ore.ui;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -109,8 +111,24 @@ public class HelpablePanel extends JPanel {
 		learnTypePanel.add(equivalentClassButton);
 		learnTypePanel.add(superClassButton);
 		HelpablePanel learnTypeHelpPanel = new HelpablePanel(learnTypePanel);
-		learnTypeHelpPanel.setBorder(new TitledBorder("Learning type"));
-		
+		TitledBorder border = new TitledBorder("LEarning type"){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1878007899412644256L;
+			
+			@Override
+			public void paintBorder(Component c, Graphics g, int x, int y,
+					int width, int height) {
+				// TODO Auto-generated method stub
+				super.paintBorder(c, g, x, y, width, height);
+			}
+			
+		};
+//		border.setTitleJustification(TitledBorder.ABOVE_BOTTOM);
+		border.setTitlePosition(TitledBorder.ABOVE_TOP);
+		learnTypeHelpPanel.setBorder(border);
 	
 		
 		frame.add(learnTypeHelpPanel);
@@ -118,5 +136,6 @@ public class HelpablePanel extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
+	
 	
 }

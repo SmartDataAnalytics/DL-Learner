@@ -199,7 +199,7 @@ public class PelletReasoner extends ReasonerComponent {
 						ontology = manager.loadOntologyFromPhysicalURI(url
 								.toURI());
 					}
-
+					
 					owlAPIOntologies.add(ontology);
 					// imports includes the ontology itself
 					Set<OWLOntology> imports = manager
@@ -1466,7 +1466,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 
 
 	public OWLOntology getOWLAPIOntologies() {
-		return reasoner.getLoadedOntologies().iterator().next();
+		return owlAPIOntologies.get(0);
 	}
 	
 	/*public void setReasonerType(String type){

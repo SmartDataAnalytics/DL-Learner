@@ -227,45 +227,40 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 
 		}
 	 
-	 class RootDerivedTask extends SwingWorker<Void, Void>{
+	class RootDerivedTask extends SwingWorker<Void, Void> {
 
-			@Override
-			public Void doInBackground() {
-				
-				expMan.getRootUnsatisfiableClasses();
-				expMan.getDerivedClasses();
-				return null;
-			}
+		@Override
+		public Void doInBackground() {
 
-			@Override
-			public void done() {
-				TaskManager.getInstance().setTaskFinished();
-				if(!isCancelled()){
-					fillUnsatClassesTable();
-				}
-				
+			expMan.getRootUnsatisfiableClasses();
+			expMan.getDerivedClasses();
+			return null;
+		}
+
+		@Override
+		public void done() {
+			TaskManager.getInstance().setTaskFinished();
+			if (!isCancelled()) {
+				fillUnsatClassesTable();
 			}
-			
-			private void fillUnsatClassesTable(){
-				SwingUtilities.invokeLater(new Runnable() {
-					
-					@Override
-					public void run() {
-						List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
-						
-						Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
-								.getRootUnsatisfiableClasses());
-						unsatClasses.addAll(rootClasses);
-						
-						Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
-								.getDerivedClasses());
-						unsatClasses.addAll(derivedClasses);
-						
-						panel.fillUnsatClassesTable(unsatClasses);
-						panel.getUnsatTable().clearSelection();
-					}
-				});
-			}
-	 }
+		}
+
+		private void fillUnsatClassesTable() {
+
+			List<OWLClass> unsatClasses = new ArrayList<OWLClass>();
+
+			Set<OWLClass> rootClasses = new TreeSet<OWLClass>(expMan
+					.getRootUnsatisfiableClasses());
+			unsatClasses.addAll(rootClasses);
+
+			Set<OWLClass> derivedClasses = new TreeSet<OWLClass>(expMan
+					.getDerivedClasses());
+			unsatClasses.addAll(derivedClasses);
+
+			panel.fillUnsatClassesTable(unsatClasses);
+			panel.getUnsatTable().clearSelection();
+
+		}
+	}
 
 }

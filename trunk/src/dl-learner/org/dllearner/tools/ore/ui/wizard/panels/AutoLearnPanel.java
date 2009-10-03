@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -15,15 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.ui.ClassesTable;
-import org.dllearner.tools.ore.ui.EquivalentClassExpressionsTable;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
+import org.dllearner.tools.ore.ui.MarkableTable;
+import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 
 public class AutoLearnPanel extends JPanel {
 
@@ -32,13 +34,13 @@ public class AutoLearnPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -5204979906041331328L;
 	
-	private ClassesTable classesTable;
-	
+//	private ClassesTable classesTable;
+	private MarkableTable classesTable;
 	private JPanel superPanel;
 	private JPanel equivalentPanel;
 	
-	private EquivalentClassExpressionsTable equivalentClassResultsTable;
-	private EquivalentClassExpressionsTable superClassResultsTable;
+	private SelectableClassExpressionsTable equivalentClassResultsTable;
+	private SelectableClassExpressionsTable superClassResultsTable;
 	
 	private GraphicalCoveragePanel equivalentClassCoveragePanel;
 	private GraphicalCoveragePanel superClassCoveragePanel;
@@ -48,7 +50,7 @@ public class AutoLearnPanel extends JPanel {
 	
 	private JButton skipButton;
 	
-	private final static String INCONSISTENY_WARNING = "<html><font color=red>" +
+	private final static String INCONSISTENCY_WARNING = "<html><font color=red>" +
 														"Warning. Selected class expressions leads to an inconsistent ontology!" +
 														"</font></html>";
 	public AutoLearnPanel(){
@@ -69,10 +71,10 @@ public class AutoLearnPanel extends JPanel {
 	}
 	
 	private JComponent createClassesPanel(){
-		classesTable = new ClassesTable();
+		classesTable = new MarkableTable();
 		classesTable.setBorder(null);
-		classesTable.setEnabled(false);
 		JScrollPane classesScroll = new JScrollPane(classesTable);
+		classesScroll.setBorder(new MatteBorder(null));
 		return classesScroll;
 	}
 	
@@ -106,7 +108,7 @@ public class AutoLearnPanel extends JPanel {
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 0;
-		equivalentClassResultsTable = new EquivalentClassExpressionsTable();
+		equivalentClassResultsTable = new SelectableClassExpressionsTable();
 		equivalentClassResultsTable.setName("equivalent");
 		equivalentPanel.add(new JScrollPane(equivalentClassResultsTable), c);
 		
@@ -136,7 +138,7 @@ public class AutoLearnPanel extends JPanel {
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 0;
-		superClassResultsTable = new EquivalentClassExpressionsTable();
+		superClassResultsTable = new SelectableClassExpressionsTable();
 		superClassResultsTable.setName("super");
 		superPanel.add(new JScrollPane(superClassResultsTable), c);
 		
@@ -177,6 +179,19 @@ public class AutoLearnPanel extends JPanel {
 		superClassResultsTable.clear();
 		equivalentClassCoveragePanel.clear();
 		superClassCoveragePanel.clear();
+		validate();
+		repaint();
+	}
+	
+	public void clearClassesTable(){
+		classesTable.clear();
+	}
+	
+	public List<Description> getSelectedDescriptions(){
+		List<Description> selected = new ArrayList<Description>();
+		selected.addAll(equivalentClassResultsTable.getSelecetdDescriptions());
+		selected.addAll(superClassResultsTable.getSelecetdDescriptions());
+		return selected;
 	}
 	
 	private void addTableSelectionListeners(){
@@ -187,10 +202,10 @@ public class AutoLearnPanel extends JPanel {
 					if (!e.getValueIsAdjusting() && equivalentClassResultsTable.getSelectedRow() >= 0){
 						
 						EvaluatedDescriptionClass selectedClassExpression = equivalentClassResultsTable.getSelectedValue();
-						OREManager.getInstance().setNewClassDescription(selectedClassExpression);
+						
 						equivalentClassCoveragePanel.setNewClassDescription(selectedClassExpression);
 						if(!selectedClassExpression.isConsistent()){
-							equivalentInconsistencyLabel.setText(INCONSISTENY_WARNING);
+							equivalentInconsistencyLabel.setText(INCONSISTENCY_WARNING);
 						} else {
 							equivalentInconsistencyLabel.setText(" ");
 						}
@@ -207,10 +222,10 @@ public class AutoLearnPanel extends JPanel {
 				if (!e.getValueIsAdjusting() && superClassResultsTable.getSelectedRow() >= 0){
 					
 					EvaluatedDescriptionClass selectedClassExpression = superClassResultsTable.getSelectedValue();
-					OREManager.getInstance().setNewClassDescription(selectedClassExpression);
+					
 					superClassCoveragePanel.setNewClassDescription(selectedClassExpression);
 					if(!selectedClassExpression.isConsistent()){
-						superInconsistencyLabel.setText(INCONSISTENY_WARNING);
+						superInconsistencyLabel.setText(INCONSISTENCY_WARNING);
 					} else {
 						superInconsistencyLabel.setText(" ");
 					}
@@ -227,6 +242,10 @@ public class AutoLearnPanel extends JPanel {
 		superClassCoveragePanel.setNewClassDescription(desc);
 	}
 	
+	public void setSelectedClass(int rowIndex){
+		classesTable.setSelectedClass(rowIndex);
+	}
+	
 	public static void main(String[] args){
 		JFrame frame = new JFrame();
 		
@@ -236,5 +255,6 @@ public class AutoLearnPanel extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
+
 	
 }

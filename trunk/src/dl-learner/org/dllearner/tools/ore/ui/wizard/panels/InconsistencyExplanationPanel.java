@@ -7,14 +7,11 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -29,7 +26,6 @@ import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.RepairPlanPanel;
-import org.dllearner.tools.ore.ui.UnsatisfiableClassesTable;
 import org.semanticweb.owl.apibinding.OWLManager;
 
 public class InconsistencyExplanationPanel extends JPanel{
@@ -51,11 +47,6 @@ public class InconsistencyExplanationPanel extends JPanel{
 	private JRadioButton computeAllExplanationsRadioButton;
     private  JRadioButton computeMaxExplanationsRadioButton;
 	private JSpinner maxExplanationsSelector;
-	
-	
-	private Set<ExplanationTablePanel> explanationPanels;
-	private Set<ExplanationTable> explanationTables;
-	
 	
 
 	public InconsistencyExplanationPanel() {
@@ -80,9 +71,6 @@ public class InconsistencyExplanationPanel extends JPanel{
 	
 	private JComponent createExplanationPanel(){
 		explanationsPanel = new Box(1);
-		
-		explanationPanels = new HashSet<ExplanationTablePanel>();
-		explanationTables = new HashSet<ExplanationTable>();
 
 		JPanel pan = new JPanel(new BorderLayout());
 		pan.add(explanationsPanel, BorderLayout.NORTH);
@@ -161,7 +149,6 @@ public class InconsistencyExplanationPanel extends JPanel{
 	
 	private JComponent createRepairPanel(){
 		JPanel repairPanel = new JPanel(new BorderLayout());
-		repairPanel.add(new JLabel("Repair plan"), BorderLayout.NORTH);
 		repairPanel.add(new RepairPlanPanel(), BorderLayout.CENTER);
 		return repairPanel;
 	}

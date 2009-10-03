@@ -76,7 +76,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			e.printStackTrace();
 		}
 	      logger.addAppender( fileAppender );
-	    logger.setLevel(Level.OFF);
+	    logger.setLevel(Level.DEBUG);
 
 	}
 	
@@ -587,26 +587,26 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			
 			
 			
-			Timer t1 = new Timer("pellet");
-			t1.start();
-			PelletExplanation exp1 = new PelletExplanation(manager, Collections.singleton(ontology));
-			exp1.getUnsatisfiableExplanations(cl);
-			t1.stop();
-			Timer t3 = new Timer("module-based");
-			t3.start();
-			OWLOntology module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontology, cl.getSignature(), ModuleType.TOP_OF_BOT));
-			System.out.println(module);
-			PelletExplanation exp2 = new PelletExplanation(manager, Collections.singleton(module));
-			System.out.println(exp2.getUnsatisfiableExplanations(cl).size());
-			t3.stop();
+//			Timer t1 = new Timer("pellet");
+//			t1.start();
+//			PelletExplanation exp1 = new PelletExplanation(manager, Collections.singleton(ontology));
+//			exp1.getUnsatisfiableExplanations(cl);
+//			t1.stop();
+//			Timer t3 = new Timer("module-based");
+//			t3.start();
+//			OWLOntology module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontology, cl.getSignature(), ModuleType.TOP_OF_BOT));
+//			System.out.println(module);
+//			PelletExplanation exp2 = new PelletExplanation(manager, Collections.singleton(module));
+//			System.out.println("Module based explanationcount: " + exp2.getUnsatisfiableExplanations(cl));
+//			t3.stop();
 			
 			Timer t2 = new Timer("syntactic relevance");
 			t2.start();
 			Reasoner reasoner = new PelletReasonerFactory().createReasoner(manager);
-			reasoner.loadOntologies(Collections.singleton(ontology));
+			reasoner.loadOntologies(Collections.singleton(example));
 			SyntacticRelevanceBasedExplanationGenerator exp3 = 
 				new SyntacticRelevanceBasedExplanationGenerator(reasoner, manager);
-			System.out.println(exp3.getUnsatisfiableExplanations(cl, Strategie.All_Just_Relevance).size());
+			System.out.println(exp3.getUnsatisfiableExplanations(u, Strategie.All_Just_Relevance));
 			
 			System.out.print("J = {");
 //			for(Set<OWLAxiom> explanation : expGen.getUnsatisfiableExplanations(cl, Strategie.All_Just_Relevance)){
@@ -619,7 +619,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 //			}
 			System.out.print("}");
 			t2.stop();
-			System.out.println(t1.getTotal() +"--" + t3.getTotal() + "--" +  t2.getTotal());
+//			System.out.println(t1.getTotal() +"--" + t3.getTotal() + "--" +  t2.getTotal());
 			
 //			Set<OWLAxiom> test = new HashSet<OWLAxiom>();
 //			OWLClass z = factory.getOWLClass(URI.create("z"));

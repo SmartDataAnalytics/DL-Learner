@@ -216,7 +216,6 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	private JComponent createImpactRepairPanel(){
 		JPanel impactRepairPanel = new JPanel();
 		impactRepairPanel.setLayout(new BorderLayout());
-		impactRepairPanel.add(new JLabel("Repair plan"), BorderLayout.NORTH);
 		
 		JSplitPane impRepSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		impRepSplit.setOneTouchExpandable(true);

@@ -18,6 +18,7 @@ import javax.swing.SwingWorker;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.OREManager;
@@ -42,6 +43,8 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
     private EquivalentLearningTask equivalentLearningTask;
     private SuperClassLearningTask superLearningTask;
     
+    private SwingWorker<Void, List<? extends EvaluatedDescription>> currentLearningTask;
+    
     private int currentClassIndex = 0;
     
    
@@ -59,7 +62,13 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return RepairPanelDescriptor.IDENTIFIER;
+    	if(getSelectedDescriptions().isEmpty()){
+    		return SavePanelDescriptor.IDENTIFIER;
+    	} else {
+    		OREManager.getInstance().setNewDescriptions(getSelectedDescriptions());
+    		return RepairPanelDescriptor.IDENTIFIER;
+    	}
+        
     }
     
     @Override
@@ -70,10 +79,9 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
     @Override
 	public void aboutToDisplayPanel() {
     	getWizard().getInformationField().setText(INFORMATION);
-    	fillClassesTable();
     }
 	
-	public void fillClassesTable(){
+	public void fillClassesTable(){	
 		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
 		new ClassRetrievingTask().execute();
 	}
@@ -97,9 +105,21 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 	
 	public void learnNextClass(){
 		autoLearnPanel.resetPanel();
-		OREManager.getInstance().setCurrentClass2Learn(new NamedClass("http://ns.softwiki.de/req/CustomerRequirement"));//classes.get(currentClassIndex));
+		autoLearnPanel.setSelectedClass(currentClassIndex);
+		OREManager.getInstance().setCurrentClass2Learn(classes.get(currentClassIndex));
 		learnEquivalentClassExpressions();
 		currentClassIndex++;
+	}
+	
+	public List<Description> getSelectedDescriptions(){
+		return autoLearnPanel.getSelectedDescriptions();
+	}
+	
+	public void resetPanel(){
+		currentClassIndex = 0;
+		autoLearnPanel.resetPanel();
+		autoLearnPanel.clearClassesTable();
+		
 	}
 	
 	@Override
@@ -148,6 +168,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					classes.clear();
 					classes.addAll(result);
 					autoLearnPanel.fillClassesTable(result);
 					OREManager.getInstance().setCurrentClass2Learn(classes.get(0));
@@ -199,19 +220,22 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		public void done() {
 			timer.cancel();
 			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true);
-			updateList(result);
+			updateResultTable(result);
+			if(result.isEmpty()){
+				EvaluatedDescriptionClass best = (EvaluatedDescriptionClass)la.getCurrentlyBestEvaluatedDescription();
+			} 
 			learnSubClassExpressions();
 		}
 		
 		@Override
 		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {					
 			for (List<? extends EvaluatedDescription> list : resultLists) {
-				updateList(list);
+				updateResultTable(list);
 			}
 		}
 		
 		@SuppressWarnings("unchecked")
-		private void updateList(final List<? extends EvaluatedDescription> result) {		
+		private void updateResultTable(final List<? extends EvaluatedDescription> result) {		
 			autoLearnPanel.fillEquivalentClassExpressionsTable((List<EvaluatedDescriptionClass>) result);
 		}
 	}
@@ -257,7 +281,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		public void done() {
 			timer.cancel();
 			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true);
-			updateList(result);	
+			updateResultTable(result);
 			TaskManager.getInstance().setTaskFinished();
 			setProgress(0);
 		}
@@ -265,12 +289,12 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		@Override
 		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {				
 			for (List<? extends EvaluatedDescription> list : resultLists) {
-				updateList(list);
+				updateResultTable(list);
 			}
 		}
 		
 		@SuppressWarnings("unchecked")
-		private void updateList(final List<? extends EvaluatedDescription> result) {
+		private void updateResultTable(final List<? extends EvaluatedDescription> result) {
 			autoLearnPanel.fillSuperClassExpressionsTable((List<EvaluatedDescriptionClass>) result);
 		}
 	}
