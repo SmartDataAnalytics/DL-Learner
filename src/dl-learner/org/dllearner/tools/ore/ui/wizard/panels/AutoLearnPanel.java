@@ -20,11 +20,11 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
-import org.dllearner.tools.ore.ui.MarkableTable;
+import org.dllearner.tools.ore.ui.MarkableClassesTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 
 public class AutoLearnPanel extends JPanel {
@@ -35,7 +35,7 @@ public class AutoLearnPanel extends JPanel {
 	private static final long serialVersionUID = -5204979906041331328L;
 	
 //	private ClassesTable classesTable;
-	private MarkableTable classesTable;
+	private MarkableClassesTable classesTable;
 	private JPanel superPanel;
 	private JPanel equivalentPanel;
 	
@@ -71,7 +71,7 @@ public class AutoLearnPanel extends JPanel {
 	}
 	
 	private JComponent createClassesPanel(){
-		classesTable = new MarkableTable();
+		classesTable = new MarkableClassesTable();
 		classesTable.setBorder(null);
 		JScrollPane classesScroll = new JScrollPane(classesTable);
 		classesScroll.setBorder(new MatteBorder(null));
@@ -187,10 +187,10 @@ public class AutoLearnPanel extends JPanel {
 		classesTable.clear();
 	}
 	
-	public List<Description> getSelectedDescriptions(){
-		List<Description> selected = new ArrayList<Description>();
-		selected.addAll(equivalentClassResultsTable.getSelecetdDescriptions());
-		selected.addAll(superClassResultsTable.getSelecetdDescriptions());
+	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){
+		List<EvaluatedDescriptionClass> selected = new ArrayList<EvaluatedDescriptionClass>();
+		selected.addAll(equivalentClassResultsTable.getSelectedDescriptions());
+		selected.addAll(superClassResultsTable.getSelectedDescriptions());
 		return selected;
 	}
 	
@@ -202,7 +202,7 @@ public class AutoLearnPanel extends JPanel {
 					if (!e.getValueIsAdjusting() && equivalentClassResultsTable.getSelectedRow() >= 0){
 						
 						EvaluatedDescriptionClass selectedClassExpression = equivalentClassResultsTable.getSelectedValue();
-						
+						OREManager.getInstance().setNewClassDescription(selectedClassExpression);
 						equivalentClassCoveragePanel.setNewClassDescription(selectedClassExpression);
 						if(!selectedClassExpression.isConsistent()){
 							equivalentInconsistencyLabel.setText(INCONSISTENCY_WARNING);
@@ -222,7 +222,7 @@ public class AutoLearnPanel extends JPanel {
 				if (!e.getValueIsAdjusting() && superClassResultsTable.getSelectedRow() >= 0){
 					
 					EvaluatedDescriptionClass selectedClassExpression = superClassResultsTable.getSelectedValue();
-					
+					OREManager.getInstance().setNewClassDescription(selectedClassExpression);
 					superClassCoveragePanel.setNewClassDescription(selectedClassExpression);
 					if(!selectedClassExpression.isConsistent()){
 						superInconsistencyLabel.setText(INCONSISTENCY_WARNING);

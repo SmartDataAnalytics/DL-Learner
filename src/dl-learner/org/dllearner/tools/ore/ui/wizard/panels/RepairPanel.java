@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -27,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -34,6 +36,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ui.IndividualsTable;
+import org.dllearner.tools.ore.ui.MarkableClassExpressionsTable;
 
 /**
  * JPanel for repairing action.
@@ -44,40 +47,82 @@ public class RepairPanel extends JPanel{
 
 	private static final long serialVersionUID = -7411197973240429632L;
 	
-	private JPanel posPanel;
-	private JScrollPane posScrollPane;
 	private IndividualsTable posTable;
 	private JButton posRepairButton;
 	private JButton posDeleteButton;
 	private JButton posRemoveButton;
 	
-	private JPanel negPanel;
-	private JScrollPane negScrollPane;
 	private IndividualsTable negTable;
 	private JButton negRepairButton;
 	private JButton negDeleteButton;
 	private JButton negAddButton;
 	
-	private GridBagConstraints c;
+	private JButton nextButton;
 	
+	private MarkableClassExpressionsTable descriptionsTable;
 	
 	public RepairPanel() {
-		createUI();
+		setLayout(new GridBagLayout());
+		createAutoUI();
 	}
 	
-	private void createUI(){
-		setLayout(new GridBagLayout());
-		c = new GridBagConstraints();
+	private void createAutoUI(){
+		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		add(createDescriptionsPanel(), c);
+		
+		c.gridwidth = 1;
+		c.gridy = 1;
+		c.gridx = 0;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
-		createPosPanel();
+		add(createPosPanel(), c);
 		c.gridx = 1;
-		createNegPanel();
+		add(createNegPanel(), c);
+		
+		c.gridy = 2;
+		nextButton = new JButton("Next");
+		nextButton.setActionCommand("next");
+		add(nextButton, c);
 	}
 	
-	private void createPosPanel(){
-		posPanel = new JPanel();
+	private void createManualUI(){
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		add(createDescriptionsPanel(), c);
+		
+		c.gridwidth = 1;
+		c.gridy = 1;
+		c.gridx = 0;
+		c.weightx = 0.5;
+		c.weighty = 0.5;
+		add(createPosPanel(), c);
+		c.gridx = 1;
+		add(createNegPanel(), c);
+		
+		c.gridy = 2;
+		nextButton = new JButton("Next");
+		nextButton.setActionCommand("next");
+//		add(nextButton, c);
+	}
+	
+	private JComponent createDescriptionsPanel(){
+		JPanel panel = new JPanel(new BorderLayout());
+		descriptionsTable = new MarkableClassExpressionsTable();
+		JScrollPane scroll = new JScrollPane(descriptionsTable);
+		scroll.setBorder(null);
+		panel.add(scroll);
+		return panel;
+	}
+	
+	private JComponent createPosPanel(){
+		JPanel posPanel = new JPanel();
 		posPanel.setName("positive");
 		posPanel.setLayout(new GridBagLayout());
 		posPanel.setBorder(new TitledBorder("Positive examples"));
@@ -100,17 +145,16 @@ public class RepairPanel extends JPanel{
 		posPanel.add(buttonPanel, gbc);
 		
 		posTable = new IndividualsTable();
-		posScrollPane = new JScrollPane(posTable);
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		posPanel.add(posScrollPane, gbc);
+		posPanel.add(new JScrollPane(posTable), gbc);
 		
-		add(posPanel, c);
+		return posPanel;
 	}
 	
-	private void createNegPanel(){
-		negPanel = new JPanel();
+	private JComponent createNegPanel(){
+		JPanel negPanel = new JPanel();
 		negPanel.setName("negative");
 		negPanel.setLayout(new GridBagLayout());
 		negPanel.setBorder(new TitledBorder("Negative examples"));
@@ -118,11 +162,10 @@ public class RepairPanel extends JPanel{
 		GridBagConstraints gbc = new GridBagConstraints();
 			
 		negTable = new IndividualsTable();
-		negScrollPane = new JScrollPane(negTable);
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		negPanel.add(negScrollPane, gbc);
+		negPanel.add(new JScrollPane(negTable), gbc);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setName("negative");
@@ -142,7 +185,7 @@ public class RepairPanel extends JPanel{
 		gbc.anchor = GridBagConstraints.NORTH;
 		negPanel.add(buttonPanel, gbc);
 		
-		add(negPanel, c);
+		return negPanel;
 	}
 	
 	/**
@@ -159,6 +202,20 @@ public class RepairPanel extends JPanel{
 	 */
 	public IndividualsTable getNegFailureTable() {
 		return negTable;
+	}
+	
+	public void setNextButtonEnabled(boolean enabled){
+		nextButton.setEnabled(enabled);
+	}
+	
+	public void setManualStyle(boolean value){
+		removeAll();	
+		if(value){
+			createManualUI();
+		} else {
+			createAutoUI();
+		}
+		repaint();
 	}
 	
 	/**
@@ -178,9 +235,12 @@ public class RepairPanel extends JPanel{
 		posRemoveButton.addActionListener(aL);
 		posDeleteButton.addActionListener(aL);
 		posRepairButton.addActionListener(aL);
+		
 		negAddButton.addActionListener(aL);
 		negDeleteButton.addActionListener(aL);
 		negRepairButton.addActionListener(aL);
+		
+		nextButton.addActionListener(aL);
 	}
 	
 	/**

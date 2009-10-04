@@ -39,6 +39,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.TaskManager;
@@ -209,8 +210,10 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("auto")){
 			classChoosePanel.setAutoLearningPanel(true);
+			LearningManager.getInstance().setLearningMode(LearningManager.AUTO_LEARN_MODE);
 		} else {
 			classChoosePanel.setAutoLearningPanel(false);
+			LearningManager.getInstance().setLearningMode(LearningManager.MANUAL_LEARN_MODE);
 			retrieveClasses();
 		}
 		setNextButtonAccordingToConceptSelected(); 

@@ -12,7 +12,7 @@ import javax.swing.table.TableCellRenderer;
 import org.dllearner.core.owl.NamedClass;
 import org.jdesktop.swingx.JXTable;
 
-public class MarkableTable extends JXTable {
+public class MarkableClassesTable extends JXTable {
 
 	/**
 	 * 
@@ -20,8 +20,8 @@ public class MarkableTable extends JXTable {
 	private static final long serialVersionUID = 4193878042914394758L;
 	private ImageIcon icon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/untoggled.gif");
 	
-	public MarkableTable(){
-		super(new MarkableTableModel());
+	public MarkableClassesTable(){
+		super(new MarkableClassesTableModel());
 		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		getColumn(0).setMaxWidth(30);
 		setTableHeader(null);
@@ -60,19 +60,19 @@ public class MarkableTable extends JXTable {
 	}
 	
 	public void addClasses(Set<NamedClass> classes){
-		((MarkableTableModel)getModel()).addClasses(classes);
+		((MarkableClassesTableModel)getModel()).addClasses(classes);
 	}
 	
 	public NamedClass getSelectedValue(){
-		return ((MarkableTableModel)getModel()).getSelectedValue(getSelectedRow());
+		return ((MarkableClassesTableModel)getModel()).getSelectedValue(getSelectedRow());
 	}
 	
 	public void clear(){
-		((MarkableTableModel)getModel()).clear();
+		((MarkableClassesTableModel)getModel()).clear();
 	}
 	
 	public void setSelectedClass(int rowIndex){
-		((MarkableTableModel)getModel()).setSelectedClass(rowIndex);
+		((MarkableClassesTableModel)getModel()).setSelectedClass(rowIndex);
 	}
 
 }

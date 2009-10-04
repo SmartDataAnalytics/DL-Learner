@@ -22,9 +22,12 @@ package org.dllearner.tools.ore.ui.wizard;
 
 
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.wizard.descriptors.AutoLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
@@ -167,20 +170,26 @@ public class WizardController implements ActionListener {
 			learnDescriptor.resetPanel();
 			learnDescriptor.fillClassesTable();
 		}
-//		else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(LearningPanelDescriptor.IDENTIFIER)){
-//			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
-//				nextPanelDescriptor = SavePanelDescriptor.IDENTIFIER;
-//			} else {
-//				nextPanelDescriptor = RepairPanelDescriptor.IDENTIFIER;
-//				RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
-//						.getPanelHashMap().get(nextPanelDescriptor));
-//				repair.refreshExampleLists();
-//			}
+		else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(AutoLearnPanelDescriptor.IDENTIFIER)){
+			AutoLearnPanelDescriptor descriptor = (AutoLearnPanelDescriptor)currentPanelDescriptor;
+			List<EvaluatedDescriptionClass> descriptions = descriptor.getSelectedDescriptions();
+			if(!descriptions.isEmpty()){
+				LearningManager.getInstance().setNewDescriptions(descriptions);
+			}
+			
+		}
 			
 		else if(nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){
 				RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
 						.getPanelHashMap().get(nextPanelDescriptor));
-				repair.refreshExampleLists();
+				if(LearningManager.getInstance().getLearningMode() == LearningManager.AUTO_LEARN_MODE){
+					repair.setManualPanel(false);
+					repair.fillExamplesLists();
+				} else {
+					repair.setManualPanel(true);
+					repair.fillExamplesLists();
+				}
+				
 			
 			
 			

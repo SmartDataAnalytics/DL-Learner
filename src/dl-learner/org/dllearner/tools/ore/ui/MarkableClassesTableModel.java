@@ -8,7 +8,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.core.owl.NamedClass;
 
-public class MarkableTableModel extends AbstractTableModel {
+public class MarkableClassesTableModel extends AbstractTableModel {
 
 	/**
 	 * 
@@ -18,7 +18,7 @@ public class MarkableTableModel extends AbstractTableModel {
 	private List<NamedClass> classes;
 	private int selectedRowIndex = 0;
 	
-	public MarkableTableModel(){
+	public MarkableClassesTableModel(){
 		classes = new ArrayList<NamedClass>();
 	}
 
