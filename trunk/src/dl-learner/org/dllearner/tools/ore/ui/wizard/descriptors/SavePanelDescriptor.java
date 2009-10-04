@@ -23,6 +23,7 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
@@ -63,7 +64,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
     @Override
 	public Object getBackPanelDescriptor() {
     	
-		if(OREManager.getInstance().getLearningMode() == OREManager.MANUAL_LEARN_MODE){
+		if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
 			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
 				return ManualLearnPanelDescriptor.IDENTIFIER;
 			} else {

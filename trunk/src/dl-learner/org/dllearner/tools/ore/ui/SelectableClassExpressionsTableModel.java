@@ -90,11 +90,13 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 	
 	public void clear(){
 		resultList.clear();
+		selectionList.clear();
 		fireTableDataChanged();
 	}
 	
 	public void addResults(List<EvaluatedDescriptionClass> resultList){
 		this.resultList.clear();
+		this.selectionList.clear();
 		this.resultList.addAll(resultList);
 		for(int i = 0; i < resultList.size(); i++){
 			selectionList.add(i, Boolean.FALSE);
@@ -111,11 +113,11 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 		return resultList.indexOf(e);
 	}
 	
-	public List<Description> getSelectedDescriptions(){
-		List<Description> selected = new ArrayList<Description>();
+	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){
+		List<EvaluatedDescriptionClass> selected = new ArrayList<EvaluatedDescriptionClass>();
 		for(int i = 0; i < selectionList.size(); i++){
 			if(selectionList.get(i).equals(Boolean.TRUE)){
-				selected.add(resultList.get(i).getDescription());
+				selected.add(resultList.get(i));
 			}
 		}
 		

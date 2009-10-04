@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.ListSelectionModel;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -64,7 +63,7 @@ public class SelectableClassExpressionsTable extends JXTable {
 		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedValue(getSelectedRow());
 	}
 	
-	public List<Description> getSelecetdDescriptions(){
+	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){
 		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedDescriptions();
 	}
 
