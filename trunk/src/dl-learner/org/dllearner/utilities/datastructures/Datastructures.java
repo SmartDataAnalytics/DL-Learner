@@ -21,6 +21,7 @@ package org.dllearner.utilities.datastructures;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -107,4 +108,12 @@ public class Datastructures {
 		}
 		return ret;
 	}	
+	
+	public static Set<String> individualListToStringSet(List<Individual> individuals) {
+		Set<String> ret = new TreeSet<String>();
+		for(Individual ind : individuals) {
+			ret.add(ind.toString());
+		}
+		return ret;
+	}		
 }
