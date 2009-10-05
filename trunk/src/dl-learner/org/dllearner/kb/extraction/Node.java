@@ -95,6 +95,7 @@ public abstract class Node  {
 		return uri;
 	}
 	
+	
 	public URI getURI() {
 		return URI.create(uri);
 	}
