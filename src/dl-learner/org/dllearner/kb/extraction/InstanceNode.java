@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb.extraction;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -82,11 +83,20 @@ public class InstanceNode extends Node {
 		return newNodes;
 	}
 	
+	/**
+	 * estimates the type of the retrieved tuple
+	 * @param tuple
+	 * @return
+	 */
 	public Node processTuple( RDFNodeTuple tuple) {
+		
 		try {
+			
+			//Literal nodes 
 			if(tuple.b.isLiteral()) {
 				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
 				return null;
+			//Blank nodes 
 			}else if(tuple.b.isAnon()){
 				@SuppressWarnings("unused")
 				RDFBlankNode n = (RDFBlankNode) tuple.b;
@@ -101,11 +111,27 @@ public class InstanceNode extends Node {
 			
 			// basically : if p is rdf:type then o is a class
 			// else it is an instance
+			// Class Node 
 			}else if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
+				try{
+					URI.create(tuple.b.toString());
+				}catch (Exception e) {
+					logger.warn("uri "+tuple.b.toString()+" is not a valid uri for a class, ignoring");
+					return null;
+				}
+				
 				ClassNode tmp = new ClassNode(tuple.b.toString());
 				classes.add(tmp);
 				return tmp;
+			// instance node
 			} else {
+				
+				try{
+					URI.create(tuple.b.toString());
+				}catch (Exception e) {
+					logger.warn("uri "+tuple.b.toString()+" for objectproperty: "+tuple.a.toString() +" is not valid, ignoring");
+					return null;
+				}
 				InstanceNode tmp = new InstanceNode(tuple.b.toString());
 				objectProperties.add(new ObjectPropertyNode(tuple.a.toString(), this, tmp));
 				return tmp;
