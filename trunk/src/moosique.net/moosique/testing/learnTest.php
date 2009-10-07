@@ -45,16 +45,22 @@ $instances = array(
   "http://dbtune.org/jamendo/record/1465",
   "http://dbtune.org/jamendo/record/1568",
   "http://dbtune.org/jamendo/record/1668",
-  "http://dbtune.org/jamendo/record/1769",
   "http://dbtune.org/jamendo/record/1869",
   "http://dbtune.org/jamendo/record/1970"
 );
 
 echo '<pre>';
 print_r($instances);
-print_r($c->getLearningConfig());
 print_r($posExamples);
-print_r($c->learn($instances, $posExamples, 'file:/Users/nebelschwade/Sites/moosique.net/moosique/testing/rocksubset.owl'));
+
+
+$res= $c->learn($instances, $posExamples);
+
+foreach ($res as $solution) {
+  echo round($solution->scoreValue*100, 2) . '% --- ' . $solution->descriptionKBSyntax . "\n";
+  echo $c->kbToSqarql($solution->descriptionKBSyntax) . "\n";
+}
+
 
 echo '</pre>';
 ?>

@@ -1,7 +1,6 @@
-/* moosique.net - a jamendo radio with recommendations! */
 @media screen {
 /*=============== Default Styling ===============*/
-body                          { font: normal 12px/16px Verdana, Arial, sans-serif; color: #f1f7e4;
+body                          { font: normal 12px/18px Verdana, Arial, sans-serif; color: #f1f7e4;
                                 background: url('../img/bg.png') top left repeat #3a3a3a; border-top: 5px solid #1fd611; }
 input, textarea, select       { background: #292929; border: 1px solid #5a5a5a; outline: none; padding: 5px; }
 input[type=submit]            { padding: 5px 10px; }
@@ -17,7 +16,7 @@ h6                            { font: 10px/10px Georgia, Times, serif; }
 pre                           { font: normal 10px/14px Monaco, Courier, monospace; }
 p, h1, h2, h3, h4, h5, h6, 
 table, ul, ol, blockquote, 
-pre, form                     { margin-bottom: 16px; }
+pre, form                     { margin-bottom: 18px; }
 
 /* Initial hiding */
 #recommendations, #player, 
@@ -25,11 +24,12 @@ pre, form                     { margin-bottom: 16px; }
 #loadingImg, #header h1       {   display: none; }
 
 /* Rounded Corners */
-input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
 #content, #status, #playing, 
-#playerControls, #results li  { -moz-border-radius: 10px; -webkit-border-radius: 10px; }
+#playerControls, #results li  { -moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px; }
 #mainMenu a                   { -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px; 
-                                -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; }
+                                -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; 
+                                border-bottom-left-radius: 10px; border-top-left-radius: 10px; }
                                 
 /* button-click-feeling for links, by offsetting top position */
 #playerControls a:active      { position: relative; top: 2px; }
@@ -75,7 +75,7 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
 #loadingImg                   { cursor: wait; }
 
 
-/*=============== Menu ===============*/
+/*=============== Menu & Footer ===============*/
 #mainMenu ul                  { position: absolute; top: 0; right: 0; }
 #mainMenu li                  { float: left; }
 #mainMenu a                   { display: block; margin-left: 10px; line-height: 30px; height: 30px; 
@@ -84,23 +84,23 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
 #mainMenu .active a:hover     { background: #1fd611; }
 #mainMenu a:hover             { text-decoration: none; background: #5a5a5a; }
 
+#footer a                     { padding: 0 10px; }
 
 /*=============== Search Results ===============*/
 #results li h3 a              { font-weight: normal; }
-#results li img               { border: 2px solid #545454; margin-bottom: 16px; }
-#results li                   { display: block; border: 1px solid #545454; padding: 16px; margin-bottom: 16px; 
-                                float: left; width: 318px; }
-#results li.odd               { margin-right: 16px; clear: both; }
+#results li img               { border: 2px solid #545454; }
+#results li                   { float: left; width: 312px; border: 1px solid #545454; padding: 18px; margin-bottom: 18px; }
+#results li.odd               { margin-right: 18px; clear: both; }
 #results ul ul                { list-style: disc; }
 
 /* This is for the list of found albums etc */
 #results li li,
 #results .artistSearch li li,
-#results .tagSearch li li     { border: none; display: list-item; padding: 0; margin: 0 0 0 32px; 
+#results .tagSearch li li     { border: none; display: list-item; padding: 0; margin: 0 0 0 36px; 
                                 width: auto; height: auto; float: none; }
 #results .tagSearch ul ul     { clear: both; }
-#results .artistImage         { text-align: center; }
-#results .cover               { margin-right: 16px; width: 110px; float: left; }
+#results .artistImage         { text-align: center; margin-bottom: 18px;}
+#results .cover               { margin: 0 18px 18px 0; width: 104px; height: 104px; float: left; }
 #results .tagSearch h4        { display: inline; }
 
 
@@ -123,8 +123,6 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
 
 
 /*=============== Information / Help ===============*/
-
-
 
 
 
