@@ -22,9 +22,9 @@ class DllearnerConnection extends Config {
     $this->setEndpoint($this->getConfigUrl('jamendo'));
     
     // load WSDL files (has to be done due to a Java web service bug)
-    include('Utilities.php');
     ini_set('soap.wsdl_cache_enabled', '0');
-    // Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
+    include('Utilities.php');
+    Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
     $this->connect();
 	}
   
@@ -111,23 +111,29 @@ class DllearnerConnection extends Config {
    *
    *
    */
-  public function learn($instances, $positiveExamples, $owlfile) {
-    $id = $_SESSION['sessionID'];
-    $conf = $this->getLearningConfig();
+  public function learn($instances, $positiveExamples) {
+    $result = false;
+    // $id = $_SESSION['sessionID'];
     
-    // TODO? use this as knowledgesource ID?
-    $this->client->addKnowledgeSource($id, 'owlfile', $owlfile);
+    // TODO for learning we create a new learning-ID and knowledge-Source
+    $id = $this->client->generateID();
+    $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
+    $conf = $this->getConfigLearning();
+    
+    $this->client->addKnowledgeSource($id, 'owlfile', $this->getConfigUrl('tagOntology'));
     $this->client->setReasoner($id, $conf['reasoner']);
 
-    // set the instances and pos examples
-    $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'instances', $instances);
+    // set the instances, the learning-Problem and pos examples
+    // $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'instances', $instances);
+    $this->client->applyConfigEntryStringArray($id, $kID, 'instances', $instances);
     $this->client->setLearningProblem($id, $conf['problem']);
-
     $this->client->setPositiveExamples($id, $positiveExamples);
     
     // recursion-depth and fragment saving
-    $this->client->applyConfigEntryInt($id, $this->knowledgeSourceID, 'recursionDepth', $conf['recursionDepth']);
-    $this->client->applyConfigEntryBoolean($id, $this->knowledgeSourceID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
+    // $this->client->applyConfigEntryInt($id, $this->knowledgeSourceID, 'recursionDepth', $conf['recursionDepth']);
+    // $this->client->applyConfigEntryBoolean($id, $this->knowledgeSourceID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
+    $this->client->applyConfigEntryInt($id, $kID, 'recursionDepth', $conf['recursionDepth']);
+    $this->client->applyConfigEntryBoolean($id, $kID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
 
     // algorithm config
     $learnID = $this->client->setLearningAlgorithm($id, $conf['algorithm']);
@@ -135,19 +141,25 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryInt($id, $learnID, 'valueFrequencyThreshold', $conf['valueFrequencyThreshold']);
     $this->client->applyConfigEntryBoolean($id, $learnID, 'useHasValueConstructor', $conf['useHasValueConstructor']);
 
-    $this->client->applyConfigEntryStringTupleList($id, $this->knowledgeSourceID, 'replacePredicate', array(
-      "http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag"), array("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+    // replace prefixes
+    // $this->client->applyConfigEntryStringTupleList($id, $this->knowledgeSourceID, 'replacePredicate', 
+    $this->client->applyConfigEntryStringTupleList($id, $kID, 'replacePredicate', 
+      array($this->getConfigPrefixes('tags') . 'taggedWithTag'), array($this->getConfigPrefixes('rdf') . 'type')
     );
 
     $this->client->initAll($id);
     
+    $result = $this->client->learnDescriptionsEvaluated($id);
+    $result = json_decode($result);
+    return $result;
     
-    $concepts = false;
-
-    $concepts = $this->client->learnDescriptionsEvaluated($id);
-    $concepts = json_decode($concepts);
+  }
+  
+  
+  public function kbToSqarql($kb) {
+    return $this->client->SparqlRetrieval($kb, 20);
     
-    return $concepts;
+    
     
   }
 

@@ -1,67 +1,54 @@
 <?php
-
+/**
+ * This class handles all HTML-Output for all different kinds of 
+ * requests. No Templating system is used.
+ *
+ *
+ */
 class View extends Config {
   
   private $html = '<h2>Nothing found.</h2>';
   
   // view modes are debug or both, default is html view
-  function __construct($searchType, $data) {
+  function __construct($data, $type) {
     parent::__construct(); // init config
-        
-    if (empty($data)) {
-      switch($searchType) {
-        case 'artistSearch' : $this->html = '<h2>No Artists found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-        case 'tagSearch' : $this->html = '<h2>No Tags found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-        case 'songSearch' : $this->html = '<h2>No Songs found for &raquo;' . $_GET['searchValue'] . '&laquo;.</h2>'; break;
-      }
-    } else {
-      $this->html = '';
-      $this->createOutput($searchType, $data);
-    }
+    $this->createOutput($data, $type);
   }
       
   /**
-   *
+   * 
    */ 
-  private function createOutput($searchType, $data) {
-    $mergedArray = array();
-    
-    $this->html .= $this->displaySearchHeader($searchType);
-    
-    switch ($searchType) {
-      case 'artistSearch' :
-        $mergedArray = $this->mergeArray($data, 'artist');      
-        // remove double-values recursively
-        $mergedArray = $this->arrayUnique($mergedArray);
-        // create the HTML-Output
-        $this->html .= $this->artistSearchHTML($mergedArray);
-      break;
-      
-      case 'tagSearch' :
-        $mergedArray = $this->mergeArray($data, 'tag');
-        $this->html .= $this->tagSearchHTML($mergedArray);
-      break;
-      
-      case 'songSearch' :
-        $mergedArray = $this->mergeArray($data, 'track');
-        $mergedArray = $this->arrayUnique($mergedArray);
-        $this->html .= $this->songSearchHTML($mergedArray);
-      break;
-      
-      case 'albumPlaylist' :
-        $playlistObject = simplexml_load_file($data['playlist']);
-        $mergedArray = $this->object2array($playlistObject);
-        // prepend the album stream-information
-        $mergedArray['albumID'] = $data['albumID'];
-        $this->html = $this->albumPlaylistHTML($mergedArray);
-      break;
-
-      case 'trackPlaylist' :
-        $playlistObject = simplexml_load_file($data['playlist']);
-        $mergedArray = $this->object2array($playlistObject);
-        $mergedArray['albumID'] = $data['albumID'];
-        $this->html = $this->trackPlaylistHTML($mergedArray);
-      break;
+  private function createOutput($data, $type) {
+    if (empty($data)) {
+      switch($type) {
+        case 'artistSearch' : $this->html = '<h2>No Artists found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+        case 'tagSearch' : $this->html = '<h2>No Tags found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
+        case 'songSearch' : $this->html = '<h2>No Songs found for &raquo;' . $_GET['searchValue'] . '&laquo;.</h2>'; break;
+        case 'lastFM' : $this->html = ''; break;
+      }
+    } else {
+      // finally we are producing html, depending on the type of request
+      $this->html = '';
+      switch ($type) {
+        case 'artistSearch' : 
+          $this->html .= '<h2>Artist-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
+          $this->html .= $this->artistSearchHTML($data); 
+        break;
+        case 'tagSearch' : 
+          $this->html .= '<h2>Tag-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
+          $this->html .= $this->tagSearchHTML($data); 
+        break;
+        case 'songSearch' : 
+          $this->html .= '<h2>Song-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
+          $this->html .= $this->songSearchHTML($data); 
+        break;
+        case 'lastFM' : 
+          $this->html .= $this->tagSearchHTML($data); 
+        break;
+        
+        case 'albumPlaylist' : $this->html = $this->albumPlaylistHTML($data); break;
+        case 'trackPlaylist' : $this->html = $this->trackPlaylistHTML($data); break;
+      }
     }
   }
 
@@ -69,12 +56,12 @@ class View extends Config {
   /**
    * 
    * @return 
-   * @param object $array
+   * @param object $data
    */
-  private function artistSearchHTML($array) {
+  private function artistSearchHTML($data) {
     $output = '<div class="artistSearch"><ul class="clearfix">';
     $i = 0; // counter variable for alternating li-elements
-    foreach($array as $artist) {
+    foreach($data as $artist) {
       // TODO Template-Usage
       
       // alternating classes for li-elements
@@ -90,9 +77,9 @@ class View extends Config {
           <p>%s</p>
           <p>
             <strong>Avaiable records:</strong><br />
-            Click an album to add it to your Playlist
           </p>
           <ul>%s</ul>
+          <p>Click on an album to add it to your playlist.</p>
         </li>
       ';
       // avaiable Records
@@ -153,9 +140,9 @@ class View extends Config {
    * @return 
    * @param object $array
    */
-  private function tagSearchHTML($array) {
+  private function tagSearchHTML($data) {
     $output = '<div class="tagSearch">';
-    foreach ($array as $key => $tag) {
+    foreach ($data as $key => $tag) {
 
       $numberOfAlbums = sizeof($this->getValue($tag['record']));
       $output .= '<h3>Albums tagged with <em>' 
@@ -232,12 +219,15 @@ class View extends Config {
     return $output;
   }
   
-
-  private function songSearchHTML($array) {
+  /**
+   *
+   *
+   */
+  private function songSearchHTML($data) {
     $output = '<div class="songSearch"><ul class="clearfix">';
             
     $i = 0; // counter variable for alternating li-elements
-    foreach($array as $song) {
+    foreach($data as $song) {
       // alternating classes for li-elements
       if (($i % 2) == 0) { $class = 'odd'; } 
       else { $class = ''; }
@@ -310,54 +300,15 @@ class View extends Config {
   }
 
 
-  
-  /** 
-   * If there is a global Limit for shown results set, this
-   * function returns an information-String saying so
-   * 
-   * @return String Information about gloabl Search-Limit
+  /**
+   *
+   *
+   *
    */
-  private function displaySearchHeader($searchType) {
-    $info = '';
-    switch($searchType) {
-      case 'artistSearch' : $info .= '<h2>Artist-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-      case 'tagSearch'    : $info .= '<h2>Tag-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-      case 'songSearch'   : $info .= '<h2>Song-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-      default             : $info = ''; break;
-    }
-
-    /* Don't show this info
-    if ($this->getConfig('globalLimit') == 1) {
-      $info .= '<p class="note">Please note: the maximum number of shown search results is '
-            . $this->getConfig('maxResults') . '.</p>';
-    }
-    */
-
-    return $info;
-  }
-  
-  
-    
-  private function trackPlaylistHTML($array) {
-    $albumID = $array['albumID'];
+  private function albumPlaylistHTML($data) {
+    $albumID = $data['albumID'];
     $output = '';
-    foreach($array['trackList'] as $track) {
-      $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
-               . '" class="htrack">'
-               . $track['creator'] . ' - ' . $track['title']
-               . '</a></li>';  
-    }
-    return $output;
-  }
-  
-  
-  
-  
-  
-  function albumPlaylistHTML($array) {
-    $albumID = $array['albumID'];
-    $output = '';
-    foreach($array['trackList'] as $tracks) {
+    foreach($data['trackList'] as $tracks) {
       foreach($tracks as $track) {
         $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
                  . '" class="htrack">'
@@ -369,31 +320,42 @@ class View extends Config {
   }
   
   /**
-   * Returns the HTML
-   * 
-   * @return The produced HTML-output of this Class 
+   *
+   *
+   *
    */
-  public function getHTML() {
-    return $this->html;
+  private function trackPlaylistHTML($data) {
+    $albumID = $data['albumID'];
+    $output = '';
+    foreach($data['trackList'] as $track) {
+      $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
+               . '" class="htrack">'
+               . $track['creator'] . ' - ' . $track['title']
+               . '</a></li>';  
+    }
+    return $output;
   }
   
+  
+  
+  
   /**
-   * This function returns an array or a string, depending on the number of arrayItems for the 
+   * This helper-function returns an array or a string, depending on the number of arrayItems for the 
    * given array, searches only in the 'value' subarray returned by the Dllearner
    * 
    * @param Array $array The Array to get Values from
    * @return String or Array with the value 
    */
-  private function getValue($array) {
-    if (!empty($array['value'])) {
-      if (is_array($array['value'])) {
-        if (sizeof($array['value']) == 1) {
-          return $array['value'][0];
+  private function getValue($data) {
+    if (!empty($data['value'])) {
+      if (is_array($data['value'])) {
+        if (sizeof($data['value']) == 1) {
+          return $data['value'][0];
         } else {
-          return $array['value'];
+          return $data['value'];
         }
       } else {
-        return $array['value'];
+        return $data['value'];
       }
     } else {
       return '';
@@ -401,76 +363,15 @@ class View extends Config {
   }
 
 
-
-  private function mergeArray($data, $type) {
-    // convert the $data-response object to an array
-    $array = $this->object2array($data);
-    $combinedArray = array();
-    
-    foreach($array as $subArray) {
-      if (!array_key_exists($subArray[$type]['value'], $combinedArray)) {
-        $combinedArray[$subArray[$type]['value']] = $subArray;
-      } else {
-        // we already have an object with this tag? -> merge!
-        $combinedArray[$subArray[$type]['value']] = array_merge_recursive(
-          $combinedArray[$subArray[$type]['value']], $subArray
-        );
-      }
-    }
-    
-    if (!empty($combinedArray)) {
-      return $combinedArray;
-    } else return false;
+  /**
+   * Returns the HTML
+   * 
+   * @return The produced HTML-output of this Class 
+   */
+  public function getHTML() {
+    return $this->html;
   }
 
-
-  /**
-   * Like the php-function array_unique, but for multidimensional arrays, calls itself recursively
-   * 
-   * 
-   * @return Array (Multidimensional) array without double entries 
-   * @param Array $array The Array to clean up
-   */
-  private function arrayUnique($array) {
-    $newArray = array();
-    if (is_array($array)) {
-      foreach($array as $key => $val) {
-        if ($key != 'type' && $key != 'datatype') {
-          if (is_array($val)) {
-            $val2 = $this->arrayUnique($val);
-          } else {
-            $val2 = $val;
-            $newArray = array_unique($array);
-            break;
-          }
-          if (!empty($val2)) {
-            $newArray[$key] = $val2;
-          }
-        }
-      }
-    }
-    return $newArray;
-  }
-  
-  /**
-   * Converts a simple Object to an array
-   * 
-   * @return Array the Array created from the Object
-   * @param object $obj The Object to convert
-   */
-  private function object2array($obj) { 
-    $arr = array();
-    $_arr = is_object($obj) ? get_object_vars($obj) : $obj; 
-    foreach ($_arr as $key => $val) { 
-      $val = (is_array($val) || is_object($val)) ? $this->object2array($val) : $val; 
-      $arr[$key] = $val; 
-    } 
-    return $arr;
-  } 
-  
-  
-
-  
 }
 
 ?>

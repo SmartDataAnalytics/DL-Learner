@@ -28,7 +28,6 @@ class SparqlQueryBuilder extends Config {
    * Builds the complete Sparql-Query depending on the type of search
    * and saves it in the private $queryString. 
    *
-   * @return 
    * @param object $search
    * @param object $typeOfSearch
    * @param object $limit
@@ -37,7 +36,7 @@ class SparqlQueryBuilder extends Config {
     
     /* Build up the Prefixes */
     $prefixes = '';
-    foreach($this->getAllPrefixes() as $prefix => $resource) {
+    foreach($this->getConfigPrefixes() as $prefix => $resource) {
       $prefixes .= 'PREFIX ' . $prefix . ': <' . $resource . '>' . "\n";
     }
 
@@ -62,6 +61,8 @@ class SparqlQueryBuilder extends Config {
       case 'artistSearch' : $query = $this->queryArtistSearch($search); break;
       case 'tagSearch'    : $query = $this->queryTagSearch($search); break;
       case 'songSearch'   : $query = $this->querySongSearch($search); break;
+      case 'lastFM'       : $query = $this->queryTagSearch($search); break;
+      
       /* TODO build functions for other queries
       case 'albumInfo'    : $query = $this->queryAlbumInfo($search); break;
       case 'songInfo'     : $query = $this->querySongInfo($search); break;
@@ -76,6 +77,7 @@ class SparqlQueryBuilder extends Config {
   /**
    * Returns the Sparql-Query part for an artist-search 
    *
+   * @param Mixed
    * @return String Sparql-Query part for artist-search
    */
   private function queryArtistSearch($search) {
@@ -92,10 +94,9 @@ class SparqlQueryBuilder extends Config {
     }';
     // we want the xspf-playlist only, the search filters is
     // flagged with  "i" for case-insensitive search
-    $queryString .= '
-      FILTER (regex(str(?playlist), "xspf", "i")) .             
-      FILTER (regex(str(?artistName), "' . $search . '", "i")) . 
-    ';
+    $queryString .= 'FILTER (regex(str(?playlist), "xspf", "i")) . ';
+    $queryString .= 'FILTER (regex(str(?artistName), "' . $search . '", "i")) . ';
+    
     return $queryString;
   }
   
@@ -109,25 +110,61 @@ class SparqlQueryBuilder extends Config {
    * @return String Sparql-Query part for tag-search
    */
   private function queryTagSearch($search) {
+    /* TODO multi-tag search -- maybe building an extra function is better for this 
+    $moreThanOneTag = is_array($search);
+    $searchCount = 0;
+    
+    if ($moreThanOneTag === true) {
+      $searchCount = count($search);
+    }
+    */
     $queryString = ' {
       ?artist rdf:type mo:MusicArtist ;
               foaf:name ?artistName ;
               foaf:made ?record .
       ?record rdf:type mo:Record ;
-              dc:title ?albumTitle ;
-              tags:taggedWithTag ?tag ;
-              mo:available_as ?playlist .
-              
+              dc:title ?albumTitle ; ';
+    /*          
+    if ($moreThanOneTag === true) {
+      for ($i = 0; $i < $searchCount; $i++) {
+        $queryString .= ' tags:taggedWithTag ?tag' . $i . ' ; ';
+      }
+    } else {
+      */
+      $queryString .= ' tags:taggedWithTag ?tag ; ';
+      /*
+    }
+    */
+    $queryString .= ' mo:available_as ?playlist .
       OPTIONAL {
         ?record mo:image ?cover .
         FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
       }
-    }';
-    $queryString .= '      
-      FILTER (regex(str(?playlist), "xspf", "i")) .      
-      FILTER (regex(str(?tag), "' . $search . '", "i")) . 
-    ';
-    return $queryString;
+    } ';
+    // we want the xspf-playlist only, the search filters is
+    // flagged with  "i" for case-insensitive search
+    $queryString .= ' FILTER (regex(str(?playlist), "xspf", "i")) . ';
+    
+    // searching for more than on value?
+    /*
+    if (is_array($search)) {
+      $queryString .= ' FILTER (';
+  
+      // glueing the searches together using AND together
+      for($i = 0; $i < $searchCount; $i++) {
+        $queryString .= 'regex(str(?tag' . $i  . '), "' . $search[$i] . '", "i") ';
+        if ($i !== ($searchCount - 1)) {
+          $queryString .= ' && ';
+        }
+      }
+      $queryString .= ' ) . ';
+    } else {
+      */
+      $queryString .= ' FILTER (regex(str(?tag), "' . $search . '", "i")) . ';
+      /*
+    }
+    */
+    return $queryString; 
   }
   
   /**
@@ -148,10 +185,11 @@ class SparqlQueryBuilder extends Config {
             
       OPTIONAL { ?artist foaf:img ?artistImage . }
     }';
-    $queryString .= '            
-      FILTER (regex(str(?songTitle), "' . $search . '", "i")) . 
-      FILTER (regex(str(?playlist), "xspf", "i")) . 
-    ';
+    
+    // we want the xspf-playlist only, the search filters is
+    // flagged with  "i" for case-insensitive search
+    $queryString .= 'FILTER (regex(str(?playlist), "xspf", "i")) . ';
+    $queryString .= 'FILTER (regex(str(?songTitle), "' . $search . '", "i")) . ';    
     return $queryString;
   }
     

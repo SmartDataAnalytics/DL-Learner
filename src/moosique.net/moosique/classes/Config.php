@@ -26,8 +26,10 @@ class Config {
     }
   }
   
+  
   /**
-   * 
+   * Returns the value of a general config-entry from config.ini
+   *
    * @return String The wanted Configvalue
    * @param String Value for the wanted Configvalue
    */
@@ -35,8 +37,21 @@ class Config {
     return $this->config['general'][$value];
   }
   
+  
   /**
-   * 
+   * Returns the value of a last-fm config-entry from config.ini
+   *
+   * @return String The wanted Configvalue
+   * @param String Value for the wanted Configvalue
+   */
+  public function getConfigLastFM($value) {
+    return $this->config['lastFM'][$value];
+  }
+  
+  
+  /**
+   * Returns the value of an URL defined in config.ini 
+   *
    * @return String The wanted Url
    * @param String Value for the wanted Url
    */
@@ -44,17 +59,45 @@ class Config {
     return $this->config['url'][$value];
   }
   
-  public function getLearningConfig() {
-    return $this->config['learning'];
-  }
   
   /**
-   * 
-   * @return Array An associative array of all prefixes 
+   * This funtion returns one (if specified) or all learning-Config entries from config.ini
+   *
+   * @param String Value for a single learning-Configuration
+   * @return Mixed The wanted value as a string, or - if not specified - complete learingConfig as an array
    */
-  public function getAllPrefixes() {
-    return $this->config['prefix'];
-  }  
+  
+  public function getConfigLearning($prefix = false) {
+    if ($prefix !== false) {
+      if (isset($this->config['learning'][$prefix])) {
+        return $this->config['learning'][$prefix];
+      } else {
+        return false;
+      }
+    } else {
+      return $this->config['learning'];
+    }
+  }
+  
+  
+  /**
+   * This funtion returns one (if specified) or all prefixes from the config.ini
+   *
+   * @param String String-Value for a single prefix
+   * @return Mixed The wanted prefix as a string, or - if not specified - all Prefixes as an array
+   */
+  public function getConfigPrefixes($prefix = false) {
+    if ($prefix !== false) {
+      if (isset($this->config['prefix'][$prefix])) {
+        return $this->config['prefix'][$prefix];
+      } else {
+        return false;
+      }
+    } else {
+      return $this->config['prefix'];
+    }
+  }
+  
 }
 
 

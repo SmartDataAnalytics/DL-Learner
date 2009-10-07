@@ -6,13 +6,13 @@ debug.log = function(msg) {
 
 /**
  * moosique-Player-Class
- * 
- * 
- * TODO Split out functions and comment it
+ *
+ *
+ *
  */
 var Moosique = new Class({ Implements: Options, 
   
-  // Some Default Options
+  // set some default options
   options: {
     messageFadeTime: 5000, // Time until a Status message fades out
     timeToScrobble:  0.5,  // factor for calculating max time a user has to listen to a track until its scrobbled
@@ -20,8 +20,9 @@ var Moosique = new Class({ Implements: Options,
   },
   
   /**
-   * Initializes the Object and sets some default options
-   * 
+   * Initializes the Object and sets the default options
+   * activating search functionality and the interface for using the player 
+   *
    * @param {Object} options
    */
   initialize: function(options) {
@@ -31,12 +32,14 @@ var Moosique = new Class({ Implements: Options,
     this.initInterface();
     this.updateRecently();
     this.activateSearch();
-    /*
-    this.initPlaylist();
-    */
   },
   
   
+  /**
+   * This function stores references to DOM-Objects in this class
+   * for easier access in the other methods, if sth. in the DOM is
+   * changed, just change the references here and everything will work fine.
+   */
   initVars: function() {
     this.main = document.id('content');
     this.menu = document.id('mainMenu');
@@ -59,10 +62,19 @@ var Moosique = new Class({ Implements: Options,
     this.loading = document.id('loadingImg');
     this.welcome = document.id('welcome');
     this.help = document.id('help');
-
+    this.recommendations = document.id('recommendations');
+    this.generate = document.id('generateRecommendations');
+    this.recResults = document.id('recommendationResults');
+    this.reset = document.id('reset');
   },
   
-  
+  /**
+   * Applies Config-Vars to the Yahoo Media Player as described in  http://mediaplayer.yahoo.com/api/ 
+   * for the YMP-Events and initializes the Player. Events are:
+   * onProgress, onPlaylistUpdate, onTrackPause, onTrackStart, onTrackComplete
+   * where onProgress is the most important event-handler, because this is where the learning-process is fired
+   *
+   */
   applyYahooMediaPlayerConfig: function() {
     var that = this;
 
@@ -73,11 +85,9 @@ var Moosique = new Class({ Implements: Options,
       /**
        * progress: Change the track position and duration displayed every time, as usual in players
        * 
-       * every time the song is played for at least half it's
-       * playtime, we assume that the song is liked, so we add it
-       * to the list we create the recommendations from
-       * (much like last.fm scrobbling) and learn from the heard songs
-       * BIG TODO
+       * every time the song is played for a given percent of it's length (set when initializing 
+       * the moosique-Class), we assume that the song is liked (like last.fm-scobling), so we add 
+       * it to the recently listened list AND we create the recommendations and learn
        */
       var progress = function() {
         that.nowPlayingTime.set('text', 
@@ -86,13 +96,8 @@ var Moosique = new Class({ Implements: Options,
 
         if (Math.ceil(YAHOO.MediaPlayer.getTrackPosition()) == 
             Math.ceil(YAHOO.MediaPlayer.getTrackDuration() * that.options.timeToScrobble)) {
-          /* This is where the main magic happens
 
-          After havin listened to a song for half its time we save this song to the positive examples list
-          and then send a request to the dllearner who then calulates new recommendations.
-
-          first, we update the cookie with the last played song and then
-          */
+          // first, we update the cookie with the last played song and then
           var lastListenedListItem = YAHOO.MediaPlayer.getMetaData().anchor.getParent().clone();
           var lastListened = lastListenedListItem.getFirst();
           
@@ -105,6 +110,7 @@ var Moosique = new Class({ Implements: Options,
           lastListened.getChildren('em').destroy(); // yahoo buttons
           
           // this is the final link item we save in the cookie
+          // stripped of all unneccessary links and buttons, but easy to re-add or learn from
           var last = lastListenedListItem.get('html');
 
           // get the current cookie
@@ -113,7 +119,6 @@ var Moosique = new Class({ Implements: Options,
 
           if (recentlyListenedCookie) { // does the cookie exist?
             recentlyListened = JSON.decode(recentlyListenedCookie).recentlyListened;
-
             if (recentlyListened) { // if the cookie is not totally empty
               // update recently listened and write the cookie, limit to 10 entries, 
               // due to cookie-max-size of 4KB
@@ -134,26 +139,14 @@ var Moosique = new Class({ Implements: Options,
 
           // update the recently played list
           that.updateRecently();
-
-          // TODO 
-          // send ajax request and save the scrobbled song
-          // and retrieve and update the recommendations
-          var getRecommendations = new Request({
-            method: 'get', 
-            url: 'moosique/index.php',
-            onSuccess: function(responseText, responseXML) {
-              mooPlayer.displayStatusMessage('Added this song to your recently listened to songs.');
-            }
-          }).send(YAHOO.MediaPlayer.getMetaData().title);
-
-
+          that.displayStatusMessage('Added this song to your recently listened to songs.');
+          that.generateRecommendations();
         }
       };
 
       /**
-       * playlistUpdate: every time the playlist is updated
-       * we add the events for delete/up/down-buttons to each 
-       * playlistitem and update the status on what happened
+       * playlistUpdate: every time the playlist is updated we add the events for 
+       * delete/up/down-buttons to each playlistitem and update the status on what happened
        */
       var playlistUpdate = function() {
         // delete button
@@ -196,10 +189,7 @@ var Moosique = new Class({ Implements: Options,
             }
           });
         });
-
         that.displayStatusMessage('Playlist updated.');
-        // TODO save to current-playlist cookie?
-
       };  
 
       /**
@@ -214,6 +204,7 @@ var Moosique = new Class({ Implements: Options,
       /**
        * trackStart: we change the Play-Button to a Pause-Button
        * and Update the status on #now and display whats playing
+       * TODO: when a track started playing, fetch additional information about artist etc. using musicbrainz
        */
       var trackStart = function() {
         that.nowPlayingInfo.set('text', 'Currently playing:');
@@ -223,6 +214,7 @@ var Moosique = new Class({ Implements: Options,
 
       /**
        * trackComplete: we change the Pause-Button to a Play-Button
+       * TODO: if this was the last track, add another track from the recommendations and start playing
        */
       var trackComplete = function() {
         that.playPause.setStyle('background-position', '0px 0px');
@@ -238,13 +230,37 @@ var Moosique = new Class({ Implements: Options,
 
     // Initialize YMP if ready and apply the config
     YAHOO.MediaPlayer.onAPIReady.subscribe(playerConfig);
-    
   },
   
   
+  /**
+   * Send an ajax-request to generate the recommendations and passes the
+   * result to the corresponding html-container
+   *
+   */
+  generateRecommendations: function() {
+    var that = this;
+    
+    // TODO 
+    // send ajax request and save the scrobbled song
+    // and retrieve and update the recommendations
+    var getRecommendations = new Request({
+      method: 'get', 
+      url: 'moosique/index.php',
+      onSuccess: function(response) {
+        that.recResults.set('html', response);
+        that.showTab('recommendations');
+        that.displayStatusMessage('You have new recommendations!');
+      }
+    }).send('learn=now');
+  },
   
   
-  
+  /**
+   * Updates the recently-Listened-To UL-List Element with the contents
+   * from the recentlyListened-Cookie and makes them re-addable to the playlist
+   *
+   */
   updateRecently: function() {
     var that = this;
     
@@ -261,14 +277,17 @@ var Moosique = new Class({ Implements: Options,
         }
         that.recently.set('html', recentlyHTML);
         that.makeAddable(that.recently.getElements('a'));
+      } else { // cookie is set, but no Songs in recently
+        that.recently.set('html', '<li></li>');
       }
+    } else { // no Cookie found, emptying recently
+      that.recently.set('html', '<li></li>');
     }
   },
-  
-  
+
  
   /**
-   * adding functionality for the player-GUI and the play, next etc. buttons
+   * Adds click-events to all player-related buttons, like play, next etc. buttons
    */
   addEventsToButtons: function() {
     var that = this;
@@ -278,8 +297,9 @@ var Moosique = new Class({ Implements: Options,
     that.next.addEvent('click', function() { YAHOO.MediaPlayer.next(); });
       
     // the Play-Pause Button
-    that.playPause.addEvent('click', function() {
+    that.playPause.addEvent('click', function() { 
       // STOPPED: 0, PAUSED: 1, PLAYING: 2,BUFFERING: 5, ENDED: 7
+      // see http://mediaplayer.yahoo.com/api/
       if (YAHOO.MediaPlayer.getPlayerState() == 0 ||
           YAHOO.MediaPlayer.getPlayerState() == 1 ||
           YAHOO.MediaPlayer.getPlayerState() == 7) {
@@ -313,32 +333,11 @@ var Moosique = new Class({ Implements: Options,
       }
     });
   },
+
   
   /**
-   * Playlist related functions
-   */
-  initPlaylist: function() {
-    var that = this;
-
-    $$('#recommended a').each(function(a) {
-      a.addEvent('click', function(e) {
-        // prevent link following
-        e.stop();
-        a.set('class', 'htrack');
-
-        var liItem = a.getParent();
-        // move to the playlist
-        liItem.inject(that.playlist);
-        that.refreshPlaylist();   
-      });    
-    });
-    
-    that.refreshPlaylist(); 
-  },
-  
-  /**
-   * Refreshes the playlist by emptying the current one
-   * and reReading the #playlist-container
+   * Refreshes the YMP-playlist by emptying the current one
+   * and re-adding all items from the the playlist-container
    */
   refreshPlaylist: function() {
     var that = this;
@@ -350,7 +349,7 @@ var Moosique = new Class({ Implements: Options,
   /**
    * Displays a status message
    * 
-   * @param {Object} message
+   * @param {String} message
    */
   displayStatusMessage: function(message) {
     // Update Status and fade out
@@ -364,7 +363,9 @@ var Moosique = new Class({ Implements: Options,
   
   
   /**
-   * initializes interface-functions, clicking buttons and tabs... 
+   * Adds click-Events to the Interface for Tabs and invokes
+   * addEventsToButtons()
+   *
    */
   initInterface: function() {
     var that = this;
@@ -376,14 +377,28 @@ var Moosique = new Class({ Implements: Options,
       }); 
     });
 
+    // generating recommendations clickable
+    that.generate.addEvent('click', function(e) {
+      e.stop();
+      that.generateRecommendations();
+    });
+    
+    that.reset.addEvent('click', function(e) {
+      e.stop();
+      Cookie.dispose('moosique');
+      that.updateRecently();
+    });
+
     // make buttons functional
     this.addEventsToButtons();
-    
   },
   
 
   /**
-   * adds events to the search form for retrieving results etc.
+   * Make the search-Form an ajax-Search form, displaying the results
+   * on the homepage if successful
+   *
+   * TODO: sanitize client-side too using regex and displayStatus
    */
   activateSearch: function() {
     var that = this;
@@ -398,8 +413,15 @@ var Moosique = new Class({ Implements: Options,
           // show homescreen for resultdisplaying
           that.showTab('home');
 
+          // if the welcome-text ist present, cut & paste it to help
+          if (that.welcome) {
+            if (that.welcome.get('html').length > 100) {
+              that.help.set('html', that.welcome.get('html'));
+              that.welcome.destroy();
+            }
+          }
           that.loading.setStyle('display', 'inline');
-          that.results.set('html', '<h2>Searching...</h2><p>Please be patient, this may take a minute or two...</p>');
+          that.results.set('html', '<h2>Searching...</h2><p>Please be patient, this may take up to a minute...</p>');
         },
         
         onFailure: function() {
@@ -410,14 +432,6 @@ var Moosique = new Class({ Implements: Options,
           that.searchSubmit.erase('disabled'); // reenable submitbutton
           that.searchSubmit.setStyle('display', 'inline');
           that.loading.setStyle('display', 'none');
-
-          // if the welcome-text ist present, cut & paste it to help
-          if (that.welcome) {
-            if (that.welcome.get('html').length > 100) {
-              that.help.set('html', that.welcome.get('html'));
-              that.welcome.destroy();
-            }
-          }
           // display results
           that.results.set('html', response);
           // addEvents to result-links
@@ -428,19 +442,11 @@ var Moosique = new Class({ Implements: Options,
       // only send form if value is at least 3 chars long
       if (that.searchValue.get('value').length > 2) {
         this.send();
-      }  
+      } else {
+        that.displayStatusMessage('Please enter at least 3 chars for searching...');
+      }
     });
-    
-    
-    
-    
-    
-    
   },
-  
-  
-  
-  
   
   
   
@@ -450,6 +456,8 @@ var Moosique = new Class({ Implements: Options,
    * and makes them addable to the playlist, which means clicking on
    * them adds them to the playlist and makes them playable. this 
    * is working for links to whole albums and single tracks also
+   *
+   * @param {Object} links All links to make addable
    */
   makeAddable: function (links) {
     var that = this;
@@ -485,15 +493,11 @@ var Moosique = new Class({ Implements: Options,
   },
   
   
-  
-  
-  
-  
-  
-  
   /**
    * appends prepared html code to the playlist, empties the playlist if the first
    * element is an empty li and refreshed the playlist and shows the playlist tab
+   *
+   * @param {String} HTML-Code with new Items to add to the playlist
    */
   insertIntoPlaylist: function(newItems) {
     var that = this;
@@ -531,11 +535,9 @@ var Moosique = new Class({ Implements: Options,
   },
   
   
-  
-  
-  
   /**
-   * 
+   * Shows the given tab in the menu, and hides all others
+   *
    * @param {String} tabID ID of the Tab to show
    */
   showTab: function(tabID) {
@@ -544,9 +546,7 @@ var Moosique = new Class({ Implements: Options,
     that.menu.getElements('a.' + tabID).getParent().toggleClass('active');
     that.main.getChildren().setStyle('display', 'none');
     document.id(tabID).setStyle('display', 'block');  
-
   },
-  
   
   
   /**
@@ -554,7 +554,7 @@ var Moosique = new Class({ Implements: Options,
    * with leading zeros for seconds 
    * 
    * @param {Float} seconds
-   * @return {String} minsec minutes:seconds
+   * @return {String} minsec minutes:seconds 
    */
   secondsToMinutesAndSeconds: function(seconds) {
     var min = Math.floor(seconds / 60);

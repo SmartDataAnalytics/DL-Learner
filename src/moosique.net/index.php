@@ -22,20 +22,18 @@
       </ul>
     </div>
     <form id="searchForm" method="get" action="moosique/">
-      <ol>
-        <li>
-          <select name="searchType" id="searchType">
-            <option value="allSearch">All</option>
-            <option value="artistSearch">Artist</option>
-            <option value="tagSearch">Tag</option>
-            <option value="songSearch">Song</option>
-            <?php /* TODO <option value="lastfm">Last.fm-User</option> */ ?>
-          </select>
-          <input id="searchValue" name="searchValue" type="text" />
-          <input id="searchSubmit" name="searchSubmit" value="Search" title="Search" type="submit" />
-          <img id="loadingImg" src="img/loading.gif" alt="Loading..." />
-        </li>
-      </ol>
+      <div>
+        <select name="searchType" id="searchType">
+          <option value="allSearch">All</option>
+          <option value="artistSearch">Artist</option>
+          <option value="tagSearch">Tag</option>
+          <option value="songSearch">Song</option>
+          <option value="lastFM">last.fm</option>
+        </select>
+        <input id="searchValue" name="searchValue" type="text" />
+        <input id="searchSubmit" name="searchSubmit" value="Search" title="Search" type="submit" />
+        <img id="loadingImg" src="img/loading.gif" alt="Loading..." />
+      </div>
     </form>
     <div id="playerControls">
       <a href="#" id="playPause" title="Play/Pause">Play / Pause</a>
@@ -44,7 +42,7 @@
       <a href="#" id="next" title="Play next Track in Playlist">Next Track</a>
       <a href="#" id="mute" title="Sound on/off">Mute</a>
     </div>
-    <h4 id="status"> </h4>
+    <div id="status"> </div>
     <div id="playing">
       <span class="info">Player stopped</span>
       <span class="track">...</span>
@@ -63,32 +61,16 @@
           your musical taste and generate recommendations. You can find them in the tab &raquo;Recommendations&laquo;.
         </p>
         <p>
+          You can also enter your <a href="http://last.fm">last.fm</a>-username to automatically use your
+          most-used tags to generate a initial list of recommendations.
+        </p>
+        <p>
           You can find information about the song currently playing in the tab &raquo;Info&laquo; and edit and view
           your current Playlist in the &raquo;Playlist&laquo;-Tab.
         </p>
         <p>
           Now get started and add something to the Playlist!
         </p>
-        
-        <pre>
-          <?php
-          
-          // recently Heard == posExamples testing 
-          /*
-          if (!empty($_COOKIE['moosique'])) {
-            $recent = json_decode(stripslashes($_COOKIE['moosique']))->recentlyListened;
-            $posExamples = array();
-            foreach($recent as $link) {
-              preg_match_all('#<a\s*(?:rel=[\'"]([^\'"]+)[\'"])?.*?>((?:(?!</a>).)*)</a>#i', $link, $record);
-              array_push($posExamples, $record[1][0]);
-            }
-          }
-          
-          print_r(array_unique($posExamples));
-          */
-          ?>
-        </pre>
-        
       </div>
       <div id="results">
         
@@ -97,30 +79,32 @@
 
     <div id="recommendations">
       <h2>Recommended Songs</h2>
-      <p>These are the automatically generated recommendations. Click on a song to add it to your playlist.</p>
-      <ol id="recommended">
-        <li></li>
-      </ol>
+      <p>
+        These recommendations are generated every time you listen to a song 
+        for at least half it's length, assuming that you liked it.
+      </p>
+      
+      <div id="recommendationResults">
+      
+      
+      </div>
+      <p>
+        <a href="#" id="generateRecommendations">Nothing showing up here? You can also 
+        generate your list of recommendations by clicking here.</a>
+      </p>
     </div>
 
     <div id="information">
       <div id="moreInfo">
-        <h2>About the Artist</h2>
-        <img src="http://imgjam.com/albums/8654/covers/1.200.jpg" alt="Cover" />
-        <p>
-          Iusto odio dignissim qui blandit praesent. Nisl ut aliquip ex ea commodo, consequat 
-          duis autem vel eum. Nam liber tempor cum soluta nobis eleifend option congue nihil 
-          imperdiet doming id. In hendrerit eu feugiat nulla luptatum zzril delenit augue duis 
-          dolore te feugait. Quod ii legunt saepius claritas est etiam processus dynamicus 
-          qui nobis videntur parum.
-        </p>
+
       </div>
     </div>
     
     <div id="player">
       <h2>Playlist</h2>
       <p>
-        You can delete entries from the playlist by clicking the small x on the left and change their order by clicking on the small up- and down-arrows.<br />
+        You can delete entries from the playlist by clicking the small x on the right and 
+        change their order by clicking on the small up- and down-arrows.<br />
       </p>   
       <ol id="playlist">
         <li></li>  
@@ -131,6 +115,7 @@
       <ol id="recently">
         <li></li>
       </ol>
+      <p><a href="#" id="reset">Click here to reset your &raquo;recently listened to&laquo;-list.</a></p>
     </div>
 
     <div id="help">
@@ -140,9 +125,9 @@
   </div> <!-- end content -->
 
   <div id="footer">
+    <a href="http://aksw.org/Projects/DLLearner">DL-Learner</a> |
     <a href="http://jamendo.com">Jamendo</a> |
-    <a href="http://mediaplayer.yahoo.com/">Yahoo! Media Player</a> | 
-    <a href="http://aksw.org/Projects/DLLearner">DL-Learner</a>      
+    <a href="http://mediaplayer.yahoo.com/">Yahoo! Media Player</a> 
   </div>
 </div> <!-- end container -->
 

@@ -1,83 +1,106 @@
 <?php
 
-/**
- * TODO: UGLY! Use last.fm-Api instead?
- * API-Key: b9877a7391416d0846ad5f240a1838f9
- *
- * Later.
- */
-class LastFM {
-
-  private $data;
-  private $config;
-  private $username;
-
-  function __construct($config, $username) {
-    $this->config = $config;
-    $this->username = $username;
-    $this->getData();
-  }
-
-  function getData() {
-    include_once('arc/ARC2.php');
-    $rdfParser = ARC2::getRDFParser();
-    $lastfmResource = $this->config->getUrl('lastfm') . urlencode($this->username);
-    $rdfParser->parse($lastfmResource);
-    // parse, non simple array
-    $index = $rdfParser->getSimpleIndex(0);
-    $this->data = $index;
-  }
+class LastFM extends Config {
   
-  function getRecentTracks() {
-    $playedTracks = array();
-    $trackNodes = array();
+  private $topTags;
+
+  function __construct($user) {
+    parent::__construct(); // init config
     
-    echo '<pre>';
-    // print_r($this->data);
-    
-    if (is_array($this->data) && !empty($this->data)) {
-      foreach($this->data as $rootItem => $rootValue) {
-        // only process further if the rootitem ist no uri
-        if (!preg_match('/http:\/\//i', $rootItem)) {
-          foreach($rootValue as $childItem => $childValue) {
-            // if there is a childitem :track_played, we can use the information
-            if ($childItem == $this->config->getPrefix('played')) {
-              $trackNodes[] = $childValue[0]['value'];              
-            }
-          }
+    $this->getLastFMTags($user);
+  }
+
+  /**
+   *
+   *
+   *
+   */
+  private function getLastFMTags($user) {
+    $allTags = array();
+    $requestUrl = $this->getConfigLastFM('topTagsUrl') 
+                . '&user=' . $user 
+                . '&api_key=' . $this->getConfigLastFM('apiKey');
+    $lastFMTags = @simplexml_load_file($requestUrl);
+
+    if ($lastFMTags) { // meaning the last.fm-username exists
+      foreach($lastFMTags->toptags as $tags) {
+        foreach($tags as $tag) {
+          $allTags[] = (String)$tag->name;
         }
       }
-    } else {
-      echo 'Data-Array empty.';
-    }
+      // we limit the array to the 10 most used tags
+      $allTags = array_slice($allTags, 0, 10);
 
-    if (!empty($trackNodes)) {
-      foreach($trackNodes as $trackNode) {
-        $track = $this->data[$trackNode][$this->config->getPrefix('title')][0]['value'];
-        $artistNode = $this->data[$trackNode][$this->config->getPrefix('maker')][0]['value'];
-        $artist = $this->data[$artistNode][$this->config->getPrefix('name')][0]['value'];
-        $artistZitgist = $this->data[$artistNode][$this->config->getPrefix('same')][0]['value'];
-        $album = '';
-        $albumZitgist = '';
-        
-        $playedTracks[] = array($artist, $track, $album, $artistZitgist, $albumZitgist);
-        
+      // if there is a last-fm user, but he has tagged nothing?
+      // we get the list of top-artists and get the topTags from the artists
+      if (empty($allTags)) { 
+        $allTags = $this->getTagsFromTopArtists($user);
       }
     } else {
-      echo "No recently played tracks avaiable from last.fm.";
+      if ($this->debugger) $this->debugger->log($user, 'The last.fm-User does not exist. Please try again.');
     }
-    
-    print_r($trackNodes);
-    print_r($playedTracks);
-    echo '</pre>';
+    $this->topTags = $allTags;
   }
+  
+  /**
+   *
+   *
+   *
+   */
+  private function getTagsFromTopArtists($user) {
+    $allArtists = array();
+    $finalTags = array();
+    
+    // get the top artists for the user
+    $requestUrl = $this->getConfigLastFM('topArtistsUrl')
+                . '&user=' . $user 
+                . '&api_key=' . $this->getConfigLastFM('apiKey');
+                
+    $lastFMArtists = @simplexml_load_file($requestUrl);
 
+    foreach($lastFMArtists->topartists as $artists) {
+      foreach($artists as $artist) {
+        $allArtists[] = (String)$artist->name;
+      }
+    }
+    // reduce top Artists to TOP 10
+    $allArtists = array_slice($allArtists, 0, 10);
+    
+    // get the topTags for every artist
 
+    foreach($allArtists as $artistName) {
+      $requestUrl = $this->getConfigLastFM('artistsTopTagsUrl')
+                  . '&artist=' . urlencode($artistName) 
+                  . '&api_key=' . $this->getConfigLastFM('apiKey');
+      $artistTags = @simplexml_load_file($requestUrl);
+      
+      // take only the first two tags, that should be enough
+      foreach($artistTags->toptags as $tags) {
+        $someCounter = 0;
+        foreach($tags as $tag) {
+          $finalTags[] = (String)$tag->name;
+          $someCounter++;
+          if ($someCounter == 2) break;
+        }
+      }
+    }
+    // remove double entries and limit the array to the TOP 10
+    $finalTags = array_unique($finalTags);
+    $finalTags = array_slice($finalTags, 0, 10);
+    
+    return $finalTags;
+  }
+  
+  /**
+   *
+   *
+   *
+   */
+  public function getTopTags() {
+    return $this->topTags;
+  }
+  
+  
 }
-
-include('config.php');
-
-$lastfm = new LastFM($conf, 'nebelschwade');
-$lastfm->getRecentTracks();
 
 ?>
