@@ -25,6 +25,8 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.AutoLearnPanel;
+import org.mindswap.pellet.utils.SetUtils;
+
 
 public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements ActionListener{
 	/**
@@ -65,7 +67,9 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
     
     @Override
 	public Object getNextPanelDescriptor() {
-    	if(getSelectedDescriptions().isEmpty()){
+    	List<List<EvaluatedDescriptionClass>> selectedDescriptions = getSelectedDescriptions();
+    	if(SetUtils.union(selectedDescriptions.get(0), 
+    			selectedDescriptions.get(1)).isEmpty()){
     		return SavePanelDescriptor.IDENTIFIER;
     	} else {
     		return RepairPanelDescriptor.IDENTIFIER;
@@ -86,6 +90,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 	public void fillClassesTable(){	
 		TaskManager.getInstance().setTaskStarted("Retrieving atomic classes...");
 		new ClassRetrievingTask().execute();
+		autoLearnPanel.setNextButtonEnabled(true);
 	}
 	
 	public void learnEquivalentClassExpressions(){
@@ -113,9 +118,12 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		OREManager.getInstance().setCurrentClass2Learn(classes.get(currentClassIndex));
 		learnEquivalentClassExpressions();
 		currentClassIndex++;
+		if(currentClassIndex >= classes.size()){
+			autoLearnPanel.setNextButtonEnabled(false);
+		}
 	}
 	
-	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){
+	public List<List<EvaluatedDescriptionClass>> getSelectedDescriptions(){
 		return autoLearnPanel.getSelectedDescriptions();
 	}
 	

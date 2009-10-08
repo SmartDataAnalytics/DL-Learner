@@ -79,21 +79,31 @@ public class AutoLearnPanel extends JPanel {
 	}
 	
 	private JComponent createResultPanel(){
-		JPanel resultPanel = new JPanel(new BorderLayout());
+		JPanel resultPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
 		JSplitPane equivSubSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		equivSubSplitPane.setOneTouchExpandable(true);
 		equivSubSplitPane.setDividerLocation(0.5);
+		equivSubSplitPane.setResizeWeight(0.5);
 		
 		equivSubSplitPane.setTopComponent(createEquivalentPanel());
 		equivSubSplitPane.setBottomComponent(createSuperPanel());
-		
+	
 		addTableSelectionListeners();
 		
-		skipButton = new JButton("Skip");
+		skipButton = new JButton("Next class");
 		skipButton.setActionCommand("skip");
 		
-		resultPanel.add(equivSubSplitPane, BorderLayout.CENTER);
-		resultPanel.add(skipButton, BorderLayout.SOUTH);
+		c.fill = GridBagConstraints.BOTH;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		resultPanel.add(equivSubSplitPane,c);
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		resultPanel.add(skipButton, c);
 		
 		return resultPanel;
 	}
@@ -117,7 +127,7 @@ public class AutoLearnPanel extends JPanel {
 		c.gridx = 1;
 		c.gridy = 0;
 		equivalentClassCoveragePanel = new GraphicalCoveragePanel("");
-		equivalentPanel.add(equivalentClassCoveragePanel, c);
+		equivalentPanel.add(new JScrollPane(equivalentClassCoveragePanel), c);
 		equivalentPanel.setBorder(BorderFactory.createTitledBorder("Equivalent class expressions"));
 		
 		c.gridx = 0;
@@ -147,7 +157,7 @@ public class AutoLearnPanel extends JPanel {
 		c.gridx = 1;
 		c.gridy = 0;
 		superClassCoveragePanel = new GraphicalCoveragePanel("");
-		superPanel.add(superClassCoveragePanel, c);
+		superPanel.add(new JScrollPane(superClassCoveragePanel), c);
 		superPanel.setBorder(BorderFactory.createTitledBorder("Superclass expressions"));
 		
 		c.gridx = 0;
@@ -187,10 +197,15 @@ public class AutoLearnPanel extends JPanel {
 		classesTable.clear();
 	}
 	
-	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){
-		List<EvaluatedDescriptionClass> selected = new ArrayList<EvaluatedDescriptionClass>();
-		selected.addAll(equivalentClassResultsTable.getSelectedDescriptions());
-		selected.addAll(superClassResultsTable.getSelectedDescriptions());
+	public void setNextButtonEnabled(boolean enabled){
+		skipButton.setEnabled(enabled);
+	}
+	
+	public List<List<EvaluatedDescriptionClass>> getSelectedDescriptions(){
+		List<List<EvaluatedDescriptionClass>> selected = new ArrayList<List<EvaluatedDescriptionClass>>();
+		selected.add(equivalentClassResultsTable.getSelectedDescriptions());
+		selected.add(superClassResultsTable.getSelectedDescriptions());
+		
 		return selected;
 	}
 	

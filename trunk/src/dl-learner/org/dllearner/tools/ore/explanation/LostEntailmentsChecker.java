@@ -24,10 +24,7 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
-import uk.ac.manchester.cs.owl.modularity.ModuleType;
-
 import com.clarkparsia.modularity.IncrementalClassifier;
-import com.clarkparsia.modularity.ModularityUtils;
 
 public class LostEntailmentsChecker {
 	

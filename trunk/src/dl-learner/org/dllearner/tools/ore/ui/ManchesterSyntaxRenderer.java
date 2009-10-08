@@ -25,12 +25,12 @@ public class ManchesterSyntaxRenderer {
 	
 	static private StringWriter buffer = new StringWriter();
 	static private TextBlockWriter writer = new TextBlockWriter(buffer);
-	static private ManchesterSyntaxObjectRenderer renderer = new ManchesterSyntaxObjectRenderer(writer);
-	
+//	static private ManchesterSyntaxObjectRenderer renderer = new ManchesterSyntaxObjectRenderer(writer);
+	static private ManchesterRenderer renderer = new ManchesterRenderer(OREManager.getInstance().getReasoner().getOWLOntologyManager());
 	public ManchesterSyntaxRenderer(){
 	
-		renderer.setWrapLines( false );
-		renderer.setSmartIndent( true );
+//		renderer.setWrapLines( false );
+//		renderer.setSmartIndent( true );
 	}
 
 	
@@ -73,7 +73,7 @@ public class ManchesterSyntaxRenderer {
 	public static String render(OWLAxiom value, boolean removed, int depth){
 		value.accept(renderer);
 		writer.flush();
-		String renderedString = buffer.toString();
+		String renderedString = renderer.render(value, null);//buffer.toString();
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
 		

@@ -44,7 +44,7 @@ public class ImpactTable extends JXTable {
 	    setRowHeightEnabled(true);
 	    getColumnModel().getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
 	    setRowHeight(getRowHeight() + 5);
-	    getColumn(0).setMaxWidth(50);
+	    getColumn(0).setMaxWidth(60);
 	    getColumn(2).setMaxWidth(60);
 	    
 	

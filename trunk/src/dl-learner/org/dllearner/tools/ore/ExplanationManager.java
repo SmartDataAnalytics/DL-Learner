@@ -294,6 +294,7 @@ public class ExplanationManager implements OREManagerListener{
 		reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		gen = new CachedExplanationGenerator(ontology, reasoner);
 		orderingMap.clear();
+		usageChecker = new AxiomUsageChecker(ontology);
 	}
 	
 }

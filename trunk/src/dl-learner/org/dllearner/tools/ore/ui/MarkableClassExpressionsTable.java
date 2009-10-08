@@ -20,7 +20,7 @@ public class MarkableClassExpressionsTable extends JXTable{
 	
 	public MarkableClassExpressionsTable(){
 		super(new MarkableClassExpressionsTableModel());
-		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
+//		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		getColumn(0).setMaxWidth(30);
 		setTableHeader(null);
 		setBorder(null);

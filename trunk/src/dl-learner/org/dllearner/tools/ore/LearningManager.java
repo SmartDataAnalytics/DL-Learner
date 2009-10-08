@@ -3,6 +3,7 @@ package org.dllearner.tools.ore;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 public class LearningManager {
@@ -16,7 +17,12 @@ public class LearningManager {
     
     private int learnMode = 0;
     
+    private NamedClass currentClass2Describe;
+    
     private List<EvaluatedDescriptionClass> newDescriptions;
+    
+    private List<EvaluatedDescriptionClass> equivalentDescriptions;
+    private List<EvaluatedDescriptionClass> superDescriptions;
     
     private int currentDescriptionIndex = 0;
 	
@@ -29,6 +35,7 @@ public class LearningManager {
 	
 	public LearningManager(){
 		listeners = new ArrayList<LearningManagerListener>();
+		newDescriptions = new ArrayList<EvaluatedDescriptionClass>();
 	}
 	
 	public void setLearningMode(int learningMode){
@@ -42,12 +49,40 @@ public class LearningManager {
 	public List<EvaluatedDescriptionClass> getNewDescriptions() {
 		return newDescriptions;
 	}
+	
+	public void setCurrentClass2Describe(NamedClass nc){
+		currentClass2Describe = nc;
+	}
+	
+	public NamedClass getCurrentClass2Describe(){
+		return currentClass2Describe;
+	}
 
-	public void setNewDescriptions(List<EvaluatedDescriptionClass> newDescriptions) {
-		this.newDescriptions = newDescriptions;
+	public void setNewDescriptions(List<List<EvaluatedDescriptionClass>> descriptions) {
+		newDescriptions.clear();
+		newDescriptions.addAll(descriptions.get(0));
+		newDescriptions.addAll(descriptions.get(1));
+		equivalentDescriptions = descriptions.get(0);
+		superDescriptions = descriptions.get(1);
 		currentDescriptionIndex = 0;
 		fireNewDescriptionsAdded(newDescriptions);
 		setNextDescription();
+	}
+	
+	public void addEquivalentDescriptions(List<EvaluatedDescriptionClass> descriptions){
+		equivalentDescriptions = descriptions;
+	}
+	
+	public void addSuperDescriptions(List<EvaluatedDescriptionClass> descriptions){
+		superDescriptions = descriptions;
+	}
+	
+	public boolean isEquivalentDescription(EvaluatedDescriptionClass desc){
+		return equivalentDescriptions.contains(desc);
+	}
+	
+	public boolean isSuperDescription(EvaluatedDescriptionClass desc){
+		return superDescriptions.contains(desc);
 	}
 
 	public int getCurrentDescriptionIndex() {

@@ -70,6 +70,8 @@ public class OREManager {
 	private List<OREManagerListener> listeners;
 
 	private OntologyModifier modifier;
+	
+	private boolean consistentOntology;
 
 	public OREManager(){
 		cm = ComponentManager.getInstance();
@@ -160,6 +162,7 @@ public class OREManager {
 		prefixes = reasoner.getPrefixes();
 		modifier = new OntologyModifier(reasoner);
 		fireActiveOntologyChanged();
+		consistentOntology = reasoner.isConsistent();
 	}
 	
 	public void loadOntology() throws OWLOntologyCreationException, URISyntaxException{
@@ -179,7 +182,7 @@ public class OREManager {
 	}
 	
 	public boolean consistentOntology() throws InconsistentOntologyException{
-		return reasoner.isConsistent();
+		return consistentOntology;
 	}
 	
 	public PelletReasoner getReasoner(){
