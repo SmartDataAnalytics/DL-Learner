@@ -33,6 +33,8 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
@@ -73,6 +75,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private final Color colorGreen = new Color(0, 139, 0);
 	private final DLLearnerView view;
 	private static final String HELP_BUTTON_STRING = "help";
+	private JTextArea help;
+	private static final String ADVANCED_BUTTON_STRING = "Advanced";
 
 	/**
 	 * This is the constructor for the action handler.
@@ -137,7 +141,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.setHintMessage(message);
 			view.setHelpButtonVisible(false);
 		}
-		if (z.getActionCommand().equals("")) {
+		if (z.toString().contains(ADVANCED_BUTTON_STRING)) {
 			if (!toggled) {
 				toggled = true;
 				view.setIconToggled(toggled);
@@ -148,13 +152,21 @@ public class ActionHandler implements ActionListener, ItemListener,
 				view.setExamplePanelVisible(toggled);
 			}
 		}
-		System.out.println(z.getActionCommand());
-		if (z.getActionCommand().equals(HELP_BUTTON_STRING)) {
-			String helpText = "What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?"
-					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words needed to write down the class expression."
-					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing and then further specializes it. Those class expressions, which fit the existing instances of a given class ($currentClass in this case) get a high accuracy and are displayed as suggestions. The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3 or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is set to $defaultRuntime seconds by default)."
+		if (z.toString().contains(HELP_BUTTON_STRING)) {
+			String helpText = "What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?\n"
+					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words\n needed to write down the class expression."
+					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general\n expression owl:Thing and then further specializes it. Those class expressions, which fit the existing instances of a given class ($currentClass in this case)\n get a high accuracy and are displayed as suggestions. The learning algorithm prefers short expressions.\n 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3\n or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7.\n If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is set to $defaultRuntime seconds by default)\n."
 					+ "See $wikiPage for more details. ";
-			view.getHelpButton().setToolTipText(helpText);
+			
+			help = new JTextArea();
+			help.setEditable(false);
+			help.setForeground(Color.black);
+			help.setText(helpText);
+
+			JOptionPane.showMessageDialog(null,
+			                help,
+			                "Help",                                            
+			                JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
