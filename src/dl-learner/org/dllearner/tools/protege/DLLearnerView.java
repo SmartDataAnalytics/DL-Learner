@@ -104,9 +104,12 @@ public class DLLearnerView {
 	private final JPanel addButtonPanel;
 	private final JLabel wikiPane;
 	private final ImageIcon toggledIcon;
+	private ImageIcon helpIcon;
 	private final JTextArea hint;
+	private JButton helpButton;
 	private final JPanel runPanel;
 	private final JPanel advancedPanel;
+	private JPanel hintPanel;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
 	private final MoreDetailForSuggestedConceptsPanel detail;
@@ -137,6 +140,7 @@ public class DLLearnerView {
 		model = new DLLearnerModel(editorKit, this);
 		sugPanel = new SuggestClassPanel(model, this);
 		learnerPanel = new JPanel();
+		hintPanel = new JPanel(new BorderLayout());
 		learnerPanel.setLayout(new BorderLayout());
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		action = new ActionHandler(model, this);
@@ -150,6 +154,13 @@ public class DLLearnerView {
 		advanced.setVisible(true);
 		advancedPanel = new JPanel();
 		run = new JButton();
+		URL helpIconUrl = this.getClass().getResource("Help-16x16.png");
+		helpIcon = new ImageIcon(helpIconUrl);
+		helpButton = new JButton(helpIcon);
+		helpButton.setPreferredSize(new Dimension(20, 20));
+		helpButton.setText("help");
+		helpButton.addActionListener(action);
+		helpButton.setVisible(false);
 		runPanel = new JPanel(new FlowLayout());
 		accept = new JButton("ADD");
 		addButtonPanel = new JPanel(new BorderLayout());
@@ -254,8 +265,11 @@ public class DLLearnerView {
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 2;
-		hint.setPreferredSize(new Dimension(490, 60));
-		learner.add(hint, c);
+		hint.setPreferredSize(new Dimension(450, 60));
+		helpButton.setPreferredSize(new Dimension(30, 30));
+		hintPanel.add(BorderLayout.CENTER, hint);
+		hintPanel.add(BorderLayout.EAST, helpButton);
+		learner.add(hintPanel, c);
 		
 		advancedPanel.add(advanced);
 		advancedPanel.add(adv);
@@ -311,7 +325,9 @@ public class DLLearnerView {
 			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		}
 	}
-	
+	public JButton getHelpButton() {
+		return helpButton;
+	}
 	/**
 	 * This method enables the GraphicalCoveragePanel after a class expression is
 	 * selected from the list.
@@ -513,6 +529,10 @@ public class DLLearnerView {
 	 */
 	public JComponent getLearnerView() {
 		return learnerScroll;
+	}
+	
+	public void setHelpButtonVisible(boolean isVisible) {
+		helpButton.setVisible(isVisible);
 	}
 	
 	/**

@@ -72,9 +72,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
 	private final DLLearnerView view;
+	private static final String HELP_BUTTON_STRING = "help";
 
 	/**
 	 * This is the constructor for the action handler.
+	 * 
 	 * @param m
 	 *            DLLearnerModel
 	 * @param view
@@ -96,7 +98,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals("suggest equivalent class expression") || z.getActionCommand().equals("suggest super class expression")) {
+		if (z.getActionCommand().equals("suggest equivalent class expression")
+				|| z.getActionCommand()
+						.equals("suggest super class expression")) {
 			model.setKnowledgeSource();
 			view.getSuggestClassPanel().getSuggestModel().clear();
 			view.getSuggestClassPanel().repaint();
@@ -105,8 +109,12 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.getRunButton().setEnabled(false);
 			view.getHintPanel().setForeground(Color.RED);
 			CELOE celoe = (CELOE) model.getLearningAlgorithm();
-			
-			String moreInformationsMessage = "Learning started. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and" + celoe.getMaximumHorizontalExpansion() + ". ";
+
+			String moreInformationsMessage = "Learning started. Currently searching class expressions with length between "
+					+ celoe.getMinimumHorizontalExpansion()
+					+ " and"
+					+ celoe.getMaximumHorizontalExpansion() + ". ";
+			view.setHelpButtonVisible(true);
 			view.setHintMessage(moreInformationsMessage);
 			retriever = new SuggestionRetriever();
 			retriever.execute();
@@ -125,8 +133,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "class expression\nadded";
-			view.renderErrorMessage(message);
+			String message = "class expression added";
+			view.setHintMessage(message);
+			view.setHelpButtonVisible(false);
 		}
 		if (z.getActionCommand().equals("")) {
 			if (!toggled) {
@@ -139,8 +148,15 @@ public class ActionHandler implements ActionListener, ItemListener,
 				view.setExamplePanelVisible(toggled);
 			}
 		}
+		System.out.println(z.getActionCommand());
+		if (z.getActionCommand().equals(HELP_BUTTON_STRING)) {
+			String helpText = "What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?"
+					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words needed to write down the class expression."
+					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing and then further specializes it. Those class expressions, which fit the existing instances of a given class ($currentClass in this case) get a high accuracy and are displayed as suggestions. The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3 or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is set to $defaultRuntime seconds by default)."
+					+ "See $wikiPage for more details. ";
+			view.getHelpButton().setToolTipText(helpText);
+		}
 	}
-
 
 	/**
 	 * select/deselect the Check boxes.
@@ -149,7 +165,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            ItemEvent
 	 */
 	public void itemStateChanged(ItemEvent i) {
-		
+
 	}
 
 	/**
@@ -208,8 +224,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 					}
 				}
 			}
-			view.getMoreDetailForSuggestedConceptsPanel()
-					.renderDetailPanel(evaluatedDescription);
+			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
+					evaluatedDescription);
 			view.setGraphicalPanel();
 			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 		}
@@ -300,7 +316,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 								.getNrOfConcepts()));
 						CELOE celoe = (CELOE) model.getLearningAlgorithm();
 						view.getHintPanel().setForeground(Color.RED);
-						String moreInformationsMessage = "Learning started. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and " + celoe.getMaximumHorizontalExpansion() + ".";
+						String moreInformationsMessage = "Learning started. Currently searching class expressions with length between "
+								+ celoe.getMinimumHorizontalExpansion()
+								+ " and "
+								+ celoe.getMaximumHorizontalExpansion() + ".";
 						view.setHintMessage(moreInformationsMessage);
 					}
 				}
@@ -381,7 +400,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 								// (ontology, null),
 								// ((EvaluatedDescriptionClass)
 								// eval).getAccuracy()*100));
-								if (((EvaluatedDescriptionClass) eval).isConsistent()) {
+								if (((EvaluatedDescriptionClass) eval)
+										.isConsistent()) {
 									dm.add(i, new SuggestListItem(colorGreen,
 											eval.getDescription()
 													.toManchesterSyntaxString(
@@ -404,7 +424,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 							}
 						}
 					}
-					
+
 					view.getSuggestClassPanel().setSuggestList(dm);
 					view.getLearnerView().repaint();
 				}
