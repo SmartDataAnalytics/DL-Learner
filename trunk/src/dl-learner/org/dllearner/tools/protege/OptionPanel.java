@@ -41,14 +41,6 @@ public class OptionPanel extends JPanel {
 	private final JLabel minAccuracyLabel;
 	private final JLabel maxExecutionTimeLabel;
 	private final JLabel nrOfConceptsLabel;
-	private JLabel owlRadioButtonLabel;
-	private JLabel elProfileButtonLabel;
-	private JLabel allBoxLabel;
-	private JLabel someBoxLabel;
-	private JLabel notBoxLabel;
-	private JLabel valueBoxLabel;
-	private JLabel moreBoxLabel;
-	private JLabel lessBoxLabel;
 	
 	private final JSlider minAccuracy;
 	private final JSlider maxExecutionTime;
@@ -73,12 +65,15 @@ public class OptionPanel extends JPanel {
 	private JPanel labelPanel;
 	private JPanel sliderPanel;
 	
+	private OptionPanelHandler optionHandler;
 	private double accuracy;
+	
 	/**
 	 * Constructor for the Option Panel. 
 	 */
 	public OptionPanel() {
 		setLayout(new BorderLayout());
+		optionHandler = new OptionPanelHandler(this);
 		labelPanel = new JPanel();
 		labelPanel.setLayout(new GridLayout(0, 1));
 		sliderPanel = new JPanel();
@@ -86,21 +81,13 @@ public class OptionPanel extends JPanel {
 		profilePanel = new JPanel();
 		profilePanel.setLayout(new GridLayout(0, 1));
 		radioBoxPanel = new JPanel();
-		radioBoxPanel.setLayout(new GridLayout(1, 4));
+		radioBoxPanel.setLayout(new GridLayout(1, 3));
 		checkBoxPanel = new JPanel();
-		checkBoxPanel.setLayout(new GridLayout(1, 14));
+		checkBoxPanel.setLayout(new GridLayout(1, 8));
 		
 		minAccuracyLabel = new JLabel("noise in %:    ");
 		maxExecutionTimeLabel = new JLabel("maximum execution time:    ");
 		nrOfConceptsLabel = new JLabel("max. number of results:    ");
-		owlRadioButtonLabel = new JLabel("OWL 2");
-		elProfileButtonLabel = new JLabel("EL Profile");
-		allBoxLabel = new JLabel("all");
-		someBoxLabel = new JLabel("some");
-		notBoxLabel = new JLabel("not");
-		valueBoxLabel = new JLabel("value");
-		lessBoxLabel = new JLabel("<=x with max.:");
-		moreBoxLabel = new JLabel(">=x with max.:");
 		
 		minAccuracy = new JSlider(0, 50, 5);
 		minAccuracy.setPaintTicks(true);
@@ -122,42 +109,66 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
 		
-		owlRadioButton = new JRadioButton();
-		elProfileButton = new JRadioButton();
+		owlRadioButton = new JRadioButton("OWL 2", true);
+		elProfileButton = new JRadioButton("EL Profile", false);
 		owlRadioButton.setEnabled(true);
+		owlRadioButton.addItemListener(optionHandler);
+		elProfileButton.addItemListener(optionHandler);
 		
-		allBox = new JCheckBox();
-		someBox = new JCheckBox();
-		notBox = new JCheckBox();
-		valueBox = new JCheckBox();
-		lessBox = new JCheckBox();
-		moreBox = new JCheckBox();
+		allBox = new JCheckBox("all", true);
+		allBox.addItemListener(optionHandler);
+		someBox = new JCheckBox("some", true);
+		someBox.addItemListener(optionHandler);
+		notBox = new JCheckBox("not", true);
+		notBox.addItemListener(optionHandler);
+		valueBox = new JCheckBox("value", true);
+		valueBox.addItemListener(optionHandler);
+		lessBox = new JCheckBox("<=x with max.:", true);
+		lessBox.addItemListener(optionHandler);
+		moreBox = new JCheckBox(">=x with max.:", true);
+		moreBox.addItemListener(optionHandler);
 		
 		countLessBox = new JComboBox();
+		countLessBox.addItem("1");
+		
+		countLessBox.addItem("2");
+		countLessBox.addItem("3");
+		countLessBox.addItem("4");
+		countLessBox.addItem("5");
+		countLessBox.addItem("6");
+		countLessBox.addItem("7");
+		countLessBox.addItem("8");
+		countLessBox.addItem("9");
+		countLessBox.addItem("10");
+		countLessBox.setSelectedItem("3");
 		countLessBox.setEditable(false);
+		
 		countMoreBox = new JComboBox();
+		countMoreBox.addItem("1");
+		countMoreBox.addItem("2");
+		countMoreBox.addItem("3");
+		countMoreBox.addItem("4");
+		countMoreBox.addItem("5");
+		countMoreBox.addItem("6");
+		countMoreBox.addItem("7");
+		countMoreBox.addItem("8");
+		countMoreBox.addItem("9");
+		countMoreBox.addItem("10");
+		countMoreBox.setSelectedItem("3");
 		countMoreBox.setEditable(false);
 		
 		checkBoxPanel.add(allBox);
-		checkBoxPanel.add(allBoxLabel);
 		checkBoxPanel.add(someBox);
-		checkBoxPanel.add(someBoxLabel);
 		checkBoxPanel.add(notBox);
-		checkBoxPanel.add(notBoxLabel);
 		checkBoxPanel.add(valueBox);
-		checkBoxPanel.add(valueBoxLabel);
 		checkBoxPanel.add(lessBox);
-		checkBoxPanel.add(lessBoxLabel);
 		checkBoxPanel.add(countLessBox);
 		checkBoxPanel.add(moreBox);
-		checkBoxPanel.add(moreBoxLabel);
 		checkBoxPanel.add(countMoreBox);
 		
 		
 		radioBoxPanel.add(owlRadioButton);
-		radioBoxPanel.add(owlRadioButtonLabel);
 		radioBoxPanel.add(elProfileButton);
-		radioBoxPanel.add(elProfileButtonLabel);
 		
 		profilePanel.add(radioBoxPanel);
 		profilePanel.add(checkBoxPanel);
@@ -201,56 +212,28 @@ public class OptionPanel extends JPanel {
 		return nrOfConcepts.getValue();
 	}
 
-	public void setOwlRadioButton(JRadioButton owlRadioButton) {
-		this.owlRadioButton = owlRadioButton;
-	}
-
 	public JRadioButton getOwlRadioButton() {
 		return owlRadioButton;
-	}
-
-	public void setElProfileButton(JRadioButton elProfileButton) {
-		this.elProfileButton = elProfileButton;
 	}
 
 	public JRadioButton getElProfileButton() {
 		return elProfileButton;
 	}
 
-	public void setAllBox(JCheckBox allBox) {
-		this.allBox = allBox;
-	}
-
 	public JCheckBox getAllBox() {
 		return allBox;
-	}
-
-	public void setSomeBox(JCheckBox someBox) {
-		this.someBox = someBox;
 	}
 
 	public JCheckBox getSomeBox() {
 		return someBox;
 	}
 
-	public void setNotBox(JCheckBox notBox) {
-		this.notBox = notBox;
-	}
-
 	public JCheckBox getNotBox() {
 		return notBox;
 	}
 
-	public void setValueBox(JCheckBox valueBox) {
-		this.valueBox = valueBox;
-	}
-
 	public JCheckBox getValueBox() {
 		return valueBox;
-	}
-
-	public void setLessBox(JCheckBox lessBox) {
-		this.lessBox = lessBox;
 	}
 
 	public JCheckBox getLessBox() {
@@ -261,28 +244,24 @@ public class OptionPanel extends JPanel {
 		return profilePanel;
 	}
 
-	public void setCountLessBox(JComboBox countLessBox) {
-		this.countLessBox = countLessBox;
-	}
-
 	public JComboBox getCountLessBox() {
 		return countLessBox;
-	}
-
-	public void setCountMoreBox(JComboBox countMoreBox) {
-		this.countMoreBox = countMoreBox;
 	}
 
 	public JComboBox getCountMoreBox() {
 		return countMoreBox;
 	}
 
-	public void setMoreBox(JCheckBox moreBox) {
-		this.moreBox = moreBox;
-	}
-
 	public JCheckBox getMoreBox() {
 		return moreBox;
+	}
+	
+	public JPanel getRadioBoxPanel() {
+		return radioBoxPanel;
+	}
+	
+	public JPanel getCheckBoxPanel() {
+		return checkBoxPanel;
 	}
 	
 }
