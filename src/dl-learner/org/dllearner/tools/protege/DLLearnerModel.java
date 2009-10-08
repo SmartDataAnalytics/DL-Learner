@@ -300,7 +300,15 @@ public class DLLearnerModel implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		cm.applyConfigEntry(la, "useNegation", false);
+		cm.applyConfigEntry(la, "useAllConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getAllBox().isSelected());
+		cm.applyConfigEntry(la, "useExistsConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getSomeBox().isSelected());
+		cm.applyConfigEntry(la, "useHasValueConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getValueBox().isSelected());
+		cm.applyConfigEntry(la, "useNegation", view.getPosAndNegSelectPanel().getOptionPanel().getNotBox().isSelected());
+		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox().isSelected());
+		if(view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox().isSelected()) {
+			cm.applyConfigEntry(la, "cardinalityLimit", view.getPosAndNegSelectPanel().getOptionPanel().getCountMoreBox().getSelectedItem());
+		}
+		
 		cm.applyConfigEntry(la, "noisePercentage", view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy());
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
 				.getPosAndNegSelectPanel().getOptionPanel()
