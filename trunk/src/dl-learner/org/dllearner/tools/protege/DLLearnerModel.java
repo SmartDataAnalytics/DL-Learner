@@ -300,13 +300,13 @@ public class DLLearnerModel implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		cm.applyConfigEntry(la, "useAllConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getAllBox().isSelected());
-		cm.applyConfigEntry(la, "useExistsConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getSomeBox().isSelected());
-		cm.applyConfigEntry(la, "useHasValueConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getValueBox().isSelected());
-		cm.applyConfigEntry(la, "useNegation", view.getPosAndNegSelectPanel().getOptionPanel().getNotBox().isSelected());
-		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox().isSelected());
-		if(view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox().isSelected()) {
-			cm.applyConfigEntry(la, "cardinalityLimit", view.getPosAndNegSelectPanel().getOptionPanel().getCountMoreBox().getSelectedItem());
+		cm.applyConfigEntry(la, "useAllConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getAllBox());
+		cm.applyConfigEntry(la, "useExistsConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getSomeBox());
+		cm.applyConfigEntry(la, "useHasValueConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getValueBox());
+		cm.applyConfigEntry(la, "useNegation", view.getPosAndNegSelectPanel().getOptionPanel().getNotBox());
+		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox());
+		if(view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox()) {
+			cm.applyConfigEntry(la, "cardinalityLimit", view.getPosAndNegSelectPanel().getOptionPanel().getCountMoreBox());
 		}
 		
 		cm.applyConfigEntry(la, "noisePercentage", view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy());
