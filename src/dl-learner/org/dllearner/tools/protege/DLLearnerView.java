@@ -158,7 +158,7 @@ public class DLLearnerView {
 		helpIcon = new ImageIcon(helpIconUrl);
 		helpButton = new JButton(helpIcon);
 		helpButton.setPreferredSize(new Dimension(20, 20));
-		helpButton.setText("help");
+		helpButton.setName("help");
 		helpButton.addActionListener(action);
 		helpButton.setVisible(false);
 		runPanel = new JPanel(new FlowLayout());
