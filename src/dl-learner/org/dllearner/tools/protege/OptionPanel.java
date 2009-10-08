@@ -199,20 +199,20 @@ public class OptionPanel extends JPanel {
 		return elProfileButton;
 	}
 
-	public JCheckBox getAllBox() {
-		return allBox;
+	public boolean getAllBox() {
+		return allBox.isSelected();
 	}
 
-	public JCheckBox getSomeBox() {
-		return someBox;
+	public boolean getSomeBox() {
+		return someBox.isSelected();
 	}
 
-	public JCheckBox getNotBox() {
-		return notBox;
+	public boolean getNotBox() {
+		return notBox.isSelected();
 	}
 
-	public JCheckBox getValueBox() {
-		return valueBox;
+	public boolean getValueBox() {
+		return valueBox.isSelected();
 	}
 
 	public JPanel getProfilePanel() {
@@ -220,12 +220,12 @@ public class OptionPanel extends JPanel {
 	}
 
 
-	public JComboBox getCountMoreBox() {
-		return countMoreBox;
+	public int getCountMoreBox() {
+		return Integer.parseInt(countMoreBox.getSelectedItem().toString());
 	}
 
-	public JCheckBox getMoreBox() {
-		return moreBox;
+	public boolean getMoreBox() {
+		return moreBox.isSelected();
 	}
 	
 	public JPanel getRadioBoxPanel() {
@@ -234,6 +234,28 @@ public class OptionPanel extends JPanel {
 	
 	public JPanel getCheckBoxPanel() {
 		return checkBoxPanel;
+	}
+	
+	public void setToOWLProfile() {
+		allBox.setSelected(true);
+		someBox.setSelected(true);
+		notBox.setSelected(true);
+		valueBox.setSelected(true);
+		moreBox.setSelected(true);
+		this.setCountMoreBoxEnabled(true);
+	}
+	
+	public void setToELProfile() {
+		allBox.setSelected(false);
+		someBox.setSelected(true);
+		notBox.setSelected(false);
+		valueBox.setSelected(false);
+		moreBox.setSelected(false);
+		this.setCountMoreBoxEnabled(false);
+	}
+	
+	public void setCountMoreBoxEnabled(boolean isEnabled) {
+		countMoreBox.setEnabled(isEnabled);
 	}
 	
 }

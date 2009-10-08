@@ -33,10 +33,10 @@ public class OptionPanelHandler implements ItemListener {
 			}
 
 		} else if(e.toString().contains(VALUE_STRING)) {
-			if(option.getMoreBox().isSelected()) {
-				option.getCountMoreBox().setEnabled(true);
+			if(option.getMoreBox()) {
+				option.setCountMoreBoxEnabled(true);
 			} else {
-				option.getCountMoreBox().setEnabled(false);
+				option.setCountMoreBoxEnabled(false);
 			}
 		}
 	}
@@ -44,23 +44,15 @@ public class OptionPanelHandler implements ItemListener {
 	private void setToOWLProfile() {
 		option.getOwlRadioButton().setSelected(true);
 		option.getElProfileButton().setSelected(false);
-		option.getAllBox().setSelected(true);
-		option.getSomeBox().setSelected(true);
-		option.getNotBox().setSelected(true);
-		option.getValueBox().setSelected(true);
-		option.getMoreBox().setSelected(true);
-		option.getCountMoreBox().setEnabled(true);
+		option.setToOWLProfile();
+
 	}
 
 	private void setToELProfile() {
 		option.getOwlRadioButton().setSelected(false);
 		option.getElProfileButton().setSelected(true);
-		option.getAllBox().setSelected(false);
-		option.getSomeBox().setSelected(true);
-		option.getNotBox().setSelected(false);
-		option.getValueBox().setSelected(false);
-		option.getMoreBox().setSelected(false);
-		option.getCountMoreBox().setEnabled(false);
+		option.setToELProfile();
+
 	}
 
 }
