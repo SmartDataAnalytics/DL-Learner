@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owl.model.OWLDescription;
 /**
@@ -487,21 +488,23 @@ public class DLLearnerView {
 	 * This method sets the run button enable after learning.
 	 */
 	public void algorithmTerminated() {
-		String error = "learning successful\n";
+		CELOE celoe = (CELOE) model.getLearningAlgorithm();
+		String error = "Learning successful. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and " + celoe.getMaximumHorizontalExpansion() + ".";
 		hint.setForeground(Color.RED);
-		setHintMessage(error);
+		this.setHintMessage(error);
 		String message = "";
 		if(isInconsistent) {
-			message ="Class expressions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
+			message ="\nClass expressions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
 		} else {
-			message ="To view details about why a class expression was suggested, please click on it.";
+			message ="\nTo view details about why a class expression was suggested, please click on it.";
 		}
 		run.setEnabled(true);
 		// start the algorithm and print the best concept found
 		//renderErrorMessage(error);
-		hint.setForeground(Color.BLACK);
+		//hint.setForeground(Color.BLACK);
 		hint.append(message);
-		setHintMessage(message);
+		hint.repaint();
+		//setHintMessage(message);
 	}
 	
 	/**

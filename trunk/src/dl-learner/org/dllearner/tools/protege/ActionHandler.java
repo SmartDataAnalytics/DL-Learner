@@ -40,6 +40,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -103,7 +104,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
 			view.getHintPanel().setForeground(Color.RED);
-			view.setHintMessage("learning started");
+			CELOE celoe = (CELOE) model.getLearningAlgorithm();
+			
+			String moreInformationsMessage = "Learning started. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and" + celoe.getMaximumHorizontalExpansion() + ". ";
+			view.setHintMessage(moreInformationsMessage);
 			retriever = new SuggestionRetriever();
 			retriever.execute();
 			// model.setCurrentConcept(null);
@@ -294,6 +298,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view
 								.getPosAndNegSelectPanel().getOptionPanel()
 								.getNrOfConcepts()));
+						CELOE celoe = (CELOE) model.getLearningAlgorithm();
+						view.getHintPanel().setForeground(Color.RED);
+						String moreInformationsMessage = "Learning started. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and " + celoe.getMaximumHorizontalExpansion() + ".";
+						view.setHintMessage(moreInformationsMessage);
 					}
 				}
 
@@ -339,9 +347,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
-
 			view.algorithmTerminated();
 			updateList(result);
+			view.algorithmTerminated();
 		}
 
 		@Override
@@ -396,6 +404,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 							}
 						}
 					}
+					
 					view.getSuggestClassPanel().setSuggestList(dm);
 					view.getLearnerView().repaint();
 				}
