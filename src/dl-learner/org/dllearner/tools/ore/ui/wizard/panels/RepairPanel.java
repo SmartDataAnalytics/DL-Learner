@@ -32,6 +32,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
@@ -69,11 +70,21 @@ public class RepairPanel extends JPanel{
 	private void createAutoUI(){
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
+		c.weighty = 0.3;
+		c.weightx = 1.0;
 		c.gridx = 0;
 		c.gridy = 0;
-		c.gridwidth = GridBagConstraints.REMAINDER;
+//		c.gridwidth = GridBagConstraints.REMAINDER;
 		add(createDescriptionsPanel(), c);
 		
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = 0;
+		nextButton = new JButton("Next suggestion");
+		nextButton.setActionCommand("next");
+		add(nextButton, c);
+		
+		c.fill = GridBagConstraints.BOTH;
 		c.gridwidth = 1;
 		c.gridy = 1;
 		c.gridx = 0;
@@ -83,10 +94,7 @@ public class RepairPanel extends JPanel{
 		c.gridx = 1;
 		add(createNegPanel(), c);
 		
-		c.gridy = 2;
-		nextButton = new JButton("Next");
-		nextButton.setActionCommand("next");
-		add(nextButton, c);
+		
 	}
 	
 	private void createManualUI(){
@@ -116,7 +124,7 @@ public class RepairPanel extends JPanel{
 		JPanel panel = new JPanel(new BorderLayout());
 		descriptionsTable = new MarkableClassExpressionsTable();
 		JScrollPane scroll = new JScrollPane(descriptionsTable);
-		scroll.setBorder(null);
+		scroll.setBorder(new MatteBorder(null));
 		panel.add(scroll);
 		return panel;
 	}

@@ -221,6 +221,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		impRepSplit.setOneTouchExpandable(true);
 		impRepSplit.setDividerLocation(600);
 		impRepSplit.setBorder(null);
+		impRepSplit.setResizeWeight(0.5);
 		impactRepairPanel.add(impRepSplit);
 		
 		ImpactTable impactTable = new ImpactTable();

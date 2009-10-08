@@ -85,7 +85,7 @@ public class ImpactTableModel extends AbstractTableModel implements ImpactManage
 				return "Lost";
 			}
 			else {
-				return "Added";
+				return "Retained";
 			}
     		
     	} else if(columnIndex == 1){

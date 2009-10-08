@@ -8,6 +8,10 @@ import javax.swing.table.AbstractTableModel;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.LearningManagerListener;
+import org.dllearner.tools.ore.OREManager;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
 
 public class MarkableClassExpressionsTableModel extends AbstractTableModel implements LearningManagerListener{
 	/**
@@ -42,7 +46,17 @@ public class MarkableClassExpressionsTableModel extends AbstractTableModel imple
 				return "";
 			}
 		} else {
-			return descriptions.get(rowIndex).getDescription();
+			
+			OWLDataFactory factory = OREManager.getInstance().getReasoner().getOWLOntologyManager().getOWLDataFactory();
+			OWLClass cl = factory.getOWLClass(
+					OREManager.getInstance().getCurrentClass2Learn().getURI());
+			if(LearningManager.getInstance().isEquivalentDescription(descriptions.get(rowIndex))){
+				return ManchesterSyntaxRenderer.render(factory.getOWLEquivalentClassesAxiom(cl, 
+						OWLAPIDescriptionConvertVisitor.getOWLDescription(descriptions.get(rowIndex).getDescription())), false, 0);
+			} else {
+				return ManchesterSyntaxRenderer.render(factory.getOWLSubClassAxiom(cl, 
+						OWLAPIDescriptionConvertVisitor.getOWLDescription(descriptions.get(rowIndex).getDescription())), false, 0);
+			}
 		}		
 	}
 	
