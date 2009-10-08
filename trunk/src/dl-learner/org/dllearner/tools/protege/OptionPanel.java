@@ -53,10 +53,8 @@ public class OptionPanel extends JPanel {
 	private JCheckBox someBox;
 	private JCheckBox notBox;
 	private JCheckBox valueBox;
-	private JCheckBox lessBox;
 	private JCheckBox moreBox;
 	
-	private JComboBox countLessBox;
 	private JComboBox countMoreBox;
 	
 	private JPanel profilePanel;
@@ -83,7 +81,7 @@ public class OptionPanel extends JPanel {
 		radioBoxPanel = new JPanel();
 		radioBoxPanel.setLayout(new GridLayout(1, 3));
 		checkBoxPanel = new JPanel();
-		checkBoxPanel.setLayout(new GridLayout(1, 8));
+		checkBoxPanel.setLayout(new GridLayout(1, 6));
 		
 		minAccuracyLabel = new JLabel("noise in %:    ");
 		maxExecutionTimeLabel = new JLabel("maximum execution time:    ");
@@ -123,46 +121,27 @@ public class OptionPanel extends JPanel {
 		notBox.addItemListener(optionHandler);
 		valueBox = new JCheckBox("value", true);
 		valueBox.addItemListener(optionHandler);
-		lessBox = new JCheckBox("<=x with max.:", true);
-		lessBox.addItemListener(optionHandler);
-		moreBox = new JCheckBox(">=x with max.:", true);
+		moreBox = new JCheckBox("<=x, >=x with max.:", true);
 		moreBox.addItemListener(optionHandler);
 		
-		countLessBox = new JComboBox();
-		countLessBox.addItem("1");
-		
-		countLessBox.addItem("2");
-		countLessBox.addItem("3");
-		countLessBox.addItem("4");
-		countLessBox.addItem("5");
-		countLessBox.addItem("6");
-		countLessBox.addItem("7");
-		countLessBox.addItem("8");
-		countLessBox.addItem("9");
-		countLessBox.addItem("10");
-		countLessBox.setSelectedItem("3");
-		countLessBox.setEditable(false);
-		
 		countMoreBox = new JComboBox();
-		countMoreBox.addItem("1");
-		countMoreBox.addItem("2");
-		countMoreBox.addItem("3");
-		countMoreBox.addItem("4");
-		countMoreBox.addItem("5");
-		countMoreBox.addItem("6");
-		countMoreBox.addItem("7");
-		countMoreBox.addItem("8");
-		countMoreBox.addItem("9");
-		countMoreBox.addItem("10");
-		countMoreBox.setSelectedItem("3");
+		countMoreBox.addItem(1);
+		countMoreBox.addItem(2);
+		countMoreBox.addItem(3);
+		countMoreBox.addItem(4);
+		countMoreBox.addItem(5);
+		countMoreBox.addItem(6);
+		countMoreBox.addItem(7);
+		countMoreBox.addItem(8);
+		countMoreBox.addItem(9);
+		countMoreBox.addItem(10);
+		countMoreBox.setSelectedItem(5);
 		countMoreBox.setEditable(false);
 		
 		checkBoxPanel.add(allBox);
 		checkBoxPanel.add(someBox);
 		checkBoxPanel.add(notBox);
 		checkBoxPanel.add(valueBox);
-		checkBoxPanel.add(lessBox);
-		checkBoxPanel.add(countLessBox);
 		checkBoxPanel.add(moreBox);
 		checkBoxPanel.add(countMoreBox);
 		
@@ -236,17 +215,10 @@ public class OptionPanel extends JPanel {
 		return valueBox;
 	}
 
-	public JCheckBox getLessBox() {
-		return lessBox;
-	}
-
 	public JPanel getProfilePanel() {
 		return profilePanel;
 	}
 
-	public JComboBox getCountLessBox() {
-		return countLessBox;
-	}
 
 	public JComboBox getCountMoreBox() {
 		return countMoreBox;

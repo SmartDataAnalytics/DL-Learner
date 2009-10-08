@@ -7,6 +7,7 @@ public class OptionPanelHandler implements ItemListener {
 
 	private static final String OWL_RADIO_STRING = "OWL 2";
 	private static final String EL_RADIO_STRING = "EL Profile";
+	private static final String VALUE_STRING = "<=x, >=x with max.:";
 
 	private OptionPanel option;
 
@@ -31,6 +32,12 @@ public class OptionPanelHandler implements ItemListener {
 				this.setToOWLProfile();
 			}
 
+		} else if(e.toString().contains(VALUE_STRING)) {
+			if(option.getMoreBox().isSelected()) {
+				option.getCountMoreBox().setEnabled(true);
+			} else {
+				option.getCountMoreBox().setEnabled(false);
+			}
 		}
 	}
 
@@ -41,8 +48,6 @@ public class OptionPanelHandler implements ItemListener {
 		option.getSomeBox().setSelected(true);
 		option.getNotBox().setSelected(true);
 		option.getValueBox().setSelected(true);
-		option.getLessBox().setSelected(true);
-		option.getCountLessBox().setEnabled(true);
 		option.getMoreBox().setSelected(true);
 		option.getCountMoreBox().setEnabled(true);
 	}
@@ -54,8 +59,6 @@ public class OptionPanelHandler implements ItemListener {
 		option.getSomeBox().setSelected(true);
 		option.getNotBox().setSelected(false);
 		option.getValueBox().setSelected(false);
-		option.getLessBox().setSelected(false);
-		option.getCountLessBox().setEnabled(false);
 		option.getMoreBox().setSelected(false);
 		option.getCountMoreBox().setEnabled(false);
 	}
