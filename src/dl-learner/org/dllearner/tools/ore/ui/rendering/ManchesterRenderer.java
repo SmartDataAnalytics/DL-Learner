@@ -1,4 +1,4 @@
-package org.dllearner.tools.ore.ui;
+package org.dllearner.tools.ore.ui.rendering;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -314,7 +314,7 @@ public class ManchesterRenderer implements OWLObjectVisitor{
             if (i < ops.size() - 1) {
                 write("\n");
                 insertIndent(indent);
-                if (curOp instanceof OWLClass && ops.get(i + 1) instanceof OWLRestriction && OWLRendererPreferences.getInstance().isUseThatKeyword()) {
+                if (curOp instanceof OWLClass && ops.get(i + 1) instanceof OWLRestriction<?> && OWLRendererPreferences.getInstance().isUseThatKeyword()) {
                     write("that ");
                 }
                 else {

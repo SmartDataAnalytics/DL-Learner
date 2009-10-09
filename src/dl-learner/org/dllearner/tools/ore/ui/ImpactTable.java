@@ -14,12 +14,15 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
+import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntologyChange;
@@ -42,8 +45,7 @@ public class ImpactTable extends JXTable {
 	    setGridColor(Color.LIGHT_GRAY);
 	    setTableHeader(null);
 	    setRowHeightEnabled(true);
-	    getColumnModel().getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
-	    setRowHeight(getRowHeight() + 5);
+	    getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
 	    getColumn(0).setMaxWidth(60);
 	    getColumn(2).setMaxWidth(60);
 	    
@@ -143,12 +145,13 @@ public class ImpactTable extends JXTable {
 			List<OWLOntologyChange>repairPlan = repMan.getRepairPlan();
 			
 			StringBuilder sb = new StringBuilder();
+			sb.append("[");
 			sb.append(ManchesterSyntaxRenderer.renderSimple(entailment));
 			if(((ImpactTableModel)getModel()).isLostEntailment(entailment)){
-				sb.append(" is lost because");
+				sb.append("] is lost because");
 				new ExplanationDialog(sb.toString(), expMan.getEntailmentExplanations(entailment));
 			} else {
-				sb.append(" is added because");
+				sb.append("] is added because");
 				man.applyChanges(repairPlan);
 				new ExplanationDialog(sb.toString(), expMan.getEntailmentExplanations(entailment));
 				man.applyChanges(repMan.getInverseChanges(repairPlan));
@@ -179,8 +182,9 @@ public class ImpactTable extends JXTable {
 			for(Explanation exp : explanations){
 				ExplanationTablePanel panel = new ExplanationTablePanel(new SimpleExplanationTable(exp), counter);
 				explanationsPanel.add(panel);
+				counter++;
 			}
-			add(explanationsPanel, BorderLayout.NORTH);
+			add(new JScrollPane(explanationsPanel), BorderLayout.NORTH);
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			setSize(700, 400);
 			

@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.swing.ListSelectionModel;
 
 import org.dllearner.core.owl.Individual;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 

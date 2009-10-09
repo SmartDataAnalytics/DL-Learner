@@ -39,6 +39,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 

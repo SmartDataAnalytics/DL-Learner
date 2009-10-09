@@ -3,7 +3,7 @@ package org.dllearner.tools.ore.ui.item;
 import javax.swing.JMenuItem;
 
 import org.dllearner.core.owl.Description;
-import org.dllearner.tools.ore.ui.ManchesterSyntaxRenderer;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 
 public class AddToClassMenuItem extends JMenuItem{
 	/**

@@ -9,6 +9,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.LearningManagerListener;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;

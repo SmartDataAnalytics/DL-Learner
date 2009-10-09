@@ -4,7 +4,7 @@ import javax.swing.JMenuItem;
 
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectPropertyExpression;
-import org.dllearner.tools.ore.ui.ManchesterSyntaxRenderer;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 
 public class AddPropertyAssertionMenuItem extends JMenuItem {
 

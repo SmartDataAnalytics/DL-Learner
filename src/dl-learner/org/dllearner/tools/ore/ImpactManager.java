@@ -1,8 +1,10 @@
 package org.dllearner.tools.ore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.tools.ore.explanation.LostEntailmentsChecker;
@@ -24,7 +26,11 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	private OREManager oreMan;
 	
 	private Set<OWLAxiom> lostEntailments;
-	private Set<OWLAxiom> addedEntailments;
+	private Set<OWLAxiom> retainedEntailments;
+	
+	private Map<List<OWLOntologyChange>, Set<OWLAxiom>> lostEntailmentsCache;
+	private Map<List<OWLOntologyChange>, Set<OWLAxiom>> retainedEntailmentsCache;
+	
 
 	private ImpactManager(OREManager oreMan) {
 		this.oreMan = oreMan;
@@ -33,7 +39,10 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 		this.manager = reasoner.getManager();
 		
 		lostEntailments = new HashSet<OWLAxiom>();
-		addedEntailments = new HashSet<OWLAxiom>();
+		retainedEntailments = new HashSet<OWLAxiom>();
+		
+		lostEntailmentsCache = new HashMap<List<OWLOntologyChange>, Set<OWLAxiom>>();
+		retainedEntailmentsCache = new HashMap<List<OWLOntologyChange>, Set<OWLAxiom>>();
 		
 		selectedAxioms = new ArrayList<OWLAxiom>();
 		listeners = new ArrayList<ImpactManagerListener>();
@@ -69,18 +78,29 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	}
 	
 	public Set<OWLAxiom> getAddedEntailments(){
-		return addedEntailments;
+		return retainedEntailments;
 	}
 	
 	public void computeImpactForAxiomsInRepairPlan(){
-		lostEntailments.clear();
-		addedEntailments.clear();
+		
+//		lostEntailments.clear();
+//		retainedEntailments.clear();
 		List<OWLOntologyChange> repairPlan = RepairManager.getInstance(oreMan).getRepairPlan();
-		List<Set<OWLAxiom>> classificationImpact = lostEntailmentsChecker.computeClassificationImpact(repairPlan);
-		lostEntailments.addAll(classificationImpact.get(0));
-		addedEntailments.addAll(classificationImpact.get(1));
-		Set<OWLAxiom> structuralImpact = lostEntailmentsChecker.computeStructuralImpact(repairPlan);
-		lostEntailments.addAll(structuralImpact);
+		lostEntailments = lostEntailmentsCache.get(repairPlan);
+		retainedEntailments = retainedEntailmentsCache.get(repairPlan);
+		if(lostEntailments == null){
+			lostEntailments = new HashSet<OWLAxiom>();
+			retainedEntailments = new HashSet<OWLAxiom>();
+			List<Set<OWLAxiom>> classificationImpact = lostEntailmentsChecker.computeClassificationImpact(repairPlan);
+			lostEntailments.addAll(classificationImpact.get(0));
+			retainedEntailments.addAll(classificationImpact.get(1));
+			Set<OWLAxiom> structuralImpact = lostEntailmentsChecker.computeStructuralImpact(repairPlan);
+			lostEntailments.addAll(structuralImpact);
+			
+			lostEntailmentsCache.put(repairPlan, lostEntailments);
+			retainedEntailmentsCache.put(repairPlan, retainedEntailments);
+		}
+			
 	}
 	
 	public void addSelection(OWLAxiom ax){
@@ -118,7 +138,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	public void repairPlanExecuted(List<OWLOntologyChange> changes) {
 		selectedAxioms.clear();
 		lostEntailments.clear();
-		addedEntailments.clear();
+		retainedEntailments.clear();
 		fireImpactListChanged();
 		
 	}
@@ -131,7 +151,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getReasoner().getClassifier(), manager);
 		selectedAxioms.clear();
 		lostEntailments.clear();
-		addedEntailments.clear();
+		retainedEntailments.clear();
 		fireImpactListChanged();
 		
 	}
