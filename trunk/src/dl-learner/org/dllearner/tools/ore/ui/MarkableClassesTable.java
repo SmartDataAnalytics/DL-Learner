@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 
 public class MarkableClassesTable extends JXTable {

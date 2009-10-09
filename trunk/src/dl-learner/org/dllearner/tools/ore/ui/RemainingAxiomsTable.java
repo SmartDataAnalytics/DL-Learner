@@ -3,6 +3,7 @@ package org.dllearner.tools.ore.ui;
 import java.awt.Color;
 import java.util.List;
 
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.semanticweb.owl.model.OWLAxiom;
 

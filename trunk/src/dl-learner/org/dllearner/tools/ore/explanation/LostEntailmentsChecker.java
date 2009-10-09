@@ -1,8 +1,10 @@
 package org.dllearner.tools.ore.explanation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mindswap.pellet.owlapi.Reasoner;
@@ -115,6 +117,8 @@ public class LostEntailmentsChecker {
 	}
 
 	public Set<OWLAxiom> computeStructuralImpact(List<OWLOntologyChange> changes) {
+		Map<OWLClass, Set<OWLClass>> subsumptionHierarchyUp = new HashMap<OWLClass, Set<OWLClass>>();
+		Map<OWLClass, Set<OWLClass>> subsumptionHierarchyDown = new HashMap<OWLClass, Set<OWLClass>>();
 		System.out.println("Computing structural impact");
 		System.out.println("Refreshing reasoner");
 		reasoner.refresh();
@@ -130,10 +134,18 @@ public class LostEntailmentsChecker {
 					if (subAx.getSubClass() instanceof OWLClass && subAx.getSuperClass() instanceof OWLClass) {
 						OWLClass sub = (OWLClass) subAx.getSubClass();
 						OWLClass sup = (OWLClass) subAx.getSuperClass();
-						
-						for (OWLClass desc : SetUtils.union(reasoner.getDescendantClasses(sub))) {
-							
-							for (OWLClass anc : SetUtils.union(reasoner.getAncestorClasses(sup))) {	
+						Set<OWLClass> descendants = subsumptionHierarchyDown.get(sub);
+						if(descendants == null){
+							descendants = SetUtils.union(reasoner.getDescendantClasses(sub));
+							subsumptionHierarchyDown.put(sub, descendants);
+						}
+						for (OWLClass desc : descendants) {
+							Set<OWLClass> ancestors = subsumptionHierarchyUp.get(sub);
+							if(ancestors == null){
+								ancestors = SetUtils.union(reasoner.getAncestorClasses(sup));
+								subsumptionHierarchyUp.put(sup, ancestors);
+							}
+							for (OWLClass anc : ancestors) {	
 								
 								if (!anc.equals(factory.getOWLThing()) && !desc.equals(factory.getOWLNothing())) {
 									OWLSubClassAxiom ax = factory.getOWLSubClassAxiom(desc, anc);

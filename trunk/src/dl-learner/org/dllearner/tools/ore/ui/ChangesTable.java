@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.semanticweb.owl.model.OWLOntologyChange;
 

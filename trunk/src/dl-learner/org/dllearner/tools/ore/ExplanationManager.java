@@ -12,6 +12,7 @@ import org.dllearner.tools.ore.explanation.AxiomUsageChecker;
 import org.dllearner.tools.ore.explanation.CachedExplanationGenerator;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.explanation.ExplanationException;
+import org.dllearner.tools.ore.explanation.ExplanationType;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
@@ -228,6 +229,15 @@ public class ExplanationManager implements OREManagerListener{
 		gen.setComputeLaconicExplanations(laconic);
 		fireExplanationTypeChanged();
 		
+	}
+	
+	public void setExplanationType(ExplanationType type){
+		gen.setExplanationType(type);
+		fireExplanationTypeChanged();
+	}
+	
+	public ExplanationType getExplanationType(){
+		return gen.getExplanationType();	
 	}
 	
 	public boolean isLaconicMode(){

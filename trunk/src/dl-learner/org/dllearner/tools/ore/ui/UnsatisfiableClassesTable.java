@@ -2,6 +2,7 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +98,20 @@ public class UnsatisfiableClassesTable extends JXTable {
 		}
 		
 		return selectedClasses;
+	}
+	
+	@Override
+	public String getToolTipText(MouseEvent e){
+		String tip = null;
+        java.awt.Point p = e.getPoint();
+        int rowIndex = rowAtPoint(p);
+        if(rowIndex != -1){
+        	tip = ((OWLClass)getValueAt(rowIndex, 0)).getURI().toString();
+        	
+        } else {
+        	tip = super.getToolTipText(e);
+        }
+        return tip;
 	}
 	
 	public void clear(){

@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.RemoveAxiom;
 

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
@@ -39,14 +38,17 @@ public class InconsistencyExplanationPanel extends JPanel{
 	private JComponent explanationsPanel;
 	
 	private JPanel buttonExplanationsPanel;
-	
-	
+		
 	private ButtonGroup explanationType;
+	
 	private JRadioButton regularButton;
 	private JRadioButton laconicButton;
+	private JRadioButton preciseButton;
+	
 	private JRadioButton computeAllExplanationsRadioButton;
     private  JRadioButton computeMaxExplanationsRadioButton;
-	private JSpinner maxExplanationsSelector;
+	
+    private JSpinner maxExplanationsSelector;
 	
 
 	public InconsistencyExplanationPanel() {
@@ -97,17 +99,28 @@ public class InconsistencyExplanationPanel extends JPanel{
 		GridBagConstraints c = new GridBagConstraints();
 		
 		
-		JPanel explanationTypePanel = new JPanel(new GridLayout(0, 1));
+		JPanel explanationTypePanel = new JPanel(new GridBagLayout());
+		
 		regularButton = new JRadioButton("Show regular explanations", true);
 		regularButton.setActionCommand("regular");
 		regularButton.setSelected(true);
-		laconicButton = new JRadioButton("Show precise explanations");
+		laconicButton = new JRadioButton("Show laconic explanations");
 		laconicButton.setActionCommand("laconic");
+		preciseButton = new JRadioButton("Show precise explanations");
+		preciseButton.setActionCommand("precise");
 		explanationType = new ButtonGroup();
 		explanationType.add(regularButton);
 		explanationType.add(laconicButton);
-		explanationTypePanel.add(regularButton);
-		explanationTypePanel.add(laconicButton);
+		explanationType.add(preciseButton);
+		c.gridx = 0;
+		c.gridy = 0;
+		explanationTypePanel.add(regularButton, c);
+		c.gridx = 0;
+		c.gridy = 1;
+		explanationTypePanel.add(laconicButton, c);
+		c.gridx = 0;
+		c.gridy = 2;
+		explanationTypePanel.add(preciseButton, c);
 		HelpablePanel explanationTypeHelpPanel = new HelpablePanel(explanationTypePanel);
 		explanationTypeHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		
@@ -137,11 +150,15 @@ public class InconsistencyExplanationPanel extends JPanel{
 	    
 	    HelpablePanel explanationCountHelpPanel = new HelpablePanel(explanationCountPanel);
 	    explanationCountHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+	  
 	    
 	    c.fill = GridBagConstraints.VERTICAL;
-	    
+	    c.gridx = 0;
+	    c.gridy = 0;
 	    headerPanel.add(explanationTypeHelpPanel, c);
 	    c.anchor = GridBagConstraints.LINE_END;
+	    c.gridx = 1;
+	    c.gridy = 0;
 	    headerPanel.add(explanationCountHelpPanel, c);
 	    
 	    return headerPanel;
@@ -172,6 +189,7 @@ public class InconsistencyExplanationPanel extends JPanel{
 	public void addActionListeners(ActionListener aL){
 		regularButton.addActionListener(aL);
 		laconicButton.addActionListener(aL);
+		preciseButton.addActionListener(aL);
 		computeAllExplanationsRadioButton.addActionListener(aL);
 		computeMaxExplanationsRadioButton.addActionListener(aL);
 	}

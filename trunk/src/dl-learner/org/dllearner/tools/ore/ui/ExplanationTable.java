@@ -29,6 +29,7 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.protege.editor.core.Disposable;
 import org.semanticweb.owl.model.OWLClass;
@@ -67,7 +68,8 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		column6.setResizable(false);
 //		setRowHeight(getRowHeight() + 4);
 		setRowHeightEnabled(true);
-		getColumn(0).setCellRenderer(new MultiLineTableCellRenderer());
+	
+		getColumn(0).setCellRenderer(new TextAreaRenderer());
 		getColumn(1).setMaxWidth(60);
 		getColumn(2).setMaxWidth(60);
 		getColumn(3).setMaxWidth(60);
@@ -147,7 +149,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 			private static final long serialVersionUID = -3386641672808329591L;
 
 			public String getToolTipText(MouseEvent e) {
-                String tip = null;
+             
                 java.awt.Point p = e.getPoint();
                 int index = columnModel.getColumnIndexAtX(p.x);
                 int realIndex = 
@@ -156,6 +158,20 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
             }
         };
 
+	}
+	
+	@Override
+	public String getToolTipText(MouseEvent e){
+		String tip = null;
+        java.awt.Point p = e.getPoint();
+        int rowIndex = rowAtPoint(p);
+        if(rowIndex != -1){
+        	tip = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex).toString();
+        	
+        } else {
+        	tip = super.getToolTipText(e);
+        }
+        return tip;
 	}
 	
 	public void strikeOut(boolean strikeOut){

@@ -22,6 +22,7 @@ import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.dllearner.tools.ore.explanation.ExplanationType;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.InconsistencyExplanationPanel;
 import org.mindswap.pellet.owlapi.Reasoner;
@@ -96,9 +97,11 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("regular")) {
-				expMan.setLaconicMode(false);
+				expMan.setExplanationType(ExplanationType.REGULAR);
 			} else if (e.getActionCommand().equals("laconic")) {
-				expMan.setLaconicMode(true);		
+				expMan.setExplanationType(ExplanationType.LACONIC);
+			} else if(e.getActionCommand().equals("precise")){
+				expMan.setExplanationType(ExplanationType.PRECISE);			
 			} else if (e.getActionCommand().equals("all")){
 				conditionalWarning("Computing all explanations might take a long time!", getWizard().getDialog());
 				expMan.setComputeAllExplanationsMode(true);
@@ -106,7 +109,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
 			} else if (e.getActionCommand().equals("max")){
 				expMan.setComputeAllExplanationsMode(false);
 				panel.setMaxExplanationsMode(true);
-			} 		
+			} 
 		}
 	
 

@@ -31,13 +31,20 @@ import com.clarkparsia.owlapi.OntologyUtils;
 public class CachedExplanationGenerator implements ExplanationGenerator, RepairManagerListener{
 	
 	private Map<OWLAxiom, OWLOntology> axiom2Module;
+	
 	private Map<OWLAxiom, Set<Explanation>> regularExplanationCache;
 	private Map<OWLAxiom, Set<Explanation>> laconicExplanationCache;
+	private Map<OWLAxiom, Set<Explanation>> preciseExplanationCache;
+	
 	private Map<OWLAxiom, Integer> lastRequestedRegularSize;
 	private Map<OWLAxiom, Integer> lastRequestedLaconicSize;
+	
 	private boolean laconicMode = false;
+	
 	private PelletExplanationGenerator regularExpGen;
 	private LaconicExplanationGenerator laconicExpGen;
+	
+	private ExplanationType explanationType = ExplanationType.REGULAR;
 	
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
@@ -47,15 +54,27 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		this.manager = OWLManager.createOWLOntologyManager();
 		
 		axiom2Module = new HashMap<OWLAxiom, OWLOntology>();
+		
 		regularExplanationCache = new HashMap<OWLAxiom, Set<Explanation>>();
 		laconicExplanationCache = new HashMap<OWLAxiom, Set<Explanation>>();
+		preciseExplanationCache = new HashMap<OWLAxiom, Set<Explanation>>();
+		
 		lastRequestedRegularSize = new HashMap<OWLAxiom, Integer>();
 		lastRequestedLaconicSize = new HashMap<OWLAxiom, Integer>();
+		
 		RepairManager.getInstance(OREManager.getInstance()).addListener(this);
 	}
 	
 	public void setComputeLaconicExplanations(boolean laconic){
 		laconicMode = laconic;
+	}
+	
+	public void setExplanationType(ExplanationType type){
+		explanationType = type;
+	}
+	
+	public ExplanationType getExplanationType(){
+		return explanationType;
 	}
 	
 	public boolean isLaconicMode(){
@@ -75,10 +94,22 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 	public int getArity(OWLAxiom axiom){
 		int arity = 0;
 		Map<OWLAxiom, Set<Explanation>> cache;
-		if(laconicMode == true){
-			cache = laconicExplanationCache;
-		} else {
-			cache = regularExplanationCache;
+		switch(explanationType){
+			case REGULAR : {
+				cache = regularExplanationCache;
+				break;
+			}
+			case LACONIC : {
+				cache = laconicExplanationCache;
+				break;
+			}
+			case PRECISE : {
+				cache = preciseExplanationCache;
+				break;
+			}
+			default:
+				throw new UnsupportedOperationException( "Unrecognized module type: " + explanationType );
+		
 		}
 		for(Set<Explanation> explanations : cache.values()){
 			for(Explanation exp : explanations){
@@ -93,10 +124,22 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 	public double getInconsistencyValue(OWLAxiom ax){
 		double value = 0;
 		Map<OWLAxiom, Set<Explanation>> cache;
-		if(laconicMode == true){
-			cache = laconicExplanationCache;
-		} else {
-			cache = regularExplanationCache;
+		switch(explanationType){
+			case REGULAR : {
+				cache = regularExplanationCache;
+				break;
+			}
+			case LACONIC : {
+				cache = laconicExplanationCache;
+				break;
+			}
+			case PRECISE : {
+				cache = preciseExplanationCache;
+				break;
+			}
+			default:
+				throw new UnsupportedOperationException( "Unrecognized module type: " + explanationType );
+	
 		}
 		SortedSet<Explanation> sorted = new TreeSet<Explanation>();
 		for(Set<Explanation> explanations : cache.values()){
@@ -122,10 +165,22 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		Set<Explanation> explanations = new HashSet<Explanation>();
 		
 		try {
-			if(!laconicMode){
-				explanations = computeRegularExplanations(entailment, limit);
-			} else {
-				explanations = computeLaconicExplanations(entailment, limit);
+			switch(explanationType){
+				case REGULAR : {
+					explanations = computeRegularExplanations(entailment, limit);
+					break;
+				}
+				case LACONIC : {
+					explanations = computeLaconicExplanations(entailment, limit);
+					break;
+				}
+				case PRECISE : {
+					explanations = computePreciseExplanations(entailment, limit);
+					break;
+				}
+				default:
+					throw new UnsupportedOperationException( "Unrecognized module type: " + explanationType );
+				
 			}
 		} catch (ExplanationException e) {
 			// TODO Auto-generated catch block
@@ -154,8 +209,23 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 			} else {
 				explanations = laconicExpGen.getExplanations(entailment, limit);
 			}
-			laconicExplanationCache.put(entailment, explanations);
+			laconicExplanationCache.put(entailment, laconicExpGen.retrieveAxioms(explanations));
+			preciseExplanationCache.put(entailment, explanations);
 			lastRequestedLaconicSize.put(entailment, Integer.valueOf(limit));
+		}
+		return explanations;
+	}
+	
+	private Set<Explanation> computePreciseExplanations(OWLAxiom entailment, int limit) throws ExplanationException{
+		
+		Set<Explanation> explanations = preciseExplanationCache.get(entailment);
+		Integer lastRequestedSize = lastRequestedLaconicSize.get(entailment);
+		if(lastRequestedSize == null){
+            lastRequestedSize = Integer.valueOf(0);
+		}
+		if(explanations == null || lastRequestedSize.intValue() != -1 && lastRequestedSize.intValue() < limit){
+			computeLaconicExplanations(entailment, limit);
+			explanations = preciseExplanationCache.get(entailment);
 		}
 		return explanations;
 	}
@@ -217,6 +287,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 //		}
 		regularExplanationCache.clear();
 		laconicExplanationCache.clear();
+		preciseExplanationCache.clear();
 		
 		axiom2Module.clear();
 		lastRequestedRegularSize.clear();

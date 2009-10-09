@@ -37,6 +37,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.dllearner.tools.protege.IndividualPoint;
 
 

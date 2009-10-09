@@ -17,6 +17,7 @@ import javax.swing.table.TableCellRenderer;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
+import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
@@ -34,10 +35,9 @@ public class RepairTable extends JXTable {
 		setShowHorizontalLines(true);
 		setGridColor(Color.LIGHT_GRAY);
 		setTableHeader(null);
-		setRowHeight(getRowHeight() + 5);
 		setRowHeightEnabled(true);
 		getColumn(0).setMaxWidth(30);
-		getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
+		getColumn(1).setCellRenderer(new TextAreaRenderer());
 		getColumn(2).setMaxWidth(40);
 		getColumn(2).setCellRenderer(new TableCellRenderer() {
 

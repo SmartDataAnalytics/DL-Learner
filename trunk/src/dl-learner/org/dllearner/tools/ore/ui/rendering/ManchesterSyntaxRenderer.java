@@ -1,6 +1,5 @@
-package org.dllearner.tools.ore.ui;
+package org.dllearner.tools.ore.ui.rendering;
 
-import java.io.StringWriter;
 import java.util.StringTokenizer;
 
 import org.dllearner.core.owl.Description;
@@ -18,20 +17,10 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObject;
 
 import com.clarkparsia.explanation.io.manchester.Keyword;
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
-import com.clarkparsia.explanation.io.manchester.TextBlockWriter;
 
 public class ManchesterSyntaxRenderer {
 	
-	static private StringWriter buffer = new StringWriter();
-	static private TextBlockWriter writer = new TextBlockWriter(buffer);
-//	static private ManchesterSyntaxObjectRenderer renderer = new ManchesterSyntaxObjectRenderer(writer);
 	static private ManchesterRenderer renderer = new ManchesterRenderer(OREManager.getInstance().getReasoner().getOWLOntologyManager());
-	public ManchesterSyntaxRenderer(){
-	
-//		renderer.setWrapLines( false );
-//		renderer.setSmartIndent( true );
-	}
 
 	
 	public static String render(Description value){
@@ -40,28 +29,19 @@ public class ManchesterSyntaxRenderer {
 	}
 	
 	public static String renderSimple(OWLAxiom ax){	
-		ax.accept(renderer);
-		writer.flush();
-		String renderedString = buffer.toString();
-		buffer.getBuffer().delete(0, buffer.toString().length());
+		String renderedString = renderer.render(ax, null);
 		return renderedString;
 	}
 	
 	public static String renderSimple(Description value){
 		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
-		desc.accept(renderer);
-		writer.flush();
-		String renderedString = buffer.toString();
-		buffer.getBuffer().delete(0, buffer.toString().length());
+		String renderedString = renderer.render(desc, null);
 		return renderedString;
 	}
 	
 	public static String renderSimple(Individual value){	
 		OWLIndividual ind = OWLAPIConverter.getOWLAPIIndividual(value);
-		ind.accept(renderer);
-		writer.flush();
-		String renderedString = buffer.toString();
-		buffer.getBuffer().delete(0, buffer.toString().length());
+		String renderedString = renderer.render(ind, null);
 		return renderedString;
 	}
 	
@@ -71,9 +51,7 @@ public class ManchesterSyntaxRenderer {
 	}
 	
 	public static String render(OWLAxiom value, boolean removed, int depth){
-		value.accept(renderer);
-		writer.flush();
-		String renderedString = renderer.render(value, null);//buffer.toString();
+		String renderedString = renderer.render(value, null);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
 		
@@ -127,14 +105,13 @@ public class ManchesterSyntaxRenderer {
 		}
 		bf.append("</html>");
 		renderedString = bf.toString();
-		buffer.getBuffer().delete(0, buffer.toString().length());
+
 		return renderedString;
 	}
 	
 	public static String render(OWLAxiom value, boolean removed, int depth, Explanation explanation){
-		value.accept(renderer);
-		writer.flush();
-		String renderedString = buffer.toString();
+		
+		String renderedString = renderer.render(value, null);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
 		
@@ -203,14 +180,11 @@ public class ManchesterSyntaxRenderer {
 		}
 		bf.append("</html>");
 		renderedString = bf.toString();
-		buffer.getBuffer().delete(0, buffer.toString().length());
 		return renderedString;
 	}
 	
 	private static String render(OWLObject obj){
-		obj.accept(renderer);
-		writer.flush();
-		String renderedString = buffer.toString();
+		String renderedString = renderer.render(obj, null);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		
 		StringBuffer bf = new StringBuffer();
@@ -234,7 +208,6 @@ public class ManchesterSyntaxRenderer {
 		}
 		bf.append("</html>");
 		renderedString = bf.toString();
-		buffer.getBuffer().delete(0, buffer.toString().length());
 		return renderedString;
 		
 	}
