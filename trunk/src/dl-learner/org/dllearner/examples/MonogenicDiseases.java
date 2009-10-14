@@ -59,6 +59,11 @@ public class MonogenicDiseases {
 	private static File owlFile = new File("examples/mutation/mutation.owl");
 	private static File confFile = new File("examples/mutation/mutation.conf");
 	
+	// whether to generate a class containing the positive examples
+	private static boolean generatePosExampleClass = true;
+	// set to true if accessing PostreSQL and false for MySQL
+	private static boolean pgSQL = false;
+	
 	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException {
 		
 		// reading values for db connection from ini file
@@ -71,8 +76,14 @@ public class MonogenicDiseases {
 		String table = prefs.node("database").get("table", null);
 		
 		// connect to database
-		Class.forName("com.mysql.jdbc.Driver");
-		String url = "jdbc:mysql://"+dbServer+":3306/"+dbName;
+		String url = "jdbc:";
+		if(pgSQL) {
+			Class.forName("org.postgresql.Driver");
+			url += "postgresql://"+dbServer+":5432/"+dbName;
+		} else {
+			Class.forName("com.mysql.jdbc.Driver");
+			url += "mysql://"+dbServer+":3306/"+dbName;
+		}
 		Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
 		System.out.println("Successfully connected to database.");
 		
@@ -80,6 +91,8 @@ public class MonogenicDiseases {
 		long startTime = System.nanoTime();
 		KB kb = new KB();
 		NamedClass mutationClass = new NamedClass(getURI("Mutation")); 
+		
+		NamedClass deleteriousMutationClass = new NamedClass(getURI("DeletoriousMutation"));
 		
 		// size change
 		NamedClass protSizeIncClass = new NamedClass(getURI("ProteinSizeIncreasingMutation"));
@@ -340,7 +353,16 @@ public class MonogenicDiseases {
 			// reliability_deltag
 			double reliabilityDeltag = rs.getDouble("reliability_deltag");
 			kb.addAxiom(new DoubleDatatypePropertyAssertion(reliabilityDeltagProp, mutationInd, reliabilityDeltag));
-							
+						
+			// generate a class with all positive examples (optional)
+			if(generatePosExampleClass) {
+				String phenotype = rs.getString("phenotype");
+				if(phenotype.toLowerCase().contains("polymorphism")) {
+					kb.addAxiom(new ClassAssertionAxiom(deleteriousMutationClass, mutationInd));
+				}
+			}
+			
+			
 			count++;
 		}
 		
@@ -371,15 +393,21 @@ public class MonogenicDiseases {
 		Files.clearFile(confFile);
 		String confHeader = "import(\"" + owlFile.getName() + "\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
-		confHeader += "algorithm = refexamples;\n";
-		confHeader += "refexamples.noisePercentage = 15;\n";
-		confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
-		confHeader += "refexamples.writeSearchTree = false;\n";
-		confHeader += "refexamples.searchTreeFile = \"log/mutation/searchTree.log\";\n";
+		confHeader += "problem = classLearning;\n";
+		confHeader += "classLearning.classToDescribe = \"" + deleteriousMutationClass + "\";\n"; 
+		confHeader += "algorithm = celoe;\n";
+		confHeader += "celoe.maxExecutionTimeInSeconds = 100;\n";
+		confHeader += "celoe.noisePercentage = 25;\n";
+//		confHeader += "refexamples.noisePercentage = 15;\n";
+//		confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
+//		confHeader += "refexamples.writeSearchTree = false;\n";
+//		confHeader += "refexamples.searchTreeFile = \"log/mutation/searchTree.log\";\n";
 		confHeader += "\n";
 		Files.appendFile(confFile, confHeader);
-		Carcinogenesis.appendPosExamples(confFile, posExamples);
-		Carcinogenesis.appendNegExamples(confFile, negExamples);		
+		if(!generatePosExampleClass) {
+			Carcinogenesis.appendPosExamples(confFile, posExamples);
+			Carcinogenesis.appendNegExamples(confFile, negExamples);
+		}	
 		
 		long runTime = System.nanoTime() - startTime;
 		System.out.println("Database successfully converted in " + Helper.prettyPrintNanoSeconds(runTime) + ".");
