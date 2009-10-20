@@ -24,9 +24,10 @@ pre, form                     { margin-bottom: 18px; }
 #loadingImg, #header h1       {   display: none; }
 
 /* Rounded Corners */
-input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
+input, textarea, select,
+a.button                      { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
 #content, #status, #playing, 
-#playerControls, #results li  { -moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px; }
+#playerControls, .results li  { -moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px; }
 #mainMenu a                   { -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px; 
                                 -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; 
                                 border-bottom-left-radius: 10px; border-top-left-radius: 10px; }
@@ -73,13 +74,15 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
 /* Search form */
 #searchValue                  { margin: 0 5px; width: 100px; }
 #loadingImg                   { cursor: wait; }
-
+a.button                      { background: #4a4a4a; color: #f1f7e4; padding: 5px 10px; text-decoration: none; }
+a.button:hover                { border: 1px solid #1fd611; padding: 4px 9px; }
+#addRandom                    { text-decoration: underline; }
 
 /*=============== Menu & Footer ===============*/
 #mainMenu ul                  { position: absolute; top: 0; right: 0; }
 #mainMenu li                  { float: left; }
 #mainMenu a                   { display: block; margin-left: 10px; line-height: 30px; height: 30px; 
-                                padding: 10px 12px; color: #fafafa; background: #4a4a4a; }
+                                padding: 10px 12px; color: #f1f7e4; background: #4a4a4a; }
 #mainMenu .active a,
 #mainMenu .active a:hover     { background: #1fd611; }
 #mainMenu a:hover             { text-decoration: none; background: #5a5a5a; }
@@ -87,24 +90,27 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
 #footer a                     { padding: 0 10px; }
 
 /*=============== Search Results ===============*/
-#results li h3 a              { font-weight: normal; }
-#results li img               { border: 2px solid #545454; }
-#results li                   { float: left; width: 312px; border: 1px solid #545454; padding: 18px; margin-bottom: 18px; }
-#results li.odd               { margin-right: 18px; clear: both; }
-#results ul ul                { list-style: disc; }
+.results li h3 a              { font-weight: normal; }
+.results li img               { border: 2px solid #545454; }
+.results li                   { float: left; width: 312px; border: 1px solid #545454; padding: 18px; margin-bottom: 18px; }
+.results li.odd               { margin-right: 18px; clear: both; }
+.results ul ul                { list-style: disc; }
 
 /* This is for the list of found albums etc */
-#results li li,
-#results .artistSearch li li,
-#results .tagSearch li li     { border: none; display: list-item; padding: 0; margin: 0 0 0 36px; 
+.results li li,
+.artistSearch li li,
+.tagSearch li li              { border: none; display: list-item; padding: 0; margin: 0 0 0 36px; 
                                 width: auto; height: auto; float: none; }
-#results .tagSearch ul ul     { clear: both; }
-#results .artistImage         { text-align: center; margin-bottom: 18px;}
-#results .cover               { margin: 0 18px 18px 0; width: 104px; height: 104px; float: left; }
-#results .tagSearch h4        { display: inline; }
+#recommendationResults ul ul,
+.tagSearch ul ul              { clear: both; }
+.results .artistImage         { text-align: center; margin-bottom: 18px;}
+.results .cover               { margin: 0 18px 18px 0; width: 104px; height: 104px; float: left; }
+#recommendationResults h4,
+.tagSearch h4                 { display: inline; }
 
 
 /*=============== Recommendations and playlist ===============*/
+#autoAdd                      { float: right; }
 #recommended a:hover          { cursor: pointer; text-decoration: none; font-weight: bold; color: #131313; }
 #playlist, #recommended, 
 #recently                     { margin-left: 36px; list-style: decimal; }
@@ -120,7 +126,6 @@ input, textarea, select       { -moz-border-radius: 5px; -webkit-border-radius: 
                                 background: url(../img/controls.png) 0px -200px no-repeat;}
 #playlist .moveUp             { background: url(../img/controls.png) 0px -360px no-repeat; right: 40px; }
 #playlist .moveDown           { background: url(../img/controls.png) 0px -320px no-repeat; right: 60px; }
-
 
 /*=============== Information / Help ===============*/
 

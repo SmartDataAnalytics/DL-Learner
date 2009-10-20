@@ -72,29 +72,37 @@
           Now get started and add something to the Playlist!
         </p>
       </div>
-      <div id="results">
+      <div id="results" class="results">
         
       </div>
     </div>
 
     <div id="recommendations">
-      <h2>Recommended Songs</h2>
+      <form id="autoAdd" method="get" action="">
+        <div>
+          <label for="autoAddCheckbox" title="Check this to automatically add a random song from your recommendations to your playlist everytime your recommendations are updated.">Autoadd recommendations</label>
+          <input type="checkbox" id="autoAddCheckbox" checked="checked" />
+        </div>
+      </form>
+      <h2>Recommendations</h2>
       <p>
         These recommendations are generated every time you listen to a song 
-        for at least half it's length, assuming that you liked it.
+        for at least half it's length, assuming that you liked it. You click on a
+        recommended album to add it to the playlist, or you can <a href="#" id="addRandom">click
+        here to just add a random song from your recommendations</a>.<br />
+        
       </p>
-      
-      <div id="recommendationResults">
+      <div id="recommendationResults" class="results">
       
       
       </div>
       <p>
-        <a href="#" id="generateRecommendations">Nothing showing up here? You can also 
-        generate your list of recommendations by clicking here.</a>
+        <a href="#" id="generateRecommendations" class="button" title="If there is nothing showing up here, you can generate your list of recommendations by clicking here.">Reload recommendations</a>
       </p>
     </div>
 
     <div id="information">
+      <h2>About the artist...</h2>
       <div id="moreInfo">
 
       </div>
@@ -109,13 +117,14 @@
       <ol id="playlist">
         <li></li>  
       </ol>
+      <p><a href="#" id="resetPlaylist" class="button" title="Click here to delete all tracks from your playlist.">Delete all</a></p>
       
       <h2>Recently Listened to</h2>
       <p>These are the songs you recently listened to. Click on a song to re-enqueue it to your current playlist.</p>
       <ol id="recently">
         <li></li>
       </ol>
-      <p><a href="#" id="reset">Click here to reset your &raquo;recently listened to&laquo;-list.</a></p>
+      <p><a href="#" id="resetRecently" class="button" title="Click here to reset your &raquo;recently listened to&laquo;-list.">Reset</a></p>
     </div>
 
     <div id="help">
@@ -128,6 +137,9 @@
     <a href="http://aksw.org/Projects/DLLearner">DL-Learner</a> |
     <a href="http://jamendo.com">Jamendo</a> |
     <a href="http://mediaplayer.yahoo.com/">Yahoo! Media Player</a> 
+  </div>
+  <div id="temp" class="hidden">
+    
   </div>
 </div> <!-- end container -->
 

@@ -38,7 +38,7 @@ class DllearnerConnection extends Config {
 		try {
 		  $this->client = new SoapClient($this->getConfigUrl('wsdlLocal'));
     } catch (Exception $e) {
-      $this->debugger->log($e, "Error connecting to the DL-Learner Webservice.");
+      if ($this->debugger) $this->debugger->log($e, "Error connecting to the DL-Learner Webservice.");
       echo '<h2>Could not connect to the DL-Learner Webservice.</h2>';
       exit;
     }
@@ -99,12 +99,11 @@ class DllearnerConnection extends Config {
    * @return String A JSON-Object with the containing result-set
    * @param String $query The SPARQL-Querystring to send
    */
-	public function sparqlQuery($query) {
-		$result = $this->client->sparqlQuery($_SESSION['sessionID'], $this->knowledgeSourceID, $query);
-		return $result;
-	}
-  
-  
+  public function sparqlQuery($query) {
+    $result = $this->client->sparqlQuery($_SESSION['sessionID'], $this->knowledgeSourceID, $query);
+    return $result;
+  }
+    
   
   /**
    *
@@ -146,21 +145,21 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryStringTupleList($id, $kID, 'replacePredicate', 
       array($this->getConfigPrefixes('tags') . 'taggedWithTag'), array($this->getConfigPrefixes('rdf') . 'type')
     );
-
+    
+    // after we have set all conf-values, we initialize the learning process
     $this->client->initAll($id);
     
     $result = $this->client->learnDescriptionsEvaluated($id);
-    $result = json_decode($result);
     return $result;
     
   }
   
-  
+  /**
+   * Converts a natural Description in a SPARQL-Query for recommendation retrieval
+   * 
+   */ 
   public function kbToSqarql($kb) {
-    return $this->client->SparqlRetrieval($kb, 20);
-    
-    
-    
+    return $this->client->SparqlRetrieval($kb, $this->getConfig('maxResults'));
   }
 
 }

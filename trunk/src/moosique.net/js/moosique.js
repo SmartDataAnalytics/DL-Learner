@@ -65,7 +65,12 @@ var Moosique = new Class({ Implements: Options,
     this.recommendations = document.id('recommendations');
     this.generate = document.id('generateRecommendations');
     this.recResults = document.id('recommendationResults');
-    this.reset = document.id('reset');
+    this.resetPlaylist = document.id('resetPlaylist');
+    this.resetRecently = document.id('resetRecently');
+    this.moreInfo = document.id('moreInfo');
+    this.temp = document.id('temp');
+    this.autoAddCheckbox = document.id('autoAddCheckbox');
+    this.addRandom = document.id('addRandom');
   },
   
   /**
@@ -154,9 +159,11 @@ var Moosique = new Class({ Implements: Options,
           del.removeEvents();
           del.addEvent('click', function(e) {
             e.stop();
+            // TODO: if playlist empty or deleted currently playing track: STOP!
             this.getParent().destroy(); // deletes the li-element
             // and refresh the playlist if clicked
             YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
+            // TODO: if playlist empty or deleted currently playing track: STOP!
           });
         });
 
@@ -210,14 +217,26 @@ var Moosique = new Class({ Implements: Options,
         that.nowPlayingInfo.set('text', 'Currently playing:');
         that.nowPlayingTrack.set('text', YAHOO.MediaPlayer.getMetaData().title);
         that.playPause.setStyle('background-position', '0px -40px');
+        
+        // send a request to gather additional artist-information
+        var nowPlayingAlbum = YAHOO.MediaPlayer.getMetaData().anchor.get('rel');
+        var getInfo = new Request({
+          method: 'get', 
+          url: 'moosique/index.php',
+          onSuccess: function(response) {
+            that.moreInfo.set('html', response);
+          }
+        }).send('info=' + nowPlayingAlbum);
+        
       };
 
       /**
        * trackComplete: we change the Pause-Button to a Play-Button
-       * TODO: if this was the last track, add another track from the recommendations and start playing
+       * and execute the autoAdd-Function for adding recommendations
        */
       var trackComplete = function() {
         that.playPause.setStyle('background-position', '0px 0px');
+        that.autoAddToPlaylist();
       };
 
       // add the configuration to the events by subscribing
@@ -240,19 +259,39 @@ var Moosique = new Class({ Implements: Options,
    */
   generateRecommendations: function() {
     var that = this;
-    
-    // TODO 
     // send ajax request and save the scrobbled song
     // and retrieve and update the recommendations
     var getRecommendations = new Request({
       method: 'get', 
       url: 'moosique/index.php',
+      onRequest: function() {
+        that.recResults.set('html', '<h2>Generating new recommendations...</h2><p>Please be patient, this may take up to a minute...</p>');
+      },
+      
+      onFailure: function() {
+        that.recResults.set('html', '<h2>Unable to get recommendations. Please reset and try again.</h2>');      
+      },
       onSuccess: function(response) {
-        that.recResults.set('html', response);
-        that.showTab('recommendations');
-        that.displayStatusMessage('You have new recommendations!');
+        response = response.trim();
+        if (response != '') {
+          that.recResults.set('html', response);
+          that.makeAddable($$('a.addToPlaylist'));
+          that.showTab('recommendations');
+          that.displayStatusMessage('You have new recommendations!');
+
+          if (that.autoAddCheckbox.checked) {
+            that.addRandomToPlaylist();
+          } else {
+            debug.log('Autoadding songs from recommendations is disabled.');
+          }
+        } else {
+          debug.log('Response from server empty.');
+          that.recResults.set('html', '<h2>There is nothing in your recently list.</h2><p>You have to listen to some music first, before you can get any recommendations.</p>');
+        }
+        
+        
       }
-    }).send('learn=now');
+    }).send('get=recommendations');
   },
   
   
@@ -311,13 +350,7 @@ var Moosique = new Class({ Implements: Options,
     
     // the Stop-Playing Button
     that.stop.addEvent('click', function() {
-      that.playPause.setStyle('background-position', '0px 0px');
-      that.nowPlayingInfo.set('text', 'Player stopped.');
-      that.nowPlayingTrack.set('text', '...');
-      that.nowPlayingTime.set('text', '0:00 / 0:00');
-      YAHOO.MediaPlayer.stop();
-      // and reload the playlist
-      that.refreshPlaylist();
+      that.stopPlaying();
     });
     
     // Mute-Toggle-Switch
@@ -343,6 +376,23 @@ var Moosique = new Class({ Implements: Options,
     var that = this;
     YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
     that.displayStatusMessage('Playlist updated.');
+  },
+
+
+  /**
+   *
+   *
+   *
+   */
+  stopPlaying: function() {
+    var that = this;
+    that.playPause.setStyle('background-position', '0px 0px');
+    that.nowPlayingInfo.set('text', 'Player stopped.');
+    that.nowPlayingTrack.set('text', '...');
+    that.nowPlayingTime.set('text', '0:00 / 0:00');
+    YAHOO.MediaPlayer.stop();
+    // and reload the playlist
+    that.refreshPlaylist();
   },
 
 
@@ -383,10 +433,21 @@ var Moosique = new Class({ Implements: Options,
       that.generateRecommendations();
     });
     
-    that.reset.addEvent('click', function(e) {
+    that.resetRecently.addEvent('click', function(e) {
       e.stop();
       Cookie.dispose('moosique');
       that.updateRecently();
+    });
+    
+    that.resetPlaylist.addEvent('click', function(e) {
+      e.stop();
+      that.playlist.empty();
+      that.stopPlaying();
+    });
+
+    that.addRandom.addEvent('click', function(e) {
+      e.stop();
+      that.addRandomToPlaylist();
     });
 
     // make buttons functional
@@ -472,21 +533,22 @@ var Moosique = new Class({ Implements: Options,
         var rel = a.get('rel');
 
         var type = '';
-        if (href.match(/jamendo\.com\/get\/track\/id\/album\//gi)) { type = 'albumPlaylist'; }      
-        if (href.match(/jamendo\.com\/get\/track\/id\/track\//gi)) { type = 'trackPlaylist'; }
+        if (href.match(/jamendo\.com\/get\/track\/id\//gi)) { type = 'playlist'; }      
         if (href.match(/\.mp3/)) { type = 'mp3File'; }
 
         // if the addable item is a playlist, we have to get the playlistitems
-        if (type == 'albumPlaylist' || type == 'trackPlaylist') {
+        if (type == 'playlist') {
           var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
             onSuccess: function(response) {
               that.insertIntoPlaylist(response);
+              that.showTab('player');
             }
           }).send('get=' + type + '&playlist=' + href + '&rel=' + rel);
         }
         if (type == 'mp3File') {
           var itemHTML = '<li>' + a.getParent().get('html') + '</li>';
           that.insertIntoPlaylist(itemHTML);
+          that.showTab('player');
         }
       });
     });
@@ -531,7 +593,45 @@ var Moosique = new Class({ Implements: Options,
     
     // refresh the playlist and show the player-tab
     that.refreshPlaylist();
-    that.showTab('player');
+  },
+  
+  
+  /**
+   *
+   *
+   *
+   */
+  addRandomToPlaylist: function() {
+    var that = this;
+    var addableAlbums = that.recResults.getElements('.addToPlaylist');
+    // pick a random album
+    var randomAlbum = addableAlbums.getRandom();
+    
+    if (randomAlbum) {
+      var href = randomAlbum.get('href');
+      var rel = randomAlbum.get('rel');
+
+      if (href.match(/jamendo\.com\/get\/track\/id\//gi)) { type = 'playlist'; }      
+      if (href.match(/\.mp3/)) { type = 'mp3File'; }
+
+      // if the addable item is a playlist, we have to get the playlistitems
+      var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
+        onSuccess: function(response) {
+          // yay, we have the playlist, choose a random song and add it
+          // therefore save it as Element in temp and extract a random song
+          // TODO a better way would be to just get on <li> from the response
+          // with a regexp and just use this, without creating new dom nodes etc.
+          that.temp.set('html', '<ul>' + response + '</ul>');
+          var songs = that.temp.getElements('li');
+          var randomSong = songs.getRandom();
+          that.insertIntoPlaylist('<li>' + randomSong.get('html') + '</li>'); 
+          that.temp.empty();
+        }
+      }).send('get=playlist&playlist=' + href + '&rel=' + rel);
+    } else {
+      debug.log('You currently have no recommendations, adding a random one will not work.');
+    }
+    
   },
   
   
