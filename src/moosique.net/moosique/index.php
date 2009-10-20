@@ -7,6 +7,7 @@ require('classes/LastFM.php');
 require('classes/SparqlQueryBuilder.php');
 require('classes/View.php');
 require('classes/RequestHandler.php');
+require('classes/Recommendations.php');
 
 $rqh = new RequestHandler();
 $output = $rqh->getResponse();

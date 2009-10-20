@@ -19,8 +19,24 @@ class RequestHandler extends Config {
     // we only accept ajax-get requests
     if ($this->isAjax() && $this->isGet()) {
       $this->response = $this->processRequest();
+      
+      if (!empty($this->response)) {
+        return $this->response;
+      } else {
+        if (isset($_GET['searchType'])) {
+          return "<h2>Sorry, nothing found.</h2>";
+          if ($_GET['searchType'] == 'lastFM') {
+            return '<h2>Nothing found for the last.fm-user &raquo;' . $_GET['searchValue'] . '&laquo;.';
+          }
+        } 
+        return "<h2>The repsonse from the server was empty.</h2>";
+      }
+      
+      
+      
     } else {
-      // we do nothing. This application is based on AJAX.
+      // we do nothing. This application is based on AJAX - back to home
+      header('Location: ' . $this->getConfigUrl('base'));
     }
   }
   
@@ -58,10 +74,10 @@ class RequestHandler extends Config {
         
       } 
       
+      // normal search for artist, tag or song
       if ($_GET['searchType'] == 'artistSearch' || 
           $_GET['searchType'] == 'tagSearch' ||
           $_GET['searchType'] == 'songSearch') {
-        // normal search for artist, tag or song
         $data = $this->getData($search, $_GET['searchType']);
         $view = new View($data, $_GET['searchType']);
         $response = $view->getHTML();
@@ -72,45 +88,56 @@ class RequestHandler extends Config {
         $lastFM = new LastFM($search);
         $tags = $lastFM->getTopTags();
         // no we have the topTags, do a search for related albums
-        foreach($tags as $tag) {
-          // TODO when using last.fm-Tags for tagSearch, we want exakt results, meaning
-          // no "darkmetalbeermusic" when the lastfm tag is "metal"
-          
-          $tag = $this->cleanString($tag, $_GET['searchType']);
-          // displaying 10 results per tag (=100 results) should be enough
-          $data = $this->getData($tag, $_GET['searchType'], 20);
-          $view = new View($data, $_GET['searchType']);
+        
+        if (!empty($tags)) {
+          foreach($tags as $tag) {
+            // FIXME when using last.fm-Tags for tagSearch, we want exakt results, meaning
+            // no "darkmetalbeermusic" as result when the lastfm tag is "metal"
+
+            $tag = $this->cleanString($tag, $_GET['searchType']);
+            // displaying 10 results per tag (=100 results) should be enough
+            $data = $this->getData($tag, $_GET['searchType'], 20);
+            $view = new View($data, $_GET['searchType']);
+            $response .= $view->getHTML();
+          }
+        } else { // let the view handle it, displays error
+          $view = new View($tags, $_GET['searchType']);
           $response .= $view->getHTML();
         }
       }
     }
     
     // TODO other requests --- artist Information
-    
-    
-    
+    // ======================================================================
+    if (isset($_GET['info']) && !(empty($_GET['info']))) {
+      $currentAlbum = $_GET['info'];
+      $response .= '<p>Artist Information coming soon...</p>';
+    }
     
     // A Learning-Request
     // ======================================================================
-    if (isset($_GET['learn']) && $_GET['learn'] == 'now') {
-      $posExamples = $this->getPositiveExamples();
-      $instances = $this->getInstances($posExamples);
-    
-      $this->debugger->log($instances, "INSTANZEN");
-      $this->debugger->log($posExamples, "posExamples");
+    if (isset($_GET['get']) && $_GET['get'] == 'recommendations') {
+      $r = new Recommendations();
+      $r->setPosExamples();
+      $r->setInstances($r->getPosExamples());
+      $recommendations = $r->getQueries($this->connection);
       
-      $res = $this->connection->learn($instances, $posExamples);
-
-      // TODO (Yes, BIG one) 
-      // build sparql-query based on learning-results
-      // build html-view build an sparql-results --- misuse tagSearch-Thingie
-      foreach ($res as $solution) {
-        $response .= round($solution->scoreValue*100, 2) . '% --- ' . $solution->descriptionKBSyntax . "\n";
-        // $response .= $this->connection->kbToSqarql($solution->descriptionKBSyntax) . "\n";
+      $results = array();
+      if (is_array($recommendations) && !empty($recommendations)) {
+        if (!empty($recommendations['queries'])) {
+          foreach($recommendations['queries'] as $query) {
+            $data = $this->getData($query, 'recommendations', $this->getConfig('maxResults'));
+            $results[] = $data;
+          }
+        }
+        $recommendations['results'] = $results;
+        $view = new View($recommendations, 'recommendations');
+        $response .= $view->getHTML();
+        
+      } else { // an error occured during recommendation-retrieval
+        // give the error message to the view
+        $view = new View($recommendations, 'recommendations');
       }
-      
-      $response = '<pre>' . $response . '</pre>';
-      
     }
     
     
@@ -119,111 +146,21 @@ class RequestHandler extends Config {
     if (isset($_GET['get']) && isset($_GET['playlist'])) {
       // Due to a bug in YMP we don't directly deliver the .xspf-file, we return a prepared 
       // list of <li> including the links to the mp3-files, and this is build in the view of course.
-      $data = $this->prepareData(
-        array('playlist' => $_GET['playlist'], 'albumID' => $_GET['rel']), 
-        $_GET['get']
-      );
+      $data = $this->prepareData(array('playlist' => $_GET['playlist'], 'albumID' => $_GET['rel']), $_GET['get']);
       $view = new View($data, $_GET['get']);
       $response = $view->getHTML();
     }
     
-    
-    
     // Finally returning the response
-    if (!empty($response)) {
-      return $response;
-    } else {
-      if ($_GET['searchType'] == 'lastFM') {
-        return '<h2>Nothing found for the last.fm-user &raquo;' . $_GET['searchValue'] . '&laquo;.';
-      }
-      return "<h2>The repsonse from the server was empty.</h2>";
-    }
+    return $response;
   }
   
   
-  /**
-   *
-   *
-   *
-   */
-  private function getPositiveExamples() {
-    $posExamples = array();
-    if (!empty($_COOKIE['moosique'])) {
-      $recent = json_decode(stripslashes($_COOKIE['moosique']))->recentlyListened;
-      foreach($recent as $link) {
-        // extract relation from the cookie-link
-        preg_match_all('#<a\s*(?:rel=[\'"]([^\'"]+)[\'"])?.*?>((?:(?!</a>).)*)</a>#i', $link, $record);
-        array_push($posExamples, $record[1][0]);
-      }
-    }
-    
-    $posExamples = array_unique($posExamples);
-    return $posExamples;
-    
-  }
-  
-  /**
-   *
-   *
-   *
-   */
-  private function getInstances($posExamples) {
-    // TODO more testing, what is the optimum posExamples/neutral ratio, 50/50? 
-    // for now we assume 50/50
-    // $totalInstances = $this->getConfigLearning('instances');
-    $instances = array();
-    // and then add some random Records _not_ in this list
-    $allRecords = file($this->getConfigUrl('allRecords'));
-    $countPos = count($posExamples);
-
-    for ($i = 0; $i < $countPos; $i++) {
-      $randomRecord = trim($allRecords[array_rand($allRecords)]);
-      // no double entries for the $instances-array
-      if (!in_array($randomRecord, $posExamples)) {
-        array_push($instances, $randomRecord);
-      }
-    }
-    // merge with posExamples
-    $instances = array_merge($posExamples, $instances);
-    shuffle($instances);
-    
-    return $instances;
-  }
-  
-  
-  /**
-   *
-   * @param Integer $limit optional Limit for Sparql-Query
-   */
-  private function getData($search, $type, $limit = 0) {
-    $sparql = new SparqlQueryBuilder($search, $type, $limit);
-    $query = $sparql->getQuery();
-    // sparql-query to dellearner
-    $json = $this->connection->sparqlQuery($query);
-    // convert to useable object
-    $result = json_decode($json);
-    $resultObject = $result->results->bindings;     
-       
-    // prepare the data for HTML processing
-    $data = $this->prepareData($resultObject, $type);
-    return $data;
-  }
-  
-  
-  /**
-   * Establishes a new Dl-Learner Connection and saves it in 
-   * private $connection for class-wide use. 
-   *
-   * @return 
-   */
-  private function establishConnection() {
-    $this->connection = new DllearnerConnection();
-  }
-
   /**
    * Removes unwanted chars from a search-string
    * 
-   * TODO - NOT IMPLEMENTED but prepared
+   * FIXME - NOT IMPLEMENTED but prepared --- USE AND / OR and stuff and make this an extra function
+   * 
    * If the search string contains a %20-Space-Char somewhere in the middle
    * of the string, it returns an array of search-values, divided by " "
    * Doing this we later can perform more searches for values like "stoner doom metal"
@@ -260,46 +197,56 @@ class RequestHandler extends Config {
    */ 
   private function prepareData($data, $type) {
     $mergedArray = array();
-    
     switch ($type) {
       case 'artistSearch' :
         $mergedArray = $this->mergeArray($data, 'artist');
         $mergedArray = $this->arrayUnique($mergedArray);
       break;
-      
       case 'tagSearch' :
         $mergedArray = $this->mergeArray($data, 'tag');
       break;
-      
       case 'songSearch' :
         $mergedArray = $this->mergeArray($data, 'track');
         $mergedArray = $this->arrayUnique($mergedArray);
       break;
-
       case 'lastFM' :
         $mergedArray = $this->mergeArray($data, 'tag');
       break;
-      
-      case 'albumPlaylist' :
+      case 'recommendations' :
+        $mergedArray = $this->mergeArray($data, 'record');
+        $mergedArray = $this->arrayUnique($mergedArray);
+      break;
+      case 'playlist' :
         $playlistObject = simplexml_load_file($data['playlist']);
         $mergedArray = $this->object2array($playlistObject);
         // prepend the album stream-information
         $mergedArray['albumID'] = $data['albumID'];
       break;
-
-      case 'trackPlaylist' :
-        $playlistObject = simplexml_load_file($data['playlist']);
-        $mergedArray = $this->object2array($playlistObject);
-        $mergedArray['albumID'] = $data['albumID'];
-      break;
     }
-    
     return $mergedArray;
   }
-  
-  
+
+
   /**
-   * TOOD implement nice merging for multi-tag-search
+   *
+   * @param Integer $limit optional Limit for Sparql-Query
+   */
+  private function getData($search, $type, $limit = 0) {
+    $sparql = new SparqlQueryBuilder($search, $type, $limit);
+    $query = $sparql->getQuery();
+    // sparql-query to dellearner
+    $json = $this->connection->sparqlQuery($query);
+    // convert to useable object
+    $result = json_decode($json);
+    $resultObject = $result->results->bindings;     
+       
+    // prepare the data for HTML processing
+    $data = $this->prepareData($resultObject, $type);
+    return $data;
+  }
+
+
+  /**
    * This function merges the result-Object to a nice array
    * we can process easily. The array is created by type,
    * returning the data sorted for artist, tag or song
@@ -332,7 +279,6 @@ class RequestHandler extends Config {
 
   /**
    * Like the php-function array_unique, but for multidimensional arrays, calls itself recursively
-   * 
    * 
    * @return Array (Multidimensional) array without double entries 
    * @param Array $array The Array to clean up
@@ -383,6 +329,16 @@ class RequestHandler extends Config {
    */
   public function getResponse() {
     return $this->response;
+  }
+  
+  /**
+   * Establishes a new Dl-Learner Connection and saves it in 
+   * private $connection for class-wide use. 
+   *
+   * @return 
+   */
+  private function establishConnection() {
+    $this->connection = new DllearnerConnection();
   }
   
   
