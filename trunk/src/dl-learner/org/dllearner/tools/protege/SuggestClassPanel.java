@@ -118,8 +118,6 @@ public class SuggestClassPanel extends JPanel {
 											model
 													.getCurrentlySelectedClassDescription(i));
 							view.setGraphicalPanel();
-							view.getMoreDetailForSuggestedConceptsPanel()
-									.repaint();
 
 						}
 					}
@@ -129,8 +127,6 @@ public class SuggestClassPanel extends JPanel {
 				}
 			}
 		}
-		descriptions.repaint();
-		repaint();
 	}
 
 	/**
@@ -148,9 +144,8 @@ public class SuggestClassPanel extends JPanel {
 	 * @param action
 	 *            ActionHandler
 	 */
-	public void addSuggestPanelMouseListener(ActionHandler action) {
-		descriptions.addMouseListener(action);
-
+	public void addSuggestPanelMouseListener(SuggestClassPanelHandler handle) {
+		descriptions.addMouseListener(handle);
 	}
 
 	/**

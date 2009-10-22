@@ -40,6 +40,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
 import org.dllearner.algorithms.celoe.CELOE;
+//import org.dllearner.tools.ore.ui.StatusBar;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owl.model.OWLDescription;
 /**
@@ -126,6 +127,8 @@ public class DLLearnerView {
 	private boolean toogled = false;
 	private String labels;
 	private int individualSize;
+	private SuggestClassPanelHandler sugPanelHandler;
+	//private StatusBar stat;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -140,7 +143,7 @@ public class DLLearnerView {
 		model = new DLLearnerModel(editorKit, this);
 		sugPanel = new SuggestClassPanel(model, this);
 		learnerPanel = new JPanel();
-		hintPanel = new JPanel(new BorderLayout());
+		hintPanel = new JPanel(new FlowLayout());
 		learnerPanel.setLayout(new BorderLayout());
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		action = new ActionHandler(model, this);
@@ -160,11 +163,10 @@ public class DLLearnerView {
 		helpButton.setPreferredSize(new Dimension(20, 20));
 		helpButton.setName("help");
 		helpButton.addActionListener(action);
-		helpButton.setVisible(false);
 		runPanel = new JPanel(new FlowLayout());
 		accept = new JButton("ADD");
 		addButtonPanel = new JPanel(new BorderLayout());
-		sugPanel.addSuggestPanelMouseListener(action);
+		
 		errorMessage = new JTextArea();
 		errorMessage.setEditable(false);
 		hint = new JTextArea();
@@ -181,6 +183,9 @@ public class DLLearnerView {
 		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
 		posPanel = new PosAndNegSelectPanel(model, action);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
+		sugPanelHandler = new SuggestClassPanelHandler(this, model);
+		sugPanel.addSuggestPanelMouseListener(sugPanelHandler);
+		sugPanel.getSuggestList().addListSelectionListener(sugPanelHandler);
 		this.addAcceptButtonListener(this.action);
 		this.addRunButtonListener(this.action);
 		this.addAdvancedButtonListener(this.action);	
@@ -208,6 +213,10 @@ public class DLLearnerView {
 	 */
 	public void makeView(String label) {
 		run.setEnabled(false);
+		//stat = new StatusBar();
+		helpButton.setVisible(false);
+		hint.setForeground(Color.BLACK);
+		hint.setText("To get suggestions for class expression, please click the button above.");
 		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
 		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
 			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
@@ -304,7 +313,6 @@ public class DLLearnerView {
 		learnerScroll.setViewportView(learner);
 		this.renderErrorMessage("");
 		this.getSuggestClassPanel().getSuggestModel().clear();
-		this.getSuggestClassPanel().repaint();
 			
 	}
 	
@@ -336,7 +344,6 @@ public class DLLearnerView {
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(posPanel);
 		learner.remove(advancedPanel);
-		//learner.removeAll();
 		detail.setVisible(true);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -365,7 +372,6 @@ public class DLLearnerView {
 		
 		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		learnerScroll.setViewportView(learner);
-		learnerScroll.repaint();
 	}
 	/**
 	 * This Method changes the hint message. 
@@ -389,7 +395,7 @@ public class DLLearnerView {
 	 */
 	public void setExamplePanelVisible(boolean visible) {
 		posPanel.setVisible(visible);
-		detail.repaint();
+		//detail.repaint();
 	}
 
 	/**
@@ -515,12 +521,8 @@ public class DLLearnerView {
 			message ="\nTo view details about why a class expression was suggested, please click on it.";
 		}
 		run.setEnabled(true);
-		// start the algorithm and print the best concept found
-		//renderErrorMessage(error);
-		//hint.setForeground(Color.BLACK);
+		// start the algorithm and print the best concept found;
 		hint.append(message);
-		hint.repaint();
-		//setHintMessage(message);
 	}
 	
 	/**

@@ -77,7 +77,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 
 	@Override
 	public void mouseMoved(MouseEvent m) {
-		panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 		if (m.getX() >= panel.getX1() + panel.getShiftCovered()
 				&& m.getX() <= panel.getX2() + panel.getShiftCovered()
 				&& m.getY() >= panel.getY1() && m.getY() <= panel.getY2()
@@ -109,8 +108,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
-		panel.getMoreDetailForSuggestedConceptsPanel().repaint();
-		panel.repaint();
 	}
 
 	@Override
@@ -121,7 +118,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
 
-				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 
 				Set<Individual> covInd = ((EvaluatedDescriptionClass) description)
@@ -140,7 +136,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					scrollPopup = new BasicComboPopup(indiBox);
 					scrollPopup.setAutoscrolls(true);
 					scrollPopup.show(panel, arg0.getX(), arg0.getY());
-					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
 			}
 
@@ -158,7 +153,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() <= panel.getY2()
 							+ panel.getShiftNewConcept()) {
 
-				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 				Set<Individual> addInd = ((EvaluatedDescriptionClass) description)
 						.getAdditionalInstances();
@@ -176,7 +170,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					scrollPopup = new BasicComboPopup(indiBox);
 					scrollPopup.setAutoscrolls(true);
 					scrollPopup.show(panel, arg0.getX(), arg0.getY());
-					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
 			}
 
@@ -186,7 +179,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
 
-				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 				Set<Individual> notCovInd = model.getReasoner().getIndividuals(
 						model.getCurrentConcept());
@@ -206,7 +198,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					scrollPopup = new BasicComboPopup(indiBox);
 					scrollPopup.setAutoscrolls(true);
 					scrollPopup.show(panel, arg0.getX(), arg0.getY());
-					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
 			}
 		}

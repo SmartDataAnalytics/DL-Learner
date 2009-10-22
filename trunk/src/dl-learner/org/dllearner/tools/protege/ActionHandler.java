@@ -23,9 +23,6 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -37,10 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
@@ -54,8 +48,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
  * @author Christian Koetteritzsch
  * 
  */
-public class ActionHandler implements ActionListener, ItemListener,
-		MouseListener, ListSelectionListener, ListDataListener {
+public class ActionHandler implements ActionListener {
 
 	// This is the DLLearnerModel.
 
@@ -122,8 +115,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.setHintMessage(moreInformationsMessage);
 			retriever = new SuggestionRetriever();
 			retriever.execute();
-			// model.setCurrentConcept(null);
-
 		}
 
 		if (z.getActionCommand().equals("ADD")) {
@@ -154,19 +145,21 @@ public class ActionHandler implements ActionListener, ItemListener,
 		}
 		if (z.toString().contains(HELP_BUTTON_STRING)) {
 			String helpText = "What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?\n"
-					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words\n needed to write down the class expression."
-					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general\n expression owl:Thing and then further specializes it. Those class expressions, which fit the existing instances of a given class ($currentClass in this case)\n get a high accuracy and are displayed as suggestions. The learning algorithm prefers short expressions.\n 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3\n or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7.\n If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is set to $defaultRuntime seconds by default)\n."
-					+ "See $wikiPage for more details. ";
-			
+					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words needed to write down the class expression.\n\n"
+					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing and then further specializes it.\n"
+					+ "Those class expressions, which fit the existing instances of a given class ($currentClass in this case) get a high accuracy and are displayed as suggestions.\n"
+					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3\n"
+					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase\n"
+					+ "the maximum runtime setting (it is set to $defaultRuntime seconds by default).\n\n"
+					+ "See http://dl-learner.org/wiki/ProtegePlugin for more details. ";
+
 			help = new JTextArea();
 			help.setEditable(false);
 			help.setForeground(Color.black);
 			help.setText(helpText);
 
-			JOptionPane.showMessageDialog(null,
-			                help,
-			                "Help",                                            
-			                JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, help, "Help",
+					JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -190,82 +183,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	}
 
-	/**
-	 * Nothing happens here.
-	 * 
-	 * @param m
-	 *            MouseEvent
-	 */
-	public void mouseReleased(MouseEvent m) {
-
-	}
-
-	/**
-	 * Nothing happens here.
-	 * 
-	 * @param m
-	 *            MouseEvent
-	 */
-	public void mouseEntered(MouseEvent m) {
-
-	}
-
-	/**
-	 * Choses the right EvaluatedDescription object after a concept is chosen in
-	 * the list.
-	 * 
-	 * @param m
-	 *            MouseEvent
-	 */
-	public void mouseClicked(MouseEvent m) {
-		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
-			SuggestListItem item = (SuggestListItem) view
-					.getSuggestClassPanel().getSuggestList().getSelectedValue();
-			String desc = item.getValue();
-			if (model.getEvaluatedDescriptionList() != null) {
-				List<? extends EvaluatedDescription> evalList = model
-						.getEvaluatedDescriptionList();
-				Set<String> onto = model.getOntologyURIString();
-				for (EvaluatedDescription eDescription : evalList) {
-					for (String ont : onto) {
-						if (desc.equals(eDescription.getDescription()
-								.toManchesterSyntaxString(ont, null))) {
-							evaluatedDescription = eDescription;
-							break;
-						}
-					}
-				}
-			}
-			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
-					evaluatedDescription);
-			view.setGraphicalPanel();
-			view.getMoreDetailForSuggestedConceptsPanel().repaint();
-		}
-	}
-
-	/**
-	 * Nothing happens here.
-	 * 
-	 * @param m
-	 *            MouseEvent
-	 */
-	public void mouseExited(MouseEvent m) {
-
-	}
-
-	/**
-	 * Sets the ADD button enable after a concept is chosen.
-	 * 
-	 * @param m
-	 *            MouseEvent
-	 */
-	public void mousePressed(MouseEvent m) {
-		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
-			if (!view.getAddButton().isEnabled()) {
-				view.getAddButton().setEnabled(true);
-			}
-		}
-	}
 
 	/**
 	 * Destroys the Thread after the Pluigin is closed.
@@ -279,24 +196,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void resetToggled() {
 		toggled = false;
-	}
-
-	@Override
-	public void contentsChanged(ListDataEvent listEvent) {
-		System.out.println(listEvent);
-
-	}
-
-	@Override
-	public void intervalAdded(ListDataEvent listEvent) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void intervalRemoved(ListDataEvent listEvent) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -389,9 +288,24 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
+				this.checkSelectedItem(list);
 			}
 		}
-
+		/*
+		 * TODO: ueberlegen wegen umsetzung.
+		 */
+		private void checkSelectedItem(List<? extends EvaluatedDescription> result) {
+			if(!view.getSuggestClassPanel().getSuggestList().isSelectionEmpty()) {
+				SuggestListItem item = (SuggestListItem) view.getSuggestClassPanel().getSuggestList().getSelectedValue();
+				String itemString = item.getValue();
+				for(EvaluatedDescription desc: result) {
+					if(desc.getDescription().toString().equals(itemString)) {
+						
+					}
+				}
+			}
+		}
+		
 		private void updateList(
 				final List<? extends EvaluatedDescription> result) {
 
