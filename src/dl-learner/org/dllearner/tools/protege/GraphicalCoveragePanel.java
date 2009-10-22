@@ -110,7 +110,6 @@ public class GraphicalCoveragePanel extends JPanel {
 		eval = desc;
 		model = m;
 		panel = p;
-		this.repaint();
 		id = model.getID();
 		darkGreen = new Color(0, 100, 0);
 		darkRed = new Color(205, 0, 0);
@@ -373,14 +372,12 @@ public class GraphicalCoveragePanel extends JPanel {
 				g2D.drawString("cover the same instances.", 95, 220);
 			}
 			this.setVisible(true);
-			panel.repaint();
 		}
 	}
 
 	private void computeGraphics() {
 		if (eval != null) {
 			this.setVisible(true);
-			panel.repaint();
 			additionalIndividualSize = ((EvaluatedDescriptionClass) eval)
 					.getAdditionalInstances().size();
 			distortionOld = 0;
@@ -733,4 +730,5 @@ public class GraphicalCoveragePanel extends JPanel {
 	public EvaluatedDescription getEvaluateddescription() {
 		return eval;
 	}
+	
 }

@@ -27,6 +27,7 @@ public class IndividualObject {
 
 	private final String normalIndividual;
 	private boolean isPos;
+	private String additionalInformation;
 	
 	/**
 	 * Constructor for the IndividualObject.
@@ -60,6 +61,14 @@ public class IndividualObject {
 	 */
 	public void setExamplePositive(boolean pos) {
 		isPos = pos;
+	}
+
+	public void setAdditionalInformation(String additional) {
+		this.additionalInformation = additional;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
 	}
 	
 }

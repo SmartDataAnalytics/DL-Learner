@@ -191,51 +191,97 @@ public class OptionPanel extends JPanel {
 		return nrOfConcepts.getValue();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public JRadioButton getOwlRadioButton() {
 		return owlRadioButton;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public JRadioButton getElProfileButton() {
 		return elProfileButton;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getAllBox() {
 		return allBox.isSelected();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getSomeBox() {
 		return someBox.isSelected();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getNotBox() {
 		return notBox.isSelected();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getValueBox() {
 		return valueBox.isSelected();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public JPanel getProfilePanel() {
 		return profilePanel;
 	}
 
-
+	/**
+	 * 
+	 * @return
+	 */
 	public int getCountMoreBox() {
 		return Integer.parseInt(countMoreBox.getSelectedItem().toString());
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getMoreBox() {
 		return moreBox.isSelected();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public JPanel getRadioBoxPanel() {
 		return radioBoxPanel;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public JPanel getCheckBoxPanel() {
 		return checkBoxPanel;
 	}
 	
+	/**
+	 * 
+	 */
 	public void setToOWLProfile() {
 		allBox.setSelected(true);
 		someBox.setSelected(true);
@@ -245,6 +291,9 @@ public class OptionPanel extends JPanel {
 		this.setCountMoreBoxEnabled(true);
 	}
 	
+	/**
+	 * 
+	 */
 	public void setToELProfile() {
 		allBox.setSelected(false);
 		someBox.setSelected(true);
@@ -254,6 +303,10 @@ public class OptionPanel extends JPanel {
 		this.setCountMoreBoxEnabled(false);
 	}
 	
+	/**
+	 * 
+	 * @param isEnabled
+	 */
 	public void setCountMoreBoxEnabled(boolean isEnabled) {
 		countMoreBox.setEnabled(isEnabled);
 	}

@@ -40,7 +40,6 @@ private final MoreDetailForSuggestedConceptsPanel panel;
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		panel.setInformation();
-		panel.repaint();
 	}
 
 }

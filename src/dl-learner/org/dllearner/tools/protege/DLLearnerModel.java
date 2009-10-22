@@ -549,6 +549,12 @@ public class DLLearnerModel implements Runnable{
 	public boolean getIsKnowledgeSourceIsUpdated() {
 		return knowledgeSourceIsUpdated;
 	}
+	
+	/*
+	 * TODO Add methods to get additional informations about a individual.
+	 * Informations needed are the ones in the Individuals tab in protege.
+	 */
+	
 }
 
 

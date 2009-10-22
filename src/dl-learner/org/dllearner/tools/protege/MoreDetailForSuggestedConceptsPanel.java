@@ -121,11 +121,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		conceptPanel.add(conceptText);
 		conceptPanel.add(accuracyText);
 		conceptPanel.setVisible(true);
-		//this.add(conceptPanel);
 		this.add(p);
 		this.addPropertyChangeListener(handler);
-		//conceptPanel.addPropertyChangeListener(handler);
-		this.repaint();
 	}
 
 	private void unsetEverything() {
@@ -191,7 +188,5 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		conceptPanel.add(accuracyText);
 		conceptPanel.setVisible(false);
 		this.add(conceptPanel);
-
-		repaint();
 	}
 }
