@@ -313,6 +313,9 @@ public class DLLearnerModel implements Runnable{
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
 				.getPosAndNegSelectPanel().getOptionPanel()
 				.getMaxExecutionTime());
+		view.setLearningDuration(view
+				.getPosAndNegSelectPanel().getOptionPanel()
+				.getMaxExecutionTime());
 		try {
 			// initializes the learning algorithm
 			la.init();

@@ -216,6 +216,7 @@ public class ActionHandler implements ActionListener {
 		protected List<? extends EvaluatedDescription> doInBackground()
 				throws Exception {
 			la = model.getLearningAlgorithm();
+			view.startStatusBar();
 			timer = new Timer();
 			timer.schedule(new TimerTask() {
 
