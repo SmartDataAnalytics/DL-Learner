@@ -40,7 +40,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
 import org.dllearner.algorithms.celoe.CELOE;
-//import org.dllearner.tools.ore.ui.StatusBar;
+import org.dllearner.tools.ore.ui.StatusBar;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owl.model.OWLDescription;
 /**
@@ -128,7 +128,7 @@ public class DLLearnerView {
 	private String labels;
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
-	//private StatusBar stat;
+	private StatusBar stat;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -166,7 +166,7 @@ public class DLLearnerView {
 		runPanel = new JPanel(new FlowLayout());
 		accept = new JButton("ADD");
 		addButtonPanel = new JPanel(new BorderLayout());
-		
+		stat = new StatusBar();
 		errorMessage = new JTextArea();
 		errorMessage.setEditable(false);
 		hint = new JTextArea();
@@ -213,7 +213,7 @@ public class DLLearnerView {
 	 */
 	public void makeView(String label) {
 		run.setEnabled(false);
-		//stat = new StatusBar();
+
 		helpButton.setVisible(false);
 		hint.setForeground(Color.BLACK);
 		hint.setText("To get suggestions for class expression, please click the button above.");
@@ -269,11 +269,18 @@ public class DLLearnerView {
 		addButtonPanel.add("North", accept);
 		learner.add(addButtonPanel, c);
 		
-		c.fill = GridBagConstraints.BOTH;
+		c.fill = GridBagConstraints.WEST;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 2;
+		learner.add(stat, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = 3;
 		hint.setPreferredSize(new Dimension(450, 60));
 		helpButton.setPreferredSize(new Dimension(30, 30));
 		hintPanel.add(BorderLayout.CENTER, hint);
@@ -288,13 +295,13 @@ public class DLLearnerView {
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
-		c.gridy = 3;
+		c.gridy = 4;
 		learner.add(advancedPanel, c);
 		
 		posPanel.setVisible(false);
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
-		c.gridy = 4;
+		c.gridy = 5;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridwidth = 3;
@@ -510,6 +517,7 @@ public class DLLearnerView {
 	 * This method sets the run button enable after learning.
 	 */
 	public void algorithmTerminated() {
+		this.stopStatusBar();
 		CELOE celoe = (CELOE) model.getLearningAlgorithm();
 		String error = "Learning successful. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and " + celoe.getMaximumHorizontalExpansion() + ".";
 		hint.setForeground(Color.RED);
@@ -551,5 +559,17 @@ public class DLLearnerView {
 	 */
 	public ReadingOntologyThread getReadingOntologyThread() {
 		return readThread;
+	}
+	
+	public void setLearningDuration(int time) {
+		stat.setMaximumValue(time);
+	}
+	
+	public void startStatusBar() {
+		stat.showProgress(true);
+	}
+	
+	public void stopStatusBar() {
+		stat.showProgress(false);
 	}
 }
