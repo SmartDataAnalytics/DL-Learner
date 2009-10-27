@@ -6,51 +6,78 @@
  *
  */
 class View extends Config {
-  private $html = '<h2>Nothing found.</h2>';
+  private $html = '';
+  private $limit = 0;
+  
   
   // view modes are debug or both, default is html view
-  function __construct($data, $type) {
+  function __construct($data, $type, $search, $limit = false) {
     parent::__construct(); // init config
-    $this->createOutput($data, $type);
+    
+    if ($limit === false) { // no special limit set, we use the maxResultsLimit
+      $this->limit = $this->getConfig('maxResults');
+    } else {
+      $this->limit = $limit;
+    }
+    $this->createOutput($data, $type, $search);
   }
       
       
   /**
    * 
-   */ 
-  private function createOutput($data, $type) {
+   */
+  private function createOutput($data, $type, $search) {
+    // if we have an array for $search (Tag or lastFM-Search) we implode the searchString
+    if (is_array($search)) {
+      $searchText = implode(' ', $search);
+    } else {
+      $searchText = $search;
+    }
+    
     if (!is_array($data) || empty($data)) {
       switch($type) {
-        case 'artistSearch' : $this->html = '<h2>No Artists found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-        case 'tagSearch' : $this->html = '<h2>No Tags found for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>'; break;
-        case 'songSearch' : $this->html = '<h2>No Songs found for &raquo;' . $_GET['searchValue'] . '&laquo;.</h2>'; break;
-        case 'lastFM' : $this->html = '<h2>The last.fm-user &raquo;' . $_GET['searchValue'] . '&laquo; does not exist.</h2>'; break;
+        case 'artistSearch' : $this->html = '<h2>No artists found for &raquo;' . $searchText . '&laquo;</h2>'; break;
+        case 'tagSearch' : $this->html = '<h2>No tags found for &raquo;' . $searchText . '&laquo;</h2>'; break;
+        case 'albumSearch' : $this->html = '<h2>No albums found for &raquo;' . $searchText . '&laquo;</h2>'; break;
+        case 'songSearch' : $this->html = '<h2>No songs found for &raquo;' . $searchText . '&laquo;</h2>'; break;
+        case 'lastFM' : $this->html = '<h2>The last.fm-user &raquo;' . $searchText . '&laquo; does not exist.</h2>'; break;
         case 'recommendations' : $this->html = '<h2>' . $data . '</h2>'; break;
       }
     } else {
       // finally we are producing html, depending on the type of request
-      $this->html = '';
+      // use the limits on the data before creating html, except for the playlist-html
+      if ($type != 'playlist') {
+        $data = $this->limitData($data);
+      }
+      
       switch ($type) {
         case 'artistSearch' : 
-          $this->html .= '<h2>Artist-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
-          $this->html .= $this->artistSearchHTML($data); 
+          $this->html .= '<h2>Artist-results for &raquo;' . $searchText . '&laquo;</h2>';
+          $this->artistSearchHTML($data, $type); 
         break;
         case 'tagSearch' : 
-          $this->html .= '<h2>Tag-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
-          $this->html .= $this->tagSearchHTML($data); 
+          if (is_array($search)) {
+            $this->html .= '<h2>Tag-results for &raquo;' . $searchText . '&laquo;</h2>';
+            // special case, use the albumSearch view for this one
+            $this->albumSearchHTML($data, 'albumSearch'); 
+          } else { // default case
+            $this->html .= '<h2>Tag-results for &raquo;' . $searchText . '&laquo;</h2>';
+            $this->tagSearchHTML($data, $type);
+          }
+        break;
+        case 'albumSearch' : 
+          $this->html .= '<h2>Album-results for &raquo;' . $searchText . '&laquo;</h2>';
+          $this->albumSearchHTML($data, $type); 
         break;
         case 'songSearch' : 
-          $this->html .= '<h2>Song-Results for &raquo;' . $_GET['searchValue'] . '&laquo;</h2>';
-          $this->html .= $this->songSearchHTML($data); 
-        break;
-        case 'lastFM' : 
-          $this->html .= $this->tagSearchHTML($data); 
+          $this->html .= '<h2>Song-results for &raquo;' . $searchText . '&laquo;</h2>';
+          $this->songSearchHTML($data, $type); 
         break;
         case 'recommendations' :
-          $this->html .= $this->recommendationsHTML($data); 
+          $this->recommendationsHTML($data, $type); 
         break;
         case 'playlist' : 
-          $this->html = $this->playlistHTML($data); 
+          $this->playlistHTML($data); 
         break;
       }
     }
@@ -59,31 +86,46 @@ class View extends Config {
 
   /**
    * 
-   * @return 
+   * 
+   * 
+   * 
+   * 
+   */
+  private function limitData($data) {
+    $count = count($data);
+    if ($count > $this->limit && $this->limit > 0) {
+      if ($this->getConfig('randomize') == 1) {
+        $random = array_rand($data, $this->limit);
+        $newData = array();
+        foreach($random as $randRecord) {
+          $newData[$randRecord] = $data[$randRecord];
+        }
+        $data = $newData;
+        $this->html .= '<p><strong>Note:</strong> Found ' . $count . ' results, showing ' 
+                     . $this->limit . ' random results.';
+      } else { // first xx results are shown
+        $data = array_slice($data, 0, $this->limit);
+        $this->html .= '<p><strong>Note:</strong> Found ' . $count . ' results, showing the first ' 
+                     . $this->limit . ' results.';
+      }
+    }
+    return $data;
+  }
+
+
+  /**
+   * 
    * @param object $data
    */
-  private function artistSearchHTML($data) {
-    $output = '<div class="artistSearch"><ul class="clearfix">';
+  private function artistSearchHTML($data, $type) {
+    $this->html .= '<div class="artistSearch"><ul class="clearfix">';
     $i = 0; // counter variable for alternating li-elements
     foreach($data as $artist) {
       // alternating classes for li-elements
-      if (($i % 2) == 0) { $class = 'odd'; }
-      else { $class = ''; }
-      $i++;
-      
-      $template = '
-        <li class="clearfix %s">
-          <h3>%s %s</h3>
-          <div class="artistImage">%s</div>
-          <strong>Tags:</strong><br/ > 
-          <p>%s</p>
-          <p>
-            <strong>Avaiable records:</strong><br />
-          </p>
-          <ul>%s</ul>
-          <p>Click on an album to add it to your playlist.</p>
-        </li>
-      ';
+      if (($i % 2) == 0) { $class = 'odd'; } else { $class = ''; }
+
+      $template = $this->getTemplate($type);
+
       // avaiable Records
       $recordArray = $this->getValue($artist['record']);
       $records = '';
@@ -104,98 +146,85 @@ class View extends Config {
                   . $this->getValue($artist['artistName'])  . ' - ' 
                   . $this->getValue($artist['albumTitle']) . '</a></li>';
       }
-      /* Optional Values could be empty */
-      // artist-Image if avaiable
-      $image = '<img src="img/noimage.png" alt="No image found..." />';
-      if (!empty($artist['artistImage'])) {
-        $image = '<img src="' . $this->getValue($artist['artistImage']) . '" alt="' 
-               . $this->getValue($artist['artistName']) . '" />';
-      }
+
+      $artistName = $this->getValue($artist['artistName']);
+      $image = $this->getImage($artist, $artistName);
+      $tags = $this->getTagList($artist['tag']);
       
-      // homepagelink if avaiable
-      $homepage = '';
+      $homepage = ''; // homepagelink if avaiable
       if (!empty($artist['artistHomepage'])) {
         $homepage = '<a href="' . $this->getValue($artist['artistHomepage']) . '">(Homepage)</a>';
       }
-
-      $tags = '';
-      $tempTag = $this->getValue($artist['tag']);
-      if (is_array($tempTag)) {
-        $tags = implode(', ', $tempTag);
-      } else {
-        $tags = $tempTag;
-      }
-      // remove the uri, we only want to have the tag-name
-      $tags = str_replace('http://dbtune.org/jamendo/tag/', '', $tags);
-
-      $output .= sprintf($template,
-        $class, $this->getValue($artist['artistName']), $homepage, $image, $tags, $records
-      );
       
+      $this->html .= sprintf($template,
+        $class, $artistName, $homepage, $image, $tags, $records
+      );
+
+      $i++;
     }
-    $output .= '</ul></div>';
-    return $output;
+    $this->html .= '</ul></div>';
   }
+  
   
   /**
    * 
-   * @return 
    * @param object $array
    */
-  private function tagSearchHTML($data) {
-    $output = '<div class="tagSearch">';
+  private function tagSearchHTML($data, $type) {
+    $this->html .= '<div class="tagSearch">';
     foreach ($data as $key => $tag) {
-
-      $numberOfAlbums = sizeof($this->getValue($tag['record']));
-      $output .= '<h3>Albums tagged with <em>' 
-               . str_replace('http://dbtune.org/jamendo/tag/', '', $key) 
-               . '</em> (' . $numberOfAlbums . ')</h3>';
+      $numberOfAlbums = count($this->getValue($tag['record']));
+      $count = $numberOfAlbums; // used for the for-statement
       
-      if ($numberOfAlbums > $this->getConfig('maxResults')) {
-        $output .= '<p><strong>Note:</strong> Found ' . $numberOfAlbums 
-                 . ' albums, only the first ' 
-                 .   $this->getConfig('maxResults') . ' are shown.';
-        $numberOfAlbums = $this->getConfig('maxResults');
+      $this->html .= '<h3>Albums tagged with <em>' . str_replace('http://dbtune.org/jamendo/tag/', '', $key) . '</em></h3>';
+
+      $random = array();
+      // limit the number of shown albums per tag, too
+      if ($numberOfAlbums > $this->limit) {
+        if ($this->getConfig('randomize') == 1) {
+          $this->html .= '<p><strong>Note:</strong> Found ' . $numberOfAlbums . ' albums, showing ' 
+                       . $this->limit . ' random albums.';
+          // get some random numbers for random albums, used later in the for-statement
+          $random = array_rand($this->getValue($tag['record']), $this->limit);
+        } else {
+          $this->html .= '<p><strong>Note:</strong> Found ' . $numberOfAlbums . ' albums, showing the first ' 
+                       . $this->limit . ' albums.';
+        }
+        $count = $this->limit;
       }
-      // cycle through all albums and fill the list
-      $output .= '<ul class="clearfix">';
-      for ($i = 0; $i < $numberOfAlbums; $i++) {
+      
+      $this->html .= '<ul class="clearfix">';
+      // cycle through the albums
+      for ($i = 0; $i < $count; $i++) {
         // alternating classes for li-elements
-        if (($i % 2) == 0) { $class = 'odd'; } 
-        else { $class = ''; }
+        if (($i % 2) == 0) { $class = 'odd'; } else { $class = ''; }
         
-        $template = ' 
-          <li class="clearfix %s">
-            <div class="cover">%s</div>
-            <h4>%s - %s</h4>
-            <ul>%s</ul>
-          </li>
-        ';
-        // we have to do the if/else because if there is only one
-        // result, the returned response wont contain a subarray
-        $record = $this->getSingleValue($this->getValue($tag['record']), $i);
-        $artistName = $this->getSingleValue($this->getValue($tag['artistName']), $i);
-        $albumTitle = $this->getSingleValue($this->getValue($tag['albumTitle']), $i);
-        $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getSingleValue($this->getValue($tag['playlist']), $i)); 
+        $j = $i; // default -- non random, no limit
+        // if there is limit set, and randomize is active, we use the random numbers
+        if ($numberOfAlbums > $this->limit && $this->getConfig('randomize') == 1) {
+          $j = $random[$i];
+        }
+        
+        $template = $this->getTemplate($type);
+
+        $record = $this->getValue($tag['record'], $j);
+        $artistName = $this->getValue($tag['artistName'], $j);
+        $albumTitle = $this->getValue($tag['albumTitle'], $j);
+        $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($tag['playlist'], $j)); 
         
         $addToPlaylist = '<li><a class="addToPlaylist" href="' . $playlist . '" '
                        . 'title="' . $artistName . ' - ' . $albumTitle . '" ' 
                        . 'rel="' . $record . '">Click here to add this album to your playlist.</a></li>';
                        
-        /* The album cover is optional, so it could be empty */
-        $image = '<img src="img/noimage.png" alt="No image found..." />';
-        if (!empty($tag['cover'])) {
-          $image = '<img src="' . $this->getSingleValue($this->getValue($tag['cover']), $i) . '" alt="' . $artistName. ' - ' .  $albumTitle. '" />';
-        }
+        $image = $this->getImage($tag, $artistName. ' - ' .  $albumTitle, $j);
         
-        $output .= sprintf($template,
+        $this->html .= sprintf($template,
           $class, $image, $artistName, $albumTitle, $addToPlaylist
         );
       }
-      $output .= '</ul>';
+      $this->html .= '</ul>';
     }
-    $output .= '</div>';
-    return $output;
+    $this->html .= '</div>';
   }
   
   
@@ -203,56 +232,73 @@ class View extends Config {
    *
    *
    */
-  private function songSearchHTML($data) {
-    $output = '<div class="songSearch"><ul class="clearfix">';
-            
+  private function albumSearchHTML($data, $type) {
+    $this->html .= '<div class="albumSearch"><ul class="clearfix">';
+    $i = 0; // counter variable for alternating li-elements
+    foreach($data as $album) {
+      // alternating classes for li-elements
+      if (($i % 2) == 0) { $class = 'odd'; } else { $class = ''; }
+      
+      $template = $this->getTemplate($type);
+      
+      $record = $this->getValue($album['record'], 0);
+      $albumTitle = $this->getValue($album['albumTitle'], 0);
+      $artistName = $this->getValue($album['artistName'], 0);
+      $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($album['playlist'], 0));
+      
+      $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
+                     . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
+      
+      // Artist-Image is optional   
+      $image = $this->getImage($album, $artistName . ' - ' .  $albumTitle);
+      $tags = $this->getTagList($album['tag']);
+      
+      $this->html .= sprintf($template,
+        $class, $artistName . ' - ' . $albumTitle, $image, $tags, $addToPlaylist
+      );
+      
+      $i++;
+    }
+    $this->html .= '</ul></div>';
+  }
+  
+  
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   */
+  private function songSearchHTML($data, $type) {
+    $this->html .= '<div class="songSearch"><ul class="clearfix">';
     $i = 0; // counter variable for alternating li-elements
     foreach($data as $song) {
       // alternating classes for li-elements
-      if (($i % 2) == 0) { $class = 'odd'; } 
-      else { $class = ''; }
-      $i++;
+      if (($i % 2) == 0) { $class = 'odd'; } else { $class = ''; }
       
-      $template = '
-        <li class="clearfix %s">
-          <h3>%s</h3>
-          <div class="artistImage">%s</div>
-          <p>Tags: %s</p>
-          <ul>%s</ul>
-        </li>
-      ';
-
-      $track = $this->getSingleValue($this->getValue($song['track']), $i);
-      $record = $this->getSingleValue($this->getValue($song['record']), $i);
-      $songTitle = $this->getSingleValue($this->getValue($song['songTitle']), $i);
-      $artistName = $this->getSingleValue($this->getValue($song['artistName']), $i);
-      $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getSingleValue($this->getValue($song['playlist']), $i));
-    
+      $template = $this->getTemplate($type);
+      
+      $track = $this->getValue($song['track']);
+      $record = $this->getValue($song['record']);
+      $songTitle = $this->getValue($song['songTitle']);
+      $artistName = $this->getValue($song['artistName']);
+      $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($song['playlist']));
+      
       $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
                      . $artistName . ' - ' . $songTitle . '">Click here to add this song to your playlist</a></li>';
       
-      // Artist-Image is optional             
-      $image = '<img src="img/noimage.png" alt="No image found..." />';
-      if (!empty($song['artistImage'])) {
-        $image = '<img src="' . $this->getSingleValue($this->getValue($song['artistImage']), $i) 
-               . '" alt="' . $artistName. '" />';
-      }
-    
-      $tags = '';
-      $tempTag = $this->getValue($song['tag']);
-      if (is_array($tempTag)) {
-        $tags = implode(', ', $tempTag);
-      } else {
-        $tags = $tempTag;
-      }
-      $tags = str_replace('http://dbtune.org/jamendo/tag/', '', $tags);
+      $tags = $this->getTagList($song['tag']);
+      $image = $this->getImage($song, $artistName);
       
-      $output .= sprintf($template,
+      $this->html .= sprintf($template,
         $class, $artistName . ' - ' . $songTitle, $image, $tags, $addToPlaylist
       );
+      
+      $i++;
     }
-    $output .= '</ul></div>';
-    return $output;
+    $this->html .= '</ul></div>';
   }
 
 
@@ -264,8 +310,7 @@ class View extends Config {
    * 
    * 
    */
-  private function recommendationsHTML($data) {
-    $output = '';
+  private function recommendationsHTML($data, $type) {
     $count = count($data['scores']); // doesnt matter if scores or results... 
     
     if ($count > 0) { // we have at least one usable result
@@ -274,62 +319,41 @@ class View extends Config {
       $results = $data['results'];
 
       for ($i = 0; $i < $count; $i++) {
+        $resultSet = $this->limitData($results[$i]);
         $syntax = str_replace('http://dbtune.org/jamendo/tag/', '', $syntaxes[$i]);
         $syntax = str_replace('"', '', $syntax);
-        $output .= '<h3>&raquo;' . $syntax . '&laquo; (accuracy: ' . $scores[$i] . '%)</h3>';
-        $output .= '<ul class="clearfix">';
-
+        $this->html .= '<h3>&raquo;' . $syntax . '&laquo; (accuracy: ' . $scores[$i] . '%)</h3>';
+        $this->html .= '<ul class="clearfix">';
+        
         $j = 0;
         // cycle through all albums and fill the list
-        foreach ($results[$i] as $record => $result) {
+        foreach ($resultSet as $record => $result) {
           // alternating classes for li-elements
-          if (($j % 2) == 0) { $class = 'odd'; } 
-          else { $class = ''; }
-          $j++;
+          if (($j % 2) == 0) { $class = 'odd'; } else { $class = ''; }
+          
+          $template = $this->getTemplate($type);
 
-          $template = ' 
-            <li class="clearfix %s">
-              <div class="cover">%s</div>
-              <h4>%s - %s</h4>
-              <ul>%s</ul>
-            </li>
-          ';
-          $artistName = $this->getSingleValue($this->getValue($result['artistName']));
-          $albumTitle = $this->getSingleValue($this->getValue($result['albumTitle'])); 
-          $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getSingleValue($this->getValue($result['playlist'])));
+          $artistName = $this->getValue($result['artistName']);
+          $albumTitle = $this->getValue($result['albumTitle']); 
+          $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($result['playlist']));
           $addToPlaylist = '<li><a class="addToPlaylist" href="' . $playlist . '" '
                          . 'title="' . $artistName . ' - ' . $albumTitle . '" ' 
                          . 'rel="' . $record . '">Click here to add this album to your playlist.</a></li>';
-          /* The album cover is optional, so it could be empty */
-          $image = '<img src="img/noimage.png" alt="No image found..." />';
-          if (!empty($result['cover'])) {
-            $image = '<img src="' . $this->getSingleValue($this->getValue($result['cover'])) 
-                   . '" alt="' . $artistName. ' - ' .  $albumTitle. '" />';
-          }
 
-          $output .= sprintf($template,
+          $image = $this->getImage($result, $artistName . ' - ' . $albumTitle);
+
+          $this->html .= sprintf($template,
             $class, $image, $artistName, $albumTitle, $addToPlaylist
           );
+          $j++;
         }        
-        $output .= '</ul>';
+        $this->html .= '</ul>';
       }
     } else {
-      $output = '<h2>Could not create any recommendations...</h2>';
-      $output .= '<p>Listen to some more music or reset your recently listened to list.</p>';
+      $this->html = '<h2>Could not create any recommendations...</h2>';
+      $this->html .= '<p>Listen to some more music or reset your recently listened to list.</p>';
     }
-    return $output;
   }
-
-
-
-
-
-
-
-
-
-
-
 
 
   /**
@@ -339,65 +363,134 @@ class View extends Config {
    */
   private function playlistHTML($data) {
     $albumID = $data['albumID'];
-    $output = '';
     foreach($data['trackList'] as $tracks) {
       // if the tracks-list contains only one song, there are no sub-arrays
       if (isset($tracks[0]) && is_array($tracks[0])) { 
         foreach($tracks as $track) {
-          $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
-                   . '" class="htrack">'
-                   . $track['creator'] . ' - ' . $track['title']
-                   . '</a></li>';  
+          $this->html .= '<li><a rel="' . $albumID . '" href="' . $track['location'] . '" class="htrack">'
+                       . $track['creator'] . ' - ' . $track['title']
+                       . '</a></li>';  
         }
       } else { // only one track, no sub-array, no foreach, same data
         $track = $tracks;
-        $output .= '<li><a rel="' . $albumID . '" href="' . $track['location'] 
-                 . '" class="htrack">'
-                 . $track['creator'] . ' - ' . $track['title']
-                 . '</a></li>';  
+        $this->html .= '<li><a rel="' . $albumID . '" href="' . $track['location'] . '" class="htrack">'
+                     . $track['creator'] . ' - ' . $track['title']
+                     . '</a></li>';  
       }
     }
-    return $output;
   }
   
   
+  
+  /**
+   * 
+   * 
+   * 
+   * 
+   */
+  private function getImage($image, $altText, $nr = 0) {
+    // in most cases the image is optional, so it could be empty
+    $img = '<img src="img/noimage.png" alt="No image found..." />';
+    if (isset($image['image'])) {
+      $image = $image['image'];
+      if (!empty($image)) {
+        $img = '<img src="' . $this->getValue($image, $nr) . '" alt="' . $altText . '" />';
+      }
+    } 
+    return $img;
+  }
+  
+  
+  /**
+   * 
+   * 
+   * 
+   * 
+   */
+  private function getTagList($tagsArray) {
+    $tags = '';
+    $tempTag = $this->getValue($tagsArray);
+    if (is_array($tempTag)) {
+      $tags = implode(', ', $tempTag);
+    } else {
+      $tags = $tempTag;
+    }
+    $tags = str_replace('http://dbtune.org/jamendo/tag/', '', $tags);
+    return $tags;
+  }
+  
+  
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   */
+  private function getTemplate($type) {
+    $template = '';
+    if ($type == 'artistSearch') {
+      $template = '
+        <li class="clearfix %s">
+          <h3>%s %s</h3>
+          <div class="image">%s</div>
+          <strong>Tags:</strong><br/ > 
+          <p>%s</p>
+          <p>
+            <strong>Avaiable records:</strong><br />
+          </p>
+          <ul>%s</ul>
+          <p>Click on an album to add it to your playlist.</p>
+        </li>
+      ';
+    }
+    if ($type == 'tagSearch' || $type == 'recommendations') {
+      $template = ' 
+        <li class="clearfix %s">
+          <div class="image">%s</div>
+          <h4>%s - %s</h4>
+          <ul>%s</ul>
+        </li>
+      ';
+    }
+    if ($type == 'albumSearch' || $type == 'songSearch') {
+      $template = '
+          <li class="clearfix %s">
+            <h3>%s</h3>
+            <div class="image">%s</div>
+            <p>Tags: %s</p>
+            <ul>%s</ul>
+          </li>
+        ';
+    } 
+    return $template;
+  }
   
   
   /**
    * This helper-function returns an array or a string, depending on the number of arrayItems for the 
-   * given array, searches only in the 'value' subarray returned by the Dllearner
+   * given array and if the $index-var is set, searches only in the 'value' subarray (ignore type or uri)
    * 
    * @param Array $array The Array to get Values from
    * @return String or Array with the value 
    */
-  private function getValue($data) {
-    if (!empty($data['value'])) {
-      if (is_array($data['value'])) {
-        if (sizeof($data['value']) == 1) {
-          return $data['value'][0];
-        } else {
-          return $data['value'];
+  private function getValue($data, $index = false) {
+    $value = $data['value'];
+    if (!empty($value)) {
+      if (is_array($value)) {
+        if (count($value) == 1) {
+          return $value[0];
+        } 
+        if (count($value) > 1 && $index !== false) {
+          return $value[$index];
+        } else { // an array is requested, tagList for example
+          return $value;
         }
       } else {
-        return $data['value'];
+        return $value;
       }
     } else {
       return '';
-    }
-  }
-
-  /**
-   * 
-   * 
-   * 
-   * 
-   * 
-   */
-  private function getSingleValue($data, $index = 0) {
-    if (is_array($data)) { 
-      return $data[$index]; 
-    } else { 
-      return $data;
     }
   }
 
@@ -410,6 +503,7 @@ class View extends Config {
   public function getHTML() {
     return $this->html;
   }
+  
 
 }
 

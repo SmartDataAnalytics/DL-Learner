@@ -1,4 +1,4 @@
-/* basic reset */
+/* default minimal basic css reset */
 /* =================================================================== */
 @media all {
 html, body, div, h1, h2, h3,
@@ -17,7 +17,6 @@ input, textarea,
 select, option                { font: inherit; color: inherit; }
 a                             { color: inherit; font: inherit; text-decoration: none; }
 a:hover                       { text-decoration: underline; }
-a:active                      { position: relative; top: 1px; }
 .hidden                       { position: absolute; left: -9999px; top: -9999px; }
 .clearfix:after               { clear: both; content: ' '; display: block; font-size: 0; line-height: 0; 
                                 visibility: hidden; width: 0; height: 0; }

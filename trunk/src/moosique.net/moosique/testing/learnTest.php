@@ -53,7 +53,6 @@ echo '<pre>';
 print_r($instances);
 print_r($posExamples);
 
-
 $res= $c->learn($instances, $posExamples);
 
 foreach ($res as $solution) {

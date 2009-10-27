@@ -1,9 +1,3 @@
-// initialize an empty debugger, will be activated if firefox/firebug enabled
-var debug = {};
-debug.log = function(msg) { 
-  return false;
-};
-
 /**
  * moosique-Player-Class
  *
@@ -41,36 +35,40 @@ var Moosique = new Class({ Implements: Options,
    * changed, just change the references here and everything will work fine.
    */
   initVars: function() {
-    this.main = document.id('content');
-    this.menu = document.id('mainMenu');
+    // buttons
     this.playPause = document.id('playPause');
     this.prev = document.id('prev');
     this.next = document.id('next');
     this.stop = document.id('stop');
     this.mute = document.id('mute');
-    this.status = document.id('status');
-    this.playlist = document.id('playlist');
-    this.recently = document.id('recently');
+    // player info & status display
     this.nowPlayingInfo = $$('#playing .info');
     this.nowPlayingTrack = $$('#playing .track');
     this.nowPlayingTime = $$('#playing .time');
+    this.status = document.id('status');
+    // searchForm elements
     this.searchForm = document.id('searchForm');
     this.searchSubmit = document.id('searchSubmit');
     this.searchValue = document.id('searchValue');
     this.searchType = document.id('searchType');
     this.results = document.id('results');
-    this.loading = document.id('loadingImg');
-    this.welcome = document.id('welcome');
-    this.help = document.id('help');
+    // playlist and recently
+    this.playlist = document.id('playlist');
+    this.recently = document.id('recently');
+    this.resetPlaylist = document.id('resetPlaylist');
+    this.resetRecently = document.id('resetRecently');
+    // recommendations
     this.recommendations = document.id('recommendations');
     this.generate = document.id('generateRecommendations');
     this.recResults = document.id('recommendationResults');
-    this.resetPlaylist = document.id('resetPlaylist');
-    this.resetRecently = document.id('resetRecently');
-    this.moreInfo = document.id('moreInfo');
-    this.temp = document.id('temp');
-    this.autoAddCheckbox = document.id('autoAddCheckbox');
     this.addRandom = document.id('addRandom');
+    this.autoAddCheckbox = document.id('autoAddCheckbox');    
+    // other
+    this.content = document.id('content');
+    this.nav = document.id('nav');
+    this.welcome = document.id('welcome');
+    this.help = document.id('help');
+    this.moreInfo = document.id('moreInfo');
   },
   
   /**
@@ -82,11 +80,9 @@ var Moosique = new Class({ Implements: Options,
    */
   applyYahooMediaPlayerConfig: function() {
     var that = this;
-
     var playerConfig = function() {
       // display ready-status message
       that.displayStatusMessage('Player ready.');
-
       /**
        * progress: Change the track position and duration displayed every time, as usual in players
        * 
@@ -121,7 +117,6 @@ var Moosique = new Class({ Implements: Options,
           // get the current cookie
           var recentlyListenedCookie = Cookie.read('moosique');
           var recentlyListened = [];
-
           if (recentlyListenedCookie) { // does the cookie exist?
             recentlyListened = JSON.decode(recentlyListenedCookie).recentlyListened;
             if (recentlyListened) { // if the cookie is not totally empty
@@ -133,15 +128,13 @@ var Moosique = new Class({ Implements: Options,
               } 
             } 
           }
-          // add the last played to the array
-          recentlyListened.push(last); 
+          recentlyListened.push(last); // add the last played to the array
 
           // update the cookie
           recentlyListenedObject = { 'recentlyListened' : recentlyListened };
           recentlyListenedCookie = Cookie.write( /* save for one year */
             'moosique', JSON.encode(recentlyListenedObject), { duration: 365 } 
           );
-
           // update the recently played list
           that.updateRecently();
           that.displayStatusMessage('Added this song to your recently listened to songs.');
@@ -155,44 +148,49 @@ var Moosique = new Class({ Implements: Options,
        */
       var playlistUpdate = function() {
         // delete button
-        $$('#playlist .delete').each(function(del) {
+        that.playlist.getElements('.delete').each(function(del) {
           del.removeEvents();
           del.addEvent('click', function(e) {
-            e.stop();
-            // TODO: if playlist empty or deleted currently playing track: STOP!
+            e.stop(); // don't folow link
+            // if current or the last song from the playlist stop playing
+            if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
+              that.stopPlaying();
+            } 
             this.getParent().destroy(); // deletes the li-element
-            // and refresh the playlist if clicked
-            YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
-            // TODO: if playlist empty or deleted currently playing track: STOP!
+            that.refreshPlaylist();
           });
         });
 
         // up-button
-        $$('#playlist .moveUp').each(function(up) {
+        that.playlist.getElements('.moveUp').each(function(up) {
           up.removeEvents();
           up.addEvent('click', function(e) {
-            e.stop(); // don't folow link
+            e.stop(); 
+            if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
+              that.stopPlaying();
+            } 
             var li = up.getParent();
             var before = li.getPrevious();
             if (before) { // it's not the first one
               li.inject(before, 'before');
-              // and refresh the playlist if clicked
-              YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
+              that.refreshPlaylist();
             }
           });
         });
 
         // down button
-        $$('#playlist .moveDown').each(function(down) {
+        that.playlist.getElements('.moveDown').each(function(down) {
           down.removeEvents();
           down.addEvent('click', function(e) {
-            e.stop(); // don't folow link
+            e.stop();
+            if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
+              that.stopPlaying();
+            } 
             var li = down.getParent();
             var after = li.getNext();
             if (after) { // it's not the first one
               li.inject(after, 'after');
-              // and refresh the playlist if clicked
-              YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
+              that.refreshPlaylist();
             }
           });
         });
@@ -216,7 +214,7 @@ var Moosique = new Class({ Implements: Options,
       var trackStart = function() {
         that.nowPlayingInfo.set('text', 'Currently playing:');
         that.nowPlayingTrack.set('text', YAHOO.MediaPlayer.getMetaData().title);
-        that.playPause.setStyle('background-position', '0px -40px');
+        that.playPause.setStyle('background-position', '0px -40px'); // sprite offset
         
         // send a request to gather additional artist-information
         var nowPlayingAlbum = YAHOO.MediaPlayer.getMetaData().anchor.get('rel');
@@ -227,7 +225,6 @@ var Moosique = new Class({ Implements: Options,
             that.moreInfo.set('html', response);
           }
         }).send('info=' + nowPlayingAlbum);
-        
       };
 
       /**
@@ -271,6 +268,7 @@ var Moosique = new Class({ Implements: Options,
       onFailure: function() {
         that.recResults.set('html', '<h2>Unable to get recommendations. Please reset and try again.</h2>');      
       },
+      
       onSuccess: function(response) {
         response = response.trim();
         if (response != '') {
@@ -288,8 +286,6 @@ var Moosique = new Class({ Implements: Options,
           debug.log('Response from server empty.');
           that.recResults.set('html', '<h2>There is nothing in your recently list.</h2><p>You have to listen to some music first, before you can get any recommendations.</p>');
         }
-        
-        
       }
     }).send('get=recommendations');
   },
@@ -380,8 +376,8 @@ var Moosique = new Class({ Implements: Options,
 
 
   /**
-   *
-   *
+   * This function stops the player and displays the default
+   * status-message "Player stopped", also refreshes the playlist
    *
    */
   stopPlaying: function() {
@@ -419,38 +415,36 @@ var Moosique = new Class({ Implements: Options,
    */
   initInterface: function() {
     var that = this;
-    
-    that.menu.getElements('a').each(function(tab) {
+    // tabbed nav
+    that.nav.getElements('a').each(function(tab) {
       tab.addEvent('click', function(e) {
         e.stop(); // dont follow link
         that.showTab(tab.get('class').toString());
       }); 
     });
-
     // generating recommendations clickable
     that.generate.addEvent('click', function(e) {
       e.stop();
       that.generateRecommendations();
     });
-    
+    // enable resetting recently list
     that.resetRecently.addEvent('click', function(e) {
       e.stop();
       Cookie.dispose('moosique');
       that.updateRecently();
     });
-    
+    // enable resetting the playlist
     that.resetPlaylist.addEvent('click', function(e) {
       e.stop();
       that.playlist.empty();
       that.stopPlaying();
     });
-
+    // enable the manual add random to playlist
     that.addRandom.addEvent('click', function(e) {
       e.stop();
       that.addRandomToPlaylist();
     });
-
-    // make buttons functional
+    // make player-buttons functional
     this.addEventsToButtons();
   },
   
@@ -458,22 +452,19 @@ var Moosique = new Class({ Implements: Options,
   /**
    * Make the search-Form an ajax-Search form, displaying the results
    * on the homepage if successful
-   *
-   * TODO: sanitize client-side too using regex and displayStatus
    */
   activateSearch: function() {
     var that = this;
-    
+    var spinner = new Spinner(that.searchSubmit);
+        
     that.searchForm.addEvent('submit', function(e) {
       e.stop(); // prevent form submitting the non-ajax way
       this.set('send', {
         
         onRequest: function() {
+          spinner.show();
           that.searchSubmit.set('disabled', 'disabled');
-          that.searchSubmit.setStyle('display', 'none');
-          // show homescreen for resultdisplaying
           that.showTab('home');
-
           // if the welcome-text ist present, cut & paste it to help
           if (that.welcome) {
             if (that.welcome.get('html').length > 100) {
@@ -481,19 +472,17 @@ var Moosique = new Class({ Implements: Options,
               that.welcome.destroy();
             }
           }
-          that.loading.setStyle('display', 'inline');
           that.results.set('html', '<h2>Searching...</h2><p>Please be patient, this may take up to a minute...</p>');
         },
         
         onFailure: function() {
+          spinner.hide();
           that.results.set('html', '<h2>Unable to process your search. Try again.</h2>');      
         },
         
         onSuccess: function(response) {
+          spinner.hide();
           that.searchSubmit.erase('disabled'); // reenable submitbutton
-          that.searchSubmit.setStyle('display', 'inline');
-          that.loading.setStyle('display', 'none');
-          // display results
           that.results.set('html', response);
           // addEvents to result-links
           that.makeAddable($$('a.addToPlaylist'));
@@ -501,7 +490,7 @@ var Moosique = new Class({ Implements: Options,
       });
       
       // only send form if value is at least 3 chars long
-      if (that.searchValue.get('value').length > 2) {
+      if (that.searchValue.get('value').length >= 3) {
         this.send();
       } else {
         that.displayStatusMessage('Please enter at least 3 chars for searching...');
@@ -577,7 +566,6 @@ var Moosique = new Class({ Implements: Options,
     // add the delete, moveUp, moveDown Buttons
     that.playlist.getChildren().each(function(li) {
       var children = li.getChildren();
-
       // only add the buttons if they are not there yet
       if (children.length == 1) {
         var track = li.getFirst();
@@ -590,15 +578,14 @@ var Moosique = new Class({ Implements: Options,
         delButton.inject(downButton, 'after');
       }
     });
-    
     // refresh the playlist and show the player-tab
     that.refreshPlaylist();
   },
   
   
   /**
-   *
-   *
+   * This function adds a random song from a random record from the
+   * recommendations results to the playlist (enqueue at the end)
    *
    */
   addRandomToPlaylist: function() {
@@ -606,52 +593,43 @@ var Moosique = new Class({ Implements: Options,
     var addableAlbums = that.recResults.getElements('.addToPlaylist');
     // pick a random album
     var randomAlbum = addableAlbums.getRandom();
-    
+    // if there is at least one album to add items from
     if (randomAlbum) {
       var href = randomAlbum.get('href');
       var rel = randomAlbum.get('rel');
 
-      if (href.match(/jamendo\.com\/get\/track\/id\//gi)) { type = 'playlist'; }      
-      if (href.match(/\.mp3/)) { type = 'mp3File'; }
-
-      // if the addable item is a playlist, we have to get the playlistitems
       var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
         onSuccess: function(response) {
           // yay, we have the playlist, choose a random song and add it
           // therefore save it as Element in temp and extract a random song
-          // TODO a better way would be to just get on <li> from the response
-          // with a regexp and just use this, without creating new dom nodes etc.
-          that.temp.set('html', '<ul>' + response + '</ul>');
-          var songs = that.temp.getElements('li');
+          var songs = Elements.from(response);
           var randomSong = songs.getRandom();
           that.insertIntoPlaylist('<li>' + randomSong.get('html') + '</li>'); 
-          that.temp.empty();
         }
       }).send('get=playlist&playlist=' + href + '&rel=' + rel);
     } else {
       debug.log('You currently have no recommendations, adding a random one will not work.');
     }
-    
   },
   
   
   /**
-   * Shows the given tab in the menu, and hides all others
+   * Shows the given tab in the nav, and hides all others
    *
    * @param {String} tabID ID of the Tab to show
    */
   showTab: function(tabID) {
     var that = this;
-    that.menu.getElements('li').removeClass('active');
-    that.menu.getElements('a.' + tabID).getParent().toggleClass('active');
-    that.main.getChildren().setStyle('display', 'none');
+    that.nav.getElements('li').removeClass('active');
+    that.nav.getElements('a.' + tabID).getParent().toggleClass('active');
+    that.content.getChildren().setStyle('display', 'none');
     document.id(tabID).setStyle('display', 'block');  
   },
   
   
   /**
    * Converts seconds into a string formatted minutes:seconds
-   * with leading zeros for seconds 
+   * with leading zeros for seconds for a nicer display
    * 
    * @param {Float} seconds
    * @return {String} minsec minutes:seconds 

@@ -17,7 +17,8 @@ function compress($buffer) {
 }
  
 /* the javascript-files to include and compress */
-include('mootools-1.2.3-core-yc.js');
+include('mootools-1.2.4-core-yc.js');
+include('mootools-1.2.4.2-more-yc-min.js');
 include('moosique.js');
 include('start.js');
  

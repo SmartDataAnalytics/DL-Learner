@@ -56,6 +56,12 @@ class Config {
    * @param String Value for the wanted Url
    */
   public function getConfigUrl($value) {
+    if ($value == 'wsdlLocal' || $value == 'allTags' || $value == 'allRecords') {
+      return $this->config['url']['base'] . $this->config['url'][$value];
+    }
+    if ($value == 'tagOntology') {
+      return 'file:' . $this->config['url']['absPath'] . $this->config['url'][$value];
+    }
     return $this->config['url'][$value];
   }
   

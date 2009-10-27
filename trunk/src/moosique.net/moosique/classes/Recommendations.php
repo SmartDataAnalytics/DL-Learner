@@ -97,10 +97,8 @@ class Recommendations extends Config {
           $posExamples[] = $record[1][0];
           $posExamples = array_unique($posExamples);
           $this->posExamples = $posExamples;
-          
         }
       }
-      
     } else {
       if (is_array($posExamples)) {
         $this->posExamples = $posExamples;        
@@ -130,7 +128,7 @@ class Recommendations extends Config {
       for ($i = 0; $i < $countPos; $i++) {
         $randomRecord = trim($allRecords[array_rand($allRecords)]);
         // no double entries for the $instances-array
-        if (!in_array($randomRecord, $posExamples)) {
+        if (!in_array($randomRecord, $this->posExamples)) {
           $instances[] = $randomRecord;
         }
       }

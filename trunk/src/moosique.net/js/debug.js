@@ -1,6 +1,9 @@
-/* activate debugging if firebug is avaiable */
-if (typeof(console) !== 'undefined') {  
-  debug = console;
-  debug.log("Firebug-Console for moosique.net activated.");
-}
-
+// New Debugger-Class using the mootools-log
+var Debugger = new Class({
+  Implements: Log,
+  initialize: function(){
+    this.enableLog().log('Log-Console for moosique.net activated.');
+  }
+});
+// global debugger-instance
+var debug = new Debugger;
