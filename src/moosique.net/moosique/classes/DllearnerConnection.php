@@ -104,6 +104,26 @@ class DllearnerConnection extends Config {
     return $result;
   }
     
+    
+  /**
+   * Bulid the exclusion-String-Array from config.ini for faster
+   * recommendation-generation
+   * 
+   * @param Array $conf The Learning-Conf Array
+   * @return Array The Array of String with predicates to exclude
+   */  
+  private function getExclusions($conf) {
+    // exclude from node expansion that are not relevant for any learning processes
+    // this speeds up the general node-extraction
+    $exclusionsArray = array();
+    $exclude = explode(',', $conf['exclude']);
+    foreach($exclude as $exclusion) {
+      $splitPrefix = explode(':', $exclusion);
+      $exclusionsArray[] = $this->getConfigPrefixes($splitPrefix[0]) . $splitPrefix[1];
+    }
+    if ($this->debugger) $this->debugger->log($exclusionsArray, "Exluding from extraction for faster learning:");
+    return $exclusionsArray;
+  }
   
   /**
    *
@@ -112,25 +132,26 @@ class DllearnerConnection extends Config {
    */
   public function learn($instances, $positiveExamples) {
     $result = false;
-    // $id = $_SESSION['sessionID'];
+    $conf = $this->getConfigLearning();    
+    if ($this->debugger) $this->debugger->log(array($instances, $positiveExamples), "Instances and positive examples are");
     
-    // TODO for learning we create a new learning-ID and knowledge-Source
+    // TODO extra ID is necessary?
+    // $id = $_SESSION['sessionID'];
+    // $kID = $this->knowledgeSourceID;
     $id = $this->client->generateID();
     $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
-    $conf = $this->getConfigLearning();
-    
+    $this->client->applyConfigEntryStringArray($id, $kID, 'predList', $this->getExclusions($conf));
+
+
     $this->client->addKnowledgeSource($id, 'owlfile', $this->getConfigUrl('tagOntology'));
     $this->client->setReasoner($id, $conf['reasoner']);
 
     // set the instances, the learning-Problem and pos examples
-    // $this->client->applyConfigEntryStringArray($id, $this->knowledgeSourceID, 'instances', $instances);
     $this->client->applyConfigEntryStringArray($id, $kID, 'instances', $instances);
     $this->client->setLearningProblem($id, $conf['problem']);
     $this->client->setPositiveExamples($id, $positiveExamples);
     
     // recursion-depth and fragment saving
-    // $this->client->applyConfigEntryInt($id, $this->knowledgeSourceID, 'recursionDepth', $conf['recursionDepth']);
-    // $this->client->applyConfigEntryBoolean($id, $this->knowledgeSourceID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
     $this->client->applyConfigEntryInt($id, $kID, 'recursionDepth', $conf['recursionDepth']);
     $this->client->applyConfigEntryBoolean($id, $kID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
 
@@ -141,7 +162,6 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryBoolean($id, $learnID, 'useHasValueConstructor', $conf['useHasValueConstructor']);
 
     // replace prefixes
-    // $this->client->applyConfigEntryStringTupleList($id, $this->knowledgeSourceID, 'replacePredicate', 
     $this->client->applyConfigEntryStringTupleList($id, $kID, 'replacePredicate', 
       array($this->getConfigPrefixes('tags') . 'taggedWithTag'), array($this->getConfigPrefixes('rdf') . 'type')
     );

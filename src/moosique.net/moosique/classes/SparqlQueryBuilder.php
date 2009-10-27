@@ -32,7 +32,7 @@ class SparqlQueryBuilder extends Config {
    * @param object $typeOfSearch
    * @param object $limit
    */
-  private function buildQuery($search, $searchType, $limit) {
+  private function buildQuery($search, $searchType) {
     
     /* Build up the Prefixes */
     $prefixes = '';
@@ -40,45 +40,34 @@ class SparqlQueryBuilder extends Config {
       $prefixes .= 'PREFIX ' . $prefix . ': <' . $resource . '>' . "\n";
     }
 
+    // if a global limit is set, we use it
+    // else we use the optional limit given to the parent class when constructing it
     if ($this->getConfig('globalLimit') == 1) {
       $limit = "\n" . 'LIMIT ' . $this->getConfig('maxResults');  
     } else {
-      if ($limit > 0) {
-        $limit = "\n" . 'LIMIT ' . $limit;  
-      } else {
-        $limit = '';
-      }
+      $limit = '';
     }
 
-    /**
-     * since there is no ORDER BY RAND() in Sparql and we are limiting
-     * the number of results for performance, we have to do sth. to
-     * at least randomize the results a bit..., the idea is to ORDER BY
-     * the different variables ASC/DESC randomly always used variables are
-     *?artist, ?artistName, ?record and ?playlist (record or track)
-     */
-    $orderBy = '';
-    /* BUG: Nice idea, but the jamendo-sparql-endpoint just ignores limit 
-       when using order-by, thus useless approach */
-    /*
-    $randomVariables = array('?artist', '?artistName', '?record', '?playlist');
-    $randomOrder = array('ASC', 'DESC');
-    if ($searchType != 'currentInfo') {
-      $orderBy = ' ORDER BY ' . $randomOrder[array_rand($randomOrder)] 
-               . '(' . $randomVariables[array_rand($randomVariables)] . ')' . "\n";
-    }
-    */
-
-    // we need all information we can get, everytime, thus *
+    // we need all information we are asking for everytime, thus *
     $beginStatement = 'SELECT DISTINCT * WHERE { ' . "\n";
-    $endStatement = ' }' . $orderBy . $limit;
+    // we always want the xspf-playlist only, the search filters is
+    // flagged with "i" for case-insensitive search
+    $endStatement = "\n" . ' FILTER (regex(str(?playlist), "xspf", "i")) . } ' . $limit;
+    
+    $baseQuery = ' {
+      ?artist rdf:type mo:MusicArtist ;
+              foaf:name ?artistName ;
+              foaf:made ?record .
+      ?record rdf:type mo:Record ;
+              dc:title ?albumTitle .
+    } ';
 
     $query = '';
     switch($searchType) {
       case 'artistSearch'    : $query = $this->queryArtistSearch($search); break;
       case 'tagSearch'       : $query = $this->queryTagSearch($search); break;
+      case 'albumSearch'     : $query = $this->queryAlbumSearch($search); break;
       case 'songSearch'      : $query = $this->querySongSearch($search); break;
-      case 'lastFM'          : $query = $this->queryTagSearch($search); break;
       case 'recommendations' : $query = $this->queryRecommendations($search); break;
       
       /* TODO build functions for other queries
@@ -86,7 +75,7 @@ class SparqlQueryBuilder extends Config {
       */
     }
     // save the query
-    $this->queryString = $prefixes . $beginStatement . $query . $endStatement;
+    $this->queryString = $prefixes . $beginStatement . $baseQuery . $query . $endStatement;
   }
   
   
@@ -98,21 +87,14 @@ class SparqlQueryBuilder extends Config {
    */
   private function queryArtistSearch($search) {
     $queryString = ' {
-      ?artist rdf:type mo:MusicArtist ;
-              foaf:name ?artistName ;
-              foaf:made ?record .
       ?record mo:available_as ?playlist ;
-              tags:taggedWithTag ?tag ;
-              dc:title ?albumTitle .
+              tags:taggedWithTag ?tag .
       
-      OPTIONAL { ?artist foaf:img ?artistImage . }
+      OPTIONAL { ?artist foaf:img ?image . }
       OPTIONAL { ?artist foaf:homepage ?artistHomepage . }
     }';
-    // we want the xspf-playlist only, the search filters is
-    // flagged with  "i" for case-insensitive search
-    $queryString .= 'FILTER (regex(str(?playlist), "xspf", "i")) . ';
-    $queryString .= 'FILTER (regex(str(?artistName), "' . $search . '", "i")) . ';
     
+    $queryString .= 'FILTER (regex(str(?artistName), "' . $search . '", "i")) . ';
     return $queryString;
   }
   
@@ -125,95 +107,93 @@ class SparqlQueryBuilder extends Config {
    * @return String Sparql-Query part for tag-search
    */
   private function queryTagSearch($search) {
-    /* TODO multi-tag search -- maybe building an extra function is better for this 
-    $moreThanOneTag = is_array($search);
-    $searchCount = 0;
-    
-    if ($moreThanOneTag === true) {
-      $searchCount = count($search);
-    }
-    */
-    $queryString = ' {
-      ?artist rdf:type mo:MusicArtist ;
-              foaf:name ?artistName ;
-              foaf:made ?record .
-      ?record rdf:type mo:Record ;
-              dc:title ?albumTitle ; ';
-    /*          
-    if ($moreThanOneTag === true) {
-      for ($i = 0; $i < $searchCount; $i++) {
-        $queryString .= ' tags:taggedWithTag ?tag' . $i . ' ; ';
-      }
-    } else {
-      */
-      $queryString .= ' tags:taggedWithTag ?tag ; ';
-      /*
-    }
-    */
-    $queryString .= ' mo:available_as ?playlist .
-      OPTIONAL {
-        ?record mo:image ?cover .
-        FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
-      }
-    } ';
-    // we want the xspf-playlist only, the search filters is
-    // flagged with  "i" for case-insensitive search
-    $queryString .= ' FILTER (regex(str(?playlist), "xspf", "i")) . ';
-    
-    // searching for more than on value?
-    /*
     if (is_array($search)) {
-      $queryString .= ' FILTER (';
-  
-      // glueing the searches together using AND together
-      for($i = 0; $i < $searchCount; $i++) {
-        $queryString .= 'regex(str(?tag' . $i  . '), "' . $search[$i] . '", "i") ';
-        if ($i !== ($searchCount - 1)) {
-          $queryString .= ' && ';
-        }
-      }
-      $queryString .= ' ) . ';
+      // special case again: if array, we do the exakt tagSearch
+      $queryString = $this->queryExactTagSearch($search);
     } else {
-      */
+      $queryString = ' {
+        ?record tags:taggedWithTag ?tag ; 
+                mo:available_as ?playlist .
+              
+        OPTIONAL {
+          ?record mo:image ?image .
+          FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+        }
+      } ';
       $queryString .= ' FILTER (regex(str(?tag), "' . $search . '", "i")) . ';
-      /*
     }
-    */
     return $queryString; 
   }
   
   
+  /**
+   * 
+   * 
+   * 
+   * 
+   */
+  private function queryExactTagSearch($search) {
+    $queryString = ' {
+      ?record tags:taggedWithTag ?tag ; ';
+              
+    if (is_array($search)) {
+      foreach($search as $tag) {
+        $queryString .= ' tags:taggedWithTag <http://dbtune.org/jamendo/tag/' . $tag . '> ; ';
+      }
+    } else {
+      $queryString .= ' tags:taggedWithTag <http://dbtune.org/jamendo/tag/' . $search . '> ; ';
+    }
+    $queryString .= ' mo:available_as ?playlist .
+              
+      OPTIONAL {
+        ?record mo:image ?image .
+        FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+      }
+    } ';
+    
+    return $queryString; 
+  }
+
+
+  /**
+   * Returns the Sparql-Query part for album-search
+   * 
+   * @return String Sparql-Query part for album-search
+   */
+  private function queryAlbumSearch($search) {
+    $queryString = ' {
+      ?record tags:taggedWithTag ?tag ; 
+              mo:available_as ?playlist .
+            
+      OPTIONAL {
+        ?record mo:image ?image .
+        FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+      }
+    } ';
+    
+    $queryString .= 'FILTER (regex(str(?albumTitle), "' . $search . '", "i")) . ';    
+    return $queryString;
+  }
   
   
   /**
-   * Returns the Sparql-Query part for tag-search
+   * Returns the Sparql-Query part for song-search
    * 
    * @return String Sparql-Query part for song-search
    */
   private function querySongSearch($search) {
     $queryString = ' {
-      ?artist rdf:type mo:MusicArtist ;
-              foaf:name ?artistName ;
-              foaf:made ?record .
-      ?record rdf:type mo:Record ;
-              mo:track ?track ;
+      ?record mo:track ?track ;
               tags:taggedWithTag ?tag .
       ?track  dc:title ?songTitle ;
               mo:available_as ?playlist .
             
-      OPTIONAL { ?artist foaf:img ?artistImage . }
+      OPTIONAL { ?artist foaf:img ?image . }
     }';
     
-    // we want the xspf-playlist only, the search filters is
-    // flagged with  "i" for case-insensitive search
-    $queryString .= 'FILTER (regex(str(?playlist), "xspf", "i")) . ';
     $queryString .= 'FILTER (regex(str(?songTitle), "' . $search . '", "i")) . ';    
     return $queryString;
   }
-    
-    
-    
-    
     
     
   /**
@@ -224,33 +204,22 @@ class SparqlQueryBuilder extends Config {
    */  
   private function queryRecommendations($search) {
     $queryString = ' {
-      ?artist rdf:type mo:MusicArtist ;
-              foaf:name ?artistName ;
-              foaf:made ?record .
       ?record mo:available_as ?playlist ;
-              dc:title ?albumTitle .
       
       OPTIONAL { ?artist foaf:img ?artistImage . }
       OPTIONAL { ?artist foaf:homepage ?artistHomepage . }
       OPTIONAL {
-        ?record mo:image ?cover .
-        FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
+        ?record mo:image ?image .
+        FILTER (regex(str(?image), "1.100.jpg", "i")) .  
       }
     } ';
 
-    /* ?record tags:taggedWithTag ?tag
-       makes the queries blow up high */
+    // TODO ?record tags:taggedWithTag ?tag makes the queries blow up high
 
-    $queryString .= 'FILTER (regex(str(?playlist), "xspf", "i")) . ';
     // and finally we append the sparql-string from kb-Description
     $queryString .= $search;
-    
     return $queryString; 
   }
-  
-    
-    
-    
     
     
   /**

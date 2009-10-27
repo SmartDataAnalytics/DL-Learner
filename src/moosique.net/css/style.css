@@ -2,11 +2,12 @@
 /*=============== Default Styling ===============*/
 body                          { font: normal 12px/18px Verdana, Arial, sans-serif; color: #f1f7e4;
                                 background: url('../img/bg.png') top left repeat #3a3a3a; border-top: 5px solid #1fd611; }
-input, textarea, select       { background: #292929; border: 1px solid #5a5a5a; outline: none; padding: 5px; }
+input, select                 { background: #292929; border: 1px solid #5a5a5a; outline: none; padding: 5px; }
 input[type=submit]            { padding: 5px 10px; }
-textarea:focus, input:focus, 
-select:focus                  { border: 1px solid #1fd611; }
+input:focus, select:focus     { border: 1px solid #1fd611; }
 a:hover                       { color: #1fd611; }
+a.button                      { background: #4a4a4a; color: #f1f7e4; padding: 5px 10px; text-decoration: none; }
+a.button:hover                { border: 1px solid #1fd611; padding: 4px 9px; }
 h1                            { font: 32px/32px Georgia, Times, serif; }
 h2                            { font: 28px/28px Georgia, Times, serif; }
 h3                            { font: 20px/20px Georgia, Times, serif; }
@@ -15,110 +16,93 @@ h5                            { font: 12px/12px Georgia, Times, serif; }
 h6                            { font: 10px/10px Georgia, Times, serif; }
 pre                           { font: normal 10px/14px Monaco, Courier, monospace; }
 p, h1, h2, h3, h4, h5, h6, 
-table, ul, ol, blockquote, 
-pre, form                     { margin-bottom: 18px; }
+ul, ol, pre, form             { margin-bottom: 18px; }
 
 /* Initial hiding */
-#recommendations, #player, 
-#information, #help, 
-#loadingImg, #header h1       {   display: none; }
+#recommendations, #information,
+#header h1, #player, #help    { display: none; }
 
 /* Rounded Corners */
-input, textarea, select,
-a.button                      { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
+input, select, a.button       { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
 #content, #status, #playing, 
 #playerControls, .results li  { -moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px; }
-#mainMenu a                   { -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px; 
+#nav a                        { -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px; 
                                 -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; 
                                 border-bottom-left-radius: 10px; border-top-left-radius: 10px; }
                                 
-/* button-click-feeling for links, by offsetting top position */
-#playerControls a:active      { position: relative; top: 2px; }
-#playlist .delete:active, 
-#playlist .moveUp:active, 
-#playlist .moveDown:active    { top: 6px; }
-
-
 /*=============== Default Containers ===============*/
 #container, #header, 
-#headerContainer, 
-#mainContainer, #content, 
-#playlist li                  { position: relative; }
+#content, #playlist li        { position: relative; }
 #container                    { width: 760px; margin: 0 auto; }
 #header                       { height: 150px; padding-top: 20px; }
 #content                      { background: #292929; padding: 20px; }
 #footer                       { font: normal 10px/14px Verdana, Arial, sans-serif; padding: 20px; text-align: center; }
 
 
-/*=============== header Area, Player Controls, Status, Playing and Search Form ===============*/
+/*=============== Player Controls, Status, Playing ===============*/
 #status, #playing             { position: absolute; top: 70px; left: 0; width: 490px; height: 60px; 
                                 background: #292929; padding: 10px 20px; }
 #playerControls               { position: absolute; top: 70px; right: 0; width: 170px; height: 60px; 
                                 padding: 10px 20px; background: #292929; }
+#playerControls a:active      { position: relative; top: 2px; }
 #status                       { background: #393939; height: 60px; line-height: 60px; text-align: center;
                                 font-weight: bold; border: 1px solid #1fd611; z-index: 1000; }
 #playing span                 { display: block; margin-bottom: 0; font-size: 10px; }
 #playing .track               { font: bold 12px/32px Verdana, Arial, sans-serif; }
 #playing .time                { position: absolute; bottom: 10px; right: 20px; }
-
 #prev, #next, #stop, 
 #playPause, #mute             { display: block; width: 20px; height: 40px; text-indent: -10000px; 
                                 float: left; margin: 10px 0 0 10px; }
-/* Sprites */
 #prev                         { background: url(../img/controls.png) 0px -160px no-repeat; }
 #next                         { background: url(../img/controls.png) 0px -120px no-repeat; }
 #stop                         { background: url(../img/controls.png) 0px -80px no-repeat; }
 #mute                         { background: url(../img/controls.png) 0px -280px no-repeat; margin-right: 0; width: 23px; }
 #playPause                    { background: url(../img/controls.png) 0px 0px no-repeat; width: 26px; }
 
-/* Search form */
+
+/*=============== Search Form ===============*/
 #searchValue                  { margin: 0 5px; width: 100px; }
-#loadingImg                   { cursor: wait; }
-a.button                      { background: #4a4a4a; color: #f1f7e4; padding: 5px 10px; text-decoration: none; }
-a.button:hover                { border: 1px solid #1fd611; padding: 4px 9px; }
+.spinner                      { position: absolute; z-index: 10; background: url('../img/bg.png') top left repeat #3a3a3a; }
+.spinner-img                  { background: url('../img/spinner.gif') top left no-repeat; width: 24px; height: 24px; margin: 0 auto; }
+
+
+/*=============== Content & General ===============*/
 #addRandom                    { text-decoration: underline; }
-
-/*=============== Menu & Footer ===============*/
-#mainMenu ul                  { position: absolute; top: 0; right: 0; }
-#mainMenu li                  { float: left; }
-#mainMenu a                   { display: block; margin-left: 10px; line-height: 30px; height: 30px; 
-                                padding: 10px 12px; color: #f1f7e4; background: #4a4a4a; }
-#mainMenu .active a,
-#mainMenu .active a:hover     { background: #1fd611; }
-#mainMenu a:hover             { text-decoration: none; background: #5a5a5a; }
-
 #footer a                     { padding: 0 10px; }
 
-/*=============== Search Results ===============*/
-.results li h3 a              { font-weight: normal; }
-.results li img               { border: 2px solid #545454; }
+
+/*=============== Menu ===============*/
+#nav ul                       { position: absolute; top: 0; right: 0; }
+#nav li                       { float: left; }
+#nav a                        { display: block; margin-left: 10px; line-height: 30px; height: 30px; 
+                                padding: 10px 12px; color: #f1f7e4; background: #4a4a4a; }
+#nav .active a,
+#nav .active a:hover          { background: #1fd611; }
+#nav a:hover                  { text-decoration: none; background: #5a5a5a; }
+
+
+/*=============== Search Results, Recommendations & Playlist ===============*/
+.results h3 a                 { font-weight: normal; }
+.results img                  { border: 2px solid #545454; max-width: 308px; max-height: 308px; }
 .results li                   { float: left; width: 312px; border: 1px solid #545454; padding: 18px; margin-bottom: 18px; }
 .results li.odd               { margin-right: 18px; clear: both; }
 .results ul ul                { list-style: disc; }
-
-/* This is for the list of found albums etc */
 .results li li,
 .artistSearch li li,
 .tagSearch li li              { border: none; display: list-item; padding: 0; margin: 0 0 0 36px; 
                                 width: auto; height: auto; float: none; }
+
+.results h4                   { display: inline; }
 #recommendationResults ul ul,
 .tagSearch ul ul              { clear: both; }
-.results .artistImage         { text-align: center; margin-bottom: 18px;}
-.results .cover               { margin: 0 18px 18px 0; width: 104px; height: 104px; float: left; }
-#recommendationResults h4,
-.tagSearch h4                 { display: inline; }
-
-
-/*=============== Recommendations and playlist ===============*/
+.results .image               { text-align: center; margin-bottom: 18px; }
+#recommendationResults.results .image,
+.results .tagSearch .image    { margin: 0 18px 18px 0; width: 104px; height: 104px; float: left; }
 #autoAdd                      { float: right; }
-#recommended a:hover          { cursor: pointer; text-decoration: none; font-weight: bold; color: #131313; }
-#playlist, #recommended, 
-#recently                     { margin-left: 36px; list-style: decimal; }
-#playlist li, #recently li,
-#recommended li               { line-height: 24px; }
-#playlist .ymp-btn-page-pause { font-weight: bold; }
 
-/* Playlist buttons */
+#playlist, #recently          { margin-left: 36px; list-style: decimal; }
+#playlist li, #recently li    { line-height: 24px; }
+#playlist .ymp-btn-page-pause { font-weight: bold; }
 #playlist .delete, 
 #playlist .moveUp, 
 #playlist .moveDown           { position: absolute; display: block; top: 5px; right: 20px; width: 14px; height: 14px;
@@ -126,10 +110,12 @@ a.button:hover                { border: 1px solid #1fd611; padding: 4px 9px; }
                                 background: url(../img/controls.png) 0px -200px no-repeat;}
 #playlist .moveUp             { background: url(../img/controls.png) 0px -360px no-repeat; right: 40px; }
 #playlist .moveDown           { background: url(../img/controls.png) 0px -320px no-repeat; right: 60px; }
+#playlist .delete:active, 
+#playlist .moveUp:active, 
+#playlist .moveDown:active    { top: 6px; }
 
-/*=============== Information / Help ===============*/
 
-
+/*=============== Information & Help ===============*/
 
 
 

@@ -1,18 +1,17 @@
 <?php session_start(); ?>
-<!DOCTYPE html 
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link href="css/" rel="stylesheet" type="text/css" />
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/" />
   <title>moosique.net</title>
 </head>
 <body>
 <div id="container">
   <div id="header">
     <h1>moosique.net</h1>
-    <div id="mainMenu">
+    
+    <div id="nav">
       <ul class="clearfix">
         <li class="active"><a href="#" class="home">Search</a></li>
         <li><a href="#" class="player">Playlist</a></li>
@@ -21,20 +20,22 @@
         <li><a href="#" class="help">?</a></li>
       </ul>
     </div>
+    
     <form id="searchForm" method="get" action="moosique/">
       <div>
         <select name="searchType" id="searchType">
           <option value="allSearch">All</option>
           <option value="artistSearch">Artist</option>
           <option value="tagSearch">Tag</option>
+          <option value="albumSearch">Album</option>
           <option value="songSearch">Song</option>
           <option value="lastFM">last.fm</option>
         </select>
         <input id="searchValue" name="searchValue" type="text" />
         <input id="searchSubmit" name="searchSubmit" value="Search" title="Search" type="submit" />
-        <img id="loadingImg" src="img/loading.gif" alt="Loading..." />
       </div>
     </form>
+    
     <div id="playerControls">
       <a href="#" id="playPause" title="Play/Pause">Play / Pause</a>
       <a href="#" id="stop" title="Stop playing">Stop</a>
@@ -42,6 +43,7 @@
       <a href="#" id="next" title="Play next Track in Playlist">Next Track</a>
       <a href="#" id="mute" title="Sound on/off">Mute</a>
     </div>
+    
     <div id="status"> </div>
     <div id="playing">
       <span class="info">Player stopped</span>
@@ -87,18 +89,18 @@
       <h2>Recommendations</h2>
       <p>
         These recommendations are generated every time you listen to a song 
-        for at least half it's length, assuming that you liked it. You click on a
+        for at least half it's length, assuming that you liked it. You can click on a
         recommended album to add it to the playlist, or you can <a href="#" id="addRandom">click
         here to just add a random song from your recommendations</a>.<br />
         
+      </p>
+      <p>
+        <a href="#" id="generateRecommendations" class="button" title="If there is nothing showing up here, you can generate your list of recommendations by clicking here.">Reload recommendations</a>
       </p>
       <div id="recommendationResults" class="results">
       
       
       </div>
-      <p>
-        <a href="#" id="generateRecommendations" class="button" title="If there is nothing showing up here, you can generate your list of recommendations by clicking here.">Reload recommendations</a>
-      </p>
     </div>
 
     <div id="information">
@@ -138,9 +140,7 @@
     <a href="http://jamendo.com">Jamendo</a> |
     <a href="http://mediaplayer.yahoo.com/">Yahoo! Media Player</a> 
   </div>
-  <div id="temp" class="hidden">
-    
-  </div>
+
 </div> <!-- end container -->
 
 <?php
@@ -148,15 +148,15 @@
   $c = new Config();
   if ($c->getConfig('debug') == 1) /* debugging active */ {
 ?>
-<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
-<script type="text/javascript" src="js/mootools-1.2.3-core-nc.js"></script>
-<script type="text/javascript" src="js/moosique.js"></script>
-<script type="text/javascript" src="js/debug.js"></script>
-<script type="text/javascript" src="js/start.js"></script>
-
+<script src="http://mediaplayer.yahoo.com/js"></script>
+<script src="js/mootools-1.2.4-core-nc.js"></script>
+<script src="js/mootools-1.2.4.2-more-nc.js"></script>
+<script src="js/moosique.js"></script>
+<script src="js/debug.js"></script>
+<script src="js/start.js"></script>
 <?php } else /* compress for production and dont include debugger */ { ?>
-<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
-<script type="text/javascript" src="js/"></script>
+<script src="http://mediaplayer.yahoo.com/js"></script>
+<script src="js/"></script>
 <?php } ?>
 </body>
 </html>

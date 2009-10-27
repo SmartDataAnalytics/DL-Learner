@@ -28,17 +28,19 @@ class LastFM extends Config {
           $allTags[] = (String)$tag->name;
         }
       }
-      // we limit the array to the 10 most used tags
-      $allTags = array_slice($allTags, 0, 10);
+      // we limit the array to the most used tags
+      $allTags = array_slice($allTags, 0, $this->getConfigLastFM('topTags'));
 
       // if there is a last-fm user, but he has tagged nothing?
       // we get the list of top-artists and get the topTags from the artists
       if (empty($allTags)) { 
+        if ($this->debugger) $this->debugger->log($user, 'The last.fm-User has no tags, trying to fetch tags from top artists.');
         $allTags = $this->getTagsFromTopArtists($user);
       }
     } else {
       if ($this->debugger) $this->debugger->log($user, 'The last.fm-User does not exist. Please try again.');
     }
+    if ($this->debugger) $this->debugger->log($allTags, 'Found these Tags for the last.fm-User' . $user);
     $this->topTags = $allTags;
   }
   
@@ -63,8 +65,8 @@ class LastFM extends Config {
         $allArtists[] = (String)$artist->name;
       }
     }
-    // reduce top Artists to TOP 10
-    $allArtists = array_slice($allArtists, 0, 10);
+    // reduce top Artists to topArtists
+    $allArtists = array_slice($allArtists, 0, $this->getConfigLastFM('topArtists'));
     
     // get the topTags for every artist
 
@@ -74,19 +76,17 @@ class LastFM extends Config {
                   . '&api_key=' . $this->getConfigLastFM('apiKey');
       $artistTags = @simplexml_load_file($requestUrl);
       
-      // take only the first two tags, that should be enough
+      // take only the first tag, that should be enough
       foreach($artistTags->toptags as $tags) {
-        $someCounter = 0;
         foreach($tags as $tag) {
           $finalTags[] = (String)$tag->name;
-          $someCounter++;
-          if ($someCounter == 2) break;
+          break;
         }
       }
     }
-    // remove double entries and limit the array to the TOP 10
+    // remove double entries and limit the array to the TOP Tags
     $finalTags = array_unique($finalTags);
-    $finalTags = array_slice($finalTags, 0, 10);
+    $finalTags = array_slice($finalTags, 0, $this->getConfigLastFM('topTags'));
     
     return $finalTags;
   }
