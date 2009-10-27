@@ -61,6 +61,8 @@ public class ReadingOntologyThread extends Thread {
 		this.editor = editorKit;
 		this.view = v;
 		this.model = m;
+		//TODO: mehr informationen fuer grafische anzeige herraussuchen.
+		//editor.getOWLModelManager().getActiveOntology().getIndividualAxioms();
 	}
 	
 	/**

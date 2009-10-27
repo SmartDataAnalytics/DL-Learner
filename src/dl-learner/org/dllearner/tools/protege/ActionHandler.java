@@ -114,6 +114,7 @@ public class ActionHandler implements ActionListener {
 			view.setHelpButtonVisible(true);
 			view.setHintMessage(moreInformationsMessage);
 			retriever = new SuggestionRetriever();
+			retriever.addPropertyChangeListener(view.getStatusBar());
 			retriever.execute();
 		}
 
@@ -215,13 +216,15 @@ public class ActionHandler implements ActionListener {
 		@Override
 		protected List<? extends EvaluatedDescription> doInBackground()
 				throws Exception {
+			setProgress(0);
 			la = model.getLearningAlgorithm();
-			view.startStatusBar();
+			view.getStatusBar().setMaximumValue(view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 			timer = new Timer();
 			timer.schedule(new TimerTask() {
-
+				int progress = 0;
 				@Override
 				public void run() {
+					progress += 1;setProgress(progress);
 					if (la != null) {
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view
 								.getPosAndNegSelectPanel().getOptionPanel()
@@ -236,7 +239,7 @@ public class ActionHandler implements ActionListener {
 					}
 				}
 
-			}, 0, 500);
+			}, 1000, 1000);
 
 			dlLearner = new Thread(new Runnable() {
 
@@ -270,6 +273,7 @@ public class ActionHandler implements ActionListener {
 		public void done() {
 
 			timer.cancel();
+			
 			List<? extends EvaluatedDescription> result = null;
 			try {
 				result = get();
@@ -278,9 +282,13 @@ public class ActionHandler implements ActionListener {
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
-			view.algorithmTerminated();
+			setProgress(0);
+			view.stopStatusBar();
+			//view.algorithmTerminated();
 			updateList(result);
 			view.algorithmTerminated();
+
+			
 		}
 
 		@Override

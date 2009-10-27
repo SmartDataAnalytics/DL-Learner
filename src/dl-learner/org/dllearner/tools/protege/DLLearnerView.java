@@ -572,4 +572,8 @@ public class DLLearnerView {
 	public void stopStatusBar() {
 		stat.showProgress(false);
 	}
+	
+	public StatusBar getStatusBar() {
+		return stat;
+	}
 }
