@@ -40,7 +40,8 @@ import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
- * 
+ * It renders the Informations for the individual points and sets the 
+ * individuals for the popup component.
  * @author Christian Koetteritzsch
  * 
  */
@@ -74,12 +75,18 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	}
 
 	@Override
+	/**
+	 * Nothing happens here.
+	 */
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	/**
+	 * This methode renders the tool tip message when the mouse goes over
+	 * the plus symbole. It also renders the the informations for the individual point.
+	 */
 	public void mouseMoved(MouseEvent m) {
 		if (m.getX() >= panel.getX1() + panel.getShiftCovered()
 				&& m.getX() <= panel.getX2() + panel.getShiftCovered()
@@ -132,10 +139,17 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	}
 
 	@Override
+	/**
+	 * Nothing happens here.
+	 */
 	public void propertyChange(PropertyChangeEvent arg0) {
 	}
 
 	@Override
+	/**
+	 * This methode renders the popup box and
+	 * computes which individuals must be shown.
+	 */
 	public void mouseClicked(MouseEvent arg0) {
 		if (panel.getEvaluateddescription() != null) {
 			if (arg0.getX() >= panel.getX1() + panel.getShiftCovered()
@@ -229,26 +243,34 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	}
 
 	@Override
+	/**
+	 * Nothing happens here.
+	 */
 	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	/**
+	 * Nothing happens here.
+	 */
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	/**
+	 * Nothing happens here.
+	 */
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	/**
+	 * Nothing happens here.
+	 */
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 

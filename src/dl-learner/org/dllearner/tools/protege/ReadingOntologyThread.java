@@ -29,7 +29,6 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 
@@ -62,18 +61,6 @@ public class ReadingOntologyThread extends Thread {
 		this.editor = editorKit;
 		this.view = v;
 		this.model = m;
-		
-		//TODO: mehr informationen fuer grafische anzeige herraussuchen.
-		//editor.getOWLModelManager().getActiveOntology().getDataPropertyAssertionAxioms(null);
-		//editor.getOWLModelManager().getActiveOntology().getObjectPropertyAssertionAxioms(null);
-		//editor.getOWLModelManager().getActiveOntology().getSameIndividualAxioms(null);
-		//editor.getOWLModelManager().getActiveOntology().getDifferentIndividualAxioms(null);
-		/*Set<OWLAxiom> test = editor.getOWLModelManager().getActiveOntology().getAxioms();
-		for(OWLAxiom t : test) {
-			System.out.println("hier: " + t);
-			//System.out.println("da: " + t);
-		}*/
-		//System.out.println();
 	}
 	
 	/**
@@ -97,7 +84,6 @@ public class ReadingOntologyThread extends Thread {
 	 */
 	private void setPositiveConcept() {
 		current =  editor.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		//editor.getOWLWorkspace().getOWLIndividualSelectorPanel().getSelectedObjects();
 		if(current != null) {
 			SortedSet<Individual> individuals = null;
 			hasIndividuals = false;

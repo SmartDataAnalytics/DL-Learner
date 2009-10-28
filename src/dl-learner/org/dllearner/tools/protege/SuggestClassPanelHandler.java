@@ -51,7 +51,8 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 
 	@Override
 	/**
-	 * 
+	 * This methode sets the graphical coverage panel enable when a
+	 * suggested class expression is selected.
 	 */
 	public void mouseClicked(MouseEvent e) {
 		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
@@ -72,7 +73,6 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 					}
 				}
 			}
-			view.getSuggestClassPanel().getSuggestModel().indexOf(item);
 			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(evaluatedDescription);
 			view.setGraphicalPanel();
 		}
@@ -96,7 +96,8 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 
 	@Override
 	/**
-	 * 
+	 * This methode sets the add button enable when 
+	 * a suggested class expression is selected. 
 	 */
 	public void mousePressed(MouseEvent e) {
 		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
@@ -116,13 +117,11 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 
 
 	@Override
-	/*
-	 * TODO: Ueberlegen wie ich das mit dem selektierten Objekt umsetze
+	/**
+	 * Nothing happens here. 
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		Object selectedObject = view.getSuggestClassPanel().getSuggestList().getSelectedValue();
-		
-		view.getSuggestClassPanel().getSuggestList().setSelectedValue(selectedObject, true);
+
 	}
 
 }
