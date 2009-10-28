@@ -1,6 +1,8 @@
 Installation-Requirements:
 ==========================
 
+TODO: write me!
+
 See /moosique/config.ini
 
 - PHP 5.2.x

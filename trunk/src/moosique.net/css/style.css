@@ -1,3 +1,16 @@
+/* moosique.net by Steffen Becker
+
+Colors are: 
+
+Green:              1fd611
+Background-Grey:    3a3a3a
+Button-BG-Grey      4a4a4a
+Highlight-Grey:     5a5a5a
+Dark-Grey:          292929
+White (Text):       f1f7e4
+
+*/
+
 @media screen {
 /*=============== Default Styling ===============*/
 body                          { font: normal 12px/18px Verdana, Arial, sans-serif; color: #f1f7e4;
@@ -45,7 +58,7 @@ input, select, a.button       { -moz-border-radius: 5px; -webkit-border-radius: 
 #playerControls               { position: absolute; top: 70px; right: 0; width: 170px; height: 60px; 
                                 padding: 10px 20px; background: #292929; }
 #playerControls a:active      { position: relative; top: 2px; }
-#status                       { background: #393939; height: 60px; line-height: 60px; text-align: center;
+#status                       { background: #3a3a3a; height: 60px; line-height: 60px; text-align: center;
                                 font-weight: bold; border: 1px solid #1fd611; z-index: 1000; }
 #playing span                 { display: block; margin-bottom: 0; font-size: 10px; }
 #playing .track               { font: bold 12px/32px Verdana, Arial, sans-serif; }
@@ -83,8 +96,8 @@ input, select, a.button       { -moz-border-radius: 5px; -webkit-border-radius: 
 
 /*=============== Search Results, Recommendations & Playlist ===============*/
 .results h3 a                 { font-weight: normal; }
-.results img                  { border: 2px solid #545454; max-width: 308px; max-height: 308px; }
-.results li                   { float: left; width: 312px; border: 1px solid #545454; padding: 18px; margin-bottom: 18px; }
+.results img                  { border: 2px solid #5a5a5a; max-width: 308px; max-height: 308px; }
+.results li                   { float: left; width: 312px; border: 1px solid #5a5a5a; padding: 18px; margin-bottom: 18px; }
 .results li.odd               { margin-right: 18px; clear: both; }
 .results ul ul                { list-style: disc; }
 .results li li,

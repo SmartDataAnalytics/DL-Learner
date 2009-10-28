@@ -1,30 +1,46 @@
 <?php
 /**
- * This class handles all HTML-Output for all different kinds of 
- * requests. No Templating system is used.
+ * This class handles all HTML-Output for all different kinds of requests. 
+ * It also creates error messages shown in the frontend
  *
- *
+ * @package moosique.net
+ * @author Steffen Becker
  */
 class View extends Config {
-  private $html = '';
-  private $limit = 0;
   
+  private $html = ''; // the final HTML-Output is stored
+  private $limit = 0; // limit for showing results
   
-  // view modes are debug or both, default is html view
+  /**
+   * Creating a View automatically creates the HTML
+   *
+   * @param array $data The result-Data-array
+   * @param string $type the type of search performed
+   * @param mixed $search A string or array with the searchValues
+   * @param int $limit The maximum number of results to show/create HTML for, optional
+   * @author Steffen Becker
+   */
   function __construct($data, $type, $search, $limit = false) {
     parent::__construct(); // init config
     
-    if ($limit === false) { // no special limit set, we use the maxResultsLimit
+    if ($limit === false) { // if no special limit set, we use maxResults
       $this->limit = $this->getConfig('maxResults');
     } else {
       $this->limit = $limit;
     }
     $this->createOutput($data, $type, $search);
   }
-      
-      
+  
+  
   /**
-   * 
+   * Starts creating the HTML output. First checks if the data is fine, 
+   * and gets sub-HTML-parts afterwards, if the data is not fine, an
+   * error-message will be created
+   *
+   * @param array $data The result-Data-array
+   * @param string $type the type of search performed
+   * @param mixed $search A string or array with the searchValues
+   * @author Steffen Becker
    */
   private function createOutput($data, $type, $search) {
     // if we have an array for $search (Tag or lastFM-Search) we implode the searchString
@@ -85,11 +101,12 @@ class View extends Config {
 
 
   /**
-   * 
-   * 
-   * 
-   * 
-   * 
+   * This lmits the result-data, to a given number of results stored
+   * in the private $limit
+   *
+   * @param array $data The result-Data-Array
+   * @return array The limited array
+   * @author Steffen Becker
    */
   private function limitData($data) {
     $count = count($data);
@@ -114,8 +131,13 @@ class View extends Config {
 
 
   /**
-   * 
-   * @param object $data
+   * Returns the HTML for an artist serach, containing special stuff
+   * like homepage-links, album-list etc.
+   *
+   * @param array $data The result-Array to create HTML from
+   * @param string $type type of search to get the template
+   * @return string HTML for a artistSearch
+   * @author Steffen Becker
    */
   private function artistSearchHTML($data, $type) {
     $this->html .= '<div class="artistSearch"><ul class="clearfix">';
@@ -167,8 +189,14 @@ class View extends Config {
   
   
   /**
-   * 
-   * @param object $array
+   * Returns the HTML for tagSearch results
+   * This is somewhat special, we first create a list of found tags,
+   * and then we list the albums found for those tags 
+   *
+   * @param array $data The result-Array to create HTML from
+   * @param string $type type of search to get the template
+   * @return string HTML for a tagSearch
+   * @author Steffen Becker
    */
   private function tagSearchHTML($data, $type) {
     $this->html .= '<div class="tagSearch">';
@@ -202,7 +230,7 @@ class View extends Config {
         $j = $i; // default -- non random, no limit
         // if there is limit set, and randomize is active, we use the random numbers
         if ($numberOfAlbums > $this->limit && $this->getConfig('randomize') == 1) {
-          $j = $random[$i];
+          $j = $random[$i]; // randomizing the results for the tag
         }
         
         $template = $this->getTemplate($type);
@@ -212,9 +240,8 @@ class View extends Config {
         $albumTitle = $this->getValue($tag['albumTitle'], $j);
         $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($tag['playlist'], $j)); 
         
-        $addToPlaylist = '<li><a class="addToPlaylist" href="' . $playlist . '" '
-                       . 'title="' . $artistName . ' - ' . $albumTitle . '" ' 
-                       . 'rel="' . $record . '">Click here to add this album to your playlist.</a></li>';
+        $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
+                       . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
                        
         $image = $this->getImage($tag, $artistName. ' - ' .  $albumTitle, $j);
         
@@ -229,8 +256,12 @@ class View extends Config {
   
   
   /**
+   * Returns the HTML for albumSearch results
    *
-   *
+   * @param array $data The result-Array to create HTML from
+   * @param string $type type of search to get the template
+   * @return string HTML for a albumSearch
+   * @author Steffen Becker
    */
   private function albumSearchHTML($data, $type) {
     $this->html .= '<div class="albumSearch"><ul class="clearfix">';
@@ -240,7 +271,7 @@ class View extends Config {
       if (($i % 2) == 0) { $class = 'odd'; } else { $class = ''; }
       
       $template = $this->getTemplate($type);
-      
+      // $index = 0, we always want a single value and no array here
       $record = $this->getValue($album['record'], 0);
       $albumTitle = $this->getValue($album['albumTitle'], 0);
       $artistName = $this->getValue($album['artistName'], 0);
@@ -249,7 +280,6 @@ class View extends Config {
       $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
                      . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
       
-      // Artist-Image is optional   
       $image = $this->getImage($album, $artistName . ' - ' .  $albumTitle);
       $tags = $this->getTagList($album['tag']);
       
@@ -264,12 +294,12 @@ class View extends Config {
   
   
   /**
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
+   * Returns the HTML for songSearch results
+   *
+   * @param array $data The result-Array to create HTML from
+   * @param string $type type of search to get the template
+   * @return string HTML for a songSearch
+   * @author Steffen Becker
    */
   private function songSearchHTML($data, $type) {
     $this->html .= '<div class="songSearch"><ul class="clearfix">';
@@ -303,12 +333,12 @@ class View extends Config {
 
 
   /**
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
+   * Returns the HTML for recommendations
+   *
+   * @param array $data The result-Array to create HTML from
+   * @param string $type type of search to get the template
+   * @return string HTML for recommendations
+   * @author Steffen Becker
    */
   private function recommendationsHTML($data, $type) {
     $count = count($data['scores']); // doesnt matter if scores or results... 
@@ -330,15 +360,14 @@ class View extends Config {
         foreach ($resultSet as $record => $result) {
           // alternating classes for li-elements
           if (($j % 2) == 0) { $class = 'odd'; } else { $class = ''; }
-          
           $template = $this->getTemplate($type);
 
           $artistName = $this->getValue($result['artistName']);
           $albumTitle = $this->getValue($result['albumTitle']); 
           $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($result['playlist']));
-          $addToPlaylist = '<li><a class="addToPlaylist" href="' . $playlist . '" '
-                         . 'title="' . $artistName . ' - ' . $albumTitle . '" ' 
-                         . 'rel="' . $record . '">Click here to add this album to your playlist.</a></li>';
+          
+          $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
+                         . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
 
           $image = $this->getImage($result, $artistName . ' - ' . $albumTitle);
 
@@ -357,9 +386,11 @@ class View extends Config {
 
 
   /**
+   * Returns a list of <li>s with playlist-entries, no surrounding <ul> 
    *
-   *
-   *
+   * @param array $data An array of playlist-items 
+   * @return string playlist-HTML ready to use
+   * @author Steffen Becker
    */
   private function playlistHTML($data) {
     $albumID = $data['albumID'];
@@ -381,20 +412,24 @@ class View extends Config {
   }
   
   
-  
   /**
-   * 
-   * 
-   * 
-   * 
+   * Returns an <img>-HTML-Tag for a given result. If the image is empty
+   * (can happen because of OPTIONAL search in SPARQL), the linked img in
+   * src is an empty default img
+   *
+   * @param array $image The complete result-array
+   * @param string $altText The alt-Text the image will have
+   * @param int $index optional, used for getValue for specific value-retrieval
+   * @return void
+   * @author Steffen Becker
    */
-  private function getImage($image, $altText, $nr = 0) {
+  private function getImage($image, $altText, $index = 0) {
     // in most cases the image is optional, so it could be empty
     $img = '<img src="img/noimage.png" alt="No image found..." />';
     if (isset($image['image'])) {
       $image = $image['image'];
       if (!empty($image)) {
-        $img = '<img src="' . $this->getValue($image, $nr) . '" alt="' . $altText . '" />';
+        $img = '<img src="' . $this->getValue($image, $index) . '" alt="' . $altText . '" />';
       }
     } 
     return $img;
@@ -402,10 +437,12 @@ class View extends Config {
   
   
   /**
-   * 
-   * 
-   * 
-   * 
+   * Returns a comma-seperated list of tags for a given array of 
+   * Tag-URLs like http://dbtune.org/jamendo/tag/sometag
+   *
+   * @param array $tagsArray An array with tag-URLs
+   * @return string A comma seperated tag-list, sth like rock, metal, stoner, classic
+   * @author Steffen Becker
    */
   private function getTagList($tagsArray) {
     $tags = '';
@@ -421,11 +458,11 @@ class View extends Config {
   
   
   /**
-   * 
-   * 
-   * 
-   * 
-   * 
+   * Returns a template-html-subpart for usage in sprintf-php-function
+   *
+   * @param string $type The type of search we build the HTML for
+   * @return string The template subpart containing some %s's
+   * @author Steffen Becker
    */
   private function getTemplate($type) {
     $template = '';
@@ -468,11 +505,14 @@ class View extends Config {
   
   
   /**
-   * This helper-function returns an array or a string, depending on the number of arrayItems for the 
-   * given array and if the $index-var is set, searches only in the 'value' subarray (ignore type or uri)
+   * This helper-function returns an array or a string with the value
+   * if the optional $index is set, it will always be a string, else it
+   * could be an array
    * 
-   * @param Array $array The Array to get Values from
-   * @return String or Array with the value 
+   * @param array $data The Array to get Values from
+   * @param int $index optional, get a specific value from the $data-array
+   * @return mixed string or array with the value(s)
+   * @author Steffen Becker
    */
   private function getValue($data, $index = false) {
     $value = $data['value'];
@@ -496,15 +536,15 @@ class View extends Config {
 
 
   /**
-   * Returns the HTML
-   * 
-   * @return The produced HTML-output of this Class 
+   * Returns the final HTML-Code produced
+   *
+   * @return void
+   * @author Steffen Becker
    */
   public function getHTML() {
     return $this->html;
   }
   
-
 }
 
 ?>

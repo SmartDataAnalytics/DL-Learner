@@ -1,19 +1,35 @@
 <?php
-
+/**
+ * This class provides methods for recommendations-creation,
+ * setting and getting positive examples and instances and 
+ * creating and retrieving recommendations using a connection
+ * to the DL-Learner
+ *
+ * @package moosique.net
+ * @author Steffen Becker
+ */
 class Recommendations extends Config {
   
   private $posExamples;
   private $instances;
 
+  /**
+   * Only used for getting the global config in this class
+   *
+   * @author Steffen Becker
+   */
   function __construct() {
     parent::__construct(); // init config
   }
+
 
   /**
    * Returns an array of prepared serach-statements to feed the sparql=
    * query-bulider with, converted from the natural description of the results
    *
-   *
+   * @param object $connection a reference to a DllearnerConnection Class
+   * @return mixed A multidimensional array with a SPARQL-Query, the KBsyntax and the score for all results or an error string
+   * @author Steffen Becker
    */
   public function getQueries($connection) {
     $queries = array();
@@ -47,7 +63,6 @@ class Recommendations extends Config {
                 }
               }
             }
-
             if ($match) {
               $sparql = $connection->kbToSqarql($solution->descriptionKBSyntax);
               // extract the subtring we use for the final sparql-query
@@ -58,7 +73,6 @@ class Recommendations extends Config {
               $queries[] = $sparql;
               $scores[] = $score;
               $kbSyntaxes[] = $solution->descriptionKBSyntax;
-              
             }
           }
         }
@@ -80,11 +94,14 @@ class Recommendations extends Config {
   }
 
 
-  
   /**
+   * This function sets the positive examples in private $posExamples
+   * if no array is given, it tries to get the positiveExamples from
+   * the cookie moosique (set by moosique.js)
    *
-   *
-   *
+   * @param array $posExamples an Array of url-strings of positive examples
+   * @return boolean returns false if sth. goes wrong
+   * @author Steffen Becker
    */
   public function setPosExamples($posExamples = false) {
     if ($posExamples === false) {
@@ -98,7 +115,7 @@ class Recommendations extends Config {
           $posExamples = array_unique($posExamples);
           $this->posExamples = $posExamples;
         }
-      }
+      } 
     } else {
       if (is_array($posExamples)) {
         $this->posExamples = $posExamples;        
@@ -108,20 +125,23 @@ class Recommendations extends Config {
     }
   }
   
+
+
   /**
+   * This function sets the instances in private $instances
+   * if no array is given, it tries to create instances from 
+   * posExamples and a random list of records from allRecords.txt
+   * 
+   * TODO more testing, what is the optimum posExamples/neutral ratio, 50/50? 
+   * for now we assume 50/50, use $totalInstances = $this->getConfigLearning('instances');
    *
-   *
-   *
+   * @param array $instances An array of url-strings for records of instances (should contain posExamples)
+   * @author Steffen Becker
    */
   public function setInstances($instances = false) {
-    
-    // TODO more testing, what is the optimum posExamples/neutral ratio, 50/50? 
-    // for now we assume 50/50
-    // $totalInstances = $this->getConfigLearning('instances');
-    
     if ($instances === false) {
       $instances = array();
-      // and then add some random Records _not_ in this list
+      // and then add some random Records _not_ already in this list
       $allRecords = file($this->getConfigUrl('allRecords'));
       $countPos = count($this->posExamples);
 
@@ -140,14 +160,14 @@ class Recommendations extends Config {
         $this->instances = $instances;
       }
     }
-    
-    
   }
 
+
   /**
-   * 
-   * 
-   * 
+   * Returns the positive Examples
+   *
+   * @return array Array of positive examples
+   * @author Steffen Becker
    */
   public function getPosExamples() {
     return $this->posExamples;
@@ -155,17 +175,15 @@ class Recommendations extends Config {
 
 
   /**
-   * 
-   * 
-   * 
+   * Returns the instances
+   *
+   * @return array Array of instances (containing positive Examples)
+   * @author Steffen Becker
    */
   public function getInstances() {
     return $this->instances;
   }
 
-
 }
 
 ?>
-
-
