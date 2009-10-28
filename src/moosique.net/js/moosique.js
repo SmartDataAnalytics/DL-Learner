@@ -1,8 +1,11 @@
 /**
  * moosique-Player-Class
  *
+ * TODO
  *
  *
+ * @package moosique.net
+ * @author Steffen Becker
  */
 var Moosique = new Class({ Implements: Options, 
   
@@ -76,7 +79,6 @@ var Moosique = new Class({ Implements: Options,
    * for the YMP-Events and initializes the Player. Events are:
    * onProgress, onPlaylistUpdate, onTrackPause, onTrackStart, onTrackComplete
    * where onProgress is the most important event-handler, because this is where the learning-process is fired
-   *
    */
   applyYahooMediaPlayerConfig: function() {
     var that = this;
@@ -252,7 +254,6 @@ var Moosique = new Class({ Implements: Options,
   /**
    * Send an ajax-request to generate the recommendations and passes the
    * result to the corresponding html-container
-   *
    */
   generateRecommendations: function() {
     var that = this;
@@ -294,7 +295,6 @@ var Moosique = new Class({ Implements: Options,
   /**
    * Updates the recently-Listened-To UL-List Element with the contents
    * from the recentlyListened-Cookie and makes them re-addable to the playlist
-   *
    */
   updateRecently: function() {
     var that = this;
@@ -378,7 +378,6 @@ var Moosique = new Class({ Implements: Options,
   /**
    * This function stops the player and displays the default
    * status-message "Player stopped", also refreshes the playlist
-   *
    */
   stopPlaying: function() {
     var that = this;
@@ -411,7 +410,6 @@ var Moosique = new Class({ Implements: Options,
   /**
    * Adds click-Events to the Interface for Tabs and invokes
    * addEventsToButtons()
-   *
    */
   initInterface: function() {
     var that = this;
@@ -448,7 +446,7 @@ var Moosique = new Class({ Implements: Options,
     this.addEventsToButtons();
   },
   
-
+  
   /**
    * Make the search-Form an ajax-Search form, displaying the results
    * on the homepage if successful
@@ -499,7 +497,6 @@ var Moosique = new Class({ Implements: Options,
   },
   
   
-  
   /**
    * For Recommendations and Search-Results
    * This function searches for all links with the class addToPlaylist
@@ -520,11 +517,11 @@ var Moosique = new Class({ Implements: Options,
         // determine if the link is to an album or a single track
         var href = a.get('href');
         var rel = a.get('rel');
-
+        
         var type = '';
         if (href.match(/jamendo\.com\/get\/track\/id\//gi)) { type = 'playlist'; }      
         if (href.match(/\.mp3/)) { type = 'mp3File'; }
-
+        
         // if the addable item is a playlist, we have to get the playlistitems
         if (type == 'playlist') {
           var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
@@ -586,7 +583,6 @@ var Moosique = new Class({ Implements: Options,
   /**
    * This function adds a random song from a random record from the
    * recommendations results to the playlist (enqueue at the end)
-   *
    */
   addRandomToPlaylist: function() {
     var that = this;

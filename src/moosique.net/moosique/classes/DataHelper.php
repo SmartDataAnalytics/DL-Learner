@@ -1,13 +1,19 @@
 <?php
-
+/**
+ * This class provides functions to get Data from the SPARQL-Endpoints
+ * and to prepare and use this data with different array/object methods
+ *
+ * @package moosique.net
+ * @author Steffen Becker
+ */
 class DataHelper extends Config {
   
-  public $connection;
+  public $connection; // here we save the dl-learnerconnection for public access
     
   /**
-   * 
-   * 
-   * 
+   * Get config (parent) and establish a connection to the dl-learner webservice
+   *
+   * @author Steffen Becker
    */
   function __construct() {
     parent::__construct(); // init config
@@ -16,8 +22,12 @@ class DataHelper extends Config {
   
   
   /**
+   * Get Data from a search using a SPARQL-Requst over the DL-Learner
    *
-   * 
+   * @param mixed $search String/Array with the search-Value, array for more than one value
+   * @param string $type the type of search performed (tagSearch, albumSearch etc.)
+   * @return array The resulting Data, prepared and ready for use
+   * @author Steffen Becker
    */
   public function getData($search, $type) {
     $sparql = new SparqlQueryBuilder($search, $type);
@@ -38,10 +48,12 @@ class DataHelper extends Config {
    * Cleans up objects or retrieves them from a XML-File (for playlists)
    * and converts them into arrays for use in the view class
    *
-   * @param Mixed $data The Data-Object (from a Sparql-Query or a playlist-array)
-   * @param String $type To define what kind of data to prepare
-   * @return Array A multidimensional Array ready for processing for HTML-output
-   */ 
+   * @param mixed $data The Data-Object (from a Sparql-Query or a playlist-array)
+   * @param string $type the type of search performed (tagSearch, albumSearch etc.)
+   * @param mixed $search String/Array with the search-Value, array for more than one value
+   * @return array A multidimensional Array ready for processing for HTML-output
+   * @author Steffen Becker
+   */
   public function prepareData($data, $type, $search) {
     $mergedArray = array();
     
@@ -78,11 +90,12 @@ class DataHelper extends Config {
   /**
    * This function merges the result-Object to a nice array
    * we can process easily. The array is created by type,
-   * returning the data sorted for artist, tag or song
+   * returning the data sorted for artist, tag or song etc.
    *
-   * @param Object $data
-   * @param String $type This can be 'artist', 'tag' or 'song'
-   * @return Array A Multidimensional array sorted by type for output-use
+   * @param object $data
+   * @param string $type This can be 'artist', 'tag' or 'song' etc. without 'Search'
+   * @return array a Multidimensional array sorted by type for output-use (or false)
+   * @author Steffen Becker   
    */   
   private function mergeArray($data, $type) {
     // convert the $data-response object to an array
@@ -105,11 +118,13 @@ class DataHelper extends Config {
     } else return false;
   }
   
+  
   /**
    * Like the php-function array_unique, but for multidimensional arrays, calls itself recursively
    * 
-   * @return Array (Multidimensional) array without double entries 
-   * @param Array $array The Array to clean up
+   * @param array $array The Array to clean up
+   * @return array (Multidimensional) array without double entries 
+   * @author Steffen Becker   
    */
   private function arrayUnique($array) {
     $newArray = array();
@@ -134,34 +149,32 @@ class DataHelper extends Config {
   
   
   /**
-   * Converts a simple Object to an array
+   * Converts an object to an array recursively
    * 
-   * @return Array the Array created from the Object
-   * @param object $obj The Object to convert
+   * @param object $object The object to convert
+   * @return the corresponding array created from the object
+   * @author Steffen Becker
    */
-  private function object2array($obj) { 
-    $arr = array();
-    $_arr = is_object($obj) ? get_object_vars($obj) : $obj; 
-    foreach ($_arr as $key => $val) { 
-      $val = (is_array($val) || is_object($val)) ? $this->object2array($val) : $val; 
-      $arr[$key] = $val; 
+  private function object2array($object) { 
+    $array = array();
+    $_array = is_object($object) ? get_object_vars($object) : $object; 
+    foreach ($_array as $key => $value) { 
+      $value = (is_array($value) || is_object($value)) ? $this->object2array($value) : $value; 
+      $array[$key] = $value; 
     } 
-    return $arr;
+    return $array;
   }
   
   
   /**
-   * Establishes a new Dl-Learner Connection and saves it in 
-   * private $connection for class-wide use. 
+   * Establishes a new Dl-Learner Connection 
    *
-   * @return 
+   * @author Steffen Becker
    */
   private function establishConnection() {
     $this->connection = new DllearnerConnection();
   }
   
-  
 }
-
 
 ?>

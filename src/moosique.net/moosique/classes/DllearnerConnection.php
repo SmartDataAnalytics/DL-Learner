@@ -1,50 +1,52 @@
 <?php
-
 /**
- * 
+ * This Class handles the connection to the DL-Learner WebService
+ * and sends/receives all request (Sparql/Learning) to it
+ *
+ * @package moosique.net
+ * @author Steffen Becker
  */
-class DllearnerConnection extends Config {		
-	
-  private $knowledgeSourceID;
+class DllearnerConnection extends Config {    
+  
+  private $knowledgeSourceID; // the id for the knowledge-source
   private $client;    // here we store the soap-client
   private $endpoint;  // the currently used endpoint
-                      // use getEndpoint and setEndpoint to change
 
   /**
-   * Object initializing: retrieve ini-values, set the endpoint
+   * Object initializing: retrieve ini-values (parent::__constuct), set the endpoint
    * and include the neccessary wsdl-utilities and try to establish
    * a connection to the dl-learner webservice
    *  
+   * @author Steffen Becker   
    */
-	function __construct() {
-	  parent::__construct(); // init config
+  function __construct() {
+    parent::__construct(); // init config
     // we use jamendo as the default sparql-endpoint
     $this->setEndpoint($this->getConfigUrl('jamendo'));
-    
     // load WSDL files (has to be done due to a Java web service bug)
     ini_set('soap.wsdl_cache_enabled', '0');
     include('Utilities.php');
     Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
     $this->connect();
-	}
+  }
+  
   
   /**
    * Tries to connect to the DL-Learner Webservice using the Tools 
-   * from Utilities.php. Sets private var client.
+   * from Utilities.php. Sets private var client if successful
    * 
+   * @author Steffen Becker   
    */
   private function connect() {
-		// connect to DL-Learner-Web-Service
-		try {
-		  $this->client = new SoapClient($this->getConfigUrl('wsdlLocal'));
+    try {
+      $this->client = new SoapClient($this->getConfigUrl('wsdlLocal'));
     } catch (Exception $e) {
       if ($this->debugger) $this->debugger->log($e, "Error connecting to the DL-Learner Webservice.");
       echo '<h2>Could not connect to the DL-Learner Webservice.</h2>';
       exit;
     }
-    
     // After establishing the SoapClient we create a Session ID
-    // and add the default knowledgeSource (see config.ini)
+    // and add the default knowledgeSource
     if (isset($_SESSION['sessionID'])) {
       // if there is a current session running, we don't need to
       // register a new client at the dl-learner webservice
@@ -70,34 +72,37 @@ class DllearnerConnection extends Config {
       $_SESSION['sessionID'] = $this->client->generateID();
       $this->knowledgeSourceID = $this->client->addKnowledgeSource($_SESSION['sessionID'], 'sparql', $this->endpoint);
     }
-    
-	}
-  
+  }
+
+
   /**
    * Sets the SPARQL-endpoint, the DL-Learner Webservice is connecting to 
-   * 
-   * @param String $endpoint The URI of the SPARQL-Endpoint to set
+   *
+   * @param string $endpoint The URI of the SPARQL-Endpoint to set
+   * @author Steffen Becker
    */
   public function setEndpoint($endpoint) {
     $this->endpoint = $endpoint;
   }
 
+
   /**
    * Returns a String with the URI for the SPARQL-Endpoint currently used
    * 
-   * @return String The Endpoint URI currently used 
+   * @return string The Endpoint URI currently used 
+   * @author Steffen Becker
    */
   public function getEndpoint() {
     return $this->endpoint;
   }
 
+
   /**
-   * This method tries to create a connectionID from the DL-Learner
-   * Webservice and returns a JSON-object with the results from the
-   * Sparql-Query sent to the current endpoint
+   * Uses the Webservice to get results from a SPARQL-Query from the current endpoint
    * 
-   * @return String A JSON-Object with the containing result-set
-   * @param String $query The SPARQL-Querystring to send
+   * @param string $query The SPARQL-Querystring to send
+   * @return string A JSON-Object with the containing results
+   * @author Steffen Becker   
    */
   public function sparqlQuery($query) {
     $result = $this->client->sparqlQuery($_SESSION['sessionID'], $this->knowledgeSourceID, $query);
@@ -107,14 +112,13 @@ class DllearnerConnection extends Config {
     
   /**
    * Bulid the exclusion-String-Array from config.ini for faster
-   * recommendation-generation
+   * recommendation-generation. The Exclusions are the fragments/nodes
+   * that will not be extracted
    * 
-   * @param Array $conf The Learning-Conf Array
-   * @return Array The Array of String with predicates to exclude
+   * @param array $conf The Learning-Conf Array
+   * @return array The Array of Strings with predicates to exclude
    */  
   private function getExclusions($conf) {
-    // exclude from node expansion that are not relevant for any learning processes
-    // this speeds up the general node-extraction
     $exclusionsArray = array();
     $exclude = explode(',', $conf['exclude']);
     foreach($exclude as $exclusion) {
@@ -125,10 +129,14 @@ class DllearnerConnection extends Config {
     return $exclusionsArray;
   }
   
+  
   /**
+   * Creates a learning request with the given instances an positive Examples
    *
-   *
-   *
+   * @param array $instances An Array of strings with the URLs to the instances
+   * @param array $positiveExamples An Array of strings with positive Example URLS
+   * @return string A JSON Object with the results
+   * @author Steffen Becker
    */
   public function learn($instances, $positiveExamples) {
     $result = false;
@@ -168,16 +176,19 @@ class DllearnerConnection extends Config {
     
     // after we have set all conf-values, we initialize the learning process
     $this->client->initAll($id);
-    
     $result = $this->client->learnDescriptionsEvaluated($id);
     return $result;
-    
   }
+
   
   /**
    * Converts a natural Description in a SPARQL-Query for recommendation retrieval
-   * 
-   */ 
+   * and adds the global limit set in maxResults
+   *
+   * @param string $kb Result-String in KB-Syntax
+   * @return string A SPARQL-Query String for the KB-Syntax
+   * @author Steffen Becker
+   */
   public function kbToSqarql($kb) {
     return $this->client->SparqlRetrieval($kb, $this->getConfig('maxResults'));
   }

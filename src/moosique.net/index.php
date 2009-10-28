@@ -1,4 +1,11 @@
-<?php session_start(); ?>
+<?php 
+  session_start(); 
+  /* 
+  Welcome to moosique.net - a semantic web based internet-radio 
+  
+  see README.txt for more details
+  */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -146,7 +153,7 @@
 <?php
   include('moosique/classes/Config.php');
   $c = new Config();
-  if ($c->getConfig('debug') == 1) /* debugging active */ {
+  if ($c->getConfig('debug') == 1) /* if debugging is active include js without compressing anything */ {
 ?>
 <script src="http://mediaplayer.yahoo.com/js"></script>
 <script src="js/mootools-1.2.4-core-nc.js"></script>

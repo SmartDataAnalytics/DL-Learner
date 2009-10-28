@@ -1,4 +1,4 @@
-// Default Player Config for moosique.net
+// Default Yahoo Media Player Config for moosique.net
 var YMPParams = {
   autoplay: false,
   parse: false, // do not parse initial content

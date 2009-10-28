@@ -1,9 +1,10 @@
 <?php
-
 /**
- * 
- * 
- * 
+ * This class provides functions to build the sepcial SPARQL-Queries 
+ * used in moosique.net
+ *
+ * @package moosique.net
+ * @author Steffen Becker
  */
 class SparqlQueryBuilder extends Config {
   
@@ -13,14 +14,13 @@ class SparqlQueryBuilder extends Config {
    * Class-Constructor, automatically calls buildQuery with
    * the given variables when initalizing this class 
    *
-   * @return 
-   * @param object $search
-   * @param object $typeOfSearch
-   * @param object $limit[optional]
+   * @param mixed $search The clean search-Value, can be an array of values
+   * @param string $searchType The type of search
+   * @author Steffen Becker
    */
-  function __construct($search, $searchType, $limit = 0) {
+  function __construct($search, $searchType) {
     parent::__construct(); // init config
-    $this->buildQuery($search, $searchType, $limit);
+    $this->buildQuery($search, $searchType);
   }
   
   
@@ -28,20 +28,18 @@ class SparqlQueryBuilder extends Config {
    * Builds the complete Sparql-Query depending on the type of search
    * and saves it in the private $queryString. 
    *
-   * @param object $search
-   * @param object $typeOfSearch
-   * @param object $limit
+   * @param mixed $search The clean search-Value, can be an array of values
+   * @param string $searchType The type of search
+   * @author Steffen Becker
    */
   private function buildQuery($search, $searchType) {
-    
     /* Build up the Prefixes */
     $prefixes = '';
     foreach($this->getConfigPrefixes() as $prefix => $resource) {
       $prefixes .= 'PREFIX ' . $prefix . ': <' . $resource . '>' . "\n";
     }
 
-    // if a global limit is set, we use it
-    // else we use the optional limit given to the parent class when constructing it
+    // if the globalLimit-config-value is set, we use maxResults as LIMIT
     if ($this->getConfig('globalLimit') == 1) {
       $limit = "\n" . 'LIMIT ' . $this->getConfig('maxResults');  
     } else {
@@ -69,10 +67,6 @@ class SparqlQueryBuilder extends Config {
       case 'albumSearch'     : $query = $this->queryAlbumSearch($search); break;
       case 'songSearch'      : $query = $this->querySongSearch($search); break;
       case 'recommendations' : $query = $this->queryRecommendations($search); break;
-      
-      /* TODO build functions for other queries
-      case 'currentInfo'    : $query = $this->queryCurrentInfo($search); break;
-      */
     }
     // save the query
     $this->queryString = $prefixes . $beginStatement . $baseQuery . $query . $endStatement;
@@ -80,10 +74,11 @@ class SparqlQueryBuilder extends Config {
   
   
   /**
-   * Returns the Sparql-Query part for an artist-search 
+   * Creates the SPARQL-Query-Part for an artist search
    *
-   * @param Mixed
-   * @return String Sparql-Query part for artist-search
+   * @param string $search The search value, sth. like "Slayer" or "Jimi Hendrix" 
+   * @return string The SPARQL-query part for an artist search
+   * @author Steffen Becker
    */
   private function queryArtistSearch($search) {
     $queryString = ' {
@@ -102,13 +97,14 @@ class SparqlQueryBuilder extends Config {
   /**
    * For a Tag-Search we display the playable records, therefore we need record and 
    * artist information too, AlbumCover is optional
-   * Returns the Sparql-Query part for tag-search
+   * if $search is an array, this performs an exact-tagSerach instead
    * 
-   * @return String Sparql-Query part for tag-search
+   * @param mixed $search The search value, sth. like "metal" or "breakcore", String or Array
+   * @return string Sparql-Query part for tag-search
    */
   private function queryTagSearch($search) {
     if (is_array($search)) {
-      // special case again: if array, we do the exakt tagSearch
+      // special case: if array, we do the exakt tagSearch, we have sth. like "stoner" and "rock"
       $queryString = $this->queryExactTagSearch($search);
     } else {
       $queryString = ' {
@@ -125,17 +121,20 @@ class SparqlQueryBuilder extends Config {
     return $queryString; 
   }
   
-  
+
   /**
-   * 
-   * 
-   * 
-   * 
+   * This function returns the SPARQL-Query part for an exact-Tag-Search from
+   * a search array containing string like "stoner" "doom" "metal"
+   * Performs an AND-Search, a result has to have all tags from the array
+   *
+   * @param mixed $search The search array, containing strings like "stoner", "rock" etc, single string also allowed
+   * @return string Sparql-Query part for exact-tag-search
+   * @author Steffen Becker
    */
   private function queryExactTagSearch($search) {
     $queryString = ' {
       ?record tags:taggedWithTag ?tag ; ';
-              
+    // extra check if no array, we use $search as string
     if (is_array($search)) {
       foreach($search as $tag) {
         $queryString .= ' tags:taggedWithTag <http://dbtune.org/jamendo/tag/' . $tag . '> ; ';
@@ -150,15 +149,16 @@ class SparqlQueryBuilder extends Config {
         FILTER (regex(str(?image), "1.100.jpg", "i")) .  
       }
     } ';
-    
     return $queryString; 
   }
 
 
   /**
-   * Returns the Sparql-Query part for album-search
-   * 
-   * @return String Sparql-Query part for album-search
+   * Creates the SPARQL-Query part for an album-Search
+   *
+   * @param string $search The search-string, a string like "dark side of the moon", "ladyland" etc.
+   * @return string Sparql-Query part for an album-search
+   * @author Steffen Becker
    */
   private function queryAlbumSearch($search) {
     $queryString = ' {
@@ -177,9 +177,11 @@ class SparqlQueryBuilder extends Config {
   
   
   /**
-   * Returns the Sparql-Query part for song-search
-   * 
-   * @return String Sparql-Query part for song-search
+   * Creates the SPARQL-Query part for a song-Search
+   *
+   * @param string $search The search-string, a string like "souljacker", "purple haze" etc.
+   * @return string Sparql-Query part for an album-search
+   * @author Steffen Becker
    */
   private function querySongSearch($search) {
     $queryString = ' {
@@ -197,11 +199,13 @@ class SparqlQueryBuilder extends Config {
     
     
   /**
+   * Creates the SPARQL-Query part for a recommendations search, this
+   * is much like album/tagSearch, but with additional info
    *
-   *
-   *
-   *
-   */  
+   * @param string $search The SPARQL-String retrieved from the recommendations-learn result
+   * @return string Sparql-Query part for a recommendation search
+   * @author Steffen Becker
+   */
   private function queryRecommendations($search) {
     $queryString = ' {
       ?record mo:available_as ?playlist ;
@@ -215,24 +219,22 @@ class SparqlQueryBuilder extends Config {
     } ';
 
     // TODO ?record tags:taggedWithTag ?tag makes the queries blow up high
-
-    // and finally we append the sparql-string from kb-Description
+    // and finally we append the sparql-string from kb-Description-Conversion
     $queryString .= $search;
     return $queryString; 
   }
     
     
   /**
-   * Returns the build Query-String
+   * Returns the final Query-String
    * 
-   * @return String Complete SPARQL-Query stored in SparqlQueryBuilder
+   * @return string The final Complete SPARQL-Query
+   * @author Steffen Becker
    */
   public function getQuery() {
     return $this->queryString;
   }
   
-  
 }
-
 
 ?>

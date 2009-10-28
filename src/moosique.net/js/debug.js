@@ -1,4 +1,9 @@
-// New Debugger-Class using the mootools-log
+/**
+ * Debugger-Class using the mootools-log
+ *
+ * @package moosique.net
+ * @author Steffen Becker
+ */
 var Debugger = new Class({
   Implements: Log,
   initialize: function(){

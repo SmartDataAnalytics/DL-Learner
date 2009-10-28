@@ -1,8 +1,12 @@
 <?php
-/* This little Script takes all included js-files and
+/**
+ * This little Script takes all included js-files and
  * compresses them with the PHP-Variant of js-min
  * found here: http://code.google.com/p/jsmin-php/
- * This file is only used in non-debugging-mode
+ * This is only used in non-debugging-mode
+ *
+ * @package moosique.net
+ * @author Steffen Becker
  */
 header('Content-type: application/javascript');
 $offset = 60 * 60 * 24 * 365; // set offset to 365 days = 1 year

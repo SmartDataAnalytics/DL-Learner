@@ -1,19 +1,35 @@
 <?php
-
+/**
+ * This class handles all connections to the last.fm-API for retrieving
+ * tags for a given username. If the user has no tags, the topTags for
+ * topArtists are used as tags
+ *
+ * @package moosique.net
+ * @author Steffen Becker
+ */
 class LastFM extends Config {
   
-  private $topTags;
+  private $topTags; // save tags here
 
+  /**
+   * Initializing class requires the last.fm username
+   *
+   * @param string $user The last.fm Username
+   * @author Steffen Becker
+   */
   function __construct($user) {
     parent::__construct(); // init config
-    
     $this->getLastFMTags($user);
   }
 
+
   /**
+   * Gets the Top-Tags for a last.fm user. The number of Tags to retrieve
+   * is set in config.ini
    *
-   *
-   *
+   * @param string $user The last.fm username
+   * @return array An array with the top tags for $user
+   * @author Steffen Becker
    */
   private function getLastFMTags($user) {
     $allTags = array();
@@ -44,10 +60,15 @@ class LastFM extends Config {
     $this->topTags = $allTags;
   }
   
+  
   /**
+   * This is called if the user has no Tags. This function tries to get the
+   * topArtists from the user and then tries to get the topTags for the
+   * artists -- the most listened to artists are a good base for useful tags
    *
-   *
-   *
+   * @param string $user The last.fm Username
+   * @return array An array with the topTags for the Topartists from $user
+   * @author Steffen Becker
    */
   private function getTagsFromTopArtists($user) {
     $allArtists = array();
@@ -69,7 +90,6 @@ class LastFM extends Config {
     $allArtists = array_slice($allArtists, 0, $this->getConfigLastFM('topArtists'));
     
     // get the topTags for every artist
-
     foreach($allArtists as $artistName) {
       $requestUrl = $this->getConfigLastFM('artistsTopTagsUrl')
                   . '&artist=' . urlencode($artistName) 
@@ -91,15 +111,16 @@ class LastFM extends Config {
     return $finalTags;
   }
   
+  
   /**
+   * Returns the topTags
    *
-   *
-   *
+   * @return array An Array of strings ('rock', 'doom metal' etc.) with the Top-Tags
+   * @author Steffen Becker
    */
   public function getTopTags() {
     return $this->topTags;
   }
-  
   
 }
 
