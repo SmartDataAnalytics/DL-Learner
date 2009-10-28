@@ -21,6 +21,8 @@ package org.dllearner.tools.protege;
 
 import java.awt.geom.Ellipse2D;
 
+import org.dllearner.core.owl.Individual;
+
 /**
  * This class is a datastructure for one individual shown in
  * the GraphicalCoveragePanel.
@@ -34,6 +36,8 @@ public class IndividualPoint {
 	private int yAxis;
 	private final String individual;
 	private final Ellipse2D circlePoint;
+	private Individual individualDLLearner;
+	private String baseUri;
 	
 	/**
 	 * Constructor of the class.
@@ -42,12 +46,33 @@ public class IndividualPoint {
 	 * @param y coordinate on the y axis
 	 * @param ind Name of the Individual
 	 */
+	@Deprecated
 	public IndividualPoint(String p, int x, int y, String ind) {
 		this.point = p;
 		this.xAxis = x;
 		this.yAxis = y;
 		this.circlePoint = new Ellipse2D.Double(x - 1, y - 1, 4, 4);
 		this.individual = ind;
+	}
+	
+	/**
+	 * This is the second Construktor of the class. This should be used if more 
+	 * details for the shown Individuals should be displayed. 
+	 * @param p display String
+	 * @param x coordinate on the x axis
+	 * @param y coordinate on the y axis
+	 * @param ind Name of the Individual
+	 * @param indi DLLearner Indivudal
+	 * @param base base uri of the individual.
+	 */
+	public IndividualPoint(String p, int x, int y, String ind, Individual indi, String base) {
+		this.point = p;
+		this.xAxis = x;
+		this.yAxis = y;
+		this.circlePoint = new Ellipse2D.Double(x - 1, y - 1, 4, 4);
+		this.individual = ind;
+		this.individualDLLearner = indi;
+		this.baseUri = base;
 	}
 
 	/**
@@ -112,5 +137,13 @@ public class IndividualPoint {
 	 */
 	public Ellipse2D getIndividualPoint() {
 		return circlePoint;
+	}
+	
+	public Individual getDLLearnerIndividual() {
+		return individualDLLearner;
+	}
+	
+	public String getBaseUri() {
+		return baseUri;
 	}
 }

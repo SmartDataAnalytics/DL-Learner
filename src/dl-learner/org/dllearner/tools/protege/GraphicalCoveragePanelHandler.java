@@ -24,6 +24,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -32,7 +33,10 @@ import javax.swing.plaf.basic.BasicComboPopup;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
@@ -93,15 +97,36 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 			panel.getGraphicalCoveragePanel().setToolTipText(
 					"To view all Individuals please click on the plus");
 		}
-
+		
 		Vector<IndividualPoint> v = panel.getIndividualVector();
+		FastInstanceChecker reasoner = model.getReasoner();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
 					&& v.get(i).getXAxis() <= m.getX() + 5
 					&& v.get(i).getYAxis() >= m.getY() - 5
 					&& v.get(i).getYAxis() <= m.getY() + 5) {
-				panel.getGraphicalCoveragePanel().setToolTipText(
-						v.get(i).getIndividualName());
+				String individualInformation = "<html><body>" + v.get(i).getIndividualName().toString();
+				Set<NamedClass> types = reasoner.getTypes(v.get(i).getDLLearnerIndividual());
+				individualInformation += "<br><b>Types:</b><br>";
+				for(NamedClass dlLearnerClass : types) {
+					individualInformation += dlLearnerClass.toManchesterSyntaxString(v.get(i).getBaseUri(), null) + "<br>";
+				}
+				Map<ObjectProperty,Set<Individual>> objectProperties = reasoner.getObjectPropertyRelationships(v.get(i).getDLLearnerIndividual());
+				Set<ObjectProperty> key = objectProperties.keySet();
+				individualInformation += "<br><b>Objectproperties:</b><br>";
+				for(ObjectProperty objectProperty: key) {
+					Set<Individual> indiSet = objectProperties.get(objectProperty);
+					individualInformation = individualInformation + objectProperty.toManchesterSyntaxString(v.get(i).getBaseUri(), null) + " ";
+					for(Individual indi: indiSet) {
+						individualInformation += indi.toManchesterSyntaxString(v.get(i).getBaseUri(), null);
+						if(indiSet.size() > 1) {
+							individualInformation += ", ";
+						}
+					}
+					individualInformation += "<br>";
+				}
+				individualInformation += "</body></htlm>";
+				panel.getGraphicalCoveragePanel().setToolTipText(individualInformation);
 			}
 		}
 	}

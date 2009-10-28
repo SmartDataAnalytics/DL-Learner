@@ -553,10 +553,9 @@ public class DLLearnerModel implements Runnable{
 		return knowledgeSourceIsUpdated;
 	}
 	
-	/*
-	 * TODO Add methods to get additional informations about a individual.
-	 * Informations needed are the ones in the Individuals tab in protege.
-	 */
+	public OWLEditorKit getOWLEditorKit() {
+		return editor;
+	}
 	
 }
 
