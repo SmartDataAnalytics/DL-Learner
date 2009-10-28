@@ -357,7 +357,7 @@ public class DLLearnerView {
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 0;
-		c.gridy = 3;
+		c.gridy = 4;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		learner.add(detail, c);
@@ -367,13 +367,13 @@ public class DLLearnerView {
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
-		c.gridy = 4;
+		c.gridy = 5;
 		learner.add(advancedPanel, c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 0;
-		c.gridy = 5;
+		c.gridy = 6;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		learner.add(posPanel, c);
 		

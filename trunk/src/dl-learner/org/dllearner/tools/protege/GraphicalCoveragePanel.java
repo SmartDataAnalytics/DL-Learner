@@ -499,7 +499,7 @@ public class GraphicalCoveragePanel extends JPanel {
 							for(String uri : uriString) {
 								if(ind.toString().contains(uri)) {
 									posCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
 								}
 							}
 							i++;
@@ -547,7 +547,7 @@ public class GraphicalCoveragePanel extends JPanel {
 								for(String uri : uriString) {
 									if(ind.toString().contains(uri)) {
 										posNotCovIndVector.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
 									}
 								}
 							} else {
@@ -555,7 +555,7 @@ public class GraphicalCoveragePanel extends JPanel {
 								for(String uri : uriString) {
 									if(ind.toString().contains(uri)) {
 										additionalIndividuals.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
 									}
 								}
 							}
@@ -596,7 +596,7 @@ public class GraphicalCoveragePanel extends JPanel {
 							for(String uri : uriString) {
 								if(ind.toString().contains(uri)) {
 									posNotCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null)));
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
 								}
 							}
 							k++;

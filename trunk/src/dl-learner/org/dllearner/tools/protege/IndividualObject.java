@@ -18,6 +18,8 @@
  *
  */
 package org.dllearner.tools.protege;
+
+
 /**
  * This Class handles the manchester String, the normal string and if the Individual is a positive Individual. 
  * @author Christian Koetteritzsch
