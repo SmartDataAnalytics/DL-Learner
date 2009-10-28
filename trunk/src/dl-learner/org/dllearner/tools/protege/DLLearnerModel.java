@@ -234,7 +234,6 @@ public class DLLearnerModel implements Runnable{
 			isReasonerSet = true;
 		}catch (ComponentInitException e) {
 			view.setIsInconsistent(true);
-			//e.printStackTrace();
 		} catch (InconsistentOntologyException incon) {
 			view.setIsInconsistent(true);
 		} 
@@ -266,7 +265,6 @@ public class DLLearnerModel implements Runnable{
 		try {
 			currentConceptURL = new URL(currentConcept.toString());
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			String error = "Cannot convert to URL.";
 			view.renderErrorMessage(error);
 			e1.printStackTrace();
@@ -297,23 +295,28 @@ public class DLLearnerModel implements Runnable{
 			this.la = cm.learningAlgorithm(CELOE.class, lp,
 					reasoner);
 		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//Config options set in the gui.
+		//config option if all is used for suggestions
 		cm.applyConfigEntry(la, "useAllConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getAllBox());
+		//config option if exists is used for suggestions
 		cm.applyConfigEntry(la, "useExistsConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getSomeBox());
+		//config option if hasValue is used for suggestions
 		cm.applyConfigEntry(la, "useHasValueConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getValueBox());
+		//config option if negation is used for suggestions
 		cm.applyConfigEntry(la, "useNegation", view.getPosAndNegSelectPanel().getOptionPanel().getNotBox());
+		//config option if cardinalitylimits is used for suggestions
 		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox());
 		if(view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox()) {
+			//config option to set the cardinalityrestrictions
 			cm.applyConfigEntry(la, "cardinalityLimit", view.getPosAndNegSelectPanel().getOptionPanel().getCountMoreBox());
 		}
-		
+		//config option to set the noise
 		cm.applyConfigEntry(la, "noisePercentage", view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy());
+		//config option to set the maximum execution time
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
-				.getPosAndNegSelectPanel().getOptionPanel()
-				.getMaxExecutionTime());
-		view.setLearningDuration(view
 				.getPosAndNegSelectPanel().getOptionPanel()
 				.getMaxExecutionTime());
 		try {
@@ -545,18 +548,22 @@ public class DLLearnerModel implements Runnable{
 		return evalDescriptions.get(index);
 	}
 	
+	/**
+	 * This methode sets if the knowledge source is updated or not.
+	 * @param isUpdated boolean if knowledge sourec is updated
+	 */
 	public void setKnowledgeSourceIsUpdated(boolean isUpdated) {
 		knowledgeSourceIsUpdated = isUpdated;
 	}
 	
+	/**
+	 * This methode returns a boolean if the knowledge
+	 * source is updated.
+	 * @return boolean if knowledge source is updated
+	 */
 	public boolean getIsKnowledgeSourceIsUpdated() {
 		return knowledgeSourceIsUpdated;
 	}
-	
-	public OWLEditorKit getOWLEditorKit() {
-		return editor;
-	}
-	
 }
 
 

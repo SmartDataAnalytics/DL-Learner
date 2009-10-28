@@ -139,10 +139,18 @@ public class IndividualPoint {
 		return circlePoint;
 	}
 	
+	/**
+	 * This method returns the DLLearner Individual.
+	 * @return DLLearner Individual
+	 */
 	public Individual getDLLearnerIndividual() {
 		return individualDLLearner;
 	}
 	
+	/**
+	 * This method returns the base uri of the Individual.
+	 * @return base uri of the individual
+	 */
 	public String getBaseUri() {
 		return baseUri;
 	}

@@ -38,6 +38,10 @@ private final MoreDetailForSuggestedConceptsPanel panel;
 		panel = m;
 	}
 	@Override
+	/**
+	 * This methode sets the Informations on the panel where the
+	 * graphic is shown. 
+	 */
 	public void propertyChange(PropertyChangeEvent arg0) {
 		panel.setInformation();
 	}

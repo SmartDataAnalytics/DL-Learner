@@ -22,7 +22,6 @@ package org.dllearner.tools.protege;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -34,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.event.ListSelectionEvent;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
@@ -165,34 +163,6 @@ public class ActionHandler implements ActionListener {
 	}
 
 	/**
-	 * select/deselect the Check boxes.
-	 * 
-	 * @param i
-	 *            ItemEvent
-	 */
-	public void itemStateChanged(ItemEvent i) {
-
-	}
-
-	/**
-	 * Nothing happens here.
-	 * 
-	 * @param e
-	 *            ListSelectionEvent
-	 */
-	public void valueChanged(ListSelectionEvent e) {
-
-	}
-
-
-	/**
-	 * Destroys the Thread after the Pluigin is closed.
-	 */
-	public void destroyDLLearnerThread() {
-		// dlLearner = null;
-	}
-
-	/**
 	 * Resets the toggled Button after the plugin is closed.
 	 */
 	public void resetToggled() {
@@ -258,7 +228,6 @@ public class ActionHandler implements ActionListener {
 			try {
 				dlLearner.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			List<? extends EvaluatedDescription> result = la
@@ -284,7 +253,6 @@ public class ActionHandler implements ActionListener {
 			}
 			setProgress(0);
 			view.stopStatusBar();
-			//view.algorithmTerminated();
 			updateList(result);
 			view.algorithmTerminated();
 
@@ -297,21 +265,6 @@ public class ActionHandler implements ActionListener {
 
 			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
-				this.checkSelectedItem(list);
-			}
-		}
-		/*
-		 * TODO: ueberlegen wegen umsetzung.
-		 */
-		private void checkSelectedItem(List<? extends EvaluatedDescription> result) {
-			if(!view.getSuggestClassPanel().getSuggestList().isSelectionEmpty()) {
-				SuggestListItem item = (SuggestListItem) view.getSuggestClassPanel().getSuggestList().getSelectedValue();
-				String itemString = item.getValue();
-				for(EvaluatedDescription desc: result) {
-					if(desc.getDescription().toString().equals(itemString)) {
-						
-					}
-				}
 			}
 		}
 		
@@ -329,12 +282,6 @@ public class ActionHandler implements ActionListener {
 						for (String ontology : ont) {
 							if (eval.getDescription().toString().contains(
 									ontology)) {
-								// dm.add(i, new SuggestListItem(colorGreen,
-								// eval
-								// .getDescription().toManchesterSyntaxString
-								// (ontology, null),
-								// ((EvaluatedDescriptionClass)
-								// eval).getAccuracy()*100));
 								if (((EvaluatedDescriptionClass) eval)
 										.isConsistent()) {
 									dm.add(i, new SuggestListItem(colorGreen,

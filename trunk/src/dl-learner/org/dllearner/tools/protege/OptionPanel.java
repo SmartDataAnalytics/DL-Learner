@@ -192,95 +192,80 @@ public class OptionPanel extends JPanel {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns the OWLRadioButton.
+	 * @return OWLRAdioButton
 	 */
 	public JRadioButton getOwlRadioButton() {
 		return owlRadioButton;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns the ELProfileButton.
+	 * @return ELProfileButton
 	 */
 	public JRadioButton getElProfileButton() {
 		return elProfileButton;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns if the allquantor box is selected.
+	 * @return boolean if allquantor box is selected
 	 */
 	public boolean getAllBox() {
 		return allBox.isSelected();
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns if the some box is selected.
+	 * @return boolean if some box is selected
 	 */
 	public boolean getSomeBox() {
 		return someBox.isSelected();
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns if the not box is selected.
+	 * @return boolean if not box is selected
 	 */
 	public boolean getNotBox() {
 		return notBox.isSelected();
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns if the value box is selected.
+	 * @return boolean if value box is selected
 	 */
 	public boolean getValueBox() {
 		return valueBox.isSelected();
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns the ProfilePanel.
+	 * @return Profile Panel
 	 */
 	public JPanel getProfilePanel() {
 		return profilePanel;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns the int of the cardinality restriction. 
+	 * @return cardinality restriction int
 	 */
 	public int getCountMoreBox() {
 		return Integer.parseInt(countMoreBox.getSelectedItem().toString());
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This methode returns if the cardinality restiction box is selected.
+	 * @return boolean if cardinality restiction box is selected
 	 */
 	public boolean getMoreBox() {
 		return moreBox.isSelected();
 	}
 	
 	/**
-	 * 
-	 * @return
-	 */
-	public JPanel getRadioBoxPanel() {
-		return radioBoxPanel;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public JPanel getCheckBoxPanel() {
-		return checkBoxPanel;
-	}
-	
-	/**
-	 * 
+	 * This methode sets the the checkboxes enable that are needed for
+	 * the OWL 2 Profile.
 	 */
 	public void setToOWLProfile() {
 		allBox.setSelected(true);
@@ -292,7 +277,8 @@ public class OptionPanel extends JPanel {
 	}
 	
 	/**
-	 * 
+	 * This methode sets the the checkboxes enable that are needed for
+	 * the EL Profile.
 	 */
 	public void setToELProfile() {
 		allBox.setSelected(false);
@@ -304,7 +290,8 @@ public class OptionPanel extends JPanel {
 	}
 	
 	/**
-	 * 
+	 * This methode sets the combo box for the cardinality restriction
+	 * enabled/disabled. 
 	 * @param isEnabled
 	 */
 	public void setCountMoreBoxEnabled(boolean isEnabled) {

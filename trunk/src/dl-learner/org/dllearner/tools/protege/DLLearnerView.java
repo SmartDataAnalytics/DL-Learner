@@ -340,6 +340,10 @@ public class DLLearnerView {
 			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		}
 	}
+	/**
+	 * This methode returns the help button.
+	 * @return help button
+	 */
 	public JButton getHelpButton() {
 		return helpButton;
 	}
@@ -402,7 +406,6 @@ public class DLLearnerView {
 	 */
 	public void setExamplePanelVisible(boolean visible) {
 		posPanel.setVisible(visible);
-		//detail.repaint();
 	}
 
 	/**
@@ -448,7 +451,6 @@ public class DLLearnerView {
 	public void unsetEverything() {
 		run.setEnabled(true);
 		model.getNewOWLDescription().clear();
-		action.destroyDLLearnerThread();
 		errorMessage.setText("");
 		learner.removeAll();
 	}
@@ -485,6 +487,10 @@ public class DLLearnerView {
 		this.isInconsistent = isIncon;
 	}
 	
+	/**
+	 * This methode returns if the ontology is inconsistent.
+	 * @return boolean if ontology is inconsistent
+	 */
 	public boolean getIsInconsistent() {
 		return isInconsistent;
 	}
@@ -517,7 +523,6 @@ public class DLLearnerView {
 	 * This method sets the run button enable after learning.
 	 */
 	public void algorithmTerminated() {
-		this.stopStatusBar();
 		CELOE celoe = (CELOE) model.getLearningAlgorithm();
 		String error = "Learning successful. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and " + celoe.getMaximumHorizontalExpansion() + ".";
 		hint.setForeground(Color.RED);
@@ -541,6 +546,10 @@ public class DLLearnerView {
 		return learnerScroll;
 	}
 	
+	/**
+	 * This methode sets the help button visible.
+	 * @param isVisible boolean if help button is visible
+	 */
 	public void setHelpButtonVisible(boolean isVisible) {
 		helpButton.setVisible(isVisible);
 	}
@@ -561,18 +570,24 @@ public class DLLearnerView {
 		return readThread;
 	}
 	
-	public void setLearningDuration(int time) {
-		stat.setMaximumValue(time);
-	}
-	
+	/**
+	 * This Methode starts the status bar.
+	 */
 	public void startStatusBar() {
 		stat.showProgress(true);
 	}
 	
+	/**
+	 * This methode stops the status bar.
+	 */
 	public void stopStatusBar() {
 		stat.showProgress(false);
 	}
 	
+	/**
+	 * This methode returns the statusbar.
+	 * @return statusbar
+	 */
 	public StatusBar getStatusBar() {
 		return stat;
 	}
