@@ -40,8 +40,9 @@ import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
- * It renders the Informations for the individual points and sets the 
+ * It renders the Informations for the individual points and sets the
  * individuals for the popup component.
+ * 
  * @author Christian Koetteritzsch
  * 
  */
@@ -104,7 +105,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 			panel.getGraphicalCoveragePanel().setToolTipText(
 					"To view all Individuals please click on the plus");
 		}
-		
+
 		Vector<IndividualPoint> v = panel.getIndividualVector();
 		FastInstanceChecker reasoner = model.getReasoner();
 		for (int i = 0; i < v.size(); i++) {
@@ -112,28 +113,43 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& v.get(i).getXAxis() <= m.getX() + 5
 					&& v.get(i).getYAxis() >= m.getY() - 5
 					&& v.get(i).getYAxis() <= m.getY() + 5) {
-				String individualInformation = "<html><body>" + v.get(i).getIndividualName().toString();
-				Set<NamedClass> types = reasoner.getTypes(v.get(i).getDLLearnerIndividual());
-				individualInformation += "<br><b>Types:</b><br>";
-				for(NamedClass dlLearnerClass : types) {
-					individualInformation += dlLearnerClass.toManchesterSyntaxString(v.get(i).getBaseUri(), null) + "<br>";
-				}
-				Map<ObjectProperty,Set<Individual>> objectProperties = reasoner.getObjectPropertyRelationships(v.get(i).getDLLearnerIndividual());
-				Set<ObjectProperty> key = objectProperties.keySet();
-				individualInformation += "<br><b>Objectproperties:</b><br>";
-				for(ObjectProperty objectProperty: key) {
-					Set<Individual> indiSet = objectProperties.get(objectProperty);
-					individualInformation = individualInformation + objectProperty.toManchesterSyntaxString(v.get(i).getBaseUri(), null) + " ";
-					for(Individual indi: indiSet) {
-						individualInformation += indi.toManchesterSyntaxString(v.get(i).getBaseUri(), null);
-						if(indiSet.size() > 1) {
-							individualInformation += ", ";
-						}
+				String individualInformation = "<html><body>"
+						+ v.get(i).getIndividualName().toString();
+				if (v.get(i).getDLLearnerIndividual() != null) {
+					Set<NamedClass> types = reasoner.getTypes(v.get(i)
+							.getDLLearnerIndividual());
+					individualInformation += "<br><b>Types:</b><br>";
+					for (NamedClass dlLearnerClass : types) {
+						individualInformation += dlLearnerClass
+								.toManchesterSyntaxString(
+										v.get(i).getBaseUri(), null)
+								+ "<br>";
 					}
-					individualInformation += "<br>";
+					Map<ObjectProperty, Set<Individual>> objectProperties = reasoner
+							.getObjectPropertyRelationships(v.get(i)
+									.getDLLearnerIndividual());
+					Set<ObjectProperty> key = objectProperties.keySet();
+					individualInformation += "<br><b>Objectproperties:</b><br>";
+					for (ObjectProperty objectProperty : key) {
+						Set<Individual> indiSet = objectProperties
+								.get(objectProperty);
+						individualInformation = individualInformation
+								+ objectProperty.toManchesterSyntaxString(v
+										.get(i).getBaseUri(), null) + " ";
+						for (Individual indi : indiSet) {
+							individualInformation += indi
+									.toManchesterSyntaxString(v.get(i)
+											.getBaseUri(), null);
+							if (indiSet.size() > 1) {
+								individualInformation += ", ";
+							}
+						}
+						individualInformation += "<br>";
+					}
 				}
 				individualInformation += "</body></htlm>";
-				panel.getGraphicalCoveragePanel().setToolTipText(individualInformation);
+				panel.getGraphicalCoveragePanel().setToolTipText(
+						individualInformation);
 			}
 		}
 	}
@@ -165,9 +181,10 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				if (i > 0) {
 					for (Individual ind : covInd) {
 						Set<String> uriString = model.getOntologyURIString();
-						for(String uri : uriString) {
-							if(ind.toString().contains(uri)) {
-								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
+						for (String uri : uriString) {
+							if (ind.toString().contains(uri)) {
+								individualComboBox.add(ind
+										.toManchesterSyntaxString(uri, null));
 							}
 						}
 					}
@@ -199,9 +216,10 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				if (i > 0) {
 					for (Individual ind : addInd) {
 						Set<String> uriString = model.getOntologyURIString();
-						for(String uri : uriString) {
-							if(ind.toString().contains(uri)) {
-								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
+						for (String uri : uriString) {
+							if (ind.toString().contains(uri)) {
+								individualComboBox.add(ind
+										.toManchesterSyntaxString(uri, null));
 							}
 						}
 					}
@@ -227,9 +245,10 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				if (i > 0) {
 					for (Individual ind : notCovInd) {
 						Set<String> uriString = model.getOntologyURIString();
-						for(String uri : uriString) {
-							if(ind.toString().contains(uri)) {
-								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
+						for (String uri : uriString) {
+							if (ind.toString().contains(uri)) {
+								individualComboBox.add(ind
+										.toManchesterSyntaxString(uri, null));
 							}
 						}
 					}
