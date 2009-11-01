@@ -32,7 +32,7 @@ class Debugger {
    * @param string $label The label for the object to log
    * @author Steffen Becker
    */
-  public function log($var, $label) {
+  public function log($var, $label = '') {
     $this->fb->log($var, $label);
   }
   

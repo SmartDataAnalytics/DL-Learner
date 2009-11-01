@@ -61,7 +61,11 @@ class RequestHandler extends Config {
       // concatenating the response from all 4 searches
       if ($type == 'allSearch') {
         $response .= $this->createSearch($search, 'artistSearch');
+        // do a special search-String-formatting for the tagSearch part
+        $search = $this->cleanString($_GET['searchValue'], 'tagSearch');
         $response .= $this->createSearch($search, 'tagSearch');
+        // and reset it afterwards
+        $search = $this->cleanString($_GET['searchValue'], $type);
         $response .= $this->createSearch($search, 'albumSearch');
         $response .= $this->createSearch($search, 'songSearch');
       } 
@@ -73,8 +77,8 @@ class RequestHandler extends Config {
       // last.fm search, initiate the lastFM-Class and get the tags for
       // the user ($search) - then make tagSearches for every result
       if ($type == 'lastFM') {
-        $lastFM = new LastFM($search);
-        $tags = $lastFM->getTopTags();
+        $lastFM = new LastFM();
+        $tags = $lastFM->getTags($search);
         // no we have the topTags, do a search for related albums
         if (!empty($tags)) {
           foreach($tags as $tag) {
@@ -123,8 +127,7 @@ class RequestHandler extends Config {
     // ========== ARTIST INFORMATION REQUEST =============
     // TODO artist info, not yet implemented
     if (isset($_GET['info']) && !(empty($_GET['info']))) {
-      $currentAlbum = $_GET['info'];
-      $response .= '<p>Artist Information coming soon...</p>';
+      $response .= $this->createSearch($_GET['info'], 'info');
     }
 
 
@@ -203,7 +206,6 @@ class RequestHandler extends Config {
     if ((strpos($string, " ") > 0) && ($type == 'lastFM' || $type == 'tagSearch')) {
       $string = explode(" ", $string);
     }
-    
     return $string;
   }
   

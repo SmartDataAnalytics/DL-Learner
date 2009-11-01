@@ -67,6 +67,7 @@ class SparqlQueryBuilder extends Config {
       case 'albumSearch'     : $query = $this->queryAlbumSearch($search); break;
       case 'songSearch'      : $query = $this->querySongSearch($search); break;
       case 'recommendations' : $query = $this->queryRecommendations($search); break;
+      case 'info'            : $query = $this->queryInfo($search); break;
     }
     // save the query
     $this->queryString = $prefixes . $beginStatement . $baseQuery . $query . $endStatement;
@@ -86,7 +87,7 @@ class SparqlQueryBuilder extends Config {
               tags:taggedWithTag ?tag .
       
       OPTIONAL { ?artist foaf:img ?image . }
-      OPTIONAL { ?artist foaf:homepage ?artistHomepage . }
+      OPTIONAL { ?artist foaf:homepage ?homepage . }
     }';
     
     $queryString .= 'FILTER (regex(str(?artistName), "' . $search . '", "i")) . ';
@@ -112,8 +113,8 @@ class SparqlQueryBuilder extends Config {
                 mo:available_as ?playlist .
               
         OPTIONAL {
-          ?record mo:image ?image .
-          FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+          ?record mo:image ?cover .
+          FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
         }
       } ';
       $queryString .= ' FILTER (regex(str(?tag), "' . $search . '", "i")) . ';
@@ -145,8 +146,8 @@ class SparqlQueryBuilder extends Config {
     $queryString .= ' mo:available_as ?playlist .
               
       OPTIONAL {
-        ?record mo:image ?image .
-        FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+        ?record mo:image ?cover .
+        FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
       }
     } ';
     return $queryString; 
@@ -166,8 +167,8 @@ class SparqlQueryBuilder extends Config {
               mo:available_as ?playlist .
             
       OPTIONAL {
-        ?record mo:image ?image .
-        FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+        ?record mo:image ?cover .
+        FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
       }
     } ';
     
@@ -210,21 +211,50 @@ class SparqlQueryBuilder extends Config {
     $queryString = ' {
       ?record mo:available_as ?playlist ;
       
-      OPTIONAL { ?artist foaf:img ?artistImage . }
-      OPTIONAL { ?artist foaf:homepage ?artistHomepage . }
       OPTIONAL {
-        ?record mo:image ?image .
-        FILTER (regex(str(?image), "1.100.jpg", "i")) .  
+        ?record mo:image ?cover .
+        FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
       }
     } ';
 
     // TODO ?record tags:taggedWithTag ?tag makes the queries blow up high
+    // TODO: use artistImage/Homepage etc. additional info in display
+    // OPTIONAL { ?artist foaf:img ?image . }
+    // OPTIONAL { ?artist foaf:homepage ?artistHomepage . }
+    
     // and finally we append the sparql-string from kb-Description-Conversion
     $queryString .= $search;
     return $queryString; 
   }
     
-    
+
+  /**
+   * Creates the SPARQL-Query part for additional artist information
+   *
+   * @param string $search The relation, an album, sth like 
+   * @return void
+   * @author Steffen Becker
+   */
+  private function queryInfo($search) {
+    $queryString = ' {
+      ?artist foaf:made <' . $search . '> .
+      ?record mo:available_as ?playlist ;
+              tags:taggedWithTag ?tag .
+
+      OPTIONAL { ?artist foaf:img ?image . }
+      OPTIONAL { ?artist foaf:homepage ?homepage . }
+      OPTIONAL { ?artist foaf:based_near ?location . }
+      OPTIONAL { ?artist owl:sameAs ?sameAs . }
+      
+      OPTIONAL {
+        ?record mo:image ?cover .
+        FILTER (regex(str(?cover), "1.100.jpg", "i")) .  
+      }
+    } ';
+    return $queryString;
+  }
+  
+  
   /**
    * Returns the final Query-String
    * 

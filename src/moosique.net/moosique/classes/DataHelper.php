@@ -36,8 +36,7 @@ class DataHelper extends Config {
     $json = $this->connection->sparqlQuery($query);
     // convert to useable object
     $result = json_decode($json);
-    $resultObject = $result->results->bindings;     
-       
+    $resultObject = $result->results->bindings;
     // prepare the data for HTML processing
     $data = $this->prepareData($resultObject, $type, $search);
     return $data;
@@ -77,7 +76,10 @@ class DataHelper extends Config {
       // prepend the album stream-information
       $mergedArray['albumID'] = $data['albumID'];
     }
-    
+    if ($type == 'info') { // same as artist, but only first array entry needed
+      $mergedArray = $this->mergeArray($data, 'artist');
+      $mergedArray = current($mergedArray);
+    }
     // multidimensional array_unique for everything but single-tagSearch and playlist
     if ($type != 'playlist' && $type != 'tagSearch' && !is_array($search)) {
       $mergedArray = $this->arrayUnique($mergedArray);
