@@ -7,5 +7,5 @@ var YMPParams = {
 };
 
 // Create an instance of the moosique.net
-// TODO 0.025 for debugging purposes 
-var moo = new Moosique({ timeToScrobble: 0.025 });
+var moo = new Moosique({ timeToScrobble: 0.05 }); // debugging - shorter generation time
+// var moo = new Moosique({ timeToScrobble: 0.5 });

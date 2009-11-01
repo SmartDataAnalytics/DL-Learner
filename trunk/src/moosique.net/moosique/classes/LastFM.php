@@ -9,17 +9,14 @@
  */
 class LastFM extends Config {
   
-  private $topTags; // save tags here
-
   /**
    * Initializing class requires the last.fm username
    *
    * @param string $user The last.fm Username
    * @author Steffen Becker
    */
-  function __construct($user) {
+  function __construct() {
     parent::__construct(); // init config
-    $this->getLastFMTags($user);
   }
 
 
@@ -31,7 +28,7 @@ class LastFM extends Config {
    * @return array An array with the top tags for $user
    * @author Steffen Becker
    */
-  private function getLastFMTags($user) {
+  public function getTags($user) {
     $allTags = array();
     $requestUrl = $this->getConfigLastFM('topTagsUrl') 
                 . '&user=' . $user 
@@ -57,7 +54,8 @@ class LastFM extends Config {
       if ($this->debugger) $this->debugger->log($user, 'The last.fm-User does not exist. Please try again.');
     }
     if ($this->debugger) $this->debugger->log($allTags, 'Found these Tags for the last.fm-User' . $user);
-    $this->topTags = $allTags;
+    
+    return $allTags;
   }
   
   
@@ -113,15 +111,27 @@ class LastFM extends Config {
   
   
   /**
-   * Returns the topTags
+   * Returns the last.fm artist-page-URL vor a given musicbrainz-ID
    *
-   * @return array An Array of strings ('rock', 'doom metal' etc.) with the Top-Tags
+   * @param string $mbid The musicbrainz-ID
+   * @return string The URL to the last.fm-page of the artist, or false
    * @author Steffen Becker
    */
-  public function getTopTags() {
-    return $this->topTags;
+  public function getArtistPage($mbid) {
+    // get the top artists for the user
+    $requestUrl = $this->getConfigLastFM('artistInfoUrl')
+                . '&mbid=' . $mbid
+                . '&api_key=' . $this->getConfigLastFM('apiKey');
+                
+    $artistInfo = @simplexml_load_file($requestUrl);
+    
+    if ($artistInfo) {
+      return $artistInfo->artist->url;
+    } else {
+      return false;
+    }
   }
-  
+
 }
 
 ?>

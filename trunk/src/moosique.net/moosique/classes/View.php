@@ -58,11 +58,12 @@ class View extends Config {
         case 'songSearch' : $this->html = '<h2>No songs found for &raquo;' . $searchText . '&laquo;</h2>'; break;
         case 'lastFM' : $this->html = '<h2>The last.fm-user &raquo;' . $searchText . '&laquo; does not exist.</h2>'; break;
         case 'recommendations' : $this->html = '<h2>' . $data . '</h2>'; break;
+        case 'info' : $this->html = '<h2>Could not find any information about the currently playing song or artist.</h2>';
       }
     } else {
       // finally we are producing html, depending on the type of request
-      // use the limits on the data before creating html, except for the playlist-html
-      if ($type != 'playlist') {
+      // use the limits on the data before creating html, except for the playlist-html and more info
+      if ($type != 'playlist' && $type != 'info') {
         $data = $this->limitData($data);
       }
       
@@ -91,6 +92,9 @@ class View extends Config {
         break;
         case 'recommendations' :
           $this->recommendationsHTML($data, $type); 
+        break;
+        case 'info' : 
+          $this->infoHTML($data, $type);
         break;
         case 'playlist' : 
           $this->playlistHTML($data); 
@@ -154,8 +158,7 @@ class View extends Config {
       if (is_array($recordArray)) {
         foreach($recordArray as $key => $record) {
           $records .= '<li><a class="addToPlaylist" href="' 
-                    // remove the last part of the uri, defaults to mp3, because
-                    // the yahooMediaPlayer can't play ogg
+                    // remove the last part of the uri, defaults to mp3, because the yahooMediaPlayer can't play ogg
                     . str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $artist['playlist']['value'][$key]) 
                     . '" rel="' . $artist['record']['value'][$key] . '">'
                     . $this->getValue($artist['artistName'])  . ' - ' 
@@ -170,12 +173,12 @@ class View extends Config {
       }
 
       $artistName = $this->getValue($artist['artistName']);
-      $image = $this->getImage($artist, $artistName);
+      $image = $this->getImage($artist, 'Image of ' . $artistName);
       $tags = $this->getTagList($artist['tag']);
       
       $homepage = ''; // homepagelink if avaiable
-      if (!empty($artist['artistHomepage'])) {
-        $homepage = '<a href="' . $this->getValue($artist['artistHomepage']) . '">(Homepage)</a>';
+      if (!empty($artist['homepage'])) {
+        $homepage = '<a href="' . $this->getValue($artist['homepage']) . '">(Homepage)</a>';
       }
       
       $this->html .= sprintf($template,
@@ -189,13 +192,12 @@ class View extends Config {
   
   
   /**
-   * Returns the HTML for tagSearch results
+   * Builds the HTML for tagSearch results
    * This is somewhat special, we first create a list of found tags,
    * and then we list the albums found for those tags 
    *
    * @param array $data The result-Array to create HTML from
    * @param string $type type of search to get the template
-   * @return string HTML for a tagSearch
    * @author Steffen Becker
    */
   private function tagSearchHTML($data, $type) {
@@ -243,7 +245,7 @@ class View extends Config {
         $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
                        . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
                        
-        $image = $this->getImage($tag, $artistName. ' - ' .  $albumTitle, $j);
+        $image = $this->getImage($tag, 'Cover for ' . $artistName. ' - ' .  $albumTitle, $j, 'cover');
         
         $this->html .= sprintf($template,
           $class, $image, $artistName, $albumTitle, $addToPlaylist
@@ -256,11 +258,10 @@ class View extends Config {
   
   
   /**
-   * Returns the HTML for albumSearch results
+   * Builds the HTML for albumSearch results
    *
    * @param array $data The result-Array to create HTML from
    * @param string $type type of search to get the template
-   * @return string HTML for a albumSearch
    * @author Steffen Becker
    */
   private function albumSearchHTML($data, $type) {
@@ -280,7 +281,7 @@ class View extends Config {
       $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
                      . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
       
-      $image = $this->getImage($album, $artistName . ' - ' .  $albumTitle);
+      $image = $this->getImage($album, 'Cover for ' . $artistName . ' - ' .  $albumTitle, 0, 'cover');
       $tags = $this->getTagList($album['tag']);
       
       $this->html .= sprintf($template,
@@ -294,11 +295,10 @@ class View extends Config {
   
   
   /**
-   * Returns the HTML for songSearch results
+   * Builds the HTML for songSearch results
    *
    * @param array $data The result-Array to create HTML from
    * @param string $type type of search to get the template
-   * @return string HTML for a songSearch
    * @author Steffen Becker
    */
   private function songSearchHTML($data, $type) {
@@ -320,7 +320,7 @@ class View extends Config {
                      . $artistName . ' - ' . $songTitle . '">Click here to add this song to your playlist</a></li>';
       
       $tags = $this->getTagList($song['tag']);
-      $image = $this->getImage($song, $artistName);
+      $image = $this->getImage($song, 'Image of ' . $artistName);
       
       $this->html .= sprintf($template,
         $class, $artistName . ' - ' . $songTitle, $image, $tags, $addToPlaylist
@@ -333,11 +333,11 @@ class View extends Config {
 
 
   /**
-   * Returns the HTML for recommendations
+   * Builds the HTML for recommendations
+   * TOOD enhance display: more info
    *
    * @param array $data The result-Array to create HTML from
    * @param string $type type of search to get the template
-   * @return string HTML for recommendations
    * @author Steffen Becker
    */
   private function recommendationsHTML($data, $type) {
@@ -369,7 +369,7 @@ class View extends Config {
           $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
                          . $artistName . ' - ' . $albumTitle . '">Click here to add this album to your playlist</a></li>';
 
-          $image = $this->getImage($result, $artistName . ' - ' . $albumTitle);
+          $image = $this->getImage($result, 'Cover for ' . $artistName . ' - ' . $albumTitle, 0, 'cover');
 
           $this->html .= sprintf($template,
             $class, $image, $artistName, $albumTitle, $addToPlaylist
@@ -379,17 +379,97 @@ class View extends Config {
         $this->html .= '</ul>';
       }
     } else {
-      $this->html = '<h2>Could not create any recommendations...</h2>';
+      $this->html = '<h2>Could not create any recommendations.</h2>';
       $this->html .= '<p>Listen to some more music or reset your recently listened to list.</p>';
     }
   }
 
+  /**
+   * Builds the HTML for additional information for and artist
+   *
+   * @param array $data An array of additional information
+   * @author Steffen Becker
+   */
+  private function infoHTML($data, $type) {
+    $template = $this->getTemplate($type);
+    $albumTemplate = $this->getTemplate('tagSearch');
+    $artist = $this->getValue($data['artist']);
+    $artistName = $this->getValue($data['artistName']);
+    $image = $this->getImage($data, $artistName);
+    $tags = $this->getTagList($data['tag']);
+    $homepage = '';
+    if (isset($data['homepage'])) {
+      $homepage = '<p>Homepage: <a href="' . $this->getValue($data['homepage']) . '">' 
+                . $this->getValue($data['homepage']) . '</a></li>';
+    }
+    $albumList = '';
+    $records = $this->getValue($data['record']);
+    if (is_array($records)) {
+      // if there is more than one record...    
+      $j = 0;
+      foreach($records as $key => $record) {
+        if (($j % 2) == 0) { $class = 'odd'; } else { $class = ''; }
+        $albumTitles = $this->getValue($data['albumTitle']);
+        $playlists = $this->getValue($data['playlist']);
+        $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($data['playlist'], $key));
+        $cover = $this->getImage($data, 'Cover for '. $albumTitles[$key], $key, 'cover');
+        $addToPlaylist = '<li><a rel="' . $record . '" class="addToPlaylist" href="' . $playlist . '" title="'  
+                       . $artistName . ' - ' . $albumTitles[$key] . '">Click here to add this album to your playlist</a></li>';
+        // use the template
+        $albumList .= sprintf($albumTemplate,
+          $class, $cover, $artistName, $albumTitles[$key], $addToPlaylist
+        );
+        $j++;
+      }
+    } else { // only one record
+      $playlist = str_replace('?item_o=track_no_asc&aue=ogg2&n=all', '', $this->getValue($data['playlist']));
+      $addToPlaylist = '<li><a rel="' . $records . '" class="addToPlaylist" href="' . $playlist . '" title="'  
+                     . $artistName . ' - ' . $this->getValue($data['albumTitle']) . '">Click here to add this album to your playlist</a></li>';
+      
+      $albumList .= sprintf($albumTemplate, 
+        '', $this->getImage($data, 'Cover for '. $this->getValue($data['albumTitle']), 0, 'cover'),
+        $artistName, $this->getValue($data['albumTitle']), $addToPlaylist
+      );
+    }
+  
+    $additionalInfo = '';
+    if (isset($data['location'])) {
+      $additionalInfo .= '<li><a href="' . $this->getValue($data['location']) . '">Geonames Location</a></li>';
+    }
+    if (isset($data['sameAs'])) {
+      // woot! we have a musicbrainz-ID, fetch more information, and link profiles
+      $link = $this->getValue($data['sameAs']);
+      $mbid = str_replace('http://zitgist.com/music/artist/', '', $link);
+      
+      $additionalInfo .= '<li><a href="' . $link . '">Zitgist-Dataviewer</a></li>';
+      // append musicbrainz-link
+      $mbLink = 'http://musicbrainz.org/show/artist/?mbid=' . $mbid;
+      $additionalInfo .= '<li><a href="' . $mbLink . '">Musicbrainz profile</a></li>';
+
+      // append last-fm information, if avaiable
+      $last = new LastFM();
+      $lastfmLink = $last->getArtistPage($mbid);
+      if ($lastfmLink) {
+        $additionalInfo .= '<li><a href="' . $lastfmLink . '">Artist page on last.fm</a></li>';
+      }
+    }
+    // show the frame if we have additional information
+    if (isset($data['location']) || isset($data['sameAs'])) {
+      $additionalInfo = '<h3>Information from external sources</h3><ul class="linkList">' . $additionalInfo;
+      $additionalInfo .= '</ul><iframe src=""></iframe>';
+    }
+        
+    $this->html .= sprintf($template,
+      $artistName, $image, $tags, $homepage, $albumList, $additionalInfo
+    );
+    
+  }
+  
 
   /**
-   * Returns a list of <li>s with playlist-entries, no surrounding <ul> 
+   * Builds a list of <li>s with playlist-entries, no surrounding <ul> 
    *
    * @param array $data An array of playlist-items 
-   * @return string playlist-HTML ready to use
    * @author Steffen Becker
    */
   private function playlistHTML($data) {
@@ -420,15 +500,16 @@ class View extends Config {
    * @param array $image The complete result-array
    * @param string $altText The alt-Text the image will have
    * @param int $index optional, used for getValue for specific value-retrieval
-   * @return void
+   * @param string $type optional, default is image, can be set to 'cover'
+   * @return string The <img>-Tag
    * @author Steffen Becker
    */
-  private function getImage($image, $altText, $index = 0) {
+  private function getImage($image, $altText, $index = 0, $type = 'image') {
     // in most cases the image is optional, so it could be empty
     $img = '<img src="img/noimage.png" alt="No image found..." />';
-    if (isset($image['image'])) {
-      $image = $image['image'];
-      if (!empty($image)) {
+    if (isset($image[$type])) {
+      $image = $image[$type];
+      if ($this->getValue($image, $index)) {
         $img = '<img src="' . $this->getValue($image, $index) . '" alt="' . $altText . '" />';
       }
     } 
@@ -474,7 +555,7 @@ class View extends Config {
           <strong>Tags:</strong><br/ > 
           <p>%s</p>
           <p>
-            <strong>Avaiable records:</strong><br />
+            <strong>Avaiable albums:</strong><br />
           </p>
           <ul>%s</ul>
           <p>Click on an album to add it to your playlist.</p>
@@ -492,14 +573,29 @@ class View extends Config {
     }
     if ($type == 'albumSearch' || $type == 'songSearch') {
       $template = '
-          <li class="clearfix %s">
-            <h3>%s</h3>
-            <div class="image">%s</div>
-            <p>Tags: %s</p>
-            <ul>%s</ul>
-          </li>
-        ';
+        <li class="clearfix %s">
+          <h3>%s</h3>
+          <div class="image">%s</div>
+          <p>Tags: %s</p>
+          <ul>%s</ul>
+        </li>
+      ';
     } 
+    if ($type == 'info') {
+      $template = '
+        <h2>More Information for &raquo;%s&laquo;</h2>
+        <div class="image">%s</div>
+        <p>Tags: %s</p>
+        %s
+        <h3>Avaiable albums</h3>
+        <div class="results">
+          <ul>
+            %s
+          </ul>
+        </div>
+        %s
+      ';
+    }
     return $template;
   }
   
@@ -522,7 +618,11 @@ class View extends Config {
           return $value[0];
         } 
         if (count($value) > 1 && $index !== false) {
-          return $value[$index];
+          if (isset($value[$index])) { // the index could not be set
+            return $value[$index];
+          } else {
+            return '';
+          }
         } else { // an array is requested, tagList for example
           return $value;
         }

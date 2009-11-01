@@ -11,9 +11,9 @@ var Moosique = new Class({ Implements: Options,
   
   // set some default options
   options: {
-    messageFadeTime: 5000, // Time until a Status message fades out
-    timeToScrobble:  0.5,  // factor for calculating max time a user has to listen to a track until its scrobbled
-    minSearchLength: 3     // minimum number of chars for a search value (tag, artist, song)
+    messageFadeTime: 4000, // Time until a Status message fades out in milliseconds, default: 4000 = 4 seconds
+    timeToScrobble:  0.5,  // factor for max time for scrobbling/recommendations, default: 0.5 = half the song
+    minSearchLength: 3     // minimum number of chars for a search value (tag, artist, song), default: 3
   },
   
   /**
@@ -48,6 +48,7 @@ var Moosique = new Class({ Implements: Options,
     this.nowPlayingInfo = $$('#playing .info');
     this.nowPlayingTrack = $$('#playing .track');
     this.nowPlayingTime = $$('#playing .time');
+    this.download = $$('#playing .download a');
     this.status = document.id('status');
     // searchForm elements
     this.searchForm = document.id('searchForm');
@@ -71,7 +72,7 @@ var Moosique = new Class({ Implements: Options,
     this.nav = document.id('nav');
     this.welcome = document.id('welcome');
     this.help = document.id('help');
-    this.moreInfo = document.id('moreInfo');
+    this.info = document.id('info');
   },
   
   /**
@@ -216,6 +217,7 @@ var Moosique = new Class({ Implements: Options,
       var trackStart = function() {
         that.nowPlayingInfo.set('text', 'Currently playing:');
         that.nowPlayingTrack.set('text', YAHOO.MediaPlayer.getMetaData().title);
+        that.download.set('href', YAHOO.MediaPlayer.getMetaData().anchor.get('href'));
         that.playPause.setStyle('background-position', '0px -40px'); // sprite offset
         
         // send a request to gather additional artist-information
@@ -224,7 +226,9 @@ var Moosique = new Class({ Implements: Options,
           method: 'get', 
           url: 'moosique/index.php',
           onSuccess: function(response) {
-            that.moreInfo.set('html', response);
+            that.info.set('html', response);
+            // make the additionals iframe-clickable
+            that.addLinkListItemToIframe();
           }
         }).send('info=' + nowPlayingAlbum);
       };
@@ -327,12 +331,19 @@ var Moosique = new Class({ Implements: Options,
   addEventsToButtons: function() {
     var that = this;
 
-    // the previous/next-Track Buttons
-    that.prev.addEvent('click', function() { YAHOO.MediaPlayer.previous(); });
-    that.next.addEvent('click', function() { YAHOO.MediaPlayer.next(); });
+    that.prev.addEvent('click', function(e) { 
+      e.stop();
+      YAHOO.MediaPlayer.previous(); 
+    });
+    
+    that.next.addEvent('click', function(e) { 
+      e.stop();
+      YAHOO.MediaPlayer.next(); 
+    });
       
     // the Play-Pause Button
-    that.playPause.addEvent('click', function() { 
+    that.playPause.addEvent('click', function(e) {
+      e.stop();
       // STOPPED: 0, PAUSED: 1, PLAYING: 2,BUFFERING: 5, ENDED: 7
       // see http://mediaplayer.yahoo.com/api/
       if (YAHOO.MediaPlayer.getPlayerState() == 0 ||
@@ -345,12 +356,14 @@ var Moosique = new Class({ Implements: Options,
     });
     
     // the Stop-Playing Button
-    that.stop.addEvent('click', function() {
+    that.stop.addEvent('click', function(e) {
+      e.stop();
       that.stopPlaying();
     });
     
     // Mute-Toggle-Switch
-    that.mute.addEvent('click', function() {
+    that.mute.addEvent('click', function(e) {
+      e.stop();
       if (YAHOO.MediaPlayer.getVolume() > 0) {
         YAHOO.MediaPlayer.setVolume(0);
         that.mute.setStyle('background-position', '0px -240px');
@@ -371,7 +384,6 @@ var Moosique = new Class({ Implements: Options,
   refreshPlaylist: function() {
     var that = this;
     YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
-    that.displayStatusMessage('Playlist updated.');
   },
 
 
@@ -385,6 +397,7 @@ var Moosique = new Class({ Implements: Options,
     that.nowPlayingInfo.set('text', 'Player stopped.');
     that.nowPlayingTrack.set('text', '...');
     that.nowPlayingTime.set('text', '0:00 / 0:00');
+    that.download.set('href', '#');
     YAHOO.MediaPlayer.stop();
     // and reload the playlist
     that.refreshPlaylist();
@@ -392,18 +405,23 @@ var Moosique = new Class({ Implements: Options,
 
 
   /**
-   * Displays a status message
+   * Displays a status message, fades out nicely
    * 
    * @param {String} message
    */
   displayStatusMessage: function(message) {
     // Update Status and fade out
     var that = this;
-    that.status.set({
-      'text': message,
-      'tween': {duration: that.options.messageFadeTime}
+    var fadeFX = new Fx.Tween(that.status, {
+      property: 'opacity',
+      duration: that.options.messageFadeTime / 2,
+      transition: Fx.Transitions.Expo.easeOut,
+      link: 'chain'
     });
-    that.status.tween('opacity', [1, 0]);
+    
+    that.status.set('text', message);    
+    fadeFX.start(0, 1);
+    fadeFX.start(1, 0);
   },
   
   
@@ -463,13 +481,6 @@ var Moosique = new Class({ Implements: Options,
           spinner.show();
           that.searchSubmit.set('disabled', 'disabled');
           that.showTab('home');
-          // if the welcome-text ist present, cut & paste it to help
-          if (that.welcome) {
-            if (that.welcome.get('html').length > 100) {
-              that.help.set('html', that.welcome.get('html'));
-              that.welcome.destroy();
-            }
-          }
           that.results.set('html', '<h2>Searching...</h2><p>Please be patient, this may take up to a minute...</p>');
         },
         
@@ -601,10 +612,12 @@ var Moosique = new Class({ Implements: Options,
           var songs = Elements.from(response);
           var randomSong = songs.getRandom();
           that.insertIntoPlaylist('<li>' + randomSong.get('html') + '</li>'); 
+          that.displayStatusMessage('Added a random song to your playlist.');
         }
       }).send('get=playlist&playlist=' + href + '&rel=' + rel);
     } else {
-      debug.log('You currently have no recommendations, adding a random one will not work.');
+      that.displayStatusMessage('You currently have no recommendations, nothing was added.');
+      debug.log('You currently have no recommendations, adding a random song will not work.');
     }
   },
   
@@ -621,6 +634,25 @@ var Moosique = new Class({ Implements: Options,
     that.content.getChildren().setStyle('display', 'none');
     document.id(tabID).setStyle('display', 'block');  
   },
+  
+  
+  /**
+   *
+   *
+   */
+  addLinkListItemToIframe: function() {
+    var that = this;
+    that.info.getElements('.linkList a').each(function(a) {
+      a.addEvent('click', function(e) {
+        e.stop();
+        that.info.getElements('.linkList li').removeClass('active');
+        a.getParent().addClass('active');
+        href = a.get('href');
+        that.info.getElements('iframe').set('src', href);
+      });
+    });
+  },
+  
   
   
   /**
