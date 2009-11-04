@@ -152,7 +152,7 @@ public class DLLearnerView {
 		icon = new ImageIcon(iconUrl);
 		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
 		toggledIcon = new ImageIcon(toggledIconUrl);
-		adv = new JLabel("Advanced Settings");
+		adv = new JLabel("<html>Advanced Settings</html>");
 		advanced = new JToggleButton(icon);
 		advanced.setVisible(true);
 		advancedPanel = new JPanel();
@@ -164,7 +164,7 @@ public class DLLearnerView {
 		helpButton.setName("help");
 		helpButton.addActionListener(action);
 		runPanel = new JPanel(new FlowLayout());
-		accept = new JButton("ADD");
+		accept = new JButton("<html>ADD</html>");
 		addButtonPanel = new JPanel(new BorderLayout());
 		stat = new StatusBar();
 		errorMessage = new JTextArea();
@@ -183,7 +183,7 @@ public class DLLearnerView {
 		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
 		posPanel = new PosAndNegSelectPanel(model, action);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
-		sugPanelHandler = new SuggestClassPanelHandler(this, model);
+		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
 		sugPanel.addSuggestPanelMouseListener(sugPanelHandler);
 		sugPanel.getSuggestList().addListSelectionListener(sugPanelHandler);
 		this.addAcceptButtonListener(this.action);
@@ -234,7 +234,7 @@ public class DLLearnerView {
 		}
 		individualSize = editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size();
 		labels = currentConcept;
-		run.setText("suggest " + label + " expression");
+		run.setText("<html>suggest " + label + " expression</html>");
 		GridBagConstraints c = new GridBagConstraints();
 		learner.remove(detail);
 		model.setID(label);

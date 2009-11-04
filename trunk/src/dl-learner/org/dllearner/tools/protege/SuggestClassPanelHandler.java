@@ -36,6 +36,7 @@ import org.dllearner.core.EvaluatedDescription;
 public class SuggestClassPanelHandler implements MouseListener, ListSelectionListener{
 	private DLLearnerView view;
 	private DLLearnerModel model;
+	private ActionHandler action;
 	private EvaluatedDescription evaluatedDescription;
 	
 	/**
@@ -43,9 +44,10 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 	 * @param v DLLearnerView
 	 * @param m DLLearnerModel
 	 */
-	public SuggestClassPanelHandler(DLLearnerView v, DLLearnerModel m) {
+	public SuggestClassPanelHandler(DLLearnerView v, DLLearnerModel m, ActionHandler a) {
 		this.view = v;
 		this.model = m;
+		this.action = a;
 	}
 
 
@@ -68,6 +70,7 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 						if (desc.equals(eDescription.getDescription()
 								.toManchesterSyntaxString(ont, null))) {
 							evaluatedDescription = eDescription;
+							action.setEvaluatedClassExpression(eDescription);
 							break;
 						}
 					}
