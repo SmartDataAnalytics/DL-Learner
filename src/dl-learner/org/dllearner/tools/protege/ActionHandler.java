@@ -67,7 +67,10 @@ public class ActionHandler implements ActionListener {
 	private final DLLearnerView view;
 	private static final String HELP_BUTTON_STRING = "help";
 	private JTextArea help;
+	private static final String ADD_BUTTON_STRING = "<html>ADD</html>";
 	private static final String ADVANCED_BUTTON_STRING = "Advanced";
+	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
+	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expression</html>";
 
 	/**
 	 * This is the constructor for the action handler.
@@ -93,9 +96,9 @@ public class ActionHandler implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals("suggest equivalent class expression")
+		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
 				|| z.getActionCommand()
-						.equals("suggest super class expression")) {
+						.equals(SUPER_CLASS_LEARNING_STRING)) {
 			model.setKnowledgeSource();
 			view.getSuggestClassPanel().getSuggestModel().clear();
 			view.getSuggestClassPanel().repaint();
@@ -107,8 +110,8 @@ public class ActionHandler implements ActionListener {
 
 			String moreInformationsMessage = "Learning started. Currently searching class expressions with length between "
 					+ celoe.getMinimumHorizontalExpansion()
-					+ " and"
-					+ celoe.getMaximumHorizontalExpansion() + ". ";
+					+ " and "
+					+ celoe.getMaximumHorizontalExpansion() + ".";
 			view.setHelpButtonVisible(true);
 			view.setHintMessage(moreInformationsMessage);
 			retriever = new SuggestionRetriever();
@@ -116,7 +119,7 @@ public class ActionHandler implements ActionListener {
 			retriever.execute();
 		}
 
-		if (z.getActionCommand().equals("ADD")) {
+		if (z.getActionCommand().equals(ADD_BUTTON_STRING)) {
 			if (evaluatedDescription != null) {
 				model
 						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
@@ -150,7 +153,7 @@ public class ActionHandler implements ActionListener {
 					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3\n"
 					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase\n"
 					+ "the maximum runtime setting (it is set to $defaultRuntime seconds by default).\n\n"
-					+ "See http://dl-learner.org/wiki/ProtegePlugin for more details. ";
+					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for more details.";
 
 			help = new JTextArea();
 			help.setEditable(false);
@@ -169,6 +172,14 @@ public class ActionHandler implements ActionListener {
 		toggled = false;
 	}
 
+	/**
+	 * This Methode sets the evaluated class expression that is selected
+	 * in the panel.
+	 * @param desc evaluated descriptions
+	 */
+	public void setEvaluatedClassExpression(EvaluatedDescription desc) {
+		this.evaluatedDescription = desc;
+	}
 	/**
 	 * Inner Class that retrieves the concepts given by the DL-Learner.
 	 * 
