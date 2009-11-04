@@ -265,8 +265,8 @@ public class DLLearnerModel implements Runnable{
 		try {
 			currentConceptURL = new URL(currentConcept.toString());
 		} catch (MalformedURLException e1) {
-			String error = "Cannot convert to URL.";
-			view.renderErrorMessage(error);
+			String error = "<html>Cannot convert to URL.</html>";
+			view.setHintMessage(error);
 			e1.printStackTrace();
 		}
 		cm.applyConfigEntry(lp, "classToDescribe", currentConceptURL);

@@ -36,7 +36,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 
 import org.dllearner.algorithms.celoe.CELOE;
@@ -54,6 +54,8 @@ public class DLLearnerView {
 
 	
 	private static final  long serialVersionUID = 624829578325729385L; 
+	//TODO: gucken wie geht
+	private HyperLinkHandler hyperHandler;
 	// this is the Component which shows the view of the dllearner
 	private final JComponent learner;
 
@@ -68,14 +70,6 @@ public class DLLearnerView {
 	// This is the label for the advanced button.
 
 	private final JLabel adv;
-
-	// This is the color for the error message. It is red.
-
-	private final Color colorRed = Color.red;
-
-	// This is the text area for the error message when an error occurred
-
-	private final JTextArea errorMessage;
 
 	// Advanced Button to activate/deactivate the example select panel
 
@@ -103,10 +97,10 @@ public class DLLearnerView {
 
 	// Picture of the advanced button when it is toggled
 	private final JPanel addButtonPanel;
-	private final JLabel wikiPane;
+	private final JTextPane wikiPane;
 	private final ImageIcon toggledIcon;
 	private ImageIcon helpIcon;
-	private final JTextArea hint;
+	private final JTextPane hint;
 	private JButton helpButton;
 	private final JPanel runPanel;
 	private final JPanel advancedPanel;
@@ -129,6 +123,7 @@ public class DLLearnerView {
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
 	private StatusBar stat;
+	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</font></html>";
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -147,7 +142,10 @@ public class DLLearnerView {
 		learnerPanel.setLayout(new BorderLayout());
 		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		action = new ActionHandler(model, this);
-		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
+		wikiPane = new JTextPane();
+		wikiPane.setContentType("text/html");
+		wikiPane.setBackground(learnerScroll.getBackground());
+		wikiPane.setText(WIKI_STRING);
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
 		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
@@ -167,12 +165,12 @@ public class DLLearnerView {
 		accept = new JButton("<html>ADD</html>");
 		addButtonPanel = new JPanel(new BorderLayout());
 		stat = new StatusBar();
-		errorMessage = new JTextArea();
-		errorMessage.setEditable(false);
-		hint = new JTextArea();
+		hint = new JTextPane();
+		hint.setBackground(learnerScroll.getBackground());
+		hint.setContentType("text/html");
 		hint.setEditable(false);
-		hint.setText("To get suggestions for class expression, please click the button above.");
-		hint.setPreferredSize(new Dimension(485, 30));
+		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
+		hint.addHyperlinkListener(hyperHandler);
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(new GridBagLayout());
@@ -186,6 +184,7 @@ public class DLLearnerView {
 		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
 		sugPanel.addSuggestPanelMouseListener(sugPanelHandler);
 		sugPanel.getSuggestList().addListSelectionListener(sugPanelHandler);
+		hyperHandler = new HyperLinkHandler();
 		this.addAcceptButtonListener(this.action);
 		this.addRunButtonListener(this.action);
 		this.addAdvancedButtonListener(this.action);	
@@ -216,7 +215,7 @@ public class DLLearnerView {
 
 		helpButton.setVisible(false);
 		hint.setForeground(Color.BLACK);
-		hint.setText("To get suggestions for class expression, please click the button above.");
+		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
 		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
 		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
 			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
@@ -281,7 +280,6 @@ public class DLLearnerView {
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 3;
-		hint.setPreferredSize(new Dimension(450, 60));
 		helpButton.setPreferredSize(new Dimension(30, 30));
 		hintPanel.add(BorderLayout.CENTER, hint);
 		hintPanel.add(BorderLayout.EAST, helpButton);
@@ -318,7 +316,6 @@ public class DLLearnerView {
 		detail.setVisible(true);
 		sugPanel.setVisible(true);
 		learnerScroll.setViewportView(learner);
-		this.renderErrorMessage("");
 		this.getSuggestClassPanel().getSuggestModel().clear();
 			
 	}
@@ -396,7 +393,7 @@ public class DLLearnerView {
 	 * This method returns the hint panel.
 	 * @return hint panel
 	 */
-	public JTextArea getHintPanel() {
+	public JTextPane getHintPanel() {
 		return hint;
 	}
 	
@@ -451,18 +448,9 @@ public class DLLearnerView {
 	public void unsetEverything() {
 		run.setEnabled(true);
 		model.getNewOWLDescription().clear();
-		errorMessage.setText("");
 		learner.removeAll();
 	}
 
-	/**
-	 * Renders the error message when an error occured.
-	 * @param s String 
-	 */
-	public void renderErrorMessage(String s) {
-		errorMessage.setForeground(colorRed);
-		errorMessage.setText(s);
-	}
 	/**
 	 * This Method returns the panel for more details for the chosen concept.
 	 * @return MoreDetailForSuggestedConceptsPanel
@@ -524,18 +512,16 @@ public class DLLearnerView {
 	 */
 	public void algorithmTerminated() {
 		CELOE celoe = (CELOE) model.getLearningAlgorithm();
-		String error = "Learning successful. All expressions up to length " + (celoe.getMinimumHorizontalExpansion()-1) +  " and some expressions up to \nlength " + celoe.getMaximumHorizontalExpansion() + " searched.";
+		String message = "<html><font size=\"3\">Learning successful. All expressions up to length " + (celoe.getMinimumHorizontalExpansion()-1) +  " and some expressions up to <br>length " + celoe.getMaximumHorizontalExpansion() + " searched.";
 		hint.setForeground(Color.RED);
-		this.setHintMessage(error);
-		String message = "";
 		if(isInconsistent) {
-			message ="\nClass expressions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
+			message +="<br>Class expressions marked red will lead to an inconsistent ontology. <br>Please double click on them to view detail information.</font></html>";
 		} else {
-			message ="\nTo view details about why a class expression was suggested, please click on it.";
+			message +="<br>To view details about why a class expression was suggested, please click on it.</font><html>";
 		}
 		run.setEnabled(true);
 		// start the algorithm and print the best concept found;
-		hint.append(message);
+		this.setHintMessage(message);
 	}
 	
 	/**
@@ -591,4 +577,9 @@ public class DLLearnerView {
 	public StatusBar getStatusBar() {
 		return stat;
 	}
+	
+	public HyperLinkHandler getHyperLinkHandler() {
+		return hyperHandler;
+	}
+	
 }

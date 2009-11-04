@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -51,6 +51,7 @@ public class ActionHandler implements ActionListener {
 	// This is the DLLearnerModel.
 
 	private final DLLearnerModel model;
+	private HyperLinkHandler hyperHandler;
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
@@ -66,7 +67,7 @@ public class ActionHandler implements ActionListener {
 	private final Color colorGreen = new Color(0, 139, 0);
 	private final DLLearnerView view;
 	private static final String HELP_BUTTON_STRING = "help";
-	private JTextArea help;
+	private JTextPane help;
 	private static final String ADD_BUTTON_STRING = "<html>ADD</html>";
 	private static final String ADVANCED_BUTTON_STRING = "Advanced";
 	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
@@ -85,6 +86,7 @@ public class ActionHandler implements ActionListener {
 		this.view = view;
 		this.model = m;
 		toggled = false;
+		hyperHandler = view.getHyperLinkHandler();
 
 	}
 
@@ -108,10 +110,10 @@ public class ActionHandler implements ActionListener {
 			view.getHintPanel().setForeground(Color.RED);
 			CELOE celoe = (CELOE) model.getLearningAlgorithm();
 
-			String moreInformationsMessage = "Learning started. Currently searching class expressions with length between "
+			String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
 					+ celoe.getMinimumHorizontalExpansion()
 					+ " and "
-					+ celoe.getMaximumHorizontalExpansion() + ".";
+					+ celoe.getMaximumHorizontalExpansion() + ".</font></html>";
 			view.setHelpButtonVisible(true);
 			view.setHintMessage(moreInformationsMessage);
 			retriever = new SuggestionRetriever();
@@ -130,7 +132,7 @@ public class ActionHandler implements ActionListener {
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "class expression added";
+			String message = "<html><font size=\"3\">class expression added</font></html>";
 			view.setHintMessage(message);
 			view.setHelpButtonVisible(false);
 		}
@@ -146,18 +148,21 @@ public class ActionHandler implements ActionListener {
 			}
 		}
 		if (z.toString().contains(HELP_BUTTON_STRING)) {
-			String helpText = "What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?\n"
-					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words needed to write down the class expression.\n\n"
-					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing and then further specializes it.\n"
-					+ "Those class expressions, which fit the existing instances of a given class ($currentClass in this case) get a high accuracy and are displayed as suggestions.\n"
-					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3\n"
-					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase\n"
-					+ "the maximum runtime setting (it is set to $defaultRuntime seconds by default).\n\n"
-					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for more details.";
+			String helpText = "<html><font size=\"3\">What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?<br>"
+					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words needed to write down the class expression.<br><br>"
+					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing and then further specializes it.<br>"
+					+ "Those class expressions, which fit the existing instances of a given class ($currentClass in this case) get a high accuracy and are displayed as suggestions.<br>"
+					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3<br>"
+					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase<br>"
+					+ "the maximum runtime setting (it is set to $defaultRuntime seconds by default).<br><br>"
+					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for more details.</font></html>";
 
-			help = new JTextArea();
+			help = new JTextPane();
 			help.setEditable(false);
+			help.setContentType("text/html");
 			help.setForeground(Color.black);
+			help.addHyperlinkListener(hyperHandler);
+			help.setBackground(view.getLearnerView().getBackground());
 			help.setText(helpText);
 
 			JOptionPane.showMessageDialog(null, help, "Help",
@@ -212,10 +217,10 @@ public class ActionHandler implements ActionListener {
 								.getNrOfConcepts()));
 						CELOE celoe = (CELOE) model.getLearningAlgorithm();
 						view.getHintPanel().setForeground(Color.RED);
-						String moreInformationsMessage = "Learning started. Currently searching class expressions with length between "
+						String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
 								+ celoe.getMinimumHorizontalExpansion()
 								+ " and "
-								+ celoe.getMaximumHorizontalExpansion() + ".";
+								+ celoe.getMaximumHorizontalExpansion() + ".</font></html>";
 						view.setHintMessage(moreInformationsMessage);
 					}
 				}

@@ -87,7 +87,6 @@ public class ReadingOntologyThread extends Thread {
 		if(current != null) {
 			SortedSet<Individual> individuals = null;
 			hasIndividuals = false;
-			System.out.println("hier: " + editor.getOWLModelManager().getActiveOntology().getAxioms(current));
 			// checks if selected concept is thing when yes then it selects all
 			// individuals
 			if (!(current.toString().equals("Thing"))) {
@@ -167,7 +166,7 @@ public class ReadingOntologyThread extends Thread {
 	
 	@Override
 	public void run() {
-		String loading ="loading instances...";
+		String loading ="<html><font size=\"3\">loading instances...</font></html>";
 		view.getHintPanel().setForeground(Color.RED);
 		view.setHintMessage(loading);
 		if(!model.isReasonerSet() || model.getIsKnowledgeSourceIsUpdated() == true) {
@@ -182,12 +181,12 @@ public class ReadingOntologyThread extends Thread {
 			if (this.hasIndividuals()) {
 				view.getRunButton().setEnabled(true);
 				view.getHintPanel().setForeground(Color.BLACK);
-				view.setHintMessage("To get suggestions for class descriptions, please click the button above.");
+				view.setHintMessage("<html><font size=\"3\">To get suggestions for class descriptions, please click the button above.</font></html>");
 				
 			} else {
 				view.getRunButton().setEnabled(false);
 				view.getHintPanel().setVisible(true);
-				String message ="There are no Instances for " + current + " available. Please insert some Instances.";
+				String message ="<html><font size=\"3\">There are no Instances for " + current + " available. Please insert some Instances.</font></html>";
 				view.getHintPanel().setForeground(Color.RED);
 				view.setHintMessage(message);
 			}
