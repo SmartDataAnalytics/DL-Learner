@@ -87,7 +87,6 @@ public class GraphicalCoveragePanel extends JPanel {
 	private final Color darkGreen;
 	private final Color darkRed;
 	private int notCoveredInd;
-	private final MoreDetailForSuggestedConceptsPanel panel;
 
 	/**
 	 * 
@@ -97,24 +96,23 @@ public class GraphicalCoveragePanel extends JPanel {
 	 *            EvaluatedDescription
 	 * @param m
 	 *            DLLearnerModel
-	 * @param concept
-	 *            String
-	 * @param p
-	 *            MoreDetailForSuggestedConceptsPanel
 	 */
-	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m,
-			String concept, MoreDetailForSuggestedConceptsPanel p) {
+	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m) {
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
 		this.setPreferredSize(new Dimension(540, 230));
 		eval = desc;
 		model = m;
-		panel = p;
 		id = model.getID();
 		darkGreen = new Color(0, 100, 0);
 		darkRed = new Color(205, 0, 0);
 		random = new Random();
-		conceptNew = concept;
+		for(String uri : model.getOntologyURIString()) {
+			if(eval.getDescription().toString().contains(uri)) {
+				conceptNew = eval.getDescription().toManchesterSyntaxString(uri, null);
+			}
+		}
+		
 		conceptVector = new Vector<String>();
 		posCovIndVector = new Vector<IndividualPoint>();
 		posNotCovIndVector = new Vector<IndividualPoint>();
@@ -635,15 +633,6 @@ public class GraphicalCoveragePanel extends JPanel {
 	 */
 	public GraphicalCoveragePanel getGraphicalCoveragePanel() {
 		return this;
-	}
-
-	/**
-	 * This method returns the MoreDetailForSuggestedConceptsPanel.
-	 * 
-	 * @return MoreDetailForSuggestedConceptsPanel
-	 */
-	public MoreDetailForSuggestedConceptsPanel getMoreDetailForSuggestedConceptsPanel() {
-		return panel;
 	}
 
 	/**

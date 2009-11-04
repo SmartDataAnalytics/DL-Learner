@@ -56,7 +56,7 @@ public class IndividualPoint {
 	}
 	
 	/**
-	 * This is the second Construktor of the class. This should be used if more 
+	 * This is the second Constructor of the class. This should be used if more 
 	 * details for the shown Individuals should be displayed. 
 	 * @param p display String
 	 * @param x coordinate on the x axis
@@ -76,14 +76,6 @@ public class IndividualPoint {
 	}
 
 	/**
-	 * This method sets the display string of the individual.
-	 * @param point the point to set
-	 */
-	public void setPoint(String point) {
-		this.point = point;
-	}
-
-	/**
 	 * This method returns the display string of the individual.
 	 * @return the point
 	 */
@@ -92,27 +84,11 @@ public class IndividualPoint {
 	}
 
 	/**
-	 * This method sets the x axis coordinate.
-	 * @param xAxis the xAxis to set
-	 */
-	public void setXAxis(int xAxis) {
-		this.xAxis = xAxis;
-	}
-
-	/**
 	 * This method returns the x axis coordinate.
 	 * @return the xAxis
 	 */
 	public int getXAxis() {
 		return xAxis;
-	}
-
-	/**
-	 * This method sets the y axis coordinate.
-	 * @param yAxis the yAxis to set
-	 */
-	public void setYAxis(int yAxis) {
-		this.yAxis = yAxis;
 	}
 
 	/**
