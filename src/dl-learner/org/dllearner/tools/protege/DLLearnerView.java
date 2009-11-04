@@ -524,7 +524,7 @@ public class DLLearnerView {
 	 */
 	public void algorithmTerminated() {
 		CELOE celoe = (CELOE) model.getLearningAlgorithm();
-		String error = "Learning successful. Currently searching class expressions with length between " + celoe.getMinimumHorizontalExpansion() +  " and " + celoe.getMaximumHorizontalExpansion() + ".";
+		String error = "Learning successful. All expressions up to length " + (celoe.getMinimumHorizontalExpansion()-1) +  " and some expressions up to \nlength " + celoe.getMaximumHorizontalExpansion() + " searched.";
 		hint.setForeground(Color.RED);
 		this.setHintMessage(error);
 		String message = "";
