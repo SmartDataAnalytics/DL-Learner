@@ -123,7 +123,7 @@ public class DLLearnerView {
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
 	private StatusBar stat;
-	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</font></html>";
+	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">Protege Plugin Wiki</a> for an introduction.</font></html>";
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -135,6 +135,7 @@ public class DLLearnerView {
 		editorKit = editor;
 		labels = "";
 		individualSize = 0;
+		hyperHandler = new HyperLinkHandler();
 		model = new DLLearnerModel(editorKit, this);
 		sugPanel = new SuggestClassPanel(model, this);
 		learnerPanel = new JPanel();
@@ -147,6 +148,7 @@ public class DLLearnerView {
 		wikiPane.setBackground(learnerScroll.getBackground());
 		wikiPane.setEditable(false);
 		wikiPane.setText(WIKI_STRING);
+		wikiPane.addHyperlinkListener(hyperHandler);
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
 		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
@@ -171,7 +173,6 @@ public class DLLearnerView {
 		hint.setContentType("text/html");
 		hint.setEditable(false);
 		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
-		hint.addHyperlinkListener(hyperHandler);
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(new GridBagLayout());
@@ -185,7 +186,6 @@ public class DLLearnerView {
 		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
 		sugPanel.addSuggestPanelMouseListener(sugPanelHandler);
 		sugPanel.getSuggestList().addListSelectionListener(sugPanelHandler);
-		hyperHandler = new HyperLinkHandler();
 		this.addAcceptButtonListener(this.action);
 		this.addRunButtonListener(this.action);
 		this.addAdvancedButtonListener(this.action);	

@@ -155,7 +155,7 @@ public class ActionHandler implements ActionListener {
 					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3<br>"
 					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase<br>"
 					+ "the maximum runtime setting (it is set to $defaultRuntime seconds by default).<br><br>"
-					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for more details.</font></html>";
+					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">Protege Plugin Wiki</a> for more details.</font></html>";
 
 			help = new JTextPane();
 			help.setEditable(false);
