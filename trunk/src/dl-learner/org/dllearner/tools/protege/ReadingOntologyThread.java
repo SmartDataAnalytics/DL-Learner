@@ -186,7 +186,7 @@ public class ReadingOntologyThread extends Thread {
 			} else {
 				view.getRunButton().setEnabled(false);
 				view.getHintPanel().setVisible(true);
-				String message ="<html><font size=\"3\">There are no Instances for " + current + " available. Please insert some Instances.</font></html>";
+				String message ="<html><font size=\"3\" color=\"red\">There are no Instances for " + current + " available. Please insert some Instances.</font></html>";
 				view.getHintPanel().setForeground(Color.RED);
 				view.setHintMessage(message);
 			}
