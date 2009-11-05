@@ -83,9 +83,9 @@ public class OptionPanel extends JPanel {
 		checkBoxPanel = new JPanel();
 		checkBoxPanel.setLayout(new GridLayout(1, 6));
 		
-		minAccuracyLabel = new JLabel("noise in %:    ");
-		maxExecutionTimeLabel = new JLabel("maximum execution time:    ");
-		nrOfConceptsLabel = new JLabel("max. number of results:    ");
+		minAccuracyLabel = new JLabel("<html>noise in %:    </html>");
+		maxExecutionTimeLabel = new JLabel("<html>maximum execution time:    </html>");
+		nrOfConceptsLabel = new JLabel("<html>max. number of results:    </html>");
 		
 		minAccuracy = new JSlider(0, 50, 5);
 		minAccuracy.setPaintTicks(true);
@@ -107,21 +107,21 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
 		
-		owlRadioButton = new JRadioButton("OWL 2", true);
-		elProfileButton = new JRadioButton("EL Profile", false);
+		owlRadioButton = new JRadioButton("<html>OWL 2</html>", true);
+		elProfileButton = new JRadioButton("<html>EL Profile</html>", false);
 		owlRadioButton.setEnabled(true);
 		owlRadioButton.addItemListener(optionHandler);
 		elProfileButton.addItemListener(optionHandler);
 		
-		allBox = new JCheckBox("all", true);
+		allBox = new JCheckBox("<html>all</html>", true);
 		allBox.addItemListener(optionHandler);
-		someBox = new JCheckBox("some", true);
+		someBox = new JCheckBox("<html>some</html>", true);
 		someBox.addItemListener(optionHandler);
-		notBox = new JCheckBox("not", true);
+		notBox = new JCheckBox("<html>not</html>", true);
 		notBox.addItemListener(optionHandler);
-		valueBox = new JCheckBox("value", true);
+		valueBox = new JCheckBox("<html>value</html>", true);
 		valueBox.addItemListener(optionHandler);
-		moreBox = new JCheckBox("<=x, >=x with max.:", true);
+		moreBox = new JCheckBox("<html> &#8249;=x, &#8250;=x with max.:</html>", true);
 		moreBox.addItemListener(optionHandler);
 		
 		countMoreBox = new JComboBox();
