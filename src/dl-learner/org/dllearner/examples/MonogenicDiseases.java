@@ -62,7 +62,7 @@ public class MonogenicDiseases {
 	// whether to generate a class containing the positive examples
 	private static boolean generatePosExampleClass = true;
 	// set to true if accessing PostreSQL and false for MySQL
-	private static boolean pgSQL = false;
+	private static boolean pgSQL = true;
 	
 	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException {
 		
@@ -79,7 +79,8 @@ public class MonogenicDiseases {
 		String url = "jdbc:";
 		if(pgSQL) {
 			Class.forName("org.postgresql.Driver");
-			url += "postgresql://"+dbServer+":5432/"+dbName;
+			// adapt the port if necessary
+			url += "postgresql://"+dbServer+":5433/"+dbName;
 		} else {
 			Class.forName("com.mysql.jdbc.Driver");
 			url += "mysql://"+dbServer+":3306/"+dbName;
@@ -234,7 +235,13 @@ public class MonogenicDiseases {
 			
 		// select data (restricted to pos/neg examples for efficiency)
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE (gain_contact is not null) && (gain_contact != 0)");
+		ResultSet rs = null;
+		if(pgSQL) {
+			// join tables
+			rs = stmt.executeQuery("SELECT * FROM fiche_mutant, mutants WHERE fiche_mutant.id = mutants.id AND(gain_contact is not null)");
+		} else {
+			rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE (gain_contact is not null) AND (gain_contact != 0)");
+		}
 		
 		int count = 0;
 		while(rs.next()) {
@@ -375,8 +382,13 @@ public class MonogenicDiseases {
 		
 		// selecting examples
 		// -> only a fraction of examples are selected as positive/negative
-		rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE " //lower(phenotype) not like 'polymorphism' AND "
-			+ " (gain_contact is not null) && (gain_contact != 0)");
+		if(pgSQL) {
+			rs = stmt.executeQuery("SELECT * FROM fiche_mutant, mutants WHERE fiche_mutant.id=mutants.id AND " //lower(phenotype) not like 'polymorphism' AND "
+					+ " (gain_contact is not null) AND (gain_contact != 0)");
+		} else {
+			rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE " //lower(phenotype) not like 'polymorphism' AND "
+					+ " (gain_contact is not null) AND (gain_contact != 0)");
+		}
 		List<Individual> posExamples = new LinkedList<Individual>();
 		List<Individual> negExamples = new LinkedList<Individual>();
 		while(rs.next()) {
