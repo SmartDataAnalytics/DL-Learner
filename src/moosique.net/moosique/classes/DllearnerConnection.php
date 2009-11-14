@@ -113,7 +113,7 @@ class DllearnerConnection extends Config {
   /**
    * Bulid the exclusion-String-Array from config.ini for faster
    * recommendation-generation. The Exclusions are the fragments/nodes
-   * that will not be extracted
+   * that will not be extracted for learning
    * 
    * @param array $conf The Learning-Conf Array
    * @return array The Array of Strings with predicates to exclude
@@ -125,7 +125,7 @@ class DllearnerConnection extends Config {
       $splitPrefix = explode(':', $exclusion);
       $exclusionsArray[] = $this->getConfigPrefixes($splitPrefix[0]) . $splitPrefix[1];
     }
-    if ($this->debugger) $this->debugger->log($exclusionsArray, "Exluding from extraction for faster learning:");
+    if ($this->debugger) $this->debugger->log($exclusionsArray, "Exluding from extraction for faster learning");
     return $exclusionsArray;
   }
   
@@ -141,15 +141,16 @@ class DllearnerConnection extends Config {
   public function learn($instances, $positiveExamples) {
     $result = false;
     $conf = $this->getConfigLearning();    
-    if ($this->debugger) $this->debugger->log(array($instances, $positiveExamples), "Instances and positive examples are");
+    if ($this->debugger) $this->debugger->log(array($instances, $positiveExamples), "Instances and positive examples are");    
     
-    // TODO extra ID is necessary?
+    /* FIXME extra ID is necessary?!
+    if using the already created sessionID and knowLedgeSourceID for learning, 
+    there will always be an error, when trying to use initAll
+    */
     // $id = $_SESSION['sessionID'];
     // $kID = $this->knowledgeSourceID;
     $id = $this->client->generateID();
     $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
-    $this->client->applyConfigEntryStringArray($id, $kID, 'predList', $this->getExclusions($conf));
-
 
     $this->client->addKnowledgeSource($id, 'owlfile', $this->getConfigUrl('tagOntology'));
     $this->client->setReasoner($id, $conf['reasoner']);
@@ -173,6 +174,9 @@ class DllearnerConnection extends Config {
     $this->client->applyConfigEntryStringTupleList($id, $kID, 'replacePredicate', 
       array($this->getConfigPrefixes('tags') . 'taggedWithTag'), array($this->getConfigPrefixes('rdf') . 'type')
     );
+    
+    // and exclude some items from this learning process fastening up things a bit
+    $this->client->applyConfigEntryStringArray($id, $kID, 'predList', $this->getExclusions($conf));
     
     // after we have set all conf-values, we initialize the learning process
     $this->client->initAll($id);

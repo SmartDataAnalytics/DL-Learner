@@ -125,7 +125,6 @@ class RequestHandler extends Config {
     
 
     // ========== ARTIST INFORMATION REQUEST =============
-    // TODO artist info, not yet implemented
     if (isset($_GET['info']) && !(empty($_GET['info']))) {
       $response .= $this->createSearch($_GET['info'], 'info');
     }

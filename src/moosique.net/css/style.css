@@ -21,12 +21,12 @@ input:focus, select:focus     { border: 1px solid #1fd611; }
 a:hover                       { color: #1fd611; }
 a.button                      { background: #4a4a4a; color: #f1f7e4; padding: 5px 10px; text-decoration: none; }
 a.button:hover                { border: 1px solid #1fd611; padding: 4px 9px; }
-h1                            { font: 36px/36px Georgia, Times, serif; }
-h2                            { font: 30px/30px Georgia, Times, serif; }
-h3                            { font: 24px/24px Georgia, Times, serif; }
-h4                            { font: 18px/18px Georgia, Times, serif; }
-h5                            { font: 14px/14px Georgia, Times, serif; }
-h6                            { font: 12px/12px Georgia, Times, serif; }
+h1                            { font: 36px/42px Georgia, Times, serif; }
+h2                            { font: 30px/36px Georgia, Times, serif; }
+h3                            { font: 24px/28px Georgia, Times, serif; }
+h4                            { font: 18px/20px Georgia, Times, serif; }
+h5                            { font: 14px/16px Verdana, Arial, sans-serif; }
+h6                            { font: 12px/14px Verdana, Arial, sans-serif; }
 pre                           { font: normal 10px/14px Monaco, Courier, monospace; }
 p, h1, h2, h3, h4, h5, h6, 
 ul, ol, pre, form             { margin-bottom: 20px; }
@@ -43,14 +43,14 @@ iframe                        { -moz-border-radius: 10px; -webkit-border-radius:
 #nav a                        { -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px; 
                                 -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; 
                                 border-bottom-left-radius: 10px; border-bottom-left-radius: 10px; }
-#info .linkList li            { -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; 
+#info .externalLinks li       { -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; 
                                 -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px; 
                                 border-top-left-radius: 10px; border-top-left-radius: 10px; }
 #content, #status, #playing, 
 #playerControls, #topBorder,   
 #searchValue, #searchType,
 #searchSubmit, #nav a,
-#info .linkList li            { -moz-box-shadow: 2px 2px 3px #191919; -webkit-box-shadow: 2px 2px 3px #191919; 
+#info .externalLinks li       { -moz-box-shadow: 2px 2px 3px #191919; -webkit-box-shadow: 2px 2px 3px #191919; 
                                 box-shadow: 2px 2px 3px #191919; }                          
 #nav .active a, .results img,
 a.button, #info .image img    { -moz-box-shadow: 3px 3px 3px #191919; -webkit-box-shadow: 3px 3px 3px #191919; 
@@ -64,7 +64,7 @@ a.button, #info .image img    { -moz-box-shadow: 3px 3px 3px #191919; -webkit-bo
 #container                    { width: 900px; margin: 0 auto; }
 #header                       { height: 175px; padding-top: 25px; }
 #content                      { background: #292929; padding: 25px; }
-#footer                       { font: normal 11px/14px Verdana, Arial, sans-serif; padding-top: 40px; text-align: center; }
+#footer                       { font: normal 11px/14px Verdana, Arial, sans-serif; padding-top: 40px; height: 54px; text-align: center; }
 
 
 /*=============== Player Controls, Status, Playing ===============*/
@@ -97,6 +97,7 @@ a.button, #info .image img    { -moz-box-shadow: 3px 3px 3px #191919; -webkit-bo
 
 /*=============== Content & General ===============*/
 #addRandom                    { text-decoration: underline; }
+#autoAdd                      { float: right; }
 #footer a                     { padding: 0 12px; color: #5a5a5a; }
 #footer a:hover               { color: #f1f7e4; }
 #help ul                      { list-style: disc; margin-left: 40px; }
@@ -112,30 +113,20 @@ a.button, #info .image img    { -moz-box-shadow: 3px 3px 3px #191919; -webkit-bo
 #nav a:hover                  { text-decoration: none; background: #5a5a5a; }
 
 
-/*=============== Search Results, Recommendations & Playlist ===============*/
+/*=============== Search Results & Recommendations ===============*/
 .results h3 a                 { font-weight: normal; }
-.results img                  { max-width: 373px; max-height: 373px; }
-.results li                   { float: left; width: 373px; border: 1px solid #5a5a5a; padding: 20px; margin-bottom: 20px; }
+.results img                  { max-width: 373px; max-height: 373px;}
+.results ul > li              { float: left; width: 373px; border: 1px solid #5a5a5a; padding: 20px; margin-bottom: 20px; }
 .results li.odd               { margin-right: 20px; clear: both; }
-.results ul ul                { list-style: disc; margin-bottom: 0; }
-.results li li,
-.artistSearch li li,
-.tagSearch li li,
-#info li li                   { border: none; display: list-item; padding: 0; margin: 0 0 0 36px; 
-                                width: auto; height: auto; float: none; }
+.results ul ul, #log          { clear: both; list-style: disc; margin-bottom: 0; }
+.results li li, #log li       { border: none; display: list-item; padding: 0; margin: 0 0 0 20px; width: auto;  }
+.results .image               { text-align: center; }
+.results .tagList             { margin-top: 20px; }
 
-.results h4                   { display: inline; }
-#recommendationResults ul ul,
-.tagSearch ul ul,
-#info ul ul                   { clear: both; }
-.results .image               { text-align: center; margin-bottom: 20px; }
-#recommendationResults.results .image,
-.results .tagSearch .image    { margin: 0 20px 20px 0; width: 104px; height: 104px; float: left; }
-#autoAdd                      { float: right; }
-
+/*=============== Recently & Playlist ===============*/
 #playlist, #recently          { margin-left: 36px; list-style: decimal; }
 #playlist li, #recently li    { line-height: 24px; }
-#playlist .ymp-btn-page-pause { font-weight: bold; }
+#playlist .currentlyPlaying a { font-weight: bold; color: #1fd611; }
 #playlist .delete, 
 #playlist .moveUp, 
 #playlist .moveDown           { position: absolute; display: block; top: 5px; right: 20px; width: 14px; height: 14px;
@@ -149,12 +140,13 @@ a.button, #info .image img    { -moz-box-shadow: 3px 3px 3px #191919; -webkit-bo
 
 
 /*=============== Information & Help ===============*/
+#info .image                  { float: left; margin: 0 20px 20px 0; }
+#info .tagList                { margin-bottom: 20px; }
 #info h3                      { clear: both; }
-#info .image                  { width: auto; float: left; margin: 0 20px 20px 0;}
 #info iframe                  { border: 1px solid #5a5a5a; width: 100%; height: 600px; }
-#info .linkList               { overflow: hidden; margin: 0 0 0 20px; }
-#info .linkList li            { float: left; padding: 10px; margin-right: 10px; background: #4a4a4a; }
-#info .linkList li.active     { background: #1fd611; }
+#info .externalLinks          { overflow: hidden; margin: 0 0 0 20px; }
+#info .externalLinks li       { float: left; padding: 10px; margin-right: 10px; background: #4a4a4a; }
+#info .externalLinks li.active { background: #1fd611; }
 
 
 } /* end @media screen */

@@ -1,13 +1,18 @@
 /**
  * moosique-Player-Class
  *
- * TODO
- *
- *
  * @package moosique.net
  * @author Steffen Becker
  */
 var Moosique = new Class({ Implements: Options, 
+
+  /* used for the ymp-bug when refreshing the playlist
+  Explanation: If the playlist for the YMP ist reloaded using
+  YAHOO.MediaPlayer.addTracks(that.playlist, null, true) the "active"
+  track will always be reset to the first on in the playlist.
+  Thus we try to remember where the active track was before reloading
+  the playlist and use this number as next/previous multiplicator */
+  currentPlaylistPosition: 0, 
   
   // set some default options
   options: {
@@ -59,6 +64,7 @@ var Moosique = new Class({ Implements: Options,
     // playlist and recently
     this.playlist = document.id('playlist');
     this.recently = document.id('recently');
+    this.log = document.id('log'); 
     this.resetPlaylist = document.id('resetPlaylist');
     this.resetRecently = document.id('resetRecently');
     // recommendations
@@ -74,6 +80,7 @@ var Moosique = new Class({ Implements: Options,
     this.help = document.id('help');
     this.info = document.id('info');
   },
+  
   
   /**
    * Applies Config-Vars to the Yahoo Media Player as described in  http://mediaplayer.yahoo.com/api/ 
@@ -100,7 +107,6 @@ var Moosique = new Class({ Implements: Options,
 
         if (Math.ceil(YAHOO.MediaPlayer.getTrackPosition()) == 
             Math.ceil(YAHOO.MediaPlayer.getTrackDuration() * that.options.timeToScrobble)) {
-
           // first, we update the cookie with the last played song and then
           var lastListenedListItem = YAHOO.MediaPlayer.getMetaData().anchor.getParent().clone();
           var lastListened = lastListenedListItem.getFirst();
@@ -132,7 +138,6 @@ var Moosique = new Class({ Implements: Options,
             } 
           }
           recentlyListened.push(last); // add the last played to the array
-
           // update the cookie
           recentlyListenedObject = { 'recentlyListened' : recentlyListened };
           recentlyListenedCookie = Cookie.write( /* save for one year */
@@ -147,59 +152,12 @@ var Moosique = new Class({ Implements: Options,
 
       /**
        * playlistUpdate: every time the playlist is updated we add the events for 
-       * delete/up/down-buttons to each playlistitem and update the status on what happened
+       * delete/up/down-buttons to each playlistitem
        */
       var playlistUpdate = function() {
-        // delete button
-        that.playlist.getElements('.delete').each(function(del) {
-          del.removeEvents();
-          del.addEvent('click', function(e) {
-            e.stop(); // don't folow link
-            // if current or the last song from the playlist stop playing
-            if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
-              that.stopPlaying();
-            } 
-            this.getParent().destroy(); // deletes the li-element
-            that.refreshPlaylist();
-          });
-        });
-
-        // up-button
-        that.playlist.getElements('.moveUp').each(function(up) {
-          up.removeEvents();
-          up.addEvent('click', function(e) {
-            e.stop(); 
-            if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
-              that.stopPlaying();
-            } 
-            var li = up.getParent();
-            var before = li.getPrevious();
-            if (before) { // it's not the first one
-              li.inject(before, 'before');
-              that.refreshPlaylist();
-            }
-          });
-        });
-
-        // down button
-        that.playlist.getElements('.moveDown').each(function(down) {
-          down.removeEvents();
-          down.addEvent('click', function(e) {
-            e.stop();
-            if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
-              that.stopPlaying();
-            } 
-            var li = down.getParent();
-            var after = li.getNext();
-            if (after) { // it's not the first one
-              li.inject(after, 'after');
-              that.refreshPlaylist();
-            }
-          });
-        });
-        that.displayStatusMessage('Playlist updated.');
+        that.addEventsToPlaylistButtons();
       };  
-
+      
       /**
        * trackPause: we change the Pause-Button to a Play-Button
        * and Update the status on #now
@@ -208,17 +166,19 @@ var Moosique = new Class({ Implements: Options,
         that.nowPlayingInfo.set('text', 'Player paused.');
         that.playPause.setStyle('background-position', '0px 0px');
       };
-
+      
       /**
        * trackStart: we change the Play-Button to a Pause-Button
        * and Update the status on #now and display whats playing
-       * TODO: when a track started playing, fetch additional information about artist etc. using musicbrainz
+       * and fetch/display more information about the artist in the
+       * more-info-tab
        */
       var trackStart = function() {
         that.nowPlayingInfo.set('text', 'Currently playing:');
         that.nowPlayingTrack.set('text', YAHOO.MediaPlayer.getMetaData().title);
         that.download.set('href', YAHOO.MediaPlayer.getMetaData().anchor.get('href'));
         that.playPause.setStyle('background-position', '0px -40px'); // sprite offset
+        that.toggleCurrentlyPlaying();
         
         // send a request to gather additional artist-information
         var nowPlayingAlbum = YAHOO.MediaPlayer.getMetaData().anchor.get('rel');
@@ -232,16 +192,19 @@ var Moosique = new Class({ Implements: Options,
           }
         }).send('info=' + nowPlayingAlbum);
       };
-
+      
       /**
        * trackComplete: we change the Pause-Button to a Play-Button
-       * and execute the autoAdd-Function for adding recommendations
+       * and stop playing, use the special nextTrack() function to get rid
+       * of the "restart from the beginning"-YMP-bug and start start playing again
        */
       var trackComplete = function() {
         that.playPause.setStyle('background-position', '0px 0px');
-        that.autoAddToPlaylist();
+        that.stopPlaying(); 
+        that.nextTrack();
+        YAHOO.MediaPlayer.play();
       };
-
+      
       // add the configuration to the events by subscribing
       YAHOO.MediaPlayer.onProgress.subscribe(progress);
       YAHOO.MediaPlayer.onPlaylistUpdate.subscribe(playlistUpdate);
@@ -249,7 +212,6 @@ var Moosique = new Class({ Implements: Options,
       YAHOO.MediaPlayer.onTrackStart.subscribe(trackStart);
       YAHOO.MediaPlayer.onTrackComplete.subscribe(trackComplete);
     };
-
     // Initialize YMP if ready and apply the config
     YAHOO.MediaPlayer.onAPIReady.subscribe(playerConfig);
   },
@@ -269,11 +231,9 @@ var Moosique = new Class({ Implements: Options,
       onRequest: function() {
         that.recResults.set('html', '<h2>Generating new recommendations...</h2><p>Please be patient, this may take up to a minute...</p>');
       },
-      
       onFailure: function() {
         that.recResults.set('html', '<h2>Unable to get recommendations. Please reset and try again.</h2>');      
       },
-      
       onSuccess: function(response) {
         response = response.trim();
         if (response != '') {
@@ -281,9 +241,9 @@ var Moosique = new Class({ Implements: Options,
           that.makeAddable($$('a.addToPlaylist'));
           that.showTab('recommendations');
           that.displayStatusMessage('You have new recommendations!');
-
+          
           if (that.autoAddCheckbox.checked) {
-            that.addRandomToPlaylist();
+            that.addRandomToPlaylist('auto');
           } else {
             debug.log('Autoadding songs from recommendations is disabled.');
           }
@@ -323,22 +283,388 @@ var Moosique = new Class({ Implements: Options,
       that.recently.set('html', '<li></li>');
     }
   },
-
- 
+  
+  
+  /**
+   * This function is called everytime a track starts playing
+   * and adds the class currentlyPlaying to the parent-li of
+   * the currently playing song
+   */
+  toggleCurrentlyPlaying: function() {
+    var that = this;
+    that.playlist.getElements('li.currentlyPlaying').removeClass('currentlyPlaying');
+    var currentTrack = YAHOO.MediaPlayer.getMetaData().anchor;
+    currentTrack.getParent().addClass('currentlyPlaying');
+  },
+  
+  
+  /**
+   * Set the current active playlist position using the class
+   * currentlyPlaying to determine the active item. Saves the
+   * position as an int in this.currentPlaylistPosition
+   */
+  setCurrentPlaylistPosition: function() {
+    var that = this;
+    var tracks = that.playlist.getChildren();
+    var tracksInPlaylist = tracks.length;
+    var playing = false;
+    // go through all playlistitems and save the position of the currentlyPlaying one
+    for (var i = 0; i < tracksInPlaylist; i++ ) {
+      if (tracks[i].get('class') == 'currentlyPlaying') {
+        that.currentPlaylistPosition = i;
+        playing = true;
+      }
+    }
+    // if there was no currentlyPlaying-item set the currentPlaylistPosition to 0
+    if (!playing) {
+      that.currentPlaylistPosition = 0;
+    }
+  },
+  
+  
+  /**
+   * This function stops the player and displays the default
+   * status-message "Player stopped", also refreshes the playlist
+   */
+  stopPlaying: function() {
+    var that = this;
+    that.playPause.setStyle('background-position', '0px 0px');
+    that.nowPlayingInfo.set('text', 'Player stopped.');
+    that.nowPlayingTrack.set('text', '...');
+    that.nowPlayingTime.set('text', '0:00 / 0:00');
+    that.download.set('href', '#');
+    YAHOO.MediaPlayer.stop();
+    // and refresh the playlist
+    that.refreshPlaylist();
+  },
+  
+  
+  /**
+   * Skips to the track for x+1 times from the beginning, where x is
+   * the current active position in the playlist
+   */
+  nextTrack: function() {
+    var that = this;
+    for (var i = 0; i < that.currentPlaylistPosition + 1; i++) {
+      YAHOO.MediaPlayer.next();
+    }
+  },
+  
+  
+  /**
+   * Skips to the track for x-1 times from the beginning, where x is
+   * the current active position in the playlist
+   */
+  previousTrack: function() {
+    var that = this;
+    for (var i = 0; i < that.currentPlaylistPosition - 1; i++) {
+      YAHOO.MediaPlayer.next();
+    }
+  },
+  
+  
+  /**
+   * For Recommendations and Search-Results
+   * This function searches for all links with the class addToPlaylist
+   * and makes them addable to the playlist, which means clicking on
+   * them adds them to the playlist and makes them playable. this 
+   * is working for links to whole albums and single tracks also
+   *
+   * @param {Object} links All links to make addable
+   */
+  makeAddable: function (links) {
+    var that = this;
+    links.each(function(a) {
+      a.addEvent('click', function(e) {
+        e.stop(); // dont follow link
+        
+        // remove the class from preventing adding again, if existing
+        a.removeClass('addToPlaylist');
+        // determine if the link is to an album or a single track
+        var href = a.get('href');
+        var rel = a.get('rel');
+        
+        var type = '';
+        if (href.match(/jamendo\.com\/get\/track\/id\//gi)) { type = 'playlist'; }      
+        if (href.match(/\.mp3/)) { type = 'mp3File'; }
+        
+        // if the addable item is a playlist, we have to get the playlistitems
+        if (type == 'playlist') {
+          var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
+            onSuccess: function(response) {
+              that.insertIntoPlaylist(response);
+              that.addToLog(a, 0, '');
+              that.showTab('player');
+            }
+          }).send('get=' + type + '&playlist=' + href + '&rel=' + rel);
+        }
+        if (type == 'mp3File') {
+          var itemHTML = '<li>' + a.getParent().get('html') + '</li>';
+          that.insertIntoPlaylist(itemHTML);
+          that.addToLog(a, 0, '');
+          that.showTab('player');
+        }
+      });
+    });
+  },
+  
+  
+  /**
+   * Resets the class for all music-links in the playlist to htrack
+   */
+  cleanPlaylist: function() {
+    var that = this;
+    // remove all classes from the links, except for htrack
+    that.playlist.getElements('a').each(function(a) {
+      if (a.hasClass('moveUp') || a.hasClass('moveDown') || a.hasClass('delete')) {
+        // we don't touch the playlist-moving-buttons
+      } else { // reset to htrack, nothing else
+        a.set('class', 'htrack');
+      }
+    });
+  },
+  
+  
+  /**
+   * appends prepared html code to the playlist, empties the playlist if the first
+   * element is an empty li and refreshed the playlist and shows the playlist tab
+   *
+   * @param {String} HTML-Code with new Items to add to the playlist
+   */
+  insertIntoPlaylist: function(newItems) {
+    var that = this;
+    // if the first li item of the playlist is empty, kill it
+    if (that.playlist.getFirst()) {
+      if (that.playlist.getFirst().get('text') == '') {
+        that.playlist.empty();
+      }  
+    }
+    // append new html to the playlist
+    var oldPlaylist = that.playlist.get('html');
+    that.playlist.set('html', oldPlaylist + newItems);
+    that.cleanPlaylist();
+    
+    // add the delete, moveUp, moveDown Buttons
+    that.playlist.getChildren().each(function(li) {
+      var children = li.getChildren();
+      // only add the buttons if they are not there yet
+      if (children.length == 1) {
+        var track = li.getFirst();
+        var upButton = new Element('a', { 'href': '#', 'class': 'moveUp', 'title': 'Move up', 'html': '&uarr;' });
+        var downButton = new Element('a', { 'href': '#', 'class': 'moveDown', 'title': 'Move down', 'html': '&darr;' });
+        var delButton = new Element('a', { 'href': '#', 'class': 'delete', 'title': 'Delete from Playlist', 'html': 'X' });
+        
+        upButton.inject(track, 'after');
+        downButton.inject(upButton, 'after');
+        delButton.inject(downButton, 'after');
+      }
+    });
+    // refresh the playlist and show the player-tab
+    that.refreshPlaylist();
+  },
+  
+  
+  /**
+   * Refreshes the YMP-playlist by emptying the current one
+   * and re-adding all items from the the playlist-container
+   */
+  refreshPlaylist: function() {
+    var that = this;
+    that.cleanPlaylist();    
+    that.setCurrentPlaylistPosition();
+    YAHOO.MediaPlayer.addTracks(that.playlist, null, true);
+  },
+  
+  
+  /**
+   * This function adds a random song from a random record from the
+   * recommendations results to the playlist (enqueue at the end)
+   *
+   * @param {String} type can be set to auto
+   */
+  addRandomToPlaylist: function(type) {
+    var that = this;
+    var addableAlbums = that.recResults.getElements('.addToPlaylist');
+    // pick a random album
+    var randomAlbum = addableAlbums.getRandom();
+    // if there is at least one album to add items from
+    if (randomAlbum) {
+      var href = randomAlbum.get('href');
+      var rel = randomAlbum.get('rel');
+      
+      var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
+        onSuccess: function(response) {
+          // yay, we have the playlist, choose a random song and add it
+          // therefore save it as Element in temp and extract a random song
+          var songs = Elements.from(response);
+          var randomSong = songs.getRandom();
+          that.insertIntoPlaylist('<li>' + randomSong.get('html') + '</li>'); 
+          // add an item to the history-log with additionalInfo
+          var extraInfoH3 = randomAlbum.getParent().getParent().getParent().getPrevious();
+          var extraInfo = '(From ' + extraInfoH3.get('text') + ')';
+          if (type == 'auto') {
+            that.addToLog(randomSong.get('html'), 2, extraInfo);
+          } else {
+            that.addToLog(randomSong.get('html'), 0, extraInfo);
+          }
+          that.displayStatusMessage('Added a random song to your playlist.');
+        }
+      }).send('get=playlist&playlist=' + href + '&rel=' + rel);
+    } else {
+      that.displayStatusMessage('You currently have no recommendations, nothing was added.');
+    }
+  },
+  
+  
+  /**
+   * Adds a history-log entry for given link-elements
+   *
+   * @param {String} text The Text to add to the history-log
+   * @param {int} deleted If set to 1, the text displayed will be "You deleted..." if 2 "The System added"
+   */
+  addToLog: function(a, mode, extraString) {
+    var that = this;
+    var item = false;
+    if ($type(a) == 'string') { item = Elements.from(a)[0]; } 
+    else { item = a.clone(); }
+    // if the first item of the log is empty, remove it
+    if (that.log.getFirst()) {
+      if (that.log.getFirst().get('text') == 'Nothing happened yet.') {
+        that.log.empty();
+      }  
+    }
+    // slighty format the link
+    item.set('href', item.get('rel'));
+    item.removeProperties('rel', 'title', 'class');
+    
+    if (item.getFirst()) {
+      if (item.getFirst().get('tag') == 'img') { 
+        var title = item.getFirst().get('alt'); 
+        item.set('text', title);
+      }
+    }
+    // a helper parent to convert to html
+    var parent = new Element('div');
+    item.inject(parent);
+    
+    var text = 'You added <em>' + parent.get('html') + '</em> to your playlist';
+    if (mode == 1) { text = 'You deleted the song <em>' + parent.get('html') + '</em> from your playlist.'; }
+    if (mode == 2) { text = 'The system added the song <em>' + parent.get('html') + 'to your playlist.'; }
+    
+    if (extraString != '') { text = text +  '  ' + extraString; }
+    
+    var time = new Date().format('%H:%M:%S');    
+    var newLogEntry = new Element('li', {
+      'class': 'someclass',
+      'html': time + " &mdash; " + text
+    });
+    newLogEntry.inject(that.log, 'top');
+  },
+  
+  
+  /**
+   * Adds click-Events to the Interface for Tabs and invokes
+   * addEventsToPlayerButtons()
+   */
+  initInterface: function() {
+    var that = this;
+    // tabbed nav
+    that.nav.getElements('a').each(function(tab) {
+      tab.addEvent('click', function(e) {
+        e.stop(); // dont follow link
+        that.showTab(tab.get('class').toString());
+      }); 
+    });
+    // generating recommendations clickable
+    that.generate.addEvent('click', function(e) {
+      e.stop();
+      that.generateRecommendations();
+    });
+    // enable resetting recently list
+    that.resetRecently.addEvent('click', function(e) {
+      e.stop();
+      Cookie.dispose('moosique');
+      that.updateRecently();
+    });
+    // enable resetting the playlist
+    that.resetPlaylist.addEvent('click', function(e) {
+      e.stop();
+      that.playlist.empty();
+      that.stopPlaying();
+    });
+    // enable the manual add random to playlist
+    that.addRandom.addEvent('click', function(e) {
+      e.stop();
+      that.addRandomToPlaylist('');
+    });
+    // make player-buttons functional
+    this.addEventsToPlayerButtons();
+  },
+  
+  
+  /**
+   * Adds the events to the playlist buttons for removing or moving
+   * them around from/in the playlist
+   */
+  addEventsToPlaylistButtons: function() {
+    var that = this;
+    // all buttons
+    that.playlist.getElements('.delete, .moveUp, .moveDown').each(function(all) {
+      all.removeEvents();
+      all.addEvent('click', function(e) {
+        e.stop(); // don't folow link
+        // if current or the last song from the playlist stop playing
+        if (YAHOO.MediaPlayer.getMetaData().anchor.getParent() == this.getParent()) {
+          that.stopPlaying();
+        } 
+        // switch/case different buttons
+        var typeOfButton = all.get('class');
+        var li = all.getParent();
+        switch(typeOfButton) {
+          case 'delete' :
+            that.addToLog(this.getParent().getFirst(), 1, '');
+            li.destroy(); // deletes the li-element
+          break;
+          case 'moveUp' :
+            var before = li.getPrevious();
+            if (before) { // it's not the first one
+              li.inject(before, 'before');
+              that.refreshPlaylist();
+            }
+          break;
+          case 'moveDown' :
+            var after = li.getNext();
+            if (after) { // it's not the first one
+              li.inject(after, 'after');
+              that.refreshPlaylist();
+            }
+          break;
+        }
+        // always refresh the playlist
+        that.refreshPlaylist();
+      });
+    });
+  },
+  
+  
   /**
    * Adds click-events to all player-related buttons, like play, next etc. buttons
    */
-  addEventsToButtons: function() {
+  addEventsToPlayerButtons: function() {
     var that = this;
-
+    
     that.prev.addEvent('click', function(e) { 
       e.stop();
-      YAHOO.MediaPlayer.previous(); 
+      that.stopPlaying();
+      that.previousTrack();
+      YAHOO.MediaPlayer.play();
     });
     
     that.next.addEvent('click', function(e) { 
       e.stop();
-      YAHOO.MediaPlayer.next(); 
+      that.stopPlaying();
+      that.nextTrack();
+      YAHOO.MediaPlayer.play();
     });
       
     // the Play-Pause Button
@@ -374,94 +700,6 @@ var Moosique = new Class({ Implements: Options,
         that.displayStatusMessage('Player unmuted.');
       }
     });
-  },
-
-  
-  /**
-   * Refreshes the YMP-playlist by emptying the current one
-   * and re-adding all items from the the playlist-container
-   */
-  refreshPlaylist: function() {
-    var that = this;
-    YAHOO.MediaPlayer.addTracks(that.playlist, '', true);
-  },
-
-
-  /**
-   * This function stops the player and displays the default
-   * status-message "Player stopped", also refreshes the playlist
-   */
-  stopPlaying: function() {
-    var that = this;
-    that.playPause.setStyle('background-position', '0px 0px');
-    that.nowPlayingInfo.set('text', 'Player stopped.');
-    that.nowPlayingTrack.set('text', '...');
-    that.nowPlayingTime.set('text', '0:00 / 0:00');
-    that.download.set('href', '#');
-    YAHOO.MediaPlayer.stop();
-    // and reload the playlist
-    that.refreshPlaylist();
-  },
-
-
-  /**
-   * Displays a status message, fades out nicely
-   * 
-   * @param {String} message
-   */
-  displayStatusMessage: function(message) {
-    // Update Status and fade out
-    var that = this;
-    var fadeFX = new Fx.Tween(that.status, {
-      property: 'opacity',
-      duration: that.options.messageFadeTime / 2,
-      transition: Fx.Transitions.Expo.easeOut,
-      link: 'chain'
-    });
-    
-    that.status.set('text', message);    
-    fadeFX.start(0, 1);
-    fadeFX.start(1, 0);
-  },
-  
-  
-  /**
-   * Adds click-Events to the Interface for Tabs and invokes
-   * addEventsToButtons()
-   */
-  initInterface: function() {
-    var that = this;
-    // tabbed nav
-    that.nav.getElements('a').each(function(tab) {
-      tab.addEvent('click', function(e) {
-        e.stop(); // dont follow link
-        that.showTab(tab.get('class').toString());
-      }); 
-    });
-    // generating recommendations clickable
-    that.generate.addEvent('click', function(e) {
-      e.stop();
-      that.generateRecommendations();
-    });
-    // enable resetting recently list
-    that.resetRecently.addEvent('click', function(e) {
-      e.stop();
-      Cookie.dispose('moosique');
-      that.updateRecently();
-    });
-    // enable resetting the playlist
-    that.resetPlaylist.addEvent('click', function(e) {
-      e.stop();
-      that.playlist.empty();
-      that.stopPlaying();
-    });
-    // enable the manual add random to playlist
-    that.addRandom.addEvent('click', function(e) {
-      e.stop();
-      that.addRandomToPlaylist();
-    });
-    // make player-buttons functional
-    this.addEventsToButtons();
   },
   
   
@@ -509,116 +747,40 @@ var Moosique = new Class({ Implements: Options,
   
   
   /**
-   * For Recommendations and Search-Results
-   * This function searches for all links with the class addToPlaylist
-   * and makes them addable to the playlist, which means clicking on
-   * them adds them to the playlist and makes them playable. this 
-   * is working for links to whole albums and single tracks also
-   *
-   * @param {Object} links All links to make addable
+   * Displays a status message, fades out nicely
+   * 
+   * @param {String} message
    */
-  makeAddable: function (links) {
+  displayStatusMessage: function(message) {
+    // Update Status and fade out
     var that = this;
-    links.each(function(a) {
+    var fadeFX = new Fx.Tween(that.status, {
+      property: 'opacity',
+      duration: that.options.messageFadeTime / 5,
+      transition: Fx.Transitions.Expo.easeOut,
+      link: 'chain'
+    });
+    
+    that.status.set('text', message);    
+    fadeFX.start(0, 1).wait(that.options.messageFadeTime).start(1, 0);
+  },
+  
+  
+  /**
+   * This function makes the external links from more Information behave
+   * so, that clicking opens the link in the iframe below. 
+   */
+  addLinkListItemToIframe: function() {
+    var that = this;
+    that.info.getElements('.externalLinks a').each(function(a) {
       a.addEvent('click', function(e) {
-        e.stop(); // dont follow link
-        
-        // remove the class from preventing adding again, if existing
-        a.removeClass('addToPlaylist');
-        // determine if the link is to an album or a single track
-        var href = a.get('href');
-        var rel = a.get('rel');
-        
-        var type = '';
-        if (href.match(/jamendo\.com\/get\/track\/id\//gi)) { type = 'playlist'; }      
-        if (href.match(/\.mp3/)) { type = 'mp3File'; }
-        
-        // if the addable item is a playlist, we have to get the playlistitems
-        if (type == 'playlist') {
-          var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
-            onSuccess: function(response) {
-              that.insertIntoPlaylist(response);
-              that.showTab('player');
-            }
-          }).send('get=' + type + '&playlist=' + href + '&rel=' + rel);
-        }
-        if (type == 'mp3File') {
-          var itemHTML = '<li>' + a.getParent().get('html') + '</li>';
-          that.insertIntoPlaylist(itemHTML);
-          that.showTab('player');
-        }
+        e.stop();
+        that.info.getElements('.externalLinks li').removeClass('active');
+        a.getParent().addClass('active');
+        href = a.get('href');
+        that.info.getElements('iframe').set('src', href);
       });
     });
-  },
-  
-  
-  /**
-   * appends prepared html code to the playlist, empties the playlist if the first
-   * element is an empty li and refreshed the playlist and shows the playlist tab
-   *
-   * @param {String} HTML-Code with new Items to add to the playlist
-   */
-  insertIntoPlaylist: function(newItems) {
-    var that = this;
-
-    // if the first li item of the playlist is empty, kill it
-    if (that.playlist.getFirst()) {
-      if (that.playlist.getFirst().get('text') == '') {
-        that.playlist.empty();
-      }  
-    }
-    // append new html to the playlist
-    var oldPlaylist = that.playlist.get('html');
-    that.playlist.set('html', oldPlaylist + newItems);
-    
-    // add the delete, moveUp, moveDown Buttons
-    that.playlist.getChildren().each(function(li) {
-      var children = li.getChildren();
-      // only add the buttons if they are not there yet
-      if (children.length == 1) {
-        var track = li.getFirst();
-        var upButton = new Element('a', { 'href': '#', 'class': 'moveUp', 'title': 'Move up', 'html': '&uarr;' });
-        var downButton = new Element('a', { 'href': '#', 'class': 'moveDown', 'title': 'Move down', 'html': '&darr;' });
-        var delButton = new Element('a', { 'href': '#', 'class': 'delete', 'title': 'Delete from Playlist', 'html': 'X' });
-        
-        upButton.inject(track, 'after');
-        downButton.inject(upButton, 'after');
-        delButton.inject(downButton, 'after');
-      }
-    });
-    // refresh the playlist and show the player-tab
-    that.refreshPlaylist();
-  },
-  
-  
-  /**
-   * This function adds a random song from a random record from the
-   * recommendations results to the playlist (enqueue at the end)
-   */
-  addRandomToPlaylist: function() {
-    var that = this;
-    var addableAlbums = that.recResults.getElements('.addToPlaylist');
-    // pick a random album
-    var randomAlbum = addableAlbums.getRandom();
-    // if there is at least one album to add items from
-    if (randomAlbum) {
-      var href = randomAlbum.get('href');
-      var rel = randomAlbum.get('rel');
-
-      var getPlaylist = new Request({method: 'get', url: 'moosique/index.php',
-        onSuccess: function(response) {
-          // yay, we have the playlist, choose a random song and add it
-          // therefore save it as Element in temp and extract a random song
-          var songs = Elements.from(response);
-          var randomSong = songs.getRandom();
-          that.insertIntoPlaylist('<li>' + randomSong.get('html') + '</li>'); 
-          that.displayStatusMessage('Added a random song to your playlist.');
-        }
-      }).send('get=playlist&playlist=' + href + '&rel=' + rel);
-    } else {
-      that.displayStatusMessage('You currently have no recommendations, nothing was added.');
-      debug.log('You currently have no recommendations, adding a random song will not work.');
-    }
   },
   
   
@@ -637,25 +799,6 @@ var Moosique = new Class({ Implements: Options,
   
   
   /**
-   *
-   *
-   */
-  addLinkListItemToIframe: function() {
-    var that = this;
-    that.info.getElements('.linkList a').each(function(a) {
-      a.addEvent('click', function(e) {
-        e.stop();
-        that.info.getElements('.linkList li').removeClass('active');
-        a.getParent().addClass('active');
-        href = a.get('href');
-        that.info.getElements('iframe').set('src', href);
-      });
-    });
-  },
-  
-  
-  
-  /**
    * Converts seconds into a string formatted minutes:seconds
    * with leading zeros for seconds for a nicer display
    * 
@@ -671,6 +814,5 @@ var Moosique = new Class({ Implements: Options,
     var minsec = min + ":" + sec;
     return minsec;
   }
-  
   
 });

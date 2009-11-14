@@ -1,10 +1,9 @@
 <?php 
-  session_start(); 
-  /* 
-  Welcome to moosique.net - a semantic web based internet-radio 
-  
-  see README.txt for more details
-  */
+session_start(); 
+/* 
+Welcome to moosique.net - a semantic web based internet-radio 
+see README.txt and moosique/config.ini for more details
+*/
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,17 +60,18 @@
       <div id="results" class="results">
         <h2>Welcome to moosique.net!</h2>
         <p>
-          Want to listen to some good free music? Search for something you like and add it to your playlist.
-          By listening to songs you like, moosique will automatically try to learn about
-          your musical taste and generate recommendations. You can find them in the tab &raquo;Recommendations&laquo;.
+          Want to listen to some good free music? Search for something you like and add it to your playlist. 
+          You can search for artists, albums, songs and of course tags. 
           You can also enter your <a href="http://last.fm">last.fm</a>-username to automatically use your
           most-used tags to generate a initial list of recommendations.
+          By listening to songs you like, moosique will automatically try to learn about
+          your musical taste and generate recommendations. You can find them in the tab &raquo;Recommendations&laquo;.
         </p>
         <p>
           After you have found something you want to listen to, just add it to your playlist and click the play-button.
         </p>
         <p>
-          Need help? Click on the &raquo;Help&laquo;-Tab to get more information about how to use moosique.net
+          Need help? Click on the &raquo;Help&laquo;-Tab to get more information about how to use moosique.net.
         </p>
       </div>
     </div>
@@ -114,6 +114,10 @@
         <li></li>
       </ol>
       <p><a href="#" id="resetRecently" class="button" title="Click here to reset your &raquo;recently listened to&laquo;-list.">Reset</a></p>
+      <h2>History</h2>
+      <ul id="log">
+        <li>Nothing happened yet.</li>
+      </ul>
     </div>
     <div id="help">
       <h2>How to use moosique.net</h2>
@@ -126,11 +130,43 @@
         If you are searching for tags, and your search is more than one word, the results will be better.
         For example: a search for &quot;rock&quot; will give you lots of results, where a search for "hard rock"
         will be more specific, giving you better search results. Just try it, you can't break anything.
+        Sometimes searching can take quite some time, this is where you just have to be patient... but
+        the system will always give you feedback on what it is doing at the moment.
+      </p>
+      <h3>Player and playlist functions</h3>
+      <p>
+        The player-interface is visible, no matter where on the page your are or what you are doing. 
+        You can always get information about the currently playing song in the status-planel on the
+        left, and you can always control the player with the buttons on the top-right. If you click
+        on the tab &raquo;Playlist&laquo; you will see what songs will play next and you can change
+        their order, or even delete songs from your playlist. There is also a &raquo;Recently listened
+        to&laquo;-list where you have an overview of the last 10 songs you have listened to.
+        You can reset both of these lists to &quot;restart&quot; from the beginning.
+        You can always download a song to your computer you are listening to by clicking on the link
+        &raquo;Download this song&laquo; in the player status panel.
       </p>
       <h3>Recommendations</h3>
       <p>
-        moosique.net uses the mighty <a href="http://aksw.org/Projects/DLLearner">DL-Learner</a> to generate recommendations
-        based on the songs you have listened to. 
+        moosique.net uses <a href="http://aksw.org/Projects/DLLearner">DL-Learner</a> to generate recommendations
+        based on the songs you have listened to. These songs can be found when clicking on the tab &raquo;Playlist&laquo;.
+        The recommendations are based on the tags of an album, or song 
+        from an album, you have listened to. Recommendations are created every time you listen to a song for at
+        least half its length, just like scrobbling on last.fm. You can also manually generate your recommendations
+        by clicking on the corresponding link. If you have &raquo;Autoadd recommendations&laquo; checked, a new
+        song from your recommendations is added, everytime they are generated. The system always remembers your
+        10 most recently listened to songs by storing them in a cookie. So you can come back a week later and
+        restart, where you left.
+      </p>
+      <p>
+        If something goes wrong and you don't get any recommendations or they are not what you expected, 
+        just try resetting your &raquo;recently listened to&laquo;-list and listen to some more songs.
+      </p>
+      <h3>More Info</h3>
+      <p>
+        Every time you start listening to a song, the tab &raquo;More Info&laquo; refreshes to show
+        more infomation about the artist, you are currently listening to. If there are any external
+        sources of information, you can access them at the bottom of the page, by clicking on the
+        different tabs (such as Geonames location, last.fm profile etc.).
       </p>
       <h3>Requirements</h3>
       <p>
@@ -140,7 +176,7 @@
         <li>A decent, modern browser, such as <a href="http://getfirefox.com">Firefox</a>, <a href="http://apple.com/de/safari/download/">Safari</a> or <a href="http://google.com/chrome/">Google Chrome</a></li>
         <li>JavaScript activated</li>
         <li>The <a href="http://www.adobe.com/se/products/flashplayer/">Adobe Flash Player</a> plugin for your browser</li>
-        <li>A fast internet connection</li>
+        <li>A fast internet connection, it's a streaming application...</li>
         <li>Some good headphones or loudspeakers of course. It's moosique after all!</li>
       </ul>
     </div>

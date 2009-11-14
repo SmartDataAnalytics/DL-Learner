@@ -80,11 +80,10 @@ class DataHelper extends Config {
       $mergedArray = $this->mergeArray($data, 'artist');
       $mergedArray = current($mergedArray);
     }
-    // multidimensional array_unique for everything but single-tagSearch and playlist
-    if ($type != 'playlist' && $type != 'tagSearch' && !is_array($search)) {
-      $mergedArray = $this->arrayUnique($mergedArray);
+    // multidimensional array_unique for everything but playlist
+    if ($type != 'playlist' ) {
+      $mergedArray = $this->arrayUnique($mergedArray, $type);
     }    
-    
     return $mergedArray;
   }
   
@@ -99,7 +98,7 @@ class DataHelper extends Config {
    * @return array a Multidimensional array sorted by type for output-use (or false)
    * @author Steffen Becker   
    */   
-  private function mergeArray($data, $type) {
+  public function mergeArray($data, $type) {
     // convert the $data-response object to an array
     $array = $this->object2array($data);
     $combinedArray = array();
@@ -114,7 +113,6 @@ class DataHelper extends Config {
         );
       }
     }
-    
     if (!empty($combinedArray)) {
       return $combinedArray;
     } else return false;
@@ -122,22 +120,28 @@ class DataHelper extends Config {
   
   
   /**
-   * Like the php-function array_unique, but for multidimensional arrays, calls itself recursively
+   * Like the php-function array_unique, but for multidimensional arrays, 
+   * calls itself recursively does not unique anything for tagSearch
    * 
    * @param array $array The Array to clean up
    * @return array (Multidimensional) array without double entries 
    * @author Steffen Becker   
    */
-  private function arrayUnique($array) {
+  private function arrayUnique($array, $type) {
     $newArray = array();
     if (is_array($array)) {
       foreach($array as $key => $val) {
+        // remove type && datatype, we don't need these
         if ($key != 'type' && $key != 'datatype') {
           if (is_array($val)) {
-            $val2 = $this->arrayUnique($val);
+            $val2 = $this->arrayUnique($val, $type);
           } else {
             $val2 = $val;
-            $newArray = array_unique($array);
+            if ($type == 'tagSearch') {
+              $newArray = $array;
+            } else {
+              $newArray = array_unique($array);
+            }
             break;
           }
           if (!empty($val2)) {
