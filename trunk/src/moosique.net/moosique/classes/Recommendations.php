@@ -53,13 +53,15 @@ class Recommendations extends Config {
             $match = true;
             $kbSyntax = $solution->descriptionKBSyntax;
             
+            $this->debugger->log($kbSyntax);
+            
             // everything in quotes is a potential tag
             preg_match_all('/\"(\\.|[^\"])*\"/', $kbSyntax, $quoted);
             foreach($quoted[0] as $url) {
               if (preg_match('/^\"http:\/\//', $url)) { // if a URL, check if URL to Tag
                 // if only one of the URLS used is not a tag, we don't use it
                 if (!preg_match('/^\"http:\/\/dbtune\.org\/jamendo\/tag\//', $url)) {
-                  $match = false;
+                  //$match = false;
                 }
               }
             }
@@ -111,6 +113,7 @@ class Recommendations extends Config {
         foreach($recent as $link) {
           // extract relation from the cookie-link
           preg_match_all('#<a\s*(?:rel=[\'"]([^\'"]+)[\'"])?.*?>((?:(?!</a>).)*)</a>#i', $link, $record);
+          $this->debugger->log($record);
           $posExamples[] = $record[1][0];
           $posExamples = array_unique($posExamples);
           $this->posExamples = $posExamples;
@@ -131,9 +134,6 @@ class Recommendations extends Config {
    * This function sets the instances in private $instances
    * if no array is given, it tries to create instances from 
    * posExamples and a random list of records from allRecords.txt
-   * 
-   * TODO more testing, what is the optimum posExamples/neutral ratio, 50/50? 
-   * for now we assume 50/50, use $totalInstances = $this->getConfigLearning('instances');
    *
    * @param array $instances An array of url-strings for records of instances (should contain posExamples)
    * @author Steffen Becker
@@ -143,9 +143,10 @@ class Recommendations extends Config {
       $instances = array();
       // and then add some random Records _not_ already in this list
       $allRecords = file($this->getConfigUrl('allRecords'));
-      $countPos = count($this->posExamples);
+      // $count = count($this->posExamples); // 50/50
+      $count = $this->getConfigLearning('instances');
 
-      for ($i = 0; $i < $countPos; $i++) {
+      for ($i = 0; $i < $count; $i++) {
         $randomRecord = trim($allRecords[array_rand($allRecords)]);
         // no double entries for the $instances-array
         if (!in_array($randomRecord, $this->posExamples)) {

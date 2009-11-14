@@ -217,10 +217,9 @@ class SparqlQueryBuilder extends Config {
       }
     } ';
 
-    // TODO ?record tags:taggedWithTag ?tag makes the queries blow up high
-    // TODO: use artistImage/Homepage etc. additional info in display
     // OPTIONAL { ?artist foaf:img ?image . }
     // OPTIONAL { ?artist foaf:homepage ?artistHomepage . }
+    // OPTIONAL { ?record tags:taggedWithTag ?tags . }
     
     // and finally we append the sparql-string from kb-Description-Conversion
     $queryString .= $search;

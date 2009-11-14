@@ -1,5 +1,6 @@
 @prefix : <http://dbtune.org/jamendo/tag/> .
 @prefix mo: <http://purl.org/ontology/mo/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix moosique: <http://moosique.net/> .
 @prefix tag: <http://dbtune.org/jamendo/tag/> .
 @prefix tag4: <http://dbtune.org/jamendo/tag/90> .
@@ -81,7 +82,7 @@ tag4:s rdf:type owl:Class ;
 
 :accordeon rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:instrument .
+           rdfs:subClassOf mo:Instrument .
 
 
 
@@ -115,7 +116,7 @@ tag4:s rdf:type owl:Class ;
 
 :acoustique rdf:type owl:Class ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -125,7 +126,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :afrique ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -135,7 +136,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :afro ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -154,7 +155,7 @@ tag4:s rdf:type owl:Class ;
             owl:equivalentClass :alternativ ,
                                 :alternativo ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -162,7 +163,7 @@ tag4:s rdf:type owl:Class ;
 
 :alternativ rdf:type owl:Class ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -170,7 +171,7 @@ tag4:s rdf:type owl:Class ;
 
 :alternativo rdf:type owl:Class ;
              
-             rdfs:subClassOf mo:Record .
+             rdfs:subClassOf mo:Genre .
 
 
 
@@ -239,7 +240,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :english ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -247,7 +248,7 @@ tag4:s rdf:type owl:Class ;
 
 :arabic rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -255,7 +256,7 @@ tag4:s rdf:type owl:Class ;
 
 :argentina rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:language .
+           rdfs:subClassOf dc:language .
 
 
 
@@ -265,7 +266,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :asian ;
       
-      rdfs:subClassOf moosique:language .
+      rdfs:subClassOf dc:language .
 
 
 
@@ -275,7 +276,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :eastern ;
        
-       rdfs:subClassOf moosique:language .
+       rdfs:subClassOf dc:language .
 
 
 
@@ -291,7 +292,7 @@ tag4:s rdf:type owl:Class ;
 
 :atmospherique rdf:type owl:Class ;
                
-               rdfs:subClassOf moosique:mood .
+               rdfs:subClassOf mo:Mood .
 
 
 
@@ -325,7 +326,7 @@ tag4:s rdf:type owl:Class ;
 
 :basse rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -335,7 +336,7 @@ tag4:s rdf:type owl:Class ;
           
           owl:equivalentClass :belgium ;
           
-          rdfs:subClassOf moosique:language .
+          rdfs:subClassOf dc:language .
 
 
 
@@ -343,7 +344,7 @@ tag4:s rdf:type owl:Class ;
 
 :belgium rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -369,7 +370,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :etrange ;
          
-         rdfs:subClassOf moosique:mood .
+         rdfs:subClassOf mo:Mood .
 
 
 
@@ -397,7 +398,7 @@ tag4:s rdf:type owl:Class ;
 
 :blues rdf:type owl:Class ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -425,7 +426,7 @@ tag4:s rdf:type owl:Class ;
         owl:equivalentClass :brazil ,
                             :brazilian ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -433,7 +434,7 @@ tag4:s rdf:type owl:Class ;
 
 :brass rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -441,7 +442,7 @@ tag4:s rdf:type owl:Class ;
 
 :brazil rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -449,7 +450,7 @@ tag4:s rdf:type owl:Class ;
 
 :brazilian rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:language .
+           rdfs:subClassOf dc:language .
 
 
 
@@ -514,7 +515,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :calme ;
       
-      rdfs:subClassOf moosique:mood .
+      rdfs:subClassOf mo:Mood .
 
 
 
@@ -524,7 +525,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :tranquille ;
        
-       rdfs:subClassOf moosique:mood .
+       rdfs:subClassOf mo:Mood .
 
 
 
@@ -543,7 +544,7 @@ tag4:s rdf:type owl:Class ;
 :celtique rdf:type owl:Class ;
           
           rdfs:subClassOf :world ,
-                          moosique:language .
+                          dc:language .
 
 
 
@@ -643,7 +644,7 @@ tag4:s rdf:type owl:Class ;
 
 :clarinette rdf:type owl:Class ;
             
-            rdfs:subClassOf moosique:instrument .
+            rdfs:subClassOf mo:Instrument .
 
 
 
@@ -664,7 +665,7 @@ tag4:s rdf:type owl:Class ;
          owl:equivalentClass :classique ;
          
          rdfs:subClassOf :rock ,
-                         mo:Record .
+                         mo:Genre .
 
 
 
@@ -674,7 +675,7 @@ tag4:s rdf:type owl:Class ;
            
            owl:equivalentClass :classique ;
            
-           rdfs:subClassOf mo:Record .
+           rdfs:subClassOf mo:Genre .
 
 
 
@@ -682,7 +683,7 @@ tag4:s rdf:type owl:Class ;
 
 :classique rdf:type owl:Class ;
            
-           rdfs:subClassOf mo:Record .
+           rdfs:subClassOf mo:Genre .
 
 
 
@@ -693,7 +694,7 @@ tag4:s rdf:type owl:Class ;
          owl:equivalentClass :claviers ,
                              :piano ;
          
-         rdfs:subClassOf moosique:instrument .
+         rdfs:subClassOf mo:Instrument .
 
 
 
@@ -701,7 +702,7 @@ tag4:s rdf:type owl:Class ;
 
 :claviers rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:instrument .
+          rdfs:subClassOf mo:Instrument .
 
 
 
@@ -717,7 +718,7 @@ tag4:s rdf:type owl:Class ;
 
 :contrebass rdf:type owl:Class ;
             
-            rdfs:subClassOf moosique:instrument .
+            rdfs:subClassOf mo:Instrument .
 
 
 
@@ -733,7 +734,7 @@ tag4:s rdf:type owl:Class ;
 
 :country rdf:type owl:Class ;
          
-         rdfs:subClassOf mo:Record .
+         rdfs:subClassOf mo:Genre .
 
 
 
@@ -860,7 +861,7 @@ tag4:s rdf:type owl:Class ;
 
 :delirant rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -870,7 +871,7 @@ tag4:s rdf:type owl:Class ;
            
            owl:equivalentClass :depressive ;
            
-           rdfs:subClassOf moosique:mood .
+           rdfs:subClassOf mo:Mood .
 
 
 
@@ -878,7 +879,7 @@ tag4:s rdf:type owl:Class ;
 
 :depressive rdf:type owl:Class ;
             
-            rdfs:subClassOf moosique:mood .
+            rdfs:subClassOf mo:Mood .
 
 
 
@@ -888,7 +889,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :german ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -905,7 +906,7 @@ tag4:s rdf:type owl:Class ;
 
 :didgeridoo rdf:type owl:Class ;
             
-            rdfs:subClassOf moosique:instrument .
+            rdfs:subClassOf mo:Instrument .
 
 
 
@@ -985,7 +986,7 @@ tag4:s rdf:type owl:Class ;
 
 :dream rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:mood .
+       rdfs:subClassOf mo:Mood .
 
 
 
@@ -1003,7 +1004,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :drums ;
       
-      rdfs:subClassOf moosique:instrument .
+      rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1049,7 +1050,7 @@ tag4:s rdf:type owl:Class ;
 
 :drums rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1065,7 +1066,7 @@ tag4:s rdf:type owl:Class ;
 
 :eastern rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -1075,7 +1076,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :easylistening ;
       
-      rdfs:subClassOf moosique:mood .
+      rdfs:subClassOf mo:Mood .
 
 
 
@@ -1083,7 +1084,7 @@ tag4:s rdf:type owl:Class ;
 
 :easylistening rdf:type owl:Class ;
                
-               rdfs:subClassOf moosique:mood .
+               rdfs:subClassOf mo:Mood .
 
 
 
@@ -1112,7 +1113,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :electro ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -1130,7 +1131,7 @@ tag4:s rdf:type owl:Class ;
           
           owl:equivalentClass :electro ;
           
-          rdfs:subClassOf mo:Record .
+          rdfs:subClassOf mo:Genre .
 
 
 
@@ -1140,7 +1141,7 @@ tag4:s rdf:type owl:Class ;
             
             owl:equivalentClass :electro ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -1157,7 +1158,7 @@ tag4:s rdf:type owl:Class ;
                              :elettronica ,
                              :tacelectronic ;
          
-         rdfs:subClassOf mo:Record .
+         rdfs:subClassOf mo:Genre .
 
 
 
@@ -1218,7 +1219,7 @@ tag4:s rdf:type owl:Class ;
 
 :electronica rdf:type owl:Class ;
              
-             rdfs:subClassOf mo:Record .
+             rdfs:subClassOf mo:Genre .
 
 
 
@@ -1226,7 +1227,7 @@ tag4:s rdf:type owl:Class ;
 
 :electronical rdf:type owl:Class ;
               
-              rdfs:subClassOf mo:Record .
+              rdfs:subClassOf mo:Genre .
 
 
 
@@ -1280,7 +1281,7 @@ tag4:s rdf:type owl:Class ;
 
 :elektro rdf:type owl:Class ;
          
-         rdfs:subClassOf mo:Record .
+         rdfs:subClassOf mo:Genre .
 
 
 
@@ -1288,7 +1289,7 @@ tag4:s rdf:type owl:Class ;
 
 :elektronik rdf:type owl:Class ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -1296,7 +1297,7 @@ tag4:s rdf:type owl:Class ;
 
 :elektronisch rdf:type owl:Class ;
               
-              rdfs:subClassOf mo:Record .
+              rdfs:subClassOf mo:Genre .
 
 
 
@@ -1304,7 +1305,7 @@ tag4:s rdf:type owl:Class ;
 
 :eletronica rdf:type owl:Class ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -1312,7 +1313,7 @@ tag4:s rdf:type owl:Class ;
 
 :elettronica rdf:type owl:Class ;
              
-             rdfs:subClassOf mo:Record .
+             rdfs:subClassOf mo:Genre .
 
 
 
@@ -1337,7 +1338,7 @@ tag4:s rdf:type owl:Class ;
 
 :emotion rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:mood .
+         rdfs:subClassOf mo:Mood .
 
 
 
@@ -1345,7 +1346,7 @@ tag4:s rdf:type owl:Class ;
 
 :energique rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:mood .
+           rdfs:subClassOf mo:Mood .
 
 
 
@@ -1353,7 +1354,7 @@ tag4:s rdf:type owl:Class ;
 
 :enfants rdf:type owl:Class ;
          
-         rdfs:subClassOf mo:Record .
+         rdfs:subClassOf mo:Genre .
 
 
 
@@ -1361,7 +1362,7 @@ tag4:s rdf:type owl:Class ;
 
 :english rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -1369,7 +1370,7 @@ tag4:s rdf:type owl:Class ;
 
 :envoutant rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:mood .
+           rdfs:subClassOf mo:Mood .
 
 
 
@@ -1379,7 +1380,7 @@ tag4:s rdf:type owl:Class ;
           
           owl:equivalentClass :spanish ;
           
-          rdfs:subClassOf moosique:language .
+          rdfs:subClassOf dc:language .
 
 
 
@@ -1389,7 +1390,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :espanol ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -1400,7 +1401,7 @@ tag4:s rdf:type owl:Class ;
          owl:equivalentClass :spain ,
                              :spanish ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -1446,7 +1447,7 @@ tag4:s rdf:type owl:Class ;
 
 :etrange rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:mood .
+         rdfs:subClassOf mo:Mood .
 
 
 
@@ -1501,7 +1502,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :musiquedefilm ;
       
-      rdfs:subClassOf mo:Record .
+      rdfs:subClassOf mo:Genre .
 
 
 
@@ -1511,7 +1512,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :finnish ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -1519,7 +1520,7 @@ tag4:s rdf:type owl:Class ;
 
 :finnish rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -1545,7 +1546,7 @@ tag4:s rdf:type owl:Class ;
 
 :flute rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1555,7 +1556,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :tacfolk ;
       
-      rdfs:subClassOf mo:Record .
+      rdfs:subClassOf mo:Genre .
 
 
 
@@ -1583,7 +1584,7 @@ tag4:s rdf:type owl:Class ;
           owl:equivalentClass :francaise ,
                               :france ;
           
-          rdfs:subClassOf moosique:language .
+          rdfs:subClassOf dc:language .
 
 
 
@@ -1591,7 +1592,7 @@ tag4:s rdf:type owl:Class ;
 
 :francaise rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:language .
+           rdfs:subClassOf dc:language .
 
 
 
@@ -1599,7 +1600,7 @@ tag4:s rdf:type owl:Class ;
 
 :france rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -1648,7 +1649,7 @@ tag4:s rdf:type owl:Class ;
 
 :funk rdf:type owl:Class ;
       
-      rdfs:subClassOf mo:Record .
+      rdfs:subClassOf mo:Genre .
 
 
 
@@ -1730,7 +1731,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :germany ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -1738,7 +1739,7 @@ tag4:s rdf:type owl:Class ;
 
 :germany rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -1748,7 +1749,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :guitare ;
          
-         rdfs:subClassOf moosique:instrument .
+         rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1852,7 +1853,7 @@ tag4:s rdf:type owl:Class ;
         
         rdfs:subClassOf :electro ,
                         :groove ,
-                        moosique:mood .
+                        mo:Mood .
 
 
 
@@ -1870,7 +1871,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :guitares ;
          
-         rdfs:subClassOf moosique:instrument .
+         rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1878,7 +1879,7 @@ tag4:s rdf:type owl:Class ;
 
 :guitares rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:instrument .
+          rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1894,7 +1895,7 @@ tag4:s rdf:type owl:Class ;
 
 :happy rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:mood .
+       rdfs:subClassOf mo:Mood .
 
 
 
@@ -1972,7 +1973,7 @@ tag4:s rdf:type owl:Class ;
 
 :harmonica rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:instrument .
+           rdfs:subClassOf mo:Instrument .
 
 
 
@@ -1998,7 +1999,7 @@ tag4:s rdf:type owl:Class ;
 
 :hiphop rdf:type owl:Class ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -2008,7 +2009,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :netherlands ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -2026,7 +2027,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :humour ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -2034,7 +2035,7 @@ tag4:s rdf:type owl:Class ;
 
 :humour rdf:type owl:Class ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -2071,7 +2072,7 @@ tag4:s rdf:type owl:Class ;
              
              owl:equivalentClass :indie ;
              
-             rdfs:subClassOf mo:Record .
+             rdfs:subClassOf mo:Genre .
 
 
 
@@ -2081,7 +2082,7 @@ tag4:s rdf:type owl:Class ;
              
              owl:equivalentClass :indie ;
              
-             rdfs:subClassOf mo:Record .
+             rdfs:subClassOf mo:Genre .
 
 
 
@@ -2091,7 +2092,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :indian ;
        
-       rdfs:subClassOf moosique:language .
+       rdfs:subClassOf dc:language .
 
 
 
@@ -2099,7 +2100,7 @@ tag4:s rdf:type owl:Class ;
 
 :indian rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2107,7 +2108,7 @@ tag4:s rdf:type owl:Class ;
 
 :indie rdf:type owl:Class ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -2141,7 +2142,7 @@ tag4:s rdf:type owl:Class ;
 
 :instense rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -2149,7 +2150,7 @@ tag4:s rdf:type owl:Class ;
 
 :instrumental rdf:type owl:Class ;
               
-              rdfs:subClassOf mo:Record .
+              rdfs:subClassOf mo:Genre .
 
 
 
@@ -2157,7 +2158,7 @@ tag4:s rdf:type owl:Class ;
 
 :irish rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:language .
+       rdfs:subClassOf dc:language .
 
 
 
@@ -2165,7 +2166,7 @@ tag4:s rdf:type owl:Class ;
 
 :israel rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2175,7 +2176,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :italiano ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2185,7 +2186,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :italiano ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -2196,7 +2197,7 @@ tag4:s rdf:type owl:Class ;
           owl:equivalentClass :italien ,
                               :italy ;
           
-          rdfs:subClassOf moosique:language .
+          rdfs:subClassOf dc:language .
 
 
 
@@ -2204,7 +2205,7 @@ tag4:s rdf:type owl:Class ;
 
 :italien rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -2221,7 +2222,7 @@ tag4:s rdf:type owl:Class ;
 
 :italy rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:language .
+       rdfs:subClassOf dc:language .
 
 
 
@@ -2239,7 +2240,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :tacjazz ;
       
-      rdfs:subClassOf mo:Record .
+      rdfs:subClassOf mo:Genre .
 
 
 
@@ -2306,7 +2307,7 @@ tag4:s rdf:type owl:Class ;
 
 :keyboard rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:instrument .
+          rdfs:subClassOf mo:Instrument .
 
 
 
@@ -2352,7 +2353,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :latino ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -2360,7 +2361,7 @@ tag4:s rdf:type owl:Class ;
 
 :latino rdf:type owl:Class ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -2394,7 +2395,7 @@ tag4:s rdf:type owl:Class ;
 
 :love rdf:type owl:Class ;
       
-      rdfs:subClassOf moosique:mood .
+      rdfs:subClassOf mo:Mood .
 
 
 
@@ -2445,7 +2446,7 @@ tag4:s rdf:type owl:Class ;
             
             owl:equivalentClass :meditative ;
             
-            rdfs:subClassOf moosique:mood .
+            rdfs:subClassOf mo:Mood .
 
 
 
@@ -2455,7 +2456,7 @@ tag4:s rdf:type owl:Class ;
             
             owl:equivalentClass :zen ;
             
-            rdfs:subClassOf moosique:mood .
+            rdfs:subClassOf mo:Mood .
 
 
 
@@ -2467,7 +2468,7 @@ tag4:s rdf:type owl:Class ;
                                  :melancholy ,
                                  :melancolique ;
              
-             rdfs:subClassOf moosique:mood .
+             rdfs:subClassOf mo:Mood .
 
 
 
@@ -2475,7 +2476,7 @@ tag4:s rdf:type owl:Class ;
 
 :melancholique rdf:type owl:Class ;
                
-               rdfs:subClassOf moosique:mood .
+               rdfs:subClassOf mo:Mood .
 
 
 
@@ -2483,7 +2484,7 @@ tag4:s rdf:type owl:Class ;
 
 :melancholy rdf:type owl:Class ;
             
-            rdfs:subClassOf moosique:mood .
+            rdfs:subClassOf mo:Mood .
 
 
 
@@ -2491,7 +2492,7 @@ tag4:s rdf:type owl:Class ;
 
 :melancolique rdf:type owl:Class ;
               
-              rdfs:subClassOf moosique:mood .
+              rdfs:subClassOf mo:Mood .
 
 
 
@@ -2499,7 +2500,7 @@ tag4:s rdf:type owl:Class ;
 
 :mellow rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:mood .
+        rdfs:subClassOf mo:Mood .
 
 
 
@@ -2507,7 +2508,7 @@ tag4:s rdf:type owl:Class ;
 
 :melodique rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:mood .
+           rdfs:subClassOf mo:Mood .
 
 
 
@@ -2533,7 +2534,7 @@ tag4:s rdf:type owl:Class ;
 
 :mexico rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2614,7 +2615,7 @@ tag4:s rdf:type owl:Class ;
 
 :musiquedefilm rdf:type owl:Class ;
                
-               rdfs:subClassOf mo:Record .
+               rdfs:subClassOf mo:Genre .
 
 
 
@@ -2632,7 +2633,7 @@ tag4:s rdf:type owl:Class ;
            
            owl:equivalentClass :netherlands ;
            
-           rdfs:subClassOf moosique:language .
+           rdfs:subClassOf dc:language .
 
 
 
@@ -2667,7 +2668,7 @@ tag4:s rdf:type owl:Class ;
 
 :netherlands rdf:type owl:Class ;
              
-             rdfs:subClassOf moosique:language .
+             rdfs:subClassOf dc:language .
 
 
 
@@ -2718,7 +2719,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :norwegian ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2726,7 +2727,7 @@ tag4:s rdf:type owl:Class ;
 
 :norwegian rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:language .
+           rdfs:subClassOf dc:language .
 
 
 
@@ -2734,7 +2735,7 @@ tag4:s rdf:type owl:Class ;
 
 :notfrench rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:language .
+           rdfs:subClassOf dc:language .
 
 
 
@@ -2785,7 +2786,7 @@ tag4:s rdf:type owl:Class ;
 
 :organ rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -2811,7 +2812,7 @@ tag4:s rdf:type owl:Class ;
             
             owl:equivalentClass :percussions ;
             
-            rdfs:subClassOf moosique:instrument .
+            rdfs:subClassOf mo:Instrument .
 
 
 
@@ -2819,7 +2820,7 @@ tag4:s rdf:type owl:Class ;
 
 :percussions rdf:type owl:Class ;
              
-             rdfs:subClassOf moosique:instrument .
+             rdfs:subClassOf mo:Instrument .
 
 
 
@@ -2829,7 +2830,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :solopiano ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -2877,7 +2878,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :polish ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2887,7 +2888,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :polska ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2903,7 +2904,7 @@ tag4:s rdf:type owl:Class ;
 
 :polska rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:language .
+        rdfs:subClassOf dc:language .
 
 
 
@@ -2911,7 +2912,7 @@ tag4:s rdf:type owl:Class ;
 
 :pop rdf:type owl:Class ;
      
-     rdfs:subClassOf mo:Record .
+     rdfs:subClassOf mo:Genre .
 
 
 
@@ -3168,7 +3169,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :reggae ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -3203,7 +3204,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :reggae ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -3213,7 +3214,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :reggea ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -3230,7 +3231,7 @@ tag4:s rdf:type owl:Class ;
 
 :reggea rdf:type owl:Class ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -3240,7 +3241,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :relaxing ;
        
-       rdfs:subClassOf moosique:mood .
+       rdfs:subClassOf mo:Mood .
 
 
 
@@ -3250,7 +3251,7 @@ tag4:s rdf:type owl:Class ;
           
           owl:equivalentClass :relaxing ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3260,7 +3261,7 @@ tag4:s rdf:type owl:Class ;
             
             owl:equivalentClass :relaxing ;
             
-            rdfs:subClassOf moosique:mood .
+            rdfs:subClassOf mo:Mood .
 
 
 
@@ -3271,7 +3272,7 @@ tag4:s rdf:type owl:Class ;
           owl:equivalentClass :relaxive ,
                               :releax ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3279,7 +3280,7 @@ tag4:s rdf:type owl:Class ;
 
 :relaxive rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3287,7 +3288,7 @@ tag4:s rdf:type owl:Class ;
 
 :releax rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:mood .
+        rdfs:subClassOf mo:Mood .
 
 
 
@@ -3338,7 +3339,7 @@ tag4:s rdf:type owl:Class ;
 
 :rock rdf:type owl:Class ;
       
-      rdfs:subClassOf mo:Record .
+      rdfs:subClassOf mo:Genre .
 
 
 
@@ -3443,7 +3444,7 @@ tag4:s rdf:type owl:Class ;
 
 :russian rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -3454,7 +3455,7 @@ tag4:s rdf:type owl:Class ;
      owl:equivalentClass :sadness ,
                          :triste ;
      
-     rdfs:subClassOf moosique:mood .
+     rdfs:subClassOf mo:Mood .
 
 
 
@@ -3462,7 +3463,7 @@ tag4:s rdf:type owl:Class ;
 
 :sadness rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:mood .
+         rdfs:subClassOf mo:Mood .
 
 
 
@@ -3488,7 +3489,7 @@ tag4:s rdf:type owl:Class ;
      
      owl:equivalentClass :saxophone ;
      
-     rdfs:subClassOf moosique:instrument .
+     rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3498,7 +3499,7 @@ tag4:s rdf:type owl:Class ;
       
       owl:equivalentClass :saxophone ;
       
-      rdfs:subClassOf moosique:instrument .
+      rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3506,7 +3507,7 @@ tag4:s rdf:type owl:Class ;
 
 :saxophone rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:instrument .
+           rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3514,7 +3515,7 @@ tag4:s rdf:type owl:Class ;
 
 :sensible rdf:type owl:Class ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3541,7 +3542,7 @@ tag4:s rdf:type owl:Class ;
 
 :sitar rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:instrument .
+       rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3549,7 +3550,7 @@ tag4:s rdf:type owl:Class ;
 
 :ska rdf:type owl:Class ;
      
-     rdfs:subClassOf mo:Record .
+     rdfs:subClassOf mo:Genre .
 
 
 
@@ -3606,7 +3607,7 @@ tag4:s rdf:type owl:Class ;
 
 :solopiano rdf:type owl:Class ;
            
-           rdfs:subClassOf moosique:instrument .
+           rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3631,7 +3632,7 @@ tag4:s rdf:type owl:Class ;
 :soul rdf:type owl:Class ;
       
       rdfs:subClassOf :blues ,
-                      mo:Record .
+                      mo:Genre .
 
 
 
@@ -3656,7 +3657,7 @@ tag4:s rdf:type owl:Class ;
 
 :spain rdf:type owl:Class ;
        
-       rdfs:subClassOf moosique:language .
+       rdfs:subClassOf dc:language .
 
 
 
@@ -3664,7 +3665,7 @@ tag4:s rdf:type owl:Class ;
 
 :spanish rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -3717,7 +3718,7 @@ tag4:s rdf:type owl:Class ;
 
 :swedish rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -3756,7 +3757,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :synthetiseur ;
         
-        rdfs:subClassOf moosique:instrument .
+        rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3767,7 +3768,7 @@ tag4:s rdf:type owl:Class ;
              owl:equivalentClass :synthetiseur ,
                                  :synthetizer ;
              
-             rdfs:subClassOf moosique:instrument .
+             rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3775,7 +3776,7 @@ tag4:s rdf:type owl:Class ;
 
 :synthetiseur rdf:type owl:Class ;
               
-              rdfs:subClassOf moosique:instrument .
+              rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3783,7 +3784,7 @@ tag4:s rdf:type owl:Class ;
 
 :synthetizer rdf:type owl:Class ;
              
-             rdfs:subClassOf moosique:instrument .
+             rdfs:subClassOf mo:Instrument .
 
 
 
@@ -3807,7 +3808,7 @@ tag4:s rdf:type owl:Class ;
 
 :tacelectronic rdf:type owl:Class ;
                
-               rdfs:subClassOf mo:Record .
+               rdfs:subClassOf mo:Genre .
 
 
 
@@ -3815,7 +3816,7 @@ tag4:s rdf:type owl:Class ;
 
 :tacfolk rdf:type owl:Class ;
          
-         rdfs:subClassOf mo:Record .
+         rdfs:subClassOf mo:Genre .
 
 
 
@@ -3823,7 +3824,7 @@ tag4:s rdf:type owl:Class ;
 
 :tacjazz rdf:type owl:Class ;
          
-         rdfs:subClassOf mo:Record .
+         rdfs:subClassOf mo:Genre .
 
 
 
@@ -3932,7 +3933,7 @@ tag4:s rdf:type owl:Class ;
           
           owl:equivalentClass :tranquille ;
           
-          rdfs:subClassOf moosique:mood .
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3940,7 +3941,7 @@ tag4:s rdf:type owl:Class ;
 
 :tranquille rdf:type owl:Class ;
             
-            rdfs:subClassOf moosique:mood .
+            rdfs:subClassOf mo:Mood .
 
 
 
@@ -4000,7 +4001,7 @@ tag4:s rdf:type owl:Class ;
 
 :triste rdf:type owl:Class ;
         
-        rdfs:subClassOf moosique:mood .
+        rdfs:subClassOf mo:Mood .
 
 
 
@@ -4034,7 +4035,7 @@ tag4:s rdf:type owl:Class ;
 
 :tube rdf:type owl:Class ;
       
-      rdfs:subClassOf moosique:instrument .
+      rdfs:subClassOf mo:Instrument .
 
 
 
@@ -4042,7 +4043,7 @@ tag4:s rdf:type owl:Class ;
 
 :tunisia rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:language .
+         rdfs:subClassOf dc:language .
 
 
 
@@ -4058,7 +4059,7 @@ tag4:s rdf:type owl:Class ;
 
 :ukulele rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:instrument .
+         rdfs:subClassOf mo:Instrument .
 
 
 
@@ -4101,7 +4102,7 @@ tag4:s rdf:type owl:Class ;
 
 :variete rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:mood .
+         rdfs:subClassOf mo:Mood .
 
 
 
@@ -4127,7 +4128,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :violon ;
         
-        rdfs:subClassOf moosique:instrument .
+        rdfs:subClassOf mo:Instrument .
 
 
 
@@ -4137,7 +4138,7 @@ tag4:s rdf:type owl:Class ;
          
          owl:equivalentClass :violon ;
          
-         rdfs:subClassOf moosique:instrument .
+         rdfs:subClassOf mo:Instrument .
 
 
 
@@ -4147,7 +4148,7 @@ tag4:s rdf:type owl:Class ;
         
         owl:equivalentClass :violons ;
         
-        rdfs:subClassOf moosique:instrument .
+        rdfs:subClassOf mo:Instrument .
 
 
 
@@ -4155,7 +4156,7 @@ tag4:s rdf:type owl:Class ;
 
 :violons rdf:type owl:Class ;
          
-         rdfs:subClassOf moosique:instrument .
+         rdfs:subClassOf mo:Instrument .
 
 
 
@@ -4167,7 +4168,7 @@ tag4:s rdf:type owl:Class ;
                            :voice ,
                            :voix ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -4175,7 +4176,7 @@ tag4:s rdf:type owl:Class ;
 
 :vocals rdf:type owl:Class ;
         
-        rdfs:subClassOf mo:Record .
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -4183,7 +4184,7 @@ tag4:s rdf:type owl:Class ;
 
 :voice rdf:type owl:Class ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -4191,7 +4192,7 @@ tag4:s rdf:type owl:Class ;
 
 :voix rdf:type owl:Class ;
       
-      rdfs:subClassOf mo:Record .
+      rdfs:subClassOf mo:Genre .
 
 
 
@@ -4217,7 +4218,7 @@ tag4:s rdf:type owl:Class ;
        
        owl:equivalentClass :worldmusic ;
        
-       rdfs:subClassOf mo:Record .
+       rdfs:subClassOf mo:Genre .
 
 
 
@@ -4234,7 +4235,7 @@ tag4:s rdf:type owl:Class ;
 
 :worldmusic rdf:type owl:Class ;
             
-            rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Genre .
 
 
 
@@ -4242,29 +4243,37 @@ tag4:s rdf:type owl:Class ;
 
 :zen rdf:type owl:Class ;
      
-     rdfs:subClassOf moosique:mood .
+     rdfs:subClassOf mo:Mood .
 
 
 
-###  http://moosique.net/instrument
+###  http://purl.org/dc/elements/1.1/language
 
-moosique:instrument rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf mo:Record .
-
-
-
-###  http://moosique.net/language
-
-moosique:language rdf:type owl:Class ;
+dc:language rdf:type owl:Class ;
                   
-                  rdfs:subClassOf mo:Record .
+            rdfs:subClassOf mo:Record .
 
 
 
-###  http://moosique.net/mood
+###  http://purl.org/ontology/mo/Mood
 
-moosique:mood rdf:type owl:Class ;
+mo:Mood rdf:type owl:Class ;
+              
+        rdfs:subClassOf mo:Record .
+
+
+
+###  http://purl.org/ontology/mo/Genre
+
+mo:Genre rdf:type owl:Class ;
+         
+         rdfs:subClassOf mo:Record .
+
+
+
+###  http://purl.org/ontology/mo/Instrument
+
+mo:Instrument rdf:type owl:Class ;
               
               rdfs:subClassOf mo:Record .
 
