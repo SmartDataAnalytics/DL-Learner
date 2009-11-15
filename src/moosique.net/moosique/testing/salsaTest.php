@@ -1,11 +1,6 @@
 <?php
 session_start();
 
-require('../classes/Config.php'); 
-require('../classes/DllearnerConnection.php');
-
-$c = new DllearnerConnection();
-
 // Instances are the positive Examples mixed up with some
 // other examples, thus random records
 $instances = array(
@@ -21,7 +16,24 @@ $posExamples = array(
   "http://dbtune.org/jamendo/record/1372"
 );
 
+
+require('../classes/Config.php'); 
+require('../classes/DllearnerConnection.php');
+require('../classes/SparqlQueryBuilder.php');
+
+$c = new DllearnerConnection();
+$s = new SparqlQueryBuilder('salsa', 'tagSearch');
+$q = $s->getQuery();
+
+$json = $c->sparqlQuery($q);
+// convert to useable object
+$result = json_decode($json);
+
+
 echo '<pre>';
+echo "SESSION-ID" . $_SESSION['sessionID'] . "\n" . "\n";
+
+print_r($result);
 print_r($instances);
 print_r($posExamples);
 

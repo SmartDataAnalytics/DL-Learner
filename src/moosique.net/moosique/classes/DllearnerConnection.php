@@ -147,10 +147,11 @@ class DllearnerConnection extends Config {
     if using the already created sessionID and knowLedgeSourceID for learning, 
     there will always be an error, when trying to use initAll
     */
-    // $id = $_SESSION['sessionID'];
-    // $kID = $this->knowledgeSourceID;
-    $id = $this->client->generateID();
-    $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
+    $id = $_SESSION['sessionID'];
+    $kID = $this->knowledgeSourceID;
+    // the two lines below will work, the two lines above won't
+    // $id = $this->client->generateID();
+    // $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
 
     $this->client->addKnowledgeSource($id, 'owlfile', $this->getConfigUrl('tagOntology'));
     $this->client->setReasoner($id, $conf['reasoner']);
