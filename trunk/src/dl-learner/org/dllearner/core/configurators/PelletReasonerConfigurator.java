@@ -21,7 +21,6 @@
 package org.dllearner.core.configurators;
 
 import java.util.Set;
-
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.PelletReasoner;
@@ -72,7 +71,6 @@ public void setDefaultNegation(boolean defaultNegation) {
 ComponentManager.getInstance().applyConfigEntry(pelletReasoner, "defaultNegation", defaultNegation);
 reinitNecessary = true;
 }
-
 
 /**
 * true, if this component needs reinitializsation.
