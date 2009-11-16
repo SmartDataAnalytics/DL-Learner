@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -94,6 +96,12 @@ public class CELOE extends LearningAlgorithm {
 	private TreeSet<Description> descriptions;
 	
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
+	
+	// if true, then each solution is evaluated exactly instead of approximately
+	// private boolean exactBestDescriptionEvaluation = false;
+	private boolean singleSuggestionMode;
+	private Description bestDescription;
+	private double bestAccuracy = Double.MIN_VALUE;
 	
 	private NamedClass classToDescribe;
 	// examples are either 1.) instances of the class to describe 2.) positive examples
@@ -154,6 +162,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(CommonConfigOptions.getMaxDepth(7));
 		options.add(CommonConfigOptions.maxNrOfResults(10));
+		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
 		return options;
 	}
 	
@@ -171,6 +180,8 @@ public class CELOE extends LearningAlgorithm {
 		minimizer = new DescriptionMinimizer(reasoner);
 		
 		startClass = Thing.instance;
+		
+		singleSuggestionMode = configurator.getSingleSuggestionMode();
 		
 		// create refinement operator
 		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
@@ -246,7 +257,7 @@ public class CELOE extends LearningAlgorithm {
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
 			
-			if(bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
+			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBest().getAccuracy();
 				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
 			}
@@ -260,6 +271,11 @@ public class CELOE extends LearningAlgorithm {
 			TreeSet<Description> refinements = refineNode(nextNode);
 			mon.stop();
 				
+//			System.out.println("next node: " + nextNode);
+//			for(Description refinement : refinements) {
+//				System.out.println("refinement: " + refinement);
+//			}
+			
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
@@ -269,24 +285,30 @@ public class CELOE extends LearningAlgorithm {
 				// (this also avoids duplicate node children)
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
 					
+//					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
 					addNode(refinement, nextNode);
 					mon2.stop();
-
+//					System.out.println("addNode finished" + " " + new Date());
 				}
 		
 			}
 			
 			updateMinMaxHorizExp(nextNode);
 			
+//			System.out.println(loop);
 			loop++;
 		}
-
+		
 		if (stop) {
 			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested).\n");
 		} else {
 			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested).\n");
 		}
+
+		if(singleSuggestionMode) {
+			bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
+		}		
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
@@ -343,8 +365,10 @@ public class CELOE extends LearningAlgorithm {
 			return false;
 		}
 		
+//		System.out.println("Test " + new Date());
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+//		System.out.println("Test2 " + new Date());
 		expressionTests++;
 //		System.out.println(description + " " + accuracy);
 		if(accuracy == -1) {
@@ -361,6 +385,18 @@ public class CELOE extends LearningAlgorithm {
 		}
 	
 		nodes.add(node);
+//		System.out.println("Test3 " + new Date());
+		
+		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
+		// due to the high number of examples -- so we just stick to the approximate accuracy
+		if(singleSuggestionMode) {
+			if(accuracy > bestAccuracy) {
+				bestAccuracy = accuracy;
+				bestDescription = description;
+				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription));
+			}
+			return true;
+		} 
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -374,6 +410,7 @@ public class CELOE extends LearningAlgorithm {
 				(accuracy >= accThreshold && description.getLength() < worst.getDescriptionLength()));
 		}
 		
+//		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
 			Description niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
@@ -383,18 +420,20 @@ public class CELOE extends LearningAlgorithm {
 			// a subdescription of this one unless accuracy is different
 			boolean shorterDescriptionExists = false;
 			for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
-				if(ed.getAccuracy()==accuracy && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+				if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
 					shorterDescriptionExists = true;
 					break;
 				}
 			}
 			
 			if(!shorterDescriptionExists) {
-				bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+				bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);	
 			}
 						
 		}
 		
+//		System.out.println("Test5 " + new Date());
+//		System.out.println("best evaluated descriptions size: " + bestEvaluatedDescriptions.size() + " worst: " + bestEvaluatedDescriptions.getWorst());
 		return true;
 	}	
 	

@@ -174,6 +174,15 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "ma
 public int getMaxNrOfResults() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxNrOfResults") ;
 }
+/**
+* singleSuggestionMode Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples..
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getSingleSuggestionMode() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "singleSuggestionMode") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -290,6 +299,15 @@ reinitNecessary = true;
 **/
 public void setMaxNrOfResults(int maxNrOfResults) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "maxNrOfResults", maxNrOfResults);
+reinitNecessary = true;
+}
+/**
+* @param singleSuggestionMode Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples..
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setSingleSuggestionMode(boolean singleSuggestionMode) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "singleSuggestionMode", singleSuggestionMode);
 reinitNecessary = true;
 }
 

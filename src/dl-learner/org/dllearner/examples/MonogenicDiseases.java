@@ -63,6 +63,9 @@ public class MonogenicDiseases {
 	private static boolean generatePosExampleClass = true;
 	// set to true if accessing PostreSQL and false for MySQL
 	private static boolean pgSQL = true;
+	// generate fragment => limits the number of individuals in the ontology 
+	// to speed up learning
+//	private static boolean onlyFragment = true;
 	
 	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException {
 		
@@ -233,6 +236,10 @@ public class MonogenicDiseases {
 		kb.addAxiom(new DatatypePropertyDomainAxiom(reliabilityDeltagProp, mutationClass));
 		kb.addAxiom(new DatatypePropertyRangeAxiom(reliabilityDeltagProp, Datatype.DOUBLE));				
 			
+		if(generatePosExampleClass) {
+			kb.addAxiom(new SubClassAxiom(deleteriousMutationClass, mutationClass));
+		}		
+		
 		// select data (restricted to pos/neg examples for efficiency)
 		Statement stmt = conn.createStatement();
 		ResultSet rs = null;
