@@ -26,7 +26,7 @@ public class LearningManager {
     
     private int currentDescriptionIndex = 0;
 	
-	public static LearningManager getInstance(){
+	public static synchronized LearningManager getInstance(){
 		if(instance == null){
 			instance = new LearningManager();
 		}

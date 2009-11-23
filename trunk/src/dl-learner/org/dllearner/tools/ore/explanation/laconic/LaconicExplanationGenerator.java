@@ -333,9 +333,20 @@ public class LaconicExplanationGenerator
     	return sourceAxioms;
     }
     
+    public Set<OWLAxiom> getLaconicSourceAxioms(OWLAxiom axiom){
+    	Map<OWLAxiom, Set<OWLAxiom>> axioms2SourceMap = oPlus.getAxiomsMap();
+    	Set<OWLAxiom> sourceAxioms = new HashSet<OWLAxiom>();
+    	sourceAxioms.addAll(axioms2SourceMap.get(axiom));
+    	
+    	return sourceAxioms;
+    }
+    
     public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
     	Set<OWLAxiom> parts = computeOPlus(Collections.singleton(source));
-
+    	for(OWLAxiom p : parts){
+    		System.out.println("Part: " + p);
+    		System.out.println(oPlus.getAxiomsMap().get(p));
+    	}
     	for(OWLAxiom ax :  oPlus.getAxiomsMap().get(part)){
 			parts.remove(ax);
 		}
