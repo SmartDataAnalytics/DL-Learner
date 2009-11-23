@@ -81,7 +81,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
 			if(impMan.isSelected(ax)){
 				impMan.removeSelection(ax);
-				if(expMan.isLaconicMode() && !ont.containsAxiom(ax)){
+				if(!ont.containsAxiom(ax)){
 					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
 						impMan.removeSelection(source);
@@ -96,7 +96,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 				}
 			} else {
 //				impMan.addSelection(ax);
-				if(expMan.isLaconicMode() && !ont.containsAxiom(ax)){
+				if(!ont.containsAxiom(ax)){
 //					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 //					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
 //						impMan.addSelection(source);
@@ -111,6 +111,12 @@ public class ExplanationTableModel extends AbstractTableModel {
 					if(ret == RemainingAxiomsDialog.OK_RETURN_CODE){
 						impMan.addSelection(ax);
 						List<OWLOntologyChange> changes = dialog.getChanges();
+						for(OWLAxiom source : expMan.getLaconicSourceAxioms(ax)){
+							if(repMan.isScheduled2Add(source)){
+								changes.add(new RemoveAxiom(ont, source));
+							}
+							
+						}
 						repMan.addToRepairPlan(changes);
 					}
 					

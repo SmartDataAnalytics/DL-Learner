@@ -63,9 +63,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     /**
      * Information string for class choose panel.
      */
-    public static final String INFORMATION = "Above all atomic classes which have at least one individual are listed. " 
-    										 + "Select one of them for which you want to learn equivalent class expressions," +
-    										 	" then press <Next>";
+    public static final String AUTO_LEARN_INFORMATION = "Adjust the parameters for automatic learning mode, " 
+    										 +"then press <Next>";
+    										 	
+    public static final String MANUAL_LEARN_INFORMATION = "Above all atomic classes which have at least one individual are listed. " 
+		 + "Select one of them for which you want to learn equivalent class or superclass expressions," +
+		 	" then press <Next>";
     
     private ClassChoosePanel classChoosePanel;
     private Map<Integer, Set<NamedClass>> instanceCountToClasses;
@@ -104,7 +107,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     
     @Override
 	public void aboutToDisplayPanel() {
-    	getWizard().getInformationField().setText(INFORMATION);
+    	if(isAutoLearningMode()){
+    		getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
+    	} else {
+    		getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
+    	}
+    	
         setNextButtonAccordingToConceptSelected();
     }
     
@@ -210,9 +218,11 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("auto")){
 			classChoosePanel.setAutoLearningPanel(true);
+			getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
 			LearningManager.getInstance().setLearningMode(LearningManager.AUTO_LEARN_MODE);
 		} else {
 			classChoosePanel.setAutoLearningPanel(false);
+			getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
 			LearningManager.getInstance().setLearningMode(LearningManager.MANUAL_LEARN_MODE);
 			retrieveClasses();
 		}

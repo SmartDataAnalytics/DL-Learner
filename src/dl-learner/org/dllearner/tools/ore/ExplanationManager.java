@@ -294,6 +294,10 @@ public class ExplanationManager implements OREManagerListener{
 		return gen.getSourceAxioms(ax);
 	}
 	
+	public Set<OWLAxiom> getLaconicSourceAxioms(OWLAxiom ax){
+		return gen.getLaconicSourceAxioms(ax);
+	}
+	
 	public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
 		return gen.getRemainingAxioms(source, part);
 	}

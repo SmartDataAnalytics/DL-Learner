@@ -299,6 +299,10 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		return laconicExpGen.getSourceAxioms(ax);
 	}
 	
+	public Set<OWLAxiom> getLaconicSourceAxioms(OWLAxiom ax){
+		return laconicExpGen.getLaconicSourceAxioms(ax);
+	}
+	
 	public Set<OWLAxiom> getRemainingAxioms(OWLAxiom source, OWLAxiom part){
 		return laconicExpGen.getRemainingAxioms(source, part);
 	}

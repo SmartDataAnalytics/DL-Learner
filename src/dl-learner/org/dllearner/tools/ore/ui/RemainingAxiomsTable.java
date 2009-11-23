@@ -3,7 +3,7 @@ package org.dllearner.tools.ore.ui;
 import java.awt.Color;
 import java.util.List;
 
-import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
+import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.semanticweb.owl.model.OWLAxiom;
 
@@ -18,8 +18,7 @@ public class RemainingAxiomsTable extends JXTable{
 		
 		setBackground(Color.WHITE);
 		setModel(new RemainingAxiomsTableModel(remainingAxioms));
-		setRowHeight(getRowHeight() + 5);
-		getColumn(0).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
+		getColumn(0).setCellRenderer(new TextAreaRenderer());
 		getColumn(1).setMaxWidth(30);
 	}
 	

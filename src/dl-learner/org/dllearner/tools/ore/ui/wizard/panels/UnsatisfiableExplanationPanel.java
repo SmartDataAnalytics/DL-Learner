@@ -56,6 +56,9 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	
 	private JPanel buttonExplanationsPanel;
 	
+	private final String EXPLANATION_TYPE_TEXT = "";
+	private final String EXPLANATION_COUNT_TEXT = "";
+	
 	
 	private ButtonGroup explanationType;
 	
@@ -185,7 +188,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationTypePanel.add(preciseButton, c);
 		HelpablePanel explanationTypeHelpPanel = new HelpablePanel(explanationTypePanel);
 		explanationTypeHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		
+		explanationTypeHelpPanel.setHelpText(EXPLANATION_TYPE_TEXT);
 		
 		JPanel explanationCountPanel = new JPanel(new GridBagLayout());
 		
@@ -212,6 +215,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	    
 	    HelpablePanel explanationCountHelpPanel = new HelpablePanel(explanationCountPanel);
 	    explanationCountHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+	    explanationCountHelpPanel.setHelpText(EXPLANATION_COUNT_TEXT);
 	  
 	    strikeOutBox = new JCheckBox("Strike out irrelevant parts");
 	    strikeOutBox.setActionCommand("strike");
