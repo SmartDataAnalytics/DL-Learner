@@ -81,6 +81,15 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(classLearnin
 public boolean getUseApproximations() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "useApproximations") ;
 }
+/**
+* accuracyMethod Specifies, which method/function to use for computing accuracy..
+* mandatory: false| reinit necessary: true
+* default value: standard
+* @return String 
+**/
+public String getAccuracyMethod() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "accuracyMethod") ;
+}
 
 /**
 * @param classToDescribe class of which a description should be learned.
@@ -106,6 +115,15 @@ reinitNecessary = true;
 **/
 public void setUseApproximations(boolean useApproximations) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "useApproximations", useApproximations);
+reinitNecessary = true;
+}
+/**
+* @param accuracyMethod Specifies, which method/function to use for computing accuracy..
+* mandatory: false| reinit necessary: true
+* default value: standard
+**/
+public void setAccuracyMethod(String accuracyMethod) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "accuracyMethod", accuracyMethod);
 reinitNecessary = true;
 }
 

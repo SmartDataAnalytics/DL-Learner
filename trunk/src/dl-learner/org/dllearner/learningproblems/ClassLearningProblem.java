@@ -51,6 +51,10 @@ import org.dllearner.core.owl.SubClassAxiom;
  */
 public class ClassLearningProblem extends LearningProblem {
 
+	// TODO: naming needs to be cleaned up for consistency:
+	// coverage => recall
+	// protusion => precision
+	
 	private NamedClass classToDescribe;
 	private List<Individual> classInstances;
 	private boolean equivalence = true;
@@ -59,6 +63,7 @@ public class ClassLearningProblem extends LearningProblem {
 	private static final double approx = 0.05;
 	
 	private boolean useApproximations;
+	private boolean useFMeasure;
 	
 	// factor for higher weight on coverage (needed for subclass learning)
 	private double coverageFactor;
@@ -86,6 +91,9 @@ public class ClassLearningProblem extends LearningProblem {
 		options.add(type);	
 		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", true);
 		options.add(approx);
+		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","standard"); //  or domain/range of a property.
+		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "predacc"});
+		options.add(accMethod);
 		return options;
 	}
 
@@ -97,6 +105,7 @@ public class ClassLearningProblem extends LearningProblem {
 	public void init() throws ComponentInitException {
 		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
 		useApproximations = configurator.getUseApproximations();
+		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
 		
 		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
@@ -173,7 +182,8 @@ public class ClassLearningProblem extends LearningProblem {
 		// we check whether the axiom already follows from the knowledge base
 		boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);
 		
-		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, getAccuracy(coverage, protusion), isConsistent, followsFromKB);
+		double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
+		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, acc, isConsistent, followsFromKB);
 	}	
 	
 	public boolean isEquivalenceProblem() {
@@ -210,11 +220,19 @@ public class ClassLearningProblem extends LearningProblem {
 
 	@Override
 	public double getAccuracyOrTooWeak(Description description, double noise) {
-		if(useApproximations) {
-			return getAccuracyOrTooWeakApprox(description, noise);
-		} else {
-			return getAccuracyOrTooWeakExact(description, noise);
-		}
+//		if(useFMeasure) {
+//			if(useApproximations) {
+//				return getFMeasureOrTooWeakApprox(description, noise);
+//			} else {
+//				return getFMeasureOrTooWeakExact(description, noise);
+//			}
+//		} else {
+			if(useApproximations) {
+				return getAccuracyOrTooWeakApprox(description, noise);
+			} else {
+				return getAccuracyOrTooWeakExact(description, noise);
+			}			
+//		}
 	}
 	
 	// instead of using the standard operation, we use optimisation
@@ -278,7 +296,7 @@ public class ClassLearningProblem extends LearningProblem {
 			}
 		}	
 		
-		double coverage = instancesCovered/(double)classInstances.size();
+		double recall = instancesCovered/(double)classInstances.size();
 		
 //		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
 //		MonitorFactory.add("aInstances","count", total);
@@ -318,7 +336,7 @@ public class ClassLearningProblem extends LearningProblem {
 					size = getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
 				} else {
 //					size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-					size = getAccuracy(coverage, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(coverage, instancesCovered/(double)(instancesCovered+upperEstimate));
+					size = getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
 				}
 				
 				if(size < 0.1) {
@@ -336,20 +354,26 @@ public class ClassLearningProblem extends LearningProblem {
 		
 		// since we measured/estimated accuracy only on instances outside A (superClassInstances
 		// does not include instances of A), we need to add it in the denominator
-		double protusion = instancesCovered/(double)(instancesDescription+instancesCovered);
+		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
 		if(instancesCovered + instancesDescription == 0) {
-			protusion = 0;
+			precision = 0;
 		}
 		
 //		MonitorFactory.add("estimatedB","count", estimatedB ? 1 : 0);
 //		MonitorFactory.add("bInstances","count", testsPerformed);		
 	
-		return getAccuracy(coverage, protusion);		
+		// debug code to compare the two measures
+//		System.out.println("recall: " + recall);
+//		System.out.println("precision: " + precision);
+//		System.out.println("F-measure: " + getFMeasure(recall, precision));
+//		System.out.println("standard acc: " + getAccuracy(recall, precision));
+		
+//		return getAccuracy(recall, precision);
+		return useFMeasure ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
 	}
 	
 	public double getAccuracyOrTooWeakExact(Description description, double noise) {
 
-		// overhang
 		int additionalInstances = 0;
 		for(Individual ind : superClassInstances) {
 			if(reasoner.hasType(description, ind)) {
@@ -357,7 +381,6 @@ public class ClassLearningProblem extends LearningProblem {
 			}
 		}
 		
-		// coverage
 		int coveredInstances = 0;
 		for(Individual ind : classInstances) {
 			if(reasoner.hasType(description, ind)) {
@@ -365,16 +388,15 @@ public class ClassLearningProblem extends LearningProblem {
 			}
 		}
 		
-		double coverage = coveredInstances/(double)classInstances.size();
+		double recall = coveredInstances/(double)classInstances.size();
 		
-		if(coverage < 1 - noise) {
+		if(recall < 1 - noise) {
 			return -1;
 		}
 		
-//		double protusion = additionalInstances == 0 ? 0 : coveredInstances/(double)(coveredInstances+additionalInstances);
-		double protusion = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
+		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 		
-		return getAccuracy(coverage, protusion);		
+		return useFMeasure ? getFMeasure(recall, precision) : getAccuracy(recall, precision);		
 	}
 	
 //	@Deprecated
@@ -389,10 +411,75 @@ public class ClassLearningProblem extends LearningProblem {
 //		}
 //	}
 	
+	// please note that getting recall and precision wastes some computational
+	// resource, because both methods need to compute the covered instances
+	public double getRecall(Description description) {
+		int coveredInstances = 0;
+		for(Individual ind : classInstances) {
+			if(reasoner.hasType(description, ind)) {
+				coveredInstances++;
+			}
+		}		
+		return coveredInstances/(double)classInstances.size();
+	}
+	
+	public double getPrecision(Description description) {
+
+		int additionalInstances = 0;
+		for(Individual ind : superClassInstances) {
+			if(reasoner.hasType(description, ind)) {
+				additionalInstances++;
+			}
+		}
+		
+		int coveredInstances = 0;
+		for(Individual ind : classInstances) {
+			if(reasoner.hasType(description, ind)) {
+				coveredInstances++;
+			}
+		}
+
+		return (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
+	}
+	
+	public double getPredictiveAccuracy() {
+		return 0;
+	}
+	
+	// see http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
+	// for all methods below (currently dummies)
+	public double getMatchRate() {
+		return 0;
+	}
+	
+	public double getOmissionError() {
+		return 0;
+	}
+	
+	public double getInductionRate() {
+		return 0;
+	}
+	
+	public double getComissionError() {
+		return 0;
+	}
+	
+	public double getGeneralisedRecall() {
+		return 0;
+	}	
+	
+	public double getGeneralisedPrecision() {
+		return 0;
+	}		
+	
 	// computes accuracy from coverage and protusion (changing this function may
 	// make it necessary to change the appoximation too)
 	private double getAccuracy(double coverage, double protusion) {
 		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
+	}
+	
+	private double getFMeasure(double recall, double precision) {
+		return 2 * precision * recall / (precision + recall);
 	}
 	
 	// see paper: expression used in confidence interval estimation
