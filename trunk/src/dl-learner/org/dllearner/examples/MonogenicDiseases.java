@@ -408,6 +408,23 @@ public class MonogenicDiseases {
 			}
 		}
 		
+		// conf example:
+		
+//		import("mutation.owl");
+//
+//		reasoner = fastInstanceChecker;
+//
+//		problem = classLearning;
+//		classLearning.classToDescribe = "http://dl-learner.org/mutation#DeletoriousMutation";
+//		classLearning.accuracyMethod = "fmeasure";
+//		classLearning.approxAccuracy = 0.03;
+//
+//		algorithm = celoe;
+//		celoe.maxExecutionTimeInSeconds = 10;
+//		celoe.noisePercentage = 10;
+//		celoe.maxNrOfResults = 1;
+//		celoe.singleSuggestionMode = true;
+		
 		// writing conf file
 		Files.clearFile(confFile);
 		String confHeader = "import(\"" + owlFile.getName() + "\");\n\n";
