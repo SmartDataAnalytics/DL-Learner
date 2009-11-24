@@ -487,7 +487,7 @@ public class ClassLearningProblem extends LearningProblem {
 	}
 	
 	// see paper: expression used in confidence interval estimation
-	private static double p3(double p1, int total) {
+	public static double p3(double p1, int total) {
 		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
 	}		
 	
@@ -498,7 +498,7 @@ public class ClassLearningProblem extends LearningProblem {
 //	}	
 	
 	// see paper: p'
-	private static double p1(int success, int total) {
+	public static double p1(int success, int total) {
 		return (success+2)/(double)(total+4);
 	}
 	
