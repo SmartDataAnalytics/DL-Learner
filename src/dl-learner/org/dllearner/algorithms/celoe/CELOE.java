@@ -301,9 +301,9 @@ public class CELOE extends LearningAlgorithm {
 		}
 		
 		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested).\n");
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
 		} else {
-			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested).\n");
+			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested). "  + nodes.size() + " nodes in the search tree.\n");
 		}
 
 		if(singleSuggestionMode) {

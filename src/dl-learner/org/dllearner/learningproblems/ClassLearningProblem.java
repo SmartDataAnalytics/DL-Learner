@@ -33,6 +33,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Axiom;
@@ -60,7 +61,7 @@ public class ClassLearningProblem extends LearningProblem {
 	private boolean equivalence = true;
 	private ClassLearningProblemConfigurator configurator;
 	// approximation of accuracy +- 0.05 %
-	private static final double approx = 0.05;
+	private double approx = 0.05;
 	
 	private boolean useApproximations;
 	private boolean useFMeasure;
@@ -91,6 +92,8 @@ public class ClassLearningProblem extends LearningProblem {
 		options.add(type);	
 		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", true);
 		options.add(approx);
+		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
+		options.add(approxAccuracy);
 		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","standard"); //  or domain/range of a property.
 		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "predacc"});
 		options.add(accMethod);
@@ -106,6 +109,7 @@ public class ClassLearningProblem extends LearningProblem {
 		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
 		useApproximations = configurator.getUseApproximations();
 		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
+		approx = configurator.getApproxAccuracy();
 		
 		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
@@ -333,10 +337,10 @@ public class ClassLearningProblem extends LearningProblem {
 				double size;
 				if(estimatedA) {
 //					size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-					size = getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+					size = useFMeasure ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
 				} else {
 //					size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-					size = getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
+					size = useFMeasure ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
 				}
 				
 				if(size < 0.1) {

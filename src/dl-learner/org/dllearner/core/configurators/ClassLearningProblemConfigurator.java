@@ -82,6 +82,15 @@ public boolean getUseApproximations() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "useApproximations") ;
 }
 /**
+* approxAccuracy accuracy of the approximation (only for expert use).
+* mandatory: false| reinit necessary: true
+* default value: 0.05
+* @return double 
+**/
+public double getApproxAccuracy() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "approxAccuracy") ;
+}
+/**
 * accuracyMethod Specifies, which method/function to use for computing accuracy..
 * mandatory: false| reinit necessary: true
 * default value: standard
@@ -115,6 +124,15 @@ reinitNecessary = true;
 **/
 public void setUseApproximations(boolean useApproximations) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "useApproximations", useApproximations);
+reinitNecessary = true;
+}
+/**
+* @param approxAccuracy accuracy of the approximation (only for expert use).
+* mandatory: false| reinit necessary: true
+* default value: 0.05
+**/
+public void setApproxAccuracy(double approxAccuracy) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "approxAccuracy", approxAccuracy);
 reinitNecessary = true;
 }
 /**
