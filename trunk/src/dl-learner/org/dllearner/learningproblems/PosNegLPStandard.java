@@ -20,6 +20,7 @@
 package org.dllearner.learningproblems;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -27,7 +28,10 @@ import java.util.TreeSet;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.PosNegLPStandardConfigurator;
+import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.DoubleConfigOption;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -49,6 +53,13 @@ public class PosNegLPStandard extends PosNegLP {
 	
 	private PosNegLPStandardConfigurator configurator;
 	
+	// approximation and F-measure
+	// (taken from class learning => super class instances corresponds to negative examples
+	// and class instances to positive examples)
+	private double approx = 0.05;
+	private boolean useApproximations;
+	private boolean useFMeasure;	
+	
 	@Override
 	public PosNegLPStandardConfigurator getConfigurator() {
 		return configurator;
@@ -66,6 +77,19 @@ public class PosNegLPStandard extends PosNegLP {
 		this.configurator = new PosNegLPStandardConfigurator(this);
 	}
 	
+	public void init() {
+		super.init();
+		useApproximations = configurator.getUseApproximations();
+		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
+		
+		if((!useApproximations && useFMeasure) || (useApproximations && !useFMeasure)) {
+			System.err.println("Currently F measure can only be used in combination with approximated reasoning.");
+			System.exit(0);
+		}
+		
+		approx = configurator.getApproxAccuracy();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -75,9 +99,16 @@ public class PosNegLPStandard extends PosNegLP {
 		return "pos neg learning problem";
 	}
 	
-
 	public static Collection<ConfigOption<?>> createConfigOptions() {
-		return PosNegLP.createConfigOptions();
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>(PosNegLP.createConfigOptions());
+		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", false);
+		options.add(approx);
+		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
+		options.add(approxAccuracy);
+		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","predacc"); //  or domain/range of a property.
+		accMethod.setAllowedValues(new String[] {"fmeasure", "predacc"});
+		options.add(accMethod);		
+		return options;
 	}
 	
 	/**
@@ -253,11 +284,23 @@ public class PosNegLPStandard extends PosNegLP {
 		return coveredPos + negativeExamples.size() - coveredNeg / (double) allExamples.size();
 	}
 
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double noise) {
+		if(useApproximations) {
+			if(useFMeasure) {
+				return getFMeasureOrTooWeakApprox(description, noise);
+			} else {
+				throw new Error("approximating pred. acc not implemented");
+			}
+		} else {
+			return getAccuracyOrTooWeakExact(description, noise);
+		}			
+	}	
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
-	@Override
-	public double getAccuracyOrTooWeak(Description description, double noise) {
+	public double getAccuracyOrTooWeakExact(Description description, double noise) {
 		
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 		
@@ -281,6 +324,124 @@ public class PosNegLPStandard extends PosNegLP {
 		return positiveExamples.size() - notCoveredPos + notCoveredNeg / (double) allExamples.size();
 	}
 
+	// instead of using the standard operation, we use optimisation
+	// and approximation here
+	public double getFMeasureOrTooWeakApprox(Description description, double noise) {
+		// we abort when there are too many uncovered positives
+		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
+		int instancesCovered = 0;
+		int instancesNotCovered = 0;
+		int total = 0;
+		boolean estimatedA = false;
+		
+		double lowerBorderA = 0;
+		int lowerEstimateA = 0;
+		double upperBorderA = 1;
+		int upperEstimateA = positiveExamples.size();
+		
+		for(Individual ind : positiveExamples) {
+			if(reasoner.hasType(description, ind)) {
+				instancesCovered++;
+			} else {
+				instancesNotCovered ++;
+				if(instancesNotCovered > maxNotCovered) {
+					return -1;
+				}
+			}
+			
+			// approximation step (starting after 10 tests)
+			total = instancesCovered + instancesNotCovered;
+			if(total > 10) {
+				// compute confidence interval
+				double p1 = ClassLearningProblem.p1(instancesCovered, total);
+				double p2 = ClassLearningProblem.p3(p1, total);
+				lowerBorderA = Math.max(0, p1 - p2);
+				upperBorderA = Math.min(1, p1 + p2);
+				double size = upperBorderA - lowerBorderA;
+				// if the interval has a size smaller than 10%, we can be confident
+				if(size < 2 * approx) {
+					// we have to distinguish the cases that the accuracy limit is
+					// below, within, or above the limit and that the mean is below
+					// or above the limit
+					double mean = instancesCovered/(double)total;
+					
+					// if the mean is greater than the required minimum, we can accept;
+					// we also accept if the interval is small and close to the minimum
+					// (worst case is to accept a few inaccurate descriptions)
+					if(mean > 1-noise || (upperBorderA > mean && size < 0.03)) {
+						instancesCovered = (int) (instancesCovered/(double)total * positiveExamples.size());
+						upperEstimateA = (int) (upperBorderA * positiveExamples.size());
+						lowerEstimateA = (int) (lowerBorderA * positiveExamples.size());
+						estimatedA = true;
+						break;
+					}
+					
+					// reject only if the upper border is far away (we are very
+					// certain not to lose a potential solution)
+					if(upperBorderA + 0.1 < 1-noise) {
+						return -1;
+					}
+				}				
+			}
+		}	
+		
+		double recall = instancesCovered/(double)positiveExamples.size();
+		
+//		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
+//		MonitorFactory.add("aInstances","count", total);
+		
+		// we know that a definition candidate is always subclass of the
+		// intersection of all super classes, so we test only the relevant instances
+		// (leads to undesired effects for descriptions not following this rule,
+		// but improves performance a lot);
+		// for learning a superclass of a defined class, similar observations apply;
+
+
+		int testsPerformed = 0;
+		int instancesDescription = 0;
+//		boolean estimatedB = false;
+		
+		for(Individual ind : negativeExamples) {
+
+			if(reasoner.hasType(description, ind)) {
+				instancesDescription++;
+			}
+			
+			testsPerformed++;
+			
+			if(testsPerformed > 10) {
+				
+				// compute confidence interval
+				double p1 = ClassLearningProblem.p1(instancesDescription, testsPerformed);
+				double p2 = ClassLearningProblem.p3(p1, testsPerformed);
+				double lowerBorder = Math.max(0, p1 - p2);
+				double upperBorder = Math.min(1, p1 + p2);
+				int lowerEstimate = (int) (lowerBorder * negativeExamples.size());
+				int upperEstimate = (int) (upperBorder * negativeExamples.size());
+				
+				double size;
+				if(estimatedA) {
+					size = getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+				} else {
+					size = getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
+				}
+				
+				if(size < 0.1) {
+					instancesDescription = (int) (instancesDescription/(double)testsPerformed * negativeExamples.size());
+					break;
+				}
+			}
+		}
+		
+		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
+		if(instancesCovered + instancesDescription == 0) {
+			precision = 0;
+		}	
+
+		return getFMeasure(recall, precision);
+	}
+		
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
@@ -290,4 +451,8 @@ public class PosNegLPStandard extends PosNegLP {
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 
+	private double getFMeasure(double recall, double precision) {
+		return 2 * precision * recall / (precision + recall);
+	}	
+	
 }

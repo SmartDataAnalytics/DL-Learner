@@ -103,6 +103,33 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStan
 public String getUseMultiInstanceChecks() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(posNegLPStandard,  "useMultiInstanceChecks") ;
 }
+/**
+* useApproximations whether to use stochastic approximations for computing accuracy.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseApproximations() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegLPStandard,  "useApproximations") ;
+}
+/**
+* approxAccuracy accuracy of the approximation (only for expert use).
+* mandatory: false| reinit necessary: true
+* default value: 0.05
+* @return double 
+**/
+public double getApproxAccuracy() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStandard,  "approxAccuracy") ;
+}
+/**
+* accuracyMethod Specifies, which method/function to use for computing accuracy..
+* mandatory: false| reinit necessary: true
+* default value: standard
+* @return String 
+**/
+public String getAccuracyMethod() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(posNegLPStandard,  "accuracyMethod") ;
+}
 
 /**
 * @param positiveExamples positive examples.
@@ -145,6 +172,33 @@ reinitNecessary = true;
 **/
 public void setUseMultiInstanceChecks(String useMultiInstanceChecks) {
 ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "useMultiInstanceChecks", useMultiInstanceChecks);
+reinitNecessary = true;
+}
+/**
+* @param useApproximations whether to use stochastic approximations for computing accuracy.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseApproximations(boolean useApproximations) {
+ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "useApproximations", useApproximations);
+reinitNecessary = true;
+}
+/**
+* @param approxAccuracy accuracy of the approximation (only for expert use).
+* mandatory: false| reinit necessary: true
+* default value: 0.05
+**/
+public void setApproxAccuracy(double approxAccuracy) {
+ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "approxAccuracy", approxAccuracy);
+reinitNecessary = true;
+}
+/**
+* @param accuracyMethod Specifies, which method/function to use for computing accuracy..
+* mandatory: false| reinit necessary: true
+* default value: standard
+**/
+public void setAccuracyMethod(String accuracyMethod) {
+ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "accuracyMethod", accuracyMethod);
 reinitNecessary = true;
 }
 
