@@ -80,7 +80,11 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 		OntologyModifier modifier = OREManager.getInstance().getModifier();
 		if(e.getActionCommand().equals("Save and go to class choose panel")){
 			modifier.saveOntology();
-			getWizard().setCurrentPanel(ClassChoosePanelDescriptor.IDENTIFIER);
+			if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
+				getWizard().setCurrentPanel(ClassChoosePanelDescriptor.IDENTIFIER);
+			} else {
+				getWizard().setCurrentPanel(AutoLearnPanelDescriptor.IDENTIFIER);
+			}
 		}else if(e.getActionCommand().equals("Save and Exit")){
 			modifier.saveOntology();
 			getWizard().close(0);
