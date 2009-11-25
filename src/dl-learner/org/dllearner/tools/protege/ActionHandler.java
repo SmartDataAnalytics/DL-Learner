@@ -148,13 +148,21 @@ public class ActionHandler implements ActionListener {
 			}
 		}
 		if (z.toString().contains(HELP_BUTTON_STRING)) {
-			String helpText = "<html><font size=\"3\">What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?<br>"
-					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the number of words needed to write down the class expression.<br><br>"
-					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing and then further specializes it.<br>"
-					+ "Those class expressions, which fit the existing instances of a given class ($currentClass in this case) get a high accuracy and are displayed as suggestions.<br>"
-					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3<br>"
-					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase<br>"
-					+ "the maximum runtime setting (it is set to $defaultRuntime seconds by default).<br><br>"
+			
+			Set<String> uris = model.getOntologyURIString();
+			String currentClass = "";
+			for(String uri : uris) {
+				if(model.getCurrentConcept().toString().contains(uri)) {
+					currentClass = model.getCurrentConcept().toManchesterSyntaxString(uri, null);
+				}
+			}
+			String helpText = "<html><font size=\"3\">What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?<br><br>"
+					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length <br>simply as the number of words needed to write down the class expression.<br><br>"
+					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression <br>owl:Thing and then further specializes it.<br>"
+					+ "Those class expressions, which fit the existing instances of a given class (" + currentClass + " in this case) get <br>a high accuracy and are displayed as suggestions.<br>"
+					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' <br>means that it has already evaluated all class expressions of length 1 to 3<br>"
+					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you <br>want to search for longer expressions, then you have to increase<br>"
+					+ "the maximum runtime setting (it is set to " + view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime() + " <br>seconds by default).<br><br>"
 					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">Protege Plugin Wiki</a> for more details.</font></html>";
 
 			help = new JTextPane();
