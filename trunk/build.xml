@@ -4,7 +4,7 @@
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
-	<property name="protege_dir" value="C:\Program Files\Protege_4.0\plugins" />
+	<property name="protege_dir" value="C:\Program Files\Protege_4.0.1\plugins" />
 	<property name="class_dir" value="classes" />
 	<property name="ontowiki_dir" value="${user.home}/workspace/ontowiki/ontowiki/src/extensions/components/dllearner/dllearner" />
 
@@ -354,7 +354,7 @@ public class Info {
 			<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />
 		</copy>
 		<copy toDir="${temp}/lib/ore-tool" >
-			<fileset dir="${lib_dir}/ore-tool" includes="swingx-1.0.jar,BrowserLauncher2-all-1_3.jar" />
+			<fileset dir="${lib_dir}/ore-tool" includes="BrowserLauncher2-all-1_3.jar" />
 		</copy>
 		<copy toDir="${temp}/lib" >
 			<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
