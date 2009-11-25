@@ -516,7 +516,7 @@ public class DLLearnerView {
 		String message = "<html><font size=\"3\" color=\"black\">Learning successful. All expressions up to length " + (celoe.getMinimumHorizontalExpansion()-1) +  " and some expressions up to <br>length " + celoe.getMaximumHorizontalExpansion() + " searched.";
 		hint.setForeground(Color.RED);
 		if(isInconsistent) {
-			message +="<font size=\"3\" color=\"red\"><br>Class expressions marked red will lead to an inconsistent ontology. <br>Please double click on them to view detail information.</font></html>";
+			message +="<font size=\"3\" color=\"red\"><br>Class expressions marked red will lead to an inconsistent ontology. <br>Please click on them to view detail information.</font></html>";
 		} else {
 			message +="<br>To view details about why a class expression was suggested, please click on it.</font><html>";
 		}
