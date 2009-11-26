@@ -37,6 +37,12 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owl.model.OWLNegativeDataPropertyAssertionAxiom;
+import org.semanticweb.owl.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLSameIndividualsAxiom;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
@@ -55,6 +61,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	private BasicComboPopup scrollPopup;
 	private final Vector<String> individualComboBox;
 	private JComboBox indiBox;
+	private OWLOntology ontology;
 
 	/**
 	 * This is the constructor for the handler.
@@ -71,6 +78,8 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		this.panel = p;
 		description = eval;
 		model = m;
+		ontology = model.getOWLEditorKit().getOWLModelManager()
+				.getActiveOntology();
 		individualComboBox = new Vector<String>();
 
 	}
@@ -113,12 +122,13 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& v.get(i).getXAxis() <= m.getX() + 5
 					&& v.get(i).getYAxis() >= m.getY() - 5
 					&& v.get(i).getYAxis() <= m.getY() + 5) {
-				String individualInformation = "<html><body>"
-						+ v.get(i).getIndividualName().toString();
+				String individualInformation = "<html><body><b>"
+						+ v.get(i).getIndividualName().toString() + "</b>";
 				if (v.get(i).getDLLearnerIndividual() != null) {
+
 					Set<NamedClass> types = reasoner.getTypes(v.get(i)
 							.getDLLearnerIndividual());
-					individualInformation += "<br><b>Types:</b><br>";
+					individualInformation += "<br><br><b>Types:</b><br>";
 					for (NamedClass dlLearnerClass : types) {
 						individualInformation += dlLearnerClass
 								.toManchesterSyntaxString(
@@ -145,6 +155,43 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							}
 						}
 						individualInformation += "<br>";
+					}
+					if (v.get(i).getIndividualOWL() != null) {
+						Set<OWLDataPropertyAssertionAxiom> dataProperties = ontology
+								.getDataPropertyAssertionAxioms(v.get(i)
+										.getIndividualOWL());
+						individualInformation += "<br><b>Dataproperties</b><br>";
+						for (OWLDataPropertyAssertionAxiom dataProperty : dataProperties) {
+							individualInformation += dataProperty.toString()
+									+ "<br>";
+						}
+						
+						Set<OWLNegativeObjectPropertyAssertionAxiom> negObjects = ontology.getNegativeObjectPropertyAssertionAxioms(v.get(i).getIndividualOWL());
+						individualInformation += "<br><b>negative ObjectProperties</b><br>";
+						for (OWLNegativeObjectPropertyAssertionAxiom negObject : negObjects) {
+							individualInformation += negObject.toString()
+									+ "<br>";
+						}
+						
+						Set<OWLNegativeDataPropertyAssertionAxiom> negDatas = ontology.getNegativeDataPropertyAssertionAxioms(v.get(i).getIndividualOWL());
+						individualInformation += "<br><b>negative Dataproperties</b><br>";
+						for (OWLNegativeDataPropertyAssertionAxiom negData : negDatas) {
+							individualInformation += negData.toString()
+									+ "<br>";
+						}
+						Set<OWLSameIndividualsAxiom> sameIndies = ontology.getSameIndividualAxioms(v.get(i).getIndividualOWL());
+						individualInformation += "<br><b>Same Individuals</b><br>";
+						for (OWLSameIndividualsAxiom sameIndie : sameIndies) {
+							individualInformation += sameIndie.toString()
+									+ "<br>";
+						}
+						
+						Set<OWLDifferentIndividualsAxiom> differentIndies = ontology.getDifferentIndividualAxioms(v.get(i).getIndividualOWL());
+						individualInformation += "<br><b>Different Individuals</b><br>";
+						for (OWLDifferentIndividualsAxiom differentIndie : differentIndies) {
+							individualInformation += differentIndie.toString()
+									+ "<br>";
+						}
 					}
 				}
 				individualInformation += "</body></htlm>";

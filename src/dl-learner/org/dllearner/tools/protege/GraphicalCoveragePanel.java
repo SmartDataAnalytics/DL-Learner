@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.semanticweb.owl.model.OWLDataFactory;
 
 /**
  * This class draws the graphical coverage of a learned concept.
@@ -87,6 +88,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private final Color darkGreen;
 	private final Color darkRed;
 	private int notCoveredInd;
+	private OWLDataFactory factory;
 
 	/**
 	 * 
@@ -137,6 +139,7 @@ public class GraphicalCoveragePanel extends JPanel {
 					+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
 					+ distortionOld);
 		}
+		factory = model.getOWLEditorKit().getOWLModelManager().getOWLDataFactory();
 		this.computeIndividualPoints();
 		this.addMouseMotionListener(handler);
 		this.addMouseListener(handler);
@@ -497,7 +500,7 @@ public class GraphicalCoveragePanel extends JPanel {
 							for(String uri : uriString) {
 								if(ind.toString().contains(uri)) {
 									posCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
 								}
 							}
 							i++;
@@ -545,7 +548,7 @@ public class GraphicalCoveragePanel extends JPanel {
 								for(String uri : uriString) {
 									if(ind.toString().contains(uri)) {
 										posNotCovIndVector.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
 									}
 								}
 							} else {
@@ -553,7 +556,7 @@ public class GraphicalCoveragePanel extends JPanel {
 								for(String uri : uriString) {
 									if(ind.toString().contains(uri)) {
 										additionalIndividuals.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
 									}
 								}
 							}
@@ -594,7 +597,7 @@ public class GraphicalCoveragePanel extends JPanel {
 							for(String uri : uriString) {
 								if(ind.toString().contains(uri)) {
 									posNotCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), ind, uri));
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
 								}
 							}
 							k++;

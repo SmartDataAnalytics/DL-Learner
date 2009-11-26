@@ -22,6 +22,7 @@ package org.dllearner.tools.protege;
 import java.awt.geom.Ellipse2D;
 
 import org.dllearner.core.owl.Individual;
+import org.semanticweb.owl.model.OWLIndividual;
 
 /**
  * This class is a datastructure for one individual shown in
@@ -38,6 +39,7 @@ public class IndividualPoint {
 	private final Ellipse2D circlePoint;
 	private Individual individualDLLearner;
 	private String baseUri;
+	private OWLIndividual individualOWL; 
 	
 	/**
 	 * Constructor of the class.
@@ -73,6 +75,27 @@ public class IndividualPoint {
 		this.individual = ind;
 		this.individualDLLearner = indi;
 		this.baseUri = base;
+	}
+	
+	/**
+	 * 
+	 * @param p
+	 * @param x
+	 * @param y
+	 * @param ind
+	 * @param indi
+	 * @param base
+	 */
+	public IndividualPoint(String p, int x, int y, String ind, OWLIndividual indi, Individual indiDLLearner, String base) {
+		this.point = p;
+		this.xAxis = x;
+		this.yAxis = y;
+		this.circlePoint = new Ellipse2D.Double(x-1, y-1, 4, 4);
+		this.individual = ind;
+		this.individualOWL = indi;
+		this.individualDLLearner = indiDLLearner;
+		this.baseUri = base;
+		
 	}
 
 	/**
@@ -129,5 +152,13 @@ public class IndividualPoint {
 	 */
 	public String getBaseUri() {
 		return baseUri;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public OWLIndividual getIndividualOWL() {
+		return individualOWL;
 	}
 }

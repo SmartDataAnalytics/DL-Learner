@@ -6,7 +6,7 @@ Bundle-Category: protege
 Bundle-Description: Protege DL-Learner Plugin
 Bundle-Vendor: DL-Learner Project
 Bundle-DocURL: http://dl-learner.org/wiki/ProtegePlugin
-Bundle-ClassPath: .,lib/junit-4.4.jar,lib/jamon-2.7.jar,lib/pellet/pellet-core.jar,lib/pellet/pellet-datatypes.jar,lib/ore-tool/BrowserLauncher2-all-1_3.jar,lib/pellet/pellet-el.jar,lib/pellet/pellet-explanation.jar,lib/pellet/pellet-owlapi.jar,lib/pellet/pellet-rules.jar,lib/pellet/aterm-java-1.6.jar,lib/jena/json.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.1.jar,lib/ore-tool/swingx-0.9.2.jar
+Bundle-ClassPath: .,lib/junit-4.4.jar,lib/jamon-2.7.jar,lib/pellet/pellet-core.jar,lib/pellet/pellet-datatypes.jar,lib/ore-tool/BrowserLauncher2-all-1_3.jar,lib/pellet/pellet-el.jar,lib/pellet/pellet-explanation.jar,lib/pellet/pellet-owlapi.jar,lib/pellet/pellet-rules.jar,lib/pellet/aterm-java-1.6.jar,lib/jena/json.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.1.jar,lib/ore-tool/swingx-0.9.2.jar,lib/owlapi/owlapiV3-bin.jar
 Import-Package: org.osgi.framework,org.apache.log4j
 Export-Package: lib
 Bundle-Version: 0.5.2

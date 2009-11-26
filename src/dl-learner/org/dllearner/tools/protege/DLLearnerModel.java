@@ -564,6 +564,10 @@ public class DLLearnerModel implements Runnable{
 	public boolean getIsKnowledgeSourceIsUpdated() {
 		return knowledgeSourceIsUpdated;
 	}
+	
+	public OWLEditorKit getOWLEditorKit() {
+		return editor;
+	}
 }
 
 
