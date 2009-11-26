@@ -21,13 +21,13 @@ package org.dllearner.tools.protege;
 
 import java.awt.Color;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owl.model.OWLClass;
 
@@ -95,43 +95,21 @@ public class ReadingOntologyThread extends Thread {
 		current = editor.getOWLWorkspace().getOWLSelectionModel()
 				.getLastSelectedClass();
 		if (current != null) {
-			SortedSet<Individual> individuals = null;
 			hasIndividuals = false;
 			// checks if selected concept is thing when yes then it selects all
 			// individuals
-			if (!(current.toString().equals("Thing"))) {
-				List<NamedClass> classList = reasoner.getAtomicConceptsList();
-				for (NamedClass concept : classList) {
-					// if individuals is null
-					if (individuals == null) {
-						// checks if the concept is the selected concept in
-						// protege
-						for (String onto : ontologieURI) {
-							if (concept.toString().contains(onto)) {
-								if (concept.toString().equals(
-										onto + current.toString())) {
-									// if individuals is not null it gets all
-									// individuals of
-									// the concept
-									currentConcept = concept;
-									if (reasoner.getIndividuals(concept) != null) {
-										if (reasoner.getIndividuals(concept)
-												.size() > 0) {
-											hasIndividuals = true;
-										}
-										individual = reasoner
-												.getIndividuals(concept);
-										model.setIndividuals(individual);
-										model.setHasIndividuals(hasIndividuals);
-										model.setCurrentConcept(currentConcept);
-										view.getRunButton().setEnabled(true);
-										break;
-									}
-								}
-							}
-						}
-					}
+			if (!current.isOWLThing()) {
+				Description desc = OWLAPIConverter.convertClass(current);
+				individual = reasoner.getIndividuals(desc);
+				model.setIndividuals(individual);
+				model.setHasIndividuals(hasIndividuals);
+				model.setCurrentConcept(new NamedClass(desc.toString()));
+				view.getRunButton().setEnabled(true);
+				if (reasoner.getIndividuals(desc)
+						.size() > 0) {
+					hasIndividuals = true;
 				}
+				
 			} else {
 				if (reasoner.getIndividuals().size() > 0) {
 					hasIndividuals = true;
