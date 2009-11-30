@@ -21,7 +21,7 @@ class Config {
     $this->config = parse_ini_file(dirname(__FILE__) . '/../config.ini', true);
 
     // we activate the debugger output if debugging is active
-    if ($this->getConfig('debug') == 1)  {
+    if ($this->getConfig('debug'))  {
       require_once('Debugger.php');
       $this->debugger = new Debugger();
       ob_start();

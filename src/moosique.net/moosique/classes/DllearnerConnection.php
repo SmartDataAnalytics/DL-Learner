@@ -143,15 +143,16 @@ class DllearnerConnection extends Config {
     $conf = $this->getConfigLearning();    
     if ($this->debugger) $this->debugger->log(array($instances, $positiveExamples), "Instances and positive examples are");    
     
-    /* FIXME extra ID is necessary?!
-    if using the already created sessionID and knowLedgeSourceID for learning, 
-    there will always be an error, when trying to use initAll
-    */
-    $id = $_SESSION['sessionID'];
-    $kID = $this->knowledgeSourceID;
-    // the two lines below will work, the two lines above won't
-    // $id = $this->client->generateID();
-    // $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
+    // if there are any problems with java, generate a new ID, this
+    // fixes broken openjdk/soap implementations
+    if ($this->getConfig('javaProblems')) {
+      $id = $this->client->generateID();
+      $kID = $this->client->addKnowledgeSource($id, 'sparql', $this->endpoint);
+      
+    } else {
+      $id = $_SESSION['sessionID'];
+      $kID = $this->knowledgeSourceID;      
+    }
 
     $this->client->addKnowledgeSource($id, 'owlfile', $this->getConfigUrl('tagOntology'));
     $this->client->setReasoner($id, $conf['reasoner']);
@@ -164,7 +165,10 @@ class DllearnerConnection extends Config {
     // recursion-depth and fragment saving
     $this->client->applyConfigEntryInt($id, $kID, 'recursionDepth', $conf['recursionDepth']);
     $this->client->applyConfigEntryBoolean($id, $kID, 'saveExtractedFragment', $conf['saveExtractedFragment']);
-
+    
+    // cache the sparql-queries?
+    $this->client->applyConfigEntryBoolean($id, $kID, 'useCache', $this->getConfig('useCache'));
+    
     // algorithm config
     $learnID = $this->client->setLearningAlgorithm($id, $conf['algorithm']);
     $this->client->applyConfigEntryInt($id, $learnID, 'maxExecutionTimeInSeconds', $conf['maxExecutionTimeInSeconds']);
@@ -176,8 +180,11 @@ class DllearnerConnection extends Config {
       array($this->getConfigPrefixes('tags') . 'taggedWithTag'), array($this->getConfigPrefixes('rdf') . 'type')
     );
     
-    // and exclude some items from this learning process fastening up things a bit
-    $this->client->applyConfigEntryStringArray($id, $kID, 'predList', $this->getExclusions($conf));
+    // and exclude some items from this learning process to fasten things up
+    $exclude = $this->getExclusions($conf);
+    if ($conf['recursionDepth'] > 1 && is_array($exclude) && !empty($exclude)) {
+      $this->client->applyConfigEntryStringArray($id, $kID, 'predList', $exclude);    
+    }
     
     // after we have set all conf-values, we initialize the learning process
     $this->client->initAll($id);

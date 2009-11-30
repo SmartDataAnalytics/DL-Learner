@@ -11,7 +11,7 @@ White (Text):       f1f7e4
 
 */
 
-@media screen {
+@media screen, projection {
 /*=============== Default Styling ===============*/
 body                          { font: normal 14px/20px Verdana, Arial, sans-serif; color: #f1f7e4;
                                 background: url('../img/bg.png') top left repeat #3a3a3a; }

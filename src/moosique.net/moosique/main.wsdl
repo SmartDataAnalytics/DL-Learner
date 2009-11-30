@@ -121,13 +121,6 @@
   <message name="learnDescriptionsEvaluatedResponse">
     <part name="return" type="xsd:string"></part>
   </message>
-  <message name="getCurrentlyBestEvaluatedDescriptions">
-    <part name="arg0" type="xsd:int"></part>
-    <part name="arg1" type="xsd:int"></part>
-  </message>
-  <message name="getCurrentlyBestEvaluatedDescriptionsResponse">
-    <part name="return" type="xsd:string"></part>
-  </message>
   <message name="learnDescriptionsEvaluatedLimit">
     <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:int"></part>
@@ -152,6 +145,13 @@
   </message>
   <message name="getCurrentlyBestConceptsResponse">
     <part xmlns:ns7="http://jaxb.dev.java.net/array" name="return" type="ns7:stringArray"></part>
+  </message>
+  <message name="getCurrentlyBestEvaluatedDescriptions">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+  </message>
+  <message name="getCurrentlyBestEvaluatedDescriptionsResponse">
+    <part name="return" type="xsd:string"></part>
   </message>
   <message name="getCurrentlyBestEvaluatedDescriptionsFiltered">
     <part name="arg0" type="xsd:int"></part>
@@ -509,11 +509,6 @@
       <output message="tns:learnDescriptionsEvaluatedResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
-    <operation name="getCurrentlyBestEvaluatedDescriptions" parameterOrder="arg0 arg1">
-      <input message="tns:getCurrentlyBestEvaluatedDescriptions"></input>
-      <output message="tns:getCurrentlyBestEvaluatedDescriptionsResponse"></output>
-      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
-    </operation>
     <operation name="learnDescriptionsEvaluatedLimit" parameterOrder="arg0 arg1">
       <input message="tns:learnDescriptionsEvaluatedLimit"></input>
       <output message="tns:learnDescriptionsEvaluatedLimitResponse"></output>
@@ -532,6 +527,11 @@
     <operation name="getCurrentlyBestConcepts" parameterOrder="arg0 arg1 arg2">
       <input message="tns:getCurrentlyBestConcepts"></input>
       <output message="tns:getCurrentlyBestConceptsResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+    </operation>
+    <operation name="getCurrentlyBestEvaluatedDescriptions" parameterOrder="arg0 arg1">
+      <input message="tns:getCurrentlyBestEvaluatedDescriptions"></input>
+      <output message="tns:getCurrentlyBestEvaluatedDescriptionsResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
     <operation name="getCurrentlyBestEvaluatedDescriptionsFiltered" parameterOrder="arg0 arg1 arg2 arg3">
@@ -965,18 +965,6 @@
         <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
       </fault>
     </operation>
-    <operation name="getCurrentlyBestEvaluatedDescriptions">
-      <soap:operation soapAction=""></soap:operation>
-      <input>
-        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
-      </input>
-      <output>
-        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
-      </output>
-      <fault name="ClientNotKnownException">
-        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
-      </fault>
-    </operation>
     <operation name="learnDescriptionsEvaluatedLimit">
       <soap:operation soapAction=""></soap:operation>
       <input>
@@ -1014,6 +1002,18 @@
       </fault>
     </operation>
     <operation name="getCurrentlyBestConcepts">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="getCurrentlyBestEvaluatedDescriptions">
       <soap:operation soapAction=""></soap:operation>
       <input>
         <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>

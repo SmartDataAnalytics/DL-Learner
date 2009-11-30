@@ -79,7 +79,7 @@ see README.txt and moosique/config.ini for more details
       <form id="autoAdd" method="get" action="">
         <div>
           <label for="autoAddCheckbox" title="Check this to automatically add a random song from your recommendations to your playlist everytime your recommendations are updated.">Autoadd recommendations</label>
-          <input type="checkbox" id="autoAddCheckbox" checked="checked" />
+          <input type="checkbox" id="autoAddCheckbox" />
         </div>
       </form>
       <h2>Recommendations</h2>
@@ -193,7 +193,7 @@ see README.txt and moosique/config.ini for more details
 <?php
   include('moosique/classes/Config.php');
   $c = new Config();
-  if ($c->getConfig('debug') == 1) /* if debugging is active include js without compressing anything */ {
+  if ($c->getConfig('debug')) { /* if debugging is active include js without compressing anything */ 
 ?>
 <script src="http://mediaplayer.yahoo.com/js"></script>
 <script src="js/mootools-1.2.4-core-nc.js"></script>

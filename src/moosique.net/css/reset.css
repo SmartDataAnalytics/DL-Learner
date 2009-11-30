@@ -1,5 +1,5 @@
-/* default minimal basic css reset by Steffen Becker */
-/* =================================================================== */
+/* default minimal basic css reset by Steffen Becker, based on YUI and eric meyers css-reset */
+/* ========================================================================================= */
 @media all {
 html, body, div, h1, h2, h3,
 h4, h5, h6, ul, ol, dl, li, 

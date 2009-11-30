@@ -118,7 +118,7 @@ class View extends Config {
     $count = count($data);
     // dont limit anything if limit == 0
     if ($count > $this->limit && $this->limit > 0) {
-      if ($this->getConfig('randomize') == 1) {
+      if ($this->getConfig('randomize')) {
         $random = array_rand($data, $this->limit);
         $newData = array();
         foreach($random as $randRecord) {
@@ -179,7 +179,7 @@ class View extends Config {
    * @author Steffen Becker
    */
   private function showRandomLimitNote($count) {
-    if ($this->getConfig('randomize') == 1) {
+    if ($this->getConfig('randomize')) {
       return '<p><strong>Note:</strong> Found ' . $count . ' results, showing ' . $this->limit . ' random results.';
     } else {
       return '<p><strong>Note:</strong> Found ' . $count . ' results, showing the first ' . $this->limit . ' results.';
@@ -373,12 +373,14 @@ class View extends Config {
    * Builds the HTML for additional information for and artist
    *
    * @param array $data An array of additional information
+   * @param string $type the type of search
    * @author Steffen Becker
    */
   private function infoHTML($data, $type) {
     $template = $this->getTemplate($type);
     $artist = $this->getValue($data['artist']);
     $artistName = $this->getValue($data['artistName']);
+    // TODO
     $albumList = $this->createAlbumListHTML(array($data), 'tagSearch');
 
     $homepage = ''; // could be empty
