@@ -178,6 +178,10 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     private void updateMetrics(){
     	knowledgePanel.updateMetrics();
     }
+    
+    private void updateRecentList(){
+    	knowledgePanel.updateRecentList();
+    }
   
     public KnowledgeSourcePanel getPanel() {
 		return knowledgePanel;
@@ -258,7 +262,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			if(!isCancelled()){
 				TaskManager.getInstance().setTaskFinished();
 				getWizard().setNextFinishButtonEnabled(true);
+				updateRecentList();
 				updateMetrics();
+				
 			}
 		}
 	}

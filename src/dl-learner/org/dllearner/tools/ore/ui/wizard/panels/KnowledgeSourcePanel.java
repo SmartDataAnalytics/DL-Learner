@@ -124,6 +124,19 @@ public class KnowledgeSourcePanel extends JPanel{
 		metricsPanel.setVisible(true);
 	}
 	
+	public void updateRecentList(){
+		recentLinkBox.removeAll();
+		openFromRecentLinks.clear();
+		LinkLabel link;
+		for (final URI uri : RecentManager.getInstance().getURIs()) {
+        	link = new LinkLabel(uri.toString());
+        	link.setName("recent");
+        	openFromRecentLinks.add(link);
+            recentLinkBox.add(link);
+            
+        }
+	}
+	
 	public void addListeners(ActionListener aL) {
 		openFromFileLink.addLinkListener(aL);
 		openFromURILink.addLinkListener(aL);
