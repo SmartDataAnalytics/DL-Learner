@@ -1,7 +1,6 @@
 @prefix : <http://dbtune.org/jamendo/tag/> .
-@prefix mo: <http://purl.org/ontology/mo/> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
-@prefix moosique: <http://moosique.net/> .
+@prefix mo: <http://purl.org/ontology/mo/> .
 @prefix tag: <http://dbtune.org/jamendo/tag/> .
 @prefix tag4: <http://dbtune.org/jamendo/tag/90> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -116,7 +115,17 @@ tag4:s rdf:type owl:Class ;
 
 :acoustique rdf:type owl:Class ;
             
+            owl:equivalentClass :acustico ;
+            
             rdfs:subClassOf mo:Genre .
+
+
+
+###  http://dbtune.org/jamendo/tag/acustico
+
+:acustico rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Genre .
 
 
 
@@ -145,6 +154,16 @@ tag4:s rdf:type owl:Class ;
 :afro rdf:type owl:Class ;
       
       rdfs:subClassOf :world .
+
+
+
+###  http://dbtune.org/jamendo/tag/agreable
+
+:agreable rdf:type owl:Class ;
+          
+          owl:equivalentClass :easylistening ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -223,6 +242,16 @@ tag4:s rdf:type owl:Class ;
 :ambiente rdf:type owl:Class ;
           
           rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/amour
+
+:amour rdf:type owl:Class ;
+       
+       owl:equivalentClass :love ;
+       
+       rdfs:subClassOf mo:Mood .
 
 
 
@@ -513,7 +542,8 @@ tag4:s rdf:type owl:Class ;
 
 :calm rdf:type owl:Class ;
       
-      owl:equivalentClass :calme ;
+      owl:equivalentClass :calme ,
+                          :reposant ;
       
       rdfs:subClassOf mo:Mood .
 
@@ -714,6 +744,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/contemporary
+
+:contemporary rdf:type owl:Class ;
+              
+              rdfs:subClassOf :classique .
+
+
+
 ###  http://dbtune.org/jamendo/tag/contrebass
 
 :contrebass rdf:type owl:Class ;
@@ -849,6 +887,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/debile
+
+:debile rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/deephouse
 
 :deephouse rdf:type owl:Class ;
@@ -860,6 +906,8 @@ tag4:s rdf:type owl:Class ;
 ###  http://dbtune.org/jamendo/tag/delirant
 
 :delirant rdf:type owl:Class ;
+          
+          owl:equivalentClass :psycho ;
           
           rdfs:subClassOf mo:Mood .
 
@@ -964,6 +1012,18 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/doux
+
+:doux rdf:type owl:Class ;
+      
+      owl:equivalentClass :mellow ,
+                          :sensible ,
+                          :soft ;
+      
+      rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/downbeat
 
 :downbeat rdf:type owl:Class ;
@@ -986,7 +1046,26 @@ tag4:s rdf:type owl:Class ;
 
 :dream rdf:type owl:Class ;
        
+       owl:equivalentClass :dreams ,
+                           :dreamy ;
+       
        rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/dreams
+
+:dreams rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/dreamy
+
+:dreamy rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
 
 
 
@@ -1206,6 +1285,16 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/electroindus
+
+:electroindus rdf:type owl:Class ;
+              
+              owl:equivalentClass :industriel ;
+              
+              rdfs:subClassOf :electro .
+
+
+
 ###  http://dbtune.org/jamendo/tag/electrojazz
 
 :electrojazz rdf:type owl:Class ;
@@ -1338,7 +1427,26 @@ tag4:s rdf:type owl:Class ;
 
 :emotion rdf:type owl:Class ;
          
+         owl:equivalentClass :emotional ,
+                             :emotions ;
+         
          rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/emotional
+
+:emotional rdf:type owl:Class ;
+           
+           rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/emotions
+
+:emotions rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -1346,7 +1454,19 @@ tag4:s rdf:type owl:Class ;
 
 :energique rdf:type owl:Class ;
            
+           owl:equivalentClass :puissant ;
+           
            rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/enfant
+
+:enfant rdf:type owl:Class ;
+        
+        owl:equivalentClass :enfants ;
+        
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -1492,7 +1612,25 @@ tag4:s rdf:type owl:Class ;
 
 :femalesinger rdf:type owl:Class ;
               
-              rdfs:subClassOf :singersongwriter .
+              owl:equivalentClass :femalevocals ;
+              
+              rdfs:subClassOf :vocal .
+
+
+
+###  http://dbtune.org/jamendo/tag/femalevocals
+
+:femalevocals rdf:type owl:Class ;
+              
+              rdfs:subClassOf :vocal .
+
+
+
+###  http://dbtune.org/jamendo/tag/festif
+
+:festif rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
 
 
 
@@ -1662,6 +1800,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/funny
+
+:funny rdf:type owl:Class ;
+       
+       rdfs:subClassOf :humour .
+
+
+
 ###  http://dbtune.org/jamendo/tag/fusion
 
 :fusion rdf:type owl:Class ;
@@ -1740,6 +1886,16 @@ tag4:s rdf:type owl:Class ;
 :germany rdf:type owl:Class ;
          
          rdfs:subClassOf dc:language .
+
+
+
+###  http://dbtune.org/jamendo/tag/gesang
+
+:gesang rdf:type owl:Class ;
+        
+        owl:equivalentClass :vocal ;
+        
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -2035,7 +2191,17 @@ tag4:s rdf:type owl:Class ;
 
 :humour rdf:type owl:Class ;
         
+        owl:equivalentClass :rigolo ;
+        
         rdfs:subClassOf mo:Genre .
+
+
+
+###  http://dbtune.org/jamendo/tag/hypnotic
+
+:hypnotic rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -2127,6 +2293,16 @@ tag4:s rdf:type owl:Class ;
            
            rdfs:subClassOf :indie ,
                            :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/indus
+
+:indus rdf:type owl:Class ;
+       
+       owl:equivalentClass :industriel ;
+       
+       rdfs:subClassOf :electro .
 
 
 
@@ -2415,12 +2591,29 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/magic
+
+:magic rdf:type owl:Class ;
+       
+       owl:equivalentClass :magique ;
+       
+       rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/magique
+
+:magique rdf:type owl:Class ;
+         
+         rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/malesinger
 
 :malesinger rdf:type owl:Class ;
             
-            rdfs:subClassOf :singersongwriter ,
-                            :vocal .
+            rdfs:subClassOf :vocal .
 
 
 
@@ -2500,7 +2693,29 @@ tag4:s rdf:type owl:Class ;
 
 :mellow rdf:type owl:Class ;
         
+        owl:equivalentClass :smooth ;
+        
         rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/melodico
+
+:melodico rdf:type owl:Class ;
+          
+          owl:equivalentClass :melodique ;
+          
+          rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/melodies
+
+:melodies rdf:type owl:Class ;
+          
+          owl:equivalentClass :melodique ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -2616,6 +2831,14 @@ tag4:s rdf:type owl:Class ;
 :musiquedefilm rdf:type owl:Class ;
                
                rdfs:subClassOf mo:Genre .
+
+
+
+###  http://dbtune.org/jamendo/tag/mystique
+
+:mystique rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -2806,6 +3029,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/parodie
+
+:parodie rdf:type owl:Class ;
+         
+         rdfs:subClassOf :humour .
+
+
+
 ###  http://dbtune.org/jamendo/tag/percussion
 
 :percussion rdf:type owl:Class ;
@@ -2859,6 +3090,24 @@ tag4:s rdf:type owl:Class ;
          owl:equivalentClass :space ;
          
          rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/poesie
+
+:poesie rdf:type owl:Class ;
+        
+        owl:equivalentClass :poetique ;
+        
+        rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/poetique
+
+:poetique rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3097,6 +3346,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/psycho
+
+:psycho rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/psychodelic
 
 :psychodelic rdf:type owl:Class ;
@@ -3118,6 +3375,14 @@ tag4:s rdf:type owl:Class ;
 :psytrance rdf:type owl:Class ;
            
            rdfs:subClassOf :goa .
+
+
+
+###  http://dbtune.org/jamendo/tag/puissant
+
+:puissant rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
 
 
 
@@ -3152,6 +3417,14 @@ tag4:s rdf:type owl:Class ;
 :qotsa rdf:type owl:Class ;
        
        rdfs:subClassOf :stoner .
+
+
+
+###  http://dbtune.org/jamendo/tag/quiet
+
+:quiet rdf:type owl:Class ;
+       
+       rdfs:subClassOf mo:Mood .
 
 
 
@@ -3308,6 +3581,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/reposant
+
+:reposant rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/retro
 
 :retro rdf:type owl:Class ;
@@ -3323,6 +3604,14 @@ tag4:s rdf:type owl:Class ;
 :ridicule rdf:type owl:Class ;
           
           rdfs:subClassOf :humour .
+
+
+
+###  http://dbtune.org/jamendo/tag/rigolo
+
+:rigolo rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Genre .
 
 
 
@@ -3353,12 +3642,28 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/rockfestif
+
+:rockfestif rdf:type owl:Class ;
+            
+            rdfs:subClassOf :rock .
+
+
+
 ###  http://dbtune.org/jamendo/tag/rockfrancais
 
 :rockfrancais rdf:type owl:Class ;
               
               rdfs:subClassOf :francais ,
                               :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/rockguitar
+
+:rockguitar rdf:type owl:Class ;
+            
+            rdfs:subClassOf :guitare .
 
 
 
@@ -3413,6 +3718,16 @@ tag4:s rdf:type owl:Class ;
 :roll rdf:type owl:Class ;
       
       rdfs:subClassOf :rock .
+
+
+
+###  http://dbtune.org/jamendo/tag/romantic
+
+:romantic rdf:type owl:Class ;
+          
+          owl:equivalentClass :romantique ;
+          
+          rdfs:subClassOf :amour .
 
 
 
@@ -3515,7 +3830,27 @@ tag4:s rdf:type owl:Class ;
 
 :sensible rdf:type owl:Class ;
           
+          owl:equivalentClass :sensuel ;
+          
           rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/sensual
+
+:sensual rdf:type owl:Class ;
+         
+         owl:equivalentClass :sensuel ;
+         
+         rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/sensuel
+
+:sensuel rdf:type owl:Class ;
+         
+         rdfs:subClassOf mo:Mood .
 
 
 
@@ -3587,11 +3922,35 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/slow
+
+:slow rdf:type owl:Class ;
+      
+      rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/slowcore
 
 :slowcore rdf:type owl:Class ;
           
           rdfs:subClassOf :indierock .
+
+
+
+###  http://dbtune.org/jamendo/tag/smooth
+
+:smooth rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/soft
+
+:soft rdf:type owl:Class ;
+      
+      rdfs:subClassOf mo:Mood .
 
 
 
@@ -3917,6 +4276,22 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/theatre
+
+:theatre rdf:type owl:Class ;
+         
+         rdfs:subClassOf :classique .
+
+
+
+###  http://dbtune.org/jamendo/tag/touchant
+
+:touchant rdf:type owl:Class ;
+          
+          rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/trance
 
 :trance rdf:type owl:Class ;
@@ -3994,6 +4369,24 @@ tag4:s rdf:type owl:Class ;
 :triphop rdf:type owl:Class ;
          
          rdfs:subClassOf :electro .
+
+
+
+###  http://dbtune.org/jamendo/tag/trippant
+
+:trippant rdf:type owl:Class ;
+          
+          owl:equivalentClass :trippy ;
+          
+          rdfs:subClassOf mo:Mood .
+
+
+
+###  http://dbtune.org/jamendo/tag/trippy
+
+:trippy rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Mood .
 
 
 
@@ -4204,6 +4597,14 @@ tag4:s rdf:type owl:Class ;
 
 
 
+###  http://dbtune.org/jamendo/tag/weird
+
+:weird rdf:type owl:Class ;
+       
+       rdfs:subClassOf mo:Mood .
+
+
+
 ###  http://dbtune.org/jamendo/tag/whawha
 
 :whawha rdf:type owl:Class ;
@@ -4250,16 +4651,8 @@ tag4:s rdf:type owl:Class ;
 ###  http://purl.org/dc/elements/1.1/language
 
 dc:language rdf:type owl:Class ;
-                  
+            
             rdfs:subClassOf mo:Record .
-
-
-
-###  http://purl.org/ontology/mo/Mood
-
-mo:Mood rdf:type owl:Class ;
-              
-        rdfs:subClassOf mo:Record .
 
 
 
@@ -4276,6 +4669,14 @@ mo:Genre rdf:type owl:Class ;
 mo:Instrument rdf:type owl:Class ;
               
               rdfs:subClassOf mo:Record .
+
+
+
+###  http://purl.org/ontology/mo/Mood
+
+mo:Mood rdf:type owl:Class ;
+        
+        rdfs:subClassOf mo:Record .
 
 
 

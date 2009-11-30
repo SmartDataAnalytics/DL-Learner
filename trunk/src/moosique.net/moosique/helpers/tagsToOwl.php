@@ -1,6 +1,8 @@
 <?php
-
-$array = explode("\n", file_get_contents('../data/tagsWeUse.txt'));
+// this takes a file with a lists of tags and creates a 
+// flat owl-ontology with every tag as a simple class as
+// a subclass of mo:record, for starting an ontology
+$array = explode("\n", file_get_contents('../data/tags.txt'));
 
 $output = '';
 $tagsOnly = array();

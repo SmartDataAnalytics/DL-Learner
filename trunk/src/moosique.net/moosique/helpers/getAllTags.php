@@ -1,23 +1,26 @@
 <?php
+// this small script retrieves all avaiable tags from jamendo
+$query = "
+SELECT DISTINCT ?tag WHERE {
+?record rdf:type mo:Record ;
+              mo:available_as ?playlist ;
+              tags:taggedWithTag ?tag .
+} ORDER BY ?tag
+";
 
-$text = file_get_contents('../data/allTags.txt');
-$array = explode("\n", $text);
 
+require('../classes/Config.php'); 
+require('../classes/DllearnerConnection.php');
 
-$countArray = array();
-
-foreach($array as $tag) {
-  if (empty($countArray[$tag])) {
-    $countArray[$tag] = 1;
-  } else {
-    $countArray[$tag]++;
-  }
-}
-
-arsort($countArray);
+$c = new DllearnerConnection();
+$json = $c->sparqlQuery($query);
+// convert to useable object
+$result = json_decode($json);
 
 echo '<pre>';
-print_r($countArray);
+foreach($result->results->bindings as $tag) {
+  echo $tag->tag->value . "\n";
+}
 echo '</pre>';
 
 ?>

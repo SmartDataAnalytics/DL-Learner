@@ -39,8 +39,8 @@ class SparqlQueryBuilder extends Config {
       $prefixes .= 'PREFIX ' . $prefix . ': <' . $resource . '>' . "\n";
     }
 
-    // if the globalLimit-config-value is set, we use maxResults as LIMIT
-    if ($this->getConfig('globalLimit') == 1) {
+    // if the globalLimit-config-value is set to true, we use maxResults as LIMIT
+    if ($this->getConfig('globalLimit')) {
       $limit = "\n" . 'LIMIT ' . $this->getConfig('maxResults');  
     } else {
       $limit = '';
@@ -48,17 +48,18 @@ class SparqlQueryBuilder extends Config {
 
     // we need all information we are asking for everytime, thus *
     $beginStatement = 'SELECT DISTINCT * WHERE { ' . "\n";
+
     // we always want the xspf-playlist only, the search filters is
     // flagged with "i" for case-insensitive search
     $endStatement = "\n" . ' FILTER (regex(str(?playlist), "xspf", "i")) . } ' . $limit;
     
-    $baseQuery = ' {
+    $baseQuery = '
       ?artist rdf:type mo:MusicArtist ;
               foaf:name ?artistName ;
               foaf:made ?record .
       ?record rdf:type mo:Record ;
               dc:title ?albumTitle .
-    } ';
+    ';
 
     $query = '';
     switch($searchType) {

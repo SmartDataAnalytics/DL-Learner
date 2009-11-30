@@ -48,12 +48,10 @@ class Recommendations extends Config {
           // precentage-value, can also be used for display, nicely formatted
           $score = round($solution->scoreValue*100, 2); 
           // scores below threshold are not used for recommendations
-          if ($score > $this->getConfig('threshold')) {
+          if ($score >= $this->getConfig('threshold')) {
             // check for everything that is quoted
             $match = true;
             $kbSyntax = $solution->descriptionKBSyntax;
-            
-            $this->debugger->log($kbSyntax);
             
             // everything in quotes is a potential tag
             preg_match_all('/\"(\\.|[^\"])*\"/', $kbSyntax, $quoted);
@@ -61,12 +59,12 @@ class Recommendations extends Config {
               if (preg_match('/^\"http:\/\//', $url)) { // if a URL, check if URL to Tag
                 // if only one of the URLS used is not a tag, we don't use it
                 if (!preg_match('/^\"http:\/\/dbtune\.org\/jamendo\/tag\//', $url)) {
-                  //$match = false;
+                  $match = false;
                 }
               }
             }
             if ($match) {
-              $sparql = $connection->kbToSqarql($solution->descriptionKBSyntax);
+              $sparql = $connection->kbToSqarql($kbSyntax);
               // extract the subtring we use for the final sparql-query
               $sparql = str_replace("SELECT ?subject \nWHERE", '', $sparql);
               $sparql = str_replace('LIMIT ' . $this->getConfig('maxResults'), '', $sparql);
@@ -74,7 +72,7 @@ class Recommendations extends Config {
               // push it to the queries-array and
               $queries[] = $sparql;
               $scores[] = $score;
-              $kbSyntaxes[] = $solution->descriptionKBSyntax;
+              $kbSyntaxes[] = $kbSyntax;
             }
           }
         }
@@ -113,7 +111,6 @@ class Recommendations extends Config {
         foreach($recent as $link) {
           // extract relation from the cookie-link
           preg_match_all('#<a\s*(?:rel=[\'"]([^\'"]+)[\'"])?.*?>((?:(?!</a>).)*)</a>#i', $link, $record);
-          $this->debugger->log($record);
           $posExamples[] = $record[1][0];
           $posExamples = array_unique($posExamples);
           $this->posExamples = $posExamples;
