@@ -73,6 +73,15 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(eLLearningAl
 public String getStartClass() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(eLLearningAlgorithmDisjunctive,  "startClass") ;
 }
+/**
+* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getInstanceBasedDisjoints() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(eLLearningAlgorithmDisjunctive,  "instanceBasedDisjoints") ;
+}
 
 /**
 * @param noisePercentage the (approximated) percentage of noise within the examples.
@@ -90,6 +99,15 @@ reinitNecessary = true;
 **/
 public void setStartClass(String startClass) {
 ComponentManager.getInstance().applyConfigEntry(eLLearningAlgorithmDisjunctive, "startClass", startClass);
+reinitNecessary = true;
+}
+/**
+* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+ComponentManager.getInstance().applyConfigEntry(eLLearningAlgorithmDisjunctive, "instanceBasedDisjoints", instanceBasedDisjoints);
 reinitNecessary = true;
 }
 

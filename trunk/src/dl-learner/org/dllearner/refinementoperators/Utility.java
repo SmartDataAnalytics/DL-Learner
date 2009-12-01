@@ -58,7 +58,6 @@ public final class Utility {
 	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances
-	// TODO: turn this into a parameter
 	private boolean instanceBasedDisjoints = true;	
 	
 	// cache for reasoner queries
@@ -71,11 +70,12 @@ public final class Utility {
 		throw new Error("not implemented yet");
 	}
 	
-	public Utility(ReasonerComponent rs, Map<ObjectProperty,Description> opDomains) {
+	public Utility(ReasonerComponent rs, Map<ObjectProperty,Description> opDomains, boolean instanceBasedDisjoints) {
 		this.reasoner = rs;
 		sh = rs.getClassHierarchy();
 		// we cache object property domains
 		this.opDomains = opDomains;
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
 	}
 	
 	/**
@@ -134,6 +134,7 @@ public final class Utility {
 		// for 2 of them we can stop further traversal in the subsumption
 		// hierarchy
 		for(Description d : sh.getSubClasses(upperClass)) {
+//			System.out.println("d: " + d);
 			// owl:Nothing is never a candidate (not in EL)
 			if(!(d instanceof Nothing)) {
 				NamedClass candidate = (NamedClass) d;
@@ -151,6 +152,7 @@ public final class Utility {
 						// candidate went successfully through all checks
 						candidates.add(candidate);
 					} else {
+//						System.out.println("k32: " + candidate + " index " + index + " cond1 " + isDisjoint(new Negation(candidate),index) + " cond2 " + checkSuperClasses(existingClasses,candidate));
 						// descend subsumption hierarchy to find candidates
 						candidates.addAll(getClassCandidatesRecursive(index, existingClasses, candidate));
 					}

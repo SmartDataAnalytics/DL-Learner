@@ -119,8 +119,10 @@ public class PaperStatistics {
 		String[] algorithmPostfix = new String[4];
 		algorithmPostfix[0] = "_refexamples";
 		algorithmPostfix[1] = "_refexamples_fast";
-		algorithmPostfix[2] = "_gp";
-		algorithmPostfix[3] = "_hybrid";
+		algorithmPostfix[2] = "_el";
+		algorithmPostfix[3] = "_el_disjunctive";
+//		algorithmPostfix[4] = "_gp";
+//		algorithmPostfix[5] = "_hybrid";		
 		int startAlgorithmNr = 0;
 
 		// only max. 4 folds for straight problem

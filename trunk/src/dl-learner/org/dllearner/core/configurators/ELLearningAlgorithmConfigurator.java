@@ -55,7 +55,25 @@ ELLearningAlgorithm component = ComponentManager.getInstance().learningAlgorithm
 return component;
 }
 
+/**
+* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getInstanceBasedDisjoints() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(eLLearningAlgorithm,  "instanceBasedDisjoints") ;
+}
 
+/**
+* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+ComponentManager.getInstance().applyConfigEntry(eLLearningAlgorithm, "instanceBasedDisjoints", instanceBasedDisjoints);
+reinitNecessary = true;
+}
 
 /**
 * true, if this component needs reinitializsation.

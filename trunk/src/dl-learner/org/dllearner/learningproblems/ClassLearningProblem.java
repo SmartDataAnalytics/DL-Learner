@@ -138,6 +138,8 @@ public class ClassLearningProblem extends LearningProblem {
 		Random rand = new Random(1);
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
+		
+		System.out.println(classInstances.size() + " " + superClassInstances.size());
 	}
 	
 	/**

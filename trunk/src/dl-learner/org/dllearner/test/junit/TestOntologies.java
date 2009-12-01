@@ -32,6 +32,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
  * Some ontologies to simplify unit tests.
@@ -41,7 +42,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -119,7 +120,9 @@ public final class TestOntologies {
 			owlFile = "examples/krk/KRK_ZERO_ONE.owl";
 		}  else if(ont.equals(TestOntology.DBPEDIA_OWL)) {
 			owlFile = "/home/jl/promotion/ontologien/dbpedia.owl";
-		}
+		} else if(ont.equals(TestOntology.TRAINS_OWL)) {
+			owlFile = "examples/cross-benchmark/trains/trains.owl";
+		} 
 		
 		try {	
 			ComponentManager cm = ComponentManager.getInstance();
@@ -139,7 +142,8 @@ public final class TestOntologies {
 				}			
 			}
 			
-			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
+			ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, source);
+//			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
 			source.init();
 			rc.init();
 			return rc;	

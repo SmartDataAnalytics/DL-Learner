@@ -371,7 +371,7 @@ public class MonogenicDiseases {
 			// generate a class with all positive examples (optional)
 			if(generatePosExampleClass) {
 				String phenotype = rs.getString("phenotype");
-				if(phenotype.toLowerCase().contains("polymorphism")) {
+				if(!phenotype.toLowerCase().contains("polymorphism")) {
 					kb.addAxiom(new ClassAssertionAxiom(deleteriousMutationClass, mutationInd));
 				}
 			}
@@ -385,13 +385,13 @@ public class MonogenicDiseases {
 		long startWriteTime = System.nanoTime();
 		OWLAPIReasoner.exportKBToOWL(owlFile, kb, ontologyURI);
 		long writeDuration = System.nanoTime() - startWriteTime;
-		System.out.println("OK (time: " + Helper.prettyPrintNanoSeconds(writeDuration) + "; file size: " + owlFile.length()/1024 + " KB).");		
+		System.out.println("OK (entities: " + count + "; time: " + Helper.prettyPrintNanoSeconds(writeDuration) + "; file size: " + owlFile.length()/1024 + " KB).");		
 		
 		// selecting examples
 		// -> only a fraction of examples are selected as positive/negative
 		if(pgSQL) {
 			rs = stmt.executeQuery("SELECT * FROM fiche_mutant, mutants WHERE fiche_mutant.id=mutants.id AND " //lower(phenotype) not like 'polymorphism' AND "
-					+ " (gain_contact is not null) AND (gain_contact != 0)");
+					+ " (gain_contact is not null)"); //  AND (gain_contact != 0)");
 		} else {
 			rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE " //lower(phenotype) not like 'polymorphism' AND "
 					+ " (gain_contact is not null) AND (gain_contact != 0)");
@@ -407,33 +407,28 @@ public class MonogenicDiseases {
 				posExamples.add(new Individual(getURI("mutation" + mutationID)));
 			}
 		}
-		
-		// conf example:
-		
-//		import("mutation.owl");
-//
-//		reasoner = fastInstanceChecker;
-//
-//		problem = classLearning;
-//		classLearning.classToDescribe = "http://dl-learner.org/mutation#DeletoriousMutation";
-//		classLearning.accuracyMethod = "fmeasure";
-//		classLearning.approxAccuracy = 0.03;
-//
-//		algorithm = celoe;
-//		celoe.maxExecutionTimeInSeconds = 10;
-//		celoe.noisePercentage = 10;
-//		celoe.maxNrOfResults = 1;
-//		celoe.singleSuggestionMode = true;
-		
+			
 		// writing conf file
 		Files.clearFile(confFile);
 		String confHeader = "import(\"" + owlFile.getName() + "\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
+		
 		confHeader += "problem = classLearning;\n";
-		confHeader += "classLearning.classToDescribe = \"" + deleteriousMutationClass + "\";\n"; 
+		confHeader += "classLearning.classToDescribe = \"" + deleteriousMutationClass + "\";\n";
+		confHeader += "classLearning.accuracyMethod = \"fmeasure\";\n";	
+		confHeader += "classLearning.approxAccuracy = 0.03;\n";
+		
+//		confHeader += "problem = posNegLPStandard;\n";
+//		confHeader += "posNegLPStandard.useApproximations = true;\n";
+//		confHeader += "posNegLPStandard.accuracyMethod = \"fmeasure\";\n";	
+//		confHeader += "posNegLPStandard.approxAccuracy = 0.03;\n";
+		
 		confHeader += "algorithm = celoe;\n";
-		confHeader += "celoe.maxExecutionTimeInSeconds = 100;\n";
-		confHeader += "celoe.noisePercentage = 25;\n";
+		confHeader += "celoe.maxExecutionTimeInSeconds = 10;\n";
+		confHeader += "celoe.noisePercentage = 10;\n";
+		confHeader += "celoe.singleSuggestionMode = true;\n";
+		confHeader += "celoe.useNegation = true;\n";
+		
 //		confHeader += "refexamples.noisePercentage = 15;\n";
 //		confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
 //		confHeader += "refexamples.writeSearchTree = false;\n";
@@ -446,6 +441,7 @@ public class MonogenicDiseases {
 		}	
 		
 		long runTime = System.nanoTime() - startTime;
+		System.out.println("Conf file written with " + posExamples.size() + " positive and " + negExamples.size() + " negative examples.");
 		System.out.println("Database successfully converted in " + Helper.prettyPrintNanoSeconds(runTime) + ".");
 		
 	}

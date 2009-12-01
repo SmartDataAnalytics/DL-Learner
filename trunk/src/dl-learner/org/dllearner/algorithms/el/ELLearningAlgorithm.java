@@ -32,6 +32,9 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
+import org.dllearner.core.options.CommonConfigOptions;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -59,6 +62,9 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	private boolean isRunning = false;
 	private boolean stop = false;
 	
+	private double treeSearchTimeSeconds = 1.0;
+	private long treeStartTime;
+	
 	// a set with limited size (currently the ordering is defined in the class itself)
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
 
@@ -68,6 +74,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	
 	public ELLearningAlgorithm(PosNegLP problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
+		configurator = new ELLearningAlgorithmConfigurator(this);
 	}
 	
 	public static String getName() {
@@ -90,13 +97,21 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 		return configurator;
 	}	
 	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+//		options.add(CommonConfigOptions.getNoisePercentage());
+//		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
+		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
+		return options;
+	}		
+	
 	@Override
 	public void init() throws ComponentInitException {
 		// currently we use the stable heuristic
 		heuristic = new StableHeuristic();
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
-		operator = new ELDown2(reasoner);
+		operator = new ELDown2(reasoner, configurator.getInstanceBasedDisjoints());
 	}	
 	
 	@Override
@@ -104,6 +119,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 		stop = false;
 		isRunning = true;
 		reset();
+		treeStartTime = System.nanoTime();
 		
 		// create start node
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, Thing.instance);
@@ -157,9 +173,13 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 			parentNode.addChild(node);
 		}
 		
+//		System.out.println("TEST");
+		
 		if(!node.isTooWeak()) {
 			// add as candidate
 			candidates.add(node);
+		
+//			System.out.println("TEST2");
 			
 			// check whether we want to add it to the best evaluated descriptions;
 			// to do this we pick the worst considered evaluated description
@@ -178,6 +198,19 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	}
 	
 	private boolean stoppingCriteriaSatisfied() {
+		// in some cases, there could be no candidate left ...
+		if(candidates.isEmpty()) {
+			return true;
+		}
+		
+		// stop when max time is reached
+		long runTime = System.nanoTime() - treeStartTime;
+		double runTimeSeconds = runTime / (double) 1000000000;
+		
+		if(runTimeSeconds >= treeSearchTimeSeconds) {
+			return true;
+		}
+		
 		// stop if we have a node covering all positives and none of the negatives
 		SearchTreeNode bestNode = candidates.last();
 		return (bestNode.getCoveredNegatives() == 0);

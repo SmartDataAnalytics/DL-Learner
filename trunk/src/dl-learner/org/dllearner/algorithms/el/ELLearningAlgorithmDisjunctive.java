@@ -141,6 +141,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
+		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
 		return options;
 	}	
 	
@@ -165,7 +166,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 		} else {
 			startClass = Thing.instance;
 		}
-		operator = new ELDown2(reasoner);
+		operator = new ELDown2(reasoner, configurator.getInstanceBasedDisjoints());
 		
 //		noise = configurator.getNoisePercentage()/(double)100;
 		
@@ -365,6 +366,11 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 	}
 	
 	private boolean treeCriteriaSatisfied() {
+		// stop if there are no more candidates (unlikely, but can happen)
+		if(candidates.isEmpty()) {
+			return true;
+		}		
+		
 		long runTime = System.nanoTime() - treeStartTime;
 		double runTimeSeconds = runTime / (double) 1000000000;
 		
@@ -376,6 +382,7 @@ public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
 	}
 	
 	private boolean stoppingCriteriaSatisfied() {
+	
 		// stop if we have a node covering all positives and none of the negatives
 //		SearchTreeNode bestNode = candidates.last();
 //		return (bestNode.getCoveredNegatives() == 0);
