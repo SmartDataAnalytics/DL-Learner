@@ -106,7 +106,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(posNegLPStan
 /**
 * useApproximations whether to use stochastic approximations for computing accuracy.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 * @return boolean 
 **/
 public boolean getUseApproximations() {
@@ -124,7 +124,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStan
 /**
 * accuracyMethod Specifies, which method/function to use for computing accuracy..
 * mandatory: false| reinit necessary: true
-* default value: standard
+* default value: predacc
 * @return String 
 **/
 public String getAccuracyMethod() {
@@ -177,7 +177,7 @@ reinitNecessary = true;
 /**
 * @param useApproximations whether to use stochastic approximations for computing accuracy.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 **/
 public void setUseApproximations(boolean useApproximations) {
 ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "useApproximations", useApproximations);
@@ -195,7 +195,7 @@ reinitNecessary = true;
 /**
 * @param accuracyMethod Specifies, which method/function to use for computing accuracy..
 * mandatory: false| reinit necessary: true
-* default value: standard
+* default value: predacc
 **/
 public void setAccuracyMethod(String accuracyMethod) {
 ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "accuracyMethod", accuracyMethod);

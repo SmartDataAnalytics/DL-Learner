@@ -293,14 +293,14 @@ public class PosNegLPStandard extends PosNegLP {
 				throw new Error("approximating pred. acc not implemented");
 			}
 		} else {
-			return getAccuracyOrTooWeakExact(description, noise);
+			return getPredAccuracyOrTooWeakExact(description, noise);
 		}			
 	}	
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
-	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
 		
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 		
@@ -321,9 +321,41 @@ public class PosNegLPStandard extends PosNegLP {
 			}
 		}
 		
-		return positiveExamples.size() - notCoveredPos + notCoveredNeg / (double) allExamples.size();
+//		if(useFMeasure) {
+//			double recall = (positiveExamples.size() - notCoveredPos) / (double) positiveExamples.size();
+//			double precision = (positiveExamples.size() - notCoveredPos) / (double) (allExamples.size() - notCoveredPos - notCoveredNeg);
+//			return getFMeasure(recall, precision);
+//		} else {
+			return (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
+//		}
 	}
 
+	public double getFMeasureOrTooWeakExact(Description description, double noise) {
+		int additionalInstances = 0;
+		for(Individual ind : negativeExamples) {
+			if(reasoner.hasType(description, ind)) {
+				additionalInstances++;
+			}
+		}
+		
+		int coveredInstances = 0;
+		for(Individual ind : positiveExamples) {
+			if(reasoner.hasType(description, ind)) {
+				coveredInstances++;
+			}
+		}
+		
+		double recall = coveredInstances/(double)positiveExamples.size();
+		
+		if(recall < 1 - noise) {
+			return -1;
+		}
+		
+		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
+		
+		return getFMeasure(recall, precision);		
+	}
+	
 	// instead of using the standard operation, we use optimisation
 	// and approximation here
 	public double getFMeasureOrTooWeakApprox(Description description, double noise) {
@@ -438,6 +470,12 @@ public class PosNegLPStandard extends PosNegLP {
 			precision = 0;
 		}	
 
+//		System.out.println("description: " + description);
+//		System.out.println("recall: " + recall);
+//		System.out.println("precision: " + precision);
+//		System.out.println("F-measure: " + getFMeasure(recall, precision));
+//		System.out.println("exact: " + getAccuracyOrTooWeakExact(description, noise));
+		
 		return getFMeasure(recall, precision);
 	}
 		

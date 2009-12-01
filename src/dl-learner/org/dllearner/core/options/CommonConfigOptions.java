@@ -57,6 +57,7 @@ public final class CommonConfigOptions {
 	public static String logLevelDefault = "DEBUG";
 	public static double noisePercentageDefault = 0.0;
 	public static boolean terminateOnNoiseReachedDefault = true;
+	public static boolean instanceBasedDisjointsDefault = true;
 	
 	public static StringConfigOption getVerbosityOption() {
 		StringConfigOption verbosityOption = new StringConfigOption("verbosity", "control verbosity of output for this component", "warning");
@@ -195,4 +196,8 @@ public final class CommonConfigOptions {
 	public static StringConfigOption getLogLevel() {
 		return new StringConfigOption("logLevel", "determines the logLevel for this component, can be {TRACE, DEBUG, INFO}",logLevelDefault);
 	}
+	
+	public static BooleanConfigOption getInstanceBasedDisjoints() {
+		return new BooleanConfigOption("instanceBasedDisjoints", "Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.", instanceBasedDisjointsDefault);
+	}	
 }
