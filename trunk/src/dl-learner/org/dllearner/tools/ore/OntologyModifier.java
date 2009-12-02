@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.ore;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +40,7 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owl.io.RDFXMLOntologyFormat;
+import org.semanticweb.owl.io.OWLXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
@@ -154,26 +155,7 @@ public class OntologyModifier {
 		
 	}
 	
-	/**
-	 * Saves the ontology as RDF-file.
-	 */
-	public void saveOntology(){
-		
 	
-		
-		URI physicalURI2 = URI.create("file:/tmp/MyOnt2.owl");
-		
-		try {
-			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), physicalURI2);
-		} catch (UnknownOWLOntologyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
 	/**
 	 * Deletes the complete individual from the ontology.
 	 * @param ind the individual to delete

@@ -41,8 +41,10 @@ import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;
 import org.protege.editor.core.ui.OpenFromURIPanel;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
+import org.protege.editor.owl.model.OntologyFileFilter;
 import org.semanticweb.owl.io.UnparsableOntologyException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyFormat;
 
 /**
  * Wizard panel descriptor where knowledge source is selected.
@@ -180,7 +182,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     }
     
     private void updateRecentList(){
-    	knowledgePanel.updateRecentList();
+    	knowledgePanel.updateRecentList(this);
     }
   
     public KnowledgeSourcePanel getPanel() {
