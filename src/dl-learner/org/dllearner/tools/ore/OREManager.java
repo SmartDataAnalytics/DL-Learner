@@ -1,5 +1,6 @@
 package org.dllearner.tools.ore;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,10 +37,13 @@ import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.mindswap.pellet.utils.SetUtils;
+import org.semanticweb.owl.io.OWLXMLOntologyFormat;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
 
 public class OREManager {
 
@@ -167,6 +171,23 @@ public class OREManager {
 	
 	public void loadOntology() throws OWLOntologyCreationException, URISyntaxException{
 		reasoner.loadOntologies();	
+	}
+	
+	/**
+	 * Save the ontology in OWL/XML format.
+	 * @param file The file to save as.
+	 * @throws OWLOntologyStorageException
+	 * 
+	 */
+	public void saveOntology(File file) throws OWLOntologyStorageException{
+		
+		try {
+			reasoner.getOWLOntologyManager().saveOntology(reasoner.getOWLAPIOntologies(), new OWLXMLOntologyFormat(), file.toURI());
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	
 	}
 	
 	public void makeOWAToCWA(){

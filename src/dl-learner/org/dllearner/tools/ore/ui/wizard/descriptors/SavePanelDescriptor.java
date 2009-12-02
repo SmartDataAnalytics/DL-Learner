@@ -22,10 +22,14 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
-import org.dllearner.tools.ore.OntologyModifier;
+import org.dllearner.tools.ore.ui.OverrideFileChooser;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.SavePanel;
 
@@ -40,6 +44,8 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
     		                                 "or 'Save and choose another class' button to save the changes and go back to class choose panel.";
 
     private SavePanel savePanel;
+    final JFileChooser fc = new OverrideFileChooser();
+
     
     public SavePanelDescriptor() {
     	savePanel = new SavePanel();
@@ -48,6 +54,22 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
         
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(savePanel);
+        fc.setFileFilter(new FileFilter() {
+			
+			@Override
+			public String getDescription() {
+				return "RDF/XML, OWL/XML";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				}
+				return f.getName().toLowerCase().endsWith(".owl")
+						|| f.getName().toLowerCase().endsWith(".rdf");
+			}
+		});
         
     }
     
@@ -77,20 +99,35 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		OntologyModifier modifier = OREManager.getInstance().getModifier();
+		
 		if(e.getActionCommand().equals("Save and go to class choose panel")){
-			modifier.saveOntology();
-			if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
-				getWizard().setCurrentPanel(ClassChoosePanelDescriptor.IDENTIFIER);
-			} else {
-				getWizard().setCurrentPanel(AutoLearnPanelDescriptor.IDENTIFIER);
+			if(saveOntology()){
+				if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
+					getWizard().setCurrentPanel(ClassChoosePanelDescriptor.IDENTIFIER);
+				} else {
+					getWizard().setCurrentPanel(AutoLearnPanelDescriptor.IDENTIFIER);
+				}
 			}
+			
 		}else if(e.getActionCommand().equals("Save and Exit")){
-			modifier.saveOntology();
-			getWizard().close(0);
+			if(saveOntology()){
+				getWizard().close(0);
+			}
+			
 		}
 
 		
+	}
+	
+	private boolean saveOntology(){
+		int ret = fc.showSaveDialog(savePanel);
+
+		if(ret == JFileChooser.APPROVE_OPTION){
+			return true;
+		} else {
+			return false;
+		}
+
 	}
     
      

@@ -124,7 +124,7 @@ public class KnowledgeSourcePanel extends JPanel{
 		metricsPanel.setVisible(true);
 	}
 	
-	public void updateRecentList(){
+	public void updateRecentList(ActionListener aL){
 		recentLinkBox.removeAll();
 		openFromRecentLinks.clear();
 		LinkLabel link;
@@ -133,8 +133,9 @@ public class KnowledgeSourcePanel extends JPanel{
         	link.setName("recent");
         	openFromRecentLinks.add(link);
             recentLinkBox.add(link);
-            
+            link.addLinkListener(aL);
         }
+		
 	}
 	
 	public void addListeners(ActionListener aL) {
