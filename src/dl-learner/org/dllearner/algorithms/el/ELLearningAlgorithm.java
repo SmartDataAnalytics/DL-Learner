@@ -159,8 +159,11 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 		
 		// convert tree to standard description
 		Description description = descriptionTree.transformToDescription();
+		
+//		double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, 0);
 		int negCovers = getLearningProblem().coveredNegativeExamplesOrTooWeak(description);
 		if(negCovers == -1) {
+//		if(accuracy == -1) {
 			node.setTooWeak();
 		} else {
 			node.setCoveredNegatives(negCovers);
@@ -200,6 +203,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	private boolean stoppingCriteriaSatisfied() {
 		// in some cases, there could be no candidate left ...
 		if(candidates.isEmpty()) {
+//			System.out.println("EMPTY");
 			return true;
 		}
 		

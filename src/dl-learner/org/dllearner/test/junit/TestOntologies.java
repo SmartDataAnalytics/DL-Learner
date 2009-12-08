@@ -42,7 +42,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL, RHO1 };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -110,6 +110,15 @@ public final class TestOntologies {
 			kbString += "r3(a,b).\n";
 			kbString += "r4(a,b).\n";
 			kbString += "r5(a,b).\n";
+		} else if(ont.equals(TestOntology.RHO1)) {
+			kbString += "suv SUB car.\n";
+			kbString += "limo SUB car.\n";
+			kbString += "man SUB person.\n";
+			kbString += "woman SUB person.\n";
+			kbString += "(person AND car) = BOTTOM.\n";
+			kbString += "OPDOMAIN(hasOwner) = car.\n";
+			kbString += "OPRANGE(hasOwner) = person.\n";
+			kbString += "hasOwner(opel123,person123).\n";
 		} else if(ont.equals(TestOntology.FATHER_OE)) {
 			owlFile = "examples/family/father_oe.owl";
 		} else if(ont.equals(TestOntology.CARCINOGENESIS)) {
