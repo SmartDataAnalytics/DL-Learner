@@ -42,6 +42,8 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
@@ -174,6 +176,19 @@ public class RefinementOperatorTests {
 		assertTrue(results.size()==desiredResultSize);
 	}
 			
+	@Test
+	public void rhoDRDownTest4() throws ParseException, LearningProblemUnsupportedException {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
+		RefinementOperator operator = new RhoDRDown(rs);
+		Description concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
+//		Description concept = Thing.instance;
+		Set<Description> refinements = operator.refine(concept, 6);
+		for(Description refinement : refinements) {
+			System.out.println(refinement);
+		}		
+	}
+		
+	
 	private String uri(String name) {
 		return "\""+baseURI+name+"\"";
 	}
