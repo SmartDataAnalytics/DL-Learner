@@ -20,7 +20,6 @@
 
 package org.dllearner.tools.ore;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +39,6 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owl.io.OWLXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
@@ -57,9 +55,7 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.RemoveAxiom;
-import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.OWLEntityRemover;
 
 /**
@@ -74,6 +70,8 @@ public class OntologyModifier {
 	private OWLDataFactory factory;
 	private OWLOntologyManager manager;
 	
+	private Set<OWLOntologyChange> globalChanges;
+	
 	
 	
 	public OntologyModifier(PelletReasoner reasoner){
@@ -81,6 +79,8 @@ public class OntologyModifier {
 		this.manager = reasoner.getOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
 		this.ontology = (reasoner.getOWLAPIOntologies());
+		
+		globalChanges = new HashSet<OWLOntologyChange>();
 		
 	}
 	
@@ -105,10 +105,12 @@ public class OntologyModifier {
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
 		try {
 			manager.applyChange(axiom);
+			globalChanges.add(axiom);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
 		return axiom;
 		
 	}
@@ -146,6 +148,7 @@ public class OntologyModifier {
 		//apply changes to ontology
 		try {
 			manager.applyChanges(changes);
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			System.err.println("Error: rewriting class description failed");
 			e.printStackTrace();
@@ -173,15 +176,13 @@ public class OntologyModifier {
 		try {
 			reasoner.updateCWAOntology(changes);
 			manager.applyChanges(changes);
-			return changes;
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		
-		
-		return null;
+		return changes;
 		
 	}
 	/**
@@ -204,15 +205,13 @@ public class OntologyModifier {
 		try {
 			reasoner.updateCWAOntology(changes);
 			manager.applyChange(rm);
-			return changes;
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		
-		
-		return null;
+		return changes;
 	}
 	
 	/**
@@ -235,15 +234,15 @@ public class OntologyModifier {
 		try {
 			reasoner.updateCWAOntology(changes);
 			manager.applyChange(am);
-			return changes;
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		
-		
-		return null;
+	
+		return changes;
 		
 	}
 	
@@ -277,13 +276,15 @@ public class OntologyModifier {
 		try {
 			reasoner.updateCWAOntology(changes);
 			manager.applyChanges(changes);
-			return changes;
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return null;
+		
+		return changes;
+		
 		
 	}
 	
@@ -335,13 +336,14 @@ public class OntologyModifier {
 		try {
 			reasoner.updateCWAOntology(changes);
 			manager.applyChanges(changes);
-			return changes;
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return null;
+	
+		return changes;
 		
 	}
 	
@@ -378,7 +380,7 @@ public class OntologyModifier {
 			if(remove != null){
 				reasoner.updateCWAOntology(changes);
 				manager.applyChange(remove);
-				return changes;
+				globalChanges.addAll(changes);
 			}
 			
 		} catch (OWLOntologyChangeException e) {
@@ -386,7 +388,7 @@ public class OntologyModifier {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return changes;
 		
 	}
 	
@@ -412,13 +414,12 @@ public class OntologyModifier {
 		try {	
 				reasoner.updateCWAOntology(changes);
 				manager.applyChanges(changes);
-				return changes;
-			
-			
+				globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return changes;
 	}
 	
@@ -443,16 +444,24 @@ public class OntologyModifier {
 		try {
 			reasoner.updateCWAOntology(changes);
 			manager.applyChange(axiom);
-			return changes;
+			globalChanges.addAll(changes);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return null;
+		return changes;
 	}
 	
-		
+	public void applyOntologyChanges(List<OWLOntologyChange> changes){
+		try {
+			manager.applyChanges(changes);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		globalChanges.addAll(changes);
+	}
 
 	/**
 	 * undo changes of type {@link OWLOntologyChange}.
@@ -478,7 +487,7 @@ public class OntologyModifier {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		globalChanges.removeAll(changes);
 	
 		
 	}

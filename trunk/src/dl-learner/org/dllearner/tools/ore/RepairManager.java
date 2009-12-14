@@ -145,13 +145,14 @@ public class RepairManager implements OREManagerListener{
 	}
 	
 	public void executeRepairPlan(){
-		
-		try {
-			manager.applyChanges(new ArrayList<OWLOntologyChange>(repairPlan));
-		} catch (OWLOntologyChangeException e) {
-			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
-			e.printStackTrace();
-		}
+		OREManager.getInstance().getModifier().applyOntologyChanges(new ArrayList<OWLOntologyChange>(repairPlan));
+//		try {
+//			
+//			manager.applyChanges(new ArrayList<OWLOntologyChange>(repairPlan));
+//		} catch (OWLOntologyChangeException e) {
+//			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
+//			e.printStackTrace();
+//		}
 		undoStack.push(new ArrayList<OWLOntologyChange>(repairPlan));
 		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>(repairPlan);
 		
@@ -163,13 +164,13 @@ public class RepairManager implements OREManagerListener{
 	public void undo(){
 		List<OWLOntologyChange> changes = undoStack.pop();
 		redoStack.push(changes);
-		
-		try {
-			manager.applyChanges(getInverseChanges(changes));
-		} catch (OWLOntologyChangeException e) {
-			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
-			e.printStackTrace();
-		}
+		OREManager.getInstance().getModifier().applyOntologyChanges(getInverseChanges(changes));
+//		try {
+//			manager.applyChanges(getInverseChanges(changes));
+//		} catch (OWLOntologyChangeException e) {
+//			System.out.println("Error in Repairmanager: Couldn't apply ontology changes");
+//			e.printStackTrace();
+//		}
 		
 		fireRepairPlanExecuted(changes);
 	}
