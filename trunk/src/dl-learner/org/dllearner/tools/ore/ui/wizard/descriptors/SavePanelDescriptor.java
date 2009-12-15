@@ -81,6 +81,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
     @Override
 	public void aboutToDisplayPanel() {
         getWizard().getInformationField().setText(INFORMATION);
+        savePanel.updateChangesTable();
     }    
     
     @Override
@@ -129,6 +130,8 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 		}
 
 	}
+	
+	
     
      
 }

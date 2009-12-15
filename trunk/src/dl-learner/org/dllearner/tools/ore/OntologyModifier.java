@@ -70,7 +70,7 @@ public class OntologyModifier {
 	private OWLDataFactory factory;
 	private OWLOntologyManager manager;
 	
-	private Set<OWLOntologyChange> globalChanges;
+	private List<OWLOntologyChange> globalChanges;
 	
 	
 	
@@ -80,7 +80,7 @@ public class OntologyModifier {
 		this.factory = manager.getOWLDataFactory();
 		this.ontology = (reasoner.getOWLAPIOntologies());
 		
-		globalChanges = new HashSet<OWLOntologyChange>();
+		globalChanges = new ArrayList<OWLOntologyChange>();
 		
 	}
 	
@@ -115,12 +115,26 @@ public class OntologyModifier {
 		
 	}
 	
+	public void addNewClassDescription(NamedClass old, Description newDesc){
+		OWLDescription oldOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(old);
+		OWLDescription newOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(newDesc);
+		OWLEquivalentClassesAxiom equivAxiom = factory.getOWLEquivalentClassesAxiom(oldOWLAPIDesc, newOWLAPIDesc);
+		AddAxiom add = new AddAxiom(ontology, equivAxiom);
+		try {
+			manager.applyChange(add);
+			globalChanges.add(add);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Rewrite ontology by replacing old class with new learned class description.
 	 * @param newDesc
 	 * @param oldClass
 	 */
-	public List<OWLOntologyChange> rewriteClassDescription(Description newDesc, Description oldClass){
+	public List<OWLOntologyChange> rewriteClassDescription(NamedClass newDesc, Description oldClass){
 		OWLDescription newClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
 //		OWLDescription oldClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
 		
@@ -490,6 +504,10 @@ public class OntologyModifier {
 		globalChanges.removeAll(changes);
 	
 		
+	}
+	
+	public List<OWLOntologyChange> getChanges(){
+		return globalChanges;
 	}
 	
 	/**

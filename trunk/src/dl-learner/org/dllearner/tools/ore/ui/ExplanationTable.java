@@ -84,7 +84,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 				return b;
 			}
 		});
-		getColumn(4).setHeaderValue(new ImageIcon("src/dl-learner/org/dllearner/tools/ore/DeleteCross.gif"));
+		getColumn(4).setHeaderValue(new ImageIcon(this.getClass().getResource("../DeleteCross.gif")));
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -200,7 +200,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 					setForeground(table.getForeground());
 					setBackground(UIManager.getColor("Button.background"));
 				}
-				setIcon(new ImageIcon("src/dl-learner/org/dllearner/tools/ore/Edit16.gif"));
+				setIcon(new ImageIcon(this.getClass().getResource("../Edit16.gif")));
 				setText("");
 				return this;
 				}

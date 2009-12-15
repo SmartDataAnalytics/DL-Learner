@@ -27,7 +27,7 @@ public class RepairTable extends JXTable {
 	 * 
 	 */
 	private static final long serialVersionUID = -621497634521668635L;
-	private final Icon deleteIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/Delete16.gif");
+	private final Icon deleteIcon = new ImageIcon(this.getClass().getResource("../Delete16.gif"));
 
 	public RepairTable() {
 		super(new RepairTableModel());

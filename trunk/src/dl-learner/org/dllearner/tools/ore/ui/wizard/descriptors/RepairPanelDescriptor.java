@@ -108,13 +108,13 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     
     public void setManualPanel(boolean value){
     	repairPanel.setManualStyle(value);
+    	repairPanel.addActionListeners(this);
     }
    
     /**
      * Method to control actions by button pressed.
      */
 	public void actionPerformed(ActionEvent event) {
-
 		if(event.getActionCommand().equals("next")){	
 			LearningManager.getInstance().setNextDescription();		
 		} else {
