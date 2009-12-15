@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,6 +42,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -84,26 +86,41 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	
 	private SparqlExtractOptionsPanel optionsPanel;
 	private JToggleButton optionsButton;
-	private ImageIcon toggledIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/toggled.gif");
-	private ImageIcon untoggledIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/untoggled.gif");
+	private ImageIcon toggledIcon = new ImageIcon(this.getClass().getResource("../toggled.gif"));
+	private ImageIcon untoggledIcon = new ImageIcon(this.getClass().getResource("../untoggled.gif"));
 	
-
+	private final String URLHelpText = "<html><table border=\"1\">" +
+			"<tr>" +
+			"<th>SPARQL endpoint URL</th>" +
+			"<th>The URL of the SPARQL endpoint</th>" +
+			"</tr>" +
+			"<tr>" +
+			"<th>Default graph URI</th>" +
+			"<th>Absolute URL of RDF data source(s) to populate the background graph</th>" +
+			"</tr>							" +
+			"</table></html>"; 
+	
+	private final String classHelpText = "Enter a class uri or label for which a " +
+										"relevant fragment should be extracted.";
+	
 	private SPARQLTasks task;
 	private SparqlKnowledgeSource ks;
 	private OntologyExtractingTask extractTask;
 	private ProgressMonitor mon;
+	private Timer t;
 	
 	private Map<URL, List<String>> endpointToDefaultGraph;
 	
 	public ExtractFromSparqlDialog(JFrame owner) {
 		super(owner, "Extract fragment from SPARQL endpoint", true);
-
+		getLocale().setDefault(Locale.ENGLISH);
+		
 		// Create the controls
 		createControls();
 		//create main panel
 		createSparqlPanel();
-		//add predifined endpoints
-		addPredifinedEndpoints();
+		//add predefined endpoints
+		addPredefinedEndpoints();
 		positionErrorDialog(owner);
 	}
 	 
@@ -159,6 +176,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		endPointHolderPanel.add(new JLabel("Default graph URI (optional)"));
 		endPointHolderPanel.add(defaultGraphField);
 		HelpablePanel endPointHelpPanel = new HelpablePanel(endPointHolderPanel);
+		endPointHelpPanel.setHelpText(URLHelpText);
 		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		panel.add(endPointHelpPanel, c);
 
@@ -181,6 +199,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		classField.getDocument().addDocumentListener(this);
 		classHolderPanel.add(classField);
 		HelpablePanel classHelpPanel = new HelpablePanel(classHolderPanel);
+		classHelpPanel.setHelpText(classHelpText);
 		classHelpPanel.setBorder(new TitledBorder("Class to investigate"));
 		panel.add(classHelpPanel, c);
 
@@ -246,7 +265,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		getContentPane().add(panel, BorderLayout.CENTER);
 	}
 	
-	private void addPredifinedEndpoints(){
+	private void addPredefinedEndpoints(){
 		endpointToDefaultGraph = new HashMap<URL, List<String>>();
 		for(SparqlEndpoint endpoint : SparqlEndpoint.listEndpoints()){
 			endpointToDefaultGraph.put(endpoint.getURL(), endpoint.getDefaultGraphURIs());
@@ -318,11 +337,34 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		message.setText("Checking SPARQL endpoint availability");
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
+		setLocale(Locale.ENGLISH);
 		mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
+		mon.setMillisToDecideToPopup(0);
+		mon.setMillisToPopup(0);
+		mon.getAccessibleContext().getLocale().setDefault(Locale.ENGLISH);
+		
+		t = new Timer(1000,new ActionListener() {
+			
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(mon.isCanceled()){
+					extractTask.cancel(true);
+					setCursor(null);
+					t.stop();
+					
+				}
+				
+			}
+		});
+		t.start();
 		
 		extractTask = new OntologyExtractingTask(this, mon);
 		extractTask.addPropertyChangeListener(this);
 		extractTask.execute();
+		
+		
 		
 	}
 	
@@ -470,8 +512,12 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 				okButton.setEnabled(true);
 				message.setText("<html><font color=\"green\">Fragment successfully extracted</html>");
 				
+			} else if(isCancelled()){
+				System.out.println("Canceled");
 			}
 		}
+		
+		
 		
 		private SortedSet<String> getPosExamples(String concept){
 			SortedSet<String> examples = new TreeSet<String>();
@@ -529,6 +575,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		 if ("progress" == evt.getPropertyName() ) {
 			 if(mon.isCanceled()){
 				 extractTask.cancel(true);
+				 this.setCursor(null);
 			 }
 		 }		
 	}

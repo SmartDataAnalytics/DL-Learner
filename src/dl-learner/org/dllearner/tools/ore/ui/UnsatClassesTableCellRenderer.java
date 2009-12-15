@@ -28,7 +28,7 @@ public class UnsatClassesTableCellRenderer extends DefaultTableCellRenderer {
 		if(value instanceof OWLClass){
 			if(rootClasses.contains((OWLClass)value)){
 //				setText(value.toString() );
-				setIcon(new ImageIcon("src/dl-learner/org/dllearner/tools/ore/information.png"));
+				setIcon(new ImageIcon(this.getClass().getResource("../information.png")));
 //				setHorizontalTextPosition(LEADING);
 			}
 			else {

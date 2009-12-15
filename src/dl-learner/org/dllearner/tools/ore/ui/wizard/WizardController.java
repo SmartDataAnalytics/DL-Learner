@@ -178,9 +178,14 @@ public class WizardController implements ActionListener {
 				LearningManager.getInstance().setNewDescriptions(descriptions);
 			}
 			
+		} else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ManualLearnPanelDescriptor.IDENTIFIER)){
+			OREManager oreMan = OREManager.getInstance();
+			oreMan.getModifier().addNewClassDescription(oreMan.getCurrentClass2Learn(), 
+					oreMan.getNewClassDescription().getDescription());
 		}
 			
 		else if(nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){
+			
 				RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
 						.getPanelHashMap().get(nextPanelDescriptor));
 				if(LearningManager.getInstance().getLearningMode() == LearningManager.AUTO_LEARN_MODE){
@@ -205,6 +210,22 @@ public class WizardController implements ActionListener {
 //					.getOntologyChanges().addAll(changes);
 
 		}
+		if(nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){
+			
+			RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
+					.getPanelHashMap().get(nextPanelDescriptor));
+			if(LearningManager.getInstance().getLearningMode() == LearningManager.AUTO_LEARN_MODE){
+				repair.setManualPanel(false);
+				repair.fillExamplesLists();
+			} else {
+				repair.setManualPanel(true);
+				repair.fillExamplesLists();
+			}
+			
+		
+		
+		
+	}
 		if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
 			wizard.close(Wizard.FINISH_RETURN_CODE);
 		} else {

@@ -34,7 +34,7 @@ public class ManchesterSyntaxTableCellRenderer extends DefaultTableCellRenderer 
 	}
 	
 	@Override
-	protected void setValue(Object value) {
+	protected void setValue(Object value) {System.out.println(value);
 		if(value instanceof Description){
 			OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
 			render(desc);
