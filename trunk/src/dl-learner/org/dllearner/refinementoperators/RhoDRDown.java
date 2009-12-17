@@ -228,6 +228,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
 		useStringDatatypes = configurator.getUseStringDatatypes();
+		instanceBasedDisjoints = configurator.getInstanceBasedDisjoints();
 		if(startClass != null) {
 			this.startClass = startClass;
 		}

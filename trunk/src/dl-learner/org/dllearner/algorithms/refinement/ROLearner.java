@@ -239,6 +239,7 @@ public class ROLearner extends LearningAlgorithm {
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
 		options.add(CommonConfigOptions.getLogLevel());
+		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
 		return options;
 	}
 	
