@@ -164,6 +164,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.getMaxDepth(7));
 		options.add(CommonConfigOptions.maxNrOfResults(10));
 		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
+		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
 		return options;
 	}
 	

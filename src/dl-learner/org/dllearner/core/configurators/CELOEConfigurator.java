@@ -183,6 +183,15 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "ma
 public boolean getSingleSuggestionMode() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "singleSuggestionMode") ;
 }
+/**
+* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getInstanceBasedDisjoints() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "instanceBasedDisjoints") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -308,6 +317,15 @@ reinitNecessary = true;
 **/
 public void setSingleSuggestionMode(boolean singleSuggestionMode) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "singleSuggestionMode", singleSuggestionMode);
+reinitNecessary = true;
+}
+/**
+* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "instanceBasedDisjoints", instanceBasedDisjoints);
 reinitNecessary = true;
 }
 

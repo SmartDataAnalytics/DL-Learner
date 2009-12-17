@@ -214,6 +214,7 @@ public class ROLComponent2 extends LearningAlgorithm {
 		options.add(new DoubleConfigOption("startNodeBonus", "You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space).",0.0));
 		options.add(new IntegerConfigOption("negationPenalty", "Penalty on negations (TODO: better explanation).", 0));
 		options.add(CommonConfigOptions.getExpansionPenaltyFactor(0.02));
+		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
 		return options;
 	}
 	

@@ -413,6 +413,15 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponen
 public double getExpansionPenaltyFactor() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "expansionPenaltyFactor") ;
 }
+/**
+* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getInstanceBasedDisjoints() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "instanceBasedDisjoints") ;
+}
 
 /**
 * @param writeSearchTree specifies whether to write a search tree.
@@ -763,6 +772,15 @@ reinitNecessary = true;
 **/
 public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
 ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "expansionPenaltyFactor", expansionPenaltyFactor);
+reinitNecessary = true;
+}
+/**
+* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "instanceBasedDisjoints", instanceBasedDisjoints);
 reinitNecessary = true;
 }
 

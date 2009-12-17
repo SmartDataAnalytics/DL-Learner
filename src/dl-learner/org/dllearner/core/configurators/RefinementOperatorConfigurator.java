@@ -39,6 +39,8 @@ public abstract class RefinementOperatorConfigurator {
 	
 	// below are optional parameters (neutral return values choosen)
 	
+	public abstract boolean getInstanceBasedDisjoints();
+	
 	public boolean getUseHasValueConstructor() {
 		return false;
 	}
