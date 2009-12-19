@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Map;
 
@@ -31,9 +32,13 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class NamedClass extends Description implements Entity, NamedKBElement, Comparable<NamedClass> {
+public class NamedClass extends Description implements Entity, NamedKBElement, Comparable<NamedClass>, Serializable {
 
-    private String name;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2316344469212256752L;
+	private String name;
     
 	public NamedClass(String name) {
         this.name = name;

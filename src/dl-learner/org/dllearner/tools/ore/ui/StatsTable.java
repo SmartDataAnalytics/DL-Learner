@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.ListSelectionModel;
 
-import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.semanticweb.owl.model.OWLOntologyChange;
 

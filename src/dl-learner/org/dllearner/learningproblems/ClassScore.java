@@ -19,6 +19,7 @@
  */
 package org.dllearner.learningproblems;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.dllearner.core.Score;
@@ -30,8 +31,12 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public class ClassScore extends Score {
+public class ClassScore extends Score implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2003326044901308157L;
 	private Set<Individual> coveredInstances;
 	private Set<Individual> additionalInstances;
 	

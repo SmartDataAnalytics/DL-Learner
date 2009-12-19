@@ -31,6 +31,11 @@ import java.util.Map;
 public class ObjectValueRestriction extends ValueRestriction {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2437223709767096950L;
+
+	/**
 	 * @param property
 	 */
 	public ObjectValueRestriction(Property property, Individual value) {

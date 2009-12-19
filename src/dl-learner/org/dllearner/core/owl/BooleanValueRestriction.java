@@ -30,6 +30,10 @@ import java.util.Map;
  */
 public class BooleanValueRestriction extends DatatypeValueRestriction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1653555689466334140L;
 	private boolean booleanValue;
 	
 	/**

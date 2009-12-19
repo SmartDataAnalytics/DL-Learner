@@ -5,6 +5,11 @@ import java.util.Map;
 
 public class Union extends Description {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4475957631228826618L;
+
 	public Union() {
 		
 	}

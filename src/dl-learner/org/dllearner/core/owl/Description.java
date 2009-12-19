@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,13 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public abstract class Description implements Cloneable, PropertyRange, KBElement {
+public abstract class Description implements Cloneable, PropertyRange, KBElement, Serializable {
 	
-    protected Description parent = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3439073654652166607L;
+	protected Description parent = null;
     protected List<Description> children = new LinkedList<Description>();
     
     public abstract int getArity();

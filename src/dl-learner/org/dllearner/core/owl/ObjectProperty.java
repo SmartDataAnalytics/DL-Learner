@@ -31,7 +31,12 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ObjectProperty extends ObjectPropertyExpression implements Property, Comparable<ObjectProperty> {
+public class ObjectProperty extends ObjectPropertyExpression implements Property, Comparable<ObjectProperty>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3343070247923446690L;
 
 	public ObjectProperty(String name) {
 		super(name);

@@ -2,6 +2,10 @@ package org.dllearner.core.owl;
 
 public abstract class ObjectCardinalityRestriction extends CardinalityRestriction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4891273304140021612L;
 	protected ObjectPropertyExpression role;
 	protected int number;
 	

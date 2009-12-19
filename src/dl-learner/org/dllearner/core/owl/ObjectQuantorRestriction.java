@@ -26,6 +26,11 @@ package org.dllearner.core.owl;
  */
 public abstract class ObjectQuantorRestriction extends QuantorRestriction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5482730659805823042L;
+
 	public ObjectQuantorRestriction(ObjectPropertyExpression role, Description c) {
 		super(role);
 		addChild(c);

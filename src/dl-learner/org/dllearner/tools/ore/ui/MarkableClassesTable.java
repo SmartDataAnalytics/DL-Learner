@@ -64,8 +64,8 @@ public class MarkableClassesTable extends JXTable {
 		((MarkableClassesTableModel)getModel()).addClasses(classes);
 	}
 	
-	public NamedClass getSelectedValue(){
-		return ((MarkableClassesTableModel)getModel()).getSelectedValue(getSelectedRow());
+	public NamedClass getSelectedClass(int rowIndex){
+		return ((MarkableClassesTableModel)getModel()).getSelectedValue(rowIndex);
 	}
 	
 	public void clear(){

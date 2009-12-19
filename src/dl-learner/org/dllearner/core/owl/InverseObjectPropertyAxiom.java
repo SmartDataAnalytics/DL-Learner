@@ -2,8 +2,6 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-import org.dllearner.utilities.Helper;
-
 public class InverseObjectPropertyAxiom extends PropertyAxiom {
 
 	private ObjectProperty inverseRole;

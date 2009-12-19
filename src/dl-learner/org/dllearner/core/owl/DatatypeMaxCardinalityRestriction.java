@@ -28,6 +28,11 @@ import java.util.Map;
 public class DatatypeMaxCardinalityRestriction extends DatatypeCardinalityRestriction {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6593396982074419677L;
+
+	/**
 	 * @param datatypeProperty
 	 * @param dataRange
 	 * @param cardinality

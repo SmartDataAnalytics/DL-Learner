@@ -5,6 +5,11 @@ import java.util.Map;
 
 public class Intersection extends Description {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 296837418292087387L;
+
 	public Intersection() {
 		
 	}

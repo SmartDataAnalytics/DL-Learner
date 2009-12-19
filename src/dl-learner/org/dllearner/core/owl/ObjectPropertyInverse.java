@@ -38,6 +38,11 @@ import org.dllearner.utilities.Helper;
  */
 public class ObjectPropertyInverse extends ObjectPropertyExpression {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5416117104822700896L;
+
 	public ObjectPropertyInverse(String name) {
 		super(name);
 	}
