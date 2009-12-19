@@ -100,7 +100,7 @@ public class ClassLearningProblem extends LearningProblem {
 		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
 		options.add(approxAccuracy);
 		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","standard"); //  or domain/range of a property.
-		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "predacc", "generalised_fmeasure", "jaccard"});
+		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "pred_acc", "generalised_fmeasure", "jaccard"});
 		options.add(accMethod);
 		return options;
 	}
@@ -123,7 +123,7 @@ public class ClassLearningProblem extends LearningProblem {
 			heuristic = HeuristicType.GEN_FMEASURE;
 		} else if(accM.equals("jaccard")) {
 			heuristic = HeuristicType.JACCARD;
-		} else if(accM.equals("predacc")) {
+		} else if(accM.equals("pred_acc")) {
 			heuristic = HeuristicType.PRED_ACC;
 		}
 		
@@ -437,7 +437,7 @@ public class ClassLearningProblem extends LearningProblem {
 			Set<Individual> union = Helper.union(classInstancesSet, additionalInstancesSet);
 			return (1 - (union.size() - coveredInstancesSet.size()) / (double) union.size());
 			
-		} else if (heuristic.equals(HeuristicType.OWN) || heuristic.equals(HeuristicType.FMEASURE)) {
+		} else if (heuristic.equals(HeuristicType.OWN) || heuristic.equals(HeuristicType.FMEASURE) || heuristic.equals(HeuristicType.PRED_ACC)) {
 			
 			// computing R(C) restricted to relevant instances
 			int additionalInstances = 0;
@@ -462,8 +462,17 @@ public class ClassLearningProblem extends LearningProblem {
 			}
 			
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
-			
-			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
+
+			if(heuristic.equals(HeuristicType.OWN)) {
+				return getAccuracy(recall, precision);
+			} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+				return getFMeasure(recall, precision);
+			} else if(heuristic.equals(HeuristicType.PRED_ACC)) {
+				// correctly classified divided by all examples
+				return (coveredInstances + superClassInstances.size() - additionalInstances) / (double) (classInstances.size() + superClassInstances.size());
+			}
+
+//			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
 		}
 		
 		throw new Error("ClassLearningProblem error: not implemented");
