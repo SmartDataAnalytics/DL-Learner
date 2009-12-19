@@ -42,6 +42,7 @@ import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.utilities.Helper;
 
 /**
  * The problem of learning the description of an existing class
@@ -58,19 +59,23 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	private NamedClass classToDescribe;
 	private List<Individual> classInstances;
+	private TreeSet<Individual> classInstancesSet;
 	private boolean equivalence = true;
 	private ClassLearningProblemConfigurator configurator;
 	// approximation of accuracy +- 0.05 %
 	private double approx = 0.05;
 	
 	private boolean useApproximations;
-	private boolean useFMeasure;
+//	private boolean useFMeasure;
 	
 	// factor for higher weight on coverage (needed for subclass learning)
 	private double coverageFactor;
 	
 	// instances of super classes excluding instances of the class itself
 	private List<Individual> superClassInstances;
+	
+	private enum HeuristicType { PRED_ACC, OWN, JACCARD, FMEASURE, GEN_FMEASURE };
+	private HeuristicType heuristic = HeuristicType.OWN;
 	
 	@Override
 	public ClassLearningProblemConfigurator getConfigurator(){
@@ -95,7 +100,7 @@ public class ClassLearningProblem extends LearningProblem {
 		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
 		options.add(approxAccuracy);
 		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","standard"); //  or domain/range of a property.
-		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "predacc"});
+		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "predacc", "generalised_fmeasure", "jaccard"});
 		options.add(accMethod);
 		return options;
 	}
@@ -108,7 +113,25 @@ public class ClassLearningProblem extends LearningProblem {
 	public void init() throws ComponentInitException {
 		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
 		useApproximations = configurator.getUseApproximations();
-		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
+		
+		String accM = configurator.getAccuracyMethod();
+		if(accM.equals("standard")) {
+			heuristic = HeuristicType.OWN;
+		} else if(accM.equals("fmeasure")) {
+			heuristic = HeuristicType.FMEASURE;
+		} else if(accM.equals("generalised_fmeasure")) {
+			heuristic = HeuristicType.GEN_FMEASURE;
+		} else if(accM.equals("jaccard")) {
+			heuristic = HeuristicType.JACCARD;
+		} else if(accM.equals("predacc")) {
+			heuristic = HeuristicType.PRED_ACC;
+		}
+		
+		if(useApproximations && !(heuristic.equals(HeuristicType.OWN) || heuristic.equals(HeuristicType.FMEASURE))) {
+			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + accM + ".\"");
+		}
+		
+//		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
 		approx = configurator.getApproxAccuracy();
 		
 		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
@@ -116,6 +139,7 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 		
 		classInstances = new LinkedList<Individual>(reasoner.getIndividuals(classToDescribe));
+		classInstancesSet = new TreeSet<Individual>(classInstances);
 		equivalence = (configurator.getType().equals("equivalence"));
 		
 		if(equivalence) {
@@ -188,7 +212,17 @@ public class ClassLearningProblem extends LearningProblem {
 		// we check whether the axiom already follows from the knowledge base
 		boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);
 		
-		double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
+		double acc = 0;
+		if(heuristic.equals(HeuristicType.FMEASURE)) {
+			acc = getFMeasure(coverage, protusion);
+		} else if(heuristic.equals(HeuristicType.OWN)) {
+			acc = getAccuracy(coverage, protusion);
+		} else {
+			// TODO: some superfluous instance checks are required to compute accuracy => 
+			// move accuracy computation here if possible 
+			acc = getAccuracyOrTooWeakExact(description, 1);
+		}
+//		double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
 		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, acc, isConsistent, followsFromKB);
 	}	
 	
@@ -339,10 +373,10 @@ public class ClassLearningProblem extends LearningProblem {
 				double size;
 				if(estimatedA) {
 //					size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-					size = useFMeasure ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+					size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
 				} else {
 //					size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-					size = useFMeasure ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
+					size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
 				}
 				
 				if(size < 0.1) {
@@ -375,34 +409,64 @@ public class ClassLearningProblem extends LearningProblem {
 //		System.out.println("standard acc: " + getAccuracy(recall, precision));
 		
 //		return getAccuracy(recall, precision);
-		return useFMeasure ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
+		return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
 	}
 	
 	public double getAccuracyOrTooWeakExact(Description description, double noise) {
 
-		int additionalInstances = 0;
-		for(Individual ind : superClassInstances) {
-			if(reasoner.hasType(description, ind)) {
-				additionalInstances++;
+		if(heuristic.equals(HeuristicType.JACCARD)) {
+			
+			// computing R(C) restricted to relevant instances
+			TreeSet<Individual> additionalInstancesSet = new TreeSet<Individual>();
+			for(Individual ind : superClassInstances) {
+				if(reasoner.hasType(description, ind)) {
+					additionalInstancesSet.add(ind);
+				}
 			}
-		}
-		
-		int coveredInstances = 0;
-		for(Individual ind : classInstances) {
-			if(reasoner.hasType(description, ind)) {
-				coveredInstances++;
+				
+			// computing R(A)
+			TreeSet<Individual> coveredInstancesSet = new TreeSet<Individual>();
+			for(Individual ind : classInstances) {
+				if(reasoner.hasType(description, ind)) {
+					coveredInstancesSet.add(ind);
+				}
+			}			
+			
+			// for Jaccard: covered instances is the intersection of the sets
+			// R(A) and R(C); 
+			Set<Individual> union = Helper.union(classInstancesSet, additionalInstancesSet);
+			return (1 - (union.size() - coveredInstancesSet.size()) / (double) union.size());
+			
+		} else if (heuristic.equals(HeuristicType.OWN) || heuristic.equals(HeuristicType.FMEASURE)) {
+			
+			// computing R(C) restricted to relevant instances
+			int additionalInstances = 0;
+			for(Individual ind : superClassInstances) {
+				if(reasoner.hasType(description, ind)) {
+					additionalInstances++;
+				}
 			}
+			
+			// computing R(A)
+			int coveredInstances = 0;
+			for(Individual ind : classInstances) {
+				if(reasoner.hasType(description, ind)) {
+					coveredInstances++;
+				}
+			}
+			
+			double recall = coveredInstances/(double)classInstances.size();
+			
+			if(recall < 1 - noise) {
+				return -1;
+			}
+			
+			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
+			
+			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
 		}
 		
-		double recall = coveredInstances/(double)classInstances.size();
-		
-		if(recall < 1 - noise) {
-			return -1;
-		}
-		
-		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
-		
-		return useFMeasure ? getFMeasure(recall, precision) : getAccuracy(recall, precision);		
+		throw new Error("ClassLearningProblem error: not implemented");
 	}
 	
 //	@Deprecated
@@ -477,6 +541,13 @@ public class ClassLearningProblem extends LearningProblem {
 	public double getGeneralisedPrecision() {
 		return 0;
 	}		
+	
+	@SuppressWarnings("unused")
+	private double getInverseJaccardDistance(TreeSet<Individual> set1, TreeSet<Individual> set2) {
+		Set<Individual> intersection = Helper.intersection(set1, set2);
+		Set<Individual> union = Helper.union(set1, set2);
+		return 1 - (union.size() - intersection.size()) / (double) union.size();
+	}
 	
 	// computes accuracy from coverage and protusion (changing this function may
 	// make it necessary to change the appoximation too)
