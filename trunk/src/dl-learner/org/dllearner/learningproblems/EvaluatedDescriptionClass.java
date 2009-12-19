@@ -19,6 +19,7 @@
  */
 package org.dllearner.learningproblems;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
@@ -37,8 +38,12 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionClass extends EvaluatedDescription {
+public class EvaluatedDescriptionClass extends EvaluatedDescription implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5907640793141522431L;
 	private ClassScore classScore;
 	
 	/**

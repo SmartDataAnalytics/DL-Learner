@@ -32,6 +32,10 @@ import java.util.Map;
  */
 public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9190086621306032225L;
 	DataRange dataRange;
 	
 	/**

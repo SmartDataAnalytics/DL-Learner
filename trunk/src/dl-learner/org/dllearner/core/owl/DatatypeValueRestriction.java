@@ -31,6 +31,11 @@ import java.util.Map;
  */
 public abstract class DatatypeValueRestriction extends ValueRestriction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3263813180892609631L;
+
 	public DatatypeValueRestriction(DatatypeProperty restrictedPropertyExpression, Constant value) {
 		super(restrictedPropertyExpression, value);
 	}

@@ -19,6 +19,7 @@
  */
 package org.dllearner.core;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import org.dllearner.core.owl.Description;
@@ -36,8 +37,12 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescription {
+public class EvaluatedDescription implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1106431570510815033L;
 	protected Description description;
 	protected Score score;
 	

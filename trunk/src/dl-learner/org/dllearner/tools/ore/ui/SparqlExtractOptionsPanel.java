@@ -177,7 +177,7 @@ public class SparqlExtractOptionsPanel extends JPanel{
 		breakSuperClassRetrievalAfterSpinner.setValue(1000);
 		useCacheCheckBox.setSelected(true);
 		useImprovedSparqlTupelAquisitorCheckBox.setSelected(false);
-		dissolveBlankNodesCheckBox.setSelected(true);
+		dissolveBlankNodesCheckBox.setSelected(false);
 		getPropertyInformationCheckBox.setSelected(false);
 		closeAfterRecursionCheckBox.setSelected(true);
 		getAllSuperClassesCheckBox.setSelected(true);

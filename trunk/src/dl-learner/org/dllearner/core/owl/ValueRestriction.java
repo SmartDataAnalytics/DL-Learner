@@ -27,6 +27,10 @@ package org.dllearner.core.owl;
  */
 public abstract class ValueRestriction extends Restriction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4597259716399359860L;
 	protected KBElement value;
 	
 	public ValueRestriction(PropertyExpression propertyExpression, KBElement value) {

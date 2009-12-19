@@ -14,6 +14,11 @@ public class Negation extends Description {
     }
     */
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3007095278542800128L;
+
 	public Negation(Description c) {
 		addChild(c);
 	}
