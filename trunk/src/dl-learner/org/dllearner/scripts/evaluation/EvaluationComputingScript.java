@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -56,7 +55,7 @@ public class EvaluationComputingScript {
 	// for performance measurements and development
 	private static boolean autoMode = false;
 	private static boolean useFastInstanceChecker = true;
-	private static boolean useApproximations = true;
+	private static boolean useApproximations = false;
 	private static boolean computeApproxDiff = false;
 	
 	
@@ -95,6 +94,7 @@ public class EvaluationComputingScript {
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
 		loadOntology(fileURL);
 		computeSuggestions();
+		computeWithApproximation();
 		saveResults();
 	}
 	
@@ -140,8 +140,8 @@ public class EvaluationComputingScript {
 			o.writeObject(fastSuperJaccardMap);
 //			o.writeObject(fastSuperGenFMeasureMap);
 			
-//			o.writeObject(defaultEquivalenceMap);
-//			o.writeObject(defaultSuperMap);
+			o.writeObject(defaultEquivalenceMap);
+			o.writeObject(defaultSuperMap);
 			
 			o.flush();
 		} catch (IOException e) {
@@ -210,7 +210,7 @@ public class EvaluationComputingScript {
 									lp.getConfigurator().setAccuracyMethod("jaccard");
 									System.out.println("Using accuracy method: Jaccard");
 								}
-								lp.getConfigurator().setUseApproximations(false);
+								lp.getConfigurator().setUseApproximations(useApproximations);
 								lp.init();
 								CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 								CELOEConfigurator cf = celoe.getConfigurator();
@@ -237,13 +237,16 @@ public class EvaluationComputingScript {
 															prefixes)
 													+ "\" with an accuracy of "
 													+ df.format(bestAcc) + ".) - skipping");
+									suggestions = new TreeSet<EvaluatedDescriptionClass>();
 								} else {
 
 
 									suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
 											.getCurrentlyBestEvaluatedDescriptions();
+								}
 									List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
 											suggestions.descendingSet());
+								
 									if(i == 0){
 										if(j == 0){
 											if(k == 0){
@@ -289,14 +292,95 @@ public class EvaluationComputingScript {
 											}
 										}
 									}
-							}
+//							}
 							cm.freeComponent(celoe);
 //							cm.freeComponent(lp);
 						}
 					}
 				}
+				cm.freeComponent(lp);
+			}
+			cm.freeComponent(reasoner);
+		}
+	}
+	
+	private void computeWithApproximation() throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException {
+		ComponentManager cm = ComponentManager.getInstance();
+		TreeSet<EvaluatedDescriptionClass> suggestions;
+		reasoner = null;
+		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		reasoner.init();
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
+
+		// loop through all classes
+		Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
+		classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
+		// reduce number of classes for testing purposes
+		// shrinkSet(classes, 20);
+		for (NamedClass nc : classes) {
+			// check whether the class has sufficient instances
+			int instanceCount = reasoner.getIndividuals(nc).size();
+			if (instanceCount < minInstanceCount) {
+				System.out.println("class " + nc.toManchesterSyntaxString(baseURI, prefixes) + " has only "
+						+ instanceCount + " instances (minimum: " + minInstanceCount + ") - skipping");
+			} else {
+				System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
+						+ " with " + instanceCount + " instances");
+				ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+				lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+				for (int i = 0; i <= 1; i++) {
+					if (i == 0) {
+						lp.getConfigurator().setType("equivalence");
+						System.out.println("Learning equivalentClass expressions");
+					} else {
+						lp.getConfigurator().setType("superClass");
+						System.out.println("Learning superClass expressions");
+					}
+					lp.getConfigurator().setUseApproximations(true);
+					lp.init();
+					CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+					CELOEConfigurator cf = celoe.getConfigurator();
+					cf.setUseNegation(false);
+					cf.setValueFrequencyThreshold(3);
+					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+					cf.setNoisePercentage(noisePercent);
+					cf.setMaxNrOfResults(10);
+					celoe.init();
+
+					celoe.start();
+
+					// test whether a solution above the threshold was found
+					EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
+					double bestAcc = best.getAccuracy();
+
+					if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
+						System.out
+								.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
+										+ (100 * minAccuracy)
+										+ "% or the best description is not appropriate. (The best one was \""
+										+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+										+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
+					} else {
+
+						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+								.getCurrentlyBestEvaluatedDescriptions();
+						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+								suggestions.descendingSet());
+						if (i == 0) {
+							defaultEquivalenceMap.put(nc, suggestionsList);
+						} else {
+							defaultSuperMap.put(nc, suggestionsList);
+						}
+					}
+				}
+
+				cm.freeComponent(celoe);
+				cm.freeComponent(lp);
+
 			}
 		}
+
 	}
 
 	/**
