@@ -69,4 +69,9 @@ public class ResultTable extends JXTable {
 	public EvaluatedDescriptionClass getSelectedValue(){	
 		return ((ResultTableModel)getModel()).getSelectedValue(getSelectedRow());
 	}
+	
+	public EvaluatedDescriptionClass getValueAtRow(int rowIndex){
+		return ((ResultTableModel)getModel()).getValueAtRow(rowIndex);
+		
+	}
 }

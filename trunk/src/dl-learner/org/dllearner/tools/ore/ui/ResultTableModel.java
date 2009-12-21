@@ -86,5 +86,9 @@ public class ResultTableModel extends AbstractTableModel {
 	public int getSelectionIndex(EvaluatedDescriptionClass e){
 		return resultList.indexOf(e);
 	}
+	
+	public EvaluatedDescriptionClass getValueAtRow(int rowIndex){
+		return resultList.get(rowIndex);
+	}
 
 }
