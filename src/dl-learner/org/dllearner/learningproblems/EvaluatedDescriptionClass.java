@@ -92,6 +92,15 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 
 	/**
 	 * 
+	 * @return The instances of the class not covered by the class description.
+	 * @see org.dllearner.learningproblems.ClassScore#getCoveredInstances()
+	 */
+	public Set<Individual> getNotCoveredInstances() {
+		return classScore.getNotCoveredInstances();
+	}	
+	
+	/**
+	 * 
 	 * @return True if adding the axiom to the knowledge base leads to an inconsistent knowledge base. False otherwise.
 	 */
 	public boolean isConsistent() {
