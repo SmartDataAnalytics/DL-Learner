@@ -47,7 +47,7 @@ public class ClassScore extends Score implements Serializable{
 	private boolean isConsistent;
 	private boolean followsFromKB;
 	
-	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
+	public ClassScore(Set<Individual> coveredInstances, Set<Individual> notCoveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
 		this.coveredInstances = coveredInstances;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
