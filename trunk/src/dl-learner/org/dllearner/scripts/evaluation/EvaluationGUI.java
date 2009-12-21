@@ -123,6 +123,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	public EvaluationGUI(File input) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
 		super();
 		loadResults(input);
+		setTitle(input.getName());
 		createUI();
 		classesTable.setSelectedClass(currentClassIndex);
 		showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
@@ -193,7 +194,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	
 	private JPanel createMultiTablesPanel(){
 		JPanel tablesHolderPanel = new JPanel();
-		tablesHolderPanel.setLayout(new GridLayout(5, 2));
+		tablesHolderPanel.setLayout(new GridLayout(5, 2, 5, 5));
 		tab1 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab1));
 		tab2 = new ResultTable();
