@@ -38,6 +38,8 @@ public class ClassScore extends Score implements Serializable{
 	 */
 	private static final long serialVersionUID = 2003326044901308157L;
 	private Set<Individual> coveredInstances;
+	private Set<Individual> notCoveredInstances;
+
 	private Set<Individual> additionalInstances;
 	
 	private double coverage;
@@ -49,6 +51,7 @@ public class ClassScore extends Score implements Serializable{
 	
 	public ClassScore(Set<Individual> coveredInstances, Set<Individual> notCoveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
 		this.coveredInstances = coveredInstances;
+		this.notCoveredInstances = notCoveredInstances;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
 		this.addition = protusion;
@@ -90,6 +93,13 @@ public class ClassScore extends Score implements Serializable{
 		return coveredInstances;
 	}
 
+	/**
+	 * @return the notCoveredInstances
+	 */
+	public Set<Individual> getNotCoveredInstances() {
+		return notCoveredInstances;
+	}	
+	
 	/**
 	 * @return the additionalInstances
 	 */
