@@ -573,7 +573,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 				}
 			}
 
-			Set<Individual> notCovInd = OREManager.getInstance().getPositiveFailureExamples();
+			Set<Individual> notCovInd = ((EvaluatedDescriptionClass) eval).getNotCoveredInstances();
+			
 			
 //			notCoveredInd = notCovInd.size();
 			int k = 0;
