@@ -37,10 +37,12 @@ import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.utilities.Helper;
 
@@ -73,6 +75,12 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	// instances of super classes excluding instances of the class itself
 	private List<Individual> superClassInstances;
+	// instances of super classes including instances of the class itself
+	private List<Individual> classAndSuperClassInstances;
+	
+	// specific variables for generalised F-measure
+//	private Set<Individual> dcPos; => not need, is the same as classInstances
+	private TreeSet<Individual> negatedClassInstances;
 	
 	private enum HeuristicType { PRED_ACC, OWN, JACCARD, FMEASURE, GEN_FMEASURE };
 	private HeuristicType heuristic = HeuristicType.OWN;
@@ -155,6 +163,9 @@ public class ClassLearningProblem extends LearningProblem {
 		for(Description superClass : superClasses) {
 			superClassInstancesTmp.retainAll(reasoner.getIndividuals(superClass));
 		}
+		// we create one list, which includes instances of the class (an instance of the class is also instance of all super classes) ...
+		classAndSuperClassInstances = new LinkedList<Individual>(superClassInstancesTmp);
+		// ... and a second list not including them
 		superClassInstancesTmp.removeAll(classInstances);
 		// since we use the instance list for approximations, we want to avoid
 		// any bias through URI names, so we shuffle the list once pseudo-randomly
@@ -163,7 +174,17 @@ public class ClassLearningProblem extends LearningProblem {
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 		
-		System.out.println(classInstances.size() + " " + superClassInstances.size());
+		if(heuristic.equals(HeuristicType.GEN_FMEASURE)) {
+			Description classToDescribeNeg = new Negation(classToDescribe);
+			negatedClassInstances = new TreeSet<Individual>();
+			for(Individual ind : superClassInstances) {
+				if(reasoner.hasType(classToDescribeNeg, ind)) {
+					negatedClassInstances.add(ind);
+				}
+			}
+		}
+		
+//		System.out.println(classInstances.size() + " " + superClassInstances.size());
 	}
 	
 	/**
@@ -412,6 +433,11 @@ public class ClassLearningProblem extends LearningProblem {
 		return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
 	}
 	
+	//////
+	// TODO: Adaption to super class learning case needs to be made for each heuristic!
+	// TODO: noise parameter is not used by some heuristics
+	//////
+	
 	public double getAccuracyOrTooWeakExact(Description description, double noise) {
 
 		if(heuristic.equals(HeuristicType.JACCARD)) {
@@ -473,6 +499,38 @@ public class ClassLearningProblem extends LearningProblem {
 			}
 
 //			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
+		} else if (heuristic.equals(HeuristicType.GEN_FMEASURE)) {
+			
+			// implementation is based on:
+			// http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
+			// default negation should be turned off when using fast instance checker
+			
+			// compute I_C (negated and non-negated concepts separately)
+			TreeSet<Individual> icPos = new TreeSet<Individual>();
+			TreeSet<Individual> icNeg = new TreeSet<Individual>();
+			Description descriptionNeg = new Negation(description);
+			// loop through all relevant instances
+			for(Individual ind : classAndSuperClassInstances) {
+				if(reasoner.hasType(description, ind)) {
+					icPos.add(ind);
+				} else if(reasoner.hasType(descriptionNeg, ind)) {
+					icNeg.add(ind);
+				}
+			}
+			
+			// semantic precision
+			// first compute I_C \cap Cn(DC)
+			// => TODO: we ignore Cn for now, because it is not clear how to implement it
+			Set<Individual> tmp1Pos = Helper.intersection(icPos, classInstancesSet);
+			Set<Individual> tmp1Neg = Helper.intersection(icNeg, negatedClassInstances);
+			int tmp1Size = tmp1Pos.size() + tmp1Neg.size();
+			
+			// Cn(I_C) \cap D_C is the same set if we ignore Cn ...
+			
+			double prec = tmp1Size / (double) (icPos.size() + icNeg.size());
+			double rec = tmp1Size / (double) (classInstances.size() + negatedClassInstances.size());
+			
+			return getFMeasure(rec,prec);
 		}
 		
 		throw new Error("ClassLearningProblem error: not implemented");
@@ -565,7 +623,7 @@ public class ClassLearningProblem extends LearningProblem {
 	}
 	
 	private double getFMeasure(double recall, double precision) {
-		return 2 * precision * recall / (precision + recall);
+		return (precision + recall == 0) ? 0 : 2 * precision * recall / (precision + recall);
 	}
 	
 	// see paper: expression used in confidence interval estimation
