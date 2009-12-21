@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -44,7 +47,7 @@ import org.dllearner.tools.ore.ui.MarkableClassesTable;
 import org.dllearner.tools.ore.ui.ResultTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 
-public class EvaluationGUI extends JFrame implements ActionListener, ListSelectionListener{
+public class EvaluationGUI extends JFrame implements ActionListener, ListSelectionListener, MouseMotionListener{
 	
 	
 	
@@ -67,10 +70,13 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private SelectableClassExpressionsTable defaultTab;
 	
 	private GraphicalCoveragePanel graphPanel;
+	private GraphicalCoveragePanel graphPanel2;
 	
 	private MarkableClassesTable classesTable;
 	private JButton nextFinishButton;
 	private JLabel messageLabel;
+	
+	private JWindow coverageWindow;
 	
 	private JPanel cardPanel;
 	private CardLayout cardLayout;
@@ -125,6 +131,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		loadResults(input);
 		setTitle(input.getName());
 		createUI();
+		createCoverageWindow();
 		classesTable.setSelectedClass(currentClassIndex);
 		showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
 		cardLayout.last(cardPanel);
@@ -196,24 +203,34 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		JPanel tablesHolderPanel = new JPanel();
 		tablesHolderPanel.setLayout(new GridLayout(5, 2, 5, 5));
 		tab1 = new ResultTable();
+		tab1.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab1));
 		tab2 = new ResultTable();
+		tab2.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab2));
 		tab3 = new ResultTable();
+		tab3.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab3));
 		tab4 = new ResultTable();
+		tab4.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab4));
 		tab5 = new ResultTable();
+		tab5.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab5));
 		tab6 = new ResultTable();
+		tab6.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab6));
 		tab7 = new ResultTable();
+		tab7.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab7));
 		tab8 = new ResultTable();
+		tab8.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab8));
 		tab9 = new ResultTable();
+		tab9.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab9));
 		tab10 = new ResultTable();
+		tab10.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab10));
 		
 		return tablesHolderPanel;
@@ -280,6 +297,14 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		
 		showingEquivalentSuggestions = false;
 	}
+	
+	private void createCoverageWindow(){
+		coverageWindow = new JWindow(this);
+		graphPanel2 = new GraphicalCoveragePanel("");
+		coverageWindow.add(graphPanel2);
+		coverageWindow.pack();
+		coverageWindow.setLocationRelativeTo(classesTable);
+	}
 
 	@SuppressWarnings("unchecked")
 	private void loadResults(File input) {
@@ -335,6 +360,11 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		dispose();
 	}
 	
+	
+	private void showCoveragePanel(boolean visible){
+		coverageWindow.setVisible(visible);
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("next")){
@@ -372,6 +402,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		}
 		
 	}
+	
+	
+	
 
 	/**
 	 * @param args
@@ -414,8 +447,29 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		
 	}
 
-	
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 
-	
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		ResultTable result = ((ResultTable)e.getSource());
+		int column = result.columnAtPoint(e.getPoint());
+		int row = result.rowAtPoint(e.getPoint());
+		EvaluatedDescriptionClass ec = result.getValueAtRow(row);
+		if(column == 0){
+			graphPanel2.clear();
+			graphPanel2.setNewClassDescription(ec);
+			showCoveragePanel(true);
+			
+		} else {
+			showCoveragePanel(false);
+		}
+		
+	} 
+		
+		
 
 }
