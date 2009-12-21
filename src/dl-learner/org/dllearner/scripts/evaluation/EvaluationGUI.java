@@ -32,15 +32,19 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.MarkableClassesTable;
+import org.dllearner.tools.ore.ui.ResultTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 
-public class EvaluationGUI extends JFrame implements ActionListener{
+public class EvaluationGUI extends JFrame implements ActionListener, ListSelectionListener{
 	
 	
 	
@@ -49,16 +53,20 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = -3097551929270352556L;
 	
-	private SelectableClassExpressionsTable tab1;
-	private SelectableClassExpressionsTable tab2;
-	private SelectableClassExpressionsTable tab3;
-	private SelectableClassExpressionsTable tab4;
-	private SelectableClassExpressionsTable tab5;
-	private SelectableClassExpressionsTable tab6;
-	private SelectableClassExpressionsTable tab7;
-	private SelectableClassExpressionsTable tab8;
+	private ResultTable tab1;
+	private ResultTable tab2;
+	private ResultTable tab3;
+	private ResultTable tab4;
+	private ResultTable tab5;
+	private ResultTable tab6;
+	private ResultTable tab7;
+	private ResultTable tab8;
+	private ResultTable tab9;
+	private ResultTable tab10;
 	
 	private SelectableClassExpressionsTable defaultTab;
+	
+	private GraphicalCoveragePanel graphPanel;
 	
 	private MarkableClassesTable classesTable;
 	private JButton nextFinishButton;
@@ -173,7 +181,12 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 	private JPanel createSingleTablePanel(){
 		JPanel tableHolderPanel = new JPanel(new BorderLayout());
 		defaultTab = new SelectableClassExpressionsTable();
+		defaultTab.getSelectionModel().addListSelectionListener(this);
 		tableHolderPanel.add(defaultTab);
+		
+		graphPanel = new GraphicalCoveragePanel("");
+		tableHolderPanel.add(graphPanel, BorderLayout.EAST);
+		
 		
 		return tableHolderPanel;
 	}
@@ -181,27 +194,31 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 	private JPanel createMultiTablesPanel(){
 		JPanel tablesHolderPanel = new JPanel();
 		tablesHolderPanel.setLayout(new GridLayout(5, 2));
-		tab1 = new SelectableClassExpressionsTable();
+		tab1 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab1));
-		tab2 = new SelectableClassExpressionsTable();
+		tab2 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab2));
-		tab3 = new SelectableClassExpressionsTable();
+		tab3 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab3));
-		tab4 = new SelectableClassExpressionsTable();
+		tab4 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab4));
-		tab5 = new SelectableClassExpressionsTable();
+		tab5 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab5));
-		tab6 = new SelectableClassExpressionsTable();
+		tab6 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab6));
-		tab7 = new SelectableClassExpressionsTable();
+		tab7 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab7));
-		tab8 = new SelectableClassExpressionsTable();
+		tab8 = new ResultTable();
 		tablesHolderPanel.add(createSelectablePanel(tab8));
+		tab9 = new ResultTable();
+		tablesHolderPanel.add(createSelectablePanel(tab9));
+		tab10 = new ResultTable();
+		tablesHolderPanel.add(createSelectablePanel(tab10));
 		
 		return tablesHolderPanel;
 	}
 	
-	private JPanel createSelectablePanel(SelectableClassExpressionsTable table){
+	private JPanel createSelectablePanel(ResultTable table){
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		JCheckBox box = new JCheckBox();
@@ -212,6 +229,8 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 	}
 	
 	private void showSingleTable(){
+		defaultTab.clearSelection();
+		graphPanel.clear();
 		cardLayout.first(cardPanel);
 		showingMultiTables = false;
 	}
@@ -228,11 +247,13 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 		tab2.addResults(owlEquivalenceFMeasureMap.get(nc));
 		tab3.addResults(owlEquivalencePredaccMap.get(nc));
 		tab4.addResults(owlEquivalenceJaccardMap.get(nc));
+		tab5.addResults(owlEquivalenceGenFMeasureMap.get(nc));
 		
-		tab5.addResults(fastEquivalenceStandardMap.get(nc));
-		tab6.addResults(fastEquivalenceFMeasureMap.get(nc));
-		tab7.addResults(fastEquivalencePredaccMap.get(nc));
-		tab8.addResults(fastEquivalenceJaccardMap.get(nc));
+		tab6.addResults(fastEquivalenceStandardMap.get(nc));
+		tab7.addResults(fastEquivalenceFMeasureMap.get(nc));
+		tab8.addResults(fastEquivalencePredaccMap.get(nc));
+		tab9.addResults(fastEquivalenceJaccardMap.get(nc));
+		tab10.addResults(fastEquivalenceGenFMeasureMap.get(nc));
 		
 		defaultTab.addResults(defaultEquivalenceMap.get(nc));
 		
@@ -246,13 +267,15 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 		tab2.addResults(owlSuperFMeasureMap.get(nc));
 		tab3.addResults(owlSuperPredaccMap.get(nc));
 		tab4.addResults(owlSuperJaccardMap.get(nc));
+		tab5.addResults(owlSuperGenFMeasureMap.get(nc));
 		
-		tab5.addResults(fastSuperStandardMap.get(nc));
-		tab6.addResults(fastSuperFMeasureMap.get(nc));
-		tab7.addResults(fastSuperPredaccMap.get(nc));
-		tab8.addResults(fastSuperJaccardMap.get(nc));
+		tab6.addResults(fastSuperStandardMap.get(nc));
+		tab7.addResults(fastSuperFMeasureMap.get(nc));
+		tab8.addResults(fastSuperPredaccMap.get(nc));
+		tab9.addResults(fastSuperJaccardMap.get(nc));
+		tab10.addResults(fastSuperGenFMeasureMap.get(nc));
 		
-		defaultTab.addResults(defaultEquivalenceMap.get(nc));
+		defaultTab.addResults(defaultSuperMap.get(nc));
 		
 		showingEquivalentSuggestions = false;
 	}
@@ -269,25 +292,25 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 			owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-//			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
 			owlSuperStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlSuperFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlSuperPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlSuperJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();	
-//			owlSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
 			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-//			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
 			fastSuperStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastSuperFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastSuperPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastSuperJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-//			fastSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
 			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			defaultSuperMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
@@ -318,7 +341,6 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 			if(showingMultiTables && showingEquivalentSuggestions){
 				showSingleTable();
 			} else if(!showingMultiTables && showingEquivalentSuggestions){
-				selectedEquivalenceMap.put(nc, defaultTab.getSelectedValue());
 				showSuperSuggestions(nc);
 				showMultiTables();
 			} else if(showingMultiTables && !showingEquivalentSuggestions){
@@ -328,7 +350,7 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 					nextFinishButton.setActionCommand("finish");
 				}
 			} else {
-				selectedSuperMap.put(nc, defaultTab.getSelectedValue());
+				
 				currentClassIndex++;
 				classesTable.setSelectedClass(currentClassIndex);
 				showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
@@ -338,6 +360,14 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 		} else if(e.getActionCommand().equals("finish")){
 			
 			closeDialog();
+		}
+		
+	}
+	
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if(!e.getValueIsAdjusting() && defaultTab.getSelectedRow() >= 0){
+			graphPanel.setNewClassDescription(defaultTab.getSelectedValue());
 		}
 		
 	}
@@ -382,6 +412,8 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 		});
 		
 	}
+
+	
 
 	
 

@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -120,25 +119,25 @@ public class EvaluationComputingScript {
 			o.writeObject(owlEquivalenceFMeasureMap);
 			o.writeObject(owlEquivalencePredaccMap);
 			o.writeObject(owlEquivalenceJaccardMap);
-//			o.writeObject(owlEquivalenceGenFMeasureMap);
+			o.writeObject(owlEquivalenceGenFMeasureMap);
 			
 			o.writeObject(owlSuperStandardMap);
 			o.writeObject(owlSuperFMeasureMap);
 			o.writeObject(owlSuperPredaccMap);
 			o.writeObject(owlSuperJaccardMap);
-//			o.writeObject(owlSuperGenFMeasureMap);
+			o.writeObject(owlSuperGenFMeasureMap);
 			
 			o.writeObject(fastEquivalenceStandardMap);
 			o.writeObject(fastEquivalenceFMeasureMap);
 			o.writeObject(fastEquivalencePredaccMap);
 			o.writeObject(fastEquivalenceJaccardMap);
-//			o.writeObject(fastEquivalenceGenFMeasureMap);
+			o.writeObject(fastEquivalenceGenFMeasureMap);
 			
 			o.writeObject(fastSuperStandardMap);
 			o.writeObject(fastSuperFMeasureMap);
 			o.writeObject(fastSuperPredaccMap);
 			o.writeObject(fastSuperJaccardMap);
-//			o.writeObject(fastSuperGenFMeasureMap);
+			o.writeObject(fastSuperGenFMeasureMap);
 			
 			o.writeObject(defaultEquivalenceMap);
 			o.writeObject(defaultSuperMap);
@@ -196,7 +195,7 @@ public class EvaluationComputingScript {
 							lp.getConfigurator().setType("superClass");
 							System.out.println("Learning superClass expressions");
 						}
-						for(int k = 0; k <= 3; k++){
+						for(int k = 0; k <= 4; k++){
 							if(k == 0){
 									lp.getConfigurator().setAccuracyMethod("standard");
 									System.out.println("Using accuracy method: standard");
@@ -206,9 +205,12 @@ public class EvaluationComputingScript {
 								} else if(k == 2){
 									lp.getConfigurator().setAccuracyMethod("pred_acc");
 									System.out.println("Using accuracy method: Predictive accuracy");
-								} else {
+								} else if(k == 3){
 									lp.getConfigurator().setAccuracyMethod("jaccard");
 									System.out.println("Using accuracy method: Jaccard");
+								} else{
+									lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+									System.out.println("Using accuracy method: Generalised F-Measure");
 								}
 								lp.getConfigurator().setUseApproximations(useApproximations);
 								lp.init();
@@ -255,8 +257,10 @@ public class EvaluationComputingScript {
 												owlEquivalenceFMeasureMap.put(nc, suggestionsList);
 											} else if(k == 2){
 												owlEquivalencePredaccMap.put(nc, suggestionsList);
-											} else {
+											} else if(k == 3){
 												owlEquivalenceJaccardMap.put(nc, suggestionsList);
+											} else {
+												owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
 											}
 										} else {
 											if(k == 0){
@@ -265,8 +269,10 @@ public class EvaluationComputingScript {
 												owlSuperFMeasureMap.put(nc, suggestionsList);
 											} else if(k == 2){
 												owlSuperPredaccMap.put(nc, suggestionsList);
-											} else {
+											} else if(k == 3){
 												owlSuperJaccardMap.put(nc, suggestionsList);
+											} else {
+												owlSuperGenFMeasureMap.put(nc, suggestionsList);
 											}
 										}
 									} else {
@@ -277,8 +283,10 @@ public class EvaluationComputingScript {
 												fastEquivalenceFMeasureMap.put(nc, suggestionsList);
 											} else if(k == 2){
 												fastEquivalencePredaccMap.put(nc, suggestionsList);
-											} else {
+											} else if(k == 3){
 												fastEquivalenceJaccardMap.put(nc, suggestionsList);
+											} else {
+												fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
 											}
 										} else {
 											if(k == 0){
@@ -287,8 +295,10 @@ public class EvaluationComputingScript {
 												fastSuperFMeasureMap.put(nc, suggestionsList);
 											} else if(k == 2){
 												fastSuperPredaccMap.put(nc, suggestionsList);
-											} else {
+											} else if(k == 3){
 												fastSuperJaccardMap.put(nc, suggestionsList);
+											} else {
+												fastSuperGenFMeasureMap.put(nc, suggestionsList);
 											}
 										}
 									}
