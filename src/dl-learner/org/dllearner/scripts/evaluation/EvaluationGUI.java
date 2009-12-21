@@ -6,45 +6,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.tools.ore.ui.MarkableClassesTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 
@@ -58,39 +44,59 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 	private static final long serialVersionUID = -3097551929270352556L;
 	
 	private SelectableClassExpressionsTable tab1;
+	private SelectableClassExpressionsTable tab2;
+	private SelectableClassExpressionsTable tab3;
+	private SelectableClassExpressionsTable tab4;
+	private SelectableClassExpressionsTable tab5;
+	private SelectableClassExpressionsTable tab6;
+	
 	private MarkableClassesTable classesTable;
+	private JButton nextFinishButton;
+	private JLabel messageLabel;
 	
-	private ReasonerComponent reasoner;
+	private static String SUPERCLASSTEXT = "Showing suggestions for super class";
+	private static String EQUIVALENTCLASSTEXT = "Showing suggestions for equivalent class";
 	
-	private int classesCount = 0;
 	private int currentClassIndex = 0;
 	
-	private static double minAccuracy = 0.85;
+	private boolean showingSuperclass = false;
 	
-	private static double noisePercent = 5.0;
 
-	private static int minInstanceCount = 3;
-
-	private static int algorithmRuntimeInSeconds = 10;
-
-	private static DecimalFormat df = new DecimalFormat();
-
-	// for performance measurements and development
-	private static boolean autoMode = false;
-	private static boolean useFastInstanceChecker = true;
-	private static boolean useApproximations = true;
-	private static boolean computeApproxDiff = false;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> namedClass2EquivalenceSuggestionsMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> namedClass2SuperSuggestionsMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperPredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	
+	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperPredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	
+	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultSuperMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	
 
-	public EvaluationGUI(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
+	public EvaluationGUI(File input) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
 		super();
-		loadOntology(fileURL);
-		computeLearningResults();
-		serializeResults();
-		deserializeResults();
+		loadResults(input);
 		createUI();
+		showNextClassSuggestions();
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
@@ -101,7 +107,7 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 		setLayout(new BorderLayout());
 		
 		classesTable = new MarkableClassesTable();
-		classesTable.addClasses(new TreeSet<NamedClass>(namedClass2EquivalenceSuggestionsMap.keySet()));
+		classesTable.addClasses(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
 		JScrollPane classesScroll = new JScrollPane(classesTable);
 		add(classesScroll, BorderLayout.WEST);
 		
@@ -113,168 +119,115 @@ public class EvaluationGUI extends JFrame implements ActionListener{
         JSeparator separator = new JSeparator();
         buttonPanel.add(separator, BorderLayout.NORTH);
         Box buttonBox = new Box(BoxLayout.X_AXIS);
-        JButton nextButton = new JButton("Next");
-        nextButton.setActionCommand("next");
-        nextButton.addActionListener(this);
-        buttonBox.add(nextButton);
+        nextFinishButton = new JButton("Next");
+        nextFinishButton.setActionCommand("next");
+        nextFinishButton.addActionListener(this);
+        buttonBox.add(nextFinishButton);
         buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
         add(buttonPanel, BorderLayout.SOUTH);
         
 	}
 	
 	private JPanel createTablesPanel(){
-		JPanel tablesHolder = new JPanel();
-		tablesHolder.setLayout(new GridLayout(5, 2));
+		JPanel messageTablesPanel = new JPanel();
+		messageTablesPanel.setLayout(new BorderLayout());
+		
+		messageLabel = new JLabel();
+		messageTablesPanel.add(messageLabel, BorderLayout.NORTH);
+		
+		JPanel tablesHolderPanel = new JPanel();
+		tablesHolderPanel.setLayout(new GridLayout(5, 2));
 		tab1 = new SelectableClassExpressionsTable();
+		JPanel pan = new JPanel();pan.setBorder(BorderFactory.createBevelBorder(0));
+		pan.add(tab1);
+		tablesHolderPanel.add(tab1);
+		tab2 = new SelectableClassExpressionsTable();
+		tablesHolderPanel.add(tab2);
+		tab3 = new SelectableClassExpressionsTable();
+		tablesHolderPanel.add(tab3);
+		tab4 = new SelectableClassExpressionsTable();
+		tablesHolderPanel.add(tab4);
+		tab5 = new SelectableClassExpressionsTable();
+		tablesHolderPanel.add(tab5);
+		tab6 = new SelectableClassExpressionsTable();
+		tablesHolderPanel.add(tab6);
 		
+		messageTablesPanel.add(tablesHolderPanel, BorderLayout.CENTER);
 		
-		
-		tablesHolder.add(tab1);
-		return tablesHolder;
+		return messageTablesPanel;
 	}
 	
 	private void showNextClassSuggestions(){
+		classesTable.setSelectedClass(currentClassIndex);
 		NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
-		tab1.addResults(namedClass2EquivalenceSuggestionsMap.get(nc));
-	}
-	
-	private void loadOntology(URL fileURL) throws ComponentInitException{
-		ComponentManager cm = ComponentManager.getInstance();
-
-		
-		
-		// load OWL in reasoner
-		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(fileURL);
-		ks.init();
-		
-		reasoner = null;
-		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
-		reasoner.init();
-		
-		System.out.println("Loaded ontology " + fileURL + ".");
-	}
-	
-	
-	
-	private void computeLearningResults() throws ComponentInitException, LearningProblemUnsupportedException, MalformedURLException{
-		ComponentManager cm = ComponentManager.getInstance();
-	
-		String baseURI = reasoner.getBaseURI();
-		Map<String, String> prefixes = reasoner.getPrefixes();
-	
-		// loop through all classes
-		Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
-		classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
-		// reduce number of classes for testing purposes
-//		shrinkSet(classes, 20);
-		for (NamedClass nc : classes) {
-			// check whether the class has sufficient instances
-			int instanceCount = reasoner.getIndividuals(nc).size();
-			if (instanceCount < minInstanceCount) {
-				System.out.println("class " + nc.toManchesterSyntaxString(baseURI, prefixes)
-						+ " has only " + instanceCount + " instances (minimum: " + minInstanceCount
-						+ ") - skipping");
-			} else {
-				System.out.println("\nlearning axioms for class "
-						+ nc.toManchesterSyntaxString(baseURI, prefixes) + " with " + instanceCount
-						+ " instances");
-				
-
-				TreeSet<EvaluatedDescriptionClass> suggestions;
-				// i=0 is equivalence and i=1 is super class
-				for (int i = 0; i <= 1; i++) {
-					// learn equivalence axiom
-					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class,
-							reasoner);
-					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-					if (i == 0) {
-						System.out
-								.println("generating suggestions for equivalent class (please wait "
-										+ algorithmRuntimeInSeconds + " seconds)");
-						lp.getConfigurator().setType("equivalence");
-					} else {
-						System.out.println("suggestions for super class (please wait "
-								+ algorithmRuntimeInSeconds + " seconds)");
-						lp.getConfigurator().setType("superClass");
-					}
-					lp.getConfigurator().setUseApproximations(useApproximations);
-					lp.init();
-
-					CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-					CELOEConfigurator cf = celoe.getConfigurator();
-					cf.setUseNegation(false);
-					cf.setValueFrequencyThreshold(3);
-					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-					cf.setNoisePercentage(noisePercent);
-					cf.setMaxNrOfResults(10);
-					celoe.init();
-
-					celoe.start();
-					// test whether a solution above the threshold was found
-					EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
-					double bestAcc = best.getAccuracy();
-					
-					if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
-						System.out
-								.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
-										+ (100 * minAccuracy)
-										+ "% or the best description is not appropriate. (The best one was \""
-										+ best.getDescription().toManchesterSyntaxString(baseURI,
-												prefixes)
-										+ "\" with an accuracy of "
-										+ df.format(bestAcc) + ".) - skipping");
-					} else {
-
-						
-
-						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-								.getCurrentlyBestEvaluatedDescriptions();
-						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
-								suggestions.descendingSet());
-						if(i == 0){
-							namedClass2EquivalenceSuggestionsMap.put(nc, suggestionsList);
-						} else {
-							namedClass2SuperSuggestionsMap.put(nc, suggestionsList);
-						}
-						
-					}
-				}
+		if(!showingSuperclass){
+			messageLabel.setText(EQUIVALENTCLASSTEXT);
+			showEquivalentSuggestions(nc);
+			showingSuperclass = true;
+		} else {
+			messageLabel.setText(SUPERCLASSTEXT);
+			showSuperSuggestions(nc);
+			showingSuperclass = false;
+			currentClassIndex++;
+			if(currentClassIndex >= owlEquivalenceStandardMap.keySet().size()){
+				nextFinishButton.setText("Finish");
+				nextFinishButton.setActionCommand("finish");
 			}
 		}
 		
 		
 	}
 	
-	private void serializeResults() {
-		OutputStream fos = null;
-		File file = new File("test.ser");
-		try {
-			fos = new FileOutputStream(file);
-			ObjectOutputStream o = new ObjectOutputStream(fos);
-			o.writeObject(namedClass2EquivalenceSuggestionsMap);
-			o.writeObject(namedClass2SuperSuggestionsMap);
-			o.flush();
-		} catch (IOException e) {
-			System.err.println(e);
-		} finally {
-			try {
-				fos.close();
-			} catch (Exception e) {
-			}
-		}
+	private void showEquivalentSuggestions(NamedClass nc){
+		tab1.addResults(owlEquivalenceStandardMap.get(nc));
+		tab2.addResults(owlEquivalenceFMeasureMap.get(nc));
+		tab3.addResults(owlEquivalencePredaccMap.get(nc));
+		tab4.addResults(fastEquivalenceStandardMap.get(nc));
+		tab5.addResults(fastEquivalenceFMeasureMap.get(nc));
+		tab6.addResults(fastEquivalencePredaccMap.get(nc));
+	}
+	
+	private void showSuperSuggestions(NamedClass nc){
+		tab1.addResults(owlSuperStandardMap.get(nc));
+		tab2.addResults(owlSuperFMeasureMap.get(nc));
+		tab3.addResults(owlSuperPredaccMap.get(nc));
+		tab4.addResults(fastSuperStandardMap.get(nc));
+		tab5.addResults(fastSuperFMeasureMap.get(nc));
+		tab6.addResults(fastSuperPredaccMap.get(nc));
 	}
 
-	private void deserializeResults() {
+	@SuppressWarnings("unchecked")
+	private void loadResults(File input) {
 		InputStream fis = null;
 
 		try {
-			fis = new FileInputStream("test.ser");
+			fis = new FileInputStream(input);
 			ObjectInputStream o = new ObjectInputStream(fis);
-			namedClass2EquivalenceSuggestionsMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o
-					.readObject();
-			namedClass2SuperSuggestionsMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-
+			
+			owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+//			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			
+			owlSuperStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlSuperFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlSuperPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlSuperJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();	
+//			owlSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			
+			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+//			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			
+			fastSuperStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastSuperFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastSuperPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastSuperJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+//			fastSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			
 		}
 
 		catch (IOException e) {
@@ -289,11 +242,17 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 		}
 	}
 	
+	private void closeDialog(){
+		setVisible(false);
+		dispose();
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("next")){
-			classesTable.setSelectedClass(currentClassIndex++);
 			showNextClassSuggestions();
+		} else if(e.getActionCommand().equals("finish")){
+			closeDialog();
 		}
 		
 	}
@@ -309,20 +268,15 @@ public class EvaluationGUI extends JFrame implements ActionListener{
 	 * @throws ClassNotFoundException 
 	 */
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-//		Logger.getRootLogger().setLevel(Level.WARN);
+
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		if (args.length == 0) {
-			System.out.println("You need to give an OWL file as argument.");
+			System.out.println("You need to give an file as argument.");
 			System.exit(0);
 		}
-		URL fileURL = null;
-		if(args[0].startsWith("http")){
-			fileURL = new URL(args[0]);
-		} else {
-			fileURL = new File(args[0]).toURI().toURL();
-		}
-		new EvaluationGUI(fileURL);
+		File input = new File(args[0]);
+		new EvaluationGUI(input);
 		
 	}
 
