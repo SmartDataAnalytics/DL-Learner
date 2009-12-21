@@ -182,6 +182,7 @@ public class ClassLearningProblem extends LearningProblem {
 					negatedClassInstances.add(ind);
 				}
 			}
+//			System.out.println("negated class instances: " + negatedClassInstances);
 		}
 		
 //		System.out.println(classInstances.size() + " " + superClassInstances.size());
@@ -244,7 +245,7 @@ public class ClassLearningProblem extends LearningProblem {
 			acc = getAccuracyOrTooWeakExact(description, 1);
 		}
 //		double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
-		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion, acc, isConsistent, followsFromKB);
+		return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), coverage, additionalInstances, protusion, acc, isConsistent, followsFromKB);
 	}	
 	
 	public boolean isEquivalenceProblem() {
@@ -495,7 +496,7 @@ public class ClassLearningProblem extends LearningProblem {
 				return getFMeasure(recall, precision);
 			} else if(heuristic.equals(HeuristicType.PRED_ACC)) {
 				// correctly classified divided by all examples
-				return (coveredInstances + superClassInstances.size() - additionalInstances) / (double) (classInstances.size() + superClassInstances.size());
+				return (coverageFactor * coveredInstances + superClassInstances.size() - additionalInstances) / (double) (coverageFactor * classInstances.size() + superClassInstances.size());
 			}
 
 //			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
@@ -527,8 +528,13 @@ public class ClassLearningProblem extends LearningProblem {
 			
 			// Cn(I_C) \cap D_C is the same set if we ignore Cn ...
 			
-			double prec = tmp1Size / (double) (icPos.size() + icNeg.size());
+			int icSize = icPos.size() + icNeg.size();
+			double prec = (icSize == 0) ? 0 : tmp1Size / (double) icSize;
 			double rec = tmp1Size / (double) (classInstances.size() + negatedClassInstances.size());
+			
+//			System.out.println(description);
+//			System.out.println(prec);
+//			System.out.println(rec);
 			
 			return getFMeasure(rec,prec);
 		}
@@ -623,7 +629,12 @@ public class ClassLearningProblem extends LearningProblem {
 	}
 	
 	private double getFMeasure(double recall, double precision) {
-		return (precision + recall == 0) ? 0 : 2 * precision * recall / (precision + recall);
+		// balanced F measure
+//		return (precision + recall == 0) ? 0 : 2 * precision * recall / (precision + recall);
+		// see e.g. http://en.wikipedia.org/wiki/F-measure
+		return (precision + recall == 0) ? 0 :
+		  ( (1+Math.sqrt(coverageFactor)) * (precision * recall)
+				/ (Math.sqrt(coverageFactor) * precision + recall) ); 
 	}
 	
 	// see paper: expression used in confidence interval estimation
