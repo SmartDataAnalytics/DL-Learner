@@ -202,6 +202,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private JPanel createMultiTablesPanel(){
 		JPanel tablesHolderPanel = new JPanel();
 		tablesHolderPanel.setLayout(new GridLayout(5, 2, 5, 5));
+		tablesHolderPanel.addMouseMotionListener(this);
 		tab1 = new ResultTable();
 		tab1.addMouseMotionListener(this);
 		tablesHolderPanel.add(createSelectablePanel(tab1));
@@ -455,18 +456,24 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		ResultTable result = ((ResultTable)e.getSource());
-		int column = result.columnAtPoint(e.getPoint());
-		int row = result.rowAtPoint(e.getPoint());
-		EvaluatedDescriptionClass ec = result.getValueAtRow(row);
-		if(column == 0){
-			graphPanel2.clear();
-			graphPanel2.setNewClassDescription(ec);
-			showCoveragePanel(true);
+		if(e.getSource() instanceof ResultTable){
+			ResultTable result = ((ResultTable)e.getSource());
+			int column = result.columnAtPoint(e.getPoint());
+			int row = result.rowAtPoint(e.getPoint());
 			
+			if(column == 0 && row >=0 && row <= 9){
+				EvaluatedDescriptionClass ec = result.getValueAtRow(row);
+				graphPanel2.clear();
+				graphPanel2.setNewClassDescription(ec);
+				showCoveragePanel(true);
+				
+			} else {
+				showCoveragePanel(false);
+			}
 		} else {
 			showCoveragePanel(false);
 		}
+		
 		
 	} 
 		
