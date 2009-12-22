@@ -93,6 +93,7 @@ public class EvaluationComputingScript {
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
 		loadOntology(fileURL);
 		computeSuggestions();
+		computeGenFMeasureWithoutDefaultNegation();
 		computeWithApproximation();
 		saveResults();
 	}
@@ -195,7 +196,7 @@ public class EvaluationComputingScript {
 							lp.getConfigurator().setType("superClass");
 							System.out.println("Learning superClass expressions");
 						}
-						for(int k = 0; k <= 4; k++){
+						for(int k = 0; k <= 3; k++){
 							if(k == 0){
 									lp.getConfigurator().setAccuracyMethod("standard");
 									System.out.println("Using accuracy method: standard");
@@ -312,6 +313,116 @@ public class EvaluationComputingScript {
 			}
 			cm.freeComponent(reasoner);
 		}
+		cm.freeComponent(reasoner);
+		cm.freeComponent(lp);
+		cm.freeComponent(celoe);
+	}
+	
+	private void computeGenFMeasureWithoutDefaultNegation() throws ComponentInitException, MalformedURLException,
+			LearningProblemUnsupportedException {
+		ComponentManager cm = ComponentManager.getInstance();
+		TreeSet<EvaluatedDescriptionClass> suggestions;
+		for (int i = 0; i <= 1; i++) {
+			if (i == 0) {
+				reasoner = null;
+				reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+				System.out.println("using OWLAPI-Reasoner");
+			} else {
+				reasoner = null;
+				reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+				((FastInstanceChecker) reasoner).getConfigurator().setDefaultNegation(false);
+				System.out.println("using FastInstanceChecker");
+			}
+
+			reasoner.init();
+			baseURI = reasoner.getBaseURI();
+			prefixes = reasoner.getPrefixes();
+
+			// loop through all classes
+			Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
+			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
+			// reduce number of classes for testing purposes
+			// shrinkSet(classes, 20);
+			for (NamedClass nc : classes) {
+				// check whether the class has sufficient instances
+				int instanceCount = reasoner.getIndividuals(nc).size();
+				if (instanceCount < minInstanceCount) {
+					System.out.println("class " + nc.toManchesterSyntaxString(baseURI, prefixes) + " has only "
+							+ instanceCount + " instances (minimum: " + minInstanceCount + ") - skipping");
+				} else {
+					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
+							+ " with " + instanceCount + " instances");
+					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+					for (int j = 0; j <= 1; j++) {
+						if (j == 0) {
+							lp.getConfigurator().setType("equivalence");
+							System.out.println("Learning equivalentClass expressions");
+						} else {
+							lp.getConfigurator().setType("superClass");
+							System.out.println("Learning superClass expressions");
+						}
+						lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+						System.out.println("Using accuracy method: Generalised F-Measure");
+						lp.getConfigurator().setUseApproximations(useApproximations);
+						lp.init();
+						CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+						CELOEConfigurator cf = celoe.getConfigurator();
+						cf.setUseNegation(false);
+						cf.setValueFrequencyThreshold(3);
+						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+						cf.setNoisePercentage(noisePercent);
+						cf.setMaxNrOfResults(10);
+						celoe.init();
+
+						celoe.start();
+
+						// test whether a solution above the threshold was found
+						EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
+						double bestAcc = best.getAccuracy();
+
+						if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
+							System.out
+									.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
+											+ (100 * minAccuracy)
+											+ "% or the best description is not appropriate. (The best one was \""
+											+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+											+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
+							suggestions = new TreeSet<EvaluatedDescriptionClass>();
+						} else {
+
+							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+									.getCurrentlyBestEvaluatedDescriptions();
+						}
+						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+								suggestions.descendingSet());
+
+						if (i == 0) {
+							if (j == 0) {
+								owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
+							} else {
+								owlSuperGenFMeasureMap.put(nc, suggestionsList);
+							}
+
+						} else {
+							if (j == 0) {
+								fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
+							} else {
+								fastSuperGenFMeasureMap.put(nc, suggestionsList);
+							}
+
+						}
+
+					}
+					cm.freeComponent(celoe);
+					cm.freeComponent(lp);
+				}
+			}
+			cm.freeComponent(reasoner);
+		}
+		cm.freeComponent(reasoner);
+		cm.freeComponent(lp);
+		cm.freeComponent(celoe);
 	}
 	
 	private void computeWithApproximation() throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException {
@@ -390,7 +501,7 @@ public class EvaluationComputingScript {
 
 			}
 		}
-
+		cm.freeAllComponents();
 	}
 
 	/**
