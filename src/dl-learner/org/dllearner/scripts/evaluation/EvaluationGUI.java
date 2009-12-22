@@ -3,8 +3,10 @@ package org.dllearner.scripts.evaluation;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -23,11 +25,13 @@ import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JWindow;
@@ -90,7 +94,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private int currentClassIndex = 0;
 	
 	private boolean showingEquivalentSuggestions = false;
-	private boolean showingMultiTables = true;
+	private boolean showingMultiTables = false;
 	
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
@@ -133,8 +137,10 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		createUI();
 		createCoverageWindow();
 		classesTable.setSelectedClass(currentClassIndex);
+		graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
+		graphPanel2.setConcept(classesTable.getSelectedClass(currentClassIndex));
 		showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
-		cardLayout.last(cardPanel);
+		cardLayout.first(cardPanel);
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -148,6 +154,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		classesTable = new MarkableClassesTable();
 		classesTable.addClasses(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
 		JScrollPane classesScroll = new JScrollPane(classesTable);
+		classesTable.addMouseMotionListener(this);
 		add(classesScroll, BorderLayout.WEST);
 		
 		JScrollPane suggestionsScroll = new JScrollPane(createMainPanel());
@@ -165,6 +172,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
         buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
         add(buttonPanel, BorderLayout.SOUTH);
         
+        addMouseMotionListener(this);
+        
 	}
 	
 	private JPanel createMainPanel(){
@@ -172,6 +181,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		messageTablesPanel.setLayout(new BorderLayout());
 		
 		messageLabel = new JLabel();
+		messageLabel.addMouseMotionListener(this);
 		messageTablesPanel.add(messageLabel, BorderLayout.NORTH);
 		
 		cardPanel = new JPanel();
@@ -242,8 +252,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		JCheckBox box = new JCheckBox();
 		panel.add(table, BorderLayout.CENTER);
-		panel.add(box, BorderLayout.EAST);
-		
+//		panel.add(box, BorderLayout.EAST);
+		panel.add(new RatingPanel(), BorderLayout.EAST);
 		return panel;
 	}
 	
@@ -304,7 +314,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		graphPanel2 = new GraphicalCoveragePanel("");
 		coverageWindow.add(graphPanel2);
 		coverageWindow.pack();
-		coverageWindow.setLocationRelativeTo(classesTable);
+//		coverageWindow.setLocationRelativeTo(classesTable);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -366,17 +376,30 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		coverageWindow.setVisible(visible);
 	}
 	
+	private void setCoverageLocationRelativeTo(Component component){
+		Component parent = component.getParent();
+		Point componentLocation = component.getLocationOnScreen();
+		Point p;
+		if(componentLocation.getX() < parent.getSize().width/2){
+			p = new Point((int)(componentLocation.getX() + parent.getSize().width/2 + coverageWindow.getSize().getWidth()/2),componentLocation.y);
+		} else {
+			p = new Point((int)(componentLocation.getX() - parent.getSize().width/2 - coverageWindow.getSize().getWidth()/2),componentLocation.y);
+		}
+		
+		coverageWindow.setLocation(p);
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("next")){
 			NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
 			if(showingMultiTables && showingEquivalentSuggestions){
+				showSuperSuggestions(nc);
 				showSingleTable();
 			} else if(!showingMultiTables && showingEquivalentSuggestions){
-				showSuperSuggestions(nc);
 				showMultiTables();
-			} else if(showingMultiTables && !showingEquivalentSuggestions){
-				showSingleTable();
+			} else if(!showingMultiTables && !showingEquivalentSuggestions){
+				showMultiTables();
 				if(currentClassIndex + 1 >= owlEquivalenceStandardMap.keySet().size()){
 					nextFinishButton.setText("Finish");
 					nextFinishButton.setActionCommand("finish");
@@ -385,8 +408,10 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				
 				currentClassIndex++;
 				classesTable.setSelectedClass(currentClassIndex);
+				graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
+				
 				showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
-				showMultiTables();
+				showSingleTable();
 			}
 
 		} else if(e.getActionCommand().equals("finish")){
@@ -465,6 +490,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				EvaluatedDescriptionClass ec = result.getValueAtRow(row);
 				graphPanel2.clear();
 				graphPanel2.setNewClassDescription(ec);
+				setCoverageLocationRelativeTo(result);
 				showCoveragePanel(true);
 				
 			} else {
@@ -476,7 +502,59 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		
 		
 	} 
+	
+	class RatingPanel extends JPanel{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -111227945780885551L;
+		
+		private JRadioButton rb1 = new JRadioButton("1");
+		private JRadioButton rb2 = new JRadioButton("2");;
+		private JRadioButton rb3 = new JRadioButton("3");;
+		private JRadioButton rb4 = new JRadioButton("4");;
+		private JRadioButton rb5 = new JRadioButton("5");;
+		private ButtonGroup bg;
+		
+		public RatingPanel(){
+			setLayout(new GridLayout(5,1));
+			bg = new ButtonGroup();
+			add(rb5);
+			add(rb4);
+			add(rb3);
+			add(rb2);
+			add(rb1);
+			bg.add(rb1);
+			bg.add(rb2);
+			bg.add(rb3);
+			bg.add(rb4);
+			bg.add(rb5);
+			rb1.setSelected(true);
+		}
+		
+		public int getSelectedValue(){
+			if(rb1.isSelected()){
+				return 1;
+			} else if(rb2.isSelected()){
+				return 2;
+			} else if(rb3.isSelected()){
+				return 3;
+			} else if(rb4.isSelected()){
+				return 4;
+			} else {
+				return 5;
+			}
+		}
+		
+		public void clearSelection(){
+			rb1.setSelected(true);
+		}
+		
+	}
 		
 		
 
 }
+
+

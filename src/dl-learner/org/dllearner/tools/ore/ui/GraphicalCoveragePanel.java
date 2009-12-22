@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
@@ -68,6 +69,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 
 	private EvaluatedDescription eval;
 
+	private NamedClass concept;
+	
 	private String conceptNew;
 	private final Vector<IndividualPoint> posCovIndVector;
 	private final Vector<IndividualPoint> posNotCovIndVector;
@@ -92,6 +95,9 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	private final Color darkGreen;
 	private final Color darkRed;
 //	private int notCoveredInd;
+	
+	private String coverageString = "";
+	private String coversAdditionalString = "";
 
 
 	/**
@@ -110,7 +116,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	public GraphicalCoveragePanel( String concept) {
 		
 
-		this.setPreferredSize(new Dimension(540, 260));
+		this.setPreferredSize(new Dimension(640, 260));
 		
 //		this.repaint();
 		darkGreen = new Color(0, 100, 0);
@@ -142,9 +148,12 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
-			if(OREManager.getInstance().getCurrentClass2Learn() != null){
-			g2D.drawString(ManchesterSyntaxRenderer.renderSimple(OREManager.getInstance().getCurrentClass2Learn())
+			if(concept == null && OREManager.getInstance().getCurrentClass2Learn() != null){
+				g2D.drawString(ManchesterSyntaxRenderer.renderSimple(OREManager.getInstance().getCurrentClass2Learn())
 					, 320, 10);
+			} else if(concept!= null){
+				g2D.drawString(concept.getName(), 320, 10);
+						
 			}
 //			g2D.setColor(Color.ORANGE);
 //			g2D.fillOval(310, 20, 9, 9);
@@ -189,6 +198,13 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			p = p + 20;
 			g2D.drawString("(potential problem)", 320, p);
 
+			p = p +20;
+			g2D.drawString(coverageString , 320, p);
+			p = p +20;
+			g2D.drawString(coversAdditionalString , 320, p);
+			
+			
+			
 			g2D.setColor(Color.YELLOW);
 			g2D.fill(oldConcept);
 			g2D.fillOval(310, 0, 9, 9);
@@ -469,9 +485,20 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 		}
 //		computeGraphics();
 		computeIndividualPoints();
-		
+		int coveredInstanceCount = ((EvaluatedDescriptionClass) eval).getCoveredInstances().size();
+		int instanceCount = coveredInstanceCount + ((EvaluatedDescriptionClass) eval).getNotCoveredInstances().size();
+		int coverage = (int)(((EvaluatedDescriptionClass) eval).getCoverage() * 100);
+		int additionalCount = ((EvaluatedDescriptionClass) eval).getAdditionalInstances().size();
+		coverageString = "Covers " + coveredInstanceCount + " of " + instanceCount + 
+						"(" + coverage + "%) of all instances";
+		coversAdditionalString = "Covers " + additionalCount + " additional instances";
 		getParent().repaint();
 		
+	}
+	
+	public void setConcept(NamedClass nc){
+		concept = nc;
+		getParent().repaint();
 	}
 	
 	public void clear(){
@@ -480,6 +507,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 		posNotCovIndVector.clear();
 		additionalIndividuals.clear();
 		points.clear();
+		coverageString = "";
+		coversAdditionalString = "";
 		getParent().repaint();
 	}
 	
