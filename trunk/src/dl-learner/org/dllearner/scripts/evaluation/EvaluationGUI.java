@@ -141,7 +141,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
 		graphPanel2.setConcept(classesTable.getSelectedClass(currentClassIndex));
 		showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
-		cardLayout.first(cardPanel);
+		cardLayout.last(cardPanel);
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -188,8 +188,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		cardPanel = new JPanel();
 		cardPanel.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));       
         cardLayout = new CardLayout(); 
-        cardPanel.add(createSingleTablePanel(), SINGLETABLEVIEW);
+        
         cardPanel.add(createMultiTablesPanel(), MULTITABLEVIEW);
+        cardPanel.add(createSingleTablePanel(), SINGLETABLEVIEW);
         cardPanel.setLayout(cardLayout);
 		
 		messageTablesPanel.add(cardPanel, BorderLayout.CENTER);
@@ -272,12 +273,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private void showSingleTable(){
 		defaultTab.clearSelection();
 		graphPanel.clear();
-		cardLayout.first(cardPanel);
+		cardLayout.last(cardPanel);
 		showingMultiTables = false;
 	}
 	
 	private void showMultiTables(){
-		cardLayout.last(cardPanel);
+		cardLayout.first(cardPanel);
 		showingMultiTables = true;
 	}
 	
