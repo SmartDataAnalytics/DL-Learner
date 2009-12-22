@@ -291,6 +291,11 @@ public class CELOE extends LearningAlgorithm {
 					Monitor mon2 = MonitorFactory.start("addNode");
 					addNode(refinement, nextNode);
 					mon2.stop();
+					// adding nodes is potentially computationally expensive, so we have
+					// to check whether max time is exceeded	
+					if(terminationCriteriaSatisfied()) {
+						break;
+					}
 //					System.out.println("addNode finished" + " " + new Date());
 				}
 		
