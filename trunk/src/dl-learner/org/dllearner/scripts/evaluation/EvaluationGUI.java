@@ -26,6 +26,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -595,15 +597,20 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		private JRadioButton rb4 = new JRadioButton("4");;
 		private JRadioButton rb5 = new JRadioButton("5");;
 		private ButtonGroup bg;
+		private ImageIcon thumbs_up = new ImageIcon(EvaluationGUI.class.getResource("Thumb_up.png"));
+		private ImageIcon thumbs_down = new ImageIcon(EvaluationGUI.class.getResource("Thumb_down.png"));
 		
 		public RatingPanel(){
-			setLayout(new GridLayout(5,1));
+			setLayout(new GridLayout(7,1));
 			bg = new ButtonGroup();
+			
+			add(new JLabel(thumbs_up));
 			add(rb5);
 			add(rb4);
 			add(rb3);
 			add(rb2);
 			add(rb1);
+			add(new JLabel(thumbs_down));
 			bg.add(rb1);
 			bg.add(rb2);
 			bg.add(rb3);
