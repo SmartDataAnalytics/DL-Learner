@@ -490,8 +490,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 		int coverage = (int)(((EvaluatedDescriptionClass) eval).getCoverage() * 100);
 		int additionalCount = ((EvaluatedDescriptionClass) eval).getAdditionalInstances().size();
 		coverageString = "Covers " + coveredInstanceCount + " of " + instanceCount + 
-						"(" + coverage + "%) of all instances";
-		coversAdditionalString = "Covers " + additionalCount + " additional instances";
+						"(" + coverage + " %) of all instances.";
+		coversAdditionalString = "Covers " + additionalCount + " additional instances.";
 		getParent().repaint();
 		
 	}

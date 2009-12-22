@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ public class EvaluationComputingScript {
 	private static int minInstanceCount = 3;
 
 	private static int algorithmRuntimeInSeconds = 10;
+	
+	private static int allListsComputingCount = 5;
 
 	private static DecimalFormat df = new DecimalFormat();
 
@@ -56,6 +59,8 @@ public class EvaluationComputingScript {
 	private static boolean useFastInstanceChecker = true;
 	private static boolean useApproximations = false;
 	private static boolean computeApproxDiff = false;
+	
+	private Set<NamedClass> reducedClassesSet;
 	
 	
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
@@ -92,9 +97,9 @@ public class EvaluationComputingScript {
 	
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
 		loadOntology(fileURL);
+		computeWithApproximation();
 		computeSuggestions();
 		computeGenFMeasureWithoutDefaultNegation();
-		computeWithApproximation();
 		saveResults();
 	}
 	
@@ -111,7 +116,7 @@ public class EvaluationComputingScript {
 
 	private void saveResults() {
 		OutputStream fos = null;
-		File file = new File("test.ser");
+		File file = new File("test2.ser");
 		try {
 			fos = new FileOutputStream(file);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
@@ -154,7 +159,8 @@ public class EvaluationComputingScript {
 		}
 	}
 	
-	private void computeSuggestions() throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException {
+	private void computeSuggestions() throws ComponentInitException, MalformedURLException,
+			LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
 		TreeSet<EvaluatedDescriptionClass> suggestions;
 		for (int i = 0; i <= 1; i++) {
@@ -173,11 +179,7 @@ public class EvaluationComputingScript {
 			prefixes = reasoner.getPrefixes();
 
 			// loop through all classes
-			Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
-			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
-			// reduce number of classes for testing purposes
-			// shrinkSet(classes, 20);
-			for (NamedClass nc : classes) {
+			for (NamedClass nc : reducedClassesSet) {
 				// check whether the class has sufficient instances
 				int instanceCount = reasoner.getIndividuals(nc).size();
 				if (instanceCount < minInstanceCount) {
@@ -188,129 +190,129 @@ public class EvaluationComputingScript {
 							+ " with " + instanceCount + " instances");
 					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-					for(int j = 0; j <= 1; j++){
-						if(j == 0){
+					for (int j = 0; j <= 1; j++) {
+						if (j == 0) {
 							lp.getConfigurator().setType("equivalence");
 							System.out.println("Learning equivalentClass expressions");
 						} else {
 							lp.getConfigurator().setType("superClass");
 							System.out.println("Learning superClass expressions");
 						}
-						for(int k = 0; k <= 3; k++){
-							if(k == 0){
-									lp.getConfigurator().setAccuracyMethod("standard");
-									System.out.println("Using accuracy method: standard");
-								} else if(k == 1){
-									lp.getConfigurator().setAccuracyMethod("fmeasure");
-									System.out.println("Using accuracy method: F-Measure");
-								} else if(k == 2){
-									lp.getConfigurator().setAccuracyMethod("pred_acc");
-									System.out.println("Using accuracy method: Predictive accuracy");
-								} else if(k == 3){
-									lp.getConfigurator().setAccuracyMethod("jaccard");
-									System.out.println("Using accuracy method: Jaccard");
-								} else{
-									lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
-									System.out.println("Using accuracy method: Generalised F-Measure");
-								}
-								lp.getConfigurator().setUseApproximations(useApproximations);
-								lp.init();
-								CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-								CELOEConfigurator cf = celoe.getConfigurator();
-								cf.setUseNegation(false);
-								cf.setValueFrequencyThreshold(3);
-								cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-								cf.setNoisePercentage(noisePercent);
-								cf.setMaxNrOfResults(10);
-								celoe.init();
+						for (int k = 0; k <= 3; k++) {
+							if (k == 0) {
+								lp.getConfigurator().setAccuracyMethod("standard");
+								System.out.println("Using accuracy method: standard");
+							} else if (k == 1) {
+								lp.getConfigurator().setAccuracyMethod("fmeasure");
+								System.out.println("Using accuracy method: F-Measure");
+							} else if (k == 2) {
+								lp.getConfigurator().setAccuracyMethod("pred_acc");
+								System.out.println("Using accuracy method: Predictive accuracy");
+							} else if (k == 3) {
+								lp.getConfigurator().setAccuracyMethod("jaccard");
+								System.out.println("Using accuracy method: Jaccard");
+							} else {
+								lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+								System.out.println("Using accuracy method: Generalised F-Measure");
+							}
+							lp.getConfigurator().setUseApproximations(useApproximations);
+							lp.init();
+							CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+							CELOEConfigurator cf = celoe.getConfigurator();
+							cf.setUseNegation(false);
+							cf.setValueFrequencyThreshold(3);
+							cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+							cf.setNoisePercentage(noisePercent);
+							cf.setMaxNrOfResults(10);
+							celoe.init();
 
-								celoe.start();
-								
-								
-								// test whether a solution above the threshold was found
-								EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
-								double bestAcc = best.getAccuracy();
-								
-								if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
-									System.out
-											.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
-													+ (100 * minAccuracy)
-													+ "% or the best description is not appropriate. (The best one was \""
-													+ best.getDescription().toManchesterSyntaxString(baseURI,
-															prefixes)
-													+ "\" with an accuracy of "
-													+ df.format(bestAcc) + ".) - skipping");
-									suggestions = new TreeSet<EvaluatedDescriptionClass>();
-								} else {
+							celoe.start();
 
+							// test whether a solution above the threshold
+							// was found
+							EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
+							double bestAcc = best.getAccuracy();
 
-									suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-											.getCurrentlyBestEvaluatedDescriptions();
-								}
-									List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
-											suggestions.descendingSet());
-								
-									if(i == 0){
-										if(j == 0){
-											if(k == 0){
-												owlEquivalenceStandardMap.put(nc, suggestionsList);
-											} else if( k == 1){
-												owlEquivalenceFMeasureMap.put(nc, suggestionsList);
-											} else if(k == 2){
-												owlEquivalencePredaccMap.put(nc, suggestionsList);
-											} else if(k == 3){
-												owlEquivalenceJaccardMap.put(nc, suggestionsList);
-											} else {
-												owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
-											}
-										} else {
-											if(k == 0){
-												owlSuperStandardMap.put(nc, suggestionsList);
-											} else if( k == 1){
-												owlSuperFMeasureMap.put(nc, suggestionsList);
-											} else if(k == 2){
-												owlSuperPredaccMap.put(nc, suggestionsList);
-											} else if(k == 3){
-												owlSuperJaccardMap.put(nc, suggestionsList);
-											} else {
-												owlSuperGenFMeasureMap.put(nc, suggestionsList);
-											}
-										}
-									} else {
-										if(j == 0){
-											if(k == 0){
-												fastEquivalenceStandardMap.put(nc, suggestionsList);
-											} else if( k == 1){
-												fastEquivalenceFMeasureMap.put(nc, suggestionsList);
-											} else if(k == 2){
-												fastEquivalencePredaccMap.put(nc, suggestionsList);
-											} else if(k == 3){
-												fastEquivalenceJaccardMap.put(nc, suggestionsList);
-											} else {
-												fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
-											}
-										} else {
-											if(k == 0){
-												fastSuperStandardMap.put(nc, suggestionsList);
-											} else if( k == 1){
-												fastSuperFMeasureMap.put(nc, suggestionsList);
-											} else if(k == 2){
-												fastSuperPredaccMap.put(nc, suggestionsList);
-											} else if(k == 3){
-												fastSuperJaccardMap.put(nc, suggestionsList);
-											} else {
-												fastSuperGenFMeasureMap.put(nc, suggestionsList);
-											}
-										}
-									}
+//							if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
+//								System.out
+//										.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
+//												+ (100 * minAccuracy)
+//												+ "% or the best description is not appropriate. (The best one was \""
+//												+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+//												+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
+//								suggestions = new TreeSet<EvaluatedDescriptionClass>();
+//							} else {
+//
+//								suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+//										.getCurrentlyBestEvaluatedDescriptions();
 //							}
+							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+							.getCurrentlyBestEvaluatedDescriptions();
+							List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+									suggestions.descendingSet());
+
+							if (i == 0) {
+								if (j == 0) {
+									if (k == 0) {
+										owlEquivalenceStandardMap.put(nc, suggestionsList);
+									} else if (k == 1) {
+										owlEquivalenceFMeasureMap.put(nc, suggestionsList);
+									} else if (k == 2) {
+										owlEquivalencePredaccMap.put(nc, suggestionsList);
+									} else if (k == 3) {
+										owlEquivalenceJaccardMap.put(nc, suggestionsList);
+									} else {
+										owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
+									}
+								} else {
+									if (k == 0) {
+										owlSuperStandardMap.put(nc, suggestionsList);
+									} else if (k == 1) {
+										owlSuperFMeasureMap.put(nc, suggestionsList);
+									} else if (k == 2) {
+										owlSuperPredaccMap.put(nc, suggestionsList);
+									} else if (k == 3) {
+										owlSuperJaccardMap.put(nc, suggestionsList);
+									} else {
+										owlSuperGenFMeasureMap.put(nc, suggestionsList);
+									}
+								}
+							} else {
+								if (j == 0) {
+									if (k == 0) {
+										fastEquivalenceStandardMap.put(nc, suggestionsList);
+									} else if (k == 1) {
+										fastEquivalenceFMeasureMap.put(nc, suggestionsList);
+									} else if (k == 2) {
+										fastEquivalencePredaccMap.put(nc, suggestionsList);
+									} else if (k == 3) {
+										fastEquivalenceJaccardMap.put(nc, suggestionsList);
+									} else {
+										fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
+									}
+								} else {
+									if (k == 0) {
+										fastSuperStandardMap.put(nc, suggestionsList);
+									} else if (k == 1) {
+										fastSuperFMeasureMap.put(nc, suggestionsList);
+									} else if (k == 2) {
+										fastSuperPredaccMap.put(nc, suggestionsList);
+									} else if (k == 3) {
+										fastSuperJaccardMap.put(nc, suggestionsList);
+									} else {
+										fastSuperGenFMeasureMap.put(nc, suggestionsList);
+									}
+								}
+							}
+							// }
 							cm.freeComponent(celoe);
-//							cm.freeComponent(lp);
+							// cm.freeComponent(lp);
 						}
 					}
 				}
 				cm.freeComponent(lp);
 			}
+
 			cm.freeComponent(reasoner);
 		}
 		cm.freeComponent(reasoner);
@@ -318,6 +320,13 @@ public class EvaluationComputingScript {
 		cm.freeComponent(celoe);
 	}
 	
+	/**
+	 * Computing results for accuracy method 'Generalised F-Measure'. This is done separate because
+	 * for FastInstanceChecker option useDefaultNegation is set to 'false'.
+	 * @throws ComponentInitException
+	 * @throws MalformedURLException
+	 * @throws LearningProblemUnsupportedException
+	 */
 	private void computeGenFMeasureWithoutDefaultNegation() throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
@@ -338,12 +347,7 @@ public class EvaluationComputingScript {
 			baseURI = reasoner.getBaseURI();
 			prefixes = reasoner.getPrefixes();
 
-			// loop through all classes
-			Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
-			classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
-			// reduce number of classes for testing purposes
-			// shrinkSet(classes, 20);
-			for (NamedClass nc : classes) {
+			for (NamedClass nc : reducedClassesSet) {
 				// check whether the class has sufficient instances
 				int instanceCount = reasoner.getIndividuals(nc).size();
 				if (instanceCount < minInstanceCount) {
@@ -381,19 +385,21 @@ public class EvaluationComputingScript {
 						EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
 						double bestAcc = best.getAccuracy();
 
-						if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
-							System.out
-									.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
-											+ (100 * minAccuracy)
-											+ "% or the best description is not appropriate. (The best one was \""
-											+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
-											+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
-							suggestions = new TreeSet<EvaluatedDescriptionClass>();
-						} else {
-
-							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-									.getCurrentlyBestEvaluatedDescriptions();
-						}
+//						if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
+//							System.out
+//									.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
+//											+ (100 * minAccuracy)
+//											+ "% or the best description is not appropriate. (The best one was \""
+//											+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+//											+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
+//							suggestions = new TreeSet<EvaluatedDescriptionClass>();
+//						} else {
+//
+//							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+//									.getCurrentlyBestEvaluatedDescriptions();
+//						}
+						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+						.getCurrentlyBestEvaluatedDescriptions();
 						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
 								suggestions.descendingSet());
 
@@ -501,9 +507,22 @@ public class EvaluationComputingScript {
 
 			}
 		}
-		cm.freeAllComponents();
+		reducedClassesSet = getShrinkedSet(defaultEquivalenceMap.keySet(), allListsComputingCount);
+		
 	}
 
+	private Set<NamedClass> getShrinkedSet(Set<NamedClass> set, int count){
+		Set<NamedClass> reducedSet = new HashSet<NamedClass>();
+		int i = count;
+		for(NamedClass nc : set){
+			if(i % count == 0){
+				reducedSet.add(nc);
+			}
+			i++;
+		}
+		return reducedSet;
+		
+	}
 	/**
 	 * @param args
 	 * @throws MalformedURLException 

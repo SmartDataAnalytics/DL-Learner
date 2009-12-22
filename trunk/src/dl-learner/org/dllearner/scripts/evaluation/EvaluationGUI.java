@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -60,16 +61,16 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	 */
 	private static final long serialVersionUID = -3097551929270352556L;
 	
-	private ResultTable tab1;
-	private ResultTable tab2;
-	private ResultTable tab3;
-	private ResultTable tab4;
-	private ResultTable tab5;
-	private ResultTable tab6;
-	private ResultTable tab7;
-	private ResultTable tab8;
-	private ResultTable tab9;
-	private ResultTable tab10;
+	private RatingTablePanel tab1;
+	private RatingTablePanel tab2;
+	private RatingTablePanel tab3;
+	private RatingTablePanel tab4;
+	private RatingTablePanel tab5;
+	private RatingTablePanel tab6;
+	private RatingTablePanel tab7;
+	private RatingTablePanel tab8;
+	private RatingTablePanel tab9;
+	private RatingTablePanel tab10;
 	
 	private SelectableClassExpressionsTable defaultTab;
 	
@@ -152,7 +153,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		setLayout(new BorderLayout());
 		
 		classesTable = new MarkableClassesTable();
-		classesTable.addClasses(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
+		classesTable.addClasses(new TreeSet<NamedClass>(defaultEquivalenceMap.keySet()));
 		JScrollPane classesScroll = new JScrollPane(classesTable);
 		classesTable.addMouseMotionListener(this);
 		add(classesScroll, BorderLayout.WEST);
@@ -197,6 +198,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	}
 	
 	private JPanel createSingleTablePanel(){
+		JPanel panel = new JPanel(new GridLayout(3,1));
+		
 		JPanel tableHolderPanel = new JPanel(new BorderLayout());
 		defaultTab = new SelectableClassExpressionsTable();
 		defaultTab.getSelectionModel().addListSelectionListener(this);
@@ -205,44 +208,53 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		graphPanel = new GraphicalCoveragePanel("");
 		tableHolderPanel.add(graphPanel, BorderLayout.EAST);
 		
+		JPanel noSuggestionPanel = new JPanel();
+		noSuggestionPanel.add(new JCheckBox("There is no appropriate suggestion for this class in your opinion."));
 		
-		return tableHolderPanel;
+		JPanel alternateSuggestionPanel = new JPanel();
+		alternateSuggestionPanel.add(new JTextField("There is an appropriate suggestion in your opinion, but the algorithm did not suggest it."));
+		
+		panel.add(tableHolderPanel);
+		panel.add(noSuggestionPanel);
+		panel.add(alternateSuggestionPanel);
+		
+		return panel;
 	}
 	
 	private JPanel createMultiTablesPanel(){
 		JPanel tablesHolderPanel = new JPanel();
 		tablesHolderPanel.setLayout(new GridLayout(5, 2, 5, 5));
 		tablesHolderPanel.addMouseMotionListener(this);
-		tab1 = new ResultTable();
+		tab1 = new RatingTablePanel();
 		tab1.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab1));
-		tab2 = new ResultTable();
+		tablesHolderPanel.add(tab1);
+		tab2 = new RatingTablePanel();
 		tab2.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab2));
-		tab3 = new ResultTable();
+		tablesHolderPanel.add(tab2);
+		tab3 = new RatingTablePanel();
 		tab3.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab3));
-		tab4 = new ResultTable();
+		tablesHolderPanel.add(tab3);
+		tab4 = new RatingTablePanel();
 		tab4.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab4));
-		tab5 = new ResultTable();
+		tablesHolderPanel.add(tab4);
+		tab5 = new RatingTablePanel();
 		tab5.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab5));
-		tab6 = new ResultTable();
+		tablesHolderPanel.add(tab5);
+		tab6 = new RatingTablePanel();
 		tab6.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab6));
-		tab7 = new ResultTable();
+		tablesHolderPanel.add(tab6);
+		tab7 = new RatingTablePanel();
 		tab7.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab7));
-		tab8 = new ResultTable();
+		tablesHolderPanel.add(tab7);
+		tab8 = new RatingTablePanel();
 		tab8.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab8));
-		tab9 = new ResultTable();
+		tablesHolderPanel.add(tab8);
+		tab9 = new RatingTablePanel();
 		tab9.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab9));
-		tab10 = new ResultTable();
+		tablesHolderPanel.add(tab9);
+		tab10 = new RatingTablePanel();
 		tab10.addMouseMotionListener(this);
-		tablesHolderPanel.add(createSelectablePanel(tab10));
+		tablesHolderPanel.add(tab10);
 		
 		return tablesHolderPanel;
 	}
@@ -272,17 +284,20 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private void showEquivalentSuggestions(NamedClass nc){
 		messageLabel.setText(EQUIVALENTCLASSTEXT);
 		
-		tab1.addResults(owlEquivalenceStandardMap.get(nc));
-		tab2.addResults(owlEquivalenceFMeasureMap.get(nc));
-		tab3.addResults(owlEquivalencePredaccMap.get(nc));
-		tab4.addResults(owlEquivalenceJaccardMap.get(nc));
-		tab5.addResults(owlEquivalenceGenFMeasureMap.get(nc));
+		if(owlEquivalenceStandardMap.get(nc) != null){
+			tab1.addResults(owlEquivalenceStandardMap.get(nc));
+			tab2.addResults(owlEquivalenceFMeasureMap.get(nc));
+			tab3.addResults(owlEquivalencePredaccMap.get(nc));
+			tab4.addResults(owlEquivalenceJaccardMap.get(nc));
+			tab5.addResults(owlEquivalenceGenFMeasureMap.get(nc));
+			
+			tab6.addResults(fastEquivalenceStandardMap.get(nc));
+			tab7.addResults(fastEquivalenceFMeasureMap.get(nc));
+			tab8.addResults(fastEquivalencePredaccMap.get(nc));
+			tab9.addResults(fastEquivalenceJaccardMap.get(nc));
+			tab10.addResults(fastEquivalenceGenFMeasureMap.get(nc));
+		}
 		
-		tab6.addResults(fastEquivalenceStandardMap.get(nc));
-		tab7.addResults(fastEquivalenceFMeasureMap.get(nc));
-		tab8.addResults(fastEquivalencePredaccMap.get(nc));
-		tab9.addResults(fastEquivalenceJaccardMap.get(nc));
-		tab10.addResults(fastEquivalenceGenFMeasureMap.get(nc));
 		
 		defaultTab.addResults(defaultEquivalenceMap.get(nc));
 		
@@ -292,17 +307,20 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private void showSuperSuggestions(NamedClass nc){
 		messageLabel.setText(SUPERCLASSTEXT);
 		
-		tab1.addResults(owlSuperStandardMap.get(nc));
-		tab2.addResults(owlSuperFMeasureMap.get(nc));
-		tab3.addResults(owlSuperPredaccMap.get(nc));
-		tab4.addResults(owlSuperJaccardMap.get(nc));
-		tab5.addResults(owlSuperGenFMeasureMap.get(nc));
+		if(owlSuperStandardMap.get(nc) != null){
+			tab1.addResults(owlSuperStandardMap.get(nc));
+			tab2.addResults(owlSuperFMeasureMap.get(nc));
+			tab3.addResults(owlSuperPredaccMap.get(nc));
+			tab4.addResults(owlSuperJaccardMap.get(nc));
+			tab5.addResults(owlSuperGenFMeasureMap.get(nc));
+			
+			tab6.addResults(fastSuperStandardMap.get(nc));
+			tab7.addResults(fastSuperFMeasureMap.get(nc));
+			tab8.addResults(fastSuperPredaccMap.get(nc));
+			tab9.addResults(fastSuperJaccardMap.get(nc));
+			tab10.addResults(fastSuperGenFMeasureMap.get(nc));
+		}
 		
-		tab6.addResults(fastSuperStandardMap.get(nc));
-		tab7.addResults(fastSuperFMeasureMap.get(nc));
-		tab8.addResults(fastSuperPredaccMap.get(nc));
-		tab9.addResults(fastSuperJaccardMap.get(nc));
-		tab10.addResults(fastSuperGenFMeasureMap.get(nc));
 		
 		defaultTab.addResults(defaultSuperMap.get(nc));
 		
@@ -397,13 +415,35 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				showSuperSuggestions(nc);
 				showSingleTable();
 			} else if(!showingMultiTables && showingEquivalentSuggestions){
-				showMultiTables();
-			} else if(!showingMultiTables && !showingEquivalentSuggestions){
-				showMultiTables();
-				if(currentClassIndex + 1 >= owlEquivalenceStandardMap.keySet().size()){
-					nextFinishButton.setText("Finish");
-					nextFinishButton.setActionCommand("finish");
+				if(owlEquivalenceStandardMap.get(nc) != null){
+					showMultiTables();
+				} else {
+					showSuperSuggestions(nc);
+					showSingleTable();
+					if(currentClassIndex + 1 >= defaultEquivalenceMap.keySet().size()){
+						nextFinishButton.setText("Finish");
+						nextFinishButton.setActionCommand("finish");
+					}
 				}
+				
+			} else if(!showingMultiTables && !showingEquivalentSuggestions){
+				if(owlEquivalenceStandardMap.get(nc) != null){
+					showMultiTables();
+					if(currentClassIndex + 1 >= defaultEquivalenceMap.keySet().size()){
+						nextFinishButton.setText("Finish");
+						nextFinishButton.setActionCommand("finish");
+					}
+				} else {
+					
+					currentClassIndex++;
+					classesTable.setSelectedClass(currentClassIndex);
+					graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
+					
+					showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					showSingleTable();
+				}
+				
+				
 			} else {
 				
 				currentClassIndex++;
@@ -502,6 +542,44 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		
 		
 	} 
+	
+	class RatingTablePanel extends JPanel{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7408917327199664584L;
+		private ResultTable table;
+		private RatingPanel rating;
+		
+		public RatingTablePanel(){
+			setLayout(new BorderLayout());
+			setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			table = new ResultTable(); 
+			add(table, BorderLayout.CENTER);
+			rating = new RatingPanel();
+			add(rating, BorderLayout.EAST);
+			
+		}
+		
+		public void addResults(List<EvaluatedDescriptionClass> resultList){
+			table.addResults(resultList);
+		}
+		
+		public void reset(){
+			rating.clearSelection();
+		}
+		
+		public int getRatingValue(){
+			return rating.getSelectedValue();
+		}
+		
+		public void addMouseMotionListener(MouseMotionListener mL){
+			rating.addMouseMotionListener(mL);
+			table.addMouseMotionListener(mL);
+		}
+		
+	}
 	
 	class RatingPanel extends JPanel{
 
