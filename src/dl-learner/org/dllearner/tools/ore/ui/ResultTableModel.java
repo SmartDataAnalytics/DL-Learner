@@ -42,7 +42,7 @@ public class ResultTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0){
-				return df.format(resultList.get(rowIndex).getAccuracy());			
+				return (int)(resultList.get(rowIndex).getAccuracy() *100);//df.format(resultList.get(rowIndex).getAccuracy());			
 		} else {
 				return resultList.get(rowIndex).getDescription();
 		}

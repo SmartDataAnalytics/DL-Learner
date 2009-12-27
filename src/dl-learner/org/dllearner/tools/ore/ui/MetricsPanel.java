@@ -3,6 +3,7 @@ package org.dllearner.tools.ore.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class MetricsPanel extends JPanel {
 		table.setGridColor(Color.LIGHT_GRAY);
 		table.setRowHeight(table.getRowHeight() + 4);
 		table.setShowGrid(true);
-
+		table.setBackground(SystemColor.control);
 		table.getColumnModel().getColumn(1).setMaxWidth(150);
 		table.getColumnModel().setColumnMargin(2);
 		table.setFont(getFont().deriveFont(Font.BOLD, 12.0f));

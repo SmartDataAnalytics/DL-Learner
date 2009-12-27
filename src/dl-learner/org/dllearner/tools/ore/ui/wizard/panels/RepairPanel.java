@@ -60,11 +60,41 @@ public class RepairPanel extends JPanel{
 	
 	private JButton nextButton;
 	
+	
 	private MarkableClassExpressionsTable descriptionsTable;
 	
 	public RepairPanel() {
 		setLayout(new GridBagLayout());
-		createAutoUI();
+//		createAutoUI();
+		createUI();
+	}
+	
+	private void createUI(){
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weighty = 0.3;
+		c.weightx = 1.0;
+		c.gridx = 0;
+		c.gridy = 0;
+//		c.gridwidth = GridBagConstraints.REMAINDER;
+		add(createDescriptionsPanel(), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = 0;
+		nextButton = new JButton("Next suggestion");
+		nextButton.setActionCommand("next");
+		add(nextButton, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.gridwidth = 1;
+		c.gridy = 1;
+		c.gridx = 0;
+		c.weightx = 0.5;
+		c.weighty = 0.5;
+		add(createPosPanel(), c);
+		c.gridx = 1;
+		add(createNegPanel(), c);
 	}
 	
 	private void createAutoUI(){
@@ -217,11 +247,13 @@ public class RepairPanel extends JPanel{
 	}
 	
 	public void setManualStyle(boolean value){
-		removeAll();	
+//		removeAll();	
 		if(value){
-			createManualUI();
+//			createManualUI();
+			nextButton.setVisible(false);
 		} else {
-			createAutoUI();
+//			createAutoUI();
+			nextButton.setVisible(true);
 		}
 		repaint();
 	}

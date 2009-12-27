@@ -87,7 +87,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
     @Override
 	public Object getBackPanelDescriptor() {
     	
-		if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
+		if(LearningManager.getInstance().isManualLearningMode()){
 			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
 				return ManualLearnPanelDescriptor.IDENTIFIER;
 			} else {
@@ -103,7 +103,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 		
 		if(e.getActionCommand().equals("Save and go to class choose panel")){
 			if(saveOntology()){
-				if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
+				if(LearningManager.getInstance().isManualLearningMode()){
 					getWizard().setCurrentPanel(ClassChoosePanelDescriptor.IDENTIFIER);
 				} else {
 					getWizard().setCurrentPanel(AutoLearnPanelDescriptor.IDENTIFIER);

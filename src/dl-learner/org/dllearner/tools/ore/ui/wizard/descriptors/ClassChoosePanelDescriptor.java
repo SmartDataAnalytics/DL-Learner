@@ -43,6 +43,7 @@ import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.TaskManager;
+import org.dllearner.tools.ore.LearningManager.LearningMode;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.ClassChoosePanel;
 
@@ -219,11 +220,11 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		if(e.getActionCommand().equals("auto")){
 			classChoosePanel.setAutoLearningPanel(true);
 			getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
-			LearningManager.getInstance().setLearningMode(LearningManager.AUTO_LEARN_MODE);
+			LearningManager.getInstance().setLearningMode(LearningMode.AUTO);
 		} else {
 			classChoosePanel.setAutoLearningPanel(false);
 			getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
-			LearningManager.getInstance().setLearningMode(LearningManager.MANUAL_LEARN_MODE);
+			LearningManager.getInstance().setLearningMode(LearningMode.MANUAL);
 			retrieveClasses();
 		}
 		setNextButtonAccordingToConceptSelected(); 

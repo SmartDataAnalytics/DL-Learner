@@ -1,14 +1,17 @@
 package org.dllearner.tools.ore.ui;
 
 import java.awt.Component;
+import java.awt.SystemColor;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.ui.rendering.ProgressBarTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 
 public class MarkableClassExpressionsTable extends JXTable{
@@ -16,12 +19,13 @@ public class MarkableClassExpressionsTable extends JXTable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4193878042914394758L;
-	private ImageIcon icon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/untoggled.gif");
+	private Icon icon = new ImageIcon(OREManager.class.getResource("untoggled.gif"));
 	
 	public MarkableClassExpressionsTable(){
 		super(new MarkableClassExpressionsTableModel());
 //		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		getColumn(0).setMaxWidth(30);
+		getColumn(0).setCellRenderer(new ProgressBarTableCellRenderer());
 		setTableHeader(null);
 		setBorder(null);
 		setShowVerticalLines(false);
@@ -29,6 +33,7 @@ public class MarkableClassExpressionsTable extends JXTable{
 		setRowSelectionAllowed(false);
 		setColumnSelectionAllowed(false);
 		setCellSelectionEnabled(false);
+		setBackground(SystemColor.control);
 		getColumn(0).setCellRenderer(new TableCellRenderer() {
 			
 			@Override

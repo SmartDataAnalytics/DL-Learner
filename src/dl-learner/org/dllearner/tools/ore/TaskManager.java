@@ -4,13 +4,13 @@ import java.awt.Cursor;
 
 import javax.swing.JFrame;
 
-import org.dllearner.tools.ore.ui.StatusBar;
+import org.dllearner.tools.ore.ui.StatusBar2;
 
 public class TaskManager {
 	
 	private static TaskManager instance;
 	
-	private StatusBar statusBar;
+	private StatusBar2 statusBar;
 	private JFrame dialog;
 	
 	public static synchronized TaskManager getInstance(){
@@ -20,11 +20,11 @@ public class TaskManager {
 		return instance;
 	}
 	
-	public void setStatusBar(StatusBar statusBar){
+	public void setStatusBar(StatusBar2 statusBar){
 		this.statusBar = statusBar;
 	}
 	
-	public StatusBar getStatusBar(){
+	public StatusBar2 getStatusBar(){
 		return statusBar;
 	}
 	
