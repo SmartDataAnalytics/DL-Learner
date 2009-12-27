@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -30,12 +32,19 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.mindswap.pellet.utils.SetUtils;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class EvaluationComputingScript {
 	
 	private ReasonerComponent reasoner;
 	private OWLFile ks;
-	private ComponentManager cm = ComponentManager.getInstance();
 	private CELOE celoe;
 	private ClassLearningProblem lp;
 	
@@ -54,13 +63,12 @@ public class EvaluationComputingScript {
 
 	private static DecimalFormat df = new DecimalFormat();
 
-	// for performance measurements and development
-	private static boolean autoMode = false;
-	private static boolean useFastInstanceChecker = true;
 	private static boolean useApproximations = false;
-	private static boolean computeApproxDiff = false;
 	
-	private Set<NamedClass> reducedClassesSet;
+	private Set<NamedClass> equivalentReducedClassesSet;
+	private Set<NamedClass> superReducedClassesSet;
+	
+	private URI ontologyURI;
 	
 	
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
@@ -92,18 +100,40 @@ public class EvaluationComputingScript {
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultSuperMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 
+	private Map<NamedClass, Set<OWLDescription>> assertedEquivalentClasses = new HashMap<NamedClass, Set<OWLDescription>>();
+	private Map<NamedClass, Set<OWLDescription>> assertedSuperClasses = new HashMap<NamedClass, Set<OWLDescription>>();
 	
 	
-	
-	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException{
+	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
 		loadOntology(fileURL);
 		computeWithApproximation();
 		computeSuggestions();
 		computeGenFMeasureWithoutDefaultNegation();
+		getAssertedAxioms();
 		saveResults();
+		
 	}
 	
-	private void loadOntology(URL fileURL) throws ComponentInitException{
+	private void getAssertedAxioms(){
+		try {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLDataFactory fac = man.getOWLDataFactory();
+			OWLOntology ont = man.loadOntology(ontologyURI);
+			OWLClass cl;
+			for(NamedClass nc : SetUtils.union(defaultEquivalenceMap.keySet(), defaultSuperMap.keySet())){
+				cl = fac.getOWLClass(URI.create(nc.getName()));
+				assertedEquivalentClasses.put(nc, cl.getEquivalentClasses(ont));
+				assertedSuperClasses.put(nc, cl.getSuperClasses(ont));
+			}
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void loadOntology(URL fileURL) throws ComponentInitException, URISyntaxException{
+		ontologyURI = fileURL.toURI();
 		ComponentManager cm = ComponentManager.getInstance();
 
 		// initialize KnowledgeSource
@@ -148,6 +178,12 @@ public class EvaluationComputingScript {
 			o.writeObject(defaultEquivalenceMap);
 			o.writeObject(defaultSuperMap);
 			
+			o.writeObject(baseURI);
+			o.writeObject(prefixes);
+			
+			o.writeObject(assertedEquivalentClasses);
+			o.writeObject(assertedSuperClasses);
+			
 			o.flush();
 		} catch (IOException e) {
 			System.err.println(e);
@@ -179,26 +215,31 @@ public class EvaluationComputingScript {
 			prefixes = reasoner.getPrefixes();
 
 			// loop through all classes
-			for (NamedClass nc : reducedClassesSet) {
-				// check whether the class has sufficient instances
-				int instanceCount = reasoner.getIndividuals(nc).size();
-				if (instanceCount < minInstanceCount) {
-					System.out.println("class " + nc.toManchesterSyntaxString(baseURI, prefixes) + " has only "
-							+ instanceCount + " instances (minimum: " + minInstanceCount + ") - skipping");
-				} else {
+			for (NamedClass nc : SetUtils.union(equivalentReducedClassesSet, superReducedClassesSet)) {
 					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
-							+ " with " + instanceCount + " instances");
-					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+							);
+//					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+//					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
 					for (int j = 0; j <= 1; j++) {
 						if (j == 0) {
-							lp.getConfigurator().setType("equivalence");
-							System.out.println("Learning equivalentClass expressions");
+							if(!equivalentReducedClassesSet.contains(nc)){
+								continue;
+							}
 						} else {
-							lp.getConfigurator().setType("superClass");
-							System.out.println("Learning superClass expressions");
+							if(!superReducedClassesSet.contains(nc)){
+								continue;
+							}
 						}
 						for (int k = 0; k <= 3; k++) {
+							ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+							lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+							if (j == 0) {
+								lp.getConfigurator().setType("equivalence");
+								System.out.println("Learning equivalentClass expressions");
+							} else {
+								lp.getConfigurator().setType("superClass");
+								System.out.println("Learning superClass expressions");
+							}
 							if (k == 0) {
 								lp.getConfigurator().setAccuracyMethod("standard");
 								System.out.println("Using accuracy method: standard");
@@ -227,25 +268,6 @@ public class EvaluationComputingScript {
 							celoe.init();
 
 							celoe.start();
-
-							// test whether a solution above the threshold
-							// was found
-							EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
-							double bestAcc = best.getAccuracy();
-
-//							if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
-//								System.out
-//										.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
-//												+ (100 * minAccuracy)
-//												+ "% or the best description is not appropriate. (The best one was \""
-//												+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
-//												+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
-//								suggestions = new TreeSet<EvaluatedDescriptionClass>();
-//							} else {
-//
-//								suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-//										.getCurrentlyBestEvaluatedDescriptions();
-//							}
 							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
 							.getCurrentlyBestEvaluatedDescriptions();
 							List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
@@ -306,11 +328,9 @@ public class EvaluationComputingScript {
 							}
 							// }
 							cm.freeComponent(celoe);
-							// cm.freeComponent(lp);
+							 cm.freeComponent(lp);
 						}
 					}
-				}
-				cm.freeComponent(lp);
 			}
 
 			cm.freeComponent(reasoner);
@@ -319,6 +339,7 @@ public class EvaluationComputingScript {
 		cm.freeComponent(lp);
 		cm.freeComponent(celoe);
 	}
+	
 	
 	/**
 	 * Computing results for accuracy method 'Generalised F-Measure'. This is done separate because
@@ -347,22 +368,22 @@ public class EvaluationComputingScript {
 			baseURI = reasoner.getBaseURI();
 			prefixes = reasoner.getPrefixes();
 
-			for (NamedClass nc : reducedClassesSet) {
-				// check whether the class has sufficient instances
-				int instanceCount = reasoner.getIndividuals(nc).size();
-				if (instanceCount < minInstanceCount) {
-					System.out.println("class " + nc.toManchesterSyntaxString(baseURI, prefixes) + " has only "
-							+ instanceCount + " instances (minimum: " + minInstanceCount + ") - skipping");
-				} else {
+			for (NamedClass nc : SetUtils.union(equivalentReducedClassesSet, superReducedClassesSet)) {
 					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
-							+ " with " + instanceCount + " instances");
+							);
 					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
 					for (int j = 0; j <= 1; j++) {
 						if (j == 0) {
+							if(!equivalentReducedClassesSet.contains(nc)){
+								continue;
+							}
 							lp.getConfigurator().setType("equivalence");
 							System.out.println("Learning equivalentClass expressions");
 						} else {
+							if(!superReducedClassesSet.contains(nc)){
+								continue;
+							}
 							lp.getConfigurator().setType("superClass");
 							System.out.println("Learning superClass expressions");
 						}
@@ -381,23 +402,6 @@ public class EvaluationComputingScript {
 
 						celoe.start();
 
-						// test whether a solution above the threshold was found
-						EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
-						double bestAcc = best.getAccuracy();
-
-//						if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
-//							System.out
-//									.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
-//											+ (100 * minAccuracy)
-//											+ "% or the best description is not appropriate. (The best one was \""
-//											+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
-//											+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
-//							suggestions = new TreeSet<EvaluatedDescriptionClass>();
-//						} else {
-//
-//							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-//									.getCurrentlyBestEvaluatedDescriptions();
-//						}
 						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
 						.getCurrentlyBestEvaluatedDescriptions();
 						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
@@ -422,7 +426,6 @@ public class EvaluationComputingScript {
 					}
 					cm.freeComponent(celoe);
 					cm.freeComponent(lp);
-				}
 			}
 			cm.freeComponent(reasoner);
 		}
@@ -507,13 +510,13 @@ public class EvaluationComputingScript {
 
 			}
 		}
-		reducedClassesSet = getShrinkedSet(defaultEquivalenceMap.keySet(), allListsComputingCount);
-		
+		equivalentReducedClassesSet = getShrinkedSet(defaultEquivalenceMap.keySet(), allListsComputingCount);
+		superReducedClassesSet = getShrinkedSet(defaultSuperMap.keySet(), allListsComputingCount);
 	}
 
 	private Set<NamedClass> getShrinkedSet(Set<NamedClass> set, int count){
 		Set<NamedClass> reducedSet = new HashSet<NamedClass>();
-		int i = count;
+		int i = 0;
 		for(NamedClass nc : set){
 			if(i % count == 0){
 				reducedSet.add(nc);
@@ -528,8 +531,9 @@ public class EvaluationComputingScript {
 	 * @throws MalformedURLException 
 	 * @throws LearningProblemUnsupportedException 
 	 * @throws ComponentInitException 
+	 * @throws URISyntaxException 
 	 */
-	public static void main(String[] args) throws MalformedURLException, ComponentInitException, LearningProblemUnsupportedException {
+	public static void main(String[] args) throws MalformedURLException, ComponentInitException, LearningProblemUnsupportedException, URISyntaxException {
 //		Logger.getRootLogger().setLevel(Level.WARN);
 		if (args.length == 0) {
 			System.out.println("You need to give an OWL file as argument.");
@@ -541,8 +545,9 @@ public class EvaluationComputingScript {
 		} else {
 			fileURL = new File(args[0]).toURI().toURL();
 		}
-
+		long startTime = System.currentTimeMillis();
 		new EvaluationComputingScript(fileURL);
+		System.out.println("Overall computing time: " + (System.currentTimeMillis() - startTime)/1000 +" s");
 	}
 
 }

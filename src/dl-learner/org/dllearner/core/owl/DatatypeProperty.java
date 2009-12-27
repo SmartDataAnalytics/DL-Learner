@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Map;
 
@@ -28,8 +29,12 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class DatatypeProperty implements Comparable<DatatypeProperty>, Property, NamedKBElement {
+public class DatatypeProperty implements Comparable<DatatypeProperty>, Property, NamedKBElement, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8452865438915671952L;
 	protected String name;
 	
 	public DatatypeProperty(String name) {
