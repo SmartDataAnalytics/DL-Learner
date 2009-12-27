@@ -37,7 +37,6 @@ import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
@@ -54,6 +53,9 @@ import org.dllearner.utilities.Helper;
  *
  */
 public class ClassLearningProblem extends LearningProblem {
+	
+    private long nanoStartTime;
+	private static int maxExecutionTimeInSeconds = 20;
 
 	// TODO: naming needs to be cleaned up for consistency:
 	// coverage => recall
@@ -441,6 +443,8 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	public double getAccuracyOrTooWeakExact(Description description, double noise) {
 
+		nanoStartTime = System.nanoTime();
+		
 		if(heuristic.equals(HeuristicType.JACCARD)) {
 			
 			// computing R(C) restricted to relevant instances
@@ -449,6 +453,9 @@ public class ClassLearningProblem extends LearningProblem {
 				if(reasoner.hasType(description, ind)) {
 					additionalInstancesSet.add(ind);
 				}
+				if(terminationTimeExpired()){
+					return 0;
+				}
 			}
 				
 			// computing R(A)
@@ -456,6 +463,9 @@ public class ClassLearningProblem extends LearningProblem {
 			for(Individual ind : classInstances) {
 				if(reasoner.hasType(description, ind)) {
 					coveredInstancesSet.add(ind);
+				}
+				if(terminationTimeExpired()){
+					return 0;
 				}
 			}			
 			
@@ -472,6 +482,9 @@ public class ClassLearningProblem extends LearningProblem {
 				if(reasoner.hasType(description, ind)) {
 					additionalInstances++;
 				}
+				if(terminationTimeExpired()){
+					return 0;
+				}
 			}
 			
 			// computing R(A)
@@ -479,6 +492,9 @@ public class ClassLearningProblem extends LearningProblem {
 			for(Individual ind : classInstances) {
 				if(reasoner.hasType(description, ind)) {
 					coveredInstances++;
+				}
+				if(terminationTimeExpired()){
+					return 0;
 				}
 			}
 			
@@ -517,6 +533,9 @@ public class ClassLearningProblem extends LearningProblem {
 				} else if(reasoner.hasType(descriptionNeg, ind)) {
 					icNeg.add(ind);
 				}
+				if(terminationTimeExpired()){
+					return 0;
+				}
 			}
 			
 			// semantic precision
@@ -540,6 +559,10 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 		
 		throw new Error("ClassLearningProblem error: not implemented");
+	}
+	
+	private boolean terminationTimeExpired(){
+		return ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
 	}
 	
 //	@Deprecated

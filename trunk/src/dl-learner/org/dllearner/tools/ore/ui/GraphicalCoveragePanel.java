@@ -27,6 +27,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
@@ -70,6 +71,9 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	private EvaluatedDescription eval;
 
 	private NamedClass concept;
+	
+	private String baseURI;
+	private Map<String, String> prefixes;
 	
 	private String conceptNew;
 	private final Vector<IndividualPoint> posCovIndVector;
@@ -138,10 +142,16 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 //		this.computeIndividualPoints();
 	
 	}
+	
+	public void initManchesterSyntax(String baseURI, Map<String, String> prefixes){
+		this.baseURI = baseURI;
+		this.prefixes = prefixes;
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
-			
+			g.clearRect(0, 0, 400, 400);
+			g.clearRect(320, 130, 320, 50);
 			Graphics2D g2D;
 			g2D = (Graphics2D) g;
 //			Composite original = g2D.getComposite();
@@ -152,7 +162,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 				g2D.drawString(ManchesterSyntaxRenderer.renderSimple(OREManager.getInstance().getCurrentClass2Learn())
 					, 320, 10);
 			} else if(concept!= null){
-				g2D.drawString(concept.getName(), 320, 10);
+				g2D.drawString(concept.toManchesterSyntaxString(baseURI, prefixes), 320, 10);
 						
 			}
 //			g2D.setColor(Color.ORANGE);
@@ -383,6 +393,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 //		}
 //			getParent().repaint();
 	}
+	
+	
 	@SuppressWarnings(value = { "unused" }) 
 	private void renderPlus() {
 		if (eval != null) {

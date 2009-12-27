@@ -20,13 +20,13 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -53,6 +53,8 @@ import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.MarkableClassesTable;
 import org.dllearner.tools.ore.ui.ResultTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
+import org.mindswap.pellet.utils.SetUtils;
+import org.semanticweb.owl.model.OWLDescription;
 
 public class EvaluationGUI extends JFrame implements ActionListener, ListSelectionListener, MouseMotionListener{
 	
@@ -87,6 +89,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	
 	private JPanel cardPanel;
 	private CardLayout cardLayout;
+	
+	private ResultTable mouseOverTable;
+	private int oldRow;
 	
 	private static String SUPERCLASSTEXT = "Showing suggestions for super class";
 	private static String EQUIVALENTCLASSTEXT = "Showing suggestions for equivalent class";
@@ -129,6 +134,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultSuperMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
+	private String baseURI;
+	private Map<String, String> prefixes;
+	
+	private Map<NamedClass, Set<OWLDescription>> assertedEquivalentClasses = new HashMap<NamedClass, Set<OWLDescription>>();
+	private Map<NamedClass, Set<OWLDescription>> assertedSuperClasses = new HashMap<NamedClass, Set<OWLDescription>>();
+	
 	private Map<NamedClass, EvaluatedDescriptionClass> selectedEquivalenceMap = new HashMap<NamedClass, EvaluatedDescriptionClass>();
 	private Map<NamedClass, EvaluatedDescriptionClass> selectedSuperMap = new HashMap<NamedClass, EvaluatedDescriptionClass>();
 	
@@ -140,9 +151,16 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		createUI();
 		createCoverageWindow();
 		classesTable.setSelectedClass(currentClassIndex);
+		graphPanel.initManchesterSyntax(baseURI, prefixes);
+		graphPanel2.initManchesterSyntax(baseURI, prefixes);
 		graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
 		graphPanel2.setConcept(classesTable.getSelectedClass(currentClassIndex));
-		showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+		if(classesTable.getSelectedClass(currentClassIndex) != null){
+			showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+		} else {
+			showSuperSuggestions(classesTable.getSelectedClass(currentClassIndex));
+		}
+		
 		cardLayout.last(cardPanel);
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -153,9 +171,10 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private void createUI(){
 		
 		setLayout(new BorderLayout());
-		
+		System.out.println(assertedEquivalentClasses);
+		System.out.println(assertedSuperClasses);
 		classesTable = new MarkableClassesTable();
-		classesTable.addClasses(new TreeSet<NamedClass>(defaultEquivalenceMap.keySet()));
+		classesTable.addClasses(new TreeSet<NamedClass>(SetUtils.union(defaultEquivalenceMap.keySet(), defaultSuperMap.keySet())));
 		JScrollPane classesScroll = new JScrollPane(classesTable);
 		classesTable.addMouseMotionListener(this);
 		add(classesScroll, BorderLayout.WEST);
@@ -262,16 +281,6 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		return tablesHolderPanel;
 	}
 	
-	private JPanel createSelectablePanel(ResultTable table){
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		JCheckBox box = new JCheckBox();
-		panel.add(table, BorderLayout.CENTER);
-//		panel.add(box, BorderLayout.EAST);
-		panel.add(new RatingPanel(), BorderLayout.EAST);
-		return panel;
-	}
-	
 	private void showSingleTable(){
 		defaultTab.clearSelection();
 		graphPanel.clear();
@@ -288,6 +297,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		messageLabel.setText(EQUIVALENTCLASSTEXT);
 		
 		if(owlEquivalenceStandardMap.get(nc) != null){
+			
+			
 			tab1.addResults(owlEquivalenceStandardMap.get(nc));
 			tab2.addResults(owlEquivalenceFMeasureMap.get(nc));
 			tab3.addResults(owlEquivalencePredaccMap.get(nc));
@@ -300,9 +311,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			tab9.addResults(fastEquivalenceJaccardMap.get(nc));
 			tab10.addResults(fastEquivalenceGenFMeasureMap.get(nc));
 		}
-		
-		
 		defaultTab.addResults(defaultEquivalenceMap.get(nc));
+		
+		
 		
 		showingEquivalentSuggestions = true;
 	}
@@ -311,6 +322,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		messageLabel.setText(SUPERCLASSTEXT);
 		
 		if(owlSuperStandardMap.get(nc) != null){
+			
 			tab1.addResults(owlSuperStandardMap.get(nc));
 			tab2.addResults(owlSuperFMeasureMap.get(nc));
 			tab3.addResults(owlSuperPredaccMap.get(nc));
@@ -324,8 +336,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			tab10.addResults(fastSuperGenFMeasureMap.get(nc));
 		}
 		
-		
 		defaultTab.addResults(defaultSuperMap.get(nc));
+		
 		
 		showingEquivalentSuggestions = false;
 	}
@@ -373,6 +385,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			defaultSuperMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
+			baseURI = (String)o.readObject();
+			prefixes = (Map<String, String>)o.readObject();
+			
+			assertedEquivalentClasses = (Map<NamedClass, Set<OWLDescription>>) o.readObject();
+			assertedSuperClasses = (Map<NamedClass, Set<OWLDescription>>) o.readObject();
+			
 		}
 
 		catch (IOException e) {
@@ -393,8 +411,17 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	}
 	
 	
-	private void showCoveragePanel(boolean visible){
-		coverageWindow.setVisible(visible);
+	private void showCoveragePanel(boolean show){
+		final boolean visible = show;
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				coverageWindow.setVisible(visible);
+				
+			}
+		});
+		
 	}
 	
 	private void setCoverageLocationRelativeTo(Component component){
@@ -415,34 +442,53 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		if(e.getActionCommand().equals("next")){
 			NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
 			if(showingMultiTables && showingEquivalentSuggestions){
-				showSuperSuggestions(nc);
-				showSingleTable();
+				if(defaultSuperMap.get(nc) != null){
+					showSuperSuggestions(nc);
+					showSingleTable();
+				} else {
+					currentClassIndex++;
+					classesTable.setSelectedClass(currentClassIndex);
+					graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
+					
+					showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					showSingleTable();
+				}
+				
 			} else if(!showingMultiTables && showingEquivalentSuggestions){
 				if(owlEquivalenceStandardMap.get(nc) != null){
 					showMultiTables();
-				} else {
+				} else if(defaultSuperMap.get(nc) != null){
 					showSuperSuggestions(nc);
 					showSingleTable();
 					if(currentClassIndex + 1 >= defaultEquivalenceMap.keySet().size()){
 						nextFinishButton.setText("Finish");
 						nextFinishButton.setActionCommand("finish");
 					}
-				}
-				
-			} else if(!showingMultiTables && !showingEquivalentSuggestions){
-				if(owlEquivalenceStandardMap.get(nc) != null){
-					showMultiTables();
-					if(currentClassIndex + 1 >= defaultEquivalenceMap.keySet().size()){
-						nextFinishButton.setText("Finish");
-						nextFinishButton.setActionCommand("finish");
-					}
 				} else {
-					
 					currentClassIndex++;
 					classesTable.setSelectedClass(currentClassIndex);
 					graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
 					
 					showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					showSingleTable();
+				}
+				
+			} else if(!showingMultiTables && !showingEquivalentSuggestions){
+				if(owlEquivalenceStandardMap.get(nc) != null){
+					showMultiTables();
+					
+				} else {
+					
+					currentClassIndex++;
+					classesTable.setSelectedClass(currentClassIndex);
+					NamedClass newNc = classesTable.getSelectedClass(currentClassIndex);
+					graphPanel.setConcept(newNc);
+					if(defaultEquivalenceMap.get(newNc) != null){
+						showEquivalentSuggestions(newNc);
+					} else {
+						showSuperSuggestions(newNc);
+					}
+					
 					showSingleTable();
 				}
 				
@@ -456,12 +502,29 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
 				showSingleTable();
 			}
+			setFinished();
 
 		} else if(e.getActionCommand().equals("finish")){
 			
 			closeDialog();
 		}
 		
+	}
+	
+	private void setFinished(){
+		NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
+		if(currentClassIndex == SetUtils.union(defaultEquivalenceMap.keySet(),defaultSuperMap.keySet()).size()){
+			if(showingEquivalentSuggestions && owlEquivalenceStandardMap.get(nc) == null && defaultSuperMap.get(nc) == null ||
+					showingEquivalentSuggestions && showingMultiTables && defaultSuperMap.get(nc) == null||
+					!showingEquivalentSuggestions && owlSuperStandardMap.get(nc) == null ||
+					!showingEquivalentSuggestions && showingMultiTables){
+				nextFinishButton.setText("Finish");
+				nextFinishButton.setActionCommand("finish");
+			}
+			
+		
+			
+		}
 	}
 	
 	@Override
@@ -529,13 +592,18 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			int column = result.columnAtPoint(e.getPoint());
 			int row = result.rowAtPoint(e.getPoint());
 			
-			if(column == 0 && row >=0 && row <= 9){
-				EvaluatedDescriptionClass ec = result.getValueAtRow(row);
-				graphPanel2.clear();
-				graphPanel2.setNewClassDescription(ec);
-				setCoverageLocationRelativeTo(result);
-				showCoveragePanel(true);
-				
+			if(column == 0 && row >=0){
+				if(mouseOverTable != result || row != oldRow){
+					mouseOverTable = result;
+					oldRow = row;
+					EvaluatedDescriptionClass ec = result.getValueAtRow(row);
+					graphPanel2.clear();
+					graphPanel2.setNewClassDescription(ec);
+					setCoverageLocationRelativeTo(result);
+					showCoveragePanel(true);
+				} else {
+					showCoveragePanel(true);
+				}
 			} else {
 				showCoveragePanel(false);
 			}
