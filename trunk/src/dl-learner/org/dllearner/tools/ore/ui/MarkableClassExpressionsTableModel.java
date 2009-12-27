@@ -47,7 +47,6 @@ public class MarkableClassExpressionsTableModel extends AbstractTableModel imple
 				return "";
 			}
 		} else {
-			
 			OWLDataFactory factory = OREManager.getInstance().getReasoner().getOWLOntologyManager().getOWLDataFactory();
 			OWLClass cl = factory.getOWLClass(
 					OREManager.getInstance().getCurrentClass2Learn().getURI());

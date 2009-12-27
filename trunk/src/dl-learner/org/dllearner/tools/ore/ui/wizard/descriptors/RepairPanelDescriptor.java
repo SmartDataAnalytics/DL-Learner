@@ -85,7 +85,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     
     @Override
 	public Object getBackPanelDescriptor() {
-    	if(LearningManager.getInstance().getLearningMode() == LearningManager.MANUAL_LEARN_MODE){
+    	if(LearningManager.getInstance().isManualLearningMode()){
     		return ManualLearnPanelDescriptor.IDENTIFIER;
     	} else {
     		return AutoLearnPanelDescriptor.IDENTIFIER;
@@ -108,19 +108,18 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     
     public void setManualPanel(boolean value){
     	repairPanel.setManualStyle(value);
-    	repairPanel.addActionListeners(this);
     }
    
     /**
      * Method to control actions by button pressed.
      */
 	public void actionPerformed(ActionEvent event) {
-		if(event.getActionCommand().equals("next")){	
+		if(event.getActionCommand().equals("next")){
 			LearningManager.getInstance().setNextDescription();		
 		} else {
 	        modi = OREManager.getInstance().getModifier();       
 			String actionType = ((JButton) event.getSource()).getParent().getName();
-			if(actionType.equals("negative")){
+			if(actionType.equals("negative") && repairPanel.getNegFailureTable().getSelectedRow() >=0){
 				Individual ind = repairPanel.getNegFailureTable().getSelectedIndividual();
 					if(event.getActionCommand().equals("negRepair")){
 						RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(),  "neg");
@@ -140,7 +139,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 						repairPanel.getNegFailureTable().removeIndividual(ind);
 					
 					}
-			} else if(actionType.equals("positive")){
+			} else if(actionType.equals("positive") && repairPanel.getPosFailureTable().getSelectedRow() >=0){
 				Individual ind = repairPanel.getPosFailureTable().getSelectedIndividual();
 				if(event.getActionCommand().equals("posRepair")){
 					RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(),  "pos");

@@ -41,6 +41,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
@@ -113,14 +114,15 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	
 	public ExtractFromSparqlDialog(JFrame owner) {
 		super(owner, "Extract fragment from SPARQL endpoint", true);
-		getLocale().setDefault(Locale.ENGLISH);
+		getLocale();
+		Locale.setDefault(Locale.ENGLISH);
 		
 		// Create the controls
 		createControls();
 		//create main panel
 		createSparqlPanel();
 		//add predefined endpoints
-		addPredefinedEndpoints();
+//		addPredefinedEndpoints();
 		positionErrorDialog(owner);
 	}
 	 
@@ -180,8 +182,9 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		panel.add(endPointHelpPanel, c);
 
-		JPanel classHolderPanel = new JPanel();
-		classHolderPanel.setLayout(new GridLayout(0, 1));
+		JPanel classHolderPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+//		classHolderPanel.setLayout(new GridLayout(2, 1));
 //		classHolderPanel.setBorder(new TitledBorder("Class to investigate"));
 		asLabelButton = new JRadioButton("label");
 		asURLButton = new JRadioButton("URI");
@@ -194,10 +197,15 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		buttonPanel.add(asURLButton);
 		buttonPanel.add(asLabelButton);
 		
-		classHolderPanel.add(buttonPanel);
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		
+		classHolderPanel.add(buttonPanel,gbc);
 		classField = new JTextField();
 		classField.getDocument().addDocumentListener(this);
-		classHolderPanel.add(classField);
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		classHolderPanel.add(classField,gbc);
 		HelpablePanel classHelpPanel = new HelpablePanel(classHolderPanel);
 		classHelpPanel.setHelpText(classHelpText);
 		classHelpPanel.setBorder(new TitledBorder("Class to investigate"));
@@ -328,8 +336,19 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	 
 	 public int showDialog(){
 		 setSize(500, 400);
-		 setVisible(true);
-		 setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);	 
+		 setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);	
+		 SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				setLocation(screenSize.width / 2 - getWidth() / 2,
+                        screenSize.height / 2 - getHeight() / 2);
+				 setVisible(true);
+				
+			}
+		});
+		
 		 return returnCode;
 	 }
 	 	

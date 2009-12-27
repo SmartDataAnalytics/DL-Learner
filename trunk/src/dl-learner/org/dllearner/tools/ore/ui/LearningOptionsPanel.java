@@ -54,9 +54,9 @@ public class LearningOptionsPanel extends JPanel{
 		JPanel holderPanel = new JPanel();
 		holderPanel.setLayout(new BorderLayout());
 		labelPanel = new JPanel();
-		labelPanel.setLayout(new GridLayout(0, 1));
+		labelPanel.setLayout(new GridLayout(0, 1, 5, 5));
 		sliderPanel = new JPanel();
-		sliderPanel.setLayout(new GridLayout(0, 1));
+		sliderPanel.setLayout(new GridLayout(0, 1, 5, 5));
 		
 		minAccuracyLabel = new JLabel("Noise in %:    ");
 		maxExecutionTimeLabel = new JLabel("Max. execution time in s:    ");

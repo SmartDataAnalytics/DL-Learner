@@ -36,15 +36,12 @@ import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.ExtractFromSparqlDialog;
 import org.dllearner.tools.ore.ui.LinkLabel;
-import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;
 import org.protege.editor.core.ui.OpenFromURIPanel;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
-import org.protege.editor.owl.model.OntologyFileFilter;
 import org.semanticweb.owl.io.UnparsableOntologyException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyFormat;
 
 /**
  * Wizard panel descriptor where knowledge source is selected.
@@ -109,7 +106,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     	OREManager.getInstance().setCurrentKnowledgeSource(uri);
     	currentURI = uri;
     	TaskManager.getInstance().setTaskStarted("Loading ontology...");
-    	new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+    	new OntologyLoadingTask().execute();
     	
     }
     
@@ -168,7 +165,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		int ret = dialog.showDialog();
 		if(ret == ExtractFromSparqlDialog.OK_RETURN_CODE){
 			OREManager.getInstance().setCurrentKnowledgeSource(dialog.getKnowledgeSource());
-			new OntologyLoadingTask(getWizard().getStatusBar()).execute();
+			new OntologyLoadingTask().execute();
 		}
 		
 	}
@@ -191,11 +188,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     class OntologyLoadingTask extends SwingWorker<Void, Void>{
 		
-		private StatusBar statusBar;
 		private OREManager oreMan;
 		
-		public OntologyLoadingTask(StatusBar statusBar) {		
-			this.statusBar = statusBar;
+		public OntologyLoadingTask() {		
 			this.oreMan = OREManager.getInstance();
 		}
 
@@ -205,20 +200,18 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			
 			try{
 	        	oreMan.initPelletReasoner();
+//	        	ReasonerProgressUI ui = new ReasonerProgressUI(getWizard().getDialog());
+//	        	oreMan.getReasoner().getReasoner().getKB().getTaxonomyBuilder().setProgressMonitor(ui);
 	        	RecentManager.getInstance().addURI(currentURI);
 	        	RecentManager.getInstance().serialize();
 	        	if(oreMan.consistentOntology()){
-					statusBar.setMessage("Classifying ontology...");
 					oreMan.getReasoner().classify();
-		        	statusBar.setMessage("Realising ontology...");
 		        	oreMan.getReasoner().realise();
 				}
 	        	
 			} catch(URISyntaxException e){
 				
 				cancel(true);
-				statusBar.showProgress(false);
-				statusBar.setProgressTitle("");
 				getWizard().getDialog().setCursor(null);
 				JOptionPane.showMessageDialog(getWizard().getDialog(),
 					    "Error loading ontology. Please check URI and try again.",
@@ -233,8 +226,6 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			} catch(OWLOntologyCreationException e){
 				
 				cancel(true);
-				statusBar.showProgress(false);
-				statusBar.setProgressTitle("");
 				getWizard().getDialog().setCursor(null);
 				if(e.getClass().equals(UnparsableOntologyException.class)){
 					JOptionPane.showMessageDialog(getWizard().getDialog(),

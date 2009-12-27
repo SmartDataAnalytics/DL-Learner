@@ -46,6 +46,7 @@ import javax.swing.border.EmptyBorder;
 import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.StatusBar;
+import org.dllearner.tools.ore.ui.StatusBar2;
 import org.dllearner.tools.ore.ui.wizard.panels.LeftPanel;
 
 /**
@@ -106,7 +107,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     private JButton nextButton;
     private JButton cancelButton;
     private JTextPane informationsField;
-    private StatusBar statusBar;
+    private StatusBar2 statusBar;
     
     private int returnCode;
   
@@ -391,7 +392,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         JPanel buttonPanel = new JPanel();
         JSeparator separator = new JSeparator();
         Box buttonBox = new Box(BoxLayout.X_AXIS);
-        statusBar = new StatusBar();
+        statusBar = new StatusBar2();
 
         cardPanel = new JPanel();
         cardPanel.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));       
@@ -427,7 +428,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         buttonBox.add(cancelButton);
         
         buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
-        buttonPanel.add(statusBar, BorderLayout.SOUTH);   
+        buttonPanel.add(statusBar, BorderLayout.WEST);   
 
         Color color = UIManager.getColor("Panel.background");
         informationsField = new JTextPane();
@@ -490,7 +491,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 	}
 
 	
-	public StatusBar getStatusBar() {
+	public StatusBar2 getStatusBar() {
 		return statusBar;
 	}
 	

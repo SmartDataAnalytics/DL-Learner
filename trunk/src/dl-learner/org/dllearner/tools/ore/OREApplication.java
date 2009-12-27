@@ -44,6 +44,8 @@ import org.dllearner.tools.ore.ui.wizard.descriptors.ManualLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
 
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+
 
 /**
  * Main class starting the wizard and registering wizard panels.
@@ -62,8 +64,7 @@ public class OREApplication {
     	
     	
     	try {
-//    		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    		UIManager.setLookAndFeel(new PlasticLookAndFeel());
 			UIDefaults def = UIManager.getLookAndFeelDefaults();
 			Vector<?> vec = new Vector<Object>(def.keySet());
 			Collections.sort(vec, new Comparator<Object>() {
@@ -83,15 +84,6 @@ public class OREApplication {
 			}
 			
 			
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

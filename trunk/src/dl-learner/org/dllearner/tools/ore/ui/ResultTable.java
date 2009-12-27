@@ -7,6 +7,7 @@ import javax.swing.ListSelectionModel;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
+import org.dllearner.tools.ore.ui.rendering.ProgressBarTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
@@ -25,9 +26,9 @@ public class ResultTable extends JXTable {
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ResultTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//		ProgressBarTableCellRenderer renderer = new ProgressBarTableCellRenderer();
-//		renderer.setBackground(getBackground());
-//		getColumn(0).setCellRenderer(renderer);
+		ProgressBarTableCellRenderer renderer = new ProgressBarTableCellRenderer();
+		renderer.setBackground(getBackground());
+		getColumn(0).setCellRenderer(renderer);
 		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		setColumnSizes();
 		getColumn(0).setResizable(false);

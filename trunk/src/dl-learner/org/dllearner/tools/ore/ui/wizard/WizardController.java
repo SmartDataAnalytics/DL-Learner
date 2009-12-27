@@ -185,14 +185,13 @@ public class WizardController implements ActionListener {
 		}
 			
 		else if(nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){
-			
 				RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
 						.getPanelHashMap().get(nextPanelDescriptor));
-				if(LearningManager.getInstance().getLearningMode() == LearningManager.AUTO_LEARN_MODE){
-					repair.setManualPanel(false);
+				if(LearningManager.getInstance().isManualLearningMode()){
+					repair.setManualPanel(true);
 					repair.fillExamplesLists();
 				} else {
-					repair.setManualPanel(true);
+					repair.setManualPanel(false);
 					repair.fillExamplesLists();
 				}
 				
@@ -211,20 +210,15 @@ public class WizardController implements ActionListener {
 
 		}
 		if(nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){
-			
 			RepairPanelDescriptor repair = ((RepairPanelDescriptor) model
 					.getPanelHashMap().get(nextPanelDescriptor));
-			if(LearningManager.getInstance().getLearningMode() == LearningManager.AUTO_LEARN_MODE){
-				repair.setManualPanel(false);
-				repair.fillExamplesLists();
-			} else {
+			if(LearningManager.getInstance().isManualLearningMode()){
 				repair.setManualPanel(true);
 				repair.fillExamplesLists();
+			} else {
+				repair.setManualPanel(false);
+				repair.fillExamplesLists();
 			}
-			
-		
-		
-		
 	}
 		if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
 			wizard.close(Wizard.FINISH_RETURN_CODE);

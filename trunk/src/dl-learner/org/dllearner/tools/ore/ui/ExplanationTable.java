@@ -68,6 +68,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		column6.setResizable(false);
 //		setRowHeight(getRowHeight() + 4);
 		setRowHeightEnabled(true);
+		setRowHeight(20);
 	
 		getColumn(0).setCellRenderer(new TextAreaRenderer());
 		getColumn(1).setMaxWidth(60);
