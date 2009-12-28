@@ -112,6 +112,8 @@ public class ClassLearningProblem extends LearningProblem {
 		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","standard"); //  or domain/range of a property.
 		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "pred_acc", "generalised_fmeasure", "jaccard"});
 		options.add(accMethod);
+		BooleanConfigOption consistency = new BooleanConfigOption("checkConsistency", "Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive.", true);
+		options.add(consistency);		
 		return options;
 	}
 
@@ -229,13 +231,6 @@ public class ClassLearningProblem extends LearningProblem {
 		// for each description with less than 100% coverage, we check whether it is
 		// leads to an inconsistent knowledge base
 		
-		// workaround due to a bug (see http://sourceforge.net/tracker/?func=detail&aid=2866610&group_id=203619&atid=986319)
-//		boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
-		boolean isConsistent = isConsistent(description);
-		
-		// we check whether the axiom already follows from the knowledge base
-		boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);
-		
 		double acc = 0;
 		if(heuristic.equals(HeuristicType.FMEASURE)) {
 			acc = getFMeasure(coverage, protusion);
@@ -246,8 +241,23 @@ public class ClassLearningProblem extends LearningProblem {
 			// move accuracy computation here if possible 
 			acc = getAccuracyOrTooWeakExact(description, 1);
 		}
-//		double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
-		return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), coverage, additionalInstances, protusion, acc, isConsistent, followsFromKB);
+		
+		if(configurator.getCheckConsistency()) {
+			
+			// we check whether the axiom already follows from the knowledge base
+			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);			
+			
+			// workaround due to a bug (see http://sourceforge.net/tracker/?func=detail&aid=2866610&group_id=203619&atid=986319)
+//			boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
+			// (if the axiom follows, then the knowledge base remains consistent)
+			boolean isConsistent = followsFromKB || isConsistent(description);
+			
+//			double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
+			return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), coverage, additionalInstances, protusion, acc, isConsistent, followsFromKB);
+		
+		} else {
+			return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), coverage, additionalInstances, protusion, acc);
+		}
 	}	
 	
 	public boolean isEquivalenceProblem() {

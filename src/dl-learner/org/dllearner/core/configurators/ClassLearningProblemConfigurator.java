@@ -99,6 +99,15 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(classLearnin
 public String getAccuracyMethod() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "accuracyMethod") ;
 }
+/**
+* checkConsistency Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getCheckConsistency() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "checkConsistency") ;
+}
 
 /**
 * @param classToDescribe class of which a description should be learned.
@@ -142,6 +151,15 @@ reinitNecessary = true;
 **/
 public void setAccuracyMethod(String accuracyMethod) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "accuracyMethod", accuracyMethod);
+reinitNecessary = true;
+}
+/**
+* @param checkConsistency Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setCheckConsistency(boolean checkConsistency) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "checkConsistency", checkConsistency);
 reinitNecessary = true;
 }
 
