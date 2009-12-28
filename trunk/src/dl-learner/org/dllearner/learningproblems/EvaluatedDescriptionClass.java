@@ -115,6 +115,14 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 		return classScore.followsFromKB();
 	}	
 	
+	public void setConsistent(boolean isConsistent) {
+		classScore.setConsistent(isConsistent);
+	}
+
+	public void setFollowsFromKB(boolean followsFromKB) {
+		classScore.setFollowsFromKB(followsFromKB);
+	}
+
 	/**
 	 * This convenience method can be used to store and exchange evaluated
 	 * descriptions by transforming them to a JSON string.
