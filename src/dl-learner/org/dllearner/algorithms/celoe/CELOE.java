@@ -533,7 +533,7 @@ public class CELOE extends LearningAlgorithm {
 	// check whether the node is a potential solution candidate
 	private Description rewriteNode(OENode node) {
 		Description description = node.getDescription();
-		// minimize description (expensive!)
+		// minimize description (expensive!) - also performes some human friendly rewrites
 		Description niceDescription = minimizer.minimizeClone(description);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		ConceptTransformation.replaceRange(niceDescription, reasoner);
