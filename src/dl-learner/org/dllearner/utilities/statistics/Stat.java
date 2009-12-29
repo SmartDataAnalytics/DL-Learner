@@ -21,6 +21,7 @@
 package org.dllearner.utilities.statistics;
 
 import java.text.DecimalFormat;
+import java.util.Set;
 
 /**
  * Utility class for calculating the mean and standard deviation of a given set
@@ -56,6 +57,23 @@ public class Stat {
     	squareSum = stat1.squareSum + stat2.squareSum;
     	min = Math.min(stat1.min, stat2.min);
     	max = Math.max(stat1.max, stat2.max);
+    }
+    
+    /**
+     * Creates a new stat object by merging several stat objects. The result is the same as if
+     * the numbers, which have been added to each stat would have been added to this
+     * stat object.
+     * @param stat1 Statistical object 1.
+     * @param stat2 Statistical object 2.
+     */
+    public Stat(Set<Stat> stats) {
+    	for(Stat stat : stats){
+    		count += stat.count;
+    		sum += stat.sum;
+        	squareSum += stat.squareSum;
+        	min = Math.min(min, stat.min);
+        	max = Math.max(max, stat.max);
+    	}
     }
     
     /**

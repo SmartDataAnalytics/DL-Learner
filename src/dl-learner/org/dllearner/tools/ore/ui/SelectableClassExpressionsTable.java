@@ -45,6 +45,10 @@ public class SelectableClassExpressionsTable extends JXTable {
 		((SelectableClassExpressionsTableModel)getModel()).clear();
 	}
 	
+	public void removeSelection(){
+		((SelectableClassExpressionsTableModel)getModel()).removeSelection();
+	}
+	
 	public void addResults(List<EvaluatedDescriptionClass> resultList){
 		
 		if(getSelectedRow() >= 0){
@@ -62,6 +66,18 @@ public class SelectableClassExpressionsTable extends JXTable {
 	
 	public EvaluatedDescriptionClass getSelectedValue(){	
 		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedValue(getSelectedRow());
+	}
+	
+	public EvaluatedDescriptionClass getSelectedClassExpression(){
+		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedClassExpression();
+	}
+	
+	public EvaluatedDescriptionClass getBestClassExpression(){
+		return ((SelectableClassExpressionsTableModel)getModel()).getBestClassExpression();
+	}
+	
+	public int getSelectedPosition(){
+		return ((SelectableClassExpressionsTableModel)getModel()).getSelectedPosition();
 	}
 	
 	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){
