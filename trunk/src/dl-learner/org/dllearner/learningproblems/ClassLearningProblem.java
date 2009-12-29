@@ -598,11 +598,24 @@ public class ClassLearningProblem extends LearningProblem {
 			double rec = tmp1Size / (double) (classInstances.size() + negatedClassInstances.size());
 			
 //			System.out.println(description);
+			
+//			System.out.println("I_C pos: " + icPos);
+//			System.out.println("I_C neg: " + icNeg);
+//			System.out.println("class instances: " + classInstances);
+//			System.out.println("negated class instances: " + negatedClassInstances);
+			
 //			System.out.println(prec);
 //			System.out.println(rec);
+//			System.out.println(coverageFactor);
 			
 			// too weak: see F-measure above
-			if(((1+Math.sqrt(coverageFactor))*rec)/(Math.sqrt(coverageFactor)+1)<1-noise) {
+			// => does not work for generalised F-measure, because even very general 
+			// concepts do not have a recall of 1
+//			if(((1+Math.sqrt(coverageFactor))*rec)/(Math.sqrt(coverageFactor)+1)<1-noise) {
+//				return -1;
+//			}
+			// we only return too weak if there is no recall
+			if(rec <= 0.01) {
 				return -1;
 			}
 			

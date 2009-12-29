@@ -361,6 +361,8 @@ public class CELOE extends LearningAlgorithm {
 	// returns true if node was added and false otherwise
 	private boolean addNode(Description description, OENode parentNode) {
 		
+//		System.out.println(description);
+		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
@@ -377,6 +379,7 @@ public class CELOE extends LearningAlgorithm {
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 //		System.out.println("Test2 " + new Date());
 		expressionTests++;
+//		System.out.println("acc: " + accuracy);
 //		System.out.println(description + " " + accuracy);
 		if(accuracy == -1) {
 			return false;
