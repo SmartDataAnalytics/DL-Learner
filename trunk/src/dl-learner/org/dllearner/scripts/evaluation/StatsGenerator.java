@@ -11,8 +11,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -26,24 +29,22 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-
 public class StatsGenerator {
-	
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> equivalentSuggestions;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> superSuggestions;
-	
+
 	private Map<NamedClass, String> equivalentInput;
 	private Map<NamedClass, String> superInput;
-	
+
 	private StringBuilder latex;
-	
-	//general stats
+
+	// general stats
 	private Stat acceptedGlobalStat = new Stat();
 	private Stat rejectedGlobalStat = new Stat();
 	private Stat failedGlobalStat = new Stat();
-	
-	//equivalent class stats
+
+	// equivalent class stats
 	private Stat acceptedStat = new Stat();
 	private Stat rejectedStat = new Stat();
 	private Stat failedStat = new Stat();
@@ -52,8 +53,8 @@ public class StatsGenerator {
 	private Set<Stat> accSelectedStats = new HashSet<Stat>();
 	private Set<Stat> accAboveThresholdStats = new HashSet<Stat>();
 	private Set<Stat> positionStats = new HashSet<Stat>();
-	
-	//super class stats
+
+	// super class stats
 	private Stat acceptedStatSC = new Stat();
 	private Stat rejectedStatSC = new Stat();
 	private Stat failedStatSC = new Stat();
@@ -62,67 +63,66 @@ public class StatsGenerator {
 	private Set<Stat> accSelectedStatsSC = new HashSet<Stat>();
 	private Set<Stat> accAboveThresholdStatsSC = new HashSet<Stat>();
 	private Set<Stat> positionStatsSC = new HashSet<Stat>();
-	
+
 	private int suggestionListsCount;
 	private int logicalAxiomCount;
-	
-	
-	public StatsGenerator(File directory){
-		//begin latex table with headers
+	private OWLOntology ont;
+
+	public StatsGenerator(File directory) {
+		// begin latex table with headers
 		beginTable();
-		//for each ontology
-		for(File suggestionFile : directory.listFiles(new ResultFileFilter())){
+		// for each ontology
+		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
 			clearStats();
 			loadSuggestions(suggestionFile);
 			loadOntology(suggestionFile);
-			//for each user evaluation input file
-			for(File inputFile : directory.listFiles(new NameFilter(suggestionFile))){
+			// for each user evaluation input file
+			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
 				makeSingleStat();
 				printStats();
-				
+
 			}
-			//add row to the latex table for current ontology
+			// add row to the latex table for current ontology
 			addTableRow();
 		}
-		//end latex table
+		// end latex table
 		endTable();
 		printLatexCode();
-		
-		
+
 	}
-	
-	private void loadOntology(File file){
-		String ontologyPath = file.toURI().toString().substring(0, file.toURI().toString().lastIndexOf('.') ) + ".owl";
+
+	private void loadOntology(File file) {
+		String ontologyPath = file.toURI().toString().substring(0, file.toURI().toString().lastIndexOf('.')) + ".owl";
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		try {
-			OWLOntology ont = man.loadOntologyFromPhysicalURI(URI.create(ontologyPath));
+			ont = man.loadOntologyFromPhysicalURI(URI.create(ontologyPath));
 			logicalAxiomCount = ont.getLogicalAxiomCount();
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	private void clearStats(){
+
+	private void clearStats() {
 		acceptedGlobalStat = new Stat();
 		rejectedGlobalStat = new Stat();
 		failedGlobalStat = new Stat();
-		
+
 		moreInstancesCountStats.clear();
 		accStats.clear();
 		accSelectedStats.clear();
 		accAboveThresholdStats.clear();
 		positionStats.clear();
-		
+
 		moreInstancesCountStatsSC.clear();
 		accStatsSC.clear();
 		accSelectedStatsSC.clear();
 		accAboveThresholdStatsSC.clear();
 		positionStatsSC.clear();
 	}
-	
-	private void makeSingleStat(){
+
+	private void makeSingleStat() {
 		// equivalence classes
 		int candidatesAboveThresholdCount = 0;
 		int missesCount = 0;
@@ -150,8 +150,8 @@ public class StatsGenerator {
 		Stat accSelectedStatSC = new Stat();
 		Stat accAboveThresholdStatSC = new Stat();
 		Stat positionStatSC = new Stat();
-		
-		//analysing input for equivalent class expressions
+
+		// analysing input for equivalent class expressions
 		for (Entry<NamedClass, String> e : equivalentInput.entrySet()) {
 			NamedClass currentClass = e.getKey();
 			String input = e.getValue();
@@ -192,8 +192,8 @@ public class StatsGenerator {
 		accSelectedStats.add(accSelectedStat);
 		accAboveThresholdStats.add(accSelectedStat);
 		positionStats.add(positionStat);
-		
-		//analysing input for super class expressions
+
+		// analysing input for super class expressions
 		for (Entry<NamedClass, String> e : superInput.entrySet()) {
 			NamedClass currentClass = e.getKey();
 			if (e.getValue().equals("m")) {
@@ -232,11 +232,12 @@ public class StatsGenerator {
 		accSelectedStatsSC.add(accSelectedStatSC);
 		accAboveThresholdStatsSC.add(accSelectedStatSC);
 		positionStatsSC.add(positionStatSC);
-		
+
 		acceptedGlobalStat.addNumber(foundDescriptionCount + foundDescriptionCountSC);
 		rejectedGlobalStat.addNumber(noSensibleDescriptionCountSC + noSensibleDescriptionCount);
 		failedGlobalStat.addNumber(missesCountSC + missesCount);
-		
+
+		System.out.println("Ontology URL: " + ont.getURI());
 		System.out.println("statistics for equivalence axioms:");
 		System.out.println("classes above 85% threshold: " + candidatesAboveThresholdCount);
 		System.out.println("axioms learned succesfully: " + foundDescriptionCount);
@@ -285,43 +286,67 @@ public class StatsGenerator {
 		System.out.println("average number typed by user: " + new Stat(positionStat, positionStatSC).prettyPrint(""));
 		System.out.println();
 	}
-	
-	
+
 	private void printStats() {
 
-		
 	}
-	
-	private void printLatexCode(){
+
+	private void printLatexCode() {
 		System.out.println(latex.toString());
 	}
-	
-	private void addTableRow(){
+
+	private void addTableRow() {
 		double accept = acceptedGlobalStat.getMean() / suggestionListsCount * 100;
-		double reject = rejectedGlobalStat.getMean() /suggestionListsCount * 100;
-		double fail = failedGlobalStat.getMean() /suggestionListsCount * 100;
-		latex.append(logicalAxiomCount + " & " + suggestionListsCount + " & " + 
-				accept + " & " + reject + " & " + fail + " & " + new Stat(positionStats).getMean() +"\\\\\n");
+		double reject = rejectedGlobalStat.getMean() / suggestionListsCount * 100;
+		double fail = failedGlobalStat.getMean() / suggestionListsCount * 100;
+		Stat positionStat = new Stat(positionStats);
+		double avgPosition = positionStat.getMean();
+		if(Double.isNaN(avgPosition)){
+			avgPosition = -1;
+		}
+		double stdDeviationPosition = positionStat.getStandardDeviation();
+		DecimalFormat df = new DecimalFormat("0.0");
+		double additionalInstanceCountEq = new Stat(moreInstancesCountStats).getMean();
+		double additionalInstanceCountSC = new Stat(moreInstancesCountStatsSC).getMean();
+		double additionalInstanceCount = new Stat(new Stat(moreInstancesCountStats), new Stat(moreInstancesCountStatsSC)).getMean();
+		Stat avgSelectedAccuracyEq = new Stat(accSelectedStats);
+		Stat avgSelectedAccuracySC = new Stat(accSelectedStatsSC);
+		Stat avgSelectedAccuracy = new Stat(avgSelectedAccuracyEq, avgSelectedAccuracySC);
+		double avgAccuracy = avgSelectedAccuracy.getMean();
+		
+		latex.append(logicalAxiomCount + " & " 
+				+ suggestionListsCount + " & " 
+				+ accept + " & " 
+				+ reject + " & " 
+				+ fail + " & "
+				+ df.format(avgPosition) + " $\\pm$ " + df.format(stdDeviationPosition) + " & "
+				+ df.format(avgAccuracy * 100) + " & "
+				+ additionalInstanceCountEq + " & "
+				+ additionalInstanceCount
+				+ "\\\\\n");
 	}
-	
-	private void beginTable(){
+
+	private void beginTable() {
 		latex = new StringBuilder();
-		latex.append("\\begin{tabular}{ c | c | c | c | c | c } \n");
+		latex.append("\\begin{tabular}{ c | c | c | c | c | c | c | c | c } \n");
 		latex.append("\\rotatebox{90}{\\#logical axioms} & ");
 		latex.append("\\rotatebox{90}{\\#suggestions lists} & ");
-		latex.append("\\rotatebox{90}{accept} & ");
-		latex.append("\\rotatebox{90}{reject} & ");
-		latex.append("\\rotatebox{90}{fail} & ");
-		latex.append("\\rotatebox{90}{selected positions}");
+		latex.append("\\rotatebox{90}{accept in \\%} & ");
+		latex.append("\\rotatebox{90}{reject in \\%} & ");
+		latex.append("\\rotatebox{90}{fail in \\%} & ");
+		latex.append("\\rotatebox{90}{selected positions} \\rotatebox{90}{on suggestion list} \\rotatebox{90}{incl. std. deviation} & ");
+		latex.append("\\rotatebox{90}{avg. accuracy of} \\rotatebox{90}{selected suggestions in \\%} & ");
+		latex.append("\\rotatebox{90}{add. instances} \\rotatebox{90}{(equivalence only)} & ");
+		latex.append("\\rotatebox{90}{add. instances}");
 		latex.append(" \\\\\n");
 		latex.append("\\hline\n");
 	}
-	
-	private void endTable(){
+
+	private void endTable() {
 		latex.append("\\hline\n");
 		latex.append("\\end{tabular}");
 	}
-	
+
 	private void loadSuggestions(File resultFile) {
 		InputStream fis = null;
 
@@ -333,7 +358,7 @@ public class StatsGenerator {
 			}
 			equivalentSuggestions = (Map<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			superSuggestions = (Map<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			
+
 		} catch (IOException e) {
 			System.err.println(e);
 		} catch (ClassNotFoundException e) {
@@ -346,8 +371,8 @@ public class StatsGenerator {
 		}
 		suggestionListsCount = equivalentSuggestions.size() + superSuggestions.size();
 	}
-	
-	private void loadUserInput(File input){
+
+	private void loadUserInput(File input) {
 		InputStream fis = null;
 
 		try {
@@ -370,10 +395,11 @@ public class StatsGenerator {
 
 	/**
 	 * @param args
-	 * @throws URISyntaxException 
-	 * @throws MalformedURLException 
+	 * @throws URISyntaxException
+	 * @throws MalformedURLException
 	 */
 	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+		Locale.setDefault(Locale.ENGLISH);
 		File directory = new File(new URL(args[0]).toURI());
 		new StatsGenerator(directory);
 	}
@@ -404,15 +430,16 @@ class InputFileFilter implements FileFilter {
 
 class NameFilter implements FilenameFilter {
 	private File file;
-	
-	public NameFilter(File file){
+
+	public NameFilter(File file) {
 		this.file = file;
 	}
 
 	@Override
 	public boolean accept(File dir, String name) {
-		if(name.endsWith("inp")){
-			if(name.substring(0, name.indexOf('.')).startsWith(file.getName().substring(0, file.getName().indexOf('.')))){
+		if (name.endsWith("inp")) {
+			if (name.substring(0, name.indexOf('.')).startsWith(
+					file.getName().substring(0, file.getName().indexOf('.')))) {
 				return true;
 			}
 		}
