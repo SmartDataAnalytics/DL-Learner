@@ -245,7 +245,9 @@ public class ClassLearningProblem extends LearningProblem {
 		if(configurator.getCheckConsistency()) {
 			
 			// we check whether the axiom already follows from the knowledge base
-			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);			
+//			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);			
+			
+			boolean followsFromKB = equivalence ? reasoner.isEquivalentClass(description, classToDescribe) : reasoner.isSuperClassOf(description, classToDescribe);
 			
 			// workaround due to a bug (see http://sourceforge.net/tracker/?func=detail&aid=2866610&group_id=203619&atid=986319)
 //			boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
