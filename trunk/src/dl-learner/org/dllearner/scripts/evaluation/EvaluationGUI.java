@@ -545,10 +545,10 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				} else if (defaultSuperMap.get(nc) != null) {
 					showSuperSuggestions(nc);
 					showSingleTable();
-					if (currentClassIndex + 1 >= defaultEquivalenceMap.keySet().size()) {
-						nextFinishButton.setText("Finish");
-						nextFinishButton.setActionCommand("finish");
-					}
+//					if (currentClassIndex + 1 >= defaultEquivalenceMap.keySet().size()) {
+//						nextFinishButton.setText("Finish");
+//						nextFinishButton.setActionCommand("finish");
+//					}
 				} else {
 					currentClassIndex++;
 					classesTable.setSelectedClass(currentClassIndex);
@@ -581,9 +581,14 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 
 				currentClassIndex++;
 				classesTable.setSelectedClass(currentClassIndex);
-				graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
-
-				showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+				NamedClass newCl = classesTable.getSelectedClass(currentClassIndex);
+				graphPanel.setConcept(newCl);
+				if(defaultEquivalenceMap.containsKey(newCl)){
+					showEquivalentSuggestions(newCl);
+				} else {
+					showSuperSuggestions(newCl);
+				}
+				
 				showSingleTable();
 			}
 			setFinished();
