@@ -213,10 +213,10 @@ public class EvaluationComputingScript {
 	private void saveResults() {
 		OutputStream fos = null;
 		File old = new File(ontologyURI);
-		int index = old.getName().lastIndexOf('.');
+		int index = old.toURI().toString().lastIndexOf('.');
 		String fileName = "test.res";
-	    if (index>0&& index <= old.getName().length() - 2 ) {
-	    	  fileName = old.getName().substring(0, index) + ".res";
+	    if (index > 0) {
+	    	  fileName = old.toURI().toString().substring(0, index) + ".res";
 	    }  
 		File file = new File(fileName);
 		try {
