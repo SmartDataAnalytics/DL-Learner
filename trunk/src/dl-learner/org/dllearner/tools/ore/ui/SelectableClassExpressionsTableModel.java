@@ -2,12 +2,14 @@ package org.dllearner.tools.ore.ui;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.protege.editor.owl.ui.view.SelectedEntityCardView;
 
 public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 
@@ -19,6 +21,7 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 	private List<EvaluatedDescriptionClass> resultList;
 	private DecimalFormat df;
 	private List<Boolean> selectionList;
+	private EvaluatedDescriptionClass selectedClassExpression;
 
 	public SelectableClassExpressionsTableModel(){
 		super();
@@ -54,10 +57,16 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		if(!selectionList.get(rowIndex).booleanValue()){
+			selectedClassExpression = resultList.get(rowIndex);
+			for(int i = 0; i < selectionList.size(); i++){
+				selectionList.set(i, Boolean.FALSE);
+			}
+			selectionList.set(rowIndex, (Boolean)value);
+				
+			super.fireTableCellUpdated(rowIndex, columnIndex);
+		}
 		
-		selectionList.set(rowIndex, (Boolean)value);
-			
-		super.fireTableCellUpdated(rowIndex, columnIndex);
 		
 	}
 	
@@ -94,6 +103,14 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 	
+	public void removeSelection(){
+		for(int i = 0; i < selectionList.size(); i++){
+			selectionList.set(i, Boolean.FALSE);
+		}
+		selectedClassExpression = null;
+		fireTableDataChanged();
+	}
+	
 	public void addResults(List<EvaluatedDescriptionClass> resultList){
 		this.resultList.clear();
 		this.selectionList.clear();
@@ -111,6 +128,18 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 	
 	public int getSelectionIndex(EvaluatedDescriptionClass e){
 		return resultList.indexOf(e);
+	}
+	
+	public EvaluatedDescriptionClass getSelectedClassExpression(){
+		return selectedClassExpression;
+	}
+	
+	public EvaluatedDescriptionClass getBestClassExpression(){
+		return resultList.get(0);
+	}
+	
+	public int getSelectedPosition(){
+		return resultList.indexOf(selectedClassExpression) + 1;
 	}
 	
 	public List<EvaluatedDescriptionClass> getSelectedDescriptions(){

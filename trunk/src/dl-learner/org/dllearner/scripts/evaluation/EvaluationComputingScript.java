@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
@@ -25,7 +27,10 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -40,6 +45,7 @@ import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
+
 
 public class EvaluationComputingScript {
 	
@@ -109,9 +115,69 @@ public class EvaluationComputingScript {
 		computeWithApproximation();
 		computeSuggestions();
 		computeGenFMeasureWithoutDefaultNegation();
-		getAssertedAxioms();
+//		getAssertedAxioms();
+		evaluateInconsistencies();
 		saveResults();
 		
+	}
+	
+	
+	private void evaluateInconsistencies(){
+		List<Map<NamedClass, List<EvaluatedDescriptionClass>>> superMapList = new ArrayList<Map<NamedClass,List<EvaluatedDescriptionClass>>>();
+		List<Map<NamedClass, List<EvaluatedDescriptionClass>>> equivalenceMapList = new ArrayList<Map<NamedClass,List<EvaluatedDescriptionClass>>>();
+		
+		equivalenceMapList.add(defaultEquivalenceMap);
+		equivalenceMapList.add(owlEquivalenceFMeasureMap);
+		equivalenceMapList.add(owlEquivalenceGenFMeasureMap);
+		equivalenceMapList.add(owlEquivalenceJaccardMap);
+		equivalenceMapList.add(owlEquivalencePredaccMap);
+		equivalenceMapList.add(owlEquivalenceStandardMap);
+		equivalenceMapList.add(fastEquivalenceFMeasureMap);
+		equivalenceMapList.add(fastEquivalenceGenFMeasureMap);
+		equivalenceMapList.add(fastEquivalenceJaccardMap);
+		equivalenceMapList.add(fastEquivalencePredaccMap);
+		equivalenceMapList.add(fastEquivalenceStandardMap);
+		
+		superMapList.add(defaultSuperMap);
+		superMapList.add(owlSuperFMeasureMap);
+		superMapList.add(owlSuperGenFMeasureMap);
+		superMapList.add(owlSuperJaccardMap);
+		superMapList.add(owlSuperPredaccMap);
+		superMapList.add(owlSuperStandardMap);
+		superMapList.add(fastSuperFMeasureMap);
+		superMapList.add(fastSuperGenFMeasureMap);
+		superMapList.add(fastSuperJaccardMap);
+		superMapList.add(fastSuperPredaccMap);
+		superMapList.add(fastSuperStandardMap);
+		
+		Axiom axiom;
+		NamedClass nc;
+		for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
+			for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
+				nc = entry.getKey();
+				for(EvaluatedDescriptionClass cl : entry.getValue()){
+					axiom = new EquivalentClassesAxiom(nc, cl.getDescription());
+					boolean followsFromKB = reasoner.isEquivalentClass(cl.getDescription(), nc);
+					boolean isConsistent = followsFromKB || reasoner.remainsSatisfiable(axiom);
+					cl.setConsistent(isConsistent);
+					cl.setFollowsFromKB(followsFromKB);
+				}
+				
+			}
+		}
+		for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : superMapList){
+			for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
+				nc = entry.getKey();
+				for(EvaluatedDescriptionClass cl : entry.getValue()){
+					axiom = new SubClassAxiom(nc, cl.getDescription());
+					boolean followsFromKB = reasoner.isSuperClassOf(cl.getDescription(), nc);
+					boolean isConsistent = followsFromKB || reasoner.remainsSatisfiable(axiom);
+					cl.setConsistent(isConsistent);
+					cl.setFollowsFromKB(followsFromKB);
+				}
+				
+			}
+		}
 	}
 	
 	private void getAssertedAxioms(){
@@ -146,7 +212,13 @@ public class EvaluationComputingScript {
 
 	private void saveResults() {
 		OutputStream fos = null;
-		File file = new File("test2.ser");
+		File old = new File(ontologyURI);
+		int index = old.getName().lastIndexOf('.');
+		String fileName = "test.res";
+	    if (index>0&& index <= old.getName().length() - 2 ) {
+	    	  fileName = old.getName().substring(0, index) + ".res";
+	    }  
+		File file = new File(fileName);
 		try {
 			fos = new FileOutputStream(file);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
@@ -233,6 +305,7 @@ public class EvaluationComputingScript {
 						for (int k = 0; k <= 3; k++) {
 							ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 							lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+							lp.getConfigurator().setCheckConsistency(false);
 							if (j == 0) {
 								lp.getConfigurator().setType("equivalence");
 								System.out.println("Learning equivalentClass expressions");
@@ -373,6 +446,7 @@ public class EvaluationComputingScript {
 							);
 					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+					lp.getConfigurator().setCheckConsistency(false);
 					for (int j = 0; j <= 1; j++) {
 						if (j == 0) {
 							if(!equivalentReducedClassesSet.contains(nc)){
@@ -429,7 +503,7 @@ public class EvaluationComputingScript {
 			}
 			cm.freeComponent(reasoner);
 		}
-		cm.freeComponent(reasoner);
+//		cm.freeComponent(reasoner);
 		cm.freeComponent(lp);
 		cm.freeComponent(celoe);
 	}
@@ -459,6 +533,7 @@ public class EvaluationComputingScript {
 						+ " with " + instanceCount + " instances");
 				ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 				lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+				lp.getConfigurator().setCheckConsistency(false);
 				for (int i = 0; i <= 1; i++) {
 					if (i == 0) {
 						lp.getConfigurator().setType("equivalence");
@@ -543,7 +618,7 @@ public class EvaluationComputingScript {
 		if(args[0].startsWith("http")){
 			fileURL = new URL(args[0]);
 		} else {
-			fileURL = new File(args[0]).toURI().toURL();
+			fileURL = new File(new URL(args[0]).toURI()).toURI().toURL();
 		}
 		long startTime = System.currentTimeMillis();
 		new EvaluationComputingScript(fileURL);

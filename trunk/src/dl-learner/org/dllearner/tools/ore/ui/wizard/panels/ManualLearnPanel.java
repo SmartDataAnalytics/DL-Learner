@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -57,6 +58,8 @@ public class ManualLearnPanel extends JPanel{
 	private ResultTable resultTable;
 	private JScrollPane tableScrollPane;
 	private JPanel resultPanel;
+	
+	private JLabel inconsistencyLabel;
 
 	private JButton stopButton;
 	private JButton startButton;
@@ -70,6 +73,10 @@ public class ManualLearnPanel extends JPanel{
 	private JRadioButton superClassButton;
 	
 	private GridBagConstraints c;
+	
+	private static String INCONSISTENCYWARNING = "<html><font color=red>" +
+	"Warning! Adding selected class expression leads to an inconsistent ontology." +
+	"</font></html>";
 
 
 	public ManualLearnPanel() {
@@ -98,6 +105,8 @@ public class ManualLearnPanel extends JPanel{
 		resultPanel.setLayout(new BorderLayout());
 		resultPanel.add(tableScrollPane);
 		resultPanel.setBorder(new TitledBorder("Learned class expressions"));
+		inconsistencyLabel = new JLabel(" ");
+		resultPanel.add(inconsistencyLabel, BorderLayout.SOUTH);
 
 		add(resultPanel, c);
 	}
@@ -216,9 +225,18 @@ public class ManualLearnPanel extends JPanel{
 		return equivalentClassButton.isSelected();
 	}
 	
+	public void showInconsistencyWarning(boolean show){
+		if(show){
+			inconsistencyLabel.setText(INCONSISTENCYWARNING);
+		} else {
+			inconsistencyLabel.setText(" ");
+		}
+	}
+	
 	public void reset(){
 		graphicPanel.clear();
 		resultTable.clear();
+		showInconsistencyWarning(false);
 	}
 	
 	public static void main(String[] args){

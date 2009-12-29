@@ -15,10 +15,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +60,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.MarkableClassesTable;
 import org.dllearner.tools.ore.ui.ResultTable;
+import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owl.model.OWLDescription;
 
@@ -66,6 +72,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	 * 
 	 */
 	private static final long serialVersionUID = -3097551929270352556L;
+	
+	private File inputFile;
 
 	private RatingTablePanel tab1;
 	private RatingTablePanel tab2;
@@ -78,7 +86,11 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private RatingTablePanel tab9;
 	private RatingTablePanel tab10;
 
-	private ResultTable defaultTab;
+	private SelectableClassExpressionsTable defaultTab;
+	private static String INCONSISTENCYWARNING = "<html><font color=red>" +
+	"Warning. Selected class expressions leads to an inconsistent ontology!" +
+	"</font></html>";
+	private JLabel inconsistencyLabel;
 	private JCheckBox noSuggestionCheckBox;
 	private JCheckBox alternateSuggestionCheckBox;
 	private ButtonGroup bg;
@@ -142,12 +154,14 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private Map<NamedClass, Set<OWLDescription>> assertedEquivalentClasses = new HashMap<NamedClass, Set<OWLDescription>>();
 	private Map<NamedClass, Set<OWLDescription>> assertedSuperClasses = new HashMap<NamedClass, Set<OWLDescription>>();
 
-	private Map<NamedClass, EvaluatedDescriptionClass> selectedEquivalenceMap = new HashMap<NamedClass, EvaluatedDescriptionClass>();
-	private Map<NamedClass, EvaluatedDescriptionClass> selectedSuperMap = new HashMap<NamedClass, EvaluatedDescriptionClass>();
+	
+	private Map<NamedClass, String> selectedEquivalenceMap = new HashMap<NamedClass, String>();
+	private Map<NamedClass, String> selectedSuperMap = new HashMap<NamedClass, String>();
 
 	public EvaluationGUI(File input) throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
 		super();
+		inputFile = input;
 		loadResults(input);
 		setTitle(input.getName());
 		createUI();
@@ -224,6 +238,15 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 
 		return messageTablesPanel;
 	}
+	
+	private void showInconsistencyWarning(boolean show){
+		if(show){
+			inconsistencyLabel.setText(INCONSISTENCYWARNING);
+		} else {
+			inconsistencyLabel.setText(" ");
+		}
+		
+	}
 
 	private JPanel createSingleTablePanel() {
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -232,13 +255,21 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.weightx = 1.0;
 		c.weighty = 0.0;
-		JPanel tableHolderPanel = new JPanel(new BorderLayout());
-		defaultTab = new ResultTable();
+		JPanel tableHolderPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		defaultTab = new SelectableClassExpressionsTable();
 		defaultTab.getSelectionModel().addListSelectionListener(this);
-		tableHolderPanel.add(defaultTab);
+		tableHolderPanel.add(new JScrollPane(defaultTab), gbc);
 		graphPanel = new GraphicalCoveragePanel("");
-		tableHolderPanel.add(graphPanel, BorderLayout.EAST);
+		gbc.weightx = 0.0;
+		tableHolderPanel.add(graphPanel, gbc);
 		panel.add(tableHolderPanel, c);
+		
+		inconsistencyLabel = new JLabel();
+		panel.add(inconsistencyLabel, c);
+		inconsistencyLabel.setText(" ");
 
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -255,7 +286,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				defaultTab.clearSelection();
+				defaultTab.removeSelection();
 				graphPanel.clear();
+				showInconsistencyWarning(false);
 			}
 		});
 		panel.add(noSuggestionCheckBox, c);
@@ -272,7 +305,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				defaultTab.clearSelection();
+				defaultTab.removeSelection();
 				graphPanel.clear();
+				showInconsistencyWarning(false);
 			}
 		});
 		panel.add(alternateSuggestionCheckBox, c);
@@ -280,6 +315,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		bg = new ButtonGroup();
 		bg.add(alternateSuggestionCheckBox);
 		bg.add(noSuggestionCheckBox);
+		noSuggestionCheckBox.setSelected(true);
 		return panel;
 	}
 
@@ -481,6 +517,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("next")) {
 			NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
+			if(!showingMultiTables){
+				traceInput();
+			}
 			if (showingMultiTables && showingEquivalentSuggestions) {
 				if (defaultSuperMap.get(nc) != null) {
 					showSuperSuggestions(nc);
@@ -514,7 +553,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				}
 
 			} else if (!showingMultiTables && !showingEquivalentSuggestions) {
-				if (owlEquivalenceStandardMap.get(nc) != null) {
+				if (owlSuperStandardMap.get(nc) != null) {
 					showMultiTables();
 
 				} else {
@@ -542,17 +581,79 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				showSingleTable();
 			}
 			setFinished();
+			resetSingleTablePanel();
 
 		} else if (e.getActionCommand().equals("finish")) {
-
+			if(!showingMultiTables){
+				traceInput();
+			}
 			closeDialog();
+			saveInput();
 		}
 
+	}
+	
+	private void resetSingleTablePanel(){
+		bg.clearSelection();
+		noSuggestionCheckBox.setSelected(true);
+		showInconsistencyWarning(false);
+	}
+	
+	private void traceInput(){
+		NamedClass currentClass = classesTable.getSelectedClass(currentClassIndex);
+		if(alternateSuggestionCheckBox.isSelected()){
+			if(showingEquivalentSuggestions){
+				selectedEquivalenceMap.put(currentClass, "m");
+			} else {
+				selectedSuperMap.put(currentClass, "m");
+			}
+		} else if(noSuggestionCheckBox.isSelected()){
+			if(showingEquivalentSuggestions){
+				selectedEquivalenceMap.put(currentClass, "n");
+			} else {
+				selectedSuperMap.put(currentClass, "n");
+			}
+		} else {
+			int position = defaultTab.getSelectedPosition() - 1;
+			if(showingEquivalentSuggestions){
+				selectedEquivalenceMap.put(currentClass, String.valueOf(position));
+			} else {
+				selectedSuperMap.put(currentClass, String.valueOf(position));
+			}
+		}
+	}
+	
+	
+	private void saveInput(){
+		OutputStream fos = null;
+		int index = inputFile.getName().lastIndexOf('.');
+		String fileName = "test.inp";
+	    if (index>0&& index <= inputFile.getName().length() - 2 ) {
+	    	  fileName = inputFile.getName().substring(0, index) + ".inp";
+	    }  
+		File file = new File(fileName);
+		try {
+			fos = new FileOutputStream(file);
+			ObjectOutputStream o = new ObjectOutputStream(fos);
+			
+			o.writeObject(selectedEquivalenceMap);
+			o.writeObject(selectedSuperMap);
+			
+			o.flush();
+			o.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fos.close();
+			} catch (Exception e) {
+			}
+		}
 	}
 
 	private void setFinished() {
 		NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
-		if (currentClassIndex == SetUtils.union(defaultEquivalenceMap.keySet(), defaultSuperMap.keySet()).size()) {
+		if (currentClassIndex == SetUtils.union(defaultEquivalenceMap.keySet(), defaultSuperMap.keySet()).size() - 1) {
 			if (showingEquivalentSuggestions && owlEquivalenceStandardMap.get(nc) == null
 					&& defaultSuperMap.get(nc) == null || showingEquivalentSuggestions && showingMultiTables
 					&& defaultSuperMap.get(nc) == null || !showingEquivalentSuggestions
@@ -567,51 +668,17 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting() && defaultTab.getSelectedRow() >= 0) {
-			graphPanel.setNewClassDescription(defaultTab.getSelectedValue());
-			bg.clearSelection();
-		}
-
-	}
-
-	/**
-	 * @param args
-	 * @throws ComponentInitException
-	 * @throws MalformedURLException
-	 * @throws LearningProblemUnsupportedException
-	 * @throws UnsupportedLookAndFeelException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws ClassNotFoundException
-	 */
-	public static void main(String[] args) throws ComponentInitException, MalformedURLException,
-			LearningProblemUnsupportedException, ClassNotFoundException, InstantiationException,
-			IllegalAccessException, UnsupportedLookAndFeelException {
-
-		UIManager.setLookAndFeel(new PlasticLookAndFeel());
-
-		if (args.length == 0) {
-			System.out.println("You need to give an file as argument.");
-			System.exit(0);
-		}
-		final File input = new File(args[0]);
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					new EvaluationGUI(input);
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (ComponentInitException e) {
-					e.printStackTrace();
-				} catch (LearningProblemUnsupportedException e) {
-					e.printStackTrace();
-				}
-
+			EvaluatedDescriptionClass cl = defaultTab.getSelectedValue();
+			showInconsistencyWarning(!cl.isConsistent());
+			graphPanel.setNewClassDescription(cl);
+			if(defaultTab.getSelectedClassExpression() != null){
+				bg.clearSelection();
 			}
-		});
+			
+		}
 
 	}
+	
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -645,6 +712,48 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		}
 
 	}
+
+	/**
+	 * @param args
+	 * @throws ComponentInitException
+	 * @throws MalformedURLException
+	 * @throws LearningProblemUnsupportedException
+	 * @throws UnsupportedLookAndFeelException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws ClassNotFoundException
+	 * @throws URISyntaxException 
+	 */
+	public static void main(String[] args) throws ComponentInitException, MalformedURLException,
+			LearningProblemUnsupportedException, ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException, URISyntaxException {
+
+		UIManager.setLookAndFeel(new PlasticLookAndFeel());
+
+		if (args.length == 0) {
+			System.out.println("You need to give an file as argument.");
+			System.exit(0);
+		}
+		final File input = new File(new URL(args[0]).toURI());
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					new EvaluationGUI(input);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (ComponentInitException e) {
+					e.printStackTrace();
+				} catch (LearningProblemUnsupportedException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+	}
+
 
 	class RatingTablePanel extends JPanel {
 

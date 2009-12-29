@@ -110,11 +110,8 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 		if (!e.getValueIsAdjusting() && learnPanel.getResultTable().getSelectedRow() >= 0 && 
 				(learningTask.isDone() || learningTask.isCancelled())){
 			EvaluatedDescriptionClass selectedClassExpression = learnPanel.getResultTable().getSelectedValue();
-//			if(!selectedClassExpression.isConsistent()){
-//				learnPanel.add(new JLabel("Selected class expression may lead to an inconsistent knowledgebase."));
-//			}
+			learnPanel.showInconsistencyWarning(!selectedClassExpression.isConsistent());
 			OREManager.getInstance().setNewClassDescription(selectedClassExpression);
-			
 			learnPanel.updateCurrentGraphicalCoveragePanel(OREManager.getInstance().getNewClassDescription());
 		}
 		

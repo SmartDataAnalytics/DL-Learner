@@ -535,12 +535,14 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	@Override
 	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
-		
-//			System.out.println("super: " + superConcept + "; sub: " + subConcept);
-			return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
-		
+		return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
 	}
 	
+	@Override
+	protected boolean isEquivalentClassImpl(Description class1, Description class2) {
+		return reasoner.isEquivalentClass(OWLAPIDescriptionConvertVisitor.getOWLDescription(class1), OWLAPIDescriptionConvertVisitor.getOWLDescription(class2));			
+	}
+
 	@Override
 	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
 		Set<Set<OWLClass>> classes = null;

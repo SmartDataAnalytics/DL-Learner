@@ -262,7 +262,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 	    private final double threshold = OREManager.getInstance().getThreshold();
 
 		@Override
-		public Void doInBackground() {System.out.println("Learning super class for " + OREManager.getInstance().getCurrentClass2Learn());
+		public Void doInBackground() {
 			OREManager.getInstance().setLearningType("superClass");
 			OREManager.getInstance().setLearningProblem();
 		    OREManager.getInstance().setLearningAlgorithm();
