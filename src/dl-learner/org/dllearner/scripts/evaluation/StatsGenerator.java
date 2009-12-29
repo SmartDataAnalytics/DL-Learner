@@ -381,6 +381,7 @@ public class StatsGenerator {
 
 			equivalentInput = (Map<NamedClass, String>) o.readObject();
 			superInput = (Map<NamedClass, String>) o.readObject();
+			
 		} catch (IOException e) {
 			System.err.println(e);
 		} catch (ClassNotFoundException e) {

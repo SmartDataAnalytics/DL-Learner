@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +158,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	
 	private Map<NamedClass, String> selectedEquivalenceMap = new HashMap<NamedClass, String>();
 	private Map<NamedClass, String> selectedSuperMap = new HashMap<NamedClass, String>();
+	
+	private Map<NamedClass, List<Integer>> equivalentClassListRating = new HashMap<NamedClass, List<Integer>>();
+	private Map<NamedClass, List<Integer>> superClassListRating = new HashMap<NamedClass, List<Integer>>();
 
 	public EvaluationGUI(File input) throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
@@ -515,10 +519,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		traceInput();
 		if (e.getActionCommand().equals("next")) {
+			
 			NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
 			if(!showingMultiTables){
-				traceInput();
+				
 			}
 			if (showingMultiTables && showingEquivalentSuggestions) {
 				if (defaultSuperMap.get(nc) != null) {
@@ -584,9 +590,6 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			resetSingleTablePanel();
 
 		} else if (e.getActionCommand().equals("finish")) {
-			if(!showingMultiTables){
-				traceInput();
-			}
 			closeDialog();
 			saveInput();
 		}
@@ -601,24 +604,43 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	
 	private void traceInput(){
 		NamedClass currentClass = classesTable.getSelectedClass(currentClassIndex);
-		if(alternateSuggestionCheckBox.isSelected()){
-			if(showingEquivalentSuggestions){
-				selectedEquivalenceMap.put(currentClass, "m");
+		if (!showingMultiTables) {
+			if (alternateSuggestionCheckBox.isSelected()) {
+				if (showingEquivalentSuggestions) {
+					selectedEquivalenceMap.put(currentClass, "m");
+				} else {
+					selectedSuperMap.put(currentClass, "m");
+				}
+			} else if (noSuggestionCheckBox.isSelected()) {
+				if (showingEquivalentSuggestions) {
+					selectedEquivalenceMap.put(currentClass, "n");
+				} else {
+					selectedSuperMap.put(currentClass, "n");
+				}
 			} else {
-				selectedSuperMap.put(currentClass, "m");
-			}
-		} else if(noSuggestionCheckBox.isSelected()){
-			if(showingEquivalentSuggestions){
-				selectedEquivalenceMap.put(currentClass, "n");
-			} else {
-				selectedSuperMap.put(currentClass, "n");
+				int position = defaultTab.getSelectedPosition() - 1;
+				if (showingEquivalentSuggestions) {
+					selectedEquivalenceMap.put(currentClass, String.valueOf(position));
+				} else {
+					selectedSuperMap.put(currentClass, String.valueOf(position));
+				}
 			}
 		} else {
-			int position = defaultTab.getSelectedPosition() - 1;
+			List<Integer> ratingList = new ArrayList<Integer>();
+			ratingList.add(tab1.getRatingValue());
+			ratingList.add(tab2.getRatingValue());
+			ratingList.add(tab3.getRatingValue());
+			ratingList.add(tab4.getRatingValue());
+			ratingList.add(tab5.getRatingValue());
+			ratingList.add(tab6.getRatingValue());
+			ratingList.add(tab7.getRatingValue());
+			ratingList.add(tab8.getRatingValue());
+			ratingList.add(tab9.getRatingValue());
+			ratingList.add(tab10.getRatingValue());
 			if(showingEquivalentSuggestions){
-				selectedEquivalenceMap.put(currentClass, String.valueOf(position));
+				equivalentClassListRating.put(currentClass, ratingList);
 			} else {
-				selectedSuperMap.put(currentClass, String.valueOf(position));
+				superClassListRating.put(currentClass, ratingList);
 			}
 		}
 	}
@@ -638,6 +660,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			
 			o.writeObject(selectedEquivalenceMap);
 			o.writeObject(selectedSuperMap);
+			
+			o.writeObject(equivalentClassListRating);
+			o.writeObject(superClassListRating);
 			
 			o.flush();
 			o.close();
