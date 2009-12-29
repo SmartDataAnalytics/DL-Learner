@@ -434,6 +434,7 @@ public class CELOE extends LearningAlgorithm {
 			}
 			
 			if(!shorterDescriptionExists) {
+//				System.out.println(niceDescription + " acc " + accuracy);
 				bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);	
 			}
 						

@@ -27,6 +27,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
@@ -54,6 +56,7 @@ import org.dllearner.utilities.Helper;
  */
 public class ClassLearningProblem extends LearningProblem {
 	
+	private static Logger logger = Logger.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
 	private static int maxExecutionTimeInSeconds = 20;
 
@@ -352,10 +355,15 @@ public class ClassLearningProblem extends LearningProblem {
 					// or above the limit
 					double mean = instancesCovered/(double)total;
 					
+					// we can estimate the best possible concept to reach with downward refinement
+					// by setting precision to 1 and recall = mean stays as it is
+					double optimumEstimate = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(double)(coverageFactor+1);
+					
 					// if the mean is greater than the required minimum, we can accept;
 					// we also accept if the interval is small and close to the minimum
 					// (worst case is to accept a few inaccurate descriptions)
-					if(mean > 1-noise || (upperBorderA > mean && size < 0.03)) {
+					if(optimumEstimate > 1-noise-0.03) {
+//							|| (upperBorderA > mean && size < 0.03)) {
 						instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
 						upperEstimateA = (int) (upperBorderA * classInstances.size());
 						lowerEstimateA = (int) (lowerBorderA * classInstances.size());
@@ -365,7 +373,9 @@ public class ClassLearningProblem extends LearningProblem {
 					
 					// reject only if the upper border is far away (we are very
 					// certain not to lose a potential solution)
-					if(upperBorderA + 0.1 < 1-noise) {
+//					if(upperBorderA + 0.1 < 1-noise) {
+					double optimumEstimateUpperBorder = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(double)(coverageFactor+1);
+					if(optimumEstimateUpperBorder < 1 - noise) {
 						return -1;
 					}
 				}				
@@ -448,16 +458,31 @@ public class ClassLearningProblem extends LearningProblem {
 		return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
 	}
 	
-	//////
-	// TODO: Adaption to super class learning case needs to be made for each heuristic!
-	// TODO: noise parameter is not used by some heuristics
-	//////
-	
+
+	// exact computation for 5 heuristics; each one adapted to super class learning;
+	// each one takes the noise parameter into account
 	public double getAccuracyOrTooWeakExact(Description description, double noise) {
 
 		nanoStartTime = System.nanoTime();
 		
 		if(heuristic.equals(HeuristicType.JACCARD)) {
+			
+			// computing R(A)
+			TreeSet<Individual> coveredInstancesSet = new TreeSet<Individual>();
+			for(Individual ind : classInstances) {
+				if(reasoner.hasType(description, ind)) {
+					coveredInstancesSet.add(ind);
+				}
+				if(terminationTimeExpired()){
+					return 0;
+				}
+			}				
+			
+			// if even the optimal case (no additional instances covered) is not sufficient, 
+			// the concept is too weak
+			if(coveredInstancesSet.size() / (double) classInstances.size() <= 1 - noise) {
+				return -1;
+			}
 			
 			// computing R(C) restricted to relevant instances
 			TreeSet<Individual> additionalInstancesSet = new TreeSet<Individual>();
@@ -469,17 +494,8 @@ public class ClassLearningProblem extends LearningProblem {
 					return 0;
 				}
 			}
-				
-			// computing R(A)
-			TreeSet<Individual> coveredInstancesSet = new TreeSet<Individual>();
-			for(Individual ind : classInstances) {
-				if(reasoner.hasType(description, ind)) {
-					coveredInstancesSet.add(ind);
-				}
-				if(terminationTimeExpired()){
-					return 0;
-				}
-			}			
+					
+			// TODO: easier computation |R(A) \cap R(C)| / |R(A) \cup R(C)|
 			
 			// for Jaccard: covered instances is the intersection of the sets
 			// R(A) and R(C); 
@@ -512,19 +528,36 @@ public class ClassLearningProblem extends LearningProblem {
 			
 			double recall = coveredInstances/(double)classInstances.size();
 			
-			if(recall < 1 - noise) {
-				return -1;
-			}
+			// noise computation is incorrect
+//			if(recall < 1 - noise) {
+//				return -1;
+//			}
 			
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 
+			
 			if(heuristic.equals(HeuristicType.OWN)) {
-				return getAccuracy(recall, precision);
+				// best reachable concept has same recall and precision 1:
+				// 1/t+1 * (t*r + 1)
+				if((coverageFactor*recall+1)/(double)(coverageFactor+1) <(1-noise)) {
+					return -1;
+				} else {
+					return getAccuracy(recall, precision);
+				}
 			} else if(heuristic.equals(HeuristicType.FMEASURE)) {
-				return getFMeasure(recall, precision);
+				// best reachable concept has same recall and precision 1:
+				if(((1+Math.sqrt(coverageFactor))*recall)/(Math.sqrt(coverageFactor)+1)<1-noise) {
+					return -1;
+				} else {
+					return getFMeasure(recall, precision);
+				}
 			} else if(heuristic.equals(HeuristicType.PRED_ACC)) {
-				// correctly classified divided by all examples
-				return (coverageFactor * coveredInstances + superClassInstances.size() - additionalInstances) / (double) (coverageFactor * classInstances.size() + superClassInstances.size());
+				if((coverageFactor * coveredInstances + superClassInstances.size()) / (double) (coverageFactor * classInstances.size() + superClassInstances.size()) < 1 -noise) {
+					return -1;
+				} else {
+					// correctly classified divided by all examples
+					return (coverageFactor * coveredInstances + superClassInstances.size() - additionalInstances) / (double) (coverageFactor * classInstances.size() + superClassInstances.size());					
+				}
 			}
 
 //			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
@@ -552,7 +585,8 @@ public class ClassLearningProblem extends LearningProblem {
 			
 			// semantic precision
 			// first compute I_C \cap Cn(DC)
-			// => TODO: we ignore Cn for now, because it is not clear how to implement it
+			// it seems that in our setting, we can ignore Cn, because the examples (class instances)
+			// are already part of the background knowledge
 			Set<Individual> tmp1Pos = Helper.intersection(icPos, classInstancesSet);
 			Set<Individual> tmp1Neg = Helper.intersection(icNeg, negatedClassInstances);
 			int tmp1Size = tmp1Pos.size() + tmp1Neg.size();
@@ -567,6 +601,11 @@ public class ClassLearningProblem extends LearningProblem {
 //			System.out.println(prec);
 //			System.out.println(rec);
 			
+			// too weak: see F-measure above
+			if(((1+Math.sqrt(coverageFactor))*rec)/(Math.sqrt(coverageFactor)+1)<1-noise) {
+				return -1;
+			}
+			
 			return getFMeasure(rec,prec);
 		}
 		
@@ -574,7 +613,11 @@ public class ClassLearningProblem extends LearningProblem {
 	}
 	
 	private boolean terminationTimeExpired(){
-		return ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
+		boolean val = ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
+		if(val) {
+			logger.warn("Description test aborted, because it took longer than " + maxExecutionTimeInSeconds + " seconds.");
+		}
+		return val;
 	}
 	
 //	@Deprecated
