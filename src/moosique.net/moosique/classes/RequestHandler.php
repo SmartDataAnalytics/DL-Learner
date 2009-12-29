@@ -100,7 +100,7 @@ class RequestHandler extends Config {
       $r->setInstances();
       // get all queries/kbSyntaxes
       $recommendations = $r->getQueries($this->dataHelper->connection);
-      
+      $this->debugger->log($recommendations, "RECS");
       $results = array();
       // if we have some recommendations and queries for them
       if (is_array($recommendations) && !empty($recommendations)) {

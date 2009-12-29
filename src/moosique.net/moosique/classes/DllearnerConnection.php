@@ -25,8 +25,8 @@ class DllearnerConnection extends Config {
     $this->setEndpoint($this->getConfigUrl('jamendo'));
     // load WSDL files (has to be done due to a Java web service bug)
     ini_set('soap.wsdl_cache_enabled', '0');
-    include('Utilities.php');
-    Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
+    // include('Utilities.php');
+    // Utilities::loadWSDLfiles($this->getConfigUrl('wsdl'));    
     $this->connect();
   }
   
@@ -153,6 +153,8 @@ class DllearnerConnection extends Config {
       $id = $_SESSION['sessionID'];
       $kID = $this->knowledgeSourceID;      
     }
+
+    $this->debugger->log($this->getConfigUrl('tagOntology'), "OWL");
 
     $this->client->addKnowledgeSource($id, 'owlfile', $this->getConfigUrl('tagOntology'));
     $this->client->setReasoner($id, $conf['reasoner']);

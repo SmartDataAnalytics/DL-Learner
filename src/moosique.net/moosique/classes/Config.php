@@ -66,7 +66,7 @@ class Config {
     }
     // prepend absPath (file:/) for ontology
     if ($value == 'tagOntology') {
-      return 'file:' . $this->config['url']['absPath'] . $this->config['url'][$value];
+      return 'file://' . $this->config['url']['absPath'] . $this->config['url'][$value];
     }
     return $this->config['url'][$value];
   }

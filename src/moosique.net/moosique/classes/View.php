@@ -381,6 +381,8 @@ class View extends Config {
     $artist = $this->getValue($data['artist']);
     $artistName = $this->getValue($data['artistName']);
     // TODO
+    $this->debugger->log($data);
+    $this->debugger->log($this->getValue($data['record']);
     $albumList = $this->createAlbumListHTML(array($data), 'tagSearch');
 
     $homepage = ''; // could be empty
