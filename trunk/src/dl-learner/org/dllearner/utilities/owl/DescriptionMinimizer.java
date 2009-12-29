@@ -128,6 +128,11 @@ public class DescriptionMinimizer {
 			if(description.getChild(0) instanceof Nothing) {
 				return Thing.instance;
 			} 			
+			// we rewrite <= 0 r C to \neg \exists r C - easier to read for humans
+			if(((ObjectMaxCardinalityRestriction)description).getCardinality() == 0) {
+				ObjectProperty p = (ObjectProperty)((ObjectMaxCardinalityRestriction)description).getRole();
+				return new Negation(new ObjectSomeRestriction(p, description.getChild(0)));
+			}
 			return description;
 		} else if(description instanceof ObjectMinCardinalityRestriction) {
 			// >= 0 r.C \equiv \top
