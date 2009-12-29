@@ -41,7 +41,7 @@ class Recommendations extends Config {
       // learn sth!
       $res = $connection->learn($this->instances, $this->posExamples);
       $solutions = json_decode($res);
-      
+      $this->debugger->log($solutions, "solutions");
       // do we have some solutions?
       if ($solutions->solution1) {
         foreach ($solutions as $solution) {
@@ -107,7 +107,7 @@ class Recommendations extends Config {
     if ($posExamples === false) {
       $posExamples = array();
       if (!empty($_COOKIE['moosique'])) {
-        $recent = json_decode(stripslashes($_COOKIE['moosique']))->recentlyListened;
+        $recent = json_decode($_COOKIE['moosique'])->recentlyListened;
         foreach($recent as $link) {
           // extract relation from the cookie-link
           preg_match_all('#<a\s*(?:rel=[\'"]([^\'"]+)[\'"])?.*?>((?:(?!</a>).)*)</a>#i', $link, $record);
