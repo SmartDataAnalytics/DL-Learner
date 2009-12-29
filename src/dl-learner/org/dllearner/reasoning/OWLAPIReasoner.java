@@ -508,6 +508,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
+	public boolean isEquivalentClassImpl(Description class1, Description class2) {
+		try {
+			return reasoner.isEquivalentClass(OWLAPIDescriptionConvertVisitor.getOWLDescription(class1), OWLAPIDescriptionConvertVisitor.getOWLDescription(class2));			
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("Equivalent Classes Reasoning Error in OWL API.");
+		}
+	}	
+	
+	@Override
 	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {

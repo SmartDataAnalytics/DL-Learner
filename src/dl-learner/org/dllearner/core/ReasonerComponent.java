@@ -243,6 +243,26 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
+	public final boolean isEquivalentClass(Description class1, Description class2) {
+		reasoningStartTimeTmp = System.nanoTime();
+		boolean result = false;
+		try {
+			result = isEquivalentClassImpl(class1, class2);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+		nrOfSubsumptionChecks+=2;
+		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
+		subsumptionReasoningTimeNs += reasoningDurationTmp;
+		overallReasoningTimeNs += reasoningDurationTmp;
+		return result;
+	}
+
+	protected boolean isEquivalentClassImpl(Description class1, Description class2) throws ReasoningMethodUnsupportedException {
+		return isSuperClassOfImpl(class1,class2) && isSuperClassOfImpl(class2,class1);
+	}	
+	
+	@Override
 	public final Set<Description> isSuperClassOf(Set<Description> superConcepts,
 			Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
