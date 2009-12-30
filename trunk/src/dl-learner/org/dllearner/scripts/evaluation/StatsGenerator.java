@@ -12,7 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +28,7 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.util.DLExpressivityChecker;
 
 public class StatsGenerator {
 
@@ -37,7 +38,8 @@ public class StatsGenerator {
 	private Map<NamedClass, String> equivalentInput;
 	private Map<NamedClass, String> superInput;
 
-	private StringBuilder latex;
+	private StringBuilder latexStats;
+	private StringBuilder latexMetrics;
 
 	// general stats
 	private Stat acceptedGlobalStat = new Stat();
@@ -70,7 +72,8 @@ public class StatsGenerator {
 
 	public StatsGenerator(File directory) {
 		// begin latex table with headers
-		beginTable();
+		beginOntologyMetricsTable();
+		beginStatsTable();
 		// for each ontology
 		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
 			clearStats();
@@ -80,14 +83,14 @@ public class StatsGenerator {
 			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
 				makeSingleStat();
-				printStats();
-
 			}
-			// add row to the latex table for current ontology
-			addTableRow();
+			// add row to the metrics latex table for current ontology
+			addOntologyMetricsTableRow();
+			// add row to the stats latex table for current ontology
+			addStatsTableRow();
 		}
-		// end latex table
-		endTable();
+		// end latex tables
+		endTables();
 		printLatexCode();
 
 	}
@@ -287,15 +290,54 @@ public class StatsGenerator {
 		System.out.println();
 	}
 
-	private void printStats() {
-
+	private void printStatsTable() {
+		System.out.println(latexStats.toString());
+	}
+	
+	private void printOntologyMetricsTable() {
+		System.out.println(latexMetrics.toString());
 	}
 
 	private void printLatexCode() {
-		System.out.println(latex.toString());
+		printOntologyMetricsTable();
+		printStatsTable();
 	}
 
-	private void addTableRow() {
+	
+
+	private void beginStatsTable() {
+		latexStats = new StringBuilder();
+		latexStats.append("\\begin{tabular}{ c | c | c | c | c | c | c | c | c } \n");
+		latexStats.append("\\rotatebox{90}{\\#logical axioms} & ");
+		latexStats.append("\\rotatebox{90}{\\#suggestions lists} & ");
+		latexStats.append("\\rotatebox{90}{accept in \\%} & ");
+		latexStats.append("\\rotatebox{90}{reject in \\%} & ");
+		latexStats.append("\\rotatebox{90}{fail in \\%} & ");
+		latexStats.append("\\rotatebox{90}{selected positions} \\rotatebox{90}{on suggestion list} \\rotatebox{90}{incl. std. deviation} & ");
+		latexStats.append("\\rotatebox{90}{avg. accuracy of} \\rotatebox{90}{selected suggestions in \\%} & ");
+		latexStats.append("\\rotatebox{90}{add. instances} \\rotatebox{90}{(equivalence only)} & ");
+		latexStats.append("\\rotatebox{90}{add. instances}");
+		latexStats.append(" \\\\\n");
+		latexStats.append("\\hline\n");
+	}
+
+	
+	
+	private void beginOntologyMetricsTable(){
+		latexMetrics = new StringBuilder();
+		latexMetrics.append("\\begin{tabular}{ c | c | c | c | c | c  } \n");
+		latexMetrics.append("\\#logical axioms & ");
+		latexMetrics.append("\\#classes & ");
+		latexMetrics.append("\\#object properties & ");
+		latexMetrics.append("\\#data properties & ");
+		latexMetrics.append("\\#individuals & ");
+		latexMetrics.append("DL expressivity");
+		latexMetrics.append(" \\\\\n");
+		latexMetrics.append("\\hline\n");
+		
+	}
+	
+	private void addStatsTableRow() {
 		double accept = acceptedGlobalStat.getMean() / suggestionListsCount * 100;
 		double reject = rejectedGlobalStat.getMean() / suggestionListsCount * 100;
 		double fail = failedGlobalStat.getMean() / suggestionListsCount * 100;
@@ -314,37 +356,40 @@ public class StatsGenerator {
 		Stat avgSelectedAccuracy = new Stat(avgSelectedAccuracyEq, avgSelectedAccuracySC);
 		double avgAccuracy = avgSelectedAccuracy.getMean();
 		
-		latex.append(logicalAxiomCount + " & " 
+		latexStats.append(logicalAxiomCount + " & " 
 				+ suggestionListsCount + " & " 
-				+ accept + " & " 
-				+ reject + " & " 
-				+ fail + " & "
+				+ df.format(accept) + " & " 
+				+ df.format(reject) + " & " 
+				+ df.format(fail) + " & "
 				+ df.format(avgPosition) + " $\\pm$ " + df.format(stdDeviationPosition) + " & "
 				+ df.format(avgAccuracy * 100) + " & "
 				+ additionalInstanceCountEq + " & "
 				+ additionalInstanceCount
 				+ "\\\\\n");
 	}
-
-	private void beginTable() {
-		latex = new StringBuilder();
-		latex.append("\\begin{tabular}{ c | c | c | c | c | c | c | c | c } \n");
-		latex.append("\\rotatebox{90}{\\#logical axioms} & ");
-		latex.append("\\rotatebox{90}{\\#suggestions lists} & ");
-		latex.append("\\rotatebox{90}{accept in \\%} & ");
-		latex.append("\\rotatebox{90}{reject in \\%} & ");
-		latex.append("\\rotatebox{90}{fail in \\%} & ");
-		latex.append("\\rotatebox{90}{selected positions} \\rotatebox{90}{on suggestion list} \\rotatebox{90}{incl. std. deviation} & ");
-		latex.append("\\rotatebox{90}{avg. accuracy of} \\rotatebox{90}{selected suggestions in \\%} & ");
-		latex.append("\\rotatebox{90}{add. instances} \\rotatebox{90}{(equivalence only)} & ");
-		latex.append("\\rotatebox{90}{add. instances}");
-		latex.append(" \\\\\n");
-		latex.append("\\hline\n");
+	
+	private void addOntologyMetricsTableRow(){
+		int logicalAxiomsCount = ont.getLogicalAxiomCount();
+		int classesCount = ont.getReferencedClasses().size();
+		int objectPropertiesCount = ont.getReferencedObjectProperties().size();
+		int dataPropertiesCount = ont.getReferencedDataProperties().size();
+		int individualsCount = ont.getReferencedIndividuals().size();
+		String expressivity = new DLExpressivityChecker(Collections.singleton(ont)).getDescriptionLogicName();
+		latexMetrics.append(logicalAxiomsCount + " & " 
+				+ classesCount + " & " 
+				+ objectPropertiesCount + " & " 
+				+ dataPropertiesCount + " & " 
+				+ individualsCount + " & "
+				+ "$\\mathcal{" + expressivity + "}$" 
+				+ "\\\\\n");
+		
 	}
-
-	private void endTable() {
-		latex.append("\\hline\n");
-		latex.append("\\end{tabular}");
+	
+	private void endTables() {
+		latexMetrics.append("\\hline\n");
+		latexMetrics.append("\\end{tabular}");
+		latexStats.append("\\hline\n");
+		latexStats.append("\\end{tabular}");
 	}
 
 	private void loadSuggestions(File resultFile) {
