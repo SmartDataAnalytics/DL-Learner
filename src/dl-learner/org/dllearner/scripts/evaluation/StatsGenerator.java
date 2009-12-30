@@ -37,6 +37,9 @@ public class StatsGenerator {
 
 	private Map<NamedClass, String> equivalentInput;
 	private Map<NamedClass, String> superInput;
+	
+	private Map<NamedClass, List<Integer>> equivalentRating;
+	private Map<NamedClass, List<Integer>> superRating;
 
 	private StringBuilder latexStats;
 	private StringBuilder latexMetrics;
@@ -290,21 +293,6 @@ public class StatsGenerator {
 		System.out.println();
 	}
 
-	private void printStatsTable() {
-		System.out.println(latexStats.toString());
-	}
-	
-	private void printOntologyMetricsTable() {
-		System.out.println(latexMetrics.toString());
-	}
-
-	private void printLatexCode() {
-		printOntologyMetricsTable();
-		printStatsTable();
-	}
-
-	
-
 	private void beginStatsTable() {
 		latexStats = new StringBuilder();
 		latexStats.append("\\begin{tabular}{ c | c | c | c | c | c | c | c | c } \n");
@@ -316,12 +304,10 @@ public class StatsGenerator {
 		latexStats.append("\\rotatebox{90}{selected positions} \\rotatebox{90}{on suggestion list} \\rotatebox{90}{incl. std. deviation} & ");
 		latexStats.append("\\rotatebox{90}{avg. accuracy of} \\rotatebox{90}{selected suggestions in \\%} & ");
 		latexStats.append("\\rotatebox{90}{add. instances} \\rotatebox{90}{(equivalence only)} & ");
-		latexStats.append("\\rotatebox{90}{add. instances}");
+		latexStats.append("\\rotatebox{90}{add. instances total}");
 		latexStats.append(" \\\\\n");
 		latexStats.append("\\hline\n");
 	}
-
-	
 	
 	private void beginOntologyMetricsTable(){
 		latexMetrics = new StringBuilder();
@@ -334,7 +320,6 @@ public class StatsGenerator {
 		latexMetrics.append("DL expressivity");
 		latexMetrics.append(" \\\\\n");
 		latexMetrics.append("\\hline\n");
-		
 	}
 	
 	private void addStatsTableRow() {
@@ -363,8 +348,8 @@ public class StatsGenerator {
 				+ df.format(fail) + " & "
 				+ df.format(avgPosition) + " $\\pm$ " + df.format(stdDeviationPosition) + " & "
 				+ df.format(avgAccuracy * 100) + " & "
-				+ additionalInstanceCountEq + " & "
-				+ additionalInstanceCount
+				+ df.format(additionalInstanceCountEq) + " & "
+				+ df.format(additionalInstanceCount)
 				+ "\\\\\n");
 	}
 	
@@ -392,6 +377,10 @@ public class StatsGenerator {
 		latexStats.append("\\end{tabular}");
 	}
 
+	/**
+	 * Loads the computed suggestion files.
+	 * @param resultFile The file where the suggestions are serialized.
+	 */
 	private void loadSuggestions(File resultFile) {
 		InputStream fis = null;
 
@@ -417,6 +406,10 @@ public class StatsGenerator {
 		suggestionListsCount = equivalentSuggestions.size() + superSuggestions.size();
 	}
 
+	/**
+	 * Loads the user input evaluated in the EvaluationGUI.
+	 * @param input
+	 */
 	private void loadUserInput(File input) {
 		InputStream fis = null;
 
@@ -424,11 +417,17 @@ public class StatsGenerator {
 			fis = new FileInputStream(input);
 			ObjectInputStream o = new ObjectInputStream(fis);
 
+			//load the single list evaluation
 			equivalentInput = (Map<NamedClass, String>) o.readObject();
 			superInput = (Map<NamedClass, String>) o.readObject();
+			//load the ratings for the multilists
+			equivalentRating = (Map<NamedClass, List<Integer>>) o.readObject();
+			superRating = (Map<NamedClass, List<Integer>>) o.readObject();
 			
+			System.out.println(equivalentRating);
+			System.out.println(superRating);
 		} catch (IOException e) {
-			System.err.println(e);
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			System.err.println(e);
 		} finally {
@@ -437,6 +436,20 @@ public class StatsGenerator {
 			} catch (Exception e) {
 			}
 		}
+	}
+	
+
+	private void printStatsTable() {
+		System.out.println(latexStats.toString());
+	}
+	
+	private void printOntologyMetricsTable() {
+		System.out.println(latexMetrics.toString());
+	}
+
+	private void printLatexCode() {
+		printOntologyMetricsTable();
+		printStatsTable();
 	}
 
 	/**

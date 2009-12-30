@@ -592,7 +592,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 				showSingleTable();
 			}
 			setFinished();
-			resetSingleTablePanel();
+			resetTablePanels();
 
 		} else if (e.getActionCommand().equals("finish")) {
 			closeDialog();
@@ -601,7 +601,17 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 
 	}
 	
-	private void resetSingleTablePanel(){
+	private void resetTablePanels(){
+		tab1.reset();
+		tab2.reset();
+		tab3.reset();
+		tab4.reset();
+		tab5.reset();
+		tab6.reset();
+		tab7.reset();
+		tab8.reset();
+		tab9.reset();
+		tab10.reset();
 		bg.clearSelection();
 		noSuggestionCheckBox.setSelected(true);
 		showInconsistencyWarning(false);
