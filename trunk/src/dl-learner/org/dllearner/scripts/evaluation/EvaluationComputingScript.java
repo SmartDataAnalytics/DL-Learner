@@ -115,7 +115,6 @@ public class EvaluationComputingScript {
 		computeWithApproximation();
 		computeSuggestions();
 		computeGenFMeasureWithoutDefaultNegation();
-//		getAssertedAxioms();
 		evaluateInconsistencies();
 		saveResults();
 		
@@ -218,7 +217,7 @@ public class EvaluationComputingScript {
 	    if (index > 0) {
 	    	  fileName = old.toURI().toString().substring(0, index) + ".res";
 	    }  
-		File file = new File(fileName);
+		File file = new File(URI.create(fileName));
 		try {
 			fos = new FileOutputStream(file);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
