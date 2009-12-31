@@ -1120,7 +1120,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		Set<DatatypeProperty> mostGeneralBDPs = rs.getBooleanDatatypeProperties();
 		Set<DatatypeProperty> applicableBDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralBDPs) {
-			Description d = (NamedClass) rs.getDomain(role);
+//			Description d = (NamedClass) rs.getDomain(role);
+			Description d = rs.getDomain(role);
 			if(!isDisjoint(domain,d))
 				applicableBDPs.add(role);
 		}
@@ -1130,7 +1131,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		Set<DatatypeProperty> mostGeneralDDPs = rs.getDoubleDatatypeProperties();
 		Set<DatatypeProperty> applicableDDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralDDPs) {
-			Description d = (NamedClass) rs.getDomain(role);
+//			Description d = (NamedClass) rs.getDomain(role);
+			Description d = rs.getDomain(role);
 //			System.out.println("domain: " + d);
 			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);
