@@ -112,10 +112,10 @@ public class EvaluationComputingScript {
 	
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
 		loadOntology(fileURL);
-		computeWithApproximation();
-		computeSuggestions();
-		computeGenFMeasureWithoutDefaultNegation();
-		evaluateInconsistencies();
+//		computeWithApproximation();
+//		computeSuggestions();
+//		computeGenFMeasureWithoutDefaultNegation();
+//		evaluateInconsistencies();
 		saveResults();
 		
 	}
@@ -200,7 +200,6 @@ public class EvaluationComputingScript {
 	private void loadOntology(URL fileURL) throws ComponentInitException, URISyntaxException{
 		ontologyURI = fileURL.toURI();
 		ComponentManager cm = ComponentManager.getInstance();
-
 		// initialize KnowledgeSource
 		ks = cm.knowledgeSource(OWLFile.class);
 		ks.getConfigurator().setUrl(fileURL);
@@ -211,13 +210,13 @@ public class EvaluationComputingScript {
 
 	private void saveResults() {
 		OutputStream fos = null;
-		File old = new File(ontologyURI);
-		int index = old.toURI().toString().lastIndexOf('.');
+		File old = new File(ontologyURI.getPath());
+		int index = old.getName().lastIndexOf('.');
 		String fileName = "test.res";
 	    if (index > 0) {
-	    	  fileName = old.toURI().toString().substring(0, index) + ".res";
+	    	  fileName = old.getName().substring(0, index) + ".res";
 	    }  
-		File file = new File(URI.create(fileName));
+		File file = new File(fileName);
 		try {
 			fos = new FileOutputStream(file);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
