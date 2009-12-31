@@ -1,0 +1,1 @@
+http://www.mindswap.org/ontologies/SC.owl
