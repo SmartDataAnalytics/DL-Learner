@@ -212,9 +212,13 @@ public class CELOE extends LearningAlgorithm {
 				Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
 				if(superClasses.size() > 1) {
 					startClass = new Intersection(new LinkedList<Description>(superClasses));
-				} else {
+				} else if(superClasses.size() == 1){
 					startClass = (Description) superClasses.toArray()[0];
-				}	
+				} else {
+					startClass = Thing.instance;
+					logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
+							"sensible to learn a description in this case.");
+				}
 			}				
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
