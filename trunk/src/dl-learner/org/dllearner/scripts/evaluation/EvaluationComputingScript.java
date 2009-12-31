@@ -61,7 +61,7 @@ public class EvaluationComputingScript {
 	
 	private static double noisePercent = 5.0;
 
-	private static int minInstanceCount = 3;
+	private static int minInstanceCount = 5;
 
 	private static int algorithmRuntimeInSeconds = 10;
 	
