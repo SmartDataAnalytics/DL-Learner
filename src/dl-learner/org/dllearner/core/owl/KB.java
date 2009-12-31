@@ -19,6 +19,10 @@ import org.semanticweb.owl.util.SimpleURIMapper;
 
 public class KB implements KBElement {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1114373618440145279L;
 	// private Set<Axiom> axioms = new HashSet<Axiom>();
 	private Set<AssertionalAxiom> abox = new HashSet<AssertionalAxiom>();
 	private Set<TerminologicalAxiom> tbox = new HashSet<TerminologicalAxiom>();

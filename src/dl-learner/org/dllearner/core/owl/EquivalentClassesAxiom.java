@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class EquivalentClassesAxiom extends TerminologicalAxiom {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2893732406014114441L;
 	private Description concept1;
 	private Description concept2;
 	

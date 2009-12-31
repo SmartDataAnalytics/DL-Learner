@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class SymmetricObjectPropertyAxiom extends PropertyAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8698680348695324368L;
 	private ObjectProperty role;
 	
 	public SymmetricObjectPropertyAxiom(ObjectProperty role) {

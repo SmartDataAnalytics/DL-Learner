@@ -27,6 +27,10 @@ import java.util.Map;
  */
 public class BooleanDatatypePropertyAssertion extends DatatypePropertyAssertion {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7624507967222663104L;
 	private boolean value;
 	
 	public BooleanDatatypePropertyAssertion(DatatypeProperty datatypeProperty, Individual individual, boolean value) {

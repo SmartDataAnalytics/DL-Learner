@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class InverseObjectPropertyAxiom extends PropertyAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6402501966040365366L;
 	private ObjectProperty inverseRole;
 	private ObjectProperty role;
 	

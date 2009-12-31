@@ -29,6 +29,10 @@ import java.util.Map;
  */
 public class TypedConstant extends Constant implements Comparable<TypedConstant> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9135242138291085300L;
 	private Datatype datatype;
 	
 	public TypedConstant(String literal, Datatype datatype) {

@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class SubClassAxiom extends TerminologicalAxiom {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5059709557246520213L;
 	private Description subConcept;
 	private Description superConcept;
 	

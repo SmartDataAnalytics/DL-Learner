@@ -27,6 +27,11 @@ import java.util.Map;
  */
 public class DatatypePropertyRangeAxiom extends PropertyRangeAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6632066237684906382L;
+
 	public DatatypePropertyRangeAxiom(DatatypeProperty property, DataRange domain) {
 		super(property, domain);
 	}

@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class SubObjectPropertyAxiom extends PropertyAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1085651734702155330L;
 	private ObjectProperty role;
 	private ObjectProperty subRole;
 	

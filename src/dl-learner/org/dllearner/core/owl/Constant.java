@@ -27,6 +27,10 @@ package org.dllearner.core.owl;
  */
 public abstract class Constant implements KBElement {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2331790456049452753L;
 	String literal;
 	
 	public Constant(String literal) {
