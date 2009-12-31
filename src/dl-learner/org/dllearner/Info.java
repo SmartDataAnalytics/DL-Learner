@@ -1,8 +1,8 @@
 
-	// File is updated automatically when a new version is created
-	package org.dllearner;
+// File is updated automatically when a new version is created
+package org.dllearner;
 
-	public class Info {
-		public static final String build = "2009-12-14";
-	}
-			
+public class Info {
+	public static final String build = "2009-12-31";
+}
+		
