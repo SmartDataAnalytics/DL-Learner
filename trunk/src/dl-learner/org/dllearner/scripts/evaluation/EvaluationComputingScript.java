@@ -112,10 +112,10 @@ public class EvaluationComputingScript {
 	
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
 		loadOntology(fileURL);
-//		computeWithApproximation();
-//		computeSuggestions();
-//		computeGenFMeasureWithoutDefaultNegation();
-//		evaluateInconsistencies();
+		computeWithApproximation();
+		computeSuggestions();
+		computeGenFMeasureWithoutDefaultNegation();
+		evaluateInconsistencies();
 		saveResults();
 		
 	}
