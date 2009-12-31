@@ -58,7 +58,7 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	private static Logger logger = Logger.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
-	private static int maxExecutionTimeInSeconds = 20;
+	private static int maxExecutionTimeInSeconds = 10;
 
 	// TODO: naming needs to be cleaned up for consistency:
 	// coverage => recall
