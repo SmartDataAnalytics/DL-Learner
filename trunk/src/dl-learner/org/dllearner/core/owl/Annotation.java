@@ -30,6 +30,10 @@ import java.util.Map;
  */
 public class Annotation implements KBElement {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 46761104877109257L;
 	protected URI annotationURI;
 	protected KBElement annotationValue;
 	

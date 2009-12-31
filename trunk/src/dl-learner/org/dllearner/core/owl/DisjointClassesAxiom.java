@@ -28,6 +28,10 @@ import java.util.Set;
  */
 public class DisjointClassesAxiom extends TerminologicalAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7788863077013583508L;
 	private Set<Description> descriptions;
 	
 	public DisjointClassesAxiom(Set<Description> descriptions) {

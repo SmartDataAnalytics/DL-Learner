@@ -30,6 +30,10 @@ import java.util.Map;
  */
 public class UntypedConstant extends Constant {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2569002545544130198L;
 	private String lang;
 	private boolean hasLang = false;
 	

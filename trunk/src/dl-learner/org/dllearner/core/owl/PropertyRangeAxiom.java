@@ -25,6 +25,10 @@ package org.dllearner.core.owl;
  */
 public abstract class PropertyRangeAxiom extends PropertyAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3438094891570651204L;
 	Property property;
 	PropertyRange range;
 	

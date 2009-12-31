@@ -30,6 +30,10 @@ import java.util.Map;
  */
 public class DoubleMinValue implements SimpleDoubleDataRange {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8808907963085216763L;
 	private double value;
 	
 	public DoubleMinValue(double value) {

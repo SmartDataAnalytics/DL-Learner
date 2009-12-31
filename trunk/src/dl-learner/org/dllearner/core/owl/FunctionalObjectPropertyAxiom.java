@@ -4,6 +4,10 @@ import java.util.Map;
 
 public class FunctionalObjectPropertyAxiom extends PropertyAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2571916949143387591L;
 	private ObjectProperty role;
 	
 	public FunctionalObjectPropertyAxiom(ObjectProperty role) {

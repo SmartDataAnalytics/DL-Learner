@@ -28,6 +28,10 @@ import java.util.Set;
  */
 public class DifferentIndividualsAxiom extends AssertionalAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2109917591559200265L;
 	private Set<Individual> individuals;
 	
 	public DifferentIndividualsAxiom(Set<Individual> individuals) {

@@ -27,6 +27,10 @@ package org.dllearner.core.owl;
  */
 public abstract class PropertyDomainAxiom extends PropertyAxiom {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3075192895197509256L;
 	Description domain;
 	Property property;
 	
