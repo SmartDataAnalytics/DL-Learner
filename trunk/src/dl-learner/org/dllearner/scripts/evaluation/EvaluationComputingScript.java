@@ -268,6 +268,9 @@ public class EvaluationComputingScript {
 	private void computeSuggestions() throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
+		ClassLearningProblem lp = null;
+		CELOE celoe = null;
+		CELOEConfigurator cf = null;
 		TreeSet<EvaluatedDescriptionClass> suggestions;
 		for (int i = 0; i <= 1; i++) {
 			if (i == 0) {
@@ -301,7 +304,7 @@ public class EvaluationComputingScript {
 							}
 						}
 						for (int k = 0; k <= 3; k++) {
-							ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+							lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 							lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
 							lp.getConfigurator().setCheckConsistency(false);
 							if (j == 0) {
@@ -329,8 +332,8 @@ public class EvaluationComputingScript {
 							}
 							lp.getConfigurator().setUseApproximations(useApproximations);
 							lp.init();
-							CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-							CELOEConfigurator cf = celoe.getConfigurator();
+							celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+							cf = celoe.getConfigurator();
 							cf.setUseNegation(false);
 							cf.setValueFrequencyThreshold(3);
 							cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
@@ -422,6 +425,9 @@ public class EvaluationComputingScript {
 	private void computeGenFMeasureWithoutDefaultNegation() throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
+		ClassLearningProblem lp = null;
+		CELOE celoe = null;
+		CELOEConfigurator cf = null;
 		TreeSet<EvaluatedDescriptionClass> suggestions;
 		for (int i = 0; i <= 1; i++) {
 			if (i == 0) {
@@ -442,10 +448,11 @@ public class EvaluationComputingScript {
 			for (NamedClass nc : SetUtils.union(equivalentReducedClassesSet, superReducedClassesSet)) {
 					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
 							);
-					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-					lp.getConfigurator().setCheckConsistency(false);
+					
 					for (int j = 0; j <= 1; j++) {
+						lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+						lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+						lp.getConfigurator().setCheckConsistency(false);
 						if (j == 0) {
 							if(!equivalentReducedClassesSet.contains(nc)){
 								continue;
@@ -463,8 +470,8 @@ public class EvaluationComputingScript {
 						System.out.println("Using accuracy method: Generalised F-Measure");
 						lp.getConfigurator().setUseApproximations(useApproximations);
 						lp.init();
-						CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-						CELOEConfigurator cf = celoe.getConfigurator();
+						celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+						cf = celoe.getConfigurator();
 						cf.setUseNegation(false);
 						cf.setValueFrequencyThreshold(3);
 						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
@@ -494,10 +501,11 @@ public class EvaluationComputingScript {
 							}
 
 						}
+						cm.freeComponent(celoe);
+						cm.freeComponent(lp);
 
 					}
-					cm.freeComponent(celoe);
-					cm.freeComponent(lp);
+					
 			}
 			cm.freeComponent(reasoner);
 		}
@@ -520,6 +528,9 @@ public class EvaluationComputingScript {
 		classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
 		// reduce number of classes for testing purposes
 		// shrinkSet(classes, 20);
+		ClassLearningProblem lp = null;
+		CELOE celoe = null;
+		CELOEConfigurator cf = null;
 		for (NamedClass nc : classes) {
 			// check whether the class has sufficient instances
 			int instanceCount = reasoner.getIndividuals(nc).size();
@@ -529,10 +540,11 @@ public class EvaluationComputingScript {
 			} else {
 				System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
 						+ " with " + instanceCount + " instances");
-				ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-				lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-				lp.getConfigurator().setCheckConsistency(false);
+				
 				for (int i = 0; i <= 1; i++) {
+					lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+					lp.getConfigurator().setCheckConsistency(false);
 					if (i == 0) {
 						lp.getConfigurator().setType("equivalence");
 						System.out.println("Learning equivalentClass expressions");
@@ -542,8 +554,8 @@ public class EvaluationComputingScript {
 					}
 					lp.getConfigurator().setUseApproximations(true);
 					lp.init();
-					CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-					CELOEConfigurator cf = celoe.getConfigurator();
+					celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+					cf = celoe.getConfigurator();
 					cf.setUseNegation(false);
 					cf.setValueFrequencyThreshold(3);
 					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
@@ -576,10 +588,11 @@ public class EvaluationComputingScript {
 							defaultSuperMap.put(nc, suggestionsList);
 						}
 					}
+					cm.freeComponent(celoe);
+					cm.freeComponent(lp);
 				}
 
-				cm.freeComponent(celoe);
-				cm.freeComponent(lp);
+				
 
 			}
 		}
