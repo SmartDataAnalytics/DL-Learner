@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -46,6 +47,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTextPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -88,9 +90,11 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private RatingTablePanel tab10;
 
 	private SelectableClassExpressionsTable defaultTab;
-	private static String INCONSISTENCYWARNING = "<html><font color=red>" +
-	"Warning. Selected class expressions leads to an inconsistent ontology!" +
-	"</font></html>";
+	private static String INCONSISTENCYWARNING = 
+	"<html>Warning. Selected class expressions leads to an inconsistent ontology!<br>" +
+	"(Often, suggestions leading to an inconsistency should still be added. They help to detect problems in " +
+	"the ontology elsewhere.<br>" +
+	" See http://dl-learner.org/files/screencast/protege/screencast.htm .)</html>";
 	private JLabel inconsistencyLabel;
 	private JCheckBox noSuggestionCheckBox;
 	private JCheckBox alternateSuggestionCheckBox;
@@ -245,9 +249,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	
 	private void showInconsistencyWarning(boolean show){
 		if(show){
-			inconsistencyLabel.setText(INCONSISTENCYWARNING);
+			inconsistencyLabel.setForeground(Color.BLACK);
 		} else {
-			inconsistencyLabel.setText(" ");
+			inconsistencyLabel.setForeground(SystemColor.control);
 		}
 		
 	}
@@ -273,10 +277,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		
 		inconsistencyLabel = new JLabel();
 		panel.add(inconsistencyLabel, c);
-		inconsistencyLabel.setText(" ");
+		inconsistencyLabel.setText(INCONSISTENCYWARNING);
+		inconsistencyLabel.setForeground(SystemColor.control);
 
 		c.weightx = 1.0;
 		c.weighty = 0.0;
+		c.ipady = 10;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		noSuggestionCheckBox = new JCheckBox();
 		noSuggestionCheckBox.setAction(new AbstractAction(
