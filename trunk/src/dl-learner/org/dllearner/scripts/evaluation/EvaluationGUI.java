@@ -47,7 +47,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
-import javax.swing.JTextPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -559,8 +558,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 					currentClassIndex++;
 					classesTable.setSelectedClass(currentClassIndex);
 					graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
-
-					showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					if(defaultEquivalenceMap.get(classesTable.getSelectedClass(currentClassIndex)) != null){
+						showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					} else {
+						showSuperSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					}
+					
 					showSingleTable();
 				}
 
