@@ -615,7 +615,7 @@ public class ClassLearningProblem extends LearningProblem {
 //				return -1;
 //			}
 			// we only return too weak if there is no recall
-			if(rec <= 0.01) {
+			if(rec <= 0.0000001) {
 				return -1;
 			}
 			
