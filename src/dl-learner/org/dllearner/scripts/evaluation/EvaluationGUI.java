@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
@@ -47,25 +49,38 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.View;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.MarkableClassesTable;
 import org.dllearner.tools.ore.ui.ResultTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owl.model.OWLDescription;
 
+import com.clarkparsia.explanation.io.manchester.Keyword;
+import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
+import com.clarkparsia.explanation.io.manchester.TextBlockWriter;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 public class EvaluationGUI extends JFrame implements ActionListener, ListSelectionListener, MouseMotionListener {
@@ -178,7 +193,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		graphPanel2.initManchesterSyntax(baseURI, prefixes);
 		graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
 		graphPanel2.setConcept(classesTable.getSelectedClass(currentClassIndex));
-		if (classesTable.getSelectedClass(currentClassIndex) != null) {
+		if (defaultEquivalenceMap.get(classesTable.getSelectedClass(currentClassIndex)) != null) {
 			showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
 		} else {
 			showSuperSuggestions(classesTable.getSelectedClass(currentClassIndex));
@@ -267,7 +282,9 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1.0;
 		defaultTab = new SelectableClassExpressionsTable();
+		defaultTab.getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
 		defaultTab.getSelectionModel().addListSelectionListener(this);
+		defaultTab.setRowHeightEnabled(true);
 		tableHolderPanel.add(new JScrollPane(defaultTab), gbc);
 		graphPanel = new GraphicalCoveragePanel("");
 		gbc.weightx = 0.0;
@@ -367,7 +384,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	}
 
 	private void showSingleTable() {
-		defaultTab.clearSelection();
+		
 		graphPanel.clear();
 		cardLayout.last(cardPanel);
 		showingMultiTables = false;
@@ -382,7 +399,6 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		messageLabel.setText("<html>" + EQUIVALENTCLASSTEXT
 				+ "<b>" + classesTable.getSelectedClass(currentClassIndex).toManchesterSyntaxString(baseURI, prefixes)
 				+ "</b></html>");
-
 		if (owlEquivalenceStandardMap.get(nc) != null) {
 
 			tab1.addResults(owlEquivalenceStandardMap.get(nc));
@@ -526,6 +542,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	public void actionPerformed(ActionEvent e) {
 		traceInput();
 		if (e.getActionCommand().equals("next")) {
+			defaultTab.clearSelection();
 			
 			NamedClass nc = classesTable.getSelectedClass(currentClassIndex);
 			if(!showingMultiTables){
@@ -540,7 +557,12 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 					classesTable.setSelectedClass(currentClassIndex);
 					graphPanel.setConcept(classesTable.getSelectedClass(currentClassIndex));
 
-					showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					
+					if(defaultEquivalenceMap.get(classesTable.getSelectedClass(currentClassIndex)) != null){
+						showEquivalentSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					} else {
+						showSuperSuggestions(classesTable.getSelectedClass(currentClassIndex));
+					}
 					showSingleTable();
 				}
 
@@ -817,6 +839,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			setLayout(new BorderLayout());
 			setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			table = new ResultTable();
+			table.getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
+			table.setRowHeightEnabled(true);
 			add(table, BorderLayout.CENTER);
 			rating = new RatingPanel();
 			add(rating, BorderLayout.EAST);
@@ -896,5 +920,158 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 		}
 
 	}
+
+}
+
+class MultiLineTableCellRenderer extends JTextPane implements TableCellRenderer{
+
+    /**
+ * 
+ */
+private static final long serialVersionUID = -5375479462711405013L;
+	protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+	
+	private StringWriter buffer;
+	private TextBlockWriter writer;
+	private ManchesterSyntaxObjectRenderer renderer;
+
+	private StyledDocument doc;
+	Style style;
+    public MultiLineTableCellRenderer() {
+        super();
+
+        
+        setContentType("text/html");
+        setBorder(noFocusBorder);
+      
+        buffer = new StringWriter();
+		writer = new TextBlockWriter(buffer);
+		renderer = new ManchesterSyntaxObjectRenderer(writer);
+		renderer.setWrapLines( false );
+		renderer.setSmartIndent( true );
+		
+		
+		doc = (StyledDocument)getDocument();
+        style = doc.addStyle("StyleName", null);
+        StyleConstants.setItalic(style, true);
+     
+            
+
+    }
+
+
+    public Component getTableCellRendererComponent(JTable table,
+                                                   Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus,
+                                                   int row,
+                                                   int column)
+    {
+        if (isSelected)
+        {
+            super.setForeground(table.getSelectionForeground());
+            super.setBackground(table.getSelectionBackground());
+        }
+        else
+        {
+            super.setForeground(table.getForeground());
+            super.setBackground(table.getBackground());
+        }
+
+        setFont(table.getFont());
+
+        if (hasFocus)
+        {
+            setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+            if (!isSelected && table.isCellEditable(row, column))
+            {
+                Color col;
+                col = UIManager.getColor("Table.focusCellForeground");
+                if (col != null)
+                {
+                    super.setForeground(col);
+                }
+                col = UIManager.getColor("Table.focusCellBackground");
+                if (col != null)
+                {
+                    super.setBackground(col);
+                }
+            }
+        }
+        else
+        {
+            setBorder(noFocusBorder);
+        }
+
+        setEnabled(table.isEnabled());
+
+        setValue(table, row, column, value);
+
+        return this;
+    }
+
+    protected void setValue(JTable table, int row, int column, Object value)
+    {
+        if (value != null)
+        {	
+        	String text = value.toString();
+        	setText(text);
+          
+            if(value instanceof Description){
+            	OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
+				desc.accept(renderer);
+				
+				writer.flush();
+				String newAxiom = buffer.toString();
+
+				StringTokenizer st = new StringTokenizer(newAxiom);
+			
+				StringBuffer bf = new StringBuffer();
+				bf.append("<html>");
+					
+				String token;
+				while(st.hasMoreTokens()){
+					token = st.nextToken();
+					
+					String color = "black";
+					
+					boolean isReserved = false;
+					if(!token.equals("type") && !token.equals("subClassOf")){
+						for(Keyword key : Keyword.values()){
+							if(token.equals(key.getLabel())){
+								color = key.getColor();
+								isReserved = true;break;
+							} 
+						}
+					}
+					if(isReserved){
+						bf.append("<b><font color=" + color + ">" + token + " </font></b>");
+					} else {
+						bf.append(" " + token + " ");
+					}
+				}
+				bf.append("</html>");
+				newAxiom = bf.toString();
+				setText(newAxiom);
+//				oldAxioms.add(buffer.toString());
+				buffer.getBuffer().delete(0, buffer.toString().length());
+			}
+
+            
+            View view = getUI().getRootView(this);
+            view.setSize((float) table.getColumnModel().getColumn(column).getWidth() - 3, -1);
+            float y = view.getPreferredSpan(View.Y_AXIS);
+            int h = (int) Math.ceil(y + 3);
+            
+            if (table.getRowHeight(row) != h)
+            {
+                table.setRowHeight(row, h );
+            }
+        }
+        else
+        {
+            setText("");
+        }
+    }
 
 }
