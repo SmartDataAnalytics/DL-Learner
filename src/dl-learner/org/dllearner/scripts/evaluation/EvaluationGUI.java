@@ -805,7 +805,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			System.out.println("You need to give an file as argument.");
 			System.exit(0);
 		}
-		final File input = new File(new URL(args[0]).toURI());
+		final File input = new File(args[0]);
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
