@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="655"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.47pre4 r22446"
    version="1.0"
    sodipodi:docname="components_print.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -53,9 +54,10 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1280"
-     inkscape:window-height="965"
-     inkscape:window-x="-5"
-     inkscape:window-y="-3" />
+     inkscape:window-height="954"
+     inkscape:window-x="-4"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -197,7 +199,7 @@
        y="589.74506" />
     <text
        xml:space="preserve"
-       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="536.57153"
        y="628.09448"
        id="text3239"><tspan
@@ -213,11 +215,19 @@
          sodipodi:role="line"
          x="536.57153"
          y="688.09448"
-         id="tspan3245">top-down refinement approaches</tspan><tspan
+         id="tspan3245">top-down refinement approaches:</tspan><tspan
          sodipodi:role="line"
          x="536.57153"
          y="718.09448"
-         id="tspan3247">extended Genetic Programming</tspan></text>
+         id="tspan2863">  OCEL, ELTL Base, ELTL, CELOE</tspan><tspan
+         sodipodi:role="line"
+         x="536.57153"
+         y="748.09448"
+         id="tspan3247">Genetic Programming:</tspan><tspan
+         sodipodi:role="line"
+         x="536.57153"
+         y="778.09448"
+         id="tspan2865">  standard and hybrid algorithm</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.49988842;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:4.4996651, 4.4996651;stroke-dashoffset:0;stroke-opacity:1"
        d="M -102.85717,566.34454 L -99.999997,392.08642"
@@ -270,7 +280,7 @@
        sodipodi:cy="486.23734"
        sodipodi:rx="208.57143"
        sodipodi:ry="52.142857"
-       d="M 632.85713,486.23734 A 208.57143,52.142857 0 1 1 215.71428,486.23734 A 208.57143,52.142857 0 1 1 632.85713,486.23734 z"
+       d="m 632.85713,486.23734 c 0,28.7977 -93.38061,52.14285 -208.57142,52.14285 -115.19082,0 -208.57143,-23.34515 -208.57143,-52.14285 0,-28.79771 93.38061,-52.14286 208.57143,-52.14286 115.19081,0 208.57142,23.34515 208.57142,52.14286 z"
        transform="matrix(0.8390411,0,0,1.0410959,38.43542,-29.268074)" />
     <text
        xml:space="preserve"
