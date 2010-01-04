@@ -122,7 +122,7 @@ public class Info {
 		<!-- we also need to copy some images, which should be
 		included in dllearner.jar -->
 		<copy toDir="classes_tmp" >
-			<fileset dir="${source_dir}" includes="**/*.gif,**/*.html"/>
+			<fileset dir="${source_dir}" includes="**/*.gif,**/*.png,**/*.html"/>
 		</copy>
 		<mkdir dir="${release_tmp_dir}"/>
 		<mkdir dir="${release_tmp_dir}/lib/"/>
