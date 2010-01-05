@@ -55,7 +55,7 @@ public class PelletExplanationGenerator implements ExplanationGenerator{
 		// If there is no existing reasoner create a new one and load the ontologies 
 		if( reasoner == null ) {
 			reasoner = new Reasoner( manager );
-			reasoner.loadOntologies( ontologies );
+			reasoner.loadOntologies( manager.getImportsClosure(ontologies.iterator().next()));
 		}
 
 		// Create a single explanation generator
@@ -69,7 +69,7 @@ public class PelletExplanationGenerator implements ExplanationGenerator{
 		// Set the necessary fields		
 		expGen.setReasonerFactory( new PelletReasonerFactory() );
 		expGen.setReasoner( reasoner );
-		expGen.setOntologies( ontologies );
+		expGen.setOntologies( manager.getImportsClosure(ontologies.iterator().next()) );
 		
 		// Create the converter that will translate axioms into class expressions
 		converter = new SatisfiabilityConverter( manager.getOWLDataFactory() );

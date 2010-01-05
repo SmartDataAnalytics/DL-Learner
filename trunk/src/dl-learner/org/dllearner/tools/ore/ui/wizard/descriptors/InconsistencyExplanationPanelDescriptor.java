@@ -64,6 +64,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     }
     
     private void setNextButtonEnabled2ConsistentOntology(){
+    	reasoner.refresh();
     	if(reasoner.isConsistent()){
     		getWizard().setNextFinishButtonEnabled(true);
     	} else {
