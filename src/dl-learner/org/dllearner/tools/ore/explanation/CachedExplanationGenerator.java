@@ -15,7 +15,6 @@ import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
@@ -46,11 +45,11 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 	
 	private ExplanationType explanationType = ExplanationType.REGULAR;
 	
-	private OWLOntology ontology;
+	private Set<OWLOntology> ontologies;
 	private OWLOntologyManager manager;
 
-	public CachedExplanationGenerator(OWLOntology ontology, Reasoner reasoner){
-		this.ontology = ontology;
+	public CachedExplanationGenerator(Set<OWLOntology> ontologies){
+		this.ontologies = ontologies;
 		this.manager = OWLManager.createOWLOntologyManager();
 		
 		axiom2Module = new HashMap<OWLAxiom, OWLOntology>();
@@ -199,7 +198,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		if(explanations == null || lastRequestedSize.intValue() != -1 && lastRequestedSize.intValue() < limit){
 			OWLOntology module = axiom2Module.get(entailment);
 			if(module == null){
-				module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(Collections.singleton(ontology), entailment.getSignature(), ModuleType.TOP_OF_BOT));
+				module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontologies, entailment.getSignature(), ModuleType.TOP_OF_BOT));
 			}
 			axiom2Module.put(entailment, module);
 			laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(module));
@@ -239,7 +238,7 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		if(explanations == null || lastRequestedSize.intValue() != -1 && lastRequestedSize.intValue() < limit){
 			OWLOntology module = axiom2Module.get(entailment);
 			if(module == null){
-				module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(Collections.singleton(ontology), entailment.getSignature(), ModuleType.TOP_OF_BOT));
+				module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontologies, entailment.getSignature(), ModuleType.TOP_OF_BOT));
 			}
 			axiom2Module.put(entailment, module);
 			regularExpGen = new PelletExplanationGenerator(manager, Collections.singleton(module));

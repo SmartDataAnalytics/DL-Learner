@@ -61,7 +61,8 @@ public class ExplanationManager implements OREManagerListener{
 		OREManager.getInstance().addListener(this);
 		this.reasoner = oreMan.getReasoner().getReasoner();
 		this.manager = reasoner.getManager();
-		this.ontology = reasoner.getLoadedOntologies().iterator().next();
+		this.ontology = oreMan.getReasoner().getOWLAPIOntologies();
+		System.out.println(ontology);
 		
 		dataFactory = manager.getOWLDataFactory();
 		
@@ -74,7 +75,7 @@ public class ExplanationManager implements OREManagerListener{
 
 		listeners = new ArrayList<ExplanationManagerListener>();
 		
-		gen = new CachedExplanationGenerator(ontology, reasoner);
+		gen = new CachedExplanationGenerator(reasoner.getLoadedOntologies());
 
 	}
 	
@@ -304,9 +305,9 @@ public class ExplanationManager implements OREManagerListener{
 
 	@Override
 	public void activeOntologyChanged() {
-		ontology = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
 		reasoner = OREManager.getInstance().getReasoner().getReasoner();
-		gen = new CachedExplanationGenerator(ontology, reasoner);
+		ontology = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
+		gen = new CachedExplanationGenerator(reasoner.getLoadedOntologies());
 		orderingMap.clear();
 		usageChecker = new AxiomUsageChecker(ontology);
 	}
