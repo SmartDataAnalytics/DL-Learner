@@ -21,8 +21,6 @@ package org.dllearner.tools.protege;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -102,7 +100,6 @@ public class GraphicalCoveragePanel extends JPanel {
 	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m) {
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
-		this.setPreferredSize(new Dimension(540, 230));
 		eval = desc;
 		model = m;
 		id = model.getID();
@@ -150,82 +147,11 @@ public class GraphicalCoveragePanel extends JPanel {
 		if (eval != null) {
 			Graphics2D g2D;
 			g2D = (Graphics2D) g;
-			Composite original = g2D.getComposite();
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
-			g2D.setColor(Color.BLACK);
-			g2D.drawString(model.getOldConceptOWLAPI().toString(), 320, 10);
-			g2D.setColor(Color.ORANGE);
-			g2D.fillOval(310, 20, 9, 9);
-			g2D.setColor(Color.black);
-			int p = 30;
-			for (int i = 0; i < conceptVector.size(); i++) {
-				g2D.drawString(conceptVector.get(i), 320, p);
-				p = p + 20;
-			}
-			g2D.setColor(darkGreen);
-			Ellipse2D circlePoint = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
-			g2D.fill(circlePoint);
-			g2D.setColor(Color.BLACK);
-			g2D.drawString("<html>individuals covered by", 320, p);
-			g2D.setColor(Color.ORANGE);
-			g2D.fillOval(455, p - 9, 9, 9);
-			g2D.setColor(Color.BLACK);
-			g2D.drawString("and", 485, p);
-			g2D.setColor(Color.YELLOW);
-			g2D.fillOval(525, p - 9, 9, 9);
-			g2D.setColor(Color.BLACK);
-			p = p + 20;
-			g2D.drawString("(OK)</html>", 320, p);
-			p = p + 20;
-			if(id.equals(EQUI_STRING)) {
-				g2D.setColor(darkRed);
-				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
-				g2D.fill(circlePoint2);
-				g2D.setColor(Color.BLACK);
-				g2D.drawString("<html>individuals covered by", 320, p);
-				g2D.setColor(Color.ORANGE);
-				g2D.fillOval(455, p - 9, 9, 9);
-				g2D.setColor(Color.BLACK);
-				p = p + 20;
-				g2D.drawString("(potential problem)</html>", 320, p);
-				p = p + 20;
-				g2D.setColor(darkRed);
-				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
-				g2D.fill(circlePoint3);
-				g2D.setColor(Color.BLACK);
-				g2D.drawString("<html>individuals covered by", 320, p);
-				g2D.setColor(Color.YELLOW);
-				g2D.fillOval(455, p - 9, 9, 9);
-				g2D.setColor(Color.BLACK);
-				p = p + 20;
-				g2D.drawString("(potential problem)</html>", 320, p);
-			} else {
-				g2D.setColor(Color.BLACK);
-				Ellipse2D circlePoint2 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
-				g2D.fill(circlePoint2);
-				g2D.drawString("<html>individuals covered by", 320, p);
-				g2D.setColor(Color.ORANGE);
-				g2D.fillOval(455, p - 9, 9, 9);
-				g2D.setColor(Color.BLACK);
-				p = p + 20;
-				g2D.drawString("(no problem)</html>", 320, p);
-				p = p + 20;
-				g2D.setColor(darkRed);
-				Ellipse2D circlePoint3 = new Ellipse2D.Double(315 - 1, p - 6, 4, 4);
-				g2D.fill(circlePoint3);
-				g2D.setColor(Color.BLACK);
-				g2D.drawString("<html>individuals covered by", 320, p);
-				g2D.setColor(Color.YELLOW);
-				g2D.fillOval(455, p - 9, 9, 9);
-				g2D.setColor(Color.BLACK);
-				p = p + 20;
-				g2D.drawString("(potential problem)</html>", 320, p);
-			}
 			
 			g2D.setColor(Color.YELLOW);
 			g2D.fill(oldConcept);
-			g2D.fillOval(310, 0, 9, 9);
 			g2D.setColor(Color.ORANGE);
 			g2D.setComposite(ac);
 			g2D.fill(newConcept);
@@ -355,22 +281,6 @@ public class GraphicalCoveragePanel extends JPanel {
 			for (int i = 0; i < additionalIndividuals.size(); i++) {
 				g2D.setColor(Color.BLACK);
 				g2D.fill(additionalIndividuals.get(i).getIndividualPoint());
-			}
-			if(!((EvaluatedDescriptionClass) eval).isConsistent()) {
-				g2D.setComposite(original);
-				g2D.setColor(darkRed);
-				g2D.drawString("Adding this class expression may lead to an inconsistent ontology.", 0, 220);
-			}
-			if(eval.getAccuracy() == 1.0) {
-				g2D.setComposite(original);
-				g2D.setColor(Color.ORANGE);
-				g2D.fillOval(0, 211, 9, 9);
-				g2D.setColor(darkRed);
-				g2D.drawString("and", 25, 220);
-				g2D.setColor(Color.YELLOW);
-				g2D.fillOval(65, 211, 9, 9);
-				g2D.setColor(darkRed);
-				g2D.drawString("cover the same instances.", 95, 220);
 			}
 			this.setVisible(true);
 		}
