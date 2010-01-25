@@ -19,6 +19,7 @@
  */
 package org.dllearner.tools.protege;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
@@ -42,10 +43,10 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 
 	private final DLLearnerModel model;
 	private EvaluatedDescription eval;
-	//private final  JTextArea concept;
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 540;
-	private GraphicalCoveragePanel p;
+	private GraphicalCoveragePanel graphicalPanel;
+	private GraphicalCoverageTextField graphicalText;
 
 	/**
 	 * This is the constructor for the Panel.
@@ -53,7 +54,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 */
 	public MoreDetailForSuggestedConceptsPanel(DLLearnerModel model) {
 		super();
-		setLayout(null);
+		setLayout(new GridLayout(1, 2));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.model = model;
 	}
@@ -67,11 +68,13 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
-		p = new GraphicalCoveragePanel(eval, model);
-		p.setBounds(5, 0, 600, 700);
+		graphicalPanel = new GraphicalCoveragePanel(eval, model);
+		graphicalText = new GraphicalCoverageTextField(eval, model);
+		graphicalPanel.setBounds(5, 0, 300, 350);
 		//adds all information to the example panel
 		unsetEverything();
-		this.add(p);
+		this.add(graphicalPanel, "Center");
+		this.add(graphicalText.getTextScroll(), "East");
 	}
 
 	private void unsetEverything() {
@@ -84,7 +87,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * @return graphical coverage panel
 	 */
 	public GraphicalCoveragePanel getGraphicalCoveragePanel() {
-		return p;
+		return graphicalPanel;
 	}
 	
 	/**
@@ -92,8 +95,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 */
 	public void unsetPanel() {
 		unsetEverything();
-		if(p != null) {
-			p.unsetPanel();
+		if(graphicalPanel != null) {
+			graphicalPanel.unsetPanel();
 		}
 	}
 }

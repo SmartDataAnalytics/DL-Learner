@@ -20,6 +20,7 @@
 package org.dllearner.tools.protege;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -51,7 +51,7 @@ public class ActionHandler implements ActionListener {
 	// This is the DLLearnerModel.
 
 	private final DLLearnerModel model;
-	private HyperLinkHandler hyperHandler;
+	
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
@@ -63,15 +63,16 @@ public class ActionHandler implements ActionListener {
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
+	private HelpTextPanel helpPanel;
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
 	private final DLLearnerView view;
 	private static final String HELP_BUTTON_STRING = "help";
-	private JTextPane help;
 	private static final String ADD_BUTTON_STRING = "<html>ADD</html>";
 	private static final String ADVANCED_BUTTON_STRING = "Advanced";
 	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
 	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expression</html>";
+	private static JOptionPane optionPane;
 
 	/**
 	 * This is the constructor for the action handler.
@@ -86,7 +87,9 @@ public class ActionHandler implements ActionListener {
 		this.view = view;
 		this.model = m;
 		toggled = false;
-		hyperHandler = view.getHyperLinkHandler();
+		helpPanel = new HelpTextPanel(view);
+		optionPane = new JOptionPane();
+		
 
 	}
 
@@ -99,8 +102,7 @@ public class ActionHandler implements ActionListener {
 	public void actionPerformed(ActionEvent z) {
 
 		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
-				|| z.getActionCommand()
-						.equals(SUPER_CLASS_LEARNING_STRING)) {
+				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
 			model.setKnowledgeSource();
 			view.getSuggestClassPanel().getSuggestModel().clear();
 			view.getSuggestClassPanel().repaint();
@@ -148,32 +150,22 @@ public class ActionHandler implements ActionListener {
 			}
 		}
 		if (z.toString().contains(HELP_BUTTON_STRING)) {
-			
+
 			Set<String> uris = model.getOntologyURIString();
 			String currentClass = "";
-			for(String uri : uris) {
-				if(model.getCurrentConcept().toString().contains(uri)) {
-					currentClass = model.getCurrentConcept().toManchesterSyntaxString(uri, null);
+			for (String uri : uris) {
+				if (model.getCurrentConcept().toString().contains(uri)) {
+					currentClass = model.getCurrentConcept()
+							.toManchesterSyntaxString(uri, null);
 				}
 			}
-			String helpText = "<html><font size=\"3\">What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?<br><br>"
-					+ "Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length <br>simply as the number of words needed to write down the class expression.<br><br>"
-					+ "The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression <br>owl:Thing and then further specializes it.<br>"
-					+ "Those class expressions, which fit the existing instances of a given class (" + currentClass + " in this case) get <br>a high accuracy and are displayed as suggestions.<br>"
-					+ "The learning algorithm prefers short expressions. 'Currently searching class expressions with length between 4 and 7.' <br>means that it has already evaluated all class expressions of length 1 to 3<br>"
-					+ "or excluded them as possible suggestions. All the expressions currently evaluated have length between 4 and 7. If you <br>want to search for longer expressions, then you have to increase<br>"
-					+ "the maximum runtime setting (it is set to " + view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime() + " <br>seconds by default).<br><br>"
-					+ "See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">Protege Plugin Wiki</a> for more details.</font></html>";
-
-			help = new JTextPane();
-			help.setEditable(false);
-			help.setContentType("text/html");
-			help.setForeground(Color.black);
-			help.addHyperlinkListener(hyperHandler);
-			help.setBackground(view.getLearnerView().getBackground());
-			help.setText(helpText);
-
-			JOptionPane.showMessageDialog(null, help, "Help",
+			
+			//helpPanel.renderHelpTextMessage(currentClass);
+			//view.getLearnerView().add();
+			//help = new JTextPane();
+			//help.setText(helpText);
+			optionPane.setPreferredSize(new Dimension(300, 200));
+			JOptionPane.showMessageDialog(view.getLearnerView(), helpPanel.renderHelpTextMessage(currentClass), "Help",
 					JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
@@ -186,13 +178,16 @@ public class ActionHandler implements ActionListener {
 	}
 
 	/**
-	 * This Methode sets the evaluated class expression that is selected
-	 * in the panel.
-	 * @param desc evaluated descriptions
+	 * This Methode sets the evaluated class expression that is selected in the
+	 * panel.
+	 * 
+	 * @param desc
+	 *            evaluated descriptions
 	 */
 	public void setEvaluatedClassExpression(EvaluatedDescription desc) {
 		this.evaluatedDescription = desc;
 	}
+
 	/**
 	 * Inner Class that retrieves the concepts given by the DL-Learner.
 	 * 
@@ -212,13 +207,17 @@ public class ActionHandler implements ActionListener {
 				throws Exception {
 			setProgress(0);
 			la = model.getLearningAlgorithm();
-			view.getStatusBar().setMaximumValue(view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
+			view.getStatusBar().setMaximumValue(
+					view.getPosAndNegSelectPanel().getOptionPanel()
+							.getMaxExecutionTime());
 			timer = new Timer();
 			timer.schedule(new TimerTask() {
 				int progress = 0;
+
 				@Override
 				public void run() {
-					progress += 1;setProgress(progress);
+					progress += 1;
+					setProgress(progress);
 					if (la != null) {
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view
 								.getPosAndNegSelectPanel().getOptionPanel()
@@ -228,7 +227,8 @@ public class ActionHandler implements ActionListener {
 						String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
 								+ celoe.getMinimumHorizontalExpansion()
 								+ " and "
-								+ celoe.getMaximumHorizontalExpansion() + ".</font></html>";
+								+ celoe.getMaximumHorizontalExpansion()
+								+ ".</font></html>";
 						view.setHintMessage(moreInformationsMessage);
 					}
 				}
@@ -266,7 +266,7 @@ public class ActionHandler implements ActionListener {
 		public void done() {
 
 			timer.cancel();
-			
+
 			List<? extends EvaluatedDescription> result = null;
 			try {
 				result = get();
@@ -280,7 +280,6 @@ public class ActionHandler implements ActionListener {
 			updateList(result);
 			view.algorithmTerminated();
 
-			
 		}
 
 		@Override
@@ -291,7 +290,7 @@ public class ActionHandler implements ActionListener {
 				updateList(list);
 			}
 		}
-		
+
 		private void updateList(
 				final List<? extends EvaluatedDescription> result) {
 
