@@ -11,6 +11,7 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class BlankNodeCollector {
 
@@ -41,6 +42,11 @@ public class BlankNodeCollector {
 	}
 	
 	
+	/**
+	 * @param rsw
+	 * @param depth
+	 * @return true if there are more blanknodes
+	 */
 	public static boolean testResultSet(ResultSetRewindable rsw, int depth){
 		List<String> vars = new ArrayList<String>();
 		vars.add("o0");
@@ -63,9 +69,25 @@ public class BlankNodeCollector {
 		rsw.reset();
 		return true;
 	}
+	
+	//true to stop expansion
 	private static boolean testOneQuerySolution(List<String> vars, QuerySolution q){
+		
+//		System.out.println(q);
+//		System.out.println(vars);
+//		for (String v : vars) {
+//			RDFNode n = q.get(v);
+//			if(n==null){
+//				System.out.println("returning true");
+//				return true;
+//			}
+//			
+//		}
+		
 		for (String v : vars) {
-			if(!q.get(v).isAnon()){
+			RDFNode n = q.get(v);
+			if(!n.isAnon()){
+//				System.out.println(n);
 				return true;
 			}
 		}

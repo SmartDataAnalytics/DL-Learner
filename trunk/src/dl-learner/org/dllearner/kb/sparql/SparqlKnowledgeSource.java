@@ -61,7 +61,6 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
-import org.mindswap.pellet.utils.progress.SilentProgressMonitor;
 import org.semanticweb.owl.model.OWLOntology;
 
 import com.jamonapi.Monitor;
@@ -81,10 +80,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private static final boolean debug = false;
 	
 	//private static final boolean threaded = debug && true ;
-	
 
-	// tupleaquisitor
-	//private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
 	//	 sysex 
 	private static final boolean debugExitAfterExtraction = debug && false; // switches
 
@@ -259,7 +255,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 						.getGetAllSuperClasses(), configurator
 						.getCloseAfterRecursion(), configurator
 						.getGetPropertyInformation(), configurator
-						.getBreakSuperClassRetrievalAfter());
+						.getBreakSuperClassRetrievalAfter(),
+						configurator.getDissolveBlankNodes());
 
 		// give everything to the manager
 		m.useConfiguration(configuration);

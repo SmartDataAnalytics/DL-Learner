@@ -47,13 +47,15 @@ public class Configuration {
 	private boolean closeAfterRecursion = true;
 
 	private boolean getPropertyInformation = false;
+	
+	private boolean dissolveBlankNodes = false;
 
 	private int breakSuperClassesAfter = 200;
 
 	public Configuration(TupleAquisitor tupelAquisitor,
 			Manipulator manipulator, int recursiondepth,
 			boolean getAllSuperClasses, boolean closeAfterRecursion,
-			boolean getPropertyInformation, int breakSuperClassesAfter) {
+			boolean getPropertyInformation, int breakSuperClassesAfter, boolean dissolveBlankNodes) {
 
 		this.tupelAquisitor = tupelAquisitor;
 		this.manipulator = manipulator;
@@ -62,6 +64,7 @@ public class Configuration {
 		this.closeAfterRecursion = closeAfterRecursion;
 		this.getPropertyInformation = getPropertyInformation;
 		this.breakSuperClassesAfter = breakSuperClassesAfter;
+		this.dissolveBlankNodes = dissolveBlankNodes;
 		
 		this.owlAPIOntologyCollector = new OWLAPIOntologyCollector();
 
@@ -70,10 +73,10 @@ public class Configuration {
 	public Configuration(TupleAquisitor tupelAquisitor,
 			Manipulator manipulator, int recursiondepth,
 			boolean getAllSuperClasses, boolean closeAfterRecursion,
-			boolean getPropertyInformation, int breakSuperClassesAfter,
+			boolean getPropertyInformation, int breakSuperClassesAfter, boolean dissolveBlankNodes,
 			OWLAPIOntologyCollector owlAPIOntologyCollector) {
 		this(tupelAquisitor, manipulator, recursiondepth, getAllSuperClasses,
-				closeAfterRecursion, getAllSuperClasses, breakSuperClassesAfter);
+				closeAfterRecursion, getAllSuperClasses, breakSuperClassesAfter,dissolveBlankNodes);
 		this.owlAPIOntologyCollector = owlAPIOntologyCollector;
 	}
 
@@ -111,6 +114,10 @@ public class Configuration {
 
 	public OWLAPIOntologyCollector getOwlAPIOntologyCollector() {
 		return owlAPIOntologyCollector;
+	}
+
+	public boolean isDissolveBlankNodes() {
+		return dissolveBlankNodes;
 	}
 
 }

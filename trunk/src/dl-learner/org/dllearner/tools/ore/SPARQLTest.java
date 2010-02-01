@@ -27,7 +27,10 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.SetManipulation;
+
+import com.hp.hpl.jena.query.ResultSetRewindable;
 
 /**
  * Test class for SPARQL mode.
@@ -61,6 +64,7 @@ public class SPARQLTest {
 				.knowledgeSource(SparqlKnowledgeSource.class);
 		ks.getConfigurator().setUrl(endPoint.getURL());
 		ks.getConfigurator().setInstances(posExamples);
+		ks.getConfigurator().setDissolveBlankNodes(false);
 		ks.init();
 		// ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class,
 		// ks);
