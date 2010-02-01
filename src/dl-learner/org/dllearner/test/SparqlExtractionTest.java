@@ -78,6 +78,7 @@ public class SparqlExtractionTest {
 			boolean getAllSuperClasses = true;
 			boolean closeAfterRecursion = true;
 			boolean getPropertyInformation = false;
+			boolean dissolveBlankNodes = false;
 			int breakSuperClassesAfter = 1000;
 			
 			String ontologyURI = "http://www.fragment.org/fragment";
@@ -93,6 +94,7 @@ public class SparqlExtractionTest {
 					closeAfterRecursion,
 					getPropertyInformation,
 					breakSuperClassesAfter,
+					dissolveBlankNodes,
 					collector
 					);
 			

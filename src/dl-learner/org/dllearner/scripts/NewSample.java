@@ -149,7 +149,7 @@ public class NewSample {
 
 		// all components need to be initialised before they can be used
 		ks.init();
-		f.init();	
+		f.init();
 		lp.init();
 		la.init();
 

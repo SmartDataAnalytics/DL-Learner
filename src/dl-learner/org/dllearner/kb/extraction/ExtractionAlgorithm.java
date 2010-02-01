@@ -70,6 +70,7 @@ public class ExtractionAlgorithm {
 	 *
 	 */
 	public Node expandNode(String uri, TupleAquisitor tupleAquisitor) {
+		tupleAquisitor.setDissolveBlankNodes(configuration.isDissolveBlankNodes());
 
 		SimpleClock sc = new SimpleClock();
 		if(tupleAquisitor instanceof SparqlTupleAquisitorImproved){
@@ -146,7 +147,9 @@ public class ExtractionAlgorithm {
 		}
 		
 		Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBlankNode").start();
-		expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
+		if( configuration.isDissolveBlankNodes()){
+			expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
+		}
 		m.stop();
 		
 	

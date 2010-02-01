@@ -45,7 +45,7 @@ public abstract class TupleAquisitor {
 	
 	protected int mode = 0;
 	protected boolean uriDebugCheck = true;
-	protected boolean dissolveBlankNodes = true;
+	protected boolean dissolveBlankNodes = false;
 
 	public final SortedSet<RDFNodeTuple> getTupelForResource(String uri){
 		checkURIforValidity(uri);
