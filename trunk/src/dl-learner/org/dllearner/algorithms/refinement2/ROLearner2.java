@@ -417,6 +417,8 @@ public class ROLearner2 {
 				String acc = new DecimalFormat( ".00%" ).format((candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
 				// no handling needed, it will just look ugly in the output
 				logger.info("more accurate ("+acc+") class expression found: " + candidatesStable.last().getConcept().toManchesterSyntaxString(baseURI, prefixes));
+				printBestSolutions(5, true);
+				printStatistics(false);
 				bestNodeStable = candidatesStable.last();
 			}
 
