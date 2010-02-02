@@ -145,6 +145,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	// namespaces
@@ -192,6 +193,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 		doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 		intDatatypeProperties = new TreeSet<DatatypeProperty>();
+		stringDatatypeProperties = new TreeSet<DatatypeProperty>();
 		individuals = new TreeSet<Individual>();	
 				
 		// create OWL API ontology manager
@@ -377,7 +379,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					else if(uri.equals(Datatype.DOUBLE.getURI()))
 						doubleDatatypeProperties.add(dtp);
 					else if(uri.equals(Datatype.INT.getURI()))
-						intDatatypeProperties.add(dtp);				
+						intDatatypeProperties.add(dtp);		
+					else if(uri.equals(Datatype.STRING.getURI()))
+						intDatatypeProperties.add(dtp);	
 				}
 			}
 			datatypeProperties.add(dtp);
@@ -976,6 +980,14 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
+	
+	/**
+	 * @return the intDatatypeProperties
+	 */
+	@Override
+	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
+		return stringDatatypeProperties;
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getBaseURI()
