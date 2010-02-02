@@ -771,6 +771,21 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
+	public final SortedSet<DatatypeProperty> getStringDatatypeProperties() {
+		try {
+			return getStringDatatypePropertiesImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
+	@Override
 	public final Description getDomain(ObjectProperty objectProperty) {
 		try {
 			return getDomainImpl(objectProperty);

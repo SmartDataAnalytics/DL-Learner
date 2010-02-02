@@ -40,6 +40,7 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
@@ -60,6 +61,7 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
+import org.dllearner.core.owl.StringValueRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
@@ -158,6 +160,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<ObjectProperty, Map<Individual, Integer>> valueFrequency = new HashMap<ObjectProperty, Map<Individual, Integer>>();
 	// data structure with identified frequent values
 	private Map<ObjectProperty, Set<Individual>> frequentValues = new HashMap<ObjectProperty, Set<Individual>>();	
+	// frequent data values
+	private Map<DatatypeProperty, Set<Constant>> frequentDataValues = new HashMap<DatatypeProperty, Set<Constant>>();	
+	private Map<DatatypeProperty, Map<Constant, Integer>> dataValueFrequency = new HashMap<DatatypeProperty, Map<Constant, Integer>>();		
+	private boolean useDataHasValueConstructor = false;
 	
 	// staistics
 	public long mComputationTimeNs = 0;
@@ -263,13 +269,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					}
 				}
 				
-				// keep only frequent patterns (TODO it would be slightly
-				// more efficient if we stop adding to valueFrequency
-				// after threshold is reached)
+				// keep only frequent patterns
 				Set<Individual> frequentInds = new TreeSet<Individual>();
 				for(Individual i : opMap.keySet()) {
 					if(opMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
+						break;
 					}
 				}
 				frequentValues.put(op, frequentInds);
@@ -278,13 +283,44 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			
 		}
 		
+		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
+			dpDomains.put(dp, rs.getDomain(dp));
+			
+			if(useDataHasValueConstructor) {
+				Map<Constant, Integer> dpMap = new TreeMap<Constant, Integer>();
+				dataValueFrequency.put(dp, dpMap);
+				
+				// sets ordered by corresponding individual (which we ignore)
+				Collection<SortedSet<Constant>> fillerSets = rs.getDatatypeMembers(dp).values();
+				for(SortedSet<Constant> fillerSet : fillerSets) {
+					for(Constant i : fillerSet) {
+//						System.out.println("op " + op + " i " + i);
+						Integer value = dpMap.get(i);
+						
+						if(value != null) {
+							dpMap.put(i, value+1);
+						} else {
+							dpMap.put(i, 1);
+						}
+					}
+				}
+				
+				// keep only frequent patterns
+				Set<Constant> frequentInds = new TreeSet<Constant>();
+				for(Constant i : dpMap.keySet()) {
+					if(dpMap.get(i) >= frequencyThreshold) {
+						frequentInds.add(i);
+						break;
+					}
+				}
+				frequentDataValues.put(dp, frequentInds);				
+			}
+		}
+		
 		// we do not need the temporary set anymore and let the
 		// garbage collector take care of it
 		valueFrequency = null;
-		
-		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
-			dpDomains.put(dp, rs.getDomain(dp));
-		}
+		dataValueFrequency = null;
 		
 		// compute splits for double datatype properties
 		for(DatatypeProperty dp : rs.getDoubleDatatypeProperties()) {
@@ -929,6 +965,17 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				}
 			}
 		}		
+		
+		if(useDataHasValueConstructor) {
+			Set<DatatypeProperty> stringDPs = rs.getStringDatatypeProperties();
+			for(DatatypeProperty dp : stringDPs) {
+				// loop over frequent values
+				Set<Constant> freqValues = frequentDataValues.get(dp);
+				for(Constant c : freqValues) {
+					m3.add(new StringValueRestriction(dp, c.getLiteral()));
+				}
+			}			
+		}
 		
 		m.put(3,m3);
 		

@@ -30,7 +30,8 @@ public enum Datatype implements DataRange {
 	
     DOUBLE ("http://www.w3.org/2001/XMLSchema#double"),
     INT ("http://www.w3.org/2001/XMLSchema#int"),
-    BOOLEAN   ("http://www.w3.org/2001/XMLSchema#boolean");
+    BOOLEAN   ("http://www.w3.org/2001/XMLSchema#boolean"),
+    STRING ("http://www.w3.org/2001/XMLSchema#string");
 
     private URI uri;
 
@@ -51,6 +52,10 @@ public enum Datatype implements DataRange {
 		return 1;
 	}
 
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
+	
 	public String toString(String baseURI, Map<String, String> prefixes) {
 		return uri.toString();
 	}
@@ -59,16 +64,11 @@ public enum Datatype implements DataRange {
 		return uri.toString();
 	}
 	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return uri.toString();
 	}	
 }
