@@ -381,16 +381,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					else if(uri.equals(Datatype.INT.getURI()))
 						intDatatypeProperties.add(dtp);		
 					else if(uri.equals(Datatype.STRING.getURI()))
-						intDatatypeProperties.add(dtp);	
+						stringDatatypeProperties.add(dtp);	
 				}
+			} else {
+				stringDatatypeProperties.add(dtp);
 			}
 			datatypeProperties.add(dtp);
 		}
 		for(OWLIndividual owlIndividual : owlIndividuals) {
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
 		}		
-		
-
 		
 	}
 

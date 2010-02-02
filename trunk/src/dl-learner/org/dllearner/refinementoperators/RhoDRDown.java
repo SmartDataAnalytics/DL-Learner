@@ -147,6 +147,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<NamedClass,Set<ObjectProperty>> mgr = new TreeMap<NamedClass,Set<ObjectProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgbd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgdd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
+	private Map<NamedClass,Set<DatatypeProperty>> mgsd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -643,6 +644,13 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					refinements.add(newDSR);
 				}
 			}
+		} else if (description instanceof StringValueRestriction) {
+			StringValueRestriction svr = (StringValueRestriction) description;
+			DatatypeProperty dp = svr.getRestrictedPropertyExpresssion();
+			Set<DatatypeProperty> subDPs = rs.getSubProperties(dp);
+			for(DatatypeProperty subDP : subDPs) {
+				refinements.add(new StringValueRestriction(subDP, svr.getStringValue()));
+			}
 		}
 		
 		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
@@ -1083,6 +1091,17 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			}
 		}			
 		
+		if(useDataHasValueConstructor) {
+			Set<DatatypeProperty> stringDPs = mgsd.get(nc);
+			for(DatatypeProperty dp : stringDPs) {
+				// loop over frequent values
+				Set<Constant> freqValues = frequentDataValues.get(dp);
+				for(Constant c : freqValues) {
+					m3.add(new StringValueRestriction(dp, c.getLiteral()));
+				}
+			}			
+		}		
+		
 		mA.get(nc).put(3,m3);
 		
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
@@ -1106,10 +1125,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		if(appOP.get(domain) == null)
 			computeApp(domain);	
 		
-		// initialise mgr, mgbd, mgdd
+		// initialise mgr, mgbd, mgdd, mgsd
 		mgr.put(domain, new TreeSet<ObjectProperty>());
 		mgbd.put(domain, new TreeSet<DatatypeProperty>());
 		mgdd.put(domain, new TreeSet<DatatypeProperty>());
+		mgsd.put(domain, new TreeSet<DatatypeProperty>());
 		
 		SortedSet<ObjectProperty> mostGeneral = rs.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
@@ -1118,8 +1138,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		// datatype properties have the same type (e.g. boolean, integer, double)
 		Set<DatatypeProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, rs.getBooleanDatatypeProperties());
 		Set<DatatypeProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, rs.getDoubleDatatypeProperties());
+		Set<DatatypeProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, rs.getStringDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));	
 		computeMgddRecursive(domain, mostGeneralDDP, mgdd.get(domain));
+		computeMgsdRecursive(domain, mostGeneralSDP, mgsd.get(domain));
 	}
 	
 	private void computeMgrRecursive(NamedClass domain, Set<ObjectProperty> currProperties, Set<ObjectProperty> mgrTmp) {
@@ -1148,6 +1170,15 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				computeMgddRecursive(domain, rs.getSubProperties(prop), mgddTmp);
 		}
 	}		
+	
+	private void computeMgsdRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgsdTmp) {
+		for(DatatypeProperty prop : currProperties) {
+			if(appDD.get(domain).contains(prop))
+				mgsdTmp.add(prop);
+			else
+				computeMgsdRecursive(domain, rs.getSubProperties(prop), mgsdTmp);
+		}
+	}	
 	
 	// computes the set of applicable properties for a given class
 	private void computeApp(NamedClass domain) {

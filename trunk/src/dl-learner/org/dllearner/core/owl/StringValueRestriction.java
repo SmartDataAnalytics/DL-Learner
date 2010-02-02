@@ -28,8 +28,12 @@ package org.dllearner.core.owl;
  */
 public class StringValueRestriction extends DatatypeValueRestriction {
 
+	private String stringValue;
+	
 	public StringValueRestriction(DatatypeProperty restrictedPropertyExpression, String value) {
+		// TODO: we pass it as typed property, although it could be untyped
 		super(restrictedPropertyExpression, new TypedConstant(value.toString(), Datatype.STRING));
+		stringValue = value.toString();
 	}
 
 	private static final long serialVersionUID = 5651982376457935975L;
@@ -39,4 +43,8 @@ public class StringValueRestriction extends DatatypeValueRestriction {
 		return 3;
 	}
 
+	public String getStringValue() {
+		return stringValue;
+	}
+	
 }
