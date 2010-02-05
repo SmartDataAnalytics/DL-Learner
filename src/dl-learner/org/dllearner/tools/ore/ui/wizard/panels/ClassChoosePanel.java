@@ -62,6 +62,11 @@ public class ClassChoosePanel extends JPanel{
 	private JPanel manualLearnPanel;
 	private JPanel autoLearnPanel;
 	
+	private static final String HELP_TEXT = "<html>You can choose whether you want to learn class " +
+			"descriptions for a single, manually selected class,<br>" +
+			"or you can learn class descriptions step by step for all classes with a minimum " +
+			"number of instances.</html>";
+	
 	private LearningOptionsPanel learningOptionsPanel;
 	
 	/**
@@ -92,6 +97,7 @@ public class ClassChoosePanel extends JPanel{
 		
 		HelpablePanel optionsHelpPanel = new HelpablePanel(optionsPanel);
 		optionsHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		optionsHelpPanel.setHelpText(HELP_TEXT);
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		add(optionsHelpPanel, c);
 		
@@ -192,7 +198,7 @@ public class ClassChoosePanel extends JPanel{
     
     public void reset(){
     	classesTable.clear();
-    	minInstanceCountSpinner.setValue(new Integer(1));
+    	minInstanceCountSpinner.setValue(Integer.valueOf(1));
     	autoLearnButton.setSelected(true);
     	setAutoLearningPanel(true);
     }

@@ -191,11 +191,11 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 			while(iter.hasNext()){
 				NamedClass nc = iter.next();
 				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
-				Set<NamedClass> temp = instanceCountToClasses.get(new Integer(instanceCount));
+				Set<NamedClass> temp = instanceCountToClasses.get(Integer.valueOf(instanceCount));
 				if(temp == null) {
 					temp = new HashSet<NamedClass>();
 					temp.add(nc);
-					instanceCountToClasses.put(new Integer(instanceCount), temp);
+					instanceCountToClasses.put(Integer.valueOf(instanceCount), temp);
 				}
 				temp.add(nc);				
 			}			

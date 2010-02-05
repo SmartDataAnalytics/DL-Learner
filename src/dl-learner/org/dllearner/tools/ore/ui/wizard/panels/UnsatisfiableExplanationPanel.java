@@ -56,8 +56,12 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 	
 	private JPanel buttonExplanationsPanel;
 	
-	private final String EXPLANATION_TYPE_TEXT = "";
-	private final String EXPLANATION_COUNT_TEXT = "";
+	private static final String EXPLANATION_TYPE_TEXT = "<html>You can select whether the shown explanations shell " +
+			"only contain axioms, which are asserted in the ontology," +
+			"<br>or whether the explanations show only relevant parts of the original axioms.</html>" +
+			"";
+	private static final String EXPLANATION_COUNT_TEXT = "<html>You can choose between showing/computing all " +
+			"explanations,<br> or only a limited number of them.</html>";
 	
 	
 	private ButtonGroup explanationType;

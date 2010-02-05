@@ -49,6 +49,10 @@ public class FleissKappa
 		final int N = mat.length;
 		final int k = mat[0].length;
 
+		if(n < 2){
+			System.err.println("Only " + n + " raters per subject detected. There have to be at least 2 raters per subject");
+			return -999;
+		}
 		logger.debug(n + " raters.");
 		logger.debug(N + " subjects.");
 		logger.debug(k + " categories.");

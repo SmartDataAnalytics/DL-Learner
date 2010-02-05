@@ -795,7 +795,7 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	 * @throws ClassNotFoundException
 	 * @throws URISyntaxException 
 	 */
-	public static void main(String[] args) throws ComponentInitException, MalformedURLException,
+	public static void main(String[] args) throws ComponentInitException,
 			LearningProblemUnsupportedException, ClassNotFoundException, InstantiationException,
 			IllegalAccessException, UnsupportedLookAndFeelException, URISyntaxException {
 

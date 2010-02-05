@@ -625,12 +625,8 @@ public class EvaluationComputingScript {
 			System.out.println("You need to give an OWL file as argument.");
 			System.exit(0);
 		}
-		URL fileURL = null;
-		if(args[0].startsWith("http")){
-			fileURL = new URL(args[0]);
-		} else {
-			fileURL = new File(new URL(args[0]).toURI()).toURI().toURL();
-		}
+		URL fileURL = new URL(args[0]);
+		
 		long startTime = System.currentTimeMillis();
 		new EvaluationComputingScript(fileURL);
 		System.out.println("Overall computing time: " + (System.currentTimeMillis() - startTime)/1000 +" s");

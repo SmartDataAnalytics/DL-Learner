@@ -324,7 +324,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * @param newValue The new enabled status of the button.
      */ 
     public void setBackButtonEnabled(boolean newValue) {
-        wizardModel.setBackButtonEnabled(new Boolean(newValue));
+        wizardModel.setBackButtonEnabled(Boolean.valueOf(newValue));
     }
 
    /**
@@ -340,7 +340,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * @param newValue The new enabled status of the button.
      */ 
     public void setNextFinishButtonEnabled(boolean newValue) {
-        wizardModel.setNextFinishButtonEnabled(new Boolean(newValue));
+        wizardModel.setNextFinishButtonEnabled(Boolean.valueOf(newValue));
     }
  
    /**
@@ -356,7 +356,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * @param newValue The new enabled status of the button.
      */ 
     public void setCancelButtonEnabled(boolean newValue) {
-        wizardModel.setCancelButtonEnabled(new Boolean(newValue));
+        wizardModel.setCancelButtonEnabled(Boolean.valueOf(newValue));
     }
     
     /**

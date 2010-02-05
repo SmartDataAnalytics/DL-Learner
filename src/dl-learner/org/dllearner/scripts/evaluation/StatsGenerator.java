@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -20,10 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.utilities.statistics.FleissKappa;
 import org.dllearner.utilities.statistics.Stat;
+import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
@@ -72,6 +77,11 @@ public class StatsGenerator {
 	private int suggestionListsCount;
 	private int logicalAxiomCount;
 	private OWLOntology ont;
+	
+	//matrix for Fleiss Kappa input
+	private short[][] mat;
+	private List<NamedClass> equivalentLists;
+	private List<NamedClass> superLists;
 
 	public StatsGenerator(File directory) {
 		// begin latex table with headers
@@ -79,9 +89,9 @@ public class StatsGenerator {
 		beginStatsTable();
 		// for each ontology
 		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
-			clearStats();
 			loadSuggestions(suggestionFile);
 			loadOntology(suggestionFile);
+			resetStats();
 			// for each user evaluation input file
 			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
@@ -110,7 +120,7 @@ public class StatsGenerator {
 		}
 	}
 
-	private void clearStats() {
+	private void resetStats() {
 		acceptedGlobalStat = new Stat();
 		rejectedGlobalStat = new Stat();
 		failedGlobalStat = new Stat();
@@ -126,6 +136,10 @@ public class StatsGenerator {
 		accSelectedStatsSC.clear();
 		accAboveThresholdStatsSC.clear();
 		positionStatsSC.clear();
+		
+		equivalentLists = new ArrayList<NamedClass>(equivalentSuggestions.keySet());
+		superLists = new ArrayList<NamedClass>(superSuggestions.keySet());
+		mat = new short[suggestionListsCount][3];
 	}
 
 	private void makeSingleStat() {
@@ -156,16 +170,21 @@ public class StatsGenerator {
 		Stat accSelectedStatSC = new Stat();
 		Stat accAboveThresholdStatSC = new Stat();
 		Stat positionStatSC = new Stat();
-
 		// analysing input for equivalent class expressions
 		for (Entry<NamedClass, String> e : equivalentInput.entrySet()) {
 			NamedClass currentClass = e.getKey();
 			String input = e.getValue();
+			if(input.equals("-1")){
+				input = "n";
+			}
 			if (input.equals("m")) {
 				missesCount++;
+				mat[equivalentLists.indexOf(currentClass)][2]++;
 			} else if (input.equals("n")) {
 				noSensibleDescriptionCount++;
+				mat[equivalentLists.indexOf(currentClass)][1]++;
 			} else {
+				mat[equivalentLists.indexOf(currentClass)][0]++;
 				int selectedIndex = Integer.parseInt(input);
 				EvaluatedDescriptionClass selectedExpression = equivalentSuggestions.get(currentClass).get(
 						selectedIndex);
@@ -204,9 +223,12 @@ public class StatsGenerator {
 			NamedClass currentClass = e.getKey();
 			if (e.getValue().equals("m")) {
 				missesCountSC++;
+				mat[superLists.indexOf(currentClass) + equivalentLists.size()][2]++;
 			} else if (e.getValue().equals("n")) {
 				noSensibleDescriptionCountSC++;
+				mat[superLists.indexOf(currentClass) + equivalentLists.size()][1]++;
 			} else {
+				mat[superLists.indexOf(currentClass) + equivalentLists.size()][0]++;
 				int selectedIndex = Integer.parseInt(e.getValue());
 				EvaluatedDescriptionClass selectedExpression = superSuggestions.get(currentClass).get(selectedIndex);
 				double bestAcc = superSuggestions.get(currentClass).get(0).getAccuracy();
@@ -351,6 +373,13 @@ public class StatsGenerator {
 				+ df.format(additionalInstanceCountEq) + " & "
 				+ df.format(additionalInstanceCount)
 				+ "\\\\\n");
+		for(int i = 0; i < mat.length; i++){
+			for(int j = 0; j < mat[i].length; j++){
+				System.out.print(mat[i][j]);
+			}
+			System.out.println();
+		}
+		System.out.println(new FleissKappa().computeKappa(mat));
 	}
 	
 	private void addOntologyMetricsTableRow(){
@@ -403,7 +432,7 @@ public class StatsGenerator {
 			} catch (Exception e) {
 			}
 		}
-		suggestionListsCount = equivalentSuggestions.size() + superSuggestions.size();
+		suggestionListsCount = equivalentSuggestions.keySet().size() + superSuggestions.keySet().size();
 	}
 
 	/**
@@ -459,6 +488,7 @@ public class StatsGenerator {
 	 */
 	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
 		Locale.setDefault(Locale.ENGLISH);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		File directory = new File(new URL(args[0]).toURI());
 		new StatsGenerator(directory);
 	}
