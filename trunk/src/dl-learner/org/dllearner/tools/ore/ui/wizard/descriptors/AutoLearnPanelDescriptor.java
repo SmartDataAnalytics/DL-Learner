@@ -20,7 +20,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
@@ -44,11 +43,6 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
     
     private EquivalentLearningTask equivalentLearningTask;
     private SuperClassLearningTask superLearningTask;
-    
-    private Timer timer;
-	private LearningAlgorithm la;
-    
-    private SwingWorker<Void, List<? extends EvaluatedDescription>> currentLearningTask;
     
     private int currentClassIndex = 0;
     
@@ -97,7 +91,6 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		TaskManager.getInstance().getStatusBar().setMessage("Learning equivalent class expressions...");
 		getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		equivalentLearningTask = new EquivalentLearningTask();
-		currentLearningTask = equivalentLearningTask;
 		equivalentLearningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
 		equivalentLearningTask.execute();
 	}
@@ -107,7 +100,6 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		TaskManager.getInstance().getStatusBar().setProgress(0);
 		getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		superLearningTask = new SuperClassLearningTask();
-		currentLearningTask = superLearningTask;
 		superLearningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
 		superLearningTask.execute();
 	}

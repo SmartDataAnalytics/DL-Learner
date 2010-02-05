@@ -124,15 +124,15 @@ public class SparqlExtractOptionsPanel extends JPanel{
 		c.gridy = 7;
 		add(getAllSuperClassesCheckBox, c);
 		
-//		c.anchor = GridBagConstraints.LINE_START;	
-//		c.gridx = 1;
-//		c.gridy = 8;
-//		add(new JLabel("Use literals"), c);
-//		useLitsCheckBox = new JCheckBox();
-//		c.anchor = GridBagConstraints.LINE_END;
-//		c.gridx = 0;
-//		c.gridy = 8;
-//		add(useLitsCheckBox, c);
+		c.anchor = GridBagConstraints.LINE_START;	
+		c.gridx = 1;
+		c.gridy = 8;
+		add(new JLabel("Use literals"), c);
+		useLitsCheckBox = new JCheckBox();
+		c.anchor = GridBagConstraints.LINE_END;
+		c.gridx = 0;
+		c.gridy = 8;
+		add(useLitsCheckBox, c);
 		
 	}
 	
@@ -181,7 +181,7 @@ public class SparqlExtractOptionsPanel extends JPanel{
 		getPropertyInformationCheckBox.setSelected(false);
 		closeAfterRecursionCheckBox.setSelected(true);
 		getAllSuperClassesCheckBox.setSelected(true);
-//		useLitsCheckBox.setSelected(true);
+		useLitsCheckBox.setSelected(false);
 	}
 	
 	public void setToolTips(){

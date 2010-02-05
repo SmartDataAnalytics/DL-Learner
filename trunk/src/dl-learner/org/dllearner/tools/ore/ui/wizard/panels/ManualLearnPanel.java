@@ -74,10 +74,35 @@ public class ManualLearnPanel extends JPanel{
 	
 	private GridBagConstraints c;
 	
-	private static String INCONSISTENCYWARNING = "<html><font color=red>" +
+	private static final String INCONSISTENCY_WARNING = "<html><font color=red>" +
 	"Warning! Adding selected class expression leads to an inconsistent ontology." +
 	"</font></html>";
-
+	
+	private static final String LEARNTYPE_HELP_TEXT = "<html>You can choose between learning class " +
+			"expressions, which are equivalent to your selected class,<br>" +
+			"or learning class expressions, which subsumes the seleminimal number ofcted class.</html>";
+	
+	private static final String LEARNOPTIONS_HELP_TEXT = "<html><table border=\"1\">" +
+	"<tr>" +
+	"<th>Noise</th>" +
+	"<th></th>" +
+	"</tr>" +
+	"<tr>" +
+	"<th>Max. execution time</th>" +
+	"<th>The maximal time in seconds after which the algorithm terminates.</th>" +
+	"</tr>" +
+	"<tr>" +
+	"<th>Max. number of results</th>" +
+	"<th>The maximal number of class expressions which will be returned.</th>" +
+	"</tr>" +
+	"<tr>" +
+	"<th>Threshold</th>" +
+	"<th>Specifies the minimal accuracy value, which the results must have to be shown.</th>" +
+	"</tr>"+
+	"</table></html>";
+	
+	private static final String COVERAGE_HELP_TEXT = "This panel shows an abstract coverage view " +
+			"of the instances in the ontology.";
 
 	public ManualLearnPanel() {
 		createUI();
@@ -158,6 +183,7 @@ public class ManualLearnPanel extends JPanel{
 		learnTypePanel.add(superClassButton);
 		HelpablePanel learnTypeHelpPanel = new HelpablePanel(learnTypePanel);
 		learnTypeHelpPanel.setBorder(new TitledBorder("Learning type"));
+		learnTypeHelpPanel.setHelpText(LEARNTYPE_HELP_TEXT);
 		buttonSliderPanel.add(learnTypeHelpPanel, new GridBagConstraints(0, 1,
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
@@ -165,6 +191,7 @@ public class ManualLearnPanel extends JPanel{
 		optionsPanel = new LearningOptionsPanel();
 		HelpablePanel optionsHelpPanel = new HelpablePanel(optionsPanel);
 		optionsHelpPanel.setBorder(new TitledBorder("Options"));
+		optionsHelpPanel.setHelpText(LEARNOPTIONS_HELP_TEXT);
 		buttonSliderPanel.add(optionsHelpPanel, new GridBagConstraints(0, 2,
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
@@ -181,6 +208,7 @@ public class ManualLearnPanel extends JPanel{
 		
 		graphicPanel = new GraphicalCoveragePanel("");
 		HelpablePanel coverageHelpPanel = new HelpablePanel(graphicPanel);
+		coverageHelpPanel.setHelpText(COVERAGE_HELP_TEXT);
 		
 		JPanel graphicHolderPanel = new JPanel(new BorderLayout());
 		graphicHolderPanel.add(coverageHelpPanel);
@@ -227,7 +255,7 @@ public class ManualLearnPanel extends JPanel{
 	
 	public void showInconsistencyWarning(boolean show){
 		if(show){
-			inconsistencyLabel.setText(INCONSISTENCYWARNING);
+			inconsistencyLabel.setText(INCONSISTENCY_WARNING);
 		} else {
 			inconsistencyLabel.setText(" ");
 		}

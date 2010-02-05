@@ -64,6 +64,9 @@ public class OREApplication {
     	
     	
     	try {
+    		UIManager.put("OptionPane.cancelButtonText","Cancel");
+    		UIManager.put("ProgressMonitor.progressText","Progress");
+
     		UIManager.setLookAndFeel(new PlasticLookAndFeel());
 			UIDefaults def = UIManager.getLookAndFeelDefaults();
 			Vector<?> vec = new Vector<Object>(def.keySet());

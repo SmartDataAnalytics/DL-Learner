@@ -15,7 +15,10 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,7 +93,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	private ImageIcon toggledIcon = new ImageIcon(this.getClass().getResource("../toggled.gif"));
 	private ImageIcon untoggledIcon = new ImageIcon(this.getClass().getResource("../untoggled.gif"));
 	
-	private final String URLHelpText = "<html><table border=\"1\">" +
+	private static final String URL_HELP_TEXT = "<html><table border=\"1\">" +
 			"<tr>" +
 			"<th>SPARQL endpoint URL</th>" +
 			"<th>The URL of the SPARQL endpoint</th>" +
@@ -101,7 +104,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			"</tr>							" +
 			"</table></html>"; 
 	
-	private final String classHelpText = "Enter a class uri or label for which a " +
+	private static final String CLASS_HELP_TEXT = "Enter a class uri or label for which a " +
 										"relevant fragment should be extracted.";
 	
 	private SPARQLTasks task;
@@ -110,7 +113,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	private ProgressMonitor mon;
 	private Timer t;
 	
-	private Map<URL, List<String>> endpointToDefaultGraph;
+	private Map<URI, List<String>> endpointToDefaultGraph;
 	
 	public ExtractFromSparqlDialog(JFrame owner) {
 		super(owner, "Extract fragment from SPARQL endpoint", true);
@@ -178,7 +181,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		endPointHolderPanel.add(new JLabel("Default graph URI (optional)"));
 		endPointHolderPanel.add(defaultGraphField);
 		HelpablePanel endPointHelpPanel = new HelpablePanel(endPointHolderPanel);
-		endPointHelpPanel.setHelpText(URLHelpText);
+		endPointHelpPanel.setHelpText(URL_HELP_TEXT);
 		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		panel.add(endPointHelpPanel, c);
 
@@ -207,7 +210,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		gbc.weighty = 1.0;
 		classHolderPanel.add(classField,gbc);
 		HelpablePanel classHelpPanel = new HelpablePanel(classHolderPanel);
-		classHelpPanel.setHelpText(classHelpText);
+		classHelpPanel.setHelpText(CLASS_HELP_TEXT);
 		classHelpPanel.setBorder(new TitledBorder("Class to investigate"));
 		panel.add(classHelpPanel, c);
 
@@ -274,11 +277,16 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	}
 	
 	private void addPredefinedEndpoints(){
-		endpointToDefaultGraph = new HashMap<URL, List<String>>();
+		endpointToDefaultGraph = new HashMap<URI, List<String>>();
 		for(SparqlEndpoint endpoint : SparqlEndpoint.listEndpoints()){
-			endpointToDefaultGraph.put(endpoint.getURL(), endpoint.getDefaultGraphURIs());
+			try {
+				endpointToDefaultGraph.put(endpoint.getURL().toURI(), endpoint.getDefaultGraphURIs());
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
-		for(URL url : endpointToDefaultGraph.keySet()){
+		for(URI url : endpointToDefaultGraph.keySet()){
 			comboBox.addItem(url.toString());
 		}		
 	}
@@ -355,12 +363,11 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	private void extract() {
 		message.setText("Checking SPARQL endpoint availability");
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-		setLocale(Locale.ENGLISH);
 		mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
 		mon.setMillisToDecideToPopup(0);
 		mon.setMillisToPopup(0);
-		mon.getAccessibleContext().getLocale().setDefault(Locale.ENGLISH);
+		mon.getAccessibleContext().getLocale();
+		
 		
 		t = new Timer(1000,new ActionListener() {
 			
@@ -385,6 +392,21 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		
 		
 		
+	}
+	
+	private boolean URLExists(){
+		try {
+			HttpURLConnection.setFollowRedirects(false);
+			HttpURLConnection con = (HttpURLConnection)new URL(comboBox.getSelectedItem().toString()).openConnection();
+			con.setRequestMethod("HEAD");
+			return con.getResponseCode() == HttpURLConnection.HTTP_OK;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	private boolean urlIsConnectable()
@@ -565,13 +587,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 			message.setText("");
 			JComboBox cb = (JComboBox)e.getSource();
 			if(cb.getSelectedIndex() >= 0){
-		        URL endpointURL = null;
-				try {
-					endpointURL = new URL((String)cb.getSelectedItem());
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		        URI endpointURL = URI.create((String)cb.getSelectedItem());
 		        List<String> defaultGraphs = endpointToDefaultGraph.get(endpointURL);
 		        if(defaultGraphs != null && !defaultGraphs.isEmpty()){
 		        	defaultGraphField.setText(defaultGraphs.iterator().next());

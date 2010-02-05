@@ -42,8 +42,14 @@ public class Explanation implements Comparable<Explanation> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		Explanation exp = (Explanation)obj;
+	public boolean equals(Object o) {
+		if(o == this){
+			return true;
+		}
+		if(!(o instanceof Explanation)){
+			return false;
+		}
+		Explanation exp = (Explanation)o;
 		return exp.getEntailment().equals(entailment) && exp.getAxioms().equals(axioms);
 	}
 

@@ -69,7 +69,7 @@ public class PelletExplanationGenerator implements ExplanationGenerator{
 		// Set the necessary fields		
 		expGen.setReasonerFactory( new PelletReasonerFactory() );
 		expGen.setReasoner( reasoner );
-		expGen.setOntologies( manager.getImportsClosure(ontologies.iterator().next()) );
+		expGen.setOntologies( ontologies );
 		
 		// Create the converter that will translate axioms into class expressions
 		converter = new SatisfiabilityConverter( manager.getOWLDataFactory() );

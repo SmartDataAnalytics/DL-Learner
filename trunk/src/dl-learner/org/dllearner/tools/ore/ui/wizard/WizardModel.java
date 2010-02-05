@@ -194,7 +194,7 @@ public class WizardModel {
     void setBackButtonEnabled(Boolean newValue) {
         
         Boolean oldValue = getBackButtonEnabled();        
-        if (newValue != oldValue) {
+        if (!newValue.equals(oldValue)) {
             buttonEnabledHashmap.put(BACK_BUTTON_ENABLED_PROPERTY, newValue);
             firePropertyChange(BACK_BUTTON_ENABLED_PROPERTY, oldValue, newValue);
         }
@@ -207,7 +207,7 @@ public class WizardModel {
     void setNextFinishButtonEnabled(Boolean newValue) {
         
         Boolean oldValue = getNextFinishButtonEnabled();        
-        if (newValue != oldValue) {
+        if (!newValue.equals(oldValue)) {
             buttonEnabledHashmap.put(NEXT_FINISH_BUTTON_ENABLED_PROPERTY, newValue);
             firePropertyChange(NEXT_FINISH_BUTTON_ENABLED_PROPERTY, oldValue, newValue);
         }
@@ -220,7 +220,7 @@ public class WizardModel {
     void setCancelButtonEnabled(Boolean newValue) {
         
         Boolean oldValue = getCancelButtonEnabled();        
-        if (newValue != oldValue) {
+        if (!newValue.equals(oldValue)) {
             buttonEnabledHashmap.put(CANCEL_BUTTON_ENABLED_PROPERTY, newValue);
             firePropertyChange(CANCEL_BUTTON_ENABLED_PROPERTY, oldValue, newValue);
         }
