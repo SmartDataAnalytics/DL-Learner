@@ -27,7 +27,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class TypedConstant extends Constant implements Comparable<TypedConstant> {
+public class TypedConstant extends Constant {
 
 	/**
 	 * 
@@ -100,6 +100,14 @@ public class TypedConstant extends Constant implements Comparable<TypedConstant>
 		return literal + "^^" + datatype;
 	}
 
-
+	@Override
+	public int compareTo(Constant o) {
+		if(o instanceof UntypedConstant) {
+			return 1;
+		}
+		String str = literal + datatype;
+		String str2 = o.literal + ((TypedConstant)o).datatype;
+		return str.compareTo(str2);
+	}	
 
 }

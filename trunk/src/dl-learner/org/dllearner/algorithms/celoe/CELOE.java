@@ -152,6 +152,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useHasValueConstructor());
+		options.add(CommonConfigOptions.useDataHasValueConstructor());
 		options.add(CommonConfigOptions.valueFreqencyThreshold());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.cardinalityLimit());

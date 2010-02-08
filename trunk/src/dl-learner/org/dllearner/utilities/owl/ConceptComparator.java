@@ -23,8 +23,10 @@ import java.util.Comparator;
 import java.util.Set;
 
 import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
+import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.DoubleMaxValue;
 import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Individual;
@@ -204,8 +206,23 @@ public class ConceptComparator implements Comparator<Description> {
 				}
 			} else
 				return -1;			
+		} else if(concept1 instanceof DatatypeValueRestriction) {
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction || concept2 instanceof ObjectValueRestriction) {
+				return 1;
+			} else if(concept2 instanceof DatatypeValueRestriction) {
+				int roleCompare = rc.compare(((DatatypeValueRestriction)concept1).getRestrictedPropertyExpression(), ((DatatypeValueRestriction)concept2).getRestrictedPropertyExpression());
+				
+				if(roleCompare == 0) {
+					Constant value1 = ((DatatypeValueRestriction)concept1).getValue();
+					Constant value2 = ((DatatypeValueRestriction)concept2).getValue();
+					return value1.compareTo(value2);
+				} else {
+					return roleCompare;
+				}
+			} else
+				return -1;			
 		} else if(concept1 instanceof Thing) {
-			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction || concept2 instanceof ObjectValueRestriction)
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction || concept2 instanceof ObjectValueRestriction || concept2 instanceof DatatypeValueRestriction)
 				return 1;
 			else if(concept2 instanceof Thing)
 				return 0;
