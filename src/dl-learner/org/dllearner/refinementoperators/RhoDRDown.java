@@ -205,6 +205,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		useAllConstructor = configurator.getUseAllConstructor();
 		useExistsConstructor = configurator.getUseExistsConstructor();
 		useHasValueConstructor = configurator.getUseHasValueConstructor();
+		useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
 		frequencyThreshold = configurator.getValueFrequencyThreshold();
 		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
 		cardinalityLimit = configurator.getCardinalityLimit();
@@ -231,6 +232,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.frequencyThreshold = valueFrequencyThreshold;
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 		cardinalityLimit = configurator.getCardinalityLimit();
+		this.useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;

@@ -25,7 +25,7 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public abstract class Constant implements KBElement {
+public abstract class Constant implements KBElement, Comparable<Constant> {
 
 	/**
 	 * 
@@ -43,4 +43,5 @@ public abstract class Constant implements KBElement {
 	public String getLiteral() {
 		return literal;
 	}
+		
 }

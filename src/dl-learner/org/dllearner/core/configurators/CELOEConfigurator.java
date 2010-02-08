@@ -85,6 +85,15 @@ public boolean getUseHasValueConstructor() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "useHasValueConstructor") ;
 }
 /**
+* useDataHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getUseDataHasValueConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "useDataHasValueConstructor") ;
+}
+/**
 * valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
 * mandatory: false| reinit necessary: true
 * default value: 3
@@ -218,6 +227,15 @@ reinitNecessary = true;
 **/
 public void setUseHasValueConstructor(boolean useHasValueConstructor) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "useHasValueConstructor", useHasValueConstructor);
+reinitNecessary = true;
+}
+/**
+* @param useDataHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "useDataHasValueConstructor", useDataHasValueConstructor);
 reinitNecessary = true;
 }
 /**

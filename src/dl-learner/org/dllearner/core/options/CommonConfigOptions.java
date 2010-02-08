@@ -43,6 +43,7 @@ public final class CommonConfigOptions {
 	public static boolean useAllConstructorDefault = true;
 	public static boolean useExistsConstructorDefault = true;
 	public static boolean useHasValueConstructorDefault = false;
+	public static boolean useDataHasValueConstructorDefault = false;
 	public static int valueFrequencyThresholdDefault = 3;
 	public static boolean useCardinalityRestrictionsDefault = true;
 	public static int cardinalityLimitDefault = 5;
@@ -131,6 +132,10 @@ public final class CommonConfigOptions {
 	
 	public static BooleanConfigOption useHasValueConstructor() {
 		return new BooleanConfigOption("useHasValueConstructor", "specifies whether the hasValue constructor is used in the learning algorithm",useHasValueConstructorDefault);
+	}	
+	
+	public static BooleanConfigOption useDataHasValueConstructor() {
+		return new BooleanConfigOption("useDataHasValueConstructor", "specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties",useDataHasValueConstructorDefault);
 	}	
 	
 	public static IntegerConfigOption valueFreqencyThreshold() {

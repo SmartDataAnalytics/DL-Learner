@@ -998,6 +998,12 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}	
 	
 	@Override
+	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) {
+		return rc.getDatatypeMembersImpl(datatypeProperty);
+	}		
+	
+	@Override
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedIndividuals(individual, objectProperty);
 	}

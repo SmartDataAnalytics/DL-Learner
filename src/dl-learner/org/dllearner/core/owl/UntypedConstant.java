@@ -113,6 +113,15 @@ public class UntypedConstant extends Constant {
 			return literal;
 		}
 	}
-
+	
+	@Override
+	public int compareTo(Constant o) {
+		if(o instanceof TypedConstant) {
+			return -1;
+		}
+		String str = literal + lang;
+		String str2 = ((UntypedConstant)o).literal + ((UntypedConstant)o).lang;
+		return str.compareTo(str2);
+	}
 
 }

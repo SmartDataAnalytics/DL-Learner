@@ -45,6 +45,10 @@ public abstract class RefinementOperatorConfigurator {
 		return false;
 	}
 
+	public boolean getUseDataHasValueConstructor() {
+		return false;
+	}
+	
 	public int getValueFrequencyThreshold() {
 		return 3;
 	}
