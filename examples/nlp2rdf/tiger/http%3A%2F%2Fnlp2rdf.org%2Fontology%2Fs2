@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax500">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax500">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">als</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">als</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w4_als">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKVZ">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKVZ">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">ab</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w7_%2F"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">ab</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKVZ"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w6_ab">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">US-Präsidenten</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w4_als"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w6_ab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">US-Präsident</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w0_Konzernchefs">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w0_Konzernchefs">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Konzernchefs</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w0_Konzernchefs">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w1_lehnen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w0_Konzernchefs">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">Konzernchef</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w0_Konzernchefs">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w0_Konzernchefs">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Milliardär</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w2_den"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w4_als"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">Milliardär</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w7_%2F">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w7_%2F">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">/</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w7_%2F">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w6_ab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w7_%2F">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">--</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w7_%2F">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w7_%2F">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax502">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax502">
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax502">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w4_als"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w6_ab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w2_den"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:firstToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w0_Konzernchefs"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w5_US-Pr%C3%A4sidenten"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w1_lehnen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w7_%2F"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w0_Konzernchefs"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Konzernchefs lehnen den Milliardär als US-Präsidenten ab /</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">den</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w1_lehnen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w3_Milliard%C3%A4r"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">der</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w2_den">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax501">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2syntax501">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">lehnen</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w0_Konzernchefs"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2w2_den"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">lehnen</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s2w1_lehnen">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s2syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+</rdf:RDF>
