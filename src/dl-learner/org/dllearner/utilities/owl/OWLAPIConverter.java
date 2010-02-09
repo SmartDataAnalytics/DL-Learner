@@ -175,6 +175,8 @@ public final class OWLAPIConverter {
 			return Datatype.DOUBLE;
 		else if(uri.equals(Datatype.INT.getURI()))
 			return Datatype.INT;			
+		else if(uri.equals(Datatype.STRING.getURI()))
+			return Datatype.STRING;			
 		
 		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
 	}
