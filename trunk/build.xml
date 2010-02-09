@@ -36,7 +36,7 @@
 	</target>
 
 	<!-- build target -->
-	<target name="rdbtoonto"  description="makes jar">
+	<target name="jar"  description="makes dllearner.jar">
 		<!-- compile project into temporary directory -->
 		<mkdir dir="classes_tmp"/>
 		<javac destdir="classes_tmp" target="1.6">
@@ -44,7 +44,7 @@
 			<classpath refid="classpath"/>
 		</javac>
 
-		<jar jarfile="lib/rdbtoonto/converter.jar">
+		<jar jarfile="dllearner.jar">
 			<fileset dir="classes_tmp"/>
 		</jar>
 		<delete dir="classes_tmp"/>
