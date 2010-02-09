@@ -1,0 +1,2414 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:olia_system="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:j.0="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.1="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#"
+    xmlns="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithSentence">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are subordinating conjunctions which mark the beginning of a finite subordinate clause, e.g.  "weil", "da" , "damit", "wenn", "ob".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <owl:unionOf rdf:nodeID="A1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#APZR">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: APZR</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">APZR</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CircumpositionRightPart"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Truncated">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0LD 
+first part of a composition 
+	"An und Abreise"
+
+impossible to link to anything more specific than residual</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The tag TRUNC describes parts of words which end with an hyphen. The hyphen substitutes a part of a following word which is linked with and/ or ("und / oder"). It is also called first part of a compound, e.g. "An- und Abreise" .</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Misc"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#fem">
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fem</olia_system:hasTagContaining>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Feminine gender.</rdfs:comment>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <j.0:hasGender rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#fem"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#GenderFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A2"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:rest rdf:nodeID="A4"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Conjunction">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Conjunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <owl:unionOf rdf:nodeID="A6"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#coordinatedVerbPhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Als erste Richtlinie gilt zun¨achst: In NPs, APs und PPs werden die zu koordinierenden Elemente
+      direkt zusammengefaßt und bilden wieder eine Konstituente. In VPs und S¨atzen verbinden sich die
+      VP- und S-Knoten zuerst mit den Dependenten auf ihrer Seite der Koordination und werden dann zu
+      einer koordinierten Phrase zusammengefaßt (siehe Beispiele).
+      (Bader et al. 2003, §9.1)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CVP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VerbalPhrase"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributivePossessivePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are attributive possessive pronouns, e.g. "mein [Buch]", "deine [Mutter]".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PossessivePronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/directNextToken">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ComparisonParticle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are the comparison particles "als" and "wie". They have only a mid-sentence use that means they are not followed by an Nominal Phrase or an Adverbial Phrase.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Conjunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"comparative conjunction" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PROAV">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIGER-STTS naming convention for PAV.</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PROAV</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PROAV</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PastParticipleAuxiliary">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Past participle, auxiliary, e.g. "gewesen"
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Participle"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ITJ">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: ITJ</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ITJ</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Interjection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ProperNoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Proper noun, e.g. "Hans, Hamburg, HSV"
+(tigerstts.xml)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Noun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#DegreeFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are the pronouns.
+
+A pronoun is a pro-form that belongs to a nominal syntactic category, The prototypical pronoun has the same distribution as an NP.
+Pronouns are free forms (as opposed to affixes) that fill the position of a noun phrase (or other nominal category) in a sentence.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Pronomen 14.05.07)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Proform"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Verb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are all other (i.e. neither VA nor VM) verb forms which can be classified as VV.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:nodeID="A7"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag"/>
+    <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveDemonstrativePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are substitutive demonstrative pronouns, e.g. "jener", "dieser".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#DemonstrativePronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PROP">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PROP</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PROP is the tag for a pronominal form of a prepositional phrase, e.g. "dabei", "deswegen" .
+
+Its the used tag instead of PAV in the STTS version of Tübingen.
+
+Rosmary Stegmann, Heike Telljohann, Erhard W. Hinrichs (September 2000).
+Stylebook for the German Treebank in VERBMOBIL. Seminar fur Sprachwissenschaft
+Universitat Tubingen Report 239, Sec 3.4.2 The Inventory of Labels, p.19.</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#BS">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BS</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Letter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the sentence punctuation mark for the comma "$,".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Misc">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Pos"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <owl:unionOf rdf:nodeID="A10"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NegationParticle">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the negation particle "nicht".</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"negating particle" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Proform">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Proform
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxilliaryVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the imperative  of an auxiliary verb, e.g. "sei [ruhig !]".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ImperativeAuxiliary"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Adverb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#OpenClass"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:nodeID="A13"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasCase">
+    <rdfs:domain rdf:nodeID="A14"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are separated additional verbal items, e.g. "[er kommt] an", "[er fahrt] rad".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"separated verb particle" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rdf:rest rdf:nodeID="A15"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are finite verbs, e.g.  "[du] gehst", "[wir] kommen [an]".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteFullVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Verb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#OpenClass"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Verb
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#isDominated">
+    <owl:inverseOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#dominates"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are adpositions.
+
+An adposition is a more or less grammaticalized relator word that takes a noun phrase as a complement and forms with it an adposition phrase. Its meaning is the grammatical or semantic relation between the dependent noun phrase and whatever the adposition phrase depends on. For example:
+“to“ in „He went to the races“ or „with“ in „He promised to help with whatever was the matter“.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Adposition 14.05.07)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Adposition"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OLiA core concepts for linguistic annotations.
+
+Christian Chiarcos, 13/01/08, chiarcos@uni-potsdam.de</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rdf:rest rdf:nodeID="A11"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveInterrogativePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are attributive interrogative pronouns, e.g. "welche [Farbe]", "wessen [Hut]".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InterrogativePronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rdf:rest rdf:nodeID="A3"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveWithZu">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InfinitiveWithZu"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Infinitive with zu, full verb, e.g. "anzukommen, loszulassen"
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NonfiniteVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxilliaryVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the past participle of an auxiliary verb, e.g. "gewesen".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PastParticipleAuxiliary"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PPOSS">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PPOSS</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PPOSS</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutivePossessivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <rdf:rest rdf:nodeID="A18"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <rdf:rest rdf:nodeID="A20"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nextToken">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#unitComponent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fremdsprachliche Zitate werden als Chunks (CH) flach annotiert; die einzelnen Komponenten erhalten
+      das Label UC (“unit component”).
+      (Bader et al. 2003, § 2.1.5)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UC</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalInfinitive">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the infinitive form of a modal verb, e.g. in German "wollen".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveModalVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InterrogativePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are interrogative pronouns.
+
+An interrogative pronoun is a pronoun which is an interrogative pro-form.
+Examples in English are "who", "which".
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Fragepronomen 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#prepositionalPhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PPs werden wie NPs behandelt, also auch flach
+      annotiert. Die Pr¨a-/Post-/Zirkumposition (PoSTags:
+      APPR / APPO / APZR) bekommt das Label
+      AC (adpositional case marker). Sonst ¨andert
+      sich die Struktur nicht.
+      (Bader et al. 2003, §3.1)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pos</owl:hasValue>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTier"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasSource">
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Relation"/>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#UnitOfAnnotation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Relation is a directed edge between a source and a target concept.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PTKNEG">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PTKNEG</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PTKNEG</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NegationParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithZu">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are subordinating conjunctions with "zu" and infinitive, e.g. "anstatt zu fragen", "um zu leben".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasPerson">
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PersonFeature"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdfs:domain rdf:nodeID="A9"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteModalVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Finite modal verb, e.g. "dürfen"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#TenseFeature">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tense is a grammatical category that manifests the time at which a situation holds. This is done by relating the time meant to some reference point, which is by default the time of the speech act. Therefore, tense is a deictic category.
+The most important temporal relations between the two time-points are simultaneity, anteriority and posteriority. They found the tenses present, past and future.
+Tense is frequently marked on the verb or the auxiliary. Nominal tense is quite rare.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Tempus 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rdf:rest rdf:nodeID="A22"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <rdf:rest rdf:nodeID="A23"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Pos">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Tag"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">base type (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the imperative , e.g. "komm !".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ImperativeFullVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#generalsentenceinternalpunctuation_tag">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$(</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: $(</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PRF">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PRF</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PRF</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A24">
+    <owl:unionOf rdf:nodeID="A25"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A26">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A27">
+    <rdf:rest rdf:nodeID="A28"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PDAT">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PDAT</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PDAT</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveDemonstrativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A29">
+    <rdf:rest rdf:nodeID="A30"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveFullVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Infinitive, full verb, e.g. "gehen, ankommen"
+(tigerstts.xml)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Infinitive"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <rdf:rest rdf:nodeID="A32"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A33">
+    <rdf:rest rdf:nodeID="A34"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A35">
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTier"/>
+    <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</owl:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#comparative">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The comparative is a grammatical category of the adjective or adverb which signifies that whatever is modified by the adjective/adverb has the property designated by it to a higher degree than the standard of comparison.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Komparativ 18.06.07)</rdfs:comment>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comp</olia_system:hasTagStartingWith>
+    <j.0:hasDegree rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#comparative"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#DegreeFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CARD">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CARD</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: CARD</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VAINF">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VAINF</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VAINF</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A25">
+    <rdf:rest rdf:nodeID="A36"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Punctuation">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Pos"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Punctuation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#dominates">
+    <owl:inverseOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#isDominated"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">structural relationship between 
+(a) a phrase and the syntactic nodes it is attached to (in constituency analysis), or
+(b) a head and its children (in dependency analysis)
+The head/phrase dominates its children.
+Different types of dominates relations may be distinguished via edge labels which are attached to the child nodes.</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#infinitive">
+    <j.0:hasInfiniteness rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#infinitive"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An infinitive is a verb form whose subject slot is blocked so that it does not function as the main verb of an independent clause. However, it does designate a situation core, so it may function as the head of a (nonfinite) dependent clause. Morphologically, it is a non-finite form which is crucially not specified for person, number and mood. Other categories which may or may not be absent include tense, aspect and voice.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Infinitiv 18.06.07)</rdfs:comment>
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inf</olia_system:hasTagEndingWith>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Noun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Noun
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#OpenClass"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#KOKOM">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KOKOM</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: KOKOM</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ComparisonParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are past participles, e.g. "gegangen", "angekommen".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PastParticipleFullVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A37">
+    <rdf:rest rdf:nodeID="A26"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A28">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <rdf:rest rdf:nodeID="A19"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InfinitiveWithZu"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A38">
+    <rdf:rest rdf:nodeID="A31"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#DemonstrativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <owl:unionOf rdf:nodeID="A17"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VerbalPhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Jedes Verb f¨uhrt eine eigenst¨andige Phrase ein.
+Phrasen mit finitem Verb bekommen das Label S
+(Satz)
+(Bader et al. 2003, §5.1)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A39">
+    <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cat</owl:hasValue>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTier"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A34">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#TenseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#untagged">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Untagged"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VAIMP">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VAIMP</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VAIMP</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A40">
+    <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTarget"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A41">
+    <rdf:rest rdf:nodeID="A42"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasTense">
+    <rdfs:domain rdf:nodeID="A43"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#TenseFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Category">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#UnitOfAnnotation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Deprecated version of UnitOfAnnotation</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedClass"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A44">
+    <rdf:rest rdf:nodeID="A45"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">function labels of VPs and clauses (S)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PTKVZ">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PTKVZ</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PTKVZ</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveAuxiliaryVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Infinitive"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Infinitive, auxiliary verb, e.g. "werden, sein"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteAuxiliaryVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Finite auxiliary verb, e.g. "[du] bist, [wir] werden"
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A46">
+    <rdf:rest rdf:nodeID="A47"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are prepositions with an article e.g. "im Haus", "zur Sache".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">prototype ontology for syntactic annotation.
+Important note: Here, an ontology of labels used in syntactic annotation is provided, but not an ontology of _structures_. Especially, the ontology itself does not perform a conversion between dependency trees and constituency analyses, though its representations may be used by corresponding converters.</rdfs:comment>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Christian Chiarcos, 17/07/2007
+Tiger Annotation Scheme, syntactic component
+based upon Bader, R. et al. (2003), "TIGER Annotationsschema", Draft 24.07.2003
+Note, that the syntactic sub-ontology is not concerned with the alignment with part of speech tags and morphology but only with the relationships between syntactic nodes.
+    
+    updated 10/01/25, Christian Chiarcos chiarcos@uni-potsdam.de 
+    </owl:versionInfo>
+    <owl:imports rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#infinitive_zu">
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Infzu</olia_system:hasTagEndingWith>
+    <j.0:hasInfiniteness rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#infinitive_zu"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This in an infinitive combined with "zu".</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature">
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Categories and Relations can carry Features that express annotations attached to them. By convention, (tags that represent) Features can be linked with Feature individuals, as well. Because of this reflexivity, a predicate like hasDegree(positive) allows to retrieve the individual positive as well. (This is necessary if positive represents a tag on its own, rather than being a property of a complex tag.)</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These can be e.g. common nouns ("Tisch", "Herr", "Haus"), sizes ("Kilo", "Meter"), substantiative adjectives ("der Alte"), substantiative infinitives ("[das] Spielen", "[das] Reisen"), substantiative participles ("[das] Gewuenschte", "[das] Gesuchte",), ordinal numerals ([der] Vierte).</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0LD 
+appellative  "Tisch, Herr, das Reisen"
+		     NN&lt;ABK abbreviation
+		     NN&lt;ADJ substantiative adjective "der Alte"
+		     NN&lt;CARD cardinal numeral "Hunderte"
+		     NN&lt;FRACT fraction number "ein Viertel"
+		     NN&lt;ORD ordinal numeral "ein Vierter"
+		     NN&lt;VINF substantiative infinitive "das Spielen"
+		     NN&lt;VPART</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Noun"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CommonNoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasPPFunction">
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PPs werden wie NPs behandelt, also auch flach
+annotiert. Die Pr¨a-/Post-/Zirkumposition (PoSTags:
+APPR / APPO / APZR) bekommt das Label
+AC (adpositional case marker). Sonst ¨andert
+sich die Struktur nicht.
+(Bader et al.2003, §3.1)</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PPEdge"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ForeignMaterial">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0LD 
+The tag FM describes foreign material, e.g.  "Er hat das mit _A big sh _ ubersetzt". Foreign words are written in capital letters if they were written with small letters The tag FM describes foreign material, e.g.  "Er hat das mit _A big sh _ ubersetzt"
+	    to distinguish from NN:
+		german flexion =&gt; NN
+		Foreign words are written in capital letters if they are written with a small letter in the original language and belong to the NN category.
+		z.B. die Contras</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The tag FM describes foreign material, e.g.  "Er hat das mit _A big sh _ ubersetzt". Foreign words are written in capital letters if they were written in the original language with small letters and belong to the category of nouns (NN) , e.g. "die Contras".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Misc"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#coordinatedAdjectivePhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §9.1)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CAP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A48">
+    <owl:unionOf rdf:nodeID="A49"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VVFIN">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VVFIN</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VVFIN</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#APPR">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: APPR</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">APPR</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A42">
+    <rdf:rest rdf:nodeID="A27"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/hasLemma">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A45">
+    <rdf:rest rdf:nodeID="A50"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#masc">
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Masc</olia_system:hasTagContaining>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">masculine gender</rdfs:comment>
+    <j.0:hasGender rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#masc"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#GenderFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linguistic annotations pertain to either structural entities (words, tokens, constituents, sentences =&gt; Category), relations between these (dependency, dominance, coreference, etc. =&gt; Relation), or grammatical features attached to these (case, gender, number, agreement, tense, mood, aspect, ... =&gt; Feature).</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A32">
+    <rdf:rest rdf:nodeID="A46"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveIndefinitePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxilliaryVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the infinitive form of an auxiliary verb, e.g.  "werden", "sein".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveAuxiliaryVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasNPFunction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">edge labels specific to element of NPs, cf. Bader et al. (2003), §2</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NPEdge"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#present">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Present is an absolute tense which refers to the moment of utterance.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Present 18.06.07)</rdfs:comment>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pres</olia_system:hasTagContaining>
+    <j.0:hasTense rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#present"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#TenseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PWAT">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PWAT</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PWAT</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Verb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are verbs.
+
+A verb is a word that is a member of a part of speech whose prototypical members designate events and processes.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Verb 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Untagged">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Untagged
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Misc"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A51">
+    <owl:complementOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Relation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A52">
+    <rdf:rest rdf:nodeID="A53"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PossessivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#sentencefinalpunctuation_tag">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: $.</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$.</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A54">
+    <rdf:rest rdf:nodeID="A55"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A50">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#GenderFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PWS">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PWS</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PWS</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Tag"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The POS contains "real POS-Tags".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Postposition">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are postpositions e.g. "ihm zufolge", "der Sache wegen".
+
+A postposition is an adposition that follows its complement.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Postposition 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PPER">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PPER</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PPER</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §4)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A56">
+    <owl:complementOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#UnitOfAnnotation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Relation">
+    <rdfs:subClassOf rdf:nodeID="A57"/>
+    <rdfs:subClassOf rdf:nodeID="A58"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation"/>
+    <rdfs:subClassOf rdf:nodeID="A59"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Between instances of two Categories, a Relation can be established that links these together, e.g., a dominance relation (constituent X is grammatical subject of sentence Y), a dependency relation (token X is a modifier of token Y), a discourse relation (discourse unit X is in contrast to discourse unit Y), an anaphoric relation (referring expression X is coreferent with referring expressing Y), an alignment relation (word X expresses the same meaning as word Y).
+Note that Relation and Category are not disjoint, because in some approaches, establishing a Relation between two concepts entails that a structural entity is formed, consisting of Relation and the Categories connected by the Relation, e.g., in Rhetorical Structure Theory (Mann and Thompson 1987).</rdfs:comment>
+    <owl:equivalentClass rdf:nodeID="A48"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Noun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are nouns.
+
+A noun is a word that is a member of a part of speech whose prototypical members designate physical objects.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Substantiv 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/previousToken">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A53">
+    <rdf:rest rdf:nodeID="A41"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#RelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Conjunction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are conjunctions.
+
+A conjunction is a word that syntactically links words or larger constituents and expresses a relationship between them.
+Prototypically, a conjunction links two clauses. However, coordinative conjunctions may also link subclausal expressions.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Konjunktion 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Conjunction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A60">
+    <rdf:rest rdf:nodeID="A54"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#RelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ImperativeFullVerb">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Imperative"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Imperative, full verb, e.g. "komm [!]"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A43">
+    <owl:unionOf rdf:nodeID="A61"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A47">
+    <rdf:rest rdf:nodeID="A60"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PossessivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#UnitOfAnnotation">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Category"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A UnitOfAnnotation is a structural entity that can be annotated, e.g., a word, token, constituent, or another types of markable.
+Word classes, etc., are then modelled as indirect children of UnitOfAnnotation. The division between Features and classes of UnitsOfAnnotation follows conventional standards.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation"/>
+    <rdfs:subClassOf rdf:nodeID="A62"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveIndefinitePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#IndefinitePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are substitutive indefinite pronouns, e.g. "keiner", "viele", "man", "niemand".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NE">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NE</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: NE</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A62">
+    <owl:complementOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InfinitiveWithZu">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are infinitives with "zu", e.g. "anzukommen", "loszulassen".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveWithZu"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PTKA">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PTKA</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PTKA</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ParticleWithAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#subject">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §5)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SB</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PWAV">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PWAV</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PWAV</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AdverbialInterrogativeRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A61">
+    <rdf:rest rdf:nodeID="A63"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#RelativePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are relative pronouns.
+
+A relative pronoun is a special pronoun which combines the functions of a plain relativizer and a clause internal pronoun that refers to the head of the relative clause.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Relativpronomen 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A64">
+    <rdf:rest rdf:nodeID="A65"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/hasSentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Infinitive">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NonfiniteVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VMPP">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VMPP</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VMPP</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NamedEntity">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.org/ontology/Entity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#comparativeComplement">
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NPEdge"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PPEdge"/>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CC</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">comparative complement, German "Vergleichskomplement" 
+applies to NPs (Bader et al. 2003, §2), PPs (Bader et al. §3), and APs (Bader et al. §4)
+Adjektive im Komparativ k¨onnen sich mit einem
+zus¨atzlichen Argument verbinden, einer mit
+als eingeleiteten Phrase, wobei die Kategorie der
+Phrase vom als unabh¨angig ist. Dieses Argument
+bekommt das Funktionslabel CC (comparative
+complement), das Wort als das Label CM (comparative
+conjunction). Siehe auch die Abschnitte
+7.2 und 6.4.
+(Bader et al. 2003, §4.5)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#APEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#properNounComponent">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PNC</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vorname(n), Familienname(n) und Namenszus¨atze werden alle unter dem Knoten PN (proper noun)
+      zusammengefaßt und als eine komplexe Kernkomponente der NP betrachtet. Die einzelnen Komponenten
+      des PN werden als PNC (proper noun component) annotiert.
+      Dasselbe gilt f¨ur fremdsprachliche Namen. Komponenten von Firmennamen wie Bayerische Vereinsbank
+      sowie Titel werden dagegen als NKs annotiert.
+      (Bader et al. 2003, §2.1.4)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are the pronominal adverbs, e.g. in German "dafür", "dabei", "deswegen", "trotzdem".
+
+A pronominal adverb is a pro-form that belongs to an adverbial syntactic category.
+An Example in English is „there“ in „If you’ll look on the table, you’ll find the book there.“
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Pronominaladverb 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ADJA">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ADJA</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: ADJA</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is a finite modal verb e.g. in German"duerfen".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteModalVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VMINF">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VMINF</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VMINF</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A66">
+    <owl:unionOf rdf:nodeID="A67"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A63">
+    <rdf:rest rdf:nodeID="A33"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A55">
+    <rdf:rest rdf:nodeID="A64"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are finite auxiliary verbs, e.g. "[du] bist", "[wir] werden".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxilliaryVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteAuxiliaryVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/firstToken">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A67">
+    <rdf:rest rdf:nodeID="A29"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunction">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Conjunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are subordinating conjunctions.
+
+A subordinative conjunction is a conjunction that subordinates one clause to another.
+E.g. “when“ in „Listen when I speak to you“.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet subordinierende Konjunktion 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VVIZU">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VVIZU</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VVIZU</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InfinitiveWithZu"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#conjunct">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to coordinated adverbial phrases and coordinated complementisers, examples in Bader et al. (2003), § 5.2.1</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CJ</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTarget">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Relation is a directed edge between a source and a target concept.</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#UnitOfAnnotation"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Relation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CommonNoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Noun"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Common noun, e.g. "Tisch, Herr, [das] Reisen"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#third">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The third person is the value of the category person which prototypically represents a non-speech act participant and functions anaphorically.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet dritte Person 18.06.07)</rdfs:comment>
+    <j.0:hasPerson rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#third"/>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</olia_system:hasTagStartingWith>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PersonFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/syntaxTreeHasPart">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.org/ontology/syntaxTreeHasPart"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:inverseOf rdf:resource="http://nlp2rdf.org/ontology/isPartOfSyntaxTree"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VVIMP">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VVIMP</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VVIMP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#TRUNC">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TRUNC</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: TRUNC</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Truncated"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Noun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are proper names, e.g.  "Hans", "Hamburg", "HSV".
+
+A proper name is a name of an individual (as opposed to a collective).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Eigenname 14.05.07)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ProperNoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MoodFeature">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AnsweringParticle">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are the answering particles, e.g. "ja", "nein", "danke", "bitte".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NPEdge">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">edge labels within a noun phrase (Bader et al. 2003, §2)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTagContaining">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">As opposed to hasTag proper, the string representation defines a substring of a concrete annotation.
+The respective linguistic annotation then applies to every element whose annotation (tag) contains this substring.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This property is used to describe the possible position of a morphological feature within the annotation string.
+A feature which in an annotation string is marked with the startsWith property.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#coordinatedComplementizer">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CCP</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">coordinated conjunctions
+(Bader et al. 2003, §5.2.1, §9.2)</rdfs:comment>
+    <j.1:hasVPFunction rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#complementizer"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Tag"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Additional contains "non linguistic tags".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#KOUS">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: KOUS</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KOUS</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithSentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Particle">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A65">
+    <rdf:rest rdf:nodeID="A68"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#first">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The first person is the value of the category person which prototypically represents the speaker.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet erste Person 18.06.07)</rdfs:comment>
+    <j.0:hasPerson rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#first"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</olia_system:hasTagStartingWith>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PersonFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annotation Model for the Stuttgart-Tübingen Tagset (STTS, Schiller et al. 1999) of part of speech annotation.
+Christian Chiarcos and Angelika Adam, 10/01/04, chiarcos@uni-potsdam.de</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#comma_tag">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$,</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: $,</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A49">
+    <rdf:rest rdf:nodeID="A69"/>
+    <rdf:first rdf:nodeID="A40"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#complementizer">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CP</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §5)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#APPO">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">APPO</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: APPO</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Postposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#APPRART">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: APPRART</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">APPRART</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ADJD">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ADJD</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: ADJD</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasNumeralFunction">
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">function labels within complex numerals.
+"Für komplexe Numeralien (10 000, eine Million) ist das Label NM (NuMber) vorgesehen. Die
+einzelnen Komponenten bekommen das Funktionslabel NMC (NuMber Component)."
+(Bader et al. 2003, §2.1.2)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A70">
+    <rdf:rest rdf:nodeID="A71"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Case is a nominal inflectional category indicating the syntactic or semantic function of an NP.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Kasus 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasGender">
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdfs:domain rdf:nodeID="A72"/>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#GenderFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NNE">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: NNE</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is an additional tag used in the NEGRA Corpus (not in Schiller et al. 1999). It refers to common nouns that occur as part of a named entity. In a strict sense, these would have to be in the intersection between CommonNoun and ProperNoun, but as these are disjoint in the Reference Model, this leads to an inconsistency. Thus, in accordance with their function, NNEs are regarded as ProperNouns here, not as CommonNouns.</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NNE</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PAV">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PAV</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PAV</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#unknown">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UNKNOWN</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Unknown"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NumberFeature">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number is a grammatical category encoding the cardinality of a referent. A minimal number system distinguishes between one item and more than one item.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Numerus 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#relativeClause">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RC</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NPEdge"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relativs¨atze werden als T¨ochter des NP-Knotens annotiert, und zwar unabh¨angig davon, ob sie extraponiert
+sind oder nicht. Sie werden mit dem Label RC (relative clause) gekennzeichnet. (Bader et al. 2003, §2.6)
+
+Also applies to cleft sentences: Cleft-S¨atze: Der Relativsatz soll immer als RC zur pr¨adikativen NP annotiert werden. Das Pronomen
+es ist Subjekt.</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PPEdge">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">edge labels within a PP, especially including all NP edges. (Bader et al. 2003, §3)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A73">
+    <rdf:rest rdf:nodeID="A70"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveDemonstrativePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#DemonstrativePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are attributive demonstrative pronouns, e.g. "jener [Mensch]".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasAPFunction">
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">function labels within an adjective phrase</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#APEdge"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#IndefinitePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are indefinite pronouns.
+
+This is a pronoun which belongs to a class whose members make indefinite reference. An indefinite pronoun may be specific or nonspecific. In the latter case, it may be generic.
+An indefinite pronoun may be negative.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Indefinitpronomen 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ParticleWithAdjective">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are particles in combination with an adjective, e.g. "am [schoensten]", or with an adverb, e.g. "zu [schnell]".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"particle with adjective or adverb" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasInfiniteness">
+    <rdfs:domain rdf:nodeID="A66"/>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The InfinitenessFeature is in the TIGER morphology annotation schema an attribute which describes the infinitive, the infinitive with "zu",  the imperative and  the past participle.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#genitive">
+    <j.0:hasCase rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#genitive"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The genitive is the case that marks the possessive attribute (which then is a genitive attribute).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Gentiv 18.06.07)</rdfs:comment>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gen</olia_system:hasTagContaining>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gen</olia_system:hasTagStartingWith>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are non-reflexive personal pronouns, e.g. in German "ich", "er", "ihm", "mich".
+
+A personal pronoun is a pronoun (a pro-substantive) that expresses person.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Personalpronomen 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#second">
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2</olia_system:hasTagStartingWith>
+    <j.0:hasPerson rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#second"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The second person is the value of the category person which prototypically represents the addressee of the speech act.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet erste Person 18.06.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PersonFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PersonFeature">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Person is a deictic category encoding the speech participant role, including the non-speech-act-participation, of a referent.
+Person is a pronominal category that may appear in independent pronouns or in pronominal affixes of other word classes.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Person 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutivePossessivePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PossessivePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are substitutive possessive pronouns, e.g. "meins", "deiner".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#nominative">
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nom</olia_system:hasTagStartingWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The nominative is the case that marks the subject in the accusative system of fundamental relations. It is also the case of nouns used in isolation (hence its name) and in predicate position. It is often not marked formally.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Nominativ 18.06.07)</rdfs:comment>
+    <j.0:hasCase rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#nominative"/>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nom</olia_system:hasTagContaining>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#indicative">
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ind</olia_system:hasTagEndingWith>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <j.0:hasMood rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#indicative"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MoodFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasDegree">
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#DegreeFeature"/>
+    <rdfs:domain rdf:nodeID="A0"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A74">
+    <rdf:rest rdf:nodeID="A38"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxilliaryVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The German verbs "haben", "sein" und "werden" will be marked as auxiliary verbs, whether they are used as main verbs or as auxiliary verbs within a sentence.
+
+An auxiliary is a strongly grammaticalized word - typically a verb -such that
+- it is the structural head of a periphrastic construction in which a non-finite form of a full lexical verb is the primary dependent,
+- that construction is part of the conjugation paradigm for full verbs of the language.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Auxiliar 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Verb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AdverbialInterrogativeRelativePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are adverbial interrogative relative pronouns, e.g. "warum", "wo", "wann", "worueber", "wobei".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InterrogativePronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A75">
+    <owl:unionOf rdf:nodeID="A37"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ADV">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: ADV</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ADV</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Punctuation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The tag "$." is used for sentence final punctuation e.g. ". ? ! ; :".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PDS">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PDS</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PDS</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveDemonstrativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTagEndingWith">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">As opposed to hasTag proper, the string representation defines the final subsequence of a concrete annotation.
+The respective linguistic annotation then applies to every element whose annotation (tag) ends with this substring.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This property is used to describe the possible position of a morphological feature within the annotation string.
+The last feature in an annotation string is marked with the endsWith property.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PIS">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PIS</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PIS</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveIndefinitePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#complexNumeral">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NM</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">complex (multi-token) numeral within an noun phrase.
+      "Für komplexe Numeralien (10 000, eine Million) ist das Label NM (NuMber) vorgesehen. Die einzelnen Komponenten bekommen das Funktionslabel
+      NMC (NuMber Component)."
+      (Bader etal. 2003, §2.1.2)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ART">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: ART</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ART</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are co-ordinating (adjacent arranged) conjunctions "und", "oder", "aber".
+
+A coordinative conjunction is a conjunction that coordinates two expressions.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet koordinierende Konjunktion 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Conjunction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#OpenClass">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Pos"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">open word classes
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A71">
+    <rdf:rest rdf:nodeID="A74"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#neut">
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <j.0:hasGender rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#neut"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">neutral gender</rdfs:comment>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Neut</olia_system:hasTagContaining>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#GenderFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ZuWithInfinitive">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the particle "zu" which appears before an infinitive, e.g. "zu [gehen]".</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"zu before infinitive" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A76">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NumberFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PPOSAT">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PPOSAT</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PPOSAT</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributivePossessivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PIDAT">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PIDAT</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PIDAT</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Verb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml: "finite")</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl">
+    <owl:imports rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl"/>
+    <owl:imports rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIGER morphosyntax (parts of speech = modified STTS) and morphology
+July 2007 created by Christian Chiarcos and Angelika Adam
+2010/01/13 system.owl references updated, Christian Chiarcos, chiarcos@uni-potsdam.de</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#past">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Past is an absolute tense that refers to a time preceding the moment of utterance.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Präteritum 18.06.07)</rdfs:comment>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Past</olia_system:hasTagContaining>
+    <j.0:hasTense rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#past"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#TenseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteFullVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Finite full verb, e.g. "[du] gehst, [wir] kommen [an]"
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#FiniteVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#past_participle">
+    <j.0:hasInfiniteness rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#past_participle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The past participle is a verb form which is used to form perfect tenses and passives. Some past participles are also used as adjectives. 
+(http://www.testyourenglish.net/online-ingilizce/aramenu/glossary.html 18.06.07)</rdfs:comment>
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Psp</olia_system:hasTagEndingWith>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are adverbs e.g. "schon", "bald", "doch".
+
+An adverb is a word that is a member of a part of speech whose prototypical members (by themselves) modify clauses.
+In many descriptions, any word with lexical content (i.e., other than grammatical particles) that isn’t clearly a noun, a verb or an adjective is put into the class of adverb. Semantically, forms that have been called adverbs cover an extremely wide range of concepts, hence they cannot be identified in terms of time-stability or any other well-defined semantic parameter.
+The unit modified by an adverb is typically a clause, but may be any other category (sentence, verb phrase, verb, nominal, adjective, adverb).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Adverb 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Adverb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#adjectivePhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §4)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NN">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: NN</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NN</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These can be e.g. the attributive adjectives ("[das] grosse [Haus]"), attributive used present participles ("[das] lachende [Kind]"), attributive used past participles ("[der] gesuchte [Dieb]"), ordinal numerals ("[die] zweite [Besetzung]") or fractional numerals ("[ein] dreiviertel [Liter Milch]").</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveInterrogativePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are substitutive interrogative pronouns, e.g. "wer", "was".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InterrogativePronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#IndefinitePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are attributive indefinite pronouns without a determiner, e.g. "kein [Mensch]", "irgendein [Glas]".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A77">
+    <rdf:rest rdf:nodeID="A76"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CardinalNumber">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cardinal number, e.g. "zwei [Männer], [im Jahre] 1994"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/StructuredText">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Interjection">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Interjection"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Interjection, e.g. "mhm, ach, tja"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#DemonstrativePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are demonstrative pronouns.
+
+This is a pronoun with deictic function.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Demonstrativpronomen 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Unknown">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">tagging of the token unknown
+(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Misc"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A78">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PersonFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/isPartOfEntity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#singular">
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <j.0:hasNumber rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#singular"/>
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sg</olia_system:hasTagEndingWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The singular is a number selecting one element of the designated class. Since it is unmarked as against all other numbers, it may also be used when the cardinality of the referent set is left open or specified elsewhere in the context (e.g. by a numeral). It may also be used for generics and unbounded masses.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Singular 18.06.07)</rdfs:comment>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sg</olia_system:hasTagContaining>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NumberFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/SyntaxTreeNode">
+    <rdfs:subClassOf rdf:resource="http://nlp2rdf.org/ontology/SyntaxTreeNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#KON">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KON</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: KON</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#nounPhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">noun phrase (Bader et al. 2003, §2)
+      Eine NP besteht zun"achst aus einer Reihe von pronominalen, substantivischen und adjektivischen Kernelementen (NP kernel elements, NK). Ihre genauere Unterteilung kann aufgrund der Part-of-Speech bzw. kategorialen Information vorgenommen werden, so dass sich eine Unterscheidung auf der Ebene der Funktionslabels er"ubrigt.</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PRELS">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PRELS</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PRELS</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relations between syntactic nodes.
+Note that here, edge labels are coded as properties of child nodes. The corresponding parent node in the syntactic tree (dependency or phrase structure) has to be inferred from the dominates property</rdfs:comment>
+    <rdfs:subClassOf rdf:nodeID="A8"/>
+    <rdfs:subClassOf rdf:nodeID="A35"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PTKZU">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PTKZU</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PTKZU</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ZuWithInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are temporal, causal, modal and local prepositions, e.g. "ohne", "mit", "waehrend" or the left part of a circumposition "um [der sache wegen]", "von [heute an]".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PossessivePronoun">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are possessive pronouns.
+
+This is a special type of pronoun used prototypically to indicate the possessor in an attributive possession relation. It typically has the inflectional categories of the adjective.
+The possessive pronoun is normally a modifier to a head noun that represents the possessum. It can also be used to indicate the subject or object relation for the nominalization of a verb or a nonfinite verb form.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Possessivpronomen 14.05.07)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A79">
+    <rdf:rest rdf:nodeID="A77"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A80">
+    <rdf:rest rdf:nodeID="A78"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PastParticipleModal">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Participle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Past participle, modal verb, e.g. "gekonnt, [er hat gehen] können"
+(tigerstts.xml)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalPastParticiple"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#superlative">
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sup</olia_system:hasTagStartingWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The superlative is a grammatical category of the adjective or adverb which signifies that whatever is modified by the adjective/adverb has the property designated by it to a higher degree than all the other members of the same class.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Superlativ 18.06.07)</rdfs:comment>
+    <j.0:hasDegree rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#superlative"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#DegreeFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#discourseLevelConstituent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applied to direct speech
+
+Da f¨ur uns die syntaktische Struktur Vorrang hat vor der Diskursstruktur, wird die letztere nur annotiert,
+wenn keine klaren syntaktischen Beziehungen bestehen. So wird im folgenden Satz die angefu
+¨ hrte A¨ ußerung als OC zu sagt annotiert.
+(65) “Nun”, sagt Peter, “m¨ussen wir nach Hause gehen”.
+Wenn hingegen keine syntaktische Beziehung (meistens OC) zwischen dem Angef¨uhrten und der es
+einbettenden Diskursstruktur besteht, verbinden sich die beiden Komponenten parataktisch zu einer
+Discourse Level Constituent (DL). Die Bestandteile einer DL sind: RS (reported speech) und DH
+(discourse-level head).
+(Bader et al. 2003, §5.5)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DL</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveRelativePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#RelativePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are attributive relative pronouns, e.g. "[der Mann, ] dessen [Hund]".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#accusative">
+    <j.0:hasCase rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#accusative"/>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acc</olia_system:hasTagContaining>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acc</olia_system:hasTagStartingWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The accusative is the case that, in the accusative system of fundamental relations, marks the direct object and sometimes other syntactic functions, too. 
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Akkusativ 18.06.07)</rdfs:comment>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Assigns a Linguistic Annotation a String representation, e.g., a particular Part of Speech tag, the respective abbreviation of the grammatical cases used in an annotation scheme, etc.
+implicit semantics: hasTag is to be used if the tag is equal to the string value, otherwise use hasTagContaining, hasTagStartingWith, hasTagEndingWith</rdfs:comment>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:nodeID="A75"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VMFIN">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VMFIN</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VMFIN</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A81">
+    <rdf:rest rdf:nodeID="A73"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A82">
+    <rdf:rest rdf:nodeID="A52"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Als erste Richtlinie gilt zun¨achst: In NPs, APs und PPs werden die zu koordinierenden Elemente
+direkt zusammengefaßt und bilden wieder eine Konstituente. In VPs und S¨atzen verbinden sich die
+VP- und S-Knoten zuerst mit den Dependenten auf ihrer Seite der Koordination und werden dann zu
+einer koordinierten Phrase zusammengefaßt (siehe Beispiele).
+Beachte: die Pr¨asenz einer koordinierenden Konjunktion ist nicht notwendig. Aufz¨ahlungen werden
+ebenso annotiert.
+(Bader et al. 2003, §9)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A83">
+    <rdf:rest rdf:nodeID="A80"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A84">
+    <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasSource"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A85">
+    <rdf:rest rdf:nodeID="A79"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Tag">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The document tigerstts.xml distributed with TigerSearch (version 2.1, September 1st, 2003; doc/examples/tigerstts.xml) specifies an alternative hierarchical structuring of STTS tags.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Category"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A86">
+    <rdf:rest rdf:nodeID="A83"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#placeholder">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a pro-form that is resolved by a repeated element
+(Bader et al. 2003, §6.1)
+also, the so-called vorfeld-es: Vorfeld-es (PH ohne RE)
+Test: steht nur im Vorfeld (d.h., dieses es h¨angt
+weder vom Auftreten eines satzwertigen Arguments
+ab noch vom Verb) (Bader et al. 2003, §6.2)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PH</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#DegreeFeature">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Degree of comparison is a grammatical category of the adjective or adverb which allows a comparison between the extent to which whatever is modified by the adjective/adverb possesses the quality designated by it, and something else.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Grad 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A87">
+    <owl:unionOf rdf:nodeID="A81"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VAFIN">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VAFIN</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VAFIN</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Article">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Definite or indefinite article, "der", "die", "das", "ein", "eine"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A88">
+    <rdf:rest rdf:nodeID="A82"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveIndefinitePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Entity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A69">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:nodeID="A84"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Imperative">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NonfiniteVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Imperative
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A68">
+    <rdf:rest rdf:nodeID="A85"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasMood">
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MoodFeature"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdfs:domain rdf:nodeID="A24"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A59">
+    <owl:complementOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasChunkFunction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fremdsprachliche Zitate werden als Chunks (CH) flach annotiert; die einzelnen Komponenten erhalten
+das Label UC (“unit component”).
+(Bader et al. 2003, §.2.1.5)</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#coordinatedNounPhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §9.1)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CNP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A89">
+    <rdf:rest rdf:nodeID="A90"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#DemonstrativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/isPartOfSyntaxTree">
+    <rdfs:subPropertyOf rdf:resource="http://nlp2rdf.org/ontology/isPartOfSyntaxTree"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A91">
+    <rdf:rest rdf:nodeID="A92"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTier">
+    <rdfs:domain rdf:nodeID="A5"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Assigns a linguistic annotation a string representation of the annotation layer ("tier", "level") where it is to be found, e.g., "pos" for Part of Speech annotation, "gloss" for linguistic glosses, etc.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalPastParticiple">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the past participle of a modal verb , e.g. in German "[er hat] gekonnt".</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PastParticipleModal"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTagStartingWith">
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">As opposed to hasTag proper, the string representation specifies only the beginning of a concrete annotation.
+The respective linguistic annotation then applies to every element whose annotation (tag) startsWith this substring.</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This property is used to describe the possible position of a morphological feature within the annotation string.
+The first feature in an annotation string is marked with the startsWith property.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A58">
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTarget"/>
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction">
+    <rdfs:domain rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">different relationships (edges, function labels) between parent (head/phrase) and child nodes may be distinguished via different edge labels attached to the child node.</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#apposition">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AG</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PPEdge"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#separableVerbPrefix">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(Bader et al. 2003, §5)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SVP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#KOUI">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KOUI</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: KOUI</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithZu"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PIAT">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PIAT</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PIAT</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A93">
+    <rdf:rest rdf:nodeID="A89"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/belongsToSentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/hasToken">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.org/ontology/belongsToSentence"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A36">
+    <rdf:rest rdf:nodeID="A91"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Adjective">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#OpenClass"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#modifier">
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NPEdge"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#APEdge"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MO</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Modifier, German "Modifikator" (Bader et al. 2003, §2)
+Applies within NPs only to focus particles, e.g. nur, auch, lediglich,
+zumindest, vor allem, . . . which are annotated regardless of their positioning within the NP (Bader et al. 2003, §2.7).
+Within adjective phrases, label of PPs and adverbials (Bader et al. 2003, §4.1)
+also applies to VPs (Bader et al. 2003, §5)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#imperative">
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Imp</olia_system:hasTagEndingWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The imperative is the mood that encodes directive modality, especially demands, directed towards a speech act participant.
+The imperative in the strict sense is of second person. The imperative in the wide sense includes the hortative and the jussive.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Imperativ 18.06.07)
+
+In the TIGER-Corpus this feature belongs to the InfinitenessFeature.</rdfs:comment>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <j.0:hasInfiniteness rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#imperative"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitenessFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#plural">
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pl</olia_system:hasTagContaining>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The plural is a number indicating a plurality of elements of the designated class. The lower limit is two, but may be higher depending on whether the language has a dual and a trial in addition to singular and plural.
+In some languages the plural is also used for generics and objects that always occur in groups.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Plural 18.06.07)</rdfs:comment>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <j.0:hasNumber rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#plural"/>
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pl</olia_system:hasTagEndingWith>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NumberFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/typeLabel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Punctuation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are other sentence medial punctuation marks not the comma.
+The tag "$("  is used for e.g.  "-, (, ), [ , ]".</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"other punctuation marks" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are adverbial ("er faehrt schnell") or predicative ("er ist schnell") adjectives. These can also be from nominals ("[mir ist] angst"), fraction numbers ("halb [voll]"), ordinal numerals ("[zu] dritt"), adverbial used present participles ("[er kam] lachend [herein]") or adverbial used past participles ("gebraucht [kaufen]", "gekonnt [gespielt]").</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#secondAccusativeObject">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">object accusative 2 (Bader et al. 2003, §5)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OA2</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are infinitives, e.g.  "gehen", "ankommen".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveFullVerb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A94">
+    <rdf:rest rdf:nodeID="A93"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A72">
+    <owl:unionOf rdf:nodeID="A95"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A57">
+    <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasSource"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NonfiniteVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml: "nonfinite")</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Verb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#dative">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The dative is the case that marks the indirect object. It may also be the case that marks NPs with the role of recipient and perhaps similar roles, as the beneficiary or the - adverbal -possessor.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Dativ 18.06.07)</rdfs:comment>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <olia_system:hasTagContaining rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dat</olia_system:hasTagContaining>
+    <j.0:hasCase rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#dative"/>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dat</olia_system:hasTagStartingWith>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CaseFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasVPFunction">
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">function labels within finite (S) and nonfinite (VP) verb phrases
+(Bader et al. 2003, §5)</rdfs:comment>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VVPP">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VVPP</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VVPP</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#APEdge">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">function labels within an adjective phrase
+Im Falle von deverbalen Adjektiven werden die Argumente des Verbs vererbt und mit ihren
+urspr¨unglichen Funktionen annotiert.
+(Bader et al. 2003, §4.7)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VAPP">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VAPP</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VAPP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <rdf:rest rdf:nodeID="A94"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#VVINF">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VVINF</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: VVINF</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A92">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MoodFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PRELAT">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PRELAT</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PRELAT</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A96">
+    <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
+    <owl:onProperty rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasTag"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Restriction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Participle">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NonfiniteVerb"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Past participle
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#hasNumber">
+    <rdfs:domain rdf:nodeID="A87"/>
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#hasFeature"/>
+    <rdfs:range rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#NumberFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are particles.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Particle"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Adposition">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A97">
+    <rdf:rest rdf:nodeID="A98"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/directPreviousToken">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#GenderFeature">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MorphologicalFeature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A99">
+    <rdf:rest rdf:nodeID="A100"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are reflexive personal pronouns, e.g. "sich", "einander", "dich", "mir".
+
+A reflexive pronoun is a pronoun distinguished as having coreference with the subject, cf. „himself“ in „He prides himself on his appearance“.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Reflexivpronomen 14.05.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#properNoun">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PN</olia_system:hasTag>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vorname(n), Familienname(n) und Namenszus¨atze werden alle unter dem Knoten PN (proper noun)
+      zusammengefaßt und als eine komplexe Kernkomponente der NP betrachtet. Die einzelnen Komponenten
+      des PN werden als PNC (proper noun component) annotiert.
+      Dasselbe gilt für fremdsprachliche Namen. Komponenten von Firmennamen wie Bayerische Vereinsbank
+      sowie Titel werden dagegen als NKs annotiert.
+      (Bader et al. 2003, §2.1.4)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#numberComponent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Part of a multi-token (complex) numeral.
+      Für komplexe Numeralien (10 000, eine Million) ist das Label NM (NuMber) vorgesehen. Die einzelnen Komponenten bekommen das Funktionslabel NMC (NuMber Component).
+      (Bader etal. 2003, §2.12)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NMC</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Syntactic nodes are terminal or nonterminal nodes in a syntactic tree, either a dependency tree or a phrase structure.</rdfs:comment>
+    <rdfs:subClassOf rdf:nodeID="A39"/>
+    <rdfs:subClassOf rdf:nodeID="A96"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#UnitOfAnnotation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Interjection">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are interjections, e.g. "mhm", "ach", "tja".
+
+An interjection is a particle 1 which may represent a sentence. Thus, it is not syntactically related to other sentence components.
+An interjection is typically brief, used most often as an exclamation or as part of an exclamation and typically expresses an emotional reaction, often with respect to an accompanying sentence. It may include a combination of sounds not otherwise found it the language.
+Examples in English are „psst!“, „ugh!“, „well, well!“, „yes“, „no“.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Interjektion 14.05.07)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Interjection"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rdf:rest rdf:nodeID="A97"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NonWords">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0LD 
+non-words
+non-word, additional characters including "D2XW3"</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are non-words mostly bigger groups of numbers or combinations of letters and numbers which could not be related to CARD (cardinal numeral) or ADJA (attributive adjective), e.g. "das Model DX3E".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Misc"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nonword, with special characters, e.g. "3:7, H2O, D2XW3" (tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ImperativeAuxiliary">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Imperative"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Imperative, auxiliary verb, e.g. "sei [ruhig !]"
+(tigerstts.xml)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Feature">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitsOfAnnotation and Relations can be described in a more detailed way by the features that are attached to them, e.g., case, number, or aspect. Features are, however, not subject to further annotations (by means of hasFeature), they are thus disjoint from Relations and UnitsOfAnnotation.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#LinguisticAnnotation"/>
+    <rdfs:subClassOf rdf:nodeID="A51"/>
+    <rdfs:subClassOf rdf:nodeID="A56"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Tag">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">STTS Tags are organized according to main groups in Schiller et al.'s little tag set (1999), without lexical and morphological information.</rdfs:comment>
+    <rdfs:subClassOf rdf:nodeID="A16"/>
+    <rdfs:subClassOf rdf:nodeID="A21"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Category"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#PastParticipleFullVerb">
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Participle"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Past participle, full verb, e.g. "gegangen, angekommen"
+(tigerstts.xml)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PTKANT">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: PTKANT</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PTKANT</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AnsweringParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A95">
+    <rdf:rest rdf:nodeID="A99"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Noun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalVerb">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are modal verbs which include the German words "koennen", "muessen", "wollen", "duerfen", "moegen" also the conjunctive forms of "moegen", "moechten" and "sollen".
+
+A modal verb is a grammatical verb expressing modality.
+Modal verbs express both subjective and objective modality.
+An Example in English is "must".
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Modalverb 14.05.07)</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0LD 
+These are modal verbs which include "koennen, muessen, wollen, duerfen, moegen" also the conjunctive forms of "moegen, moechten" and "sollen".
+
+no category for modal verbs, thus not distinguished from non-aux verbs</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Verb"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/consistsOfToken">
+    <owl:inverseOf rdf:resource="http://nlp2rdf.org/ontology/isPartOfEntity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#XY">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">XY</olia_system:hasTag>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: XY</rdfs:label>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NonWords"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#verbPhrase">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">verbal phrase with a non-finite verb.
+      Jedes Verb f¨uhrt eine eigenst¨andige Phrase ein.
+      Phrasen mit finitem Verb bekommen das Label S
+      (Satz)
+      (Bader et al. 2003, §5.1)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VP</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VerbalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithDeterminer">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#IndefinitePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0LD 
+attributive indefinite pronouns, with determiner
+
+PIDAT is a contextual variant of PIAT, accordingly, both are grouped
+  together in TigerSTTS, but in ELM-DE, too:
+  http://www.ilc.cnr.it/EAGLES96/TT-rep/node49.html#SECTION000103000000000000000 
+=&gt; here, too</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are attributive indefinite pronouns with a determiner, e.g. "[ein] wenig [Wasser]", "[die] beiden [Brueder]".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are definite e.g. in German "der", "die", "das" or indefinite articles e.g.  in German "ein", "eine".
+
+An article is a highly grammaticalized determiner that expresses one or a few of the basic determinations (definite/indefinite, generic/specific, given/new).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Artikel 14.05.07)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Article"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasProperNounFunction">
+    <rdfs:subPropertyOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#hasFunction"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vorname(n), Familienname(n) und Namenszus¨atze werden alle unter dem Knoten PN (proper noun)
+zusammengefaßt und als eine komplexe Kernkomponente der NP betrachtet. Die einzelnen Komponenten
+des PN werden als PNC (proper noun component) annotiert.
+Dasselbe gilt f¨ur fremdsprachliche Namen. Komponenten von Firmennamen wie Bayerische Vereinsbank
+sowie Titel werden dagegen als NKs annotiert.
+(Bader et al. 2003, §2.1.4)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CircumpositionRightPart">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This is the right part of a circumposition e.g. "von jetzt an".
+The equalization with circumposition could be incomplete, because another definition of circumposition would describe that both parts belong together.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#accusativeObject">
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OA</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#APEdge"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">accusative argument of a verb phrase (Bader et al. 2003, §5) or a deverbal adjective 
+(Bader et al. 2003, §4)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VPEdge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#ClosedClass">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(tigerstts.xml)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Pos"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Letter">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#subjunctive">
+    <j.0:hasMood rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#subjunctive"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <olia_system:hasTagEndingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Subj</olia_system:hasTagEndingWith>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#MoodFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#chunk">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">flat analysis of foreign material
+      "Fremdsprachliche Zitate werden als Chunks (CH) flach annotiert; die einzelnen Komponenten erhalten das Label UC (“unit component”)."
+      (Bader et al. 2003, §2.1.5)</rdfs:comment>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CH</olia_system:hasTag>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A98">
+    <rdf:rest rdf:nodeID="A86"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#positive">
+    <j.0:hasDegree rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#positive"/>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">morph</olia_system:hasTier>
+    <olia_system:hasTagStartingWith rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pos</olia_system:hasTagStartingWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The positive is the basic form of an adjective with regard to degrees of comparison.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Positiv 18.06.07)</rdfs:comment>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#DegreeFeature"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FM">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TIER: pos</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TAG: FM</rdfs:label>
+    <olia_system:hasTag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FM</olia_system:hasTag>
+    <olia_system:hasTier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pos</olia_system:hasTier>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ForeignMaterial"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Punctuation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are punctuation marks which begin in STTS with $....</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional"/>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Punctuation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#InfinitiveModalVerb">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Infinitive"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Infinitive, modal verb, e.g. "wollen"
+(tigerstts.xml)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalInfinitive"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#RelativePronoun"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are substitutive relative pronouns, e.g. "[der Hund, ] der".</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are cardinal numerals, e.g. "zwei Manner, im Jahre 1994".
+
+A cardinal numeral is a numeral - most typically a noun 2 - which designates the cardinality of a set; i.e. it is used for counting and for expressing how many objects are referred to.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Kardinalzahlwort 14.05.07)
+
+
+Only for cardinal numerals there is a special word class defined within the numerals.
+Ordinal numerals, multiplicatives and fraction numbers are counted according to her distribution to the adjectives or nouns.</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#CardinalNumber"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A100">
+    <rdf:rest rdf:nodeID="A44"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A90">
+    <rdf:rest rdf:nodeID="A88"/>
+    <rdf:first rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective">
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are adjectives.
+
+An adjective is a word that is a member of a part of speech whose prototypical members designate properties and, less prototypically, states.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_ServletAdjektiv 14.05.07)</rdfs:comment>
+    <owl:equivalentClass rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger.owl#Adjective"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

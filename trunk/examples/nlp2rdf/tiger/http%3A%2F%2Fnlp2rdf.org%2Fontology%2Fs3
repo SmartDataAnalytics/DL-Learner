@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax502">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax502">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax502">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">gibt</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w0_Texaner"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w2_nur"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">geben</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w1_gibt">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">über</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w4_Auskunft"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w6_seine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">über</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w5_%C3%BCber">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/adjectivePhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/adjectivePhrase">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax501">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax501">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Wirtschaftspolitik</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w6_seine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">Wirtschaftspolitik</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax500">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/adjectivePhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax500">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w2_nur"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w4_Auskunft"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w6_seine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w0_Texaner"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w1_gibt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w3_vage"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:firstToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w0_Texaner"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Texaner gibt nur vage Auskunft über seine Wirtschaftspolitik</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3">
+    <ns0:hasToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w5_%C3%BCber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">nur</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w1_gibt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w3_vage"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">nur</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w2_nur">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">vage</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w2_nur"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w4_Auskunft"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">vage</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w3_vage">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">seine</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w5_%C3%BCber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w7_Wirtschaftspolitik"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">sein</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPOSAT"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w6_seine">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w0_Texaner">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w0_Texaner">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Texaner</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w0_Texaner">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w1_gibt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w0_Texaner">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">Texaner</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w0_Texaner">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w0_Texaner">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax503">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax503">
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3syntax503">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Auskunft</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <ns0:previousToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w3_vage"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <ns0:nextToken xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3w5_%C3%BCber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <ns0:hasLemma xmlns:ns0="http://nlp2rdf.org/ontology/">Auskunft</ns0:hasLemma>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s3w4_Auskunft">
+    <ns0:isPartOfSyntaxTree xmlns:ns0="http://nlp2rdf.org/ontology/" rdf:resource="http://nlp2rdf.org/ontology/s3syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPOSAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPOSAT">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributivePossessivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+</rdf:RDF>
