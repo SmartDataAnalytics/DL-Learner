@@ -164,6 +164,11 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     	children.remove(child);
     }
     
+    public void removeChild(int index) {
+    	children.get(index).setParent(null);
+    	children.remove(index);
+    }
+    
     public void replaceChild(int index, Description newChild) {
     	children.remove(index);
     	children.add(index, newChild);

@@ -31,7 +31,6 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**

@@ -184,6 +184,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private boolean disjointChecks = true;
 	private boolean instanceBasedDisjoints = true;
 	
+	private boolean dropDisjuncts = false;
+
 	// caches for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
 
@@ -513,6 +515,23 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				
 			}
 			
+			// if enabled, we can remove elements of the disjunction
+			if(dropDisjuncts) {
+				// A1 OR A2 => {A1,A2}
+				if(description.getChildren().size() == 2) {
+					refinements.add(description.getChild(0));
+					refinements.add(description.getChild(1));
+				} else {
+					// copy children list and remove a different element in each turn
+					for(int i=0; i<description.getChildren().size(); i++) {
+						List<Description> newChildren = new LinkedList<Description>(description.getChildren());
+						newChildren.remove(i);						
+						Union md = new Union(newChildren);
+						refinements.add(md);
+					}
+				}
+			}
+			
 		} else if (description instanceof ObjectSomeRestriction) {
 			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
 			Description range = opRanges.get(role);
@@ -787,6 +806,17 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		}
 		return true;
 	}
+	
+	/**
+	 * By default, the operator does not specialize e.g. (A or B) to A, because
+	 * it only guarantees weak completeness. Under certain circumstances, e.g.
+	 * refinement of a fixed given concept, it can be useful to allow such
+	 * refinements, which can be done by passing the parameter true to this method. 
+	 * @param dropDisjuncts Whether to remove disjuncts in refinement process.
+	 */
+	public void setDropDisjuncts(boolean dropDisjuncts) {
+		this.dropDisjuncts = dropDisjuncts;
+	}	
 	
 	private void computeTopRefinements(int maxLength) {
 		computeTopRefinements(maxLength, null);

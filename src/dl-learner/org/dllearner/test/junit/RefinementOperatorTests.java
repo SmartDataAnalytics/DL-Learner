@@ -42,7 +42,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
@@ -188,6 +188,21 @@ public class RefinementOperatorTests {
 		}		
 	}
 		
+	@Test
+	public void invertedOperatorTest() throws ParseException {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
+		RhoDRDown rho = new RhoDRDown(rs);
+		rho.setDropDisjuncts(true);
+		RefinementOperator operator = new OperatorInverter(rho);
+		Description concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
+		Set<Description> refinements = operator.refine(concept, 6);
+		for(Description refinement : refinements) {
+			System.out.println(refinement);
+		}		
+		// we should get four upward refinements 
+		// (replacing limo => car, man => person, or drop one of the intersects)
+		assertTrue(refinements.size()==4);
+	}
 	
 	private String uri(String name) {
 		return "\""+baseURI+name+"\"";
