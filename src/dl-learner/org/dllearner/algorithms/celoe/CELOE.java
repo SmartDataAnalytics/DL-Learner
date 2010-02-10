@@ -50,6 +50,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Helper;
@@ -219,15 +220,51 @@ public class CELOE extends LearningAlgorithm {
 			// capture all instances), but owl:Thing for learning subclasses (since it is
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
-				Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
-				if(superClasses.size() > 1) {
-					startClass = new Intersection(new LinkedList<Description>(superClasses));
-				} else if(superClasses.size() == 1){
-					startClass = (Description) superClasses.toArray()[0];
+				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
+				if(configurator.getReuseExistingDescription() && (existingDefinitions.size() > 0)) {
+					// the existing definition is reused, which in the simplest case means to
+					// use it as a start class or, if it is already too specific, generalise it
+					
+					// pick the longest existing definition as candidate
+					Description existingDefinition = null;
+					int highestLength = 0;
+					for(Description exDef : existingDefinitions) {
+						if(exDef.getLength() > highestLength) {
+							existingDefinition = exDef;
+							highestLength = exDef.getLength();
+						}
+					}
+					
+					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
+					startClassCandidates.add(existingDefinition);
+					((RhoDRDown)operator).setDropDisjuncts(true);
+					RefinementOperator upwardOperator = new OperatorInverter(operator);
+					
+					// use upward refinement until we find an appropriate start class
+					boolean startClassFound = false;
+					do {
+						Description candidate = startClassCandidates.pollFirst();
+						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
+							// add upward refinements to list
+							startClassCandidates.addAll(upwardOperator.refine(candidate, candidate.getLength()));
+						} else {
+							startClassFound = true;
+						}
+					} while(!startClassFound);
+					
+					((RhoDRDown)operator).setDropDisjuncts(false);
+					
 				} else {
-					startClass = Thing.instance;
-					logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-							"sensible to learn a description in this case.");
+					Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+					if(superClasses.size() > 1) {
+						startClass = new Intersection(new LinkedList<Description>(superClasses));
+					} else if(superClasses.size() == 1){
+						startClass = (Description) superClasses.toArray()[0];
+					} else {
+						startClass = Thing.instance;
+						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
+								"sensible to learn a description in this case.");
+					}					
 				}
 			}				
 		} else if(learningProblem instanceof PosOnlyLP) {
