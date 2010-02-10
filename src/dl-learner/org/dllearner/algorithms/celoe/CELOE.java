@@ -21,7 +21,6 @@ package org.dllearner.algorithms.celoe;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,6 +118,7 @@ public class CELOE extends LearningAlgorithm {
 	// important parameters
 	private double noise;
 	private double maxDepth;
+	private boolean filterFollowsFromKB;
 	
 	// utility variables
 	private String baseURI;
@@ -166,6 +166,8 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.maxNrOfResults(10));
 		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
 		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
+		options.add(new BooleanConfigOption("filterDescriptionsFollowingFromKB", "If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.", false));
+		options.add(new BooleanConfigOption("reuseExistingDescription", "If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.", false));
 		return options;
 	}
 	
@@ -193,11 +195,18 @@ public class CELOE extends LearningAlgorithm {
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
 		
+		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
+		
 		// we put important parameters in class variables
 		noise = configurator.getNoisePercentage()/100d;
-		maxDepth = configurator.getMaxDepth();		
+		maxDepth = configurator.getMaxDepth();
+		// (filterFollowsFromKB is automatically set to false if the problem
+		// is not a class learning problem
+		filterFollowsFromKB = configurator.getFilterDescriptionsFollowingFromKB()
+		  && isClassLearningProblem;
 		
-		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
+		System.out.println("filter follows from KB: " + filterFollowsFromKB);
+		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
 			ClassLearningProblem problem = (ClassLearningProblem) learningProblem;
@@ -264,8 +273,8 @@ public class CELOE extends LearningAlgorithm {
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
 			
-			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
-				highestAccuracy = bestEvaluatedDescriptions.getBest().getAccuracy();
+			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
+				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
 			}
 
@@ -442,8 +451,9 @@ public class CELOE extends LearningAlgorithm {
 			}
 			
 			if(!shorterDescriptionExists) {
-//				System.out.println(niceDescription + " acc " + accuracy);
-				bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);	
+				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
+					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+				}
 			}
 						
 		}

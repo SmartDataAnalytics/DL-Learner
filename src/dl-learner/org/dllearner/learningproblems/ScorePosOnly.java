@@ -30,6 +30,8 @@ import org.dllearner.core.owl.Individual;
  */
 public class ScorePosOnly extends Score {
 
+	private static final long serialVersionUID = 2191608162129054464L;
+	
 	private Set<Individual> coveredInstances;
 	private Set<Individual> notCoveredPositives;
 	private Set<Individual> additionalInstances;

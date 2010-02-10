@@ -38,7 +38,9 @@ import org.dllearner.core.owl.Individual;
  */
 public class ScoreTwoValued extends ScorePosNeg {
 
-    private Set<Individual> posAsPos;	
+	private static final long serialVersionUID = 6264873890324824550L;
+	
+	private Set<Individual> posAsPos;	
     private Set<Individual> posAsNeg;
     private Set<Individual> negAsPos;
     private Set<Individual> negAsNeg;    
