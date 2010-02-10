@@ -66,6 +66,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
@@ -1112,16 +1113,14 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the asserted class definitions
 	 */
 	@Override
-	public Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
+	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
 		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLDescription(nc).asOWLClass();
-		Set<OWLDescription> owlAPIDefinitions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
-		
-		// TODO converting to DL-Learner format
+		Set<OWLDescription> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
 		Set<Description> definitions = new HashSet<Description>();
-		
+		for(OWLDescription owlAPIDescription : owlAPIDescriptions) {
+			definitions.add(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(owlAPIDescription));
+		}
 		return definitions;
-		
 	}
-	
 	
 }
