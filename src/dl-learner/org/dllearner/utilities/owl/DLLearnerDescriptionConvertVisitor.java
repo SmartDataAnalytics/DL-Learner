@@ -4,11 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.dllearner.core.owl.DataRange;
+import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
+import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
+import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
@@ -16,6 +23,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataAllRestriction;
@@ -54,7 +62,13 @@ public class DLLearnerDescriptionConvertVisitor implements OWLDescriptionVisitor
 	
 	@Override
 	public void visit(OWLClass description) {
-		stack.push(new NamedClass(description.getURI()));
+		if(description.isOWLNothing()){
+			stack.push(Nothing.instance);
+		} else if(description.isOWLThing()){
+			stack.push(Thing.instance);
+		} else {
+			stack.push(new NamedClass(description.getURI()));
+		}
 	}
 
 	@Override
@@ -155,37 +169,59 @@ public class DLLearnerDescriptionConvertVisitor implements OWLDescriptionVisitor
 
 	@Override
 	public void visit(OWLDataSomeRestriction description) {
-		// TODO Auto-generated method stub
-		
+		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+				.getURI().toString());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+		stack.push(new DatatypeSomeRestriction(property, dataRange));
 	}
 
 	@Override
 	public void visit(OWLDataAllRestriction description) {
-		// TODO Auto-generated method stub
-		
+//		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+//				.getURI().toString());
+//		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+//		stack.push(new DatatypeAllRestriction(property, dataRange));
+		throw new Error("Unsupported owl construct " + description.getClass() + ". Please inform a DL-Learner developer to add it.");		
 	}
 
 	@Override
 	public void visit(OWLDataValueRestriction description) {
-		// TODO Auto-generated method stub
+//		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+//				.getURI().toString());
+//		Constant c = OWLAPIConverter.convertConstant(description.getValue());
+//		
+//		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+//		stack.push(new DatatypeValueRestriction(property, dataRange));
 		
 	}
 
 	@Override
 	public void visit(OWLDataMinCardinalityRestriction description) {
-		// TODO Auto-generated method stub
+		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+				.getURI().toString());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+		int min = description.getCardinality();
+		stack.push(new DatatypeMinCardinalityRestriction(property, dataRange,min));
 		
 	}
 
 	@Override
 	public void visit(OWLDataExactCardinalityRestriction description) {
-		// TODO Auto-generated method stub
+		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+				.getURI().toString());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+		int minmax = description.getCardinality();
+		stack.push(new DatatypeExactCardinalityRestriction(property, dataRange, minmax));
 		
 	}
 
 	@Override
 	public void visit(OWLDataMaxCardinalityRestriction description) {
-		// TODO Auto-generated method stub
+		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+				.getURI().toString());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+		int max = description.getCardinality();
+		stack.push(new DatatypeMaxCardinalityRestriction(property, dataRange, max));
 		
 	}
 
