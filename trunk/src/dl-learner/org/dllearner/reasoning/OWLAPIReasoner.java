@@ -1111,9 +1111,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @param nc the class
 	 * @return the asserted class definitions
 	 */
-	public Set<Description> getAssertedDefinitions(NamedClass nc){
+	@Override
+	public Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
 		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLDescription(nc).asOWLClass();
-		Set<OWLDescription> OWLAPIDefinitions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
+		Set<OWLDescription> owlAPIDefinitions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
 		
 		// TODO converting to DL-Learner format
 		Set<Description> definitions = new HashSet<Description>();

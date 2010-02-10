@@ -263,6 +263,21 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}	
 	
 	@Override
+	public Set<Description> getAssertedDefinitions(NamedClass namedClass) {
+		try {
+			return getAssertedDefinitionsImpl(namedClass);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	protected Set<Description> getAssertedDefinitionsImpl(NamedClass namedClass)
+		throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
+	@Override
 	public final Set<Description> isSuperClassOf(Set<Description> superConcepts,
 			Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
