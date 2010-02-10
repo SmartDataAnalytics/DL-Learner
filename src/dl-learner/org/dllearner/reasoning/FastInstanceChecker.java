@@ -1059,4 +1059,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return rc.remainsSatisfiableImpl(axiom);
 	}
 
+	@Override
+	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc) {
+		return rc.getAssertedDefinitionsImpl(nc);
+	}
+	
 }

@@ -189,6 +189,19 @@ public class RefinementOperatorTests {
 	}
 		
 	@Test
+	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SWORE);
+		RefinementOperator operator = new RhoDRDown(rs);
+//		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
+		Description concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
+		System.out.println(concept);
+		Set<Description> refinements = operator.refine(concept, 7);
+		for(Description refinement : refinements) {
+			System.out.println(refinement);
+		}		
+	}	
+	
+	@Test
 	public void invertedOperatorTest() throws ParseException {
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
 		RhoDRDown rho = new RhoDRDown(rs);

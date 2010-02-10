@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -206,8 +207,6 @@ public class CELOE extends LearningAlgorithm {
 		filterFollowsFromKB = configurator.getFilterDescriptionsFollowingFromKB()
 		  && isClassLearningProblem;
 		
-		System.out.println("filter follows from KB: " + filterFollowsFromKB);
-		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
 			ClassLearningProblem problem = (ClassLearningProblem) learningProblem;
@@ -242,15 +241,33 @@ public class CELOE extends LearningAlgorithm {
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
+					Description candidate;
 					do {
-						Description candidate = startClassCandidates.pollFirst();
+						candidate = startClassCandidates.pollFirst();
 						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
 							// add upward refinements to list
-							startClassCandidates.addAll(upwardOperator.refine(candidate, candidate.getLength()));
+							Set<Description> refinements = upwardOperator.refine(candidate, candidate.getLength());
+//							System.out.println("ref: " + refinements);
+							LinkedList<Description> refinementList = new LinkedList<Description>(refinements);
+//							Collections.reverse(refinementList);
+//							System.out.println("list: " + refinementList);
+							startClassCandidates.addAll(refinementList);
+//							System.out.println("candidates: " + startClassCandidates);
 						} else {
 							startClassFound = true;
 						}
 					} while(!startClassFound);
+					startClass = candidate;
+					
+					if(startClass.equals(existingDefinition)) {
+						logger.info("Reusing existing description " + startClass.toManchesterSyntaxString(baseURI, prefixes) + " as start class for learning algorithm.");
+					} else {
+						logger.info("Generalised existing description " + existingDefinition.toManchesterSyntaxString(baseURI, prefixes) + " to " + startClass.toManchesterSyntaxString(baseURI, prefixes) + ", which is used as start class for the learning algorithm.");
+					}
+					
+//					System.out.println("start class: " + startClass);
+//					System.out.println("existing def: " + existingDefinition);
+//					System.out.println(reasoner.getIndividuals(existingDefinition));
 					
 					((RhoDRDown)operator).setDropDisjuncts(false);
 					

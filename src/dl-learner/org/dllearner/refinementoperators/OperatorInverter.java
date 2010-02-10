@@ -60,13 +60,16 @@ public class OperatorInverter implements RefinementOperator {
 	@Override
 	public Set<Description> refine(Description description, int maxLength) {
 		Description negatedDescription = getNegation(description);
+//		System.out.println("negated description: " + negatedDescription);
 		// concept length can change because of the conversion process; as a heuristic
 		// we increase maxLength by the length difference of negated and original concept
 		int lengthDiff = Math.max(0, negatedDescription.getLength() - description.getLength());
-		Set<Description> refinements = operator.refine(negatedDescription, maxLength+lengthDiff);
+		Set<Description> refinements = operator.refine(negatedDescription, maxLength+lengthDiff+1);
+//		System.out.println("refinv: " + refinements);
 		TreeSet<Description> results = new TreeSet<Description>(cc);
 		for(Description d : refinements) {
 			Description dNeg = getNegation(d);
+//			System.out.println("dNeg: " + dNeg);
 			// to satisfy the guarantee that the method does not return longer
 			// concepts, we perform an additional check
 			if(!guaranteeLength || dNeg.getLength() <= maxLength) {
