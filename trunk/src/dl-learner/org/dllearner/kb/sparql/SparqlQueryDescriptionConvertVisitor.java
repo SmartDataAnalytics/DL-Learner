@@ -83,15 +83,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * = RDFSReasoning; }
 	 */
 
-	private String getSparqlQuery(int resultLimit) { // for old function see
-														// below
-		// it was using the object attribute in a strange way
-		// QUALITY: what if this function is called several times?? should be
-		// private maybe?
-		String tmpQuery = "SELECT ?subject \nWHERE {" + query + " }\n " + limit(resultLimit);
-
-		query = tmpQuery;
-		return query;
+	private String getSparqlQuery(int resultLimit, boolean labels) { 
+		return "SELECT ?subject \nWHERE { "+((labels)?" ?subject rdfs:label ?label .":"")+" " + query + " }\n " + limit(resultLimit);
 	}
 
 	public static String getSparqlQuery(String descriptionKBSyntax) throws ParseException {
@@ -100,18 +93,17 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 
 	public static String getSparqlQuery(String descriptionKBSyntax, int limit) throws ParseException {
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
-		return getSparqlQuery(d, limit);
+		return getSparqlQuery(d, limit, false);
 	}
 
 	public static String getSparqlQuery(Description description) {
-		return getSparqlQuery(description, defaultLimit);
+		return getSparqlQuery(description, defaultLimit, false);
 	}
 
-	public static String getSparqlQuery(Description description, int resultLimit) {
+	public static String getSparqlQuery(Description description, int resultLimit, boolean labels) {
 		SparqlQueryDescriptionConvertVisitor visitor = new SparqlQueryDescriptionConvertVisitor();
 		description.accept(visitor);
-		String ret = visitor.getSparqlQuery(resultLimit);
-		return ret;
+		return visitor.getSparqlQuery(resultLimit, labels);
 	}
 
 	/**
@@ -244,7 +236,6 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * .Intersection)
 	 */
 	public void visit(Intersection description) {
-		// HACK see replace hacks in other functions
 		logger.trace("Intersection");
 		description.getChild(0).accept(this);
 		query += ".";
