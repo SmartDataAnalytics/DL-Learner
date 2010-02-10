@@ -53,6 +53,7 @@ import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
@@ -85,6 +86,7 @@ import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLNamedObject;
@@ -1102,6 +1104,22 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		return consistent;
+	}
+	
+	/**
+	 * Returns asserted class definitions of given class
+	 * @param nc the class
+	 * @return the asserted class definitions
+	 */
+	public Set<Description> getAssertedDefinitions(NamedClass nc){
+		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLDescription(nc).asOWLClass();
+		Set<OWLDescription> OWLAPIDefinitions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
+		
+		// TODO converting to DL-Learner format
+		Set<Description> definitions = new HashSet<Description>();
+		
+		return definitions;
+		
 	}
 	
 	
