@@ -201,6 +201,24 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "si
 public boolean getInstanceBasedDisjoints() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "instanceBasedDisjoints") ;
 }
+/**
+* filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base..
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getFilterDescriptionsFollowingFromKB() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "filterDescriptionsFollowingFromKB") ;
+}
+/**
+* reuseExistingDescription If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base..
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getReuseExistingDescription() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "reuseExistingDescription") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -344,6 +362,24 @@ reinitNecessary = true;
 **/
 public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "instanceBasedDisjoints", instanceBasedDisjoints);
+reinitNecessary = true;
+}
+/**
+* @param filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base..
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setFilterDescriptionsFollowingFromKB(boolean filterDescriptionsFollowingFromKB) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "filterDescriptionsFollowingFromKB", filterDescriptionsFollowingFromKB);
+reinitNecessary = true;
+}
+/**
+* @param reuseExistingDescription If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base..
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setReuseExistingDescription(boolean reuseExistingDescription) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "reuseExistingDescription", reuseExistingDescription);
 reinitNecessary = true;
 }
 

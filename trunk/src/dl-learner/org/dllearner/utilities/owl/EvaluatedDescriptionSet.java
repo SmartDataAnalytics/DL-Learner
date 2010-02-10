@@ -89,6 +89,10 @@ public class EvaluatedDescriptionSet {
 		return set.size()==0 ? null : set.last();
 	}
 	
+	public double getBestAccuracy() {
+		return set.size()==0 ? Double.NEGATIVE_INFINITY : set.last().getAccuracy();
+	}
+	
 	public EvaluatedDescription getWorst() {
 		return set.size()==0 ? null : set.first();
 	}

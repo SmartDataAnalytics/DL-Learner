@@ -44,6 +44,7 @@ import org.semanticweb.owl.model.OWLDescription;
  */
 public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	
+	private static final long serialVersionUID = -6962185910615506968L;
 	private ScorePosNeg score2;
 	
 	/**

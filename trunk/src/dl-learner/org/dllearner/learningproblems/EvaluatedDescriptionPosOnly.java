@@ -31,6 +31,7 @@ import org.dllearner.core.owl.Individual;
  */
 public class EvaluatedDescriptionPosOnly extends EvaluatedDescription {
 
+	private static final long serialVersionUID = 4014754537024635033L;
 	private ScorePosOnly score2;
 	
 	public EvaluatedDescriptionPosOnly(Description description, ScorePosOnly score) {

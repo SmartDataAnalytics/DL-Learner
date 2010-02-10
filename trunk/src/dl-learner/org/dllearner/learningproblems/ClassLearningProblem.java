@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
@@ -250,7 +249,8 @@ public class ClassLearningProblem extends LearningProblem {
 			// we check whether the axiom already follows from the knowledge base
 //			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);			
 			
-			boolean followsFromKB = equivalence ? reasoner.isEquivalentClass(description, classToDescribe) : reasoner.isSuperClassOf(description, classToDescribe);
+//			boolean followsFromKB = equivalence ? reasoner.isEquivalentClass(description, classToDescribe) : reasoner.isSuperClassOf(description, classToDescribe);
+			boolean followsFromKB = followsFromKB(description);
 			
 			// workaround due to a bug (see http://sourceforge.net/tracker/?func=detail&aid=2866610&group_id=203619&atid=986319)
 //			boolean isConsistent = coverage >= 0.999999 || isConsistent(description);
@@ -771,5 +771,9 @@ public class ClassLearningProblem extends LearningProblem {
 			axiom = new SubClassAxiom(classToDescribe, description);
 		}
 		return reasoner.remainsSatisfiable(axiom);
+	}
+	
+	public boolean followsFromKB(Description description) {
+		return equivalence ? reasoner.isEquivalentClass(description, classToDescribe) : reasoner.isSuperClassOf(description, classToDescribe);
 	}
 }

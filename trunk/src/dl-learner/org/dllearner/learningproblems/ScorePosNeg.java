@@ -34,6 +34,7 @@ import org.dllearner.core.owl.Individual;
  */
 public abstract class ScorePosNeg extends Score {
 	
+	private static final long serialVersionUID = -4646131678864109469L;
 
 	public abstract double getScoreValue();
 	
