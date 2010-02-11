@@ -47,6 +47,7 @@ public class Manager {
 	private ExtractionAlgorithm extractionAlgorithm;
 	private int nrOfExtractedTriples = 0;
 	private List<Node> seedNodes = new ArrayList<Node>();
+	private boolean stop = false;
 	
 	private ProgressMonitor mon;
 	
@@ -59,13 +60,31 @@ public class Manager {
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 	}
 
-	public Node extractOneURI(String uri) {
-		
-		//logger.info("Start extracting: "+uri);
-		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
-		//logger.info("Finished extracting: "+uri );
-		seedNodes.add(n);
-		return n;
+//	public Node extractOneURI(String uri) {
+//		
+//		//logger.info("Start extracting: "+uri);
+//		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
+//		//logger.info("Finished extracting: "+uri );
+//		seedNodes.add(n);
+//		return n;
+//	}
+	
+	/**
+	 * Stops the algorithm...
+	 * meaning only the remaining sparql queries will not be processed anymore
+	 */
+	public void stop(){
+		stop = true;
+		extractionAlgorithm.stop();
+	}
+	
+	private boolean stopCondition(){
+		return stop;
+	}
+	
+	private void reset(){
+		stop = false;
+		extractionAlgorithm.reset();
 	}
 	
 	
@@ -84,6 +103,10 @@ public class Manager {
 				mon.setProgress(progress);
 			}
 			logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
+			if(stopCondition()){
+				break;
+			}
+			
 			try {
 				Node n = extractionAlgorithm.expandNode(one, configuration.getTupelAquisitor());
 				seedNodes.add(n);
@@ -96,6 +119,7 @@ public class Manager {
 		}
 		//((SparqlTupleAquisitor) configuration.getTupelAquisitor()).printHM();
 		//System.exit(0);
+		reset();
 		logger.info("Finished extraction");
 		return allExtractedNodes;
 		
