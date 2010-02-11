@@ -20,6 +20,8 @@
 package org.dllearner.tools.protege;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JCheckBox;
@@ -81,7 +83,7 @@ public class OptionPanel extends JPanel {
 		radioBoxPanel = new JPanel();
 		radioBoxPanel.setLayout(new GridLayout(1, 3));
 		checkBoxPanel = new JPanel();
-		checkBoxPanel.setLayout(new GridLayout(1, 6));
+		checkBoxPanel.setLayout(new GridBagLayout());
 		
 		minAccuracyLabel = new JLabel("<html>noise in %:    </html>");
 		maxExecutionTimeLabel = new JLabel("<html>maximum execution time:    </html>");
@@ -137,13 +139,55 @@ public class OptionPanel extends JPanel {
 		countMoreBox.addItem(10);
 		countMoreBox.setSelectedItem(5);
 		countMoreBox.setEditable(false);
+		GridBagConstraints c = new GridBagConstraints();
 		
-		checkBoxPanel.add(allBox);
-		checkBoxPanel.add(someBox);
-		checkBoxPanel.add(notBox);
-		checkBoxPanel.add(valueBox);
-		checkBoxPanel.add(moreBox);
-		checkBoxPanel.add(countMoreBox);
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		checkBoxPanel.add(allBox, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		checkBoxPanel.add(someBox, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		checkBoxPanel.add(notBox, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 6;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		checkBoxPanel.add(valueBox, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 8;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		checkBoxPanel.add(moreBox, c);
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 9;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		checkBoxPanel.add(countMoreBox, c);
 		
 		
 		radioBoxPanel.add(owlRadioButton);
