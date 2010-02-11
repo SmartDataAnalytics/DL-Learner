@@ -238,7 +238,7 @@ public class SPARQLTasks {
 		String sparqlQueryString = "";
 		try {
 			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(conceptKBSyntax, sparqlResultLimit);
+					.getSparqlQuery(conceptKBSyntax, sparqlResultLimit, false, false);
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}

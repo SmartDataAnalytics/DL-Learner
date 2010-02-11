@@ -111,7 +111,7 @@ public class EvaluatedDescription implements Serializable{
 	 * @return A SPARQL query of the underlying description.
 	 */
 	public String getSparqlQuery(int limit) {
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit, false);
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit, false, false);
 	}	
 	
 	/**
