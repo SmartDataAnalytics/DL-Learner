@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class ExMakerFixedSize {
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ExMakerFixedSize.class);
 
 	private final Examples examples;
