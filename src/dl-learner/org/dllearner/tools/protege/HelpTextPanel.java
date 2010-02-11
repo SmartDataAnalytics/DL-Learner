@@ -36,19 +36,19 @@ public class HelpTextPanel extends JTextPane{
 	
 	public JTextPane renderHelpTextMessage(String currentClass) {
 		String helpText = "<html><p style=\"text-align: justify;\">What does a sentence like 'Learning started. Currently searching class expressions with length between 4 and 7.' mean?</p>"
-            + "<p style=\"text-align: justify;\">Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the"
+            + "<p style=\"text-align: justify;\">Length: In Manchester OWL Syntax (the syntax used for class expressions in Protege), we define length simply as the "
             + "number of words needed to write down the class expression.</p>"
             + "<p style=\"text-align: justify;\">The learning algorithm (called CELOE) for suggesting class expressions starts with the most general expression owl:Thing"
             + " and then further specializes it. Those class expressions, which fit the existing instances of a given class ("
             + currentClass
-            + " in this case)"
+            + " in this case) "
             + "get a high accuracy and are displayed as suggestions. The learning algorithm prefers short expressions. 'Currently searching class expressions with length"
             + " between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3 or excluded them as possible suggestions. All the expressions"
-            + " currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is"
+            + " currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is "
             + "set to " + view.getPosAndNegSelectPanel().getOptionPanel()
             .getMaxExecutionTime()
             + " seconds by default).</p>"
-            + "<p>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">Protege Plugin Wiki</a> for more details.</p></html>";
+            + "<p>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for more details.</p></html>";
 		this.setEditable(false);
 		this.setOpaque(true);
 		this.setPreferredSize(new Dimension(500, 370));
