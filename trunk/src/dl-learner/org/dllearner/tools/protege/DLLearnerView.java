@@ -123,7 +123,7 @@ public class DLLearnerView {
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
 	private StatusBar stat;
-	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">Protege Plugin Wiki</a> for an introduction.</font></html>";
+	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for an introduction.</font></html>";
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description

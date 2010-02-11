@@ -19,7 +19,7 @@
  */
 package org.dllearner.tools.protege;
 
-import javax.swing.JScrollPane;
+//import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
 import org.dllearner.core.EvaluatedDescription;
@@ -33,15 +33,15 @@ public class GraphicalCoverageTextField extends JTextPane{
 	private DLLearnerModel model;
 	EvaluatedDescription description;
 	private String conceptNew;
-	private final JScrollPane textScroll;
+	//private final JScrollPane textScroll;
 	
 	public GraphicalCoverageTextField(EvaluatedDescription desc, DLLearnerModel m) {
 		this.setContentType("text/html");
 		this.setEditable(false);
 		this.model = m;
-		textScroll = new JScrollPane(
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//textScroll = new JScrollPane(
+		//		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		//		JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.setBackground(model.getOWLEditorKit().getOWLWorkspace().getOWLComponentFactory().getOWLClassSelectorPanel().getBackground());
 		this.id = model.getID();
 		this.description = desc;
@@ -80,10 +80,10 @@ public class GraphicalCoverageTextField extends JTextPane{
 		             }
 		             text += "</html>";
 		this.setText(text);
-		textScroll.setViewportView(this);
+		//textScroll.setViewportView(this);
 	}
 	
-	public JScrollPane getTextScroll() {
-		return textScroll;
+	public JTextPane getTextScroll() {
+		return this;
 	}
 }
