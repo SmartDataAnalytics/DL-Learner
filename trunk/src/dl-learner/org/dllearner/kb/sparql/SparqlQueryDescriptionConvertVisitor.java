@@ -19,7 +19,10 @@
  */
 package org.dllearner.kb.sparql;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -61,49 +64,117 @@ import org.dllearner.parser.ParseException;
  */
 public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor {
 
-	// private SparqlEndpoint se = null;
-	// private boolean RDFSReasoning = false;
-	private static int defaultLimit = 5;
-
+	
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
 	private Stack<String> stack = new Stack<String>();
-
 	private String query = "";
-
 	private int currentObject = 0;
-
+	
+	private int limit = 5;
+	private boolean labels = false;
+	private boolean distinct = false;
+	private Map<String,String> classToSubclassesVirtuoso = null;
+	private List<String> foundNamedClasses = new ArrayList<String>();
+	
 	public SparqlQueryDescriptionConvertVisitor() {
 		stack.push("subject");
 	}
-
-	/*
-	 * public SparqlQueryDescriptionConvertVisitor(SparqlEndpoint se, boolean
-	 * RDFSReasoning) { stack.push("subject"); this.se = se; this.RDFSReasoning
-	 * = RDFSReasoning; }
-	 */
-
-	private String getSparqlQuery(int resultLimit, boolean labels) { 
-		return "SELECT ?subject \nWHERE { "+((labels)?" ?subject rdfs:label ?label .":"")+" " + query + " }\n " + limit(resultLimit);
+	
+	public void reset(){
+		currentObject = 0;
+		stack = new Stack<String>();
+		stack.push("subject");
+		query = "";
 	}
 
-	public static String getSparqlQuery(String descriptionKBSyntax) throws ParseException {
-		return getSparqlQuery(descriptionKBSyntax, defaultLimit);
+	public String getSparqlQuery( String descriptionKBSyntax) throws ParseException { 
+		Description description = KBParser.parseConcept(descriptionKBSyntax);
+		return getSparqlQuery( description);
+	}
+	
+	public String getSparqlQuery( Description description) { 
+		description.accept(this);
+		expandSubclasses();
+		String ret =  "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n } " + limit();
+		this.reset();
+		return ret;
+	}
+	
+	private void expandSubclasses(){
+		if(classToSubclassesVirtuoso == null){
+			return;
+		}
+		int counter = 0;
+		int index = 0;
+		String filter = "";
+		String var = "";
+		String uri = "";
+		StringBuffer tmp ;
+		for(String nc: foundNamedClasses){
+			index = query.indexOf("<"+nc+">");
+			filter = classToSubclassesVirtuoso.get(nc);
+			if(index == -1){
+				logger.warn("named class found before, but not in query?? "+nc);
+			}else if(filter != null){
+				var = "?expanded"+counter;
+				uri = "<"+nc+">";
+				tmp = new StringBuffer();
+				tmp.append(query.substring(0, index));
+				tmp.append(var);
+				tmp.append(query.substring(index+(uri.length())));
+				tmp.append("\nFILTER ( " +var+ " in (" +filter+	") ). ");
+				query = tmp.toString();
+//				= query.substring(0, index)+var+query.substring(index+(uri.length()));
+				
+//				query += "\nFILTER (?expanded" +counter+
+//						" in (" +filter+
+//						") ). ";
+			}else{
+				logger.debug("no mapping found ("+nc+")  "+this.getClass().getSimpleName());
+			}
+			counter++;
+		}
+	}
+	
+	private String limit() {
+		return (limit > 0) ? " LIMIT " + limit + " " : "";
+	}
+	private String labels() {
+		return (labels)?"\n?subject rdfs:label ?label . ":"";
+	}
+	private String distinct() {
+		return (distinct)?"DISTINCT ":"";
 	}
 
-	public static String getSparqlQuery(String descriptionKBSyntax, int limit) throws ParseException {
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	public void setLabels(boolean labels) {
+		this.labels = labels;
+	}
+
+
+	public void setDistinct(boolean distinct) {
+		this.distinct = distinct;
+	}
+	
+	public void setClassToSubclassesVirtuoso(Map<String,String> classToSubclassesVirtuoso) {
+		this.classToSubclassesVirtuoso = classToSubclassesVirtuoso;
+	}
+
+	public static String getSparqlQuery(String descriptionKBSyntax, int limit, boolean labels, boolean distinct) throws ParseException {
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
-		return getSparqlQuery(d, limit, false);
+		return getSparqlQuery(d, limit, labels, distinct);
 	}
-
-	public static String getSparqlQuery(Description description) {
-		return getSparqlQuery(description, defaultLimit, false);
-	}
-
-	public static String getSparqlQuery(Description description, int resultLimit, boolean labels) {
+	
+	public static String getSparqlQuery(Description description, int limit, boolean labels, boolean distinct) {
 		SparqlQueryDescriptionConvertVisitor visitor = new SparqlQueryDescriptionConvertVisitor();
-		description.accept(visitor);
-		return visitor.getSparqlQuery(resultLimit, labels);
+		visitor.setDistinct(distinct);
+		visitor.setLabels(labels);
+		visitor.setLimit(limit);
+		return visitor.getSparqlQuery(description);
 	}
 
 	/**
@@ -124,7 +195,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		String rewritten = SparqlQueryDescriptionConvertRDFS
 				.conceptRewrite(descriptionKBSyntax, st, maxDepth);
 
-		return getSparqlQuery(rewritten, resultLimit);
+		return getSparqlQuery(rewritten, resultLimit, false, false);
 
 	}
 
@@ -137,6 +208,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		try {
 			SortedSet<String> s = new TreeSet<String>();
 			HashMap<String, String> result = new HashMap<String, String>();
+			HashMap<String, String> subclassMap = new HashMap<String, String>();
+			subclassMap.put("http://nlp2rdf.org/ontology/Sentence","<http://nlp2rdf.org/ontology/Subsentence>");
 			String conj = "(\"http://dbpedia.org/class/yago/Person100007846\" AND \"http://dbpedia.org/class/yago/Head110162991\")";
 
 			s.add("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
@@ -150,8 +223,19 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 			s.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
 			s.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 
+			s.clear();
+			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun\" AND EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag\"))");
+
+//			<http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag>
+			String query = "";
+			SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
+			visit.setLabels(true);
+			visit.setDistinct(true);
+			visit.setClassToSubclassesVirtuoso(subclassMap);
+			
 			for (String kbsyntax : s) {
-				result.put(kbsyntax, SparqlQueryDescriptionConvertVisitor.getSparqlQuery(kbsyntax));
+				query = visit.getSparqlQuery(kbsyntax);
+				result.put(kbsyntax, query);
 			}
 			System.out.println("************************");
 			for (String string : result.keySet()) {
@@ -196,7 +280,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 */
 	public void visit(ObjectSomeRestriction description) {
 		logger.trace("ObjectSomeRestriction");
-		query += "?" + stack.peek() + " <" + description.getRole() + "> ?object" + currentObject + ".";
+		query += "\n?" + stack.peek() + " <" + description.getRole() + "> ?object" + currentObject + ". ";
 		stack.push("object" + currentObject);
 		currentObject++;
 		description.getChild(0).accept(this);
@@ -238,7 +322,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public void visit(Intersection description) {
 		logger.trace("Intersection");
 		description.getChild(0).accept(this);
-		query += ".";
+		query += ". ";
 		description.getChild(1).accept(this);
 	}
 
@@ -302,7 +386,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public void visit(ObjectValueRestriction description) {
 		ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
 		Individual ind = description.getIndividual();
-		query += "?" + stack.peek() + " <" + op.getName() + "> <" + ind.getName() + ">";
+		query += "\n?" + stack.peek() + " <" + op.getName() + "> <" + ind.getName() + "> ";
 	}
 
 	/*
@@ -326,7 +410,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public void visit(NamedClass description) {
 
 		logger.trace("NamedClass");
-		query += "?" + stack.peek() + " a <" + description.getName() + ">";
+		query += "\n?" + stack.peek() + " a <" + description.getName() + "> ";
+		foundNamedClasses.add(description.getName());
 	}
 
 	/*
@@ -384,8 +469,6 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		logger.trace("DatatypeSomeRestriction");
 	}
 
-	private String limit(int resultLimit) {
-		return (resultLimit > 0) ? " LIMIT " + resultLimit + " " : "";
-	}
+	
 
 }

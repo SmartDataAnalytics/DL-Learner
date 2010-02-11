@@ -30,12 +30,12 @@ import org.apache.log4j.Logger;
  * @author Sebastian Hellmann <hellmann@informatik.uni-leipzig.de>
  *
  */
-public class Randomizer {
-	private static Logger logger = Logger.getLogger(Randomizer.class);
+public class ExMakerFixedSize {
+	private static Logger logger = Logger.getLogger(ExMakerFixedSize.class);
 
 	private final Examples examples;
 	
-	public Randomizer(Examples examples ){
+	public ExMakerFixedSize(Examples examples ){
 		this.examples = examples;
 	}
 	
@@ -47,14 +47,14 @@ public class Randomizer {
 			ex.addNegTrain("n"+i);
 		}
 		
-		Randomizer r = new Randomizer(ex);
-		ex = r.split(0.7d);
+		ExMakerFixedSize r = new ExMakerFixedSize(ex);
+		ex = r.select(5, 5);
 		System.out.println(ex.toString());
 		
 	}
 	
-	public Examples split(double percentageOfTrainingSet){
-//		System.out.println(GlobalConfig.trainingDataPercentage+"");
+	public Examples select(int nrOfPos, int nrOfNeg){
+
 		SortedSet<String> posTrain = new TreeSet<String>();
 		SortedSet<String> negTrain = new TreeSet<String>();
 		
@@ -66,32 +66,20 @@ public class Randomizer {
 		posOld.addAll(examples.getPositiveExamples());
 		negOld.addAll(examples.getNegativeExamples());
 		
-		int posOldSize = posOld.size();
-		int negOldSize = negOld.size();
-		
-		while (!posOld.isEmpty() && (((double)posOld.size()/(double)posOldSize)) > percentageOfTrainingSet) {
+		while (!posOld.isEmpty() && posTrain.size()< nrOfPos) {
 			String one = pickOneRandomly(posOld.toArray(new String[] {}));
 			posOld.remove(one);
-			posTest.add(one);
+			posTrain.add(one);
 		}
-		posTrain.addAll(posOld);
+		posTest.addAll(posOld);
 		
-		while (!negOld.isEmpty() && (((double)negOld.size()/(double)negOldSize)) > percentageOfTrainingSet) {
+		while (!negOld.isEmpty() && negTrain.size()< nrOfNeg) {
 			String one = pickOneRandomly(negOld.toArray(new String[] {}));
 			negOld.remove(one);
-			negTest.add(one);
+			negTrain.add(one);
 		}
-		negTrain.addAll(negOld);
+		negTest.addAll(negOld);
 		
-		
-		double posPercent = posTrain.size()/(double)posOldSize;
-		double negPercent = negTrain.size()/(double)negOldSize;
-		
-//		if there is more than a 10% error
-		if(Math.abs(posPercent - percentageOfTrainingSet)>0.1d || Math.abs(negPercent - percentageOfTrainingSet)>0.1d ){
-			logger.info("repeating, unevenly matched");
-			return split(percentageOfTrainingSet);
-		}
 		return new Examples(posTrain, negTrain, posTest, negTest);
 	}
 	

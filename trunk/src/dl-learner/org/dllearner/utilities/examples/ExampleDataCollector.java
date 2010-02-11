@@ -119,7 +119,7 @@ public class ExampleDataCollector {
 		
 	}
 	
-	public File collect(){
+	private File collect(){
 		String from = null;
 		File tmpFile = null;
 		FileWriter fw = null;
