@@ -40,7 +40,6 @@ import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.tools.ore.ui.StatusBar;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owl.model.OWLDescription;
 /**
@@ -122,7 +121,7 @@ public class DLLearnerView {
 	private String labels;
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
-	private StatusBar stat;
+	private StatusBar2 stat;
 	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for an introduction.</font></html>";
 
 	/**
@@ -167,7 +166,9 @@ public class DLLearnerView {
 		runPanel = new JPanel(new FlowLayout());
 		accept = new JButton("<html>ADD</html>");
 		addButtonPanel = new JPanel(new BorderLayout());
-		stat = new StatusBar();
+		stat = new StatusBar2();
+		stat.setBackground(learnerScroll.getBackground());
+		this.setStatusBarVisible(false);
 		hint = new JTextPane();
 		hint.setBackground(learnerScroll.getBackground());
 		hint.setContentType("text/html");
@@ -346,6 +347,13 @@ public class DLLearnerView {
 		return helpButton;
 	}
 	/**
+	 * This method sets the status bar visible when learning
+	 * is started.
+	 */
+	public void setStatusBarVisible(boolean b) {
+		stat.setVisible(b);
+	}
+	/**
 	 * This method enables the GraphicalCoveragePanel after a class expression is
 	 * selected from the list.
 	 */
@@ -513,6 +521,7 @@ public class DLLearnerView {
 	 */
 	public void algorithmTerminated() {
 		CELOE celoe = (CELOE) model.getLearningAlgorithm();
+		this.setStatusBarVisible(false);
 		String message = "<html><font size=\"3\" color=\"black\">Learning successful. All expressions up to length " + (celoe.getMinimumHorizontalExpansion()-1) +  " and some expressions up to <br>length " + celoe.getMaximumHorizontalExpansion() + " searched.";
 		hint.setForeground(Color.RED);
 		if(isInconsistent) {
@@ -575,7 +584,7 @@ public class DLLearnerView {
 	 * This methode returns the statusbar.
 	 * @return statusbar
 	 */
-	public StatusBar getStatusBar() {
+	public StatusBar2 getStatusBar() {
 		return stat;
 	}
 	
