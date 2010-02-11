@@ -80,7 +80,7 @@ public class BlankNode extends Node {
 
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor TupelAquisitor,
-			Manipulator manipulator) {
+			Manipulator manipulator, boolean dissolveBlankNodes) {
 		return new ArrayList<BlankNode>();
 	}
 

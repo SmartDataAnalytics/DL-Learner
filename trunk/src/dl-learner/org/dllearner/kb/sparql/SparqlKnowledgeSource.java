@@ -77,12 +77,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	private ProgressMonitor mon;
 	
-	private static final boolean debug = false;
-	
-	//private static final boolean threaded = debug && true ;
-
-	//	 sysex 
-	private static final boolean debugExitAfterExtraction = debug && false; // switches
+	private static final boolean debugExitAfterExtraction = false; // switches
 
 
 	private SparqlKnowledgeSourceConfigurator configurator;
@@ -478,7 +473,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			ret = new SparqlTupleAquisitor(getSparqlQueryMaker(),
 					getSPARQLTasks());
 		}
-		ret.setDissolveBlankNodes(configurator.getDissolveBlankNodes());
 		return ret;
 
 	}
@@ -518,27 +512,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		this.mon = mon;
 	}
 
-	/*
-	 * public static void main(String[] args) throws MalformedURLException {
-	 * String query = "SELECT ?pred ?obj\n" + "WHERE {<http://dbpedia.org/resource/Leipzig>
-	 * ?pred ?obj}"; URL url = new
-	 * URL("http://dbpedia.openlinksw.com:8890/sparql"); SparqlEndpoint sse =
-	 * new SparqlEndpoint(url); SparqlQuery q = new SparqlQuery(query, sse);
-	 * String[][] array = q.getAsStringArray(); for (int i = 0; i <
-	 * array.length; i++) { for (int j = 0; j < array[0].length; j++)
-	 * System.out.print(array[i][j] + " "); System.out.println(); } }
-	 */
-
-	/*
-	 * SparqlOntologyCollector oc= // new
-	 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
-	 * numberOfRecursions, filterMode, //
-	 * Datastructures.setToArray(predList),Datastructures.setToArray(
-	 * objList),Datastructures.setToArray(classList),format,url,useLits);
-	 * //HashMap<String, String> parameters = new HashMap<String, String>();
-	 * //parameters.put("default-graph-uri", "http://dbpedia.org");
-	 * //parameters.put("format", "application/sparql-results.xml");
-	 * 
-	 */
+	
 
 }

@@ -45,8 +45,19 @@ public abstract class TupleAquisitor {
 	
 	protected int mode = 0;
 	protected boolean uriDebugCheck = true;
-	protected boolean dissolveBlankNodes = false;
+	
+	public boolean dissolveBlankNodes = false;
 
+	
+	/**
+	 * this function is still used somewhere, but should be replaced
+	 * @return
+	 */
+	@Deprecated
+	public boolean isDissolveBlankNodes(){
+		return dissolveBlankNodes;
+	}
+	
 	public final SortedSet<RDFNodeTuple> getTupelForResource(String uri){
 		checkURIforValidity(uri);
 			
@@ -93,12 +104,6 @@ public abstract class TupleAquisitor {
 			return false;
 		}
 		return true;
-	}
-	public boolean isDissolveBlankNodes() {
-		return dissolveBlankNodes;
-	}
-	public void setDissolveBlankNodes(boolean dissolveBlankNodes) {
-		this.dissolveBlankNodes = dissolveBlankNodes;
 	}
 }
 

@@ -66,7 +66,7 @@ public abstract class Node  {
 	 * @param manipulator
 	 */
 	public abstract List<BlankNode> expandProperties(
-			TupleAquisitor TupelAquisitor, Manipulator manipulator);
+			TupleAquisitor TupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes);
 
 	/**
 	 * output

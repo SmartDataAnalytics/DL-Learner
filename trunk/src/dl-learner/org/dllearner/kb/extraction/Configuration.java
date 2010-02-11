@@ -66,6 +66,8 @@ public class Configuration {
 		this.breakSuperClassesAfter = breakSuperClassesAfter;
 		this.dissolveBlankNodes = dissolveBlankNodes;
 		
+		this.tupelAquisitor.dissolveBlankNodes = dissolveBlankNodes;
+		
 		this.owlAPIOntologyCollector = new OWLAPIOntologyCollector();
 
 	}

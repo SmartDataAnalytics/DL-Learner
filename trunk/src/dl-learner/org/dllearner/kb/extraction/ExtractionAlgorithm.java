@@ -85,8 +85,6 @@ public class ExtractionAlgorithm {
 	 *
 	 */
 	public Node expandNode(String uri, TupleAquisitor tupleAquisitor) {
-		tupleAquisitor.setDissolveBlankNodes(configuration.isDissolveBlankNodes());
-
 		SimpleClock sc = new SimpleClock();
 		if(tupleAquisitor instanceof SparqlTupleAquisitorImproved){
 			((SparqlTupleAquisitorImproved)tupleAquisitor).removeFromCache(uri);
@@ -155,7 +153,7 @@ public class ExtractionAlgorithm {
 				if(stopCondition()){
 					break;
 				}
-				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
 			}
 			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
 			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
@@ -163,13 +161,13 @@ public class ExtractionAlgorithm {
 				if(stopCondition()){
 					break;
 				}
-				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
 			}
 			m.stop();
 		}
 		
 		Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBlankNode").start();
-		if( configuration.isDissolveBlankNodes()&& !stopCondition()){
+		if( configuration.isDissolveBlankNodes() && !stopCondition()){
 			expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
 		}
 		m.stop();
