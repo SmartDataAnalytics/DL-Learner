@@ -200,6 +200,7 @@ public class ActionHandler implements ActionListener {
 
 		private Thread dlLearner;
 		private final DefaultListModel dm = new DefaultListModel();
+		private boolean isFinished; 
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -212,6 +213,7 @@ public class ActionHandler implements ActionListener {
 					view.getPosAndNegSelectPanel().getOptionPanel()
 							.getMaxExecutionTime());
 			timer = new Timer();
+			isFinished = false;
 			timer.schedule(new TimerTask() {
 				int progress = 0;
 
@@ -219,6 +221,10 @@ public class ActionHandler implements ActionListener {
 				public void run() {
 					progress += 1;
 					setProgress(progress);
+					if(progress == view.getPosAndNegSelectPanel().getOptionPanel()
+							.getMaxExecutionTime() - 1) {
+						isFinished = true;
+					}
 					if (la != null) {
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view
 								.getPosAndNegSelectPanel().getOptionPanel()
@@ -323,7 +329,9 @@ public class ActionHandler implements ActionListener {
 															ontology, null),
 											((EvaluatedDescriptionClass) eval)
 													.getAccuracy() * 100));
-									view.setIsInconsistent(true);
+									if(isFinished) {
+										view.setIsInconsistent(true);
+									}
 									i++;
 									break;
 								}
