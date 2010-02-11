@@ -144,14 +144,14 @@ public class InstanceNode extends Node {
 	
 	// gets the types for properties recursively
 	@Override
-	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
 		List<BlankNode> ret =  new ArrayList<BlankNode>();
 		for (ObjectPropertyNode one : objectProperties) {
-			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
+			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		}
 		
 		for (DatatypePropertyNode one : datatypeProperties) {
-			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
+			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		}
 		return ret;
 

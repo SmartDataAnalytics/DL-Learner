@@ -114,7 +114,7 @@ public class ClassNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
 		return new ArrayList<BlankNode>();
 	}
 	

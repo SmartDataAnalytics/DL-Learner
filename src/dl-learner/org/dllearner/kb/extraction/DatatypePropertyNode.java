@@ -64,7 +64,7 @@ public class DatatypePropertyNode extends PropertyNode {
 
 	// gets the types for properties recursively
 	@Override
-	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
 		List<BlankNode> ret =  new ArrayList<BlankNode>();
 		//ret.addAll(b.expandProperties(tupelAquisitor, manipulator));
 		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
@@ -77,7 +77,7 @@ public class DatatypePropertyNode extends PropertyNode {
 					}
 				}else if(tuple.b.isAnon()){
 									
-					if(tupelAquisitor.isDissolveBlankNodes()){
+					if(dissolveBlankNodes){
 						RDFBlankNode n = (RDFBlankNode) tuple.b;
 						BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
 						//add it to the graph
