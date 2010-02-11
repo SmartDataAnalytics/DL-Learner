@@ -207,6 +207,7 @@ public class ActionHandler implements ActionListener {
 				throws Exception {
 			setProgress(0);
 			la = model.getLearningAlgorithm();
+			view.setStatusBarVisible(true);
 			view.getStatusBar().setMaximumValue(
 					view.getPosAndNegSelectPanel().getOptionPanel()
 							.getMaxExecutionTime());
