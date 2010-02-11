@@ -119,6 +119,7 @@ public class ExampleDataCollector {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private File collect(){
 		String from = null;
 		File tmpFile = null;
