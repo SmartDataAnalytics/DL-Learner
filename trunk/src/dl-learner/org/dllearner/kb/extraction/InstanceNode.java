@@ -26,7 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -98,8 +97,8 @@ public class InstanceNode extends Node {
 				return null;
 			//Blank nodes 
 			}else if(tuple.b.isAnon()){
-				@SuppressWarnings("unused")
-				RDFBlankNode n = (RDFBlankNode) tuple.b;
+//				@SuppressWarnings("unused")
+//				RDFBlankNode n = (RDFBlankNode) tuple.b;
 				if(tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){
 					logger.warn("blanknodes for instances not implemented yet (rare frequency). e.g. (instance rdf:type (A and B)"+" " + this+ " in tuple "+tuple);
 				}
