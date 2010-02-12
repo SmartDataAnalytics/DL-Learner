@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2010, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.scripts.evaluation;
 
 import java.io.BufferedReader;
@@ -6,7 +25,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,11 +32,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.kb.OWLFile;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLClass;
@@ -26,9 +39,18 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
+/**
+ * Takes a file with a list of ontologies as input (one URL per line),
+ * loads the ontology in a reasoner and displays basic data about it.
+ * 
+ * @author Lorenz Bühmann
+ * @author Jens Lehmann
+ *
+ */
 public class OntologyChecker {
 
 	private static int minInstanceCount = 5;
+	private static boolean displayClasses = false;
 
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
@@ -68,14 +90,19 @@ public class OntologyChecker {
 						reasoner.classify();
 						sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
 						int classCount = 0;
+						StringBuffer tmp = new StringBuffer();
 						if (reasoner.getIndividuals().size() > 0) {
 							for (OWLClass cl : reasoner.getClasses()) {
 								if (reasoner.getIndividuals(cl, false).size() >= minInstanceCount) {
 									classCount++;
+									tmp.append("  " + cl.getURI() + "\n");
 								}
 							}
 						}
 						sb.append("#classes with min. " + minInstanceCount + " individuals: " + classCount + "\n");
+						if(displayClasses) {
+							sb.append(tmp);
+						}
 						ontologyRelClassCountMap.put(url, classCount);
 					} else {
 						sb.append("Ontology is inconsistent. \n");
