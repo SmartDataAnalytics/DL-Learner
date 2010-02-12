@@ -22,7 +22,6 @@ package org.dllearner.utilities.examples;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -37,8 +36,8 @@ import org.apache.log4j.Logger;
 public class Examples {
 	private static final Logger logger = Logger.getLogger(Examples.class);
 
-	private final SortedSet<String> positiveExamples = new TreeSet<String>();
-	private final SortedSet<String> negativeExamples = new TreeSet<String>();
+//	private final SortedSet<String> positiveExamples = new TreeSet<String>();
+//	private final SortedSet<String> negativeExamples = new TreeSet<String>();
 	private final SortedSet<String> posTrain = new TreeSet<String>();
 	private final SortedSet<String> negTrain = new TreeSet<String>();
 	private final SortedSet<String> posTest = new TreeSet<String>();
@@ -53,56 +52,64 @@ public class Examples {
 		this.addNegTest(negTest);
 	}
 	
-	public void remove(Set<String> remove) {
-		for (String string : remove) {
-			positiveExamples.remove(string);
-			negativeExamples.remove(string);
-		}
-	}
+//	public void remove(Set<String> remove) {
+//		for (String string : remove) {
+//			positiveExamples.remove(string);
+//			negativeExamples.remove(string);
+//		}
+//	}
 
+	private void _remove(String toBeRemoved ){
+		posTrain.remove(toBeRemoved);
+		negTrain.remove(toBeRemoved);
+		posTest.remove(toBeRemoved);
+		negTest.remove(toBeRemoved);
+	}
+	private void _removeAll(Collection<String> toBeRemoved){
+		posTrain.removeAll(toBeRemoved);
+		negTrain.removeAll(toBeRemoved);
+		posTest.removeAll(toBeRemoved);
+		negTest.removeAll(toBeRemoved);
+	}
+	
 	public void addPosTrain(Collection<String> pos) {
-		positiveExamples.addAll(pos);
+		_removeAll(pos);
 		posTrain.addAll(pos);
 	}
-
-	public void addPosTrain(String pos) {
-		positiveExamples.add(pos);
-		posTrain.add(pos);
-	}
-
 	public void addPosTest(Collection<String> pos) {
-		positiveExamples.addAll(pos);
+		_removeAll(pos);
 		posTest.addAll(pos);
 	}
-
-	public void addPosTest(String pos) {
-		positiveExamples.add(pos);
-		posTest.add(pos);
-	}
-
 	public void addNegTrain(Collection<String> neg) {
-		negativeExamples.addAll(neg);
+		_removeAll(neg);
 		negTrain.addAll(neg);
 	}
-
-	public void addNegTrain(String neg) {
-		negativeExamples.add(neg);
-		negTrain.add(neg);
-	}
-
 	public void addNegTest(Collection<String> neg) {
-		negativeExamples.addAll(neg);
+		_removeAll(neg);
 		negTest.addAll(neg);
 	}
-
+	
+	
+	public void addPosTrain(String pos) {
+		_remove(pos);
+		posTrain.add(pos);
+	}
+	public void addPosTest(String pos) {
+		_remove(pos);
+		posTest.add(pos);
+	}
+	public void addNegTrain(String neg) {
+		_remove(neg);
+		negTrain.add(neg);
+	}
 	public void addNegTest(String neg) {
-		negativeExamples.add(neg);
+		_remove(neg);
 		negTest.add(neg);
 	}
 
 	public boolean checkConsistency() {
-		for (String one : positiveExamples) {
-			if (negativeExamples.contains(one)) {
+		for (String one : posTrain) {
+			if (negTrain.contains(one)) {
 				logger.error("positve and negative example overlap " + one);
 				return false;
 			}
@@ -112,8 +119,18 @@ public class Examples {
 
 	@Override
 	public String toString() {
+		String ret =  "Total: " + size();
+		double posPercent = posTrain.size() / (double) posSize();
+		double negPercent = negTrain.size() / (double) negSize();
+		ret += "\nPositive: " + posTrain.size() + " | " + posTest.size() + " ("
+				+ DecimalFormat.getPercentInstance().format(posPercent) + ")";
+		ret += "\nNegative: " + negTrain.size() + " | " + negTest.size() + " ("
+				+ DecimalFormat.getPercentInstance().format(negPercent) + ")";
 
-		int total = (positiveExamples.size() + negativeExamples.size());
+		return ret;
+	}
+	
+	public String toFullString() {
 
 		String ret = "Training:\n";
 		for (String one : posTrain) {
@@ -130,15 +147,8 @@ public class Examples {
 			ret += "-" + one + "\n";
 		}
 
-		ret += "\nTotal: " + total;
-		double posPercent = posTrain.size() / (double) positiveExamples.size();
-		double negPercent = negTrain.size() / (double) negativeExamples.size();
-		ret += "\nPositive: " + posTrain.size() + " | " + posTest.size() + " ("
-				+ DecimalFormat.getPercentInstance().format(posPercent) + ")";
-		ret += "\nNegative: " + negTrain.size() + " | " + negTest.size() + " ("
-				+ DecimalFormat.getPercentInstance().format(negPercent) + ")";
-
-		return ret;
+		return ret+this.toString();
+		
 	}
 
 	public void writeExamples(String filename) {
@@ -158,12 +168,28 @@ public class Examples {
 		}
 	}
 
+	public int size(){
+		return posTrain.size()+negTrain.size()+posTest.size()+negTest.size();
+	}
+	public int posSize(){
+		return posTrain.size()+posTest.size();
+	}
+	public int negSize(){
+		return negTrain.size()+negTest.size();
+	}
+	
 	public SortedSet<String> getPositiveExamples() {
-		return positiveExamples;
+		SortedSet<String> total = new TreeSet<String>();
+		total.addAll(posTrain);
+		total.addAll(posTest);
+		return total;
 	}
 
 	public SortedSet<String> getNegativeExamples() {
-		return negativeExamples;
+		SortedSet<String> total = new TreeSet<String>();
+		total.addAll(negTrain);
+		total.addAll(negTest);
+		return total;
 	}
 
 	public SortedSet<String> getPosTrain() {
