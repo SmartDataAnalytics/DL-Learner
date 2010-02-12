@@ -315,7 +315,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				for(Constant i : dpMap.keySet()) {
 					if(dpMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
-						break;
 					}
 				}
 				frequentDataValues.put(dp, frequentInds);				
