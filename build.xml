@@ -18,6 +18,9 @@
 	<property name="release_ore_dir" value="release/ore-${today}" />
 	<property name="version_ore_dir" value="ore-${today}" />
 	
+	<property environment="env"/>
+	<property name = "protege.home"      location="${env.PROTEGE_HOME}"/>
+	<property name = "protege.plugins"   location="${protege.home}/plugins"/>
 
 	<!-- other settings -->
 	<!-- maximum amount of allocated memory in startup scripts -->
@@ -552,5 +555,50 @@ public class Info {
 		</tar>
 		<delete dir="release"/>
 	</target>
+	
+	<!-- build the DL-Learner evaluation plugin for Protege -->
+		<target name="buildEvaluationProtegePlugin">
+			<property name="source" value="src/dl-learner/org/dllearner/tools/evaluationplugin" />
+			<property name="temp" value="${source}/temp" />
+			<property name="build" value="${source}/build" />
+
+			<mkdir dir="${temp}" />
+			<mkdir dir="${build}" />
+			<mkdir dir="${temp}/META-INF" />
+			<mkdir dir="${temp}/lib" />
+			<copy toDir="${temp}/META-INF" >
+				<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />
+			</copy>
+			<copy toDir="${temp}/lib" >
+				<fileset dir="${lib_dir}/ore-tool" includes="swingx-1.0.jar" />
+			</copy>
+			<copy toDir="${temp}/lib" >
+				<fileset dir="${lib_dir}/jena" includes="json.jar" />
+			</copy>
+			<copy toDir="${temp}" >
+				<fileset dir="${class_dir}"  />
+			</copy>
+			<copy toDir="${temp}" >
+				<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
+			</copy>
+			<javac srcdir="${source}"
+		         destdir="${temp}"
+		         debug="on"
+		    	 target="1.5">
+				<classpath refid="classpath"/>
+			</javac>
+			<jar destfile="${build}/DL-Learner-evaluation-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
+				<fileset dir="${temp}" />
+			</jar>
+		</target>
+	
+	<!-- build and install the DL-Learner evaluation plugin for Protege to the given Protege directory -->
+		<target name="installEvaluationProtegePlugin" depends="buildEvaluationProtegePlugin">
+			<copy file="${build}/DL-Learner-evaluation-protege-plugin.jar" 
+			           todir = "${protege.plugins}"
+			           overwrite = "true"/>
+			<delete dir="${temp}" />
+			<delete dir="${build}" />
+		</target>
 
 </project>
