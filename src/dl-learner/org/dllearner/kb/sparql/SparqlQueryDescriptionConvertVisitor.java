@@ -150,6 +150,10 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
+	
+	public void noLimit() {
+		this.limit = -1;
+	}
 
 	public void setLabels(boolean labels) {
 		this.labels = labels;
@@ -224,7 +228,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 			s.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 
 			s.clear();
-			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun\" AND EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag\"))");
+//			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun\" AND EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag\"))");
+			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (\"http://nlp2rdf.org/ontology/hasLemma\" VALUE \"test\" )");
 
 //			<http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag>
 			String query = "";
