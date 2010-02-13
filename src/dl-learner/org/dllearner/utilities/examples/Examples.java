@@ -120,8 +120,8 @@ public class Examples {
 	@Override
 	public String toString() {
 		String ret =  "Total: " + size();
-		double posPercent = posTrain.size() / (double) posSize();
-		double negPercent = negTrain.size() / (double) negSize();
+		double posPercent = posTrain.size() / (double) sizeTotalOfPositives();
+		double negPercent = negTrain.size() / (double) sizeTotalOfNegatives();
 		ret += "\nPositive: " + posTrain.size() + " | " + posTest.size() + " ("
 				+ DecimalFormat.getPercentInstance().format(posPercent) + ")";
 		ret += "\nNegative: " + negTrain.size() + " | " + negTest.size() + " ("
@@ -171,12 +171,16 @@ public class Examples {
 	public int size(){
 		return posTrain.size()+negTrain.size()+posTest.size()+negTest.size();
 	}
-	public int posSize(){
+	public int sizeTotalOfPositives(){
 		return posTrain.size()+posTest.size();
 	}
-	public int negSize(){
+	public int sizeTotalOfNegatives(){
 		return negTrain.size()+negTest.size();
 	}
+	public int sizeOfTrainingSets(){
+		return posTrain.size()+negTrain.size();
+	}
+	
 	
 	public SortedSet<String> getPositiveExamples() {
 		SortedSet<String> total = new TreeSet<String>();

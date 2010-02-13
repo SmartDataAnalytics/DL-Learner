@@ -19,6 +19,7 @@
  */
 package org.dllearner.utilities;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -153,6 +154,12 @@ public class JamonMonitorLogger {
 		// System.out.println(m);
 		 m.setHits(m.getHits()+1);
 		//System.out.println(m);
+	}
+	
+	public static void writeHTMLReport(String filename){
+		File jamonlog = new File(filename);
+		Files.createFile(jamonlog, MonitorFactory.getReport());
+		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 	
 	

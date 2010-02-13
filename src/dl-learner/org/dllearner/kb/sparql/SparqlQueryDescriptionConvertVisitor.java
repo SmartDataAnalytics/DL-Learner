@@ -67,25 +67,26 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
-	private Stack<String> stack = new Stack<String>();
-	private String query = "";
-	private int currentObject = 0;
-	
 	private int limit = 5;
 	private boolean labels = false;
 	private boolean distinct = false;
 	private Map<String,String> classToSubclassesVirtuoso = null;
-	private List<String> foundNamedClasses = new ArrayList<String>();
 	
-	public SparqlQueryDescriptionConvertVisitor() {
-		stack.push("subject");
-	}
+	private Stack<String> stack = new Stack<String>();
+	private String query = "";
+	private int currentObject = 0;
+	private List<String> foundNamedClasses = new ArrayList<String>();
 	
 	public void reset(){
 		currentObject = 0;
 		stack = new Stack<String>();
 		stack.push("subject");
 		query = "";
+		foundNamedClasses =  new ArrayList<String>() ;
+	}
+	
+	public SparqlQueryDescriptionConvertVisitor() {
+		stack.push("subject");
 	}
 
 	public String getSparqlQuery( String descriptionKBSyntax) throws ParseException { 
@@ -97,7 +98,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		description.accept(this);
 		expandSubclasses();
 		String ret =  "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n } " + limit();
-		this.reset();
+		reset();
 		return ret;
 	}
 	
@@ -158,7 +159,6 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public void setLabels(boolean labels) {
 		this.labels = labels;
 	}
-
 
 	public void setDistinct(boolean distinct) {
 		this.distinct = distinct;
@@ -402,15 +402,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * .DatatypeValueRestriction)
 	 */
 	public void visit(DatatypeValueRestriction description) {
-		String current = stack.peek();
-		String property = description.getRestrictedPropertyExpression().toString();
-		String value = description.getValue().toString();
-		System.out.println("here");
-		System.out.println(stack.peek());
-		System.out.println(current);
-		System.out.println(property);
-		System.out.println(value);
 		logger.trace("DatatypeValueRestriction");
+		query += "\n?" + stack.peek() + " <" + description.getRestrictedPropertyExpression() + ">  \""+description.getValue().getLiteral()+"\" ";
 	}
 
 	/*
@@ -421,7 +414,6 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * .NamedClass)
 	 */
 	public void visit(NamedClass description) {
-
 		logger.trace("NamedClass");
 		query += "\n?" + stack.peek() + " a <" + description.getName() + "> ";
 		foundNamedClasses.add(description.getName());
