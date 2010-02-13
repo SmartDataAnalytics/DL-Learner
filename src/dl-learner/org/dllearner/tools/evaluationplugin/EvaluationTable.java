@@ -26,17 +26,17 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	
 	private static final String[] TOOLTIPS = {
 		"The learned equivalent class expression.",
-		"Improvement",
-		"Equal Quality (+)",
-		"Equal Quality (-)",
-		"Inferior",
-		"Not acceptable",
-		"Error"		};
+		"Adding the definition improves the ontology.",
+		"The learned definition is as good as the existing one. Both are good.",
+		"The learned definition is as good as the existing one. Both are rather bad.",
+		"The learned definition is not as good as the existing one, but still acceptable.",
+		"The learned definition is not acceptable.",
+		"Adding the definition would be a bad mistake. "		};
 	
 	public EvaluationTable(OWLEditorKit editorKit){
 		super(new EvaluationTableModel());
 		mediator = new LinkedObjectComponentMediator(editorKit, this);
-		
+		getTableHeader().setReorderingAllowed(false);
 		setRenderers(editorKit);
 		setColumnSizes();
 	}

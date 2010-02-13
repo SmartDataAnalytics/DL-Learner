@@ -6,9 +6,12 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,6 +25,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -48,6 +52,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private JLabel inconsistencyLabel;
 	private JButton nextSaveButton;
 	private JLabel currentClassLabel;
+	private JProgressBar progressBar;
+
 
 	private List<NamedClass> classes = new ArrayList<NamedClass>();
 	private int currentClassIndex = 0;
@@ -56,7 +62,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 	private final ConceptComparator comparator = new ConceptComparator();
 
-	private static final String CURRENT_CLASS_MESSAGE = "Showing equivalent class expressions for class ";
+	private static final String CURRENT_CLASS_MESSAGE = "<html>Showing equivalent class expressions for class ";
 	private static final String INCONSISTENCY_WARNING = "<html>Warning. Selected class expressions leads to an inconsistent ontology!<br>"
 			+ "(Often, suggestions leading to an inconsistency should still be added. They help to detect problems in "
 			+ "the ontology elsewhere.<br>"
@@ -129,6 +135,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 		nextSaveButton = new JButton();
 		nextSaveButton.setActionCommand("next");
+		nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
 		nextSaveButton.setAction(new AbstractAction("Next") {
 			/**
 			 * 
@@ -140,7 +147,13 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 				showNextEvaluatedDescriptions();
 			}
 		});
-		coverageHolderPanel.add(nextSaveButton, BorderLayout.SOUTH);
+		JPanel buttonHolderPanel = new JPanel();
+		buttonHolderPanel.add(nextSaveButton);
+		progressBar = new JProgressBar();
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        buttonHolderPanel.add(progressBar);
+		coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
 		add(coverageHolderPanel, BorderLayout.SOUTH);
 
 	}
@@ -155,11 +168,15 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
 				OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass));
-		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + renderedClass);
+		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + "<b>" + renderedClass + "</b></html>");
 		System.out.println("Showing evaluated descriptions for class " + currentClass.toString());
 
 		// refresh coverage panel to the current class
 		coveragePanel.setConcept(currentClass);
+		
+		//increment progress
+		progressBar.setValue(currentClassIndex);
+		progressBar.setString("class " + currentClassIndex + " of " + classes.size());
 		
 		//reset last selected row to -1
 		lastSelectedRowIndex = -1;
@@ -176,12 +193,18 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		if (currentClassIndex == classes.size()) {
 			nextSaveButton.setAction(new AbstractAction("Save") {
 
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 8298689809521088714L;
+
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					saveUserInputToFile();
+//					saveUserInputToFile();
 				}
 
 			});
+			nextSaveButton.setToolTipText("Save the evaluation results to disk.");
 
 		}
 	}
@@ -237,10 +260,30 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			e.printStackTrace();
 		}
 		classes.addAll(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
+		progressBar.setMaximum(classes.size());
 	}
 
 	private void saveUserInputToFile() {
-
+		OWLOntology activeOnt = getOWLModelManager().getActiveOntology();
+		URI uri = getOWLModelManager().getOntologyPhysicalURI(activeOnt);
+		String outputFile = uri.toString().substring(0, uri.toString().lastIndexOf('.') + 1) + "inp";
+		OutputStream fos = null;
+		File file = new File(outputFile);
+		try {
+			fos = new FileOutputStream(file);
+			ObjectOutputStream o = new ObjectOutputStream(fos);
+			
+			
+			o.flush();
+			o.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fos.close();
+			} catch (Exception e) {
+			}
+		}
 	}
 
 	/**
