@@ -30,9 +30,12 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
@@ -49,7 +52,9 @@ import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
+import org.dllearner.core.owl.StringValueRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.Union;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -229,14 +234,42 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 
 			s.clear();
 //			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun\" AND EXISTS \"http://nlp2rdf.org/ontology/syntaxTreeHasPart\".\"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag\"))");
-			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (\"http://nlp2rdf.org/ontology/hasLemma\" VALUE \"test\" )");
+//			s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (\"http://nlp2rdf.org/ontology/hasLemma\" VALUE \"test\" )");
 
+			String prefix = "http://nlp2rdf.org/ontology/";
+			String test = "(\"Sentence\" AND (EXISTS \"syntaxTreeHasPart\".\"VVPP\" AND EXISTS \"syntaxTreeHasPart\".(\"stts:AuxilliaryVerb\" AND \"hasLemma\" = werden)))";
+
+			ObjectProperty stp  = new ObjectProperty(prefix+"syntaxTreeHasPart");
+			DatatypeProperty dtp = new DatatypeProperty(prefix+"hasLemma");
+			StringValueRestriction svr = new StringValueRestriction(dtp,"werden" );
+			Intersection inner = new Intersection(new NamedClass(prefix+"Auxillary"), svr);
+			Intersection middle = new Intersection(
+					new ObjectSomeRestriction(stp, new NamedClass(prefix+"VVPP")),
+					new ObjectSomeRestriction(stp, inner));
+			Intersection outer = new Intersection(
+					new NamedClass(prefix+"Sentence"),
+					middle
+					);
+			
+			System.out.println(outer.toKBSyntaxString(null,null));
+			System.out.println(test);
+
+//			s.add(outer.toKBSyntaxString(null,null));
+			SparqlQueryDescriptionConvertVisitor testVisitor = new SparqlQueryDescriptionConvertVisitor();
+			String q = testVisitor.getSparqlQuery(outer.toKBSyntaxString());
+			System.out.println(q);
+			if (true) {
+				System.exit(0);
+			}
+			
 //			<http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag>
 			String query = "";
 			SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
-			visit.setLabels(true);
-			visit.setDistinct(true);
-			visit.setClassToSubclassesVirtuoso(subclassMap);
+			visit.setLabels(false);
+			visit.setDistinct(false);
+//			visit.setClassToSubclassesVirtuoso(subclassMap);
+			
+			
 			
 			for (String kbsyntax : s) {
 				query = visit.getSparqlQuery(kbsyntax);

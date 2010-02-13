@@ -38,7 +38,6 @@ import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.examples.ExMakerFixedSize;
@@ -47,13 +46,12 @@ import org.dllearner.utilities.examples.Examples;
 
 import com.jamonapi.Monitor;
 
-public class TestIterativeLearning {
-	private static final Logger logger = Logger.getLogger(TestIterativeLearning.class);
+public class GlobalTest {
+	private static final Logger logger = Logger.getLogger(GlobalTest.class);
 
 	static DecimalFormat df = new DecimalFormat("00.###%");
 
-//	static String backgroundXML = "files/tiger.noSchema.noImports.rdf";
-	static String backgroundXML = "files/tiger_trimmed_toPOS.rdf";
+	static String backgroundXML = "files/tiger.noSchema.noImports.rdf";
 	static String propertiesXML = "files/propertiesOnly.rdf";
 	static String sentenceXMLFolder = "files/tiger/";
 	static String sentenceprefix = "http://nlp2rdf.org/ontology/s";
@@ -141,7 +139,7 @@ public class TestIterativeLearning {
 			EvaluatedDescription ed = learn(learn, config);
 			
 			/*RETRIEVING*/
-			SortedSet<String> retrieved = getSentences(ed, config.resultLimit, learn);
+			SortedSet<String> retrieved = getSentences(ed, config.resultLimit);
 			logger.debug("Retrieved "+retrieved.size()+" sentences");
 			
 			
@@ -157,26 +155,15 @@ public class TestIterativeLearning {
 			logger.debug("Number of retrieved negatives: "+negAsPos.size());
 			logger.debug("Total: "+posAsPos.size()+" + "+negAsPos.size() +" = "+retrieved.size());
 			
-			//not covered
-			
-			
 //			if(retrieved.size()!=(posAsPos.size()+negAsPos.size())){
 //				logger.warn("sets are  wrong");
 //				System.exit(0);
 //			}
 			
 			Examples newlyFound = new Examples();
-			SortedSet<String> discoveredPosInStore = Helper.intersection(retrieved, learn.getPosTest());
-			SortedSet<String> misclassifiedNegInStore = Helper.intersection(retrieved, learn.getNegTest());
-			newlyFound.addPosTrain(discoveredPosInStore);
-			newlyFound.addNegTrain(misclassifiedNegInStore);
-			int print = 5;
-			logger.info("Discovered "+discoveredPosInStore.size()+" positive sentences in store (printing "+print+"):");
-			_getLabels(discoveredPosInStore, print);
-			logger.info("Misclassified "+misclassifiedNegInStore.size()+" negative sentences in store (printing "+print+"):");
-			_getLabels(misclassifiedNegInStore, print);
-			
-			
+			newlyFound.addPosTrain(Helper.intersection(retrieved, learn.getPosTest()));
+			newlyFound.addNegTrain(Helper.intersection(retrieved, learn.getNegTest()));
+			//validate here
 			
 			fs = new ExMakerFixedSize(newlyFound, randomizedebug);
 			newlyFound = fs.select(config.splits, config.splits);
@@ -217,10 +204,9 @@ public class TestIterativeLearning {
 	private static Set<KnowledgeSource> _getOWL(Examples ex) throws Exception{
 		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 		List<URL> urls = new ArrayList<URL>();
-		urls.add(new File(backgroundXML).toURI().toURL());
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getPosTrain()));
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getNegTrain()));
-		
+		urls.add(new File(backgroundXML).toURI().toURL());
 
 		for (URL u : urls) {
 			OWLFile ks = ComponentFactory.getOWLFile(u);
@@ -260,7 +246,6 @@ public class TestIterativeLearning {
 		ExMakerFixedSize fs = new ExMakerFixedSize(newlyFound);
 		Examples tmp = fs.select(100, 100);
 		FastInstanceChecker fc = _getFastInstanceChecker(tmp);
-		@SuppressWarnings("unused")
 		SortedSet<Individual> inds = fc.getIndividuals(d);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -281,7 +266,7 @@ public class TestIterativeLearning {
 	}
 	
 	public static EvaluatedDescription learn(Examples ex, ExperimentConfig config) {
-		Monitor init = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "init").start();
+		Monitor init = JamonMonitorLogger.getTimeMonitor(GlobalTest.class, "init").start();
 
 		EvaluatedDescription result = null;
 		
@@ -293,7 +278,7 @@ public class TestIterativeLearning {
 			lp.init();
 			la.init();
 			init.stop();
-			Monitor learning = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "learning")
+			Monitor learning = JamonMonitorLogger.getTimeMonitor(GlobalTest.class, "learning")
 					.start();
 			la.start();
 			learning.stop();
@@ -309,63 +294,33 @@ public class TestIterativeLearning {
 		return result;
 	}
 
-	public static SortedSet<String> getSentences(EvaluatedDescription ed, int resultLimit, Examples justforFindingTheBug) {
+	public static SortedSet<String> getSentences(EvaluatedDescription ed, int resultLimit) {
 		SortedSet<String> result = new TreeSet<String>();
 		SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
 		visit.setDistinct(true);
 		visit.setLabels(false);
 		visit.setLimit(resultLimit);
-		String sparqlQueryGood = "";
-		String sparqlQueryBad = "";
+		String sparqlQuery = "";
 		try {
-			sparqlQueryGood = visit.getSparqlQuery(ed.getDescription().toKBSyntaxString());
-			sparqlQueryBad = visit.getSparqlQuery(ed.getDescription());
-			if(!sparqlQueryGood.equals(sparqlQueryBad)){
-				String file = "errorDescription/"+System.currentTimeMillis();
-				justforFindingTheBug.writeExamples(file);
-				Files.appendFile(new File(file), "\n\n/**\nGood:\n"+sparqlQueryGood+"\nBad:\n"+sparqlQueryBad+"**/");
-			}
-			
+			sparqlQuery = visit.getSparqlQuery(ed.getDescription());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		logger.debug("USING CONCEPT: "+PrefixMap.toKBSyntaxString(ed.getDescription()));
-		sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + sparqlQueryGood;
-		logger.debug(sparqlQueryGood);
+		logger.debug(PrefixMap.toKBSyntaxString(ed.getDescription()));
+		sparqlQuery = " \n define input:inference \"" + rulegraph + "\" \n" + "" + sparqlQuery;
+		logger.debug(sparqlQuery);
 
-		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "sparqlquery").start();
-		result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
+		Monitor m = JamonMonitorLogger.getTimeMonitor(GlobalTest.class, "sparqlquery").start();
+		result.addAll(sparqlTasks.queryAsSet(sparqlQuery, "subject"));
 		m.stop();
 		logger.debug("query avg: " + ((double)m.getAvg() / (double)1000)+ " seconds (last: "+((double)m.getLastValue() / (double)1000)+")");
 		if(result.isEmpty()){
 			
 			logger.error("sparql query returned no results ");
-			logger.error(sparqlQueryGood);
+			logger.error(sparqlQuery);
 			System.exit(0);
 		}
 		return result;
-	}
-	
-	private static void  _getLabels(SortedSet<String> sentenceURIs, int limit){
-		int i = 0;
-		for (String sentenceURI : sentenceURIs) {
-			if(i>=limit){
-				break;
-			}
-			i++;
-			_getLabel(sentenceURI);
-		}
-	}
-	
-	private static void _getLabel(String sentenceURI){
-		String 	query = "SELECT * FROM <"+graph+"> " +
-			"{ <"+sentenceURI+"> rdfs:label ?label . }";
-		SortedSet<String>  s = sparqlTasks.queryAsSet(query, "label");
-		if(s.isEmpty()){
-			logger.warn("no label for "+sentenceURI);
-		}else{
-			logger.debug(sentenceURI.replace(prefix, "")+" "+s.first());
-		}
 	}
 
 	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, ExperimentConfig config, Examples ex)
