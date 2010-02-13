@@ -11,14 +11,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
@@ -30,29 +29,23 @@ import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.mindswap.pellet.utils.SetUtils;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 
 public class EvaluationComputingScript {
 	
+	enum ThreeValuedLogic{
+		True, False, Both
+	}
+	
 	private ReasonerComponent reasoner;
 	private OWLFile ks;
-	private CELOE celoe;
-	private ClassLearningProblem lp;
 	
 	private String baseURI;
 	private Map<String, String> prefixes;
@@ -65,15 +58,13 @@ public class EvaluationComputingScript {
 
 	private static int algorithmRuntimeInSeconds = 10;
 	
-	private static int allListsComputingCount = 5;
-
 	private static DecimalFormat df = new DecimalFormat();
 
 	private static boolean useApproximations = false;
+	private static ThreeValuedLogic testReuseExistingDescription = ThreeValuedLogic.False;;
+	private static ThreeValuedLogic testFilterDescriptionsFollowingFromKB = ThreeValuedLogic.False;
 	
-	private Set<NamedClass> equivalentReducedClassesSet;
-	private Set<NamedClass> superReducedClassesSet;
-	
+	private final ConceptComparator comparator = new ConceptComparator();
 	private URI ontologyURI;
 	
 	
@@ -82,33 +73,48 @@ public class EvaluationComputingScript {
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperPredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	
-	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperPredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	
-	
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultSuperMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-
-	private Map<NamedClass, Set<OWLDescription>> assertedEquivalentClasses = new HashMap<NamedClass, Set<OWLDescription>>();
-	private Map<NamedClass, Set<OWLDescription>> assertedSuperClasses = new HashMap<NamedClass, Set<OWLDescription>>();
 	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
 		loadOntology(fileURL);
@@ -122,7 +128,6 @@ public class EvaluationComputingScript {
 	
 	
 	private void evaluateInconsistencies(){
-		List<Map<NamedClass, List<EvaluatedDescriptionClass>>> superMapList = new ArrayList<Map<NamedClass,List<EvaluatedDescriptionClass>>>();
 		List<Map<NamedClass, List<EvaluatedDescriptionClass>>> equivalenceMapList = new ArrayList<Map<NamedClass,List<EvaluatedDescriptionClass>>>();
 		
 		equivalenceMapList.add(defaultEquivalenceMap);
@@ -137,65 +142,48 @@ public class EvaluationComputingScript {
 		equivalenceMapList.add(fastEquivalencePredaccMap);
 		equivalenceMapList.add(fastEquivalenceStandardMap);
 		
-		superMapList.add(defaultSuperMap);
-		superMapList.add(owlSuperFMeasureMap);
-		superMapList.add(owlSuperGenFMeasureMap);
-		superMapList.add(owlSuperJaccardMap);
-		superMapList.add(owlSuperPredaccMap);
-		superMapList.add(owlSuperStandardMap);
-		superMapList.add(fastSuperFMeasureMap);
-		superMapList.add(fastSuperGenFMeasureMap);
-		superMapList.add(fastSuperJaccardMap);
-		superMapList.add(fastSuperPredaccMap);
-		superMapList.add(fastSuperStandardMap);
+		Set<EvaluatedDescriptionClass> evaluatedDescriptions = new TreeSet<EvaluatedDescriptionClass>(
+				new Comparator<EvaluatedDescriptionClass>() {
+
+					public int compare(EvaluatedDescriptionClass o1, EvaluatedDescriptionClass o2) {
+						return comparator.compare(o1.getDescription(), o2.getDescription());
+
+					};
+				});
 		
 		Axiom axiom;
-		NamedClass nc;
-		for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
-			for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
-				nc = entry.getKey();
-				for(EvaluatedDescriptionClass cl : entry.getValue()){
-					axiom = new EquivalentClassesAxiom(nc, cl.getDescription());
-					boolean followsFromKB = reasoner.isEquivalentClass(cl.getDescription(), nc);
-					boolean isConsistent = followsFromKB || reasoner.remainsSatisfiable(axiom);
-					cl.setConsistent(isConsistent);
-					cl.setFollowsFromKB(followsFromKB);
+		boolean followsFromKB;
+		boolean isConsistent;
+		for(NamedClass nc : defaultEquivalenceMap.keySet()){
+			for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
+				evaluatedDescriptions.addAll(map.get(nc));
+			}
+			for(EvaluatedDescriptionClass ec : evaluatedDescriptions){
+				System.out.println("Checking " + ec.getDescription() + "...");
+				axiom = new EquivalentClassesAxiom(nc, ec.getDescription());
+				followsFromKB = reasoner.isEquivalentClass(ec.getDescription(), nc);
+				isConsistent = followsFromKB || reasoner.remainsSatisfiable(axiom);
+				ec.setConsistent(isConsistent);
+				ec.setFollowsFromKB(followsFromKB);
+				System.out.println("Consistent: " +isConsistent);
+				System.out.println("Follows from KB: " + followsFromKB);
+			}
+			for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
+				for(EvaluatedDescriptionClass ec : map.get(nc)){
+					for(EvaluatedDescriptionClass ec2 : evaluatedDescriptions){
+						if(comparator.compare(ec.getDescription(), ec2.getDescription()) == 0){
+							ec.setConsistent(ec2.isConsistent());
+							ec.setFollowsFromKB(ec2.followsFromKB());
+						}
+					}
 				}
-				
 			}
-		}
-		for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : superMapList){
-			for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
-				nc = entry.getKey();
-				for(EvaluatedDescriptionClass cl : entry.getValue()){
-					axiom = new SubClassAxiom(nc, cl.getDescription());
-					boolean followsFromKB = reasoner.isSuperClassOf(cl.getDescription(), nc);
-					boolean isConsistent = followsFromKB || reasoner.remainsSatisfiable(axiom);
-					cl.setConsistent(isConsistent);
-					cl.setFollowsFromKB(followsFromKB);
-				}
-				
-			}
-		}
-	}
-	
-	private void getAssertedAxioms(){
-		try {
-			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-			OWLDataFactory fac = man.getOWLDataFactory();
-			OWLOntology ont = man.loadOntology(ontologyURI);
-			OWLClass cl;
-			for(NamedClass nc : SetUtils.union(defaultEquivalenceMap.keySet(), defaultSuperMap.keySet())){
-				cl = fac.getOWLClass(URI.create(nc.getName()));
-				assertedEquivalentClasses.put(nc, cl.getEquivalentClasses(ont));
-				assertedSuperClasses.put(nc, cl.getSuperClasses(ont));
-			}
-		} catch (OWLOntologyCreationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			evaluatedDescriptions.clear();
+			
 		}
 		
 	}
+	
 	
 	private void loadOntology(URL fileURL) throws ComponentInitException, URISyntaxException{
 		ontologyURI = fileURL.toURI();
@@ -227,32 +215,14 @@ public class EvaluationComputingScript {
 			o.writeObject(owlEquivalenceJaccardMap);
 			o.writeObject(owlEquivalenceGenFMeasureMap);
 			
-			o.writeObject(owlSuperStandardMap);
-			o.writeObject(owlSuperFMeasureMap);
-			o.writeObject(owlSuperPredaccMap);
-			o.writeObject(owlSuperJaccardMap);
-			o.writeObject(owlSuperGenFMeasureMap);
-			
 			o.writeObject(fastEquivalenceStandardMap);
 			o.writeObject(fastEquivalenceFMeasureMap);
 			o.writeObject(fastEquivalencePredaccMap);
 			o.writeObject(fastEquivalenceJaccardMap);
 			o.writeObject(fastEquivalenceGenFMeasureMap);
 			
-			o.writeObject(fastSuperStandardMap);
-			o.writeObject(fastSuperFMeasureMap);
-			o.writeObject(fastSuperPredaccMap);
-			o.writeObject(fastSuperJaccardMap);
-			o.writeObject(fastSuperGenFMeasureMap);
-			
 			o.writeObject(defaultEquivalenceMap);
-			o.writeObject(defaultSuperMap);
 			
-			o.writeObject(baseURI);
-			o.writeObject(prefixes);
-			
-			o.writeObject(assertedEquivalentClasses);
-			o.writeObject(assertedSuperClasses);
 			
 			o.flush();
 		} catch (IOException e) {
@@ -288,123 +258,80 @@ public class EvaluationComputingScript {
 			prefixes = reasoner.getPrefixes();
 
 			// loop through all classes
-			for (NamedClass nc : SetUtils.union(equivalentReducedClassesSet, superReducedClassesSet)) {
+			for (NamedClass nc : defaultEquivalenceMap.keySet()) {
 					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
 							);
 //					ClassLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 //					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-					for (int j = 0; j <= 1; j++) {
-						if (j == 0) {
-							if(!equivalentReducedClassesSet.contains(nc)){
-								continue;
+					for (int k = 0; k <= 3; k++) {
+						lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+						lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+						lp.getConfigurator().setCheckConsistency(false);
+						lp.getConfigurator().setType("equivalence");
+						System.out.println("Learning equivalentClass expressions");
+						if (k == 0) {
+							lp.getConfigurator().setAccuracyMethod("standard");
+							System.out.println("Using accuracy method: standard");
+						} else if (k == 1) {
+							lp.getConfigurator().setAccuracyMethod("fmeasure");
+							System.out.println("Using accuracy method: F-Measure");
+						} else if (k == 2) {
+							lp.getConfigurator().setAccuracyMethod("pred_acc");
+							System.out.println("Using accuracy method: Predictive accuracy");
+						} else if (k == 3) {
+							lp.getConfigurator().setAccuracyMethod("jaccard");
+							System.out.println("Using accuracy method: Jaccard");
+						} else {
+							lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+							System.out.println("Using accuracy method: Generalised F-Measure");
+						}
+						lp.getConfigurator().setUseApproximations(useApproximations);
+						lp.init();
+						celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+						cf = celoe.getConfigurator();
+						cf.setUseNegation(false);
+						cf.setValueFrequencyThreshold(3);
+						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+						cf.setNoisePercentage(noisePercent);
+						cf.setMaxNrOfResults(10);
+						celoe.init();
+
+						celoe.start();
+						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+						.getCurrentlyBestEvaluatedDescriptions();
+						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+								suggestions.descendingSet());
+
+						if (i == 0) {
+							if (k == 0) {
+								owlEquivalenceStandardMap.put(nc, suggestionsList);
+							} else if (k == 1) {
+								owlEquivalenceFMeasureMap.put(nc, suggestionsList);
+							} else if (k == 2) {
+								owlEquivalencePredaccMap.put(nc, suggestionsList);
+							} else if (k == 3) {
+								owlEquivalenceJaccardMap.put(nc, suggestionsList);
+							} else {
+								owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
 							}
 						} else {
-							if(!superReducedClassesSet.contains(nc)){
-								continue;
-							}
-						}
-						for (int k = 0; k <= 3; k++) {
-							lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-							lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-							lp.getConfigurator().setCheckConsistency(false);
-							if (j == 0) {
-								lp.getConfigurator().setType("equivalence");
-								System.out.println("Learning equivalentClass expressions");
-							} else {
-								lp.getConfigurator().setType("superClass");
-								System.out.println("Learning superClass expressions");
-							}
 							if (k == 0) {
-								lp.getConfigurator().setAccuracyMethod("standard");
-								System.out.println("Using accuracy method: standard");
+								fastEquivalenceStandardMap.put(nc, suggestionsList);
 							} else if (k == 1) {
-								lp.getConfigurator().setAccuracyMethod("fmeasure");
-								System.out.println("Using accuracy method: F-Measure");
+								fastEquivalenceFMeasureMap.put(nc, suggestionsList);
 							} else if (k == 2) {
-								lp.getConfigurator().setAccuracyMethod("pred_acc");
-								System.out.println("Using accuracy method: Predictive accuracy");
+								fastEquivalencePredaccMap.put(nc, suggestionsList);
 							} else if (k == 3) {
-								lp.getConfigurator().setAccuracyMethod("jaccard");
-								System.out.println("Using accuracy method: Jaccard");
+								fastEquivalenceJaccardMap.put(nc, suggestionsList);
 							} else {
-								lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
-								System.out.println("Using accuracy method: Generalised F-Measure");
+								fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
 							}
-							lp.getConfigurator().setUseApproximations(useApproximations);
-							lp.init();
-							celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-							cf = celoe.getConfigurator();
-							cf.setUseNegation(false);
-							cf.setValueFrequencyThreshold(3);
-							cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-							cf.setNoisePercentage(noisePercent);
-							cf.setMaxNrOfResults(10);
-							celoe.init();
-
-							celoe.start();
-							suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-							.getCurrentlyBestEvaluatedDescriptions();
-							List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
-									suggestions.descendingSet());
-
-							if (i == 0) {
-								if (j == 0) {
-									if (k == 0) {
-										owlEquivalenceStandardMap.put(nc, suggestionsList);
-									} else if (k == 1) {
-										owlEquivalenceFMeasureMap.put(nc, suggestionsList);
-									} else if (k == 2) {
-										owlEquivalencePredaccMap.put(nc, suggestionsList);
-									} else if (k == 3) {
-										owlEquivalenceJaccardMap.put(nc, suggestionsList);
-									} else {
-										owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
-									}
-								} else {
-									if (k == 0) {
-										owlSuperStandardMap.put(nc, suggestionsList);
-									} else if (k == 1) {
-										owlSuperFMeasureMap.put(nc, suggestionsList);
-									} else if (k == 2) {
-										owlSuperPredaccMap.put(nc, suggestionsList);
-									} else if (k == 3) {
-										owlSuperJaccardMap.put(nc, suggestionsList);
-									} else {
-										owlSuperGenFMeasureMap.put(nc, suggestionsList);
-									}
-								}
-							} else {
-								if (j == 0) {
-									if (k == 0) {
-										fastEquivalenceStandardMap.put(nc, suggestionsList);
-									} else if (k == 1) {
-										fastEquivalenceFMeasureMap.put(nc, suggestionsList);
-									} else if (k == 2) {
-										fastEquivalencePredaccMap.put(nc, suggestionsList);
-									} else if (k == 3) {
-										fastEquivalenceJaccardMap.put(nc, suggestionsList);
-									} else {
-										fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
-									}
-								} else {
-									if (k == 0) {
-										fastSuperStandardMap.put(nc, suggestionsList);
-									} else if (k == 1) {
-										fastSuperFMeasureMap.put(nc, suggestionsList);
-									} else if (k == 2) {
-										fastSuperPredaccMap.put(nc, suggestionsList);
-									} else if (k == 3) {
-										fastSuperJaccardMap.put(nc, suggestionsList);
-									} else {
-										fastSuperGenFMeasureMap.put(nc, suggestionsList);
-									}
-								}
-							}
-							// }
-							cm.freeComponent(celoe);
-							 cm.freeComponent(lp);
 						}
+						// }
+						cm.freeComponent(celoe);
+						 cm.freeComponent(lp);
 					}
+					
 			}
 
 			cm.freeComponent(reasoner);
@@ -445,66 +372,41 @@ public class EvaluationComputingScript {
 			baseURI = reasoner.getBaseURI();
 			prefixes = reasoner.getPrefixes();
 
-			for (NamedClass nc : SetUtils.union(equivalentReducedClassesSet, superReducedClassesSet)) {
-					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
-							);
+			for (NamedClass nc : defaultEquivalenceMap.keySet()) {
+					System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes));
 					
-					for (int j = 0; j <= 1; j++) {
-						lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-						lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-						lp.getConfigurator().setCheckConsistency(false);
-						if (j == 0) {
-							if(!equivalentReducedClassesSet.contains(nc)){
-								continue;
-							}
-							lp.getConfigurator().setType("equivalence");
-							System.out.println("Learning equivalentClass expressions");
-						} else {
-							if(!superReducedClassesSet.contains(nc)){
-								continue;
-							}
-							lp.getConfigurator().setType("superClass");
-							System.out.println("Learning superClass expressions");
-						}
-						lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
-						System.out.println("Using accuracy method: Generalised F-Measure");
-						lp.getConfigurator().setUseApproximations(useApproximations);
-						lp.init();
-						celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-						cf = celoe.getConfigurator();
-						cf.setUseNegation(false);
-						cf.setValueFrequencyThreshold(3);
-						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-						cf.setNoisePercentage(noisePercent);
-						cf.setMaxNrOfResults(10);
-						celoe.init();
+					lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+					lp.getConfigurator().setCheckConsistency(false);
+					lp.getConfigurator().setType("equivalence");
+					System.out.println("Learning equivalentClass expressions");
+					lp.getConfigurator().setAccuracyMethod("generalised_fmeasure");
+					System.out.println("Using accuracy method: Generalised F-Measure");
+					lp.getConfigurator().setUseApproximations(useApproximations);
+					lp.init();
+					celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+					cf = celoe.getConfigurator();
+					cf.setUseNegation(false);
+					cf.setValueFrequencyThreshold(3);
+					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+					cf.setNoisePercentage(noisePercent);
+					cf.setMaxNrOfResults(10);
+					celoe.init();
 
-						celoe.start();
+					celoe.start();
 
-						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-						.getCurrentlyBestEvaluatedDescriptions();
-						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
-								suggestions.descendingSet());
+					suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+					.getCurrentlyBestEvaluatedDescriptions();
+					List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+							suggestions.descendingSet());
 
-						if (i == 0) {
-							if (j == 0) {
-								owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
-							} else {
-								owlSuperGenFMeasureMap.put(nc, suggestionsList);
-							}
-
-						} else {
-							if (j == 0) {
-								fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
-							} else {
-								fastSuperGenFMeasureMap.put(nc, suggestionsList);
-							}
-
-						}
-						cm.freeComponent(celoe);
-						cm.freeComponent(lp);
-
+					if (i == 0) {
+						owlEquivalenceGenFMeasureMap.put(nc, suggestionsList);
+					} else {
+						fastEquivalenceGenFMeasureMap.put(nc, suggestionsList);
 					}
+					cm.freeComponent(celoe);
+					cm.freeComponent(lp);
 					
 			}
 			cm.freeComponent(reasoner);
@@ -541,77 +443,50 @@ public class EvaluationComputingScript {
 				System.out.println("\nlearning axioms for class " + nc.toManchesterSyntaxString(baseURI, prefixes)
 						+ " with " + instanceCount + " instances");
 				
-				for (int i = 0; i <= 1; i++) {
-					lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-					lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
-					lp.getConfigurator().setCheckConsistency(false);
-					if (i == 0) {
-						lp.getConfigurator().setType("equivalence");
-						System.out.println("Learning equivalentClass expressions");
-					} else {
-						lp.getConfigurator().setType("superClass");
-						System.out.println("Learning superClass expressions");
-					}
-					lp.getConfigurator().setUseApproximations(true);
-					lp.init();
-					celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-					cf = celoe.getConfigurator();
-					cf.setUseNegation(false);
-					cf.setValueFrequencyThreshold(3);
-					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
-					cf.setNoisePercentage(noisePercent);
-					cf.setMaxNrOfResults(10);
-					celoe.init();
+				lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+				lp.getConfigurator().setClassToDescribe(nc.getURI().toURL());
+				lp.getConfigurator().setCheckConsistency(false);
+				lp.getConfigurator().setType("equivalence");
+				System.out.println("Learning equivalentClass expressions");
+				lp.getConfigurator().setUseApproximations(true);
+				lp.init();
+				celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+				cf = celoe.getConfigurator();
+				cf.setUseNegation(false);
+				cf.setValueFrequencyThreshold(3);
+				cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
+				cf.setNoisePercentage(noisePercent);
+				cf.setMaxNrOfResults(10);
+				celoe.init();
 
-					celoe.start();
+				celoe.start();
 
-					// test whether a solution above the threshold was found
-					EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
-					double bestAcc = best.getAccuracy();
+				// test whether a solution above the threshold was found
+				EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
+				double bestAcc = best.getAccuracy();
 
-					if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
-						System.out
-								.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
-										+ (100 * minAccuracy)
-										+ "% or the best description is not appropriate. (The best one was \""
-										+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
-										+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
-					} else {
+				if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
+					System.out
+							.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
+									+ (100 * minAccuracy)
+									+ "% or the best description is not appropriate. (The best one was \""
+									+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+									+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
+				} else {
 
-						suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
-								.getCurrentlyBestEvaluatedDescriptions();
-						List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
-								suggestions.descendingSet());
-						if (i == 0) {
-							defaultEquivalenceMap.put(nc, suggestionsList);
-						} else {
-							defaultSuperMap.put(nc, suggestionsList);
-						}
-					}
-					cm.freeComponent(celoe);
-					cm.freeComponent(lp);
+					suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
+							.getCurrentlyBestEvaluatedDescriptions();
+					List<EvaluatedDescriptionClass> suggestionsList = new LinkedList<EvaluatedDescriptionClass>(
+							suggestions.descendingSet());
+					defaultEquivalenceMap.put(nc, suggestionsList);
 				}
-
-				
+				cm.freeComponent(celoe);
+				cm.freeComponent(lp);
 
 			}
 		}
-		equivalentReducedClassesSet = getShrinkedSet(defaultEquivalenceMap.keySet(), allListsComputingCount);
-		superReducedClassesSet = getShrinkedSet(defaultSuperMap.keySet(), allListsComputingCount);
 	}
 
-	private Set<NamedClass> getShrinkedSet(Set<NamedClass> set, int count){
-		Set<NamedClass> reducedSet = new HashSet<NamedClass>();
-		int i = 0;
-		for(NamedClass nc : set){
-			if(i % count == 0){
-				reducedSet.add(nc);
-			}
-			i++;
-		}
-		return reducedSet;
-		
-	}
 	/**
 	 * @param args
 	 * @throws MalformedURLException 
