@@ -314,6 +314,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				Set<Constant> frequentInds = new TreeSet<Constant>();
 				for(Constant i : dpMap.keySet()) {
 					if(dpMap.get(i) >= frequencyThreshold) {
+						logger.trace("adding value "+i+", because "+dpMap.get(i) +">="+frequencyThreshold);
 						frequentInds.add(i);
 					}
 				}

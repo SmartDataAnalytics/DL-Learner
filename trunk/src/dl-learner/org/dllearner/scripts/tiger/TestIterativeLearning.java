@@ -34,8 +34,8 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.examples.ExMakerFixedSize;
@@ -68,7 +68,7 @@ public class TestIterativeLearning {
 	
 	
 	
-	final static boolean  debug = true;
+	final static boolean  debug = false;
 	//no randomization in examples
 	final static boolean  randomizedebug = !debug;
 
@@ -77,10 +77,9 @@ public class TestIterativeLearning {
 		Logger.getLogger(Cache.class).setLevel(Level.INFO);
 		Logger.getLogger(ComponentPool.class).setLevel(Level.INFO);
 		Logger.getLogger(ROLearner2.class).setLevel(Level.TRACE);
+		Logger.getLogger(RhoDRDown.class).setLevel(Level.TRACE);
 		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
 
-		
-		
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
 					.asList(new String[] { graph })), new ArrayList<String>());
@@ -93,16 +92,10 @@ public class TestIterativeLearning {
 		SortedSet<String> positives;
 		SortedSet<String> negatives;
 
-		if(debug) {
-			positives =  read(test_has_pos);;
-			negatives =  read(test_has_neg);;
-		}else{
-//			positives = read(passiveWithZu);
-			positives =  read(passiveNoZU);
-			negatives = read(active);
-		}
+//		positives = read(passiveWithZu);
 		positives =  read(passiveNoZU);
 		negatives = read(active);
+		
 		//removing overlap
 		positives.removeAll(negatives);
 		negatives.removeAll(positives);
@@ -117,6 +110,7 @@ public class TestIterativeLearning {
 		
 		ExperimentConfig config = new ExperimentConfig();
 		firstContact( allExamples, config);
+		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
 		//retrieved wird neues Example, als schnittmenge mit all 
 		//und den bisher gewaehlten
 		//dann splits auswählen und
@@ -241,7 +235,7 @@ public class TestIterativeLearning {
 			FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
 			PosNegLPStandard lp = ComponentFactory
 					.getPosNegLPStandard(rc, ex.getPosTrain(), ex.getNegTrain());
-			LearningAlgorithm la = _getROLLearner(lp, rc, config );
+			LearningAlgorithm la = _getROLLearner(lp, rc, config, ex);
 
 			for (KnowledgeSource ks : tmp) {
 				ks.init();
@@ -274,50 +268,46 @@ public class TestIterativeLearning {
 		visit.setLimit(resultLimit);
 		String sparqlQuery = "";
 		try {
-			logger.debug(PrefixMap.toKBSyntaxString(ed.getDescription()));
-//			sparqlQuery = visit.getSparqlQuery(ed.getDescription().toKBSyntaxString());
-//			logger.debug(sparqlQuery);
 			sparqlQuery = visit.getSparqlQuery(ed.getDescription());
-			logger.debug(sparqlQuery);
-			if (true) {
-				System.exit(0);
-			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-
 		logger.debug(PrefixMap.toKBSyntaxString(ed.getDescription()));
-		
 		sparqlQuery = " \n define input:inference \"" + rulegraph + "\" \n" + "" + sparqlQuery;
 		logger.debug(sparqlQuery);
 
 		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "sparqlquery").start();
 		result.addAll(sparqlTasks.queryAsSet(sparqlQuery, "subject"));
 		logger.debug("query avg: " + ((double)m.getAvg() / (double)1000)+ " seconds (last: "+((double)m.getLastValue() / (double)1000)+")");
-		if(debug && result.isEmpty()){
+		if(result.isEmpty()){
+			
 			logger.error("sparql query returned no results ");
+			logger.error(sparqlQuery);
 			System.exit(0);
 		}
 		return result;
 	}
 
-	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, ExperimentConfig config)
+	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, ExperimentConfig config, Examples ex)
 			throws Exception {
+		
+		int maxExecutionTime = config.maxExecutionTime;
+		int valueFrequencyThreshold = config.valueFrequencyThreshold;
+		if(config.adaptive){
+			maxExecutionTime = 2 * ex.sizeOfTrainingSets();
+			valueFrequencyThreshold = (int) Math.floor(0.8d*((double)ex.getPosTrain().size()));
+			
+		}
+		
 		ROLComponent2 la = ComponentFactory.getROLComponent2(lp, rc);
 		la.getConfigurator().setUseExistsConstructor(true);
-
-		// la.getConfigurator().setUseAllConstructor(true);
-		// la.getConfigurator().setUseCardinalityRestrictions(true);
-		// la.getConfigurator().setUseNegation(true);
-		// la.getConfigurator().setUseHasValueConstructor(true);
-		// la.getConfigurator().setValueFrequencyThreshold(10);
 
 		la.getConfigurator().setUseAllConstructor(false);
 		la.getConfigurator().setUseCardinalityRestrictions(false);
 		la.getConfigurator().setUseNegation(false);
 		la.getConfigurator().setUseHasValueConstructor(false);
 		la.getConfigurator().setUseDataHasValueConstructor(true);
-//		la.getConfigurator().setValueFrequencyThreshold(1);
+		la.getConfigurator().setValueFrequencyThreshold(valueFrequencyThreshold);
 		
 		la.getConfigurator().setIgnoredConcepts(new HashSet<String>(Arrays.asList(new String[]{
 				"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag",
@@ -326,13 +316,14 @@ public class TestIterativeLearning {
 		})));
 		
 
-		la.getConfigurator().setNoisePercentage(0);
+		la.getConfigurator().setNoisePercentage(config.noise);
 		la.getConfigurator().setTerminateOnNoiseReached(true);
-//		la.getConfigurator().setStartClass(Config.getConfig().prefix + "Sentence");
-		la.getConfigurator().setMaxExecutionTimeInSeconds(config.maxExecutionTime);
-//		la.getConfigurator().setMinExecutionTimeInSeconds(20);
-
-		// la.getConfigurator().setMinExecutionTimeInSeconds(100);
+		la.getConfigurator().setMaxExecutionTimeInSeconds(maxExecutionTime);
+		
+		if(config.useStartClass){
+			la.getConfigurator().setStartClass(prefix + "Sentence");
+		}
+		
 		 la.getConfigurator().setWriteSearchTree(false);
 		 la.getConfigurator().setSearchTreeFile("log/searchTree.txt");
 		 la.getConfigurator().setReplaceSearchTree(false);
