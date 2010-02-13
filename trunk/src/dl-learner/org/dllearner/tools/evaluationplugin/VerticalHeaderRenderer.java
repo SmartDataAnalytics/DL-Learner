@@ -26,6 +26,13 @@ public class VerticalHeaderRenderer extends DefaultTableCellRenderer {
         label.setIcon (icon);
         label.setHorizontalAlignment (SwingConstants.CENTER);
         label.setBorder (new BevelBorder (BevelBorder.RAISED));
+        if(!((EvaluationTable)table).isAllColumnsEnabled()){
+			if(column >= 2 && column <= 5){
+				label.setEnabled(false);
+			}
+		} else {
+			label.setEnabled(true);
+		}
         return label;
     }
     

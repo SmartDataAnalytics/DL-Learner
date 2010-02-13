@@ -74,11 +74,6 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperPredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastSuperJaccardMap;
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap;
@@ -86,14 +81,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperPredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlSuperJaccardMap;
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultSuperMap;
 
 	@Override
 	protected void initialiseOWLView() throws Exception {
@@ -148,11 +137,12 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			}
 		});
 		JPanel buttonHolderPanel = new JPanel();
-		buttonHolderPanel.add(nextSaveButton);
 		progressBar = new JProgressBar();
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
         buttonHolderPanel.add(progressBar);
+		buttonHolderPanel.add(nextSaveButton);
+		
 		coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
 		add(coverageHolderPanel, BorderLayout.SOUTH);
 
@@ -165,6 +155,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		showInconsistencyWarning(false);
 		NamedClass currentClass = classes.get(currentClassIndex++);
 
+		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass).asOWLClass().
+					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
 				OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass));
@@ -200,7 +192,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-//					saveUserInputToFile();
+					saveUserInputToFile();
 				}
 
 			});
@@ -228,26 +220,21 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-			owlSuperStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlSuperFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlSuperPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlSuperJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-
+			for(int i = 1; i <= 5;i++){
+				o.readObject();
+			}
+		
+			
 			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-			fastSuperStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastSuperFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastSuperPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastSuperJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastSuperGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-
+			for(int i = 1; i <= 5;i++){
+				o.readObject();
+			}
 			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			defaultSuperMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -314,6 +301,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		evaluatedDescriptions.addAll(fastEquivalenceGenFMeasureMap.get(nc));
 		evaluatedDescriptions.addAll(fastEquivalenceFMeasureMap.get(nc));
 		evaluatedDescriptions.addAll(fastEquivalencePredaccMap.get(nc));
+		evaluatedDescriptions.addAll(defaultEquivalenceMap.get(nc));
 		List<EvaluatedDescriptionClass> merged = new ArrayList<EvaluatedDescriptionClass>(evaluatedDescriptions);
 
 		return merged;

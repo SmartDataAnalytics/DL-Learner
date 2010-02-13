@@ -16,6 +16,7 @@ public class RadioButtonRenderer extends JRadioButton implements TableCellRender
 	 */
 	private static final long serialVersionUID = -688293293192402900L;
 	private static final Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+	
 
 	public RadioButtonRenderer() {
 		super();
@@ -39,6 +40,13 @@ public class RadioButtonRenderer extends JRadioButton implements TableCellRender
 			setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
 		} else {
 			setBorder(noFocusBorder);
+		}
+		if(!((EvaluationTable)table).isAllColumnsEnabled()){
+			if(column >= 2 && column <= 5){
+				setEnabled(false);
+			}
+		} else {
+			setEnabled(true);
 		}
 
 		return this;
