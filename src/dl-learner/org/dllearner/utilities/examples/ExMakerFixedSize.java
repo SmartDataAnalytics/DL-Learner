@@ -35,9 +35,15 @@ public class ExMakerFixedSize {
 	private static Logger logger = Logger.getLogger(ExMakerFixedSize.class);
 
 	private final Examples examples;
+	private final boolean randomize;
 	
 	public ExMakerFixedSize(Examples examples ){
+		this(examples, true) ;
+	}
+	
+	public ExMakerFixedSize(Examples examples, boolean randomize ){
 		this.examples = examples;
+		this.randomize = randomize;
 	}
 	
 	public static void main(String[] args) {
@@ -54,6 +60,24 @@ public class ExMakerFixedSize {
 		
 	}
 	
+	/**
+	 * same as select(int,int)
+	 * uses both times the same number
+	 * @param both
+	 * @return
+	 */
+	public Examples select(int both){
+		return select( both,  both);
+	}
+	
+	/**
+	 * returns a new example object based on all Examples in the old set
+	 * picks a fixed number of examples, puts them into 
+	 * training sets rest to test set
+	 * @param nrOfPos
+	 * @param nrOfNeg
+	 * @return
+	 */
 	public Examples select(int nrOfPos, int nrOfNeg){
 
 		SortedSet<String> posTrain = new TreeSet<String>();
@@ -68,14 +92,24 @@ public class ExMakerFixedSize {
 		negOld.addAll(examples.getNegativeExamples());
 		
 		while (!posOld.isEmpty() && posTrain.size()< nrOfPos) {
-			String one = pickOneRandomly(posOld.toArray(new String[] {}));
+			String one;
+			if(randomize){
+				one = pickOneRandomly(posOld.toArray(new String[] {}));
+			}else{
+				one = posOld.first();
+			}
 			posOld.remove(one);
 			posTrain.add(one);
 		}
 		posTest.addAll(posOld);
 		
 		while (!negOld.isEmpty() && negTrain.size()< nrOfNeg) {
-			String one = pickOneRandomly(negOld.toArray(new String[] {}));
+			String one;
+			if(randomize){
+				one = pickOneRandomly(negOld.toArray(new String[] {}));
+			}else{
+				one = negOld.first();
+			}
 			negOld.remove(one);
 			negTrain.add(one);
 		}
@@ -83,6 +117,7 @@ public class ExMakerFixedSize {
 		
 		return new Examples(posTrain, negTrain, posTest, negTest);
 	}
+	
 	
 	public static String pickOneRandomly(String[] from){
 		Random r = new Random();
