@@ -294,6 +294,17 @@ public class EvaluationComputingScript {
 						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 						cf.setNoisePercentage(noisePercent);
 						cf.setMaxNrOfResults(10);
+						if(testReuseExistingDescription.equals(ThreeValuedLogic.True)){
+							cf.setReuseExistingDescription(true);
+						} else {
+							cf.setReuseExistingDescription(false);
+						}
+						if(testFilterDescriptionsFollowingFromKB.equals(ThreeValuedLogic.True)){
+							cf.setFilterDescriptionsFollowingFromKB(true);
+						} else {
+							cf.setFilterDescriptionsFollowingFromKB(false);
+						}
+						
 						celoe.init();
 
 						celoe.start();
@@ -391,6 +402,16 @@ public class EvaluationComputingScript {
 					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					cf.setNoisePercentage(noisePercent);
 					cf.setMaxNrOfResults(10);
+					if(testReuseExistingDescription.equals(ThreeValuedLogic.True)){
+						cf.setReuseExistingDescription(true);
+					} else {
+						cf.setReuseExistingDescription(false);
+					}
+					if(testFilterDescriptionsFollowingFromKB.equals(ThreeValuedLogic.True)){
+						cf.setFilterDescriptionsFollowingFromKB(true);
+					} else {
+						cf.setFilterDescriptionsFollowingFromKB(false);
+					}
 					celoe.init();
 
 					celoe.start();
@@ -457,6 +478,16 @@ public class EvaluationComputingScript {
 				cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 				cf.setNoisePercentage(noisePercent);
 				cf.setMaxNrOfResults(10);
+				if(testReuseExistingDescription.equals(ThreeValuedLogic.True)){
+					cf.setReuseExistingDescription(true);
+				} else {
+					cf.setReuseExistingDescription(false);
+				}
+				if(testFilterDescriptionsFollowingFromKB.equals(ThreeValuedLogic.True)){
+					cf.setFilterDescriptionsFollowingFromKB(true);
+				} else {
+					cf.setFilterDescriptionsFollowingFromKB(false);
+				}
 				celoe.init();
 
 				celoe.start();
