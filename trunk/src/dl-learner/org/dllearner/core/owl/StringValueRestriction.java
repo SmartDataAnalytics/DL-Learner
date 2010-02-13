@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Map;
+
 /**
  * 
  * String value restriction, e.g. \exists description hasValue "interesting item".
@@ -47,4 +49,7 @@ public class StringValueRestriction extends DatatypeValueRestriction {
 		return stringValue;
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return "(" + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " STRINGVALUE " + value.toKBSyntaxString(baseURI, prefixes) + ")";
+	}	
 }
