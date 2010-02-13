@@ -36,10 +36,8 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	public EvaluationTable(OWLEditorKit editorKit){
 		super(new EvaluationTableModel());
 		mediator = new LinkedObjectComponentMediator(editorKit, this);
-		OWLCellRenderer renderer = new OWLCellRenderer(editorKit, true, false);
-		renderer.setHighlightKeywords(true);
-		getColumn(0).setCellRenderer(renderer);
-		setRenderers();
+		
+		setRenderers(editorKit);
 		setColumnSizes();
 	}
 	
@@ -66,7 +64,13 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 
 	}
 	
-	private void setRenderers(){
+	private void setRenderers(OWLEditorKit editorKit){
+		//set manchester syntax renderer for the first column
+		OWLCellRenderer renderer = new OWLCellRenderer(editorKit, true, false);
+		renderer.setHighlightKeywords(true);
+		getColumn(0).setCellRenderer(renderer);
+		//set for the remaining columns a radiobutton renderer and editor
+		//and let the header text show vertical
 		for(int i = 1; i < getColumnCount(); i++){
 			getColumn(i).setCellRenderer(new RadioButtonRenderer());
 			getColumn(i).setCellEditor(new RadioButtonEditor());
@@ -128,5 +132,6 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	public void dispose(){
 		mediator.dispose();
 	}
+	
 	
 }
