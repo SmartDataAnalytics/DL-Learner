@@ -56,7 +56,7 @@ public class TypedConstant extends Constant {
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return literal;
+		return "\"" + literal + "\"";
 //		return literal + "^^" + datatype;
 	}
 	
