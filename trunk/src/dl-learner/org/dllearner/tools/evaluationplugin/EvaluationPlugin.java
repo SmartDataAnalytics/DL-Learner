@@ -1,4 +1,5 @@
 package org.dllearner.tools.evaluationplugin;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -35,9 +36,7 @@ import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
 
-
-
-public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSelectionListener{
+public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSelectionListener {
 
 	/**
 	 * 
@@ -49,20 +48,20 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private JLabel inconsistencyLabel;
 	private JButton nextSaveButton;
 	private JLabel currentClassLabel;
-	
+
 	private List<NamedClass> classes = new ArrayList<NamedClass>();
 	private int currentClassIndex = 0;
 	
-	
+	private int lastSelectedRowIndex = -1;
+
 	private final ConceptComparator comparator = new ConceptComparator();
-	
+
 	private static final String CURRENT_CLASS_MESSAGE = "Showing equivalent class expressions for class ";
-	private static final String INCONSISTENCY_WARNING = 
-		"<html>Warning. Selected class expressions leads to an inconsistent ontology!<br>" +
-		"(Often, suggestions leading to an inconsistency should still be added. They help to detect problems in " +
-		"the ontology elsewhere.<br>" +
-		" See http://dl-learner.org/files/screencast/protege/screencast.htm .)</html>";
-	
+	private static final String INCONSISTENCY_WARNING = "<html>Warning. Selected class expressions leads to an inconsistent ontology!<br>"
+			+ "(Often, suggestions leading to an inconsistency should still be added. They help to detect problems in "
+			+ "the ontology elsewhere.<br>"
+			+ " See http://dl-learner.org/files/screencast/protege/screencast.htm .)</html>";
+
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap;
@@ -90,7 +89,6 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultSuperMap;
 
-	
 	@Override
 	protected void initialiseOWLView() throws Exception {
 		System.out.println("Initializing DL-Learner Evaluation Plugin...");
@@ -98,41 +96,40 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		parseEvaluationFile();
 		showNextEvaluatedDescriptions();
 	}
-	
+
 	@Override
 	protected void disposeOWLView() {
 		evaluationTable.getSelectionModel().removeListSelectionListener(this);
 		evaluationTable.dispose();
 	}
-	
+
 	/**
 	 * Create the user interface.
 	 */
-	private void createUI(){
+	private void createUI() {
 		setLayout(new BorderLayout());
-		
+
 		currentClassLabel = new JLabel();
 		add(currentClassLabel, BorderLayout.NORTH);
-		
+
 		JPanel tableHolderPanel = new JPanel(new BorderLayout());
 		evaluationTable = new EvaluationTable(getOWLEditorKit());
 		evaluationTable.getSelectionModel().addListSelectionListener(this);
-        JScrollPane sp = new JScrollPane(evaluationTable);
-        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        tableHolderPanel.add(sp);
-        inconsistencyLabel = new JLabel(INCONSISTENCY_WARNING);
-        inconsistencyLabel.setForeground(getBackground());
-        tableHolderPanel.add(inconsistencyLabel, BorderLayout.SOUTH);
-        add(tableHolderPanel);
-        
-        
-        JPanel coverageHolderPanel = new JPanel(new BorderLayout());
-        coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
-        coverageHolderPanel.add(coveragePanel);
-        
-        nextSaveButton = new JButton();
-        nextSaveButton.setActionCommand("next");
-        nextSaveButton.setAction(new AbstractAction("Next"){
+		JScrollPane sp = new JScrollPane(evaluationTable);
+		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		tableHolderPanel.add(sp);
+		inconsistencyLabel = new JLabel(INCONSISTENCY_WARNING);
+		inconsistencyLabel.setForeground(getBackground());
+		tableHolderPanel.add(inconsistencyLabel, BorderLayout.SOUTH);
+		add(tableHolderPanel);
+
+		JPanel coverageHolderPanel = new JPanel(new BorderLayout());
+		coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
+		coverageHolderPanel.add(coveragePanel);
+
+		nextSaveButton = new JButton();
+		nextSaveButton.setActionCommand("next");
+		nextSaveButton.setAction(new AbstractAction("Next") {
 			/**
 			 * 
 			 */
@@ -142,54 +139,59 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			public void actionPerformed(ActionEvent e) {
 				showNextEvaluatedDescriptions();
 			}
-        });
-        coverageHolderPanel.add(nextSaveButton, BorderLayout.SOUTH);
-        add(coverageHolderPanel, BorderLayout.SOUTH);
-        
+		});
+		coverageHolderPanel.add(nextSaveButton, BorderLayout.SOUTH);
+		add(coverageHolderPanel, BorderLayout.SOUTH);
+
 	}
-	
+
 	/**
 	 * Show the descriptions for next class to evaluate.
 	 */
-	private void showNextEvaluatedDescriptions(){
+	private void showNextEvaluatedDescriptions() {
 		showInconsistencyWarning(false);
 		NamedClass currentClass = classes.get(currentClassIndex++);
-		
-		//show the name for the current class in manchester syntax
-		String renderedClass = getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass));
+
+		// show the name for the current class in manchester syntax
+		String renderedClass = getOWLModelManager().getRendering(
+				OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass));
 		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + renderedClass);
 		System.out.println("Showing evaluated descriptions for class " + currentClass.toString());
-		
-		//refresh coverage panel to the current class
+
+		// refresh coverage panel to the current class
 		coveragePanel.setConcept(currentClass);
 		
-		//necessary to set the current class to evaluate as activated entity
+		//reset last selected row to -1
+		lastSelectedRowIndex = -1;
+
+		// necessary to set the current class to evaluate as activated entity
 		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass);
 		OWLEntity curEntity = desc.asOWLClass();
 		getOWLEditorKit().getWorkspace().getOWLSelectionModel().setSelectedEntity(curEntity);
-		
+
 		evaluationTable.setDescriptions(getMergedDescriptions(currentClass));
-		//if the currently shown class expressions are for the last class to evaluate, change
-		//button text and action to save the user input
-		if(currentClassIndex == classes.size()){
-			nextSaveButton.setAction(new AbstractAction("Save"){
+		// if the currently shown class expressions are for the last class to
+		// evaluate, change
+		// button text and action to save the user input
+		if (currentClassIndex == classes.size()) {
+			nextSaveButton.setAction(new AbstractAction("Save") {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					
+					saveUserInputToFile();
 				}
-				
+
 			});
-			
+
 		}
 	}
-	
+
 	/**
-	 * Load the computed DL-Learner results from a file, which name corresponds to the loaded owl-file.
+	 * Load the computed DL-Learner results from a file, which name corresponds
+	 * to the loaded owl-file.
 	 */
 	@SuppressWarnings("unchecked")
-	private void parseEvaluationFile(){
+	private void parseEvaluationFile() {
 		OWLOntology activeOnt = getOWLModelManager().getActiveOntology();
 		URI uri = getOWLModelManager().getOntologyPhysicalURI(activeOnt);
 		String resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.') + 1) + "res";
@@ -223,7 +225,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			defaultSuperMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -235,25 +237,30 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			e.printStackTrace();
 		}
 		classes.addAll(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
-		
-		
 	}
-	
+
+	private void saveUserInputToFile() {
+
+	}
+
 	/**
-	 * Get a disjoint list of all computed evaluated descriptions. 
-	 * @param nc The class which is currently to evaluate.
-	 * @return A List of disjoint evaluated descriptions - here disjointness only by the description
-	 * not the accuracy.
+	 * Get a disjoint list of all computed evaluated descriptions.
+	 * 
+	 * @param nc
+	 *            The class which is currently to evaluate.
+	 * @return A List of disjoint evaluated descriptions - here disjointness
+	 *         only by the description not the accuracy.
 	 */
-	private List<EvaluatedDescriptionClass> getMergedDescriptions(NamedClass nc){
-		
-		Set<EvaluatedDescriptionClass> evaluatedDescriptions = new TreeSet<EvaluatedDescriptionClass>(new Comparator<EvaluatedDescriptionClass>(){
-			
-			public int compare(EvaluatedDescriptionClass o1, EvaluatedDescriptionClass o2) {
-				return comparator.compare(o1.getDescription(), o2.getDescription());
-				
-			};
-		});
+	private List<EvaluatedDescriptionClass> getMergedDescriptions(NamedClass nc) {
+
+		Set<EvaluatedDescriptionClass> evaluatedDescriptions = new TreeSet<EvaluatedDescriptionClass>(
+				new Comparator<EvaluatedDescriptionClass>() {
+
+					public int compare(EvaluatedDescriptionClass o1, EvaluatedDescriptionClass o2) {
+						return comparator.compare(o1.getDescription(), o2.getDescription());
+
+					};
+				});
 		evaluatedDescriptions.addAll(owlEquivalenceStandardMap.get(nc));
 		evaluatedDescriptions.addAll(owlEquivalenceJaccardMap.get(nc));
 		evaluatedDescriptions.addAll(owlEquivalenceGenFMeasureMap.get(nc));
@@ -265,28 +272,32 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		evaluatedDescriptions.addAll(fastEquivalenceFMeasureMap.get(nc));
 		evaluatedDescriptions.addAll(fastEquivalencePredaccMap.get(nc));
 		List<EvaluatedDescriptionClass> merged = new ArrayList<EvaluatedDescriptionClass>(evaluatedDescriptions);
-		
+
 		return merged;
 	}
-	
+
 	/**
-	 * Show a red colored warning, if adding the selected class expression would lead to an inconsistent
-	 * ontology.
-	 * @param show If true a warning is displayed, otherwise not.
+	 * Show a red colored warning, if adding the selected class expression would
+	 * lead to an inconsistent ontology.
+	 * 
+	 * @param show
+	 *            If true a warning is displayed, otherwise not.
 	 */
-	private void showInconsistencyWarning(boolean show){
-		if(show){
+	private void showInconsistencyWarning(boolean show) {
+		if (show) {
 			inconsistencyLabel.setForeground(Color.RED);
 		} else {
 			inconsistencyLabel.setForeground(getBackground());
 		}
 	}
-	
+
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		if (!e.getValueIsAdjusting() && evaluationTable.getSelectedRow() >= 0) {
+		int selectedRow = evaluationTable.getSelectedRow();
+		if (!e.getValueIsAdjusting() &&  selectedRow >= 0 && lastSelectedRowIndex != selectedRow) {
 			coveragePanel.setNewClassDescription(evaluationTable.getSelectedEvaluatedDescription());
 			showInconsistencyWarning(!evaluationTable.getSelectedEvaluatedDescription().isConsistent());
+			lastSelectedRowIndex = selectedRow;
 		}
 	}
 
