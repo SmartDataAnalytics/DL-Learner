@@ -26,6 +26,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.URLencodeUTF8;
 
 /**
  * a container for examples
@@ -154,12 +155,19 @@ public class Examples {
 	public void writeExamples(String filename) {
 		try {
 			FileWriter a = new FileWriter(filename, false);
+			
+			StringBuffer buffer = new StringBuffer();
+			buffer.append("\n\n\n\n\n");
 			for (String s : posTrain) {
-				a.write("+\"" + s + "\"\n");
+				a.write("import(\""+URLencodeUTF8.encode(s)+"\");\n");
+				buffer.append("+\"" + s + "\"\n");
 			}
 			for (String s : negTrain) {
-				a.write("-\"" + s + "\"\n");
+				a.write("import(\""+URLencodeUTF8.encode(s)+"\");\n");
+				buffer.append("-\"" + s + "\"\n");
 			}
+		
+			a.write(buffer.toString());
 			a.flush();
 			a.close();
 			logger.info("wrote examples to " + filename);

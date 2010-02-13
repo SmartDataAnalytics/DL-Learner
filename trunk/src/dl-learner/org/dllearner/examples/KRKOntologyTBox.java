@@ -70,11 +70,13 @@ public class KRKOntologyTBox {
 	public void addConcept(String concept){
 		try{
 		//make Description
-		Description d = KBParser.parseConcept(concept,ontologyURI.toString()+"#");
-		//d.addChild(oecr);
+		KBParser.internalNamespace = ontologyURI.toString()+"#";
+		Description d = KBParser.parseConcept(concept);
 		kb.addTBoxAxiom(new EquivalentClassesAxiom(getAtomicConcept("test"),d));
 		
-		}catch (Exception e) {e.printStackTrace();}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void initOntologyTBox(){
