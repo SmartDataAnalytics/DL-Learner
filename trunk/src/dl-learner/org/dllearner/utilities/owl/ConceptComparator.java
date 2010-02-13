@@ -133,7 +133,7 @@ public class ConceptComparator implements Comparator<Description> {
 				return 1;
 			} else if(concept2 instanceof BooleanValueRestriction) {
 				// first criterion: name of the properties
-				int cmp = rc.compare(((BooleanValueRestriction)concept1).getRestrictedPropertyExpresssion(), ((BooleanValueRestriction)concept2).getRestrictedPropertyExpresssion());
+				int cmp = rc.compare(((BooleanValueRestriction)concept1).getRestrictedPropertyExpression(), ((BooleanValueRestriction)concept2).getRestrictedPropertyExpression());
 
 				// second criterion: value of the properties (it should rarely happen that
 				// both boolean values are present since this is a contradiction or superfluous)

@@ -77,7 +77,8 @@ public abstract class DatatypeValueRestriction extends ValueRestriction {
 		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " = " + value.toKBSyntaxString(baseURI, prefixes);
 	}
 
-	public DatatypeProperty getRestrictedPropertyExpresssion() {
+	@Override
+	public DatatypeProperty getRestrictedPropertyExpression() {
 		return (DatatypeProperty) restrictedPropertyExpression;
 	}
 	
