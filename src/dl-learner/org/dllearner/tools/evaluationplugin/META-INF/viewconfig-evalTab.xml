@@ -3,7 +3,7 @@
     <VSNode splits="0.5712651314140688 0.42873486858593135">
         <CNode>
             <Component label="DL-Learner Evaluation">
-                <Property id="pluginId" value="org.coode.dlquery.org.dllearner.EvaluationPlugin"/>
+                <Property id="pluginId" value="org.dllearner.tools.evaluationplugin.org.dllearner.EvaluationPlugin"/>
             </Component>
         </CNode>
         <HSNode splits="0.19774193548387098 0.17725806451612902 0.125">

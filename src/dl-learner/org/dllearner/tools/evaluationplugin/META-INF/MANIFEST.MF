@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DL-Learner Evaluation Plugin
-Bundle-SymbolicName: org.coode.dlquery;singleton:=true
+Bundle-SymbolicName: org.dllearner.tools.evaluationplugin;singleton:=true
 Bundle-Category: protege
 Bundle-Description: A plugin for evaluating DL-Learner class descriptions 
 Bundle-Vendor: Lorenz Buehmann
