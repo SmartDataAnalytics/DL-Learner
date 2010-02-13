@@ -402,6 +402,14 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * .DatatypeValueRestriction)
 	 */
 	public void visit(DatatypeValueRestriction description) {
+		String current = stack.peek();
+		String property = description.getRestrictedPropertyExpression().toString();
+		String value = description.getValue().toString();
+		System.out.println("here");
+		System.out.println(stack.peek());
+		System.out.println(current);
+		System.out.println(property);
+		System.out.println(value);
 		logger.trace("DatatypeValueRestriction");
 	}
 
