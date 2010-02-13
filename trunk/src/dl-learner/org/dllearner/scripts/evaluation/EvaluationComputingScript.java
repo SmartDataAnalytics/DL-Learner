@@ -40,7 +40,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 
 public class EvaluationComputingScript {
 	
-	enum ThreeValuedLogic{
+	private static enum ThreeValuedLogic{
 		True, False, Both
 	}
 	
@@ -61,7 +61,7 @@ public class EvaluationComputingScript {
 	private static DecimalFormat df = new DecimalFormat();
 
 	private static boolean useApproximations = false;
-	private static ThreeValuedLogic testReuseExistingDescription = ThreeValuedLogic.False;;
+	private static ThreeValuedLogic testReuseExistingDescription = ThreeValuedLogic.False;
 	private static ThreeValuedLogic testFilterDescriptionsFollowingFromKB = ThreeValuedLogic.False;
 	
 	private final ConceptComparator comparator = new ConceptComparator();
@@ -294,12 +294,12 @@ public class EvaluationComputingScript {
 						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 						cf.setNoisePercentage(noisePercent);
 						cf.setMaxNrOfResults(10);
-						if(testReuseExistingDescription.equals(ThreeValuedLogic.True)){
+						if(testReuseExistingDescription == ThreeValuedLogic.True){
 							cf.setReuseExistingDescription(true);
 						} else {
 							cf.setReuseExistingDescription(false);
 						}
-						if(testFilterDescriptionsFollowingFromKB.equals(ThreeValuedLogic.True)){
+						if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
 							cf.setFilterDescriptionsFollowingFromKB(true);
 						} else {
 							cf.setFilterDescriptionsFollowingFromKB(false);
@@ -402,12 +402,12 @@ public class EvaluationComputingScript {
 					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					cf.setNoisePercentage(noisePercent);
 					cf.setMaxNrOfResults(10);
-					if(testReuseExistingDescription.equals(ThreeValuedLogic.True)){
+					if(testReuseExistingDescription == ThreeValuedLogic.True){
 						cf.setReuseExistingDescription(true);
 					} else {
 						cf.setReuseExistingDescription(false);
 					}
-					if(testFilterDescriptionsFollowingFromKB.equals(ThreeValuedLogic.True)){
+					if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
 						cf.setFilterDescriptionsFollowingFromKB(true);
 					} else {
 						cf.setFilterDescriptionsFollowingFromKB(false);
@@ -478,12 +478,12 @@ public class EvaluationComputingScript {
 				cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 				cf.setNoisePercentage(noisePercent);
 				cf.setMaxNrOfResults(10);
-				if(testReuseExistingDescription.equals(ThreeValuedLogic.True)){
+				if(testReuseExistingDescription == ThreeValuedLogic.True){
 					cf.setReuseExistingDescription(true);
 				} else {
 					cf.setReuseExistingDescription(false);
 				}
-				if(testFilterDescriptionsFollowingFromKB.equals(ThreeValuedLogic.True)){
+				if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
 					cf.setFilterDescriptionsFollowingFromKB(true);
 				} else {
 					cf.setFilterDescriptionsFollowingFromKB(false);
