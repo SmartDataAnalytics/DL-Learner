@@ -666,7 +666,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			}
 		} else if (description instanceof StringValueRestriction) {
 			StringValueRestriction svr = (StringValueRestriction) description;
-			DatatypeProperty dp = svr.getRestrictedPropertyExpresssion();
+			DatatypeProperty dp = svr.getRestrictedPropertyExpression();
 			Set<DatatypeProperty> subDPs = rs.getSubProperties(dp);
 			for(DatatypeProperty subDP : subDPs) {
 				refinements.add(new StringValueRestriction(subDP, svr.getStringValue()));

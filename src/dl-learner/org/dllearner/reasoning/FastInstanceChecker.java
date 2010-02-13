@@ -470,7 +470,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			return inds == null ? false : inds.contains(i);
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpresssion();
+					.getRestrictedPropertyExpression();
 			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 			if (value) {
@@ -500,7 +500,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			}
 		} else if (description instanceof DatatypeValueRestriction) {
 			String i = ((DatatypeValueRestriction)description).getValue().getLiteral();
-			DatatypeProperty dp = ((DatatypeValueRestriction)description).getRestrictedPropertyExpresssion();
+			DatatypeProperty dp = ((DatatypeValueRestriction)description).getRestrictedPropertyExpression();
 			
 			Set<String> inds = sd.get(dp).get(individual);
 			return inds == null ? false : inds.contains(i);
@@ -735,7 +735,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			return returnSet;
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpresssion();
+					.getRestrictedPropertyExpression();
 			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 			if (value) {

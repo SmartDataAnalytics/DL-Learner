@@ -258,7 +258,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		*/
 				
 		// get datatype property
-		DatatypeProperty dtp = description.getRestrictedPropertyExpresssion();
+		DatatypeProperty dtp = description.getRestrictedPropertyExpression();
 		OWLDataProperty prop = factory.getOWLDataProperty(URI.create(dtp.getName()));
 		
 		stack.push(factory.getOWLDataValueRestriction(prop, constant));	

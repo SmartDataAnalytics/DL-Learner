@@ -801,7 +801,7 @@ public class PelletReasoner extends ReasonerComponent {
 			return inds == null ? false : inds.contains(i);
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpresssion();
+					.getRestrictedPropertyExpression();
 			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 			if (value) {
@@ -1084,7 +1084,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		return returnSet;
 	} else if (description instanceof BooleanValueRestriction) {
 		DatatypeProperty dp = ((BooleanValueRestriction) description)
-				.getRestrictedPropertyExpresssion();
+				.getRestrictedPropertyExpression();
 		boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 		if (value) {
