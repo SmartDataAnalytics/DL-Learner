@@ -22,6 +22,7 @@ package org.dllearner.tools.evaluationplugin;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -196,7 +197,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			p = p + 20;
 			g2D.drawString("(potential problem)", 320, p);
 
-			p = p +20;
+			g2D.setFont(g2D.getFont().deriveFont(Font.BOLD));
+			p = p + 40;
 			g2D.drawString(coverageString , 320, p);
 			p = p +20;
 			g2D.drawString(coversAdditionalString , 320, p);

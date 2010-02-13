@@ -17,6 +17,7 @@ public class EvaluationTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private List<EvaluatedDescriptionClass> descriptions = new ArrayList<EvaluatedDescriptionClass>();
 	private List<Integer> selected;
+	private boolean allColumnsEnabled = true;
 	
 	private static final String[] COLUMN_NAMES = {
 		"equivalent class expression",
@@ -67,7 +68,12 @@ public class EvaluationTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex >= 1;
+		if(allColumnsEnabled){
+			return columnIndex >= 1;
+		} else {
+			return columnIndex <= 1 || columnIndex == 6;
+		}
+		
 	}
 	
 	@Override
@@ -79,13 +85,17 @@ public class EvaluationTableModel extends AbstractTableModel {
 		this.descriptions = descriptions;
 		this.selected = new ArrayList<Integer>(descriptions.size());
 		for(int i = 0; i < descriptions.size(); i++){
-			selected.add(i, Integer.valueOf(2));
+			selected.add(i, Integer.valueOf(1));
 		}
 		fireTableDataChanged();
 	}
 	
 	public EvaluatedDescriptionClass getSelectedEvaluatedDescription(int rowIndex){
 		return descriptions.get(rowIndex);
+	}
+	
+	public void setAllColumnsEnabled(boolean value){
+		allColumnsEnabled = value;
 	}
 
 }

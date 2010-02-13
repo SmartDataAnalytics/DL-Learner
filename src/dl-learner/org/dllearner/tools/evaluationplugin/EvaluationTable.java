@@ -23,6 +23,7 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	private static final long serialVersionUID = 6293382971051635859L;
 	
 	private LinkedObjectComponentMediator mediator;
+	private boolean allColumnsEnabled = true;
 	
 	private static final String[] TOOLTIPS = {
 		"The learned equivalent class expression.",
@@ -68,6 +69,7 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 		//set manchester syntax renderer for the first column
 		OWLCellRenderer renderer = new OWLCellRenderer(editorKit, true, false);
 		renderer.setHighlightKeywords(true);
+		renderer.setWrap(true);
 		getColumn(0).setCellRenderer(renderer);
 		//set for the remaining columns a radiobutton renderer and editor
 		//and let the header text show vertical
@@ -131,6 +133,15 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	
 	public void dispose(){
 		mediator.dispose();
+	}
+	
+	public void setAllColumnsEnabled(boolean value){
+		allColumnsEnabled = value;
+		((EvaluationTableModel)getModel()).setAllColumnsEnabled(value);
+	}
+	
+	public boolean isAllColumnsEnabled(){
+		return allColumnsEnabled;
 	}
 	
 	
