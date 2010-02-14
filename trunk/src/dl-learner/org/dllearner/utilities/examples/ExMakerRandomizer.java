@@ -19,14 +19,15 @@
  */
 package org.dllearner.utilities.examples;
 
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 /**
  * used to randomize examples and split them into training and test sets
+ * gets a percentage of the examples 
  * @author Sebastian Hellmann <hellmann@informatik.uni-leipzig.de>
  *
  */
@@ -42,7 +43,7 @@ public class ExMakerRandomizer {
 	public static void main(String[] args) {
 		Examples ex = new Examples();
 		
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 1000; i++) {
 			ex.addPosTrain("p"+i);
 			ex.addNegTrain("n"+i);
 		}
@@ -53,56 +54,49 @@ public class ExMakerRandomizer {
 		
 	}
 	
+	
 	public Examples split(double percentageOfTrainingSet){
-//		System.out.println(GlobalConfig.trainingDataPercentage+"");
-		SortedSet<String> posTrain = new TreeSet<String>();
-		SortedSet<String> negTrain = new TreeSet<String>();
+		int sizeOfPosTrainingSet = (int)Math.floor(((double)examples.sizeTotalOfPositives())*percentageOfTrainingSet);
+		int sizeOfNegTrainingSet = (int)Math.floor(((double)examples.sizeTotalOfNegatives())*percentageOfTrainingSet);
 		
-		SortedSet<String> posTest = new TreeSet<String>();
-		SortedSet<String> negTest = new TreeSet<String>();
+		List<String> posRemaining =  new ArrayList<String>(examples.getPositiveExamples());
+		List<String> negRemaining  = new ArrayList<String>(examples.getNegativeExamples());
+		Collections.shuffle(posRemaining);
+		Collections.shuffle(negRemaining);
 		
-		SortedSet<String> posOld = new TreeSet<String>();
-		SortedSet<String> negOld = new TreeSet<String>();
-		posOld.addAll(examples.getPositiveExamples());
-		negOld.addAll(examples.getNegativeExamples());
+		List<String> newPos = new ArrayList<String>();
+		List<String> newNeg = new ArrayList<String>();
 		
-		int posOldSize = posOld.size();
-		int negOldSize = negOld.size();
-		
-		while (!posOld.isEmpty() && (((double)posOld.size()/(double)posOldSize)) > percentageOfTrainingSet) {
-			String one = pickOneRandomly(posOld.toArray(new String[] {}));
-			posOld.remove(one);
-			posTest.add(one);
+		Examples ret = new Examples();
+		String one;
+		while (posRemaining.size()>sizeOfPosTrainingSet){
+			one = posRemaining.remove(posRemaining.size()-1);
+			newPos.add(one);
+			
 		}
-		posTrain.addAll(posOld);
 		
-		while (!negOld.isEmpty() && (((double)negOld.size()/(double)negOldSize)) > percentageOfTrainingSet) {
-			String one = pickOneRandomly(negOld.toArray(new String[] {}));
-			negOld.remove(one);
-			negTest.add(one);
+		ret.addPosTest(newPos);
+		ret.addPosTrain(posRemaining);
+		
+		while (negRemaining.size()>sizeOfNegTrainingSet){
+			one = negRemaining.remove(negRemaining.size()-1);
+			newNeg.add(one);
 		}
-		negTrain.addAll(negOld);
 		
+		ret.addNegTest(newNeg);
+		ret.addNegTrain(negRemaining);
 		
-		double posPercent = posTrain.size()/(double)posOldSize;
-		double negPercent = negTrain.size()/(double)negOldSize;
+		double posPercent = ret.getPosTrain().size()/(double)examples.getPositiveExamples().size();
+		double negPercent = ret.getNegTrain().size()/(double)examples.getNegativeExamples().size();
 		
 //		if there is more than a 10% error
 		if(Math.abs(posPercent - percentageOfTrainingSet)>0.1d || Math.abs(negPercent - percentageOfTrainingSet)>0.1d ){
 			logger.info("repeating, unevenly matched");
 			return split(percentageOfTrainingSet);
 		}
-		return new Examples(posTrain, negTrain, posTest, negTest);
+		return ret;
 	}
 	
-	public static String pickOneRandomly(String[] from){
-		Random r = new Random();
-		int index = Math.round((float)(from.length*r.nextFloat()));
-		try{
-			return from[index];
-		}catch (Exception e) {
-			return pickOneRandomly(from);
-		}
-	}
+	
 	
 }

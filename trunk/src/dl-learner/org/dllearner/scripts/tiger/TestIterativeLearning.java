@@ -26,8 +26,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -41,9 +39,12 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.examples.ExMakerCrossFolds;
 import org.dllearner.utilities.examples.ExMakerFixedSize;
+import org.dllearner.utilities.examples.ExMakerRandomizer;
 import org.dllearner.utilities.examples.ExampleDataCollector;
 import org.dllearner.utilities.examples.Examples;
+import org.dllearner.utilities.examples.ExperimentCollector;
 
 import com.jamonapi.Monitor;
 
@@ -72,20 +73,22 @@ public class TestIterativeLearning {
 	static String graph = "http://nlp2rdf.org/tiger";
 	static String rulegraph = "http://nlp2rdf.org/schema/rules1";
 	
+	public static DecimalFormat dftime = new DecimalFormat("#####.#");
 	
 	
 	
 	
-	final static boolean  debug = false;
+	static int iterations = 5;
+	static int folds = 6;
+	static int printSentences = 3;
 	//no randomization in examples
-	final static boolean  randomizedebug = !debug;
 
 	public static void main(String[] args) {
 		LogHelper.initLoggers();
 		Logger.getLogger(Cache.class).setLevel(Level.INFO);
 		Logger.getLogger(ComponentPool.class).setLevel(Level.INFO);
-		Logger.getLogger(ROLearner2.class).setLevel(Level.TRACE);
-		Logger.getLogger(RhoDRDown.class).setLevel(Level.TRACE);
+		Logger.getLogger(ROLearner2.class).setLevel(Level.INFO);
+		Logger.getLogger(RhoDRDown.class).setLevel(Level.INFO);
 		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
 
 		try {
@@ -96,96 +99,193 @@ public class TestIterativeLearning {
 			e.printStackTrace();
 		}
 
-		Examples allExamples = new Examples();
-		SortedSet<String> positives;
-		SortedSet<String> negatives;
-
-//		positives = read(passiveWithZu);
-		positives =  read(passiveNoZU);
-		negatives = read(active);
+//		boolean debug = true;
+//		if(debug){
+//			folds = 1;
+//			iterations = 1;
+//		}
 		
-		//removing overlap
-		positives.removeAll(negatives);
-		negatives.removeAll(positives);
+		passiveNoZU();
+//		passiveWithZu();
 
-//		System.out.println(Helper.intersection(passiveZuInfSentences, activeSentences));
-//		System.out.println(Helper.intersection(passiveZuInfSentences, passiveNoZuSentences));
-//		System.out.println(Helper.intersection(activeSentences, passiveNoZuSentences));
-		allExamples.addPosTrain(positives);
-		allExamples.addNegTrain(negatives);
-
-		logger.debug("All examples \n"+allExamples);
-		
-		ExperimentConfig config = new ExperimentConfig();
-		firstContact( allExamples, config);
+		logger.warn("finished");
 		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
-		//retrieved wird neues Example, als schnittmenge mit all 
-		//und den bisher gewaehlten
-		//dann splits auswählen und
-		//pos und neg wieder hinzufuegen
 
 	}
 	
-	public static void firstContact(Examples allExamples, ExperimentConfig config){
-		ExMakerFixedSize fs = new ExMakerFixedSize(allExamples, randomizedebug);
+	public static void passiveNoZU(){
+			ExperimentCollector eColl_passiveNoZU = new ExperimentCollector("passiveNoZU");
+		
+			SortedSet<String> positives =  read(passiveNoZU);
+			SortedSet<String> negatives = read(active);
+			
+			//removing overlap
+			positives.removeAll(negatives);
+			negatives.removeAll(positives);
+			
+			Examples allExamples = new Examples();
+			allExamples.addPosTrain(positives);
+			allExamples.addNegTrain(negatives);
+			
+			logger.debug("All examples \n"+allExamples);
+			
+			List<Examples> folds =  new ExMakerCrossFolds(allExamples).split(TestIterativeLearning.folds, 0.1d);
+//			ExMakerCrossFolds.printFolds(folds);
+			List<ExperimentConfig> configs = getConfigs();
+			for (ExperimentConfig experimentConfig : configs) {
+				logger.warn("next: passiveNoZU."+experimentConfig.label);
+				int i = 1;
+				for (Examples examples : folds) {
+					
+					logger.warn("beginning fold: "+(i++));
+					conductExperiment( examples, experimentConfig);
+					
+				}
+				eColl_passiveNoZU.addExperimentConfig(experimentConfig);
+				logger.info(experimentConfig);
+			}
+			eColl_passiveNoZU.write(iterations);
+		
+	}
+	
+	public static void passiveWithZu(){
+		ExperimentCollector eColl_passiveWithZu = new ExperimentCollector("passiveWithZu");
+			SortedSet<String> positives = read(passiveWithZu);
+			SortedSet<String> negatives = read(active);
+			
+			//removing overlap
+			positives.removeAll(negatives);
+			negatives.removeAll(positives);
+			
+			Examples allExamples = new Examples();
+			allExamples.addPosTrain(positives);
+			allExamples.addNegTrain(negatives);
+			
+			logger.debug("All examples \n"+allExamples);
+			
+			List<Examples> runs = new ArrayList<Examples>();
+			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+
+			List<ExperimentConfig> configs = getConfigs();
+			for (ExperimentConfig experimentConfig : configs) {
+				logger.warn("next: passiveWithZu."+experimentConfig.label);
+				int i=1;
+				for (Examples examples : runs) {
+					logger.warn("beginning run: "+(i++));
+					conductExperiment( examples, experimentConfig);
+					
+				}
+				eColl_passiveWithZu.addExperimentConfig(experimentConfig);
+				
+				logger.info(experimentConfig);
+			}
+			eColl_passiveWithZu.write(iterations);
+		
+	}
+	
+	public static List<ExperimentConfig> getConfigs(){
+		
+		List<ExperimentConfig> l = new ArrayList<ExperimentConfig>();
+		ExperimentConfig baseline = new ExperimentConfig(iterations, "baseline_5_5");
+		
+		
+		ExperimentConfig reducedExamples = new ExperimentConfig(iterations, "reducedExamples_2_2");
+		reducedExamples.initialsplits = 2;
+		reducedExamples.splits = 2;
+		
+		
+		ExperimentConfig fixRuntime = new ExperimentConfig(iterations, "fixRuntime_20s");
+		fixRuntime.adaptMaxRuntime=false;
+		fixRuntime.maxExecutionTime = 20;
+		
+		
+		ExperimentConfig useLemma = new ExperimentConfig(iterations, "useLemma_false");
+		useLemma.useDataHasValue=false;
+		
+		
+		l.add(baseline);
+//		l.add(reducedExamples);
+//		l.add(fixRuntime);
+//		l.add(useLemma);
+		
+
+		return l;
+	}
+	
+	public static void conductExperiment(Examples allExamples, ExperimentConfig config){
+		Examples tmp = new Examples();
+		tmp.addPosTrain(allExamples.getPosTrain());
+		tmp.addNegTrain(allExamples.getNegTrain());
+		
+		ExMakerFixedSize fs = new ExMakerFixedSize(tmp);
 		Examples learn = fs.select(config.initialsplits, config.initialsplits);
-		logger.debug("Intial training set \n"+learn);
-//		System.out.println(learn.getPosTrain());
-//		System.out.println(learn.getNegTrain());
-//		if (true) {
-//			System.exit(0);
-//		}
-//		int size = 0;
-		for(int i = 0 ; config.stopCondition(i, learn) ;i++ ) {
+		logger.debug("Total set \n"+allExamples);
+		logger.debug("Initial training set \n"+learn);
+		
+		SortedSet<String> posAsPos = new TreeSet<String>();
+		SortedSet<String> retrieved = new TreeSet<String>();
+		
+		String lastConcept="";
+		
+		for(int i = 0 ; config.stopCondition(i, learn, posAsPos,  retrieved, allExamples, lastConcept) ;i++ ) {
+			Monitor iterationTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "iterationTime").start();
 			/*LEARNING*/
 			EvaluatedDescription ed = learn(learn, config);
+			lastConcept = PrefixMap.toKBSyntaxString(ed.getDescription());
+			logger.debug("USING CONCEPT: "+lastConcept);
 			
 			/*RETRIEVING*/
-			SortedSet<String> retrieved = getSentences(ed, config.resultLimit, learn);
+			retrieved = getSentences(ed, config.resultLimit, learn);
+			//remove all that are not to be tested
+			retrieved =	Helper.intersection(allExamples.getTestExamples(), retrieved );
 			logger.debug("Retrieved "+retrieved.size()+" sentences");
 			
 			
 			/*MASHING*/
 			//Menge aller positiven geschn. mit den gefundenen
-			SortedSet<String> posAsPos = Helper.intersection(retrieved, allExamples.getPosTrain());
+			posAsPos = Helper.intersection(retrieved, allExamples.getPosTest());
 			logger.debug("Number of retrieved positives: "+posAsPos.size());
-			logger.debug("Number of total positives: "+allExamples.getPosTrain().size());
+			logger.debug("Number of total positives: "+allExamples.getPosTest().size());
 			results(posAsPos, retrieved, allExamples);
 			
 			//Menge aller positiven geschn. mit den gefundenen
-			SortedSet<String> negAsPos = Helper.intersection(retrieved, allExamples.getNegTrain());
+			SortedSet<String> negAsPos = Helper.intersection(retrieved, allExamples.getNegTest());
 			logger.debug("Number of retrieved negatives: "+negAsPos.size());
+			logger.debug("Number of total negatives: "+allExamples.getNegTest().size());
 			logger.debug("Total: "+posAsPos.size()+" + "+negAsPos.size() +" = "+retrieved.size());
 			
-			//not covered
-			
-			
-//			if(retrieved.size()!=(posAsPos.size()+negAsPos.size())){
-//				logger.warn("sets are  wrong");
-//				System.exit(0);
-//			}
 			
 			Examples newlyFound = new Examples();
-			SortedSet<String> discoveredPosInStore = Helper.intersection(retrieved, learn.getPosTest());
-			SortedSet<String> misclassifiedNegInStore = Helper.intersection(retrieved, learn.getNegTest());
+			SortedSet<String> discoveredPosInStore = Helper.intersection(retrieved, allExamples.getPosTest());
+			SortedSet<String> misclassifiedNegInStore = Helper.intersection(retrieved, allExamples.getNegTest());
 			newlyFound.addPosTrain(discoveredPosInStore);
 			newlyFound.addNegTrain(misclassifiedNegInStore);
-			int print = 5;
-			logger.info("Discovered "+discoveredPosInStore.size()+" positive sentences in store (printing "+print+"):");
-			_getLabels(discoveredPosInStore, print);
-			logger.info("Misclassified "+misclassifiedNegInStore.size()+" negative sentences in store (printing "+print+"):");
-			_getLabels(misclassifiedNegInStore, print);
+
+			SortedSet<String> posAsNeg = Helper.difference(allExamples.getPositiveExamples(), retrieved);
+			
+			logger.info("Discovered: "+discoveredPosInStore.size()+" positive sentences in store (printing "+printSentences+"):");
+			_getLabels(discoveredPosInStore, printSentences);
+			logger.info("Misclassified: "+misclassifiedNegInStore.size()+" negative sentences in store (printing "+printSentences+"):");
+			_getLabels(misclassifiedNegInStore, printSentences);
+			logger.info("Not found positives: "+posAsNeg.size()+" positive sentences in store (printing "+printSentences+"):");
+			_getLabels(posAsNeg, printSentences);
 			
 			
 			
-			fs = new ExMakerFixedSize(newlyFound, randomizedebug);
+			fs = new ExMakerFixedSize(newlyFound);
 			newlyFound = fs.select(config.splits, config.splits);
 			
 			learn.addPosTrain(newlyFound.getPosTrain());
 			learn.addNegTrain(newlyFound.getNegTrain());
 			logger.debug("Next training set \n"+learn);
-//			size =  learn.getPosTrain().size() + learn.getNegTrain().size();
-			
+			iterationTime.stop();
+			Monitor learningTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "learningTime");
+			logger.warn("finished iteration "+(i+1)+" needed on  avg: "+dftime.format(iterationTime.getAvg()));
+			logger.warn("for learning: "+dftime.format(learningTime.getLastValue())+"  avg: "+dftime.format(learningTime.getAvg()));
 		}
 		
 		
@@ -196,19 +296,19 @@ public class TestIterativeLearning {
 	
 	private static void results(SortedSet<String> posAsPos, SortedSet<String> retrieved, Examples allExamples) {
 		double precision = precision( posAsPos.size(), retrieved.size());
-		double recall = recall( posAsPos.size(),allExamples.getPosTrain().size());
-		logger.info("F-Measure: "+df.format(   (2*precision*recall)/(precision+recall))  );
+		double recall = recall( posAsPos.size(),allExamples.getPosTest().size());
+		double fmeasure =  (2*precision*recall)/(precision+recall);
+		logger.info("F-Measure: "+df.format(   fmeasure  ));
 		
 	}
 
 	public static double precision( int posAsPos, int retrieved){
-		double precision = ((double)posAsPos)/((double)retrieved);
+		double precision = (retrieved==0)?0.0d:((double)posAsPos)/((double)retrieved);
 		logger.info("Precision: "+df.format(precision));
 		return precision;
 	}
 	public static double recall( int posAsPos, int allPositives){
 		double recall = ((double)posAsPos)/((double)allPositives);
-		
 		logger.info("Recall: "+df.format(recall));
 		return recall;
 		
@@ -221,7 +321,6 @@ public class TestIterativeLearning {
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getPosTrain()));
 		urls.addAll(ExampleDataCollector.convert(sentenceXMLFolder, ex.getNegTrain()));
 		
-
 		for (URL u : urls) {
 			OWLFile ks = ComponentFactory.getOWLFile(u);
 			tmp.add(ks);
@@ -255,17 +354,17 @@ public class TestIterativeLearning {
 	}
 	
 	//test if virtuoso is correct
-	public static void validate(Description d, Examples newlyFound){
-		try {
-		ExMakerFixedSize fs = new ExMakerFixedSize(newlyFound);
-		Examples tmp = fs.select(100, 100);
-		FastInstanceChecker fc = _getFastInstanceChecker(tmp);
-		@SuppressWarnings("unused")
-		SortedSet<Individual> inds = fc.getIndividuals(d);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void validate(Description d, Examples newlyFound){
+//		try {
+//		ExMakerFixedSize fs = new ExMakerFixedSize(newlyFound);
+//		Examples tmp = fs.select(100, 100);
+//		FastInstanceChecker fc = _getFastInstanceChecker(tmp);
+//		@SuppressWarnings("unused")
+//		SortedSet<Individual> inds = fc.getIndividuals(d);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public static FastInstanceChecker _getFastInstanceChecker(Examples ex)throws Exception{
 			Set<KnowledgeSource> tmp = _getOWL(ex);
@@ -281,7 +380,8 @@ public class TestIterativeLearning {
 	}
 	
 	public static EvaluatedDescription learn(Examples ex, ExperimentConfig config) {
-		Monitor init = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "init").start();
+		Monitor initTimeKBandReasoner = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "initTimeKBandReasoner").start();
+		
 
 		EvaluatedDescription result = null;
 		
@@ -292,15 +392,14 @@ public class TestIterativeLearning {
 			LearningAlgorithm la = _getROLLearner(lp, rc, config, ex);
 			lp.init();
 			la.init();
-			init.stop();
-			Monitor learning = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "learning")
-					.start();
+			initTimeKBandReasoner.stop();
+			Monitor learningTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "learningTime").start();
 			la.start();
-			learning.stop();
-
+			learningTime.stop();
+			
 			result = la.getCurrentlyBestEvaluatedDescription();
-			logger.debug(PrefixMap.toKBSyntaxString(result.getDescription()));
-			logger.debug(PrefixMap.toManchesterSyntaxString(result.getDescription()));
+			logger.trace(PrefixMap.toKBSyntaxString(result.getDescription()));
+			logger.trace(PrefixMap.toManchesterSyntaxString(result.getDescription()));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -310,6 +409,7 @@ public class TestIterativeLearning {
 	}
 
 	public static SortedSet<String> getSentences(EvaluatedDescription ed, int resultLimit, Examples justforFindingTheBug) {
+		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "getSentences").start();
 		SortedSet<String> result = new TreeSet<String>();
 		SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
 		visit.setDistinct(true);
@@ -329,11 +429,11 @@ public class TestIterativeLearning {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		logger.debug("USING CONCEPT: "+PrefixMap.toKBSyntaxString(ed.getDescription()));
+		
 		sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + sparqlQueryGood;
-		logger.debug(sparqlQueryGood);
+		logger.trace(sparqlQueryGood);
 
-		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "sparqlquery").start();
+		
 		result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
 		m.stop();
 		logger.debug("query avg: " + ((double)m.getAvg() / (double)1000)+ " seconds (last: "+((double)m.getLastValue() / (double)1000)+")");
@@ -347,6 +447,7 @@ public class TestIterativeLearning {
 	}
 	
 	private static void  _getLabels(SortedSet<String> sentenceURIs, int limit){
+		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "_getLabels").start();
 		int i = 0;
 		for (String sentenceURI : sentenceURIs) {
 			if(i>=limit){
@@ -355,6 +456,7 @@ public class TestIterativeLearning {
 			i++;
 			_getLabel(sentenceURI);
 		}
+		m.stop();
 	}
 	
 	private static void _getLabel(String sentenceURI){
@@ -372,12 +474,10 @@ public class TestIterativeLearning {
 			throws Exception {
 		
 		int maxExecutionTime = config.maxExecutionTime;
-		int valueFrequencyThreshold = config.valueFrequencyThreshold;
-		if(config.adaptive){
-			maxExecutionTime = 2 * ex.sizeOfTrainingSets();
-			valueFrequencyThreshold = ex.getPosTrain().size();
+		int valueFrequencyThreshold = ex.getPosTrain().size();
+		if(config.adaptMaxRuntime){
+			maxExecutionTime = config.factor * ex.sizeOfTrainingSets();
 //			valueFrequencyThreshold = (int) Math.floor(0.8d*((double)ex.getPosTrain().size()));
-			
 		}
 		
 		ROLComponent2 la = ComponentFactory.getROLComponent2(lp, rc);
@@ -387,13 +487,14 @@ public class TestIterativeLearning {
 		la.getConfigurator().setUseCardinalityRestrictions(false);
 		la.getConfigurator().setUseNegation(false);
 		la.getConfigurator().setUseHasValueConstructor(false);
-		la.getConfigurator().setUseDataHasValueConstructor(true);
+		la.getConfigurator().setUseDataHasValueConstructor(config.useDataHasValue);
 		la.getConfigurator().setValueFrequencyThreshold(valueFrequencyThreshold);
 		
 		la.getConfigurator().setIgnoredConcepts(new HashSet<String>(Arrays.asList(new String[]{
 				"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag",
 				"http://nlp2rdf.org/ontology/comma_tag",
-				"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"
+				"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation",
+				"http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"
 		})));
 		
 
