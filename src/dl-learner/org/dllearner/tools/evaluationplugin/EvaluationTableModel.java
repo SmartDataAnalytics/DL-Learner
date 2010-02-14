@@ -1,7 +1,9 @@
 package org.dllearner.tools.evaluationplugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -96,6 +98,14 @@ public class EvaluationTableModel extends AbstractTableModel {
 	
 	public void setAllColumnsEnabled(boolean value){
 		allColumnsEnabled = value;
+	}
+	
+	public Map<EvaluatedDescriptionClass, Integer> getUserInputMap() {
+		Map<EvaluatedDescriptionClass, Integer> inputMap = new HashMap<EvaluatedDescriptionClass, Integer>();
+		for(EvaluatedDescriptionClass ec : descriptions){
+			inputMap.put(ec, selected.get(descriptions.indexOf(ec)));
+		}
+		return inputMap;
 	}
 
 }

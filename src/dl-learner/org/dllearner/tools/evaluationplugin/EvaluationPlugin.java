@@ -16,12 +16,14 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -54,7 +56,6 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private JLabel currentClassLabel;
 	private JProgressBar progressBar;
 
-
 	private List<NamedClass> classes = new ArrayList<NamedClass>();
 	private int currentClassIndex = 0;
 	
@@ -74,15 +75,15 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap;
 
-
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap;
 
-
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
+	
+	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap = new Hashtable<NamedClass, Map<EvaluatedDescriptionClass,Integer>>();
 
 	@Override
 	protected void initialiseOWLView() throws Exception {
@@ -133,6 +134,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				traceInput(classes.get(currentClassIndex));
 				showNextEvaluatedDescriptions();
 			}
 		});
@@ -152,19 +154,20 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	 * Show the descriptions for next class to evaluate.
 	 */
 	private void showNextEvaluatedDescriptions() {
+		
 		showInconsistencyWarning(false);
-		NamedClass currentClass = classes.get(currentClassIndex++);
+		NamedClass newClass = classes.get(currentClassIndex++);
 
-		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass).asOWLClass().
+		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
-				OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass));
+				OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass));
 		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + "<b>" + renderedClass + "</b></html>");
-		System.out.println("Showing evaluated descriptions for class " + currentClass.toString());
+		System.out.println("Showing evaluated descriptions for class " + newClass.toString());
 
 		// refresh coverage panel to the current class
-		coveragePanel.setConcept(currentClass);
+		coveragePanel.setConcept(newClass);
 		
 		//increment progress
 		progressBar.setValue(currentClassIndex);
@@ -174,11 +177,13 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		lastSelectedRowIndex = -1;
 
 		// necessary to set the current class to evaluate as activated entity
-		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription(currentClass);
+		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass);
 		OWLEntity curEntity = desc.asOWLClass();
 		getOWLEditorKit().getWorkspace().getOWLSelectionModel().setSelectedEntity(curEntity);
 
-		evaluationTable.setDescriptions(getMergedDescriptions(currentClass));
+		//add the new disjoint descriptions to the table
+		evaluationTable.setDescriptions(getMergedDescriptions(newClass));
+		
 		// if the currently shown class expressions are for the last class to
 		// evaluate, change
 		// button text and action to save the user input
@@ -192,6 +197,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					traceInput(classes.get(currentClassIndex - 1));
 					saveUserInputToFile();
 				}
 
@@ -220,9 +226,9 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-			for(int i = 1; i <= 5;i++){
-				o.readObject();
-			}
+//			for(int i = 1; i <= 5;i++){
+//				o.readObject();
+//			}
 		
 			
 			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
@@ -231,9 +237,9 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-			for(int i = 1; i <= 5;i++){
-				o.readObject();
-			}
+//			for(int i = 1; i <= 5;i++){
+//				o.readObject();
+//			}
 			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
 		} catch (FileNotFoundException e) {
@@ -249,17 +255,28 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		classes.addAll(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
 		progressBar.setMaximum(classes.size());
 	}
+	
+	/**
+	 * Add the evaluation for the current class to the result map.
+	 * @param nc The class for which the user input is traced.
+	 */
+	private void traceInput(NamedClass nc){
+		userInputMap.put(nc, evaluationTable.getUserInputMap());
+	}
 
+	/**
+	 * Saves the user evaluation map object to disk. The file format is 'FILENAME'.inp .
+	 */
 	private void saveUserInputToFile() {
 		OWLOntology activeOnt = getOWLModelManager().getActiveOntology();
 		URI uri = getOWLModelManager().getOntologyPhysicalURI(activeOnt);
 		String outputFile = uri.toString().substring(0, uri.toString().lastIndexOf('.') + 1) + "inp";
 		OutputStream fos = null;
-		File file = new File(outputFile);
+		File file = new File(URI.create(outputFile));
 		try {
 			fos = new FileOutputStream(file);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
-			
+			o.writeObject(userInputMap);
 			
 			o.flush();
 			o.close();

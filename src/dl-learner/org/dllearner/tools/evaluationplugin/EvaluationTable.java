@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.table.JTableHeader;
@@ -67,10 +68,11 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	
 	private void setRenderers(OWLEditorKit editorKit){
 		//set manchester syntax renderer for the first column
-		OWLCellRenderer renderer = new OWLCellRenderer(editorKit, true, false);
+		OWLCellRenderer renderer = new OWLCellRenderer(editorKit, false, false);
 		renderer.setHighlightKeywords(true);
-		renderer.setWrap(true);
+		renderer.setWrap(false);
 		getColumn(0).setCellRenderer(renderer);
+		
 		//set for the remaining columns a radiobutton renderer and editor
 		//and let the header text show vertical
 		for(int i = 1; i < getColumnCount(); i++){
@@ -144,5 +146,8 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 		return allColumnsEnabled;
 	}
 	
+	public Map<EvaluatedDescriptionClass, Integer> getUserInputMap(){
+		return ((EvaluationTableModel)getModel()).getUserInputMap();
+	}
 	
 }
