@@ -61,8 +61,11 @@ public class EvaluationComputingScript {
 	private static DecimalFormat df = new DecimalFormat();
 
 	private static boolean useApproximations = false;
-	private static ThreeValuedLogic testReuseExistingDescription = ThreeValuedLogic.False;
-	private static ThreeValuedLogic testFilterDescriptionsFollowingFromKB = ThreeValuedLogic.False;
+//	private static ThreeValuedLogic testReuseExistingDescription = ThreeValuedLogic.False;
+//	private static ThreeValuedLogic testFilterDescriptionsFollowingFromKB = ThreeValuedLogic.False;
+	
+	private static boolean reuseExistingDescription = false;
+	private static boolean filterDescriptionsFollowingFromKB = false;
 	
 	private final ConceptComparator comparator = new ConceptComparator();
 	private URI ontologyURI;
@@ -117,13 +120,21 @@ public class EvaluationComputingScript {
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
 	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
+		new EvaluationComputingScript(fileURL, false, false);
+	}
+	
+	public EvaluationComputingScript(URL fileURL, boolean reuseExistingDescription, boolean filterDescriptionsFollowingFromKB) 
+	throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
+		EvaluationComputingScript.filterDescriptionsFollowingFromKB = filterDescriptionsFollowingFromKB;
+		EvaluationComputingScript.reuseExistingDescription = reuseExistingDescription;
+		System.out.println("Reusing existing descriptions: " + EvaluationComputingScript.reuseExistingDescription);
+		System.out.println("Filtering descriptions following from KB: " + EvaluationComputingScript.filterDescriptionsFollowingFromKB);
 		loadOntology(fileURL);
 		computeWithApproximation();
 		computeSuggestions();
 		computeGenFMeasureWithoutDefaultNegation();
 		evaluateInconsistencies();
 		saveResults();
-		
 	}
 	
 	
@@ -202,7 +213,18 @@ public class EvaluationComputingScript {
 		int index = old.getName().lastIndexOf('.');
 		String fileName = "test.res";
 	    if (index > 0) {
-	    	  fileName = old.getName().substring(0, index) + ".res";
+	    	  fileName = old.getName().substring(0, index)+ "_";
+	    	  if(reuseExistingDescription){
+	    		  fileName = fileName + "t";
+	    	  } else {
+	    		  fileName = fileName + "f";
+	    	  }
+	    	  if(filterDescriptionsFollowingFromKB){
+	    		  fileName = fileName + "t";
+	    	  } else {
+	    		  fileName = fileName + "f";
+	    	  }
+	    	  fileName = fileName + ".res";
 	    }  
 		File file = new File(fileName);
 		try {
@@ -294,16 +316,18 @@ public class EvaluationComputingScript {
 						cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 						cf.setNoisePercentage(noisePercent);
 						cf.setMaxNrOfResults(10);
-						if(testReuseExistingDescription == ThreeValuedLogic.True){
-							cf.setReuseExistingDescription(true);
-						} else {
-							cf.setReuseExistingDescription(false);
-						}
-						if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
-							cf.setFilterDescriptionsFollowingFromKB(true);
-						} else {
-							cf.setFilterDescriptionsFollowingFromKB(false);
-						}
+//						if(testReuseExistingDescription == ThreeValuedLogic.True){
+//							cf.setReuseExistingDescription(true);
+//						} else {
+//							cf.setReuseExistingDescription(false);
+//						}
+//						if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
+//							cf.setFilterDescriptionsFollowingFromKB(true);
+//						} else {
+//							cf.setFilterDescriptionsFollowingFromKB(false);
+//						}
+						cf.setReuseExistingDescription(reuseExistingDescription);
+						cf.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
 						
 						celoe.init();
 
@@ -402,16 +426,18 @@ public class EvaluationComputingScript {
 					cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 					cf.setNoisePercentage(noisePercent);
 					cf.setMaxNrOfResults(10);
-					if(testReuseExistingDescription == ThreeValuedLogic.True){
-						cf.setReuseExistingDescription(true);
-					} else {
-						cf.setReuseExistingDescription(false);
-					}
-					if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
-						cf.setFilterDescriptionsFollowingFromKB(true);
-					} else {
-						cf.setFilterDescriptionsFollowingFromKB(false);
-					}
+//					if(testReuseExistingDescription == ThreeValuedLogic.True){
+//						cf.setReuseExistingDescription(true);
+//					} else {
+//						cf.setReuseExistingDescription(false);
+//					}
+//					if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
+//						cf.setFilterDescriptionsFollowingFromKB(true);
+//					} else {
+//						cf.setFilterDescriptionsFollowingFromKB(false);
+//					}
+					cf.setReuseExistingDescription(reuseExistingDescription);
+					cf.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
 					celoe.init();
 
 					celoe.start();
@@ -478,16 +504,18 @@ public class EvaluationComputingScript {
 				cf.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
 				cf.setNoisePercentage(noisePercent);
 				cf.setMaxNrOfResults(10);
-				if(testReuseExistingDescription == ThreeValuedLogic.True){
-					cf.setReuseExistingDescription(true);
-				} else {
-					cf.setReuseExistingDescription(false);
-				}
-				if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
-					cf.setFilterDescriptionsFollowingFromKB(true);
-				} else {
-					cf.setFilterDescriptionsFollowingFromKB(false);
-				}
+//				if(testReuseExistingDescription == ThreeValuedLogic.True){
+//					cf.setReuseExistingDescription(true);
+//				} else {
+//					cf.setReuseExistingDescription(false);
+//				}
+//				if(testFilterDescriptionsFollowingFromKB == ThreeValuedLogic.True){
+//					cf.setFilterDescriptionsFollowingFromKB(true);
+//				} else {
+//					cf.setFilterDescriptionsFollowingFromKB(false);
+//				}
+				cf.setReuseExistingDescription(reuseExistingDescription);
+				cf.setFilterDescriptionsFollowingFromKB(filterDescriptionsFollowingFromKB);
 				celoe.init();
 
 				celoe.start();
@@ -532,10 +560,50 @@ public class EvaluationComputingScript {
 			System.exit(0);
 		}
 		URL fileURL = new URL(args[0]);
-		
 		long startTime = System.currentTimeMillis();
-		new EvaluationComputingScript(fileURL);
+		
+		if(args.length == 1){
+			new EvaluationComputingScript(fileURL);
+		} else if(args.length == 2){
+			boolean reuseExistingDescription = false;
+			boolean filterDescriptionsFollowingFromKB = false;
+			if(args[1].equals("-r")){
+				reuseExistingDescription = true;
+			} else if(args[1].equals("-f")){
+				filterDescriptionsFollowingFromKB = true;
+			} else {
+				System.out.println("Wrong arguments. Type for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
+				System.exit(0);
+			}
+			new EvaluationComputingScript(fileURL, reuseExistingDescription, filterDescriptionsFollowingFromKB);
+		} else if(args.length == 3){
+			boolean reuseExistingDescription = false;
+			boolean filterDescriptionsFollowingFromKB = false;
+			if(args[1].equals("-r")){
+				reuseExistingDescription = true;
+			} else if(args[1].equals("-f")){
+				filterDescriptionsFollowingFromKB = true;
+			} else {
+				System.out.println("Wrong arguments. Type for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
+				System.exit(0);
+			}
+			if(args[2].equals("-r")){
+				reuseExistingDescription = true;
+			} else if(args[2].equals("-f")){
+				filterDescriptionsFollowingFromKB = true;
+			} else {
+				System.out.println("Wrong arguments. Type for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
+				System.exit(0);
+			}
+			new EvaluationComputingScript(fileURL, reuseExistingDescription, filterDescriptionsFollowingFromKB);
+			
+		} else {
+			System.out.println("Wrong number of arguments. Type the URL (mandatory) and optional for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
+			System.exit(0);
+		}
 		System.out.println("Overall computing time: " + (System.currentTimeMillis() - startTime)/1000 +" s");
+		
+		
 	}
 
 }
