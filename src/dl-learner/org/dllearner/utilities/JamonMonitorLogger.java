@@ -57,12 +57,6 @@ public class JamonMonitorLogger {
 			l.add(monitor);
 		}
 		
-	
-		
-		/*for (String label : retMon) {
-			l.add(MonitorFactory.getTimeMonitor(label));
-		}*/
-		
 		return l;
 	}
 	
@@ -141,9 +135,15 @@ public class JamonMonitorLogger {
 	
 	@SuppressWarnings("all")
 	public static  Monitor getTimeMonitor(Class clazz, String label) {
-		
 		String labeltmp = getMonitorPrefix(clazz)+label;
 		return MonitorFactory.getTimeMonitor(labeltmp);
+		
+	}
+	
+	@SuppressWarnings("all")
+	public static  Monitor getStatisticMonitor(Class clazz, String label) {
+		String labeltmp = getMonitorPrefix(clazz)+label;
+		return MonitorFactory.getMonitor(label, "double");
 		
 	}
 	

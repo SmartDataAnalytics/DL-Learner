@@ -36,6 +36,10 @@ import org.dllearner.utilities.URLencodeUTF8;
  */
 public class Examples {
 	private static final Logger logger = Logger.getLogger(Examples.class);
+	public static DecimalFormat df1 = new DecimalFormat("00.#%");
+	public static DecimalFormat df2 = new DecimalFormat("00.##%");
+	public static DecimalFormat df3 = new DecimalFormat("00.###%");
+	private DecimalFormat myDf = df2;
 
 //	private final SortedSet<String> positiveExamples = new TreeSet<String>();
 //	private final SortedSet<String> negativeExamples = new TreeSet<String>();
@@ -124,9 +128,9 @@ public class Examples {
 		double posPercent = posTrain.size() / (double) sizeTotalOfPositives();
 		double negPercent = negTrain.size() / (double) sizeTotalOfNegatives();
 		ret += "\nPositive: " + posTrain.size() + " | " + posTest.size() + " ("
-				+ DecimalFormat.getPercentInstance().format(posPercent) + ")";
+				+ myDf.format(posPercent) + ")";
 		ret += "\nNegative: " + negTrain.size() + " | " + negTest.size() + " ("
-				+ DecimalFormat.getPercentInstance().format(negPercent) + ")";
+				+ myDf.format(negPercent) + ")";
 
 		return ret;
 	}
@@ -189,6 +193,10 @@ public class Examples {
 		return posTrain.size()+negTrain.size();
 	}
 	
+	public int sizeOfTestSets(){
+		return posTest.size()+negTest.size();
+	}
+	
 	
 	public SortedSet<String> getPositiveExamples() {
 		SortedSet<String> total = new TreeSet<String>();
@@ -200,6 +208,13 @@ public class Examples {
 	public SortedSet<String> getNegativeExamples() {
 		SortedSet<String> total = new TreeSet<String>();
 		total.addAll(negTrain);
+		total.addAll(negTest);
+		return total;
+	}
+	
+	public SortedSet<String> getTestExamples() {
+		SortedSet<String> total = new TreeSet<String>();
+		total.addAll(posTest);
 		total.addAll(negTest);
 		return total;
 	}

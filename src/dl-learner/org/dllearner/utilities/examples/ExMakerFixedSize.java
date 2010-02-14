@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 /**
  * used to randomize examples and split them into training and test sets
+ * gets a fixed number of examples
  * @author Sebastian Hellmann <hellmann@informatik.uni-leipzig.de>
  *
  */
@@ -73,7 +74,8 @@ public class ExMakerFixedSize {
 	/**
 	 * returns a new example object based on all Examples in the old set
 	 * picks a fixed number of examples, puts them into 
-	 * training sets rest to test set
+	 * training sets, rest to test set
+	 * based on all examples found in examples object
 	 * @param nrOfPos
 	 * @param nrOfNeg
 	 * @return
