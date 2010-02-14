@@ -21,11 +21,11 @@ public class ExperimentConfig {
 	
 	public boolean useStartClass = true; 
 	public boolean searchTree = false; 
-	public int noise = 10;
+	public int noise = 5;
 	//sets ValueFrequency treshold and maxExecution time
 	public boolean adaptMaxRuntime = true;
 		public int maxExecutionTime = 20;
-		public int factor = 2;
+		public double factor = 2.0d ;//1.5d;
 	public boolean useDataHasValue = true;
 //		public int valueFrequencyThreshold = 3;
 	 
