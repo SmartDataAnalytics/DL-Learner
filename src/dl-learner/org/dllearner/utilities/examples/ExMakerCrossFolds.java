@@ -23,14 +23,14 @@ public class ExMakerCrossFolds {
 	public static void main(String[] args) {
 		Examples ex = new Examples();
 		
-		for (int i = 0; i < 30000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			ex.addPosTrain("p"+i);
 			ex.addNegTrain("n"+i);
 		}
 		long n = System.currentTimeMillis();
 		 System.out.println("initial size: "+ex.size());
 		 ExMakerCrossFolds r = new ExMakerCrossFolds(ex);
-		 List<Examples> l = r.split(10, 0.9d);
+		 List<Examples> l = r.splitLeaveOneOut(10);
 		 printFolds(l );
 		 System.out.println(System.currentTimeMillis()-n);
 		
@@ -53,7 +53,7 @@ public class ExMakerCrossFolds {
 	}
 	
 	
-	public List<Examples> split(int folds, double percentageOfTrainingSet){
+	public List<Examples> splitLeaveOneOut(int folds){
 		if( 	folds*minElementsPerFold > examples.sizeTotalOfPositives()
 				|| folds*minElementsPerFold > examples.sizeTotalOfNegatives()
 		){
@@ -64,7 +64,7 @@ public class ExMakerCrossFolds {
 			return null;
 		}
 		
-		List<Examples> ret = new ArrayList<Examples>();
+		List<Examples> foldSets = new ArrayList<Examples>();
 		double foldPercentage = 1.0d/((double)folds);
 		int tenPercentPos = (int)Math.floor(((double)examples.sizeTotalOfPositives())*foldPercentage);
 		int tenPercentNeg = (int)Math.floor(((double)examples.sizeTotalOfNegatives())*foldPercentage);
@@ -76,7 +76,7 @@ public class ExMakerCrossFolds {
 		
 		
 		Examples tmp;
-		Examples oneFold;
+//		Examples oneFold;
 		for(int i = 0; i<folds;i++){
 //			logger.trace("Foldprogess: "+i+" of "+folds);
 			SortedSet<String> newPos = new TreeSet<String>();
@@ -95,11 +95,26 @@ public class ExMakerCrossFolds {
 			tmp = new Examples();
 			tmp.addPosTrain(newPos);
 			tmp.addNegTrain(newNeg);
+			foldSets.add(tmp);
 
-			oneFold = new ExMakerRandomizer(tmp).split(percentageOfTrainingSet);
-			ret.add(oneFold);
-			
 		}
+		List<Examples> ret = new ArrayList<Examples>();
+		for(int i =0; i<foldSets.size();i++){
+			Examples oneFold = new Examples();
+			oneFold.addPosTest(foldSets.get(i).getPositiveExamples());
+			oneFold.addNegTest(foldSets.get(i).getNegativeExamples());
+			for(int a =0; a<foldSets.size();a++){
+				if(a==i){
+					continue;
+				}else{
+					oneFold.addPosTrain(foldSets.get(a).getPositiveExamples());
+					oneFold.addNegTrain(foldSets.get(a).getNegativeExamples());
+				}
+				
+			}
+			ret.add(oneFold);
+		}
+		
 		return ret;
 	}
 	

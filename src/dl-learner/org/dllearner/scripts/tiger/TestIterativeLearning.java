@@ -52,6 +52,7 @@ public class TestIterativeLearning {
 	private static final Logger logger = Logger.getLogger(TestIterativeLearning.class);
 
 	static DecimalFormat df = new DecimalFormat("00.###%");
+	public static DecimalFormat dftime = new DecimalFormat("#####.#");
 
 //	static String backgroundXML = "files/tiger.noSchema.noImports.rdf";
 	static String backgroundXML = "files/tiger_trimmed_toPOS.rdf";
@@ -73,12 +74,12 @@ public class TestIterativeLearning {
 	static String graph = "http://nlp2rdf.org/tiger";
 	static String rulegraph = "http://nlp2rdf.org/schema/rules1";
 	
-	public static DecimalFormat dftime = new DecimalFormat("#####.#");
 	
 	
 	
 	
-	static int iterations = 5;
+	
+	static int iterations = 4;
 	static int folds = 6;
 	static int printSentences = 3;
 	//no randomization in examples
@@ -90,6 +91,8 @@ public class TestIterativeLearning {
 		Logger.getLogger(ROLearner2.class).setLevel(Level.INFO);
 		Logger.getLogger(RhoDRDown.class).setLevel(Level.INFO);
 		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
+		
+		Files.mkdir("results");
 
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
@@ -104,11 +107,11 @@ public class TestIterativeLearning {
 //			folds = 1;
 //			iterations = 1;
 //		}
-		
+		long n = System.currentTimeMillis();
 		passiveNoZU();
 //		passiveWithZu();
 
-		logger.warn("finished");
+		logger.warn("finished, needed: "+(System.currentTimeMillis()-n));
 		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
 
 	}
@@ -129,7 +132,7 @@ public class TestIterativeLearning {
 			
 			logger.debug("All examples \n"+allExamples);
 			
-			List<Examples> folds =  new ExMakerCrossFolds(allExamples).split(TestIterativeLearning.folds, 0.1d);
+			List<Examples> folds =  new ExMakerCrossFolds(allExamples).splitLeaveOneOut(TestIterativeLearning.folds);
 //			ExMakerCrossFolds.printFolds(folds);
 			List<ExperimentConfig> configs = getConfigs();
 			for (ExperimentConfig experimentConfig : configs) {
@@ -139,12 +142,12 @@ public class TestIterativeLearning {
 					
 					logger.warn("beginning fold: "+(i++));
 					conductExperiment( examples, experimentConfig);
-					
 				}
 				eColl_passiveNoZU.addExperimentConfig(experimentConfig);
 				logger.info(experimentConfig);
+				eColl_passiveNoZU.write(iterations);
 			}
-			eColl_passiveNoZU.write(iterations);
+			
 		
 	}
 	
@@ -228,51 +231,55 @@ public class TestIterativeLearning {
 		
 		SortedSet<String> posAsPos = new TreeSet<String>();
 		SortedSet<String> retrieved = new TreeSet<String>();
+		SortedSet<String> newTestRetrieved = new TreeSet<String>();
+		SortedSet<String> newTrainRetrieved = new TreeSet<String>();
 		
 		String lastConcept="";
 		
-		for(int i = 0 ; config.stopCondition(i, learn, posAsPos,  retrieved, allExamples, lastConcept) ;i++ ) {
+		for(int i = 0 ; config.stopCondition(i, learn, posAsPos,  newTestRetrieved, allExamples, lastConcept) ;i++ ) {
 			Monitor iterationTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "iterationTime").start();
 			/*LEARNING*/
-			EvaluatedDescription ed = learn(learn, config);
+			EvaluatedDescription ed = learn(learn, config, i);
 			lastConcept = PrefixMap.toKBSyntaxString(ed.getDescription());
 			logger.debug("USING CONCEPT: "+lastConcept);
 			
 			/*RETRIEVING*/
-			retrieved = getSentences(ed, config.resultLimit, learn);
+			retrieved = getSentences(ed, config.resultLimit);
 			//remove all that are not to be tested
-			retrieved =	Helper.intersection(allExamples.getTestExamples(), retrieved );
-			logger.debug("Retrieved "+retrieved.size()+" sentences");
+			newTestRetrieved =	Helper.intersection(allExamples.getTestExamples(), retrieved );
+			newTrainRetrieved =	Helper.intersection(allExamples.getTrainExamples(), retrieved );
+			
+//			logger.debug("Retrieved "+retrieved.size()+" sentences");
 			
 			
 			/*MASHING*/
 			//Menge aller positiven geschn. mit den gefundenen
-			posAsPos = Helper.intersection(retrieved, allExamples.getPosTest());
+			posAsPos = Helper.intersection(newTestRetrieved, allExamples.getPosTest());
 			logger.debug("Number of retrieved positives: "+posAsPos.size());
 			logger.debug("Number of total positives: "+allExamples.getPosTest().size());
-			results(posAsPos, retrieved, allExamples);
+			double fmeasure = results(posAsPos, newTestRetrieved, allExamples);
 			
 			//Menge aller positiven geschn. mit den gefundenen
-			SortedSet<String> negAsPos = Helper.intersection(retrieved, allExamples.getNegTest());
+			SortedSet<String> negAsPos = Helper.intersection(newTestRetrieved, allExamples.getNegTest());
 			logger.debug("Number of retrieved negatives: "+negAsPos.size());
 			logger.debug("Number of total negatives: "+allExamples.getNegTest().size());
-			logger.debug("Total: "+posAsPos.size()+" + "+negAsPos.size() +" = "+retrieved.size());
+			logger.debug("Total: "+posAsPos.size()+" + "+negAsPos.size() +" = "+newTestRetrieved.size());
 			
 			
 			Examples newlyFound = new Examples();
-			SortedSet<String> discoveredPosInStore = Helper.intersection(retrieved, allExamples.getPosTest());
-			SortedSet<String> misclassifiedNegInStore = Helper.intersection(retrieved, allExamples.getNegTest());
+			SortedSet<String> discoveredPosInStore = Helper.intersection(newTrainRetrieved, allExamples.getPosTrain());
+			SortedSet<String> misclassifiedNegInStore = Helper.intersection(newTrainRetrieved, allExamples.getNegTrain());
 			newlyFound.addPosTrain(discoveredPosInStore);
 			newlyFound.addNegTrain(misclassifiedNegInStore);
 
-			SortedSet<String> posAsNeg = Helper.difference(allExamples.getPositiveExamples(), retrieved);
+			SortedSet<String> posAsNegInformative = Helper.difference(allExamples.getPositiveExamples(), retrieved);
 			
 			logger.info("Discovered: "+discoveredPosInStore.size()+" positive sentences in store (printing "+printSentences+"):");
 			_getLabels(discoveredPosInStore, printSentences);
 			logger.info("Misclassified: "+misclassifiedNegInStore.size()+" negative sentences in store (printing "+printSentences+"):");
 			_getLabels(misclassifiedNegInStore, printSentences);
-			logger.info("Not found positives: "+posAsNeg.size()+" positive sentences in store (printing "+printSentences+"):");
-			_getLabels(posAsNeg, printSentences);
+			logger.info("Not found positives: "+posAsNegInformative.size()+" positive sentences in store (printing "+printSentences+"):");
+			_getLabels(posAsNegInformative, printSentences);
 			
 			
 			
@@ -284,8 +291,14 @@ public class TestIterativeLearning {
 			logger.debug("Next training set \n"+learn);
 			iterationTime.stop();
 			Monitor learningTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "learningTime");
+			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "getSentences");
 			logger.warn("finished iteration "+(i+1)+" needed on  avg: "+dftime.format(iterationTime.getAvg()));
-			logger.warn("for learning: "+dftime.format(learningTime.getLastValue())+"  avg: "+dftime.format(learningTime.getAvg()));
+			logger.warn("learning: "+dftime.format(learningTime.getLastValue())+"  Acc: "+ed.getAccuracy());
+			logger.warn("learning: "+PrefixMap.toManchesterSyntaxString(ed));
+			logger.warn("query: "+dftime.format(queryTime.getLastValue()));
+			logger.warn("F-Measure on Store = "+df.format(fmeasure));
+			logger.warn("******************");
+			
 		}
 		
 		
@@ -294,11 +307,12 @@ public class TestIterativeLearning {
 		
 	}
 	
-	private static void results(SortedSet<String> posAsPos, SortedSet<String> retrieved, Examples allExamples) {
+	private static double results(SortedSet<String> posAsPos, SortedSet<String> retrieved, Examples allExamples) {
 		double precision = precision( posAsPos.size(), retrieved.size());
 		double recall = recall( posAsPos.size(),allExamples.getPosTest().size());
 		double fmeasure =  (2*precision*recall)/(precision+recall);
 		logger.info("F-Measure: "+df.format(   fmeasure  ));
+		return fmeasure;
 		
 	}
 
@@ -379,7 +393,7 @@ public class TestIterativeLearning {
 			return rc;
 	}
 	
-	public static EvaluatedDescription learn(Examples ex, ExperimentConfig config) {
+	public static EvaluatedDescription learn(Examples ex, ExperimentConfig config, int iteration) {
 		Monitor initTimeKBandReasoner = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "initTimeKBandReasoner").start();
 		
 
@@ -389,7 +403,7 @@ public class TestIterativeLearning {
 			FastInstanceChecker rc = _getFastInstanceChecker(ex);
 			PosNegLPStandard lp = ComponentFactory
 					.getPosNegLPStandard(rc, ex.getPosTrain(), ex.getNegTrain());
-			LearningAlgorithm la = _getROLLearner(lp, rc, config, ex);
+			LearningAlgorithm la = _getROLLearner(lp, rc, config, ex, iteration);
 			lp.init();
 			la.init();
 			initTimeKBandReasoner.stop();
@@ -408,7 +422,7 @@ public class TestIterativeLearning {
 		return result;
 	}
 
-	public static SortedSet<String> getSentences(EvaluatedDescription ed, int resultLimit, Examples justforFindingTheBug) {
+	public static SortedSet<String> getSentences(EvaluatedDescription ed, int resultLimit) {// Examples justforFindingTheBug
 		Monitor m = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "getSentences").start();
 		SortedSet<String> result = new TreeSet<String>();
 		SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
@@ -416,15 +430,15 @@ public class TestIterativeLearning {
 		visit.setLabels(false);
 		visit.setLimit(resultLimit);
 		String sparqlQueryGood = "";
-		String sparqlQueryBad = "";
+//		String sparqlQueryBad = "";
 		try {
 			sparqlQueryGood = visit.getSparqlQuery(ed.getDescription().toKBSyntaxString());
-			sparqlQueryBad = visit.getSparqlQuery(ed.getDescription());
-			if(!sparqlQueryGood.equals(sparqlQueryBad)){
-				String file = "errorDescription/"+System.currentTimeMillis();
-				justforFindingTheBug.writeExamples(file);
-				Files.appendFile(new File(file), "\n\n/**\nGood:\n"+sparqlQueryGood+"\nBad:\n"+sparqlQueryBad+"**/");
-			}
+//			sparqlQueryBad = visit.getSparqlQuery(ed.getDescription());
+//			if(!sparqlQueryGood.equals(sparqlQueryBad)){
+//				String file = "errorDescription/"+System.currentTimeMillis();
+//				justforFindingTheBug.writeExamples(file);
+//				Files.appendFile(new File(file), "\n\n/**\nGood:\n"+sparqlQueryGood+"\nBad:\n"+sparqlQueryBad+"**/");
+//			}
 			
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -470,13 +484,14 @@ public class TestIterativeLearning {
 		}
 	}
 
-	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, ExperimentConfig config, Examples ex)
+	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, ExperimentConfig config, Examples ex, int iteration)
 			throws Exception {
 		
 		int maxExecutionTime = config.maxExecutionTime;
 		int valueFrequencyThreshold = ex.getPosTrain().size();
+		int noise = config.noise + (iteration);
 		if(config.adaptMaxRuntime){
-			maxExecutionTime = config.factor * ex.sizeOfTrainingSets();
+			maxExecutionTime = (int)Math.floor(config.factor * (double)ex.sizeOfTrainingSets());
 //			valueFrequencyThreshold = (int) Math.floor(0.8d*((double)ex.getPosTrain().size()));
 		}
 		
@@ -498,7 +513,7 @@ public class TestIterativeLearning {
 		})));
 		
 
-		la.getConfigurator().setNoisePercentage(config.noise);
+		la.getConfigurator().setNoisePercentage(noise);
 		la.getConfigurator().setTerminateOnNoiseReached(true);
 		la.getConfigurator().setMaxExecutionTimeInSeconds(maxExecutionTime);
 		

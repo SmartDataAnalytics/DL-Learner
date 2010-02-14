@@ -218,6 +218,12 @@ public class Examples {
 		total.addAll(negTest);
 		return total;
 	}
+	public SortedSet<String> getTrainExamples() {
+		SortedSet<String> total = new TreeSet<String>();
+		total.addAll(posTrain);
+		total.addAll(negTrain);
+		return total;
+	}
 
 	public SortedSet<String> getPosTrain() {
 		return posTrain;

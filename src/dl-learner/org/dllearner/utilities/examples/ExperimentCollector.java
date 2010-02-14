@@ -54,24 +54,24 @@ public class ExperimentCollector {
 		Files.appendFile(new File(totalLatex), headerLatex + "\n");
 
 		for (int i = 0; i < iterations; i++) {
-			String fmeasureGNU = i + "\t";
-			String learningTimeGNU = i + "\t";
-			String totalTimeGNU  = i + "\t";
+			String fmeasureGNU = (i+1) + "\t";
+			String timeGNU = (i+1) + "\t";
+//			String totalTimeGNU  = (i+1) + "\t";
 			for (ExperimentConfig ec : experimentConfigs) {
 				fmeasureGNU += df.format(ec.iterationFmeasure[i].getAvg()) + "\t";
-				learningTimeGNU+= df.format(ec.iterationLearningTime[i].getAvg())+"\t";
-				totalTimeGNU+= df.format(ec.iterationTotalTime[i].getAvg())+"\t";
+				timeGNU+= df.format(ec.iterationLearningTime[i].getAvg())+"\t";
+				timeGNU+= df.format(ec.iterationTotalTime[i].getAvg())+"\t";
 			}
 			Files.appendFile(new File(totalGNU), fmeasureGNU + "\n");
-			Files.appendFile(new File(timeGNU), learningTimeGNU + "\n");
-			Files.appendFile(new File(timeGNU), totalTimeGNU + "\n");
+			Files.appendFile(new File(timeGNU), timeGNU + "\n");
+//			Files.appendFile(new File(timeGNU), totalTimeGNU + "\n");
 		}
 
 		for (ExperimentConfig ec : experimentConfigs) {
-			String label = ec.label + "\t&\t";
-			String learningTimeLatex = label+"learn";
-			String totalTimeLatex = label+"total";
-			String fmeasureLatex = label;
+			String label = ec.label ;
+			String learningTimeLatex = label+" learn"+ "\t&\t";
+			String totalTimeLatex = label+" total"+ "\t&\t";
+			String fmeasureLatex = label+ "\t&\t";
 			for (int i = 0; i < iterations; i++) {
 				learningTimeLatex += dfRuntime.format(ec.iterationLearningTime[i].getAvg()) + "\t&\t";
 				totalTimeLatex += dfRuntime.format(ec.iterationTotalTime[i].getAvg()) + "\t&\t";
@@ -84,10 +84,10 @@ public class ExperimentCollector {
 			
 		}
 		for (ExperimentConfig ec : experimentConfigs) {
-			String label = ec.label + "\t&\t";
-			String learningTimeHuman = label+"learn";
-			String totalTimeHuman = label+"total";
-			String fmeasureHuman = label;
+			String label = ec.label;
+			String learningTimeHuman = label+" learn" + "\t&\t";
+			String totalTimeHuman = label+" total" + "\t&\t";
+			String fmeasureHuman = label + "\t&\t";
 			for (int i = 0; i < iterations; i++) {
 				learningTimeHuman += dfRuntime.format(ec.iterationLearningTime[i].getAvg()) +" ("+dfRuntime.format(ec.iterationLearningTime[i].getStdDev()) + ")\t&\t";
 				totalTimeHuman += dfRuntime.format(ec.iterationTotalTime[i].getAvg()) +" ("+ dfRuntime.format(ec.iterationTotalTime[i].getStdDev())+ ")\t&\t";
