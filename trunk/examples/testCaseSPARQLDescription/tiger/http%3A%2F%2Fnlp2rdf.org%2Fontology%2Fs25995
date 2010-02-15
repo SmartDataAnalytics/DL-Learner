@@ -1,0 +1,357 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w23_auf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>auf</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w22_Attentat"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w24_Arafat"/>
+    <j.0:hasLemma>auf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w3_Mittwoch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Mittwoch</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w2_heutigen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w4_aus"/>
+    <j.0:hasLemma>Mittwoch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w19_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w18_festgenommen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w20_die"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w6_Sicherheitskreisen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Sicherheitskreisen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w5_pal%C3%A4stinensischen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w7_verlautete"/>
+    <j.0:hasLemma>Sicherheitskreis</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w24_Arafat">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Arafat</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w23_auf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w25_geplant"/>
+    <j.0:hasLemma>Arafat</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w5_pal%C3%A4stinensischen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>palästinensischen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w4_aus"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w6_Sicherheitskreisen"/>
+    <j.0:hasLemma>palästinensisch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w17_M%C3%A4nner">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Männer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w16_f%C3%BCnf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w18_festgenommen"/>
+    <j.0:hasLemma>Mann</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w22_Attentat">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Attentat</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w21_ein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w23_auf"/>
+    <j.0:hasLemma>Attentat</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PIAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w10_bereits">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bereits</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w9_wurden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w11_vor"/>
+    <j.0:hasLemma>bereits</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w14_im">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>im</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w13_Tagen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w15_Gaza-Streifen"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w13_Tagen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w9_wurden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w17_M%C3%A4nner"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w11_vor"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w21_ein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w0_Wie"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w25_geplant"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w7_verlautete"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w1_am"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w24_Arafat"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w23_auf"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w14_im"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w16_f%C3%BCnf"/>
+    <rdfs:label>Wie am heutigen Mittwoch aus palästinensischen Sicherheitskreisen verlautete , wurden bereits vor einigen Tagen im Gaza-Streifen fünf Männer festgenommen , die ein Attentat auf Arafat geplant hätten .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w20_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w2_heutigen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w19_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w3_Mittwoch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w6_Sicherheitskreisen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w27_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w10_bereits"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w12_einigen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s25995w0_Wie"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w22_Attentat"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w4_aus"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w5_pal%C3%A4stinensischen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w8_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w26_h%C3%A4tten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w18_festgenommen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s25995w15_Gaza-Streifen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w21_ein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w20_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w22_Attentat"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRELS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w25_geplant">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>geplant</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w24_Arafat"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w26_h%C3%A4tten"/>
+    <j.0:hasLemma>planen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w27_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w26_h%C3%A4tten"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w13_Tagen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Tagen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w12_einigen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w14_im"/>
+    <j.0:hasLemma>Tag</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w7_verlautete">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>verlautete</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w6_Sicherheitskreisen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w8_%2C"/>
+    <j.0:hasLemma>verlauten</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w8_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w7_verlautete"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w9_wurden"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w20_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w19_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w21_ein"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRELS"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w9_wurden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wurden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w8_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w10_bereits"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w0_Wie">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Wie</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w1_am"/>
+    <j.0:hasLemma>wie</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PWAV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w26_h%C3%A4tten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hätten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w25_geplant"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w27_."/>
+    <j.0:hasLemma>haben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PWAV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AdverbialInterrogativeRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w2_heutigen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>heutigen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w1_am"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w3_Mittwoch"/>
+    <j.0:hasLemma>heutig</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w1_am">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>am</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w0_Wie"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w2_heutigen"/>
+    <j.0:hasLemma>an</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w15_Gaza-Streifen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Gaza-Streifen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w14_im"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w16_f%C3%BCnf"/>
+    <j.0:hasLemma>Gaza-Streifen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w11_vor">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vor</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w10_bereits"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w12_einigen"/>
+    <j.0:hasLemma>vor</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w12_einigen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einigen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w11_vor"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w13_Tagen"/>
+    <j.0:hasLemma>einiger</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PIAT"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w4_aus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aus</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w3_Mittwoch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w5_pal%C3%A4stinensischen"/>
+    <j.0:hasLemma>aus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w16_f%C3%BCnf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>fünf</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w15_Gaza-Streifen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w17_M%C3%A4nner"/>
+    <j.0:hasLemma>fünf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s25995w18_festgenommen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>festgenommen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s25995"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s25995w17_M%C3%A4nner"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s25995w19_%2C"/>
+    <j.0:hasLemma>festnehmen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+</rdf:RDF>

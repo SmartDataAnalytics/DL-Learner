@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities.examples;
+package org.dllearner.utilities.experiments;
 
 import java.util.Random;
 import java.util.SortedSet;

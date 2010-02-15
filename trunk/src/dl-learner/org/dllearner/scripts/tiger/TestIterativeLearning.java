@@ -39,13 +39,17 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.examples.ExMakerCrossFolds;
-import org.dllearner.utilities.examples.ExMakerFixedSize;
-import org.dllearner.utilities.examples.ExMakerRandomizer;
 import org.dllearner.utilities.examples.ExampleDataCollector;
-import org.dllearner.utilities.examples.Examples;
-import org.dllearner.utilities.examples.ExperimentCollector;
+import org.dllearner.utilities.experiments.ExMakerCrossFolds;
+import org.dllearner.utilities.experiments.ExMakerFixedSize;
+import org.dllearner.utilities.experiments.ExMakerRandomizer;
+import org.dllearner.utilities.experiments.Examples;
+import org.dllearner.utilities.experiments.ExperimentCollector;
+import org.dllearner.utilities.experiments.IteratedConfig;
+import org.dllearner.utilities.experiments.Jamon;
 
+import com.jamonapi.MonKey;
+import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
 
 public class TestIterativeLearning {
@@ -75,9 +79,16 @@ public class TestIterativeLearning {
 	static String rulegraph = "http://nlp2rdf.org/schema/rules1";
 	
 	
+	static MonKeyImp logFMeasure = new MonKeyImp("F-Measure",Jamon.PERCENTAGE); 
+	static MonKeyImp logPrecision = new MonKeyImp("Precision",Jamon.PERCENTAGE); 
+	static MonKeyImp logRecall = new MonKeyImp("Recall",Jamon.PERCENTAGE); 
+	static MonKeyImp logAccuracy = new MonKeyImp("Accuracy",Jamon.PERCENTAGE); 
+	
+	static MonKeyImp logLearningTime = new MonKeyImp("Learning Time",Jamon.MS); 
+	static MonKeyImp logIterationTime = new MonKeyImp("Iteration Time",Jamon.MS); 
 	
 	
-	
+	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[]{logPrecision, logRecall, logFMeasure, logLearningTime, logIterationTime}));
 	
 	static int iterations = 4;
 	static int folds = 6;
@@ -93,7 +104,7 @@ public class TestIterativeLearning {
 		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
 		
 		Files.mkdir("results");
-
+		
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
 					.asList(new String[] { graph })), new ArrayList<String>());
@@ -102,11 +113,8 @@ public class TestIterativeLearning {
 			e.printStackTrace();
 		}
 
-//		boolean debug = true;
-//		if(debug){
-//			folds = 1;
-//			iterations = 1;
-//		}
+		folds = 2;
+		iterations = 1;
 		long n = System.currentTimeMillis();
 		passiveNoZU();
 //		passiveWithZu();
@@ -134,15 +142,24 @@ public class TestIterativeLearning {
 			
 			List<Examples> folds =  new ExMakerCrossFolds(allExamples).splitLeaveOneOut(TestIterativeLearning.folds);
 //			ExMakerCrossFolds.printFolds(folds);
-			List<ExperimentConfig> configs = getConfigs();
-			for (ExperimentConfig experimentConfig : configs) {
+			List<IteratedConfig> configs = getConfigs();
+			for (IteratedConfig experimentConfig : configs) {
 				logger.warn("next: passiveNoZU."+experimentConfig.label);
 				int i = 1;
 				for (Examples examples : folds) {
 					
+					for(MonKeyImp m : mks){
+						experimentConfig.init(m);
+					}
+					
 					logger.warn("beginning fold: "+(i++));
+					
 					conductExperiment( examples, experimentConfig);
 				}
+				if (true) {
+					System.exit(0);
+				}
+				
 				eColl_passiveNoZU.addExperimentConfig(experimentConfig);
 				logger.info(experimentConfig);
 				eColl_passiveNoZU.write(iterations);
@@ -173,8 +190,8 @@ public class TestIterativeLearning {
 			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
 			runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
 
-			List<ExperimentConfig> configs = getConfigs();
-			for (ExperimentConfig experimentConfig : configs) {
+			List<IteratedConfig> configs = getConfigs();
+			for (IteratedConfig experimentConfig : configs) {
 				logger.warn("next: passiveWithZu."+experimentConfig.label);
 				int i=1;
 				for (Examples examples : runs) {
@@ -190,23 +207,23 @@ public class TestIterativeLearning {
 		
 	}
 	
-	public static List<ExperimentConfig> getConfigs(){
+	public static List<IteratedConfig> getConfigs(){
 		
-		List<ExperimentConfig> l = new ArrayList<ExperimentConfig>();
-		ExperimentConfig baseline = new ExperimentConfig(iterations, "baseline_5_5");
+		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
+		IteratedConfig baseline = new IteratedConfig("baseline_5_5", iterations);
 		
 		
-		ExperimentConfig reducedExamples = new ExperimentConfig(iterations, "reducedExamples_2_2");
+		IteratedConfig reducedExamples = new IteratedConfig("reducedExamples_2_2", iterations);
 		reducedExamples.initialsplits = 2;
 		reducedExamples.splits = 2;
 		
 		
-		ExperimentConfig fixRuntime = new ExperimentConfig(iterations, "fixRuntime_20s");
+		IteratedConfig fixRuntime = new IteratedConfig("fixRuntime_20s", iterations);
 		fixRuntime.adaptMaxRuntime=false;
 		fixRuntime.maxExecutionTime = 20;
 		
 		
-		ExperimentConfig useLemma = new ExperimentConfig(iterations, "useLemma_false");
+		IteratedConfig useLemma = new IteratedConfig("useLemma_false", iterations);
 		useLemma.useDataHasValue=false;
 		
 		
@@ -219,7 +236,7 @@ public class TestIterativeLearning {
 		return l;
 	}
 	
-	public static void conductExperiment(Examples allExamples, ExperimentConfig config){
+	public static void conductExperiment(Examples allExamples, IteratedConfig config){
 		Examples tmp = new Examples();
 		tmp.addPosTrain(allExamples.getPosTrain());
 		tmp.addNegTrain(allExamples.getNegTrain());
@@ -235,16 +252,25 @@ public class TestIterativeLearning {
 		SortedSet<String> newTrainRetrieved = new TreeSet<String>();
 		
 		String lastConcept="";
+		double precision = 0.0;
+		double recall = 0.0;
+		double fmeasure = 0.0;
 		
-		for(int i = 0 ; config.stopCondition(i, learn, posAsPos,  newTestRetrieved, allExamples, lastConcept) ;i++ ) {
+		for(int i = 0 ; config.stopCondition(i, precision, recall, fmeasure, lastConcept) ;i++ ) {
 			Monitor iterationTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "iterationTime").start();
+			Monitor literationTime = config.start(logIterationTime, i);
+
 			/*LEARNING*/
+			Monitor lLearningTime = config.start(logLearningTime, i);
 			EvaluatedDescription ed = learn(learn, config, i);
+			lLearningTime.stop();
 			lastConcept = PrefixMap.toKBSyntaxString(ed.getDescription());
 			logger.debug("USING CONCEPT: "+lastConcept);
 			
 			/*RETRIEVING*/
+			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "queryTime").start();
 			retrieved = getSentences(ed, config.resultLimit);
+			queryTime.stop();
 			//remove all that are not to be tested
 			newTestRetrieved =	Helper.intersection(allExamples.getTestExamples(), retrieved );
 			newTrainRetrieved =	Helper.intersection(allExamples.getTrainExamples(), retrieved );
@@ -257,7 +283,13 @@ public class TestIterativeLearning {
 			posAsPos = Helper.intersection(newTestRetrieved, allExamples.getPosTest());
 			logger.debug("Number of retrieved positives: "+posAsPos.size());
 			logger.debug("Number of total positives: "+allExamples.getPosTest().size());
-			double fmeasure = results(posAsPos, newTestRetrieved, allExamples);
+			
+			 precision = precision( posAsPos.size(), retrieved.size());
+			 config.add(logPrecision, i, precision);
+			 recall = recall( posAsPos.size(),allExamples.getPosTest().size());
+			 config.add(logRecall, i, recall);
+			 fmeasure = fmeasure(precision, recall);
+			 config.add(logFMeasure, i, fmeasure);
 			
 			//Menge aller positiven geschn. mit den gefundenen
 			SortedSet<String> negAsPos = Helper.intersection(newTestRetrieved, allExamples.getNegTest());
@@ -290,10 +322,9 @@ public class TestIterativeLearning {
 			learn.addNegTrain(newlyFound.getNegTrain());
 			logger.debug("Next training set \n"+learn);
 			iterationTime.stop();
-			Monitor learningTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "learningTime");
-			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "getSentences");
+			literationTime.stop();
 			logger.warn("finished iteration "+(i+1)+" needed on  avg: "+dftime.format(iterationTime.getAvg()));
-			logger.warn("learning: "+dftime.format(learningTime.getLastValue())+"  Acc: "+ed.getAccuracy());
+			logger.warn("learning: "+dftime.format(lLearningTime.getLastValue())+"  Acc: "+ed.getAccuracy());
 			logger.warn("learning: "+PrefixMap.toManchesterSyntaxString(ed));
 			logger.warn("query: "+dftime.format(queryTime.getLastValue()));
 			logger.warn("F-Measure on Store = "+df.format(fmeasure));
@@ -307,15 +338,16 @@ public class TestIterativeLearning {
 		
 	}
 	
-	private static double results(SortedSet<String> posAsPos, SortedSet<String> retrieved, Examples allExamples) {
-		double precision = precision( posAsPos.size(), retrieved.size());
-		double recall = recall( posAsPos.size(),allExamples.getPosTest().size());
-		double fmeasure =  (2*precision*recall)/(precision+recall);
-		logger.info("F-Measure: "+df.format(   fmeasure  ));
-		return fmeasure;
-		
+	public static double accuracy (int posAsPos, int negAsNeg, int posAsNeg, int negAsPos){
+		return 0.0d;
 	}
-
+	
+	public static double fmeasure(double precision, double recall){
+		double fmeasure =  (precision+recall == 0)?0.0d: (2*precision*recall)/(precision+recall);
+		logger.info("F-Measure: "+df.format(fmeasure));
+		return fmeasure;
+	}
+	
 	public static double precision( int posAsPos, int retrieved){
 		double precision = (retrieved==0)?0.0d:((double)posAsPos)/((double)retrieved);
 		logger.info("Precision: "+df.format(precision));
@@ -393,7 +425,7 @@ public class TestIterativeLearning {
 			return rc;
 	}
 	
-	public static EvaluatedDescription learn(Examples ex, ExperimentConfig config, int iteration) {
+	public static EvaluatedDescription learn(Examples ex, IteratedConfig config, int iteration) {
 		Monitor initTimeKBandReasoner = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "initTimeKBandReasoner").start();
 		
 
@@ -484,7 +516,7 @@ public class TestIterativeLearning {
 		}
 	}
 
-	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, ExperimentConfig config, Examples ex, int iteration)
+	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc, IteratedConfig config, Examples ex, int iteration)
 			throws Exception {
 		
 		int maxExecutionTime = config.maxExecutionTime;
