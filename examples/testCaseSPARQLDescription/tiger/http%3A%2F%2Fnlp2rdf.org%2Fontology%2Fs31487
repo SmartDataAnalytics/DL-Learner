@@ -1,0 +1,503 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w31_Kaukasusrepubliken">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kaukasusrepubliken</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w30_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w32_mehr"/>
+    <j.0:hasLemma>Kaukasusrepublik</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKNEG">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NegationParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w0_Zu">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Zu</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w1_den"/>
+    <j.0:hasLemma>zu</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w5_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w4_%27%27"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w6_die"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w21_werden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w20_gel%C3%B6st"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w22_konnten"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w28_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w27_Ru%C3%9Flands"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w29_in"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KOKOM">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ComparisonParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w10_Organisation">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Organisation</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w9_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w11_f%C3%BCr"/>
+    <j.0:hasLemma>Organisation</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w6_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w5_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w7_nach"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRELS"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w25_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w24_geh%C3%B6rt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w26_Absicht"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w20_gel%C3%B6st">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gelöst</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w19_vollst%C3%A4ndig"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w21_werden"/>
+    <j.0:hasLemma>lösen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PIAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w23_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w22_konnten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w24_geh%C3%B6rt"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKZU">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ZuWithInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w41_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w40_vorsieht"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w14_Zusammenarbeit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Zusammenarbeit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w13_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w15_%28"/>
+    <j.0:hasLemma>Zusammenarbeit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w24_geh%C3%B6rt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gehört</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w23_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w25_die"/>
+    <j.0:hasLemma>gehören</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w19_vollst%C3%A4ndig">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vollständig</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w18_nicht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w20_gel%C3%B6st"/>
+    <j.0:hasLemma>vollständig</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w2_%60%60">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>``</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w1_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w3_Restproblemen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w38_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w37_als"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w39_Vertrag"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w39_Vertrag">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Vertrag</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w38_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w40_vorsieht"/>
+    <j.0:hasLemma>Vertrag</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w37_als">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>als</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w36_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w38_der"/>
+    <j.0:hasLemma>als</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KOKOM"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w4_%27%27">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>''</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w3_Restproblemen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w5_%2C"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w32_mehr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mehr</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w31_Kaukasusrepubliken"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w33_Truppen"/>
+    <j.0:hasLemma>mehr</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PIAT"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w30_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w29_in"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w31_Kaukasusrepubliken"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w35_stationieren">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>stationieren</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w34_zu"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w36_%2C"/>
+    <j.0:hasLemma>stationieren</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w7_nach">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nach</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w6_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w8_Angaben"/>
+    <j.0:hasLemma>nach</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w11_f%C3%BCr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>für</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w10_Organisation"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w12_Sicherheit"/>
+    <j.0:hasLemma>für</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w36_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w35_stationieren"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w37_als"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w14_Zusammenarbeit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w24_geh%C3%B6rt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w12_Sicherheit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w7_nach"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w25_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w20_gel%C3%B6st"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w8_Angaben"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w22_konnten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w34_zu"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w9_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w30_den"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w40_vorsieht"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w35_stationieren"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w41_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w0_Zu"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w38_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w31_Kaukasusrepubliken"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w39_Vertrag"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w27_Ru%C3%9Flands"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w16_OSZE"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w21_werden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w5_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w17_%29"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w36_%2C"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s31487w0_Zu"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w4_%27%27"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w32_mehr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w19_vollst%C3%A4ndig"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w29_in"/>
+    <rdfs:label>Zu den `` Restproblemen '' , die nach Angaben der Organisation für Sicherheit und Zusammenarbeit ( OSZE ) nicht vollständig gelöst werden konnten , gehört die Absicht Rußlands , in den Kaukasusrepubliken mehr Truppen zu stationieren , als der Vertrag vorsieht .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w3_Restproblemen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w1_den"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w15_%28"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w18_nicht"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w23_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w28_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w6_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w33_Truppen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w10_Organisation"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w13_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w11_f%C3%BCr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w37_als"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w2_%60%60"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31487w26_Absicht"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w40_vorsieht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vorsieht</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w39_Vertrag"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w41_."/>
+    <j.0:hasLemma>vorsehen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w3_Restproblemen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Restproblemen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w2_%60%60"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w4_%27%27"/>
+    <j.0:hasLemma>Restproblem</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w9_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w8_Angaben"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w10_Organisation"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w22_konnten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>konnten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w21_werden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w23_%2C"/>
+    <j.0:hasLemma>können</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRELS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w12_Sicherheit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Sicherheit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w11_f%C3%BCr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w13_und"/>
+    <j.0:hasLemma>Sicherheit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w18_nicht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nicht</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w17_%29"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w19_vollst%C3%A4ndig"/>
+    <j.0:hasLemma>nicht</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKNEG"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w8_Angaben">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Angaben</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w7_nach"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w9_der"/>
+    <j.0:hasLemma>Angabe</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w26_Absicht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Absicht</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w25_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w27_Ru%C3%9Flands"/>
+    <j.0:hasLemma>Absicht</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w33_Truppen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Truppen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w32_mehr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w34_zu"/>
+    <j.0:hasLemma>Truppe</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w17_%29">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>)</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w16_OSZE"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w18_nicht"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w16_OSZE">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>OSZE</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w15_%28"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w17_%29"/>
+    <j.0:hasLemma>OSZE</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w29_in">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>in</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w28_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w30_den"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w34_zu">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zu</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w33_Truppen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w35_stationieren"/>
+    <j.0:hasLemma>zu</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKZU"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w27_Ru%C3%9Flands">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Rußlands</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w26_Absicht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w28_%2C"/>
+    <j.0:hasLemma>Rußland</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w13_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w12_Sicherheit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w14_Zusammenarbeit"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w15_%28">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>(</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w14_Zusammenarbeit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w16_OSZE"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31487w1_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31487"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31487w0_Zu"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31487w2_%60%60"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -26,7 +26,7 @@ public class LogHelper {
 		Layout layout = new PatternLayout();
 		layout = new PatternLayout("%-5p [%C{1}]: %m%n");
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		consoleAppender.setThreshold(Level.WARN);
+		consoleAppender.setThreshold(Level.DEBUG);
 
 		Layout layout2 = null;
 		FileAppender fileAppenderNormal = null;

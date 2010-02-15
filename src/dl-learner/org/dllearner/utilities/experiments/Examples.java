@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities.examples;
+package org.dllearner.utilities.experiments;
 
 import java.io.FileWriter;
 import java.text.DecimalFormat;
@@ -26,6 +26,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.URLencodeUTF8;
 
 /**
@@ -57,13 +58,28 @@ public class Examples {
 		this.addNegTest(negTest);
 	}
 	
-//	public void remove(Set<String> remove) {
-//		for (String string : remove) {
-//			positiveExamples.remove(string);
-//			negativeExamples.remove(string);
-//		}
-//	}
-
+	/**
+	 * calculates precision based on the test set
+	 * @param retrieved
+	 * @return
+	 */
+	public double precision(SortedSet<String> retrieved){
+		if(retrieved.size()==0){return 0.0d;}
+		int posAsPos = Helper.intersection(retrieved, getPosTest()).size();
+		return ((double)posAsPos)/((double)retrieved.size());
+	}
+	
+	/**
+	 * calculates recall based on the test set
+	 * @param retrieved
+	 * @return
+	 */
+	public double recall( SortedSet<String> retrieved){
+		if(sizeTotalOfPositives()==0){return 0.0d;}
+		int posAsPos = Helper.intersection(retrieved, getPosTest()).size();
+		return ((double)posAsPos)/((double)sizeTotalOfPositives());
+	}
+	
 	private void _remove(String toBeRemoved ){
 		posTrain.remove(toBeRemoved);
 		negTrain.remove(toBeRemoved);

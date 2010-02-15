@@ -1,0 +1,200 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w1_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w0_Ben-Gurion"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w2_seine"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w0_Ben-Gurion">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Ben-Gurion</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w1_und"/>
+    <j.0:hasLemma>Ben-Gurion</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w13_verletzt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>verletzt</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w12_schwer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w14_."/>
+    <j.0:hasLemma>verletzen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w7_leicht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>leicht</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w6_wurden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w8_%2C"/>
+    <j.0:hasLemma>leicht</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w2_seine">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>seine</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w1_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w3_Au%C3%9Fenministerin"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPOSAT"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w12_schwer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schwer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w11_Schapira"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w13_verletzt"/>
+    <j.0:hasLemma>schwer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w3_Au%C3%9Fenministerin">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Außenministerin</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w2_seine"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w4_Golda"/>
+    <j.0:hasLemma>Außenministerin</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w11_Schapira">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Schapira</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w10_Mosche"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w12_schwer"/>
+    <j.0:hasLemma>Schapira</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w8_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w7_leicht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w9_Innenminister"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w14_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w13_verletzt"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w6_wurden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wurden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w5_Meir"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w7_leicht"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w5_Meir">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Meir</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w4_Golda"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w6_wurden"/>
+    <j.0:hasLemma>Meir</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w10_Mosche">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Mosche</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w9_Innenminister"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w11_Schapira"/>
+    <j.0:hasLemma>Mosche</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w4_Golda">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Golda</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w3_Au%C3%9Fenministerin"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w5_Meir"/>
+    <j.0:hasLemma>Golda</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624w9_Innenminister">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Innenminister</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s4624"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s4624w8_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s4624w10_Mosche"/>
+    <j.0:hasLemma>Innenminister</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s4624">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w8_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w13_verletzt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w2_seine"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w0_Ben-Gurion"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w11_Schapira"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s4624w0_Ben-Gurion"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w10_Mosche"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w12_schwer"/>
+    <rdfs:label>Ben-Gurion und seine Außenministerin Golda Meir wurden leicht , Innenminister Mosche Schapira schwer verletzt .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w4_Golda"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w7_leicht"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w5_Meir"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w9_Innenminister"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w6_wurden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w1_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w3_Au%C3%9Fenministerin"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s4624w14_."/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPOSAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributivePossessivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

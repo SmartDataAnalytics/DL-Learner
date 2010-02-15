@@ -1,0 +1,191 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w10_Sicherheitsvorkehrungen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Sicherheitsvorkehrungen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w9_bestehenden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w11_weiter"/>
+    <j.0:hasLemma>Sicherheitsvorkehrung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w12_versch%C3%A4rft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>verschärft</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w11_weiter"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w13_."/>
+    <j.0:hasLemma>verschärfen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w6_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w5_Anschl%C3%A4gen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w7_ohnehin"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w5_Anschl%C3%A4gen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Anschlägen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w4_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w6_die"/>
+    <j.0:hasLemma>Anschlag</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w8_schon">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schon</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w7_ohnehin"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w9_bestehenden"/>
+    <j.0:hasLemma>schon</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w0_In">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>In</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w1_Colombo"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w4_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w3_nach"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w5_Anschl%C3%A4gen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w13_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w12_versch%C3%A4rft"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w2_wurden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wurden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w1_Colombo"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w3_nach"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w7_ohnehin">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ohnehin</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w6_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w8_schon"/>
+    <j.0:hasLemma>ohnehin</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w3_nach">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nach</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w2_wurden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w4_den"/>
+    <j.0:hasLemma>nach</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w11_weiter">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>weiter</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w10_Sicherheitsvorkehrungen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w12_versch%C3%A4rft"/>
+    <j.0:hasLemma>weiter</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w7_ohnehin"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w8_schon"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w3_nach"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s19832w0_In"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w5_Anschl%C3%A4gen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w12_versch%C3%A4rft"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w9_bestehenden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w4_den"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w2_wurden"/>
+    <rdfs:label>In Colombo wurden nach den Anschlägen die ohnehin schon bestehenden Sicherheitsvorkehrungen weiter verschärft .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w13_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w11_weiter"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w1_Colombo"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w10_Sicherheitsvorkehrungen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w6_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s19832w0_In"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w9_bestehenden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bestehenden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w8_schon"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w10_Sicherheitsvorkehrungen"/>
+    <j.0:hasLemma>bestehend</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s19832w1_Colombo">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Colombo</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s19832"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s19832w0_In"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s19832w2_wurden"/>
+    <j.0:hasLemma>Colombo</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+</rdf:RDF>

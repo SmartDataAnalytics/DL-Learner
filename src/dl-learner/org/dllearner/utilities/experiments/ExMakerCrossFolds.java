@@ -1,4 +1,4 @@
-package org.dllearner.utilities.examples;
+package org.dllearner.utilities.experiments;
 
 import java.util.ArrayList;
 import java.util.Collections;

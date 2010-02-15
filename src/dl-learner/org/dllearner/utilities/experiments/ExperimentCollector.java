@@ -1,11 +1,10 @@
-package org.dllearner.utilities.examples;
+package org.dllearner.utilities.experiments;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dllearner.scripts.tiger.ExperimentConfig;
 import org.dllearner.utilities.Files;
 
 public class ExperimentCollector {
@@ -20,7 +19,7 @@ public class ExperimentCollector {
 	public static DecimalFormat df = new DecimalFormat(".####");
 	public static DecimalFormat dfhuman = new DecimalFormat("##.##%");
 	public static DecimalFormat dfRuntime = new DecimalFormat("####.");
-	List<ExperimentConfig> experimentConfigs = new ArrayList<ExperimentConfig>();
+	List<IteratedConfig> experimentConfigs = new ArrayList<IteratedConfig>();
 
 	public ExperimentCollector(String filePrefix) {
 		details = dir + filePrefix + "_" + "details";
@@ -30,7 +29,7 @@ public class ExperimentCollector {
 		timeLatex = dir + filePrefix + "_" + "timeLatex";
 	}
 
-	public void addExperimentConfig(ExperimentConfig experimentConfig) {
+	public void addExperimentConfig(IteratedConfig experimentConfig) {
 		experimentConfigs.add(experimentConfig);
 	}
 
@@ -42,7 +41,7 @@ public class ExperimentCollector {
 		Files.appendFile(new File(totalGNU), "\n***********\n\n");
 		String headerGNU = "\t";
 		String headerLatex = "\t&\t";
-		for (ExperimentConfig ec : experimentConfigs) {
+		for (IteratedConfig ec : experimentConfigs) {
 			 headerGNU += ec.label + "\t";
  			 Files.appendFile(new File(details), ec.toString());
 		}
@@ -57,43 +56,43 @@ public class ExperimentCollector {
 			String fmeasureGNU = (i+1) + "\t";
 			String timeGNU = (i+1) + "\t";
 //			String totalTimeGNU  = (i+1) + "\t";
-			for (ExperimentConfig ec : experimentConfigs) {
-				fmeasureGNU += df.format(ec.iterationFmeasure[i].getAvg()) + "\t";
-				timeGNU+= df.format(ec.iterationLearningTime[i].getAvg())+"\t";
-				timeGNU+= df.format(ec.iterationTotalTime[i].getAvg())+"\t";
-			}
+//			for (ExperimentConfig ec : experimentConfigs) {
+//				fmeasureGNU += df.format(ec.iterationFmeasure[i].getAvg()) + "\t";
+//				timeGNU+= df.format(ec.iterationLearningTime[i].getAvg())+"\t";
+//				timeGNU+= df.format(ec.iterationTotalTime[i].getAvg())+"\t";
+//			}
 			Files.appendFile(new File(totalGNU), fmeasureGNU + "\n");
 			Files.appendFile(new File(timeGNU), timeGNU + "\n");
 //			Files.appendFile(new File(timeGNU), totalTimeGNU + "\n");
 		}
 
-		for (ExperimentConfig ec : experimentConfigs) {
+		for (IteratedConfig ec : experimentConfigs) {
 			String label = ec.label ;
 			String learningTimeLatex = label+" learn"+ "\t&\t";
 			String totalTimeLatex = label+" total"+ "\t&\t";
 			String fmeasureLatex = label+ "\t&\t";
-			for (int i = 0; i < iterations; i++) {
-				learningTimeLatex += dfRuntime.format(ec.iterationLearningTime[i].getAvg()) + "\t&\t";
-				totalTimeLatex += dfRuntime.format(ec.iterationTotalTime[i].getAvg()) + "\t&\t";
-				fmeasureLatex += dfhuman.format(ec.iterationFmeasure[i].getAvg()) + "\t&\t";
-			}
-			Files.appendFile(new File(timeLatex), learningTimeLatex + "\n");
+//			for (int i = 0; i < iterations; i++) {
+//				learningTimeLatex += dfRuntime.format(ec.iterationLearningTime[i].getAvg()) + "\t&\t";
+//				totalTimeLatex += dfRuntime.format(ec.iterationTotalTime[i].getAvg()) + "\t&\t";
+//				fmeasureLatex += dfhuman.format(ec.iterationFmeasure[i].getAvg()) + "\t&\t";
+//			}
+//			Files.appendFile(new File(timeLatex), learningTimeLatex + "\n");
 			Files.appendFile(new File(timeLatex), totalTimeLatex + "\n");
 			Files.appendFile(new File(timeLatex), "\n\n\n");
 			Files.appendFile(new File(totalLatex), fmeasureLatex + "\n");
 			
 		}
-		for (ExperimentConfig ec : experimentConfigs) {
+		for (IteratedConfig ec : experimentConfigs) {
 			String label = ec.label;
 			String learningTimeHuman = label+" learn" + "\t&\t";
 			String totalTimeHuman = label+" total" + "\t&\t";
 			String fmeasureHuman = label + "\t&\t";
-			for (int i = 0; i < iterations; i++) {
-				learningTimeHuman += dfRuntime.format(ec.iterationLearningTime[i].getAvg()) +" ("+dfRuntime.format(ec.iterationLearningTime[i].getStdDev()) + ")\t&\t";
-				totalTimeHuman += dfRuntime.format(ec.iterationTotalTime[i].getAvg()) +" ("+ dfRuntime.format(ec.iterationTotalTime[i].getStdDev())+ ")\t&\t";
-				fmeasureHuman += dfhuman.format(ec.iterationFmeasure[i].getAvg()) +" ("+ dfhuman.format(ec.iterationFmeasure[i].getStdDev())+ ")\t&\t";
-			}
-			Files.appendFile(new File(timeLatex), learningTimeHuman + "\n");
+//			for (int i = 0; i < iterations; i++) {
+//				learningTimeHuman += dfRuntime.format(ec.iterationLearningTime[i].getAvg()) +" ("+dfRuntime.format(ec.iterationLearningTime[i].getStdDev()) + ")\t&\t";
+//				totalTimeHuman += dfRuntime.format(ec.iterationTotalTime[i].getAvg()) +" ("+ dfRuntime.format(ec.iterationTotalTime[i].getStdDev())+ ")\t&\t";
+//				fmeasureHuman += dfhuman.format(ec.iterationFmeasure[i].getAvg()) +" ("+ dfhuman.format(ec.iterationFmeasure[i].getStdDev())+ ")\t&\t";
+//			}
+//			Files.appendFile(new File(timeLatex), learningTimeHuman + "\n");
 			Files.appendFile(new File(timeLatex), totalTimeHuman + "\n");
 			Files.appendFile(new File(totalLatex), fmeasureHuman + "\n");
 		}

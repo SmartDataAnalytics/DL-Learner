@@ -1,0 +1,283 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKNEG">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NegationParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w6_es">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>es</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w5_darf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w7_nicht"/>
+    <j.0:hasLemma>es</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPER"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w18_rei%C3%9Fen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>reißen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w17_zu"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w19_."/>
+    <j.0:hasLemma>reißen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w19_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w18_rei%C3%9Fen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w20_%27%27"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w1_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w0_Terroristen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w2_Feinden"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w4_Friedens">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Friedens</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w3_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w5_darf"/>
+    <j.0:hasLemma>Frieden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w7_nicht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nicht</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w6_es"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w8_gestattet"/>
+    <j.0:hasLemma>nicht</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKNEG"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w0_Terroristen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Terroristen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w1_und"/>
+    <j.0:hasLemma>Terrorist</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w11_das">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>das</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w10_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w12_Gesetz"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w14_Handelns">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Handelns</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w13_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w15_an"/>
+    <j.0:hasLemma>handeln</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKZU">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ZuWithInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w10_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w9_werden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w11_das"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w2_Feinden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Feinden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w1_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w3_des"/>
+    <j.0:hasLemma>Feind</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w17_zu">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zu</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w16_sich"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w18_rei%C3%9Fen"/>
+    <j.0:hasLemma>zu</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKZU"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w13_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w12_Gesetz"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w14_Handelns"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w20_%27%27">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>''</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w19_."/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w12_Gesetz">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Gesetz</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w11_das"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w13_des"/>
+    <j.0:hasLemma>Gesetz</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPER">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w5_darf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>darf</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w4_Friedens"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w6_es"/>
+    <j.0:hasLemma>dürfen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w15_an">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>an</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w14_Handelns"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w16_sich"/>
+    <j.0:hasLemma>an</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w16_sich">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sich</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w15_an"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w17_zu"/>
+    <j.0:hasLemma>sich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w8_gestattet">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gestattet</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w7_nicht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w9_werden"/>
+    <j.0:hasLemma>gestatten</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w3_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w2_Feinden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w4_Friedens"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w15_an"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w5_darf"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w17_zu"/>
+    <rdfs:label>Terroristen und Feinden des Friedens darf es nicht gestattet werden , das Gesetz des Handelns an sich zu reißen . ''</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w3_des"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w18_rei%C3%9Fen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w1_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w10_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w6_es"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w13_des"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w4_Friedens"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w2_Feinden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w12_Gesetz"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w8_gestattet"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w19_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w9_werden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w11_das"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w0_Terroristen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w16_sich"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w7_nicht"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w14_Handelns"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s5887w20_%27%27"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s5887w0_Terroristen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s5887w9_werden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s5887"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s5887w8_gestattet"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s5887w10_%2C"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -43,7 +43,13 @@ import com.jamonapi.MonitorFactory;
  */
 public class JamonMonitorLogger {
 
-		
+
+	public static final String MS = "ms.";
+	public static final String SECONDS = "sec.";
+	public static final String COUNT = "count";
+	public static final String DOUBLE = "double";
+	public static final String PERCENTAGE = "%";
+	
 	public static List<Monitor> getMonitors(){
 		//MonitorFactory mf=(MonitorFactory)MonitorFactory.getFactory();
 		LinkedList<Monitor> l=new LinkedList<Monitor>();
@@ -89,12 +95,12 @@ public class JamonMonitorLogger {
 		retVal+=unit+"|\t";
 		long content = new Double(m.getTotal()).longValue();
 		content = content / (1000*1000);
-		String contentstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(content ) : m.getHits()+"" ;
+		String contentstr = (unit.equals(MS))? Helper.prettyPrintNanoSeconds(content ) : m.getHits()+"" ;
 		retVal+= "total:"+contentstr+"|\t";
 		
 		long avg = new Double(m.getAvg()).longValue();
 		avg = avg / (1000*1000);
-		String avgstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(avg ) : avg+"" ;
+		String avgstr = (unit.equals(MS))? Helper.prettyPrintNanoSeconds(avg ) : avg+"" ;
 		retVal+= "avg:"+avgstr+"|\t";
 		
 		return retVal;
@@ -141,9 +147,12 @@ public class JamonMonitorLogger {
 	}
 	
 	@SuppressWarnings("all")
-	public static  Monitor getStatisticMonitor(Class clazz, String label) {
-		String labeltmp = getMonitorPrefix(clazz)+label;
+	public static  Monitor getStatisticMonitor( String label) {
 		return MonitorFactory.getMonitor(label, "double");
+	}
+	@SuppressWarnings("all")
+	public static  Monitor getStatisticMonitor( String label, String unit) {
+		return MonitorFactory.getMonitor(label, unit);
 		
 	}
 	
