@@ -296,7 +296,7 @@ public class TestIterativeLearning {
 			logger.debug("Number of retrieved positives: " + posAsPos.size());
 			logger.debug("Number of total positives: " + allExamples.getPosTest().size());
 
-			precision = precision(posAsPos.size(), retrieved.size());
+			precision = precision(posAsPos.size(), newTestRetrieved.size());
 			config.add(logPrecision, i, precision);
 			recall = recall(posAsPos.size(), allExamples.getPosTest().size());
 			config.add(logRecall, i, recall);
