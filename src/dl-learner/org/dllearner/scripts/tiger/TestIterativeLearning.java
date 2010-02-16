@@ -19,6 +19,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.algorithms.refinement2.ROLearner2;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -91,7 +92,7 @@ public class TestIterativeLearning {
 	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[] { logPrecision,
 			logRecall, logFMeasure, logLearningTime, logIterationTime }));
 
-	static int iterations = 4;
+	static int iterations = 5;
 	static int folds = 10;
 	static int printSentences = 3;
 
@@ -106,7 +107,7 @@ public class TestIterativeLearning {
 		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
 
 		Files.mkdir(resultFolder);
-
+		
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
 					.asList(new String[] { graph })), new ArrayList<String>());
@@ -114,7 +115,8 @@ public class TestIterativeLearning {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
+		
 		// folds = 2;
 		// iterations = 2;
 		long n = System.currentTimeMillis();
@@ -143,6 +145,12 @@ public class TestIterativeLearning {
 
 		List<Examples> folds = new ExMakerCrossFolds(allExamples)
 				.splitLeaveOneOut(TestIterativeLearning.folds);
+		
+		/*CLEANUP*/
+		positives = null;
+		negatives = null;
+		allExamples = null;
+		
 		// ExMakerCrossFolds.printFolds(folds);
 		List<IteratedConfig> configs = getConfigs();
 		Table masterTable = new Table();
@@ -219,11 +227,11 @@ public class TestIterativeLearning {
 		reducedExamples.splits = 2;
 		// reducedExamples.adaptMaxRuntime=false;
 		// reducedExamples.maxExecutionTime = 20;
-		reducedExamples.factor = 3.0d;
+		reducedExamples.factor = 6.0d;
 
 		IteratedConfig fixRuntime = new IteratedConfig("fixRuntime_20s", iterations);
 		fixRuntime.adaptMaxRuntime = false;
-		fixRuntime.maxExecutionTime = 20;
+		fixRuntime.maxExecutionTime = 40;
 
 		IteratedConfig useLemma = new IteratedConfig("useLemma_false", iterations);
 		useLemma.useDataHasValue = false;
@@ -241,8 +249,8 @@ public class TestIterativeLearning {
 		tmp.addPosTrain(allExamples.getPosTrain());
 		tmp.addNegTrain(allExamples.getNegTrain());
 
-		ExMakerFixedSize fs = new ExMakerFixedSize(tmp);
-		Examples learn = fs.select(config.initialsplits, config.initialsplits);
+		Examples learn = new ExMakerFixedSize(tmp).select(config.initialsplits, config.initialsplits);
+		tmp = null;
 		logger.debug("Total set \n" + allExamples);
 		logger.debug("Initial training set \n" + learn);
 
@@ -260,17 +268,6 @@ public class TestIterativeLearning {
 			Monitor iterationTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class,
 					"iterationTime").start();
 			Monitor literationTime = config.start(logIterationTime, i);
-			// try {
-			// Thread.sleep(2000);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// literationTime.stop();
-			// System.out.println(literationTime);
-			// if (true) {
-			// System.exit(0);
-			// }
 
 			/* LEARNING */
 			Monitor lLearningTime = config.start(logLearningTime, i);
@@ -288,6 +285,11 @@ public class TestIterativeLearning {
 			newTestRetrieved = Helper.intersection(allExamples.getTestExamples(), retrieved);
 			newTrainRetrieved = Helper.intersection(allExamples.getTrainExamples(), retrieved);
 
+			SortedSet<String> posAsNegInformative = Helper.difference(allExamples.getPositiveExamples(),
+					retrieved);
+			
+			retrieved = null;
+			
 			// logger.debug("Retrieved "+retrieved.size()+" sentences");
 
 			/* MASHING */
@@ -318,8 +320,7 @@ public class TestIterativeLearning {
 			newlyFound.addPosTrain(discoveredPosInStore);
 			newlyFound.addNegTrain(misclassifiedNegInStore);
 
-			SortedSet<String> posAsNegInformative = Helper.difference(allExamples.getPositiveExamples(),
-					retrieved);
+			
 
 			logger.debug("Discovered: " + discoveredPosInStore.size()
 					+ " positive sentences in store (printing " + printSentences + "):");
@@ -331,8 +332,7 @@ public class TestIterativeLearning {
 					+ " positive sentences in store (printing " + printSentences + "):");
 			_getLabels(posAsNegInformative, printSentences);
 
-			fs = new ExMakerFixedSize(newlyFound);
-			newlyFound = fs.select(config.splits, config.splits);
+			newlyFound = new ExMakerFixedSize(newlyFound).select(config.splits, config.splits);
 
 			learn.addPosTrain(newlyFound.getPosTrain());
 			learn.addNegTrain(newlyFound.getNegTrain());
@@ -463,6 +463,8 @@ public class TestIterativeLearning {
 			result = la.getCurrentlyBestEvaluatedDescription();
 			logger.trace(PrefixMap.toKBSyntaxString(result.getDescription()));
 			logger.trace(PrefixMap.toManchesterSyntaxString(result.getDescription()));
+			
+			ComponentManager.getInstance().freeAllComponents();
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,12 +1,14 @@
 package org.dllearner.utilities.experiments;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.jamonapi.Monitor;
 
-public class TableRowColumn {
+public class TableRowColumn implements Serializable{
+	private static final long serialVersionUID = 1252924374566004540L;
 
 	enum Formats {
 		LATEX, GNUPLOT
@@ -18,7 +20,8 @@ public class TableRowColumn {
 	private final String label ;
 	private final String experimentName;
 	
-	Monitor[] monitors;
+//	final Monitor[] monitors;
+	final FinalizedMonitor[] monitors;
 	boolean useStdDev = false;
 	
 	DecimalFormat dfGnuPlotDefault = new DecimalFormat("######0.00####");
@@ -31,7 +34,10 @@ public class TableRowColumn {
 	// this.monitors = monitors;
 	// }
 	public TableRowColumn(Monitor[] monitors,  String experimentName, String label) {
-		this.monitors = monitors;
+		this.monitors = new FinalizedMonitor[monitors.length];
+		for (int i = 0; i < monitors.length; i++) {
+			this.monitors[i] = new FinalizedMonitor(monitors[i]);
+		}
 		this.label = label;
 		this.experimentName = experimentName;
 	}
@@ -110,8 +116,8 @@ public class TableRowColumn {
 		return dfGnuPlotDefault.format(monitors[i].getAvg()) + "";
 	}
 	
-	private String latexFormat(Monitor m, double value){
-		if(m.getUnits().equals(JamonMonitorLogger.PERCENTAGE)){
+	private String latexFormat(FinalizedMonitor monitors, double value){
+		if(monitors.getUnits().equals(JamonMonitorLogger.PERCENTAGE)){
 			return dfPercentage.format(value);
 		}else{
 			return dfLatexDefault.format(value);
