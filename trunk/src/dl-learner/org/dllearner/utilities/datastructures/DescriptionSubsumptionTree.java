@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.utilities.datastructures;
 
 import java.util.ArrayList;
@@ -14,17 +33,34 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 
+/**
+ * This class takes Descritptions and a reasoner and orders the 
+ * descriptions by subsumption into a tree, represented by the internal class "Node"
+ * @author Sebastian Hellmann <hellmann@informatik.uni-leipzig.de>
+ *
+ */
 public class DescriptionSubsumptionTree {
 	private static final Logger logger = Logger.getLogger(DescriptionSubsumptionTree.class);
+	/**
+	 * turns on logging
+	 */
 	public static boolean debug = false;
-
+	
+	/**
+	 * Datastructure for the tree
+	 * @author Sebastian Hellmann <hellmann@informatik.uni-leipzig.de>
+	 *
+	 */
 	public class Node implements Comparable<Node> {
 
-//		public Node parent = null;
 		public double accuracy;
 		public boolean root = false;
 
 		// by length?
+		/**
+		 * holds descriptions of nodes with equivalent classes
+		 * should be ordered by length
+		 */
 		public SortedSet<EvaluatedDescription> equivalents = new TreeSet<EvaluatedDescription>(
 				new Comparator<EvaluatedDescription>() {
 					@Override
@@ -35,6 +71,10 @@ public class DescriptionSubsumptionTree {
 				});
 
 		// by accuracy
+		/**
+		 * holds the nodes that are subclasses of this node.
+		 * ordered by accuracy
+		 */
 		public SortedSet<Node> subClasses = new TreeSet<Node>();
 		
 		public Node(EvaluatedDescription ed, boolean root) {
@@ -51,59 +91,70 @@ public class DescriptionSubsumptionTree {
 			this(ed,false);
 		}
 
-		// happens only if n is sure to be a subclass
-		public void insert(Node n) {
+		// 
+		/**
+		 * insert a node into the tree
+		 * only used if node is sure to be a subClass of this node
+		 * @param node
+		 */
+		public void insert(Node node) {
 			logger.warn("******************");
 			if (subClasses.isEmpty()) {
-				logger.warn("Adding " + n.getEvalDesc() + "\n\t as subclass of " + this.getEvalDesc());
-				subClasses.add(n);
+				logger.warn("Adding " + node.getEvalDesc() + "\n\t as subclass of " + this.getEvalDesc());
+				subClasses.add(node);
 			} else {
 				SortedSet<Node> subClassesTmp = new TreeSet<Node>(subClasses);
 				for (Node sub : subClassesTmp) {
-					logger.warn("Testing relation between: " + n.getEvalDesc() + "\n\t and "
+					logger.warn("Testing relation between: " + node.getEvalDesc() + "\n\t and "
 							+ sub.getEvalDesc());
 
-					boolean passOn = rc.isSuperClassOf(/* super */sub.getDesc(),/* sub */n.getDesc());
-					boolean superClass = rc.isSuperClassOf(/* super */n.getDesc(),/* sub */sub.getDesc());
+					boolean passOn = rc.isSuperClassOf(/* super */sub.getDesc(),/* sub */node.getDesc());
+					boolean superClass = rc.isSuperClassOf(/* super */node.getDesc(),/* sub */sub.getDesc());
 
 					// EquivalentClass of subclass
 					if (passOn && superClass) {
-						logger.warn("Adding " + n.getEvalDesc() + "\n\t as EQUIVALENTclass of "
+						logger.warn("Adding " + node.getEvalDesc() + "\n\t as EQUIVALENTclass of "
 								+ sub.getEvalDesc());
 //						n.parent = sub.parent;
-						sub.equivalents.add(n.getEvalDesc());
+						sub.equivalents.add(node.getEvalDesc());
 						// superclass of subclass
 					} else if (superClass) {
-						logger.warn("Adding " + n.getEvalDesc() + "\n\t as SUPERclass of "
+						logger.warn("Adding " + node.getEvalDesc() + "\n\t as SUPERclass of "
 								+ sub.getEvalDesc());
 //						n.parent = this;
 //						sub.parent = n;
 						subClasses.remove(sub);
-						subClasses.add(n);
-						n.insert(sub);
+						subClasses.add(node);
+						node.insert(sub);
 						// passOn to next Class
 					} else if (passOn) {
 						logger
-								.warn("Passing " + n.getEvalDesc() + "\n\t as SUBclass to "
+								.warn("Passing " + node.getEvalDesc() + "\n\t as SUBclass to "
 										+ sub.getEvalDesc());
-						sub.insert(n);
+						sub.insert(node);
 						// add to own subclasses
 					} else {
 						logger
-								.warn("Adding " + n.getEvalDesc() + "\n\t as SUBclass of "
+								.warn("Adding " + node.getEvalDesc() + "\n\t as SUBclass of "
 										+ this.getEvalDesc());
 //						n.parent = this;
-						subClasses.add(n);
+						subClasses.add(node);
 					}
 				}
 			}
 		}
 
 
+		/**
+		 * @return the first, i.e. the shortest class description of this node
+		 */
 		public EvaluatedDescription getEvalDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first();
 		}
 
+		/**
+		 * @return the first, i.e. the shortest class description of this node
+		 */
 		public Description getDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first().getDescription();
 		}
@@ -113,6 +164,11 @@ public class DescriptionSubsumptionTree {
 			return "subs/equivs: "+subClasses.size()+"|"+equivalents.size()+"  \n"+getEvalDesc().toString()+"\n"+subClasses;
 		}
 
+		/**
+		 * a simple recursive implementation of a tree to string conversion
+		 * @param tab
+		 * @return
+		 */
 		public String _toString(String tab) {
 			StringBuffer ret = new StringBuffer();
 			ret.append((root) ? "Thing\n" : tab + getEvalDesc() + "\n");
@@ -139,36 +195,54 @@ public class DescriptionSubsumptionTree {
 			return ret;
 		}
 
+		/**
+		 * == is used, important, when removing nodes from subClasses SortedSet
+		 * @param node
+		 * @return
+		 */
 		public boolean equals(Node node) {
 			return this == node;
 		}
 
 	}
 
-	private Node root;
-
+	/*
+	 * MAIN CLASS FOLLOWING BELOW
+	 * 
+	 * */
+	
+	private Node rootNode;
 	private final ReasonerComponent rc;
 
+	/**
+	 * 
+	 * @param rc An initialized reasoner component
+	 */
 	public DescriptionSubsumptionTree(ReasonerComponent rc) {
 		logger.trace("Output for DescriptionSubsumptionTree deactivated (in class)");
 		logger.setLevel((debug) ? Level.WARN : Level.OFF);
 		this.rc = rc;
-		this.root = new Node(null,true);
-//		this.root.parent = null;
+		this.rootNode = new Node(null,true);
 	}
-
-	public static void main(String[] args) {
-
+	
+	public Node getRootNode(){
+		return rootNode;
 	}
 
 	public void insert(Collection<EvaluatedDescription> evaluatedDescriptions) {
 		for (EvaluatedDescription evaluatedDescription : evaluatedDescriptions) {
 			logger.warn("Next to insert: " + evaluatedDescription.toString());
 			Node n = new Node(evaluatedDescription);
-			this.root.insert(n);
+			this.rootNode.insert(n);
 		}
 	}
 
+	/**
+	 * Not very well implemented, feel free to write your own
+	 * @param evaluatedDescriptions
+	 * @param limit
+	 * @param accuracyThreshold
+	 */
 	public void insertEdPosNeg(Collection<EvaluatedDescriptionPosNeg> evaluatedDescriptions, int limit,
 			double accuracyThreshold) {
 		
@@ -188,7 +262,7 @@ public class DescriptionSubsumptionTree {
 		for (EvaluatedDescription evaluatedDescription : newSet) {
 			logger.warn("Next to insert: " + evaluatedDescription.toString());
 			Node n = new Node(evaluatedDescription);
-			this.root.insert(n);
+			this.rootNode.insert(n);
 		}
 		logger.warn("Finished Inserting");
 
@@ -196,11 +270,7 @@ public class DescriptionSubsumptionTree {
 
 	@Override
 	public String toString() {
-//		for (Node n : root.subClasses) {
-//			System.out.println(n);
-//		}
-//		System.out.println(root.subClasses);
-		return root._toString("");
+		return rootNode._toString("");
 	}
 
 }
