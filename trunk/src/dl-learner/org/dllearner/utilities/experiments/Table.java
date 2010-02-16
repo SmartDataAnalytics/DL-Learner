@@ -1,6 +1,7 @@
 package org.dllearner.utilities.experiments;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,7 +15,9 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-public class Table {
+public class Table implements Serializable{
+	private static final long serialVersionUID = -7191672899557577952L;
+
 	private static final Logger logger = Logger.getLogger(Table.class);
 
 	boolean replaceCommaByPoints = true;
@@ -58,13 +61,16 @@ public class Table {
 			t.addTableRowColumn(trc);
 		}
 		
-//		System.out.println(t.getLatexAsColumn(true));
+		System.out.println(t.getLatexAsColumn(true));
+		t.serialize("test.ser");
+		Table n = deserialize("test.ser");
+		System.out.println(n.getLatexAsColumn(true));
 //		System.out.println(t.getLatexAsRows());
 //		System.out.println(t.getGnuPlotAsColumn(true));
 //		System.out.println(t.getGnuPlotAsRows());
 //		System.out.println(MonProxyFactory.);
-		System.out.println( MonitorFactory.getReport());
-		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
+//		System.out.println( MonitorFactory.getReport());
+//		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
 	}
 
 	public void addTableRowColumn(List<TableRowColumn> trcs) {
@@ -223,7 +229,16 @@ public class Table {
 		Files.createFile(new File(folder+fileprefix+"_LATEX_ROWS"), getLatexAsRows());
 		Files.createFile(new File(folder+fileprefix+"_LATEX_COLUMNS"), getLatexAsColumn());
 		Files.createFile(new File(folder+fileprefix+"_LATEX_COLUMNS_I"), getLatexAsColumn(true));
+	
+		serialize(folder+fileprefix+".ser");
+		
 	}
 	
+	public void serialize(String filename){
+		Files.writeObjectToFile(this, new File(filename));
+	}
+	public static Table deserialize(String filename){
+		return (Table)Files.readObjectfromFile(new File(filename));
+	}
 
 }
