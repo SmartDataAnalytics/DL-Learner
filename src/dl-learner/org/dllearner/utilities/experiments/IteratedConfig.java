@@ -2,7 +2,7 @@ package org.dllearner.utilities.experiments;
 
 import org.apache.log4j.Logger;
 
-public class IteratedConfig extends ExperimentConfig{
+public class IteratedConfig extends ExperimentConfiguration{
 	
 
 	private static final Logger logger = Logger.getLogger(IteratedConfig.class);
