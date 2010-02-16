@@ -39,7 +39,6 @@ public class ExperimentConfig {
 		List<TableRowColumn> l = new ArrayList<TableRowColumn>();
 		if(sizeOfResultVector == 1) {
 			Monitor[] monitors = new Monitor[mcs.size()]; 
-//			TableRowColumn trc =
 			for (int i = 0; i < monitors.length; i++) {
 				monitors[i] = mcs.get(i).getMonitors()[0];
 			}
