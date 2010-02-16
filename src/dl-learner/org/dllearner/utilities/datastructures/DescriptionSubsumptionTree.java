@@ -16,7 +16,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 public class DescriptionSubsumptionTree {
 	private static final Logger logger = Logger.getLogger(DescriptionSubsumptionTree.class);
 	static int nodeIdStatic = 0;
-	public static boolean debug = true;
+	public static boolean debug = false;
 	
     public class Node implements Comparable<Node>{
     	
