@@ -37,7 +37,6 @@ import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.examples.ExampleDataCollector;
@@ -45,7 +44,6 @@ import org.dllearner.utilities.experiments.ExMakerCrossFolds;
 import org.dllearner.utilities.experiments.ExMakerFixedSize;
 import org.dllearner.utilities.experiments.ExMakerRandomizer;
 import org.dllearner.utilities.experiments.Examples;
-import org.dllearner.utilities.experiments.ExperimentCollector;
 import org.dllearner.utilities.experiments.IteratedConfig;
 import org.dllearner.utilities.experiments.Jamon;
 import org.dllearner.utilities.experiments.Table;
@@ -106,8 +104,6 @@ public class TestIterativeLearning {
 		Logger.getLogger(RhoDRDown.class).setLevel(Level.INFO);
 		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
 
-		Files.mkdir(resultFolder);
-		
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
 					.asList(new String[] { graph })), new ArrayList<String>());
@@ -120,8 +116,8 @@ public class TestIterativeLearning {
 		// folds = 2;
 		// iterations = 2;
 		long n = System.currentTimeMillis();
-		passiveNoZU();
-		// passiveWithZu();
+//		passiveNoZU();
+		 passiveWithZu();
 
 		logger.info("finished, needed: " + (System.currentTimeMillis() - n));
 		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
@@ -151,7 +147,6 @@ public class TestIterativeLearning {
 		negatives = null;
 		allExamples = null;
 		
-		// ExMakerCrossFolds.printFolds(folds);
 		List<IteratedConfig> configs = getConfigs();
 		Table masterTable = new Table();
 		for (IteratedConfig experimentConfig : configs) {
@@ -167,9 +162,9 @@ public class TestIterativeLearning {
 			expTable.write(resultFolder, experimentConfig.experimentName);
 			masterTable.addTable(expTable);
 			masterTable.sortByExperimentName();
-			masterTable.write(resultFolder, "master_by_expname");
+			masterTable.write(resultFolder, "passiveNoZu_by_expname");
 			masterTable.sortByLabel();
-			masterTable.write(resultFolder, "master_by_label");
+			masterTable.write(resultFolder, "passiveNoZu_by_label");
 
 			JamonMonitorLogger.writeHTMLReport("/tmp/tiger.html");
 			logger.info(experimentConfig);
@@ -179,7 +174,6 @@ public class TestIterativeLearning {
 	}
 
 	public static void passiveWithZu() {
-		ExperimentCollector eColl_passiveWithZu = new ExperimentCollector("passiveWithZu");
 		SortedSet<String> positives = read(passiveWithZu);
 		SortedSet<String> negatives = read(active);
 
@@ -195,12 +189,18 @@ public class TestIterativeLearning {
 
 		List<Examples> runs = new ArrayList<Examples>();
 		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+//		
+		/*CLEANUP*/
+		positives = null;
+		negatives = null;
+		allExamples = null;
 
 		List<IteratedConfig> configs = getConfigs();
+		Table masterTable = new Table();
 		for (IteratedConfig experimentConfig : configs) {
 			logger.info("next: passiveWithZu." + experimentConfig.experimentName);
 			int i = 1;
@@ -209,11 +209,19 @@ public class TestIterativeLearning {
 				conductExperiment(examples, experimentConfig);
 
 			}
-			eColl_passiveWithZu.addExperimentConfig(experimentConfig);
+			Table expTable = new Table();
+			expTable.addTableRowColumn(experimentConfig.getTableRows());
+			expTable.write(resultFolder, "passiveWithZu"+experimentConfig.experimentName);
+			masterTable.addTable(expTable);
+			masterTable.sortByExperimentName();
+			masterTable.write(resultFolder, "passiveWithZu_by_expname");
+			masterTable.sortByLabel();
+			masterTable.write(resultFolder, "passiveWithZu_by_label");
 
+			JamonMonitorLogger.writeHTMLReport("/tmp/tiger.html");
 			logger.info(experimentConfig);
 		}
-		eColl_passiveWithZu.write(iterations);
+		
 
 	}
 
@@ -237,9 +245,9 @@ public class TestIterativeLearning {
 		useLemma.useDataHasValue = false;
 
 		l.add(baseline);
-		l.add(reducedExamples);
-		l.add(fixRuntime);
-		l.add(useLemma);
+//		l.add(reducedExamples);
+//		l.add(fixRuntime);
+//		l.add(useLemma);
 
 		return l;
 	}
