@@ -47,8 +47,8 @@ import org.dllearner.utilities.experiments.Examples;
 import org.dllearner.utilities.experiments.ExperimentCollector;
 import org.dllearner.utilities.experiments.IteratedConfig;
 import org.dllearner.utilities.experiments.Jamon;
+import org.dllearner.utilities.experiments.Table;
 
-import com.jamonapi.MonKey;
 import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
 
@@ -114,7 +114,7 @@ public class TestIterativeLearning {
 		}
 
 		folds = 2;
-		iterations = 1;
+		iterations = 2;
 		long n = System.currentTimeMillis();
 		passiveNoZU();
 //		passiveWithZu();
@@ -144,25 +144,27 @@ public class TestIterativeLearning {
 //			ExMakerCrossFolds.printFolds(folds);
 			List<IteratedConfig> configs = getConfigs();
 			for (IteratedConfig experimentConfig : configs) {
-				logger.warn("next: passiveNoZU."+experimentConfig.label);
+				experimentConfig.init(mks);
+				logger.warn("next: passiveNoZU."+experimentConfig.experimentName);
 				int i = 1;
 				for (Examples examples : folds) {
-					
-					for(MonKeyImp m : mks){
-						experimentConfig.init(m);
-					}
-					
 					logger.warn("beginning fold: "+(i++));
 					
 					conductExperiment( examples, experimentConfig);
+					
 				}
+				Table t = new Table();
+				t.addTableRowColumn(experimentConfig.getTableRows());
+				t.sortByLabel();
+				JamonMonitorLogger.writeHTMLReport("/tmp/tiger.html");
+				System.out.println(t.getGnuPlotAsColumn());
 				if (true) {
 					System.exit(0);
 				}
 				
-				eColl_passiveNoZU.addExperimentConfig(experimentConfig);
+//				eColl_passiveNoZU.addExperimentConfig(experimentConfig);
 				logger.info(experimentConfig);
-				eColl_passiveNoZU.write(iterations);
+//				eColl_passiveNoZU.write(iterations);
 			}
 			
 		
@@ -192,7 +194,7 @@ public class TestIterativeLearning {
 
 			List<IteratedConfig> configs = getConfigs();
 			for (IteratedConfig experimentConfig : configs) {
-				logger.warn("next: passiveWithZu."+experimentConfig.label);
+				logger.warn("next: passiveWithZu."+experimentConfig.experimentName);
 				int i=1;
 				for (Examples examples : runs) {
 					logger.warn("beginning run: "+(i++));
@@ -259,6 +261,17 @@ public class TestIterativeLearning {
 		for(int i = 0 ; config.stopCondition(i, precision, recall, fmeasure, lastConcept) ;i++ ) {
 			Monitor iterationTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "iterationTime").start();
 			Monitor literationTime = config.start(logIterationTime, i);
+//			try {
+//				Thread.sleep(2000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			literationTime.stop();
+//			System.out.println(literationTime);
+//			if (true) {
+//				System.exit(0);
+//			}
 
 			/*LEARNING*/
 			Monitor lLearningTime = config.start(logLearningTime, i);

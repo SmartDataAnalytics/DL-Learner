@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 public class TableRowColumn {
 
@@ -16,12 +15,13 @@ public class TableRowColumn {
 	public static String latexSep = "\t&\t";
 	public static String latexEnd = "\\\\";
 
-	String label = "";
+	private final String label ;
+	private final String experimentName;
 	
 	Monitor[] monitors;
 	boolean useStdDev = false;
 	
-	DecimalFormat dfGnuPlotDefault = new DecimalFormat("#######.######");
+	DecimalFormat dfGnuPlotDefault = new DecimalFormat("######0.00####");
 	
 //	DecimalFormat dfStdDevLatex = new DecimalFormat("##.##%");
 	DecimalFormat dfLatexDefault = new DecimalFormat("####.####");
@@ -30,9 +30,10 @@ public class TableRowColumn {
 	// public TableRowColumn(Monitor[] monitors){
 	// this.monitors = monitors;
 	// }
-	public TableRowColumn(Monitor[] monitors, String label) {
+	public TableRowColumn(Monitor[] monitors,  String experimentName, String label) {
 		this.monitors = monitors;
 		this.label = label;
+		this.experimentName = experimentName;
 	}
 
 	
@@ -44,8 +45,17 @@ public class TableRowColumn {
 
 	public void deleteAll(){
 		for (int i = 0; i < monitors.length; i++) {
-			MonitorFactory.remove(monitors[i].getMonKey());
+//			MonitorFactory.remove(monitors[i].getMonKey());
 		}
+	}
+	
+	@Override
+	public String toString(){
+		return experimentName+" "+label+" "+toGnuPlotRow();
+	}
+	
+	public String getHeader(){
+		return experimentName+" "+label;
 	}
 	
 	public int size() {
@@ -59,13 +69,17 @@ public class TableRowColumn {
 	public String getLabel() {
 		return label;
 	}
+	
+	public String getExperimentName() {
+		return experimentName;
+	}
 
 	public String toGnuPlotRow() {
 		return toRow(Formats.GNUPLOT);
 	}
 
 	private String toRow(Formats f) {
-		String ret = label;
+		String ret = experimentName+ " "+ label;
 		for (int i = 0; i < monitors.length; i++) {
 			boolean last = (i + 1 == monitors.length);
 			switch (f) {

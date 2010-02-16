@@ -43,7 +43,7 @@ public class IteratedConfig extends ExperimentConfig{
 //		if(higher(iterationRecall, recall)){highestRecall=concept;}
 //		if(higher(iterationFmeasure, fmeasure)){highestFMeasure=concept;}
 		
-		boolean condIter = (iteration<this.iterations);
+		boolean condIter = (iteration<this.sizeOfResultVector);
 		boolean condPrec = fmeasure <=1.0d;
 		if(!condIter){
 			logger.info("iterations reached, stopping");

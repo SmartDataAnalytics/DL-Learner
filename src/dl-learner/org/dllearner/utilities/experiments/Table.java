@@ -3,6 +3,8 @@ package org.dllearner.utilities.experiments;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.JamonMonitorLogger;
@@ -19,6 +21,11 @@ public class Table {
 		LATEX, GNUPLOT
 	};
 
+	
+//	private Map<String, TableRowColumn> m = new HashMap<String, TableRowColumn>();
+	private SortedSet<String> experimentNames = new TreeSet<String>();
+	private SortedSet<String> labels = new TreeSet<String>();
+	
 	private List<TableRowColumn> tableRowColumns = new ArrayList<TableRowColumn>();
 	private int length;
 
@@ -43,8 +50,8 @@ public class Table {
 				}
 //				System.out.println("avg: " + m[a].getAvg());
 			}
-			TableRowColumn trc = new TableRowColumn(m, "entry_" + i);
-			trc.deleteAll();
+			TableRowColumn trc = new TableRowColumn(m, "Test","entry_" + i);
+//			trc.deleteAll();
 			trc.useStdDev=false;
 			t.addTableRowColumn(trc);
 		}
@@ -58,11 +65,19 @@ public class Table {
 		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
 	}
 
+	public void addTableRowColumn(List<TableRowColumn> trcs) {
+		for (TableRowColumn tableRowColumn : trcs) {
+			labels.add(tableRowColumn.getLabel());
+			experimentNames.add(tableRowColumn.getExperimentName());
+			addTableRowColumn(tableRowColumn);
+		}
+	}
+	
 	public void addTableRowColumn(TableRowColumn trc) {
 		try{
 			trc.toLatexRow();
 		}catch (NullPointerException e) {
-			logger.error("TableRowColumn was not initialized, ignoring it, label: "+trc.label);
+			logger.error("TableRowColumn was not initialized, ignoring it: "+trc);
 			e.printStackTrace();
 		}
 		
@@ -73,7 +88,7 @@ public class Table {
 		if (trc.size() != length) {
 			
 			logger.error("Added TableRowColumn does not match previous set length (" + length + ") but has size "
-					+ trc.size() + "), \nignoring it, label: "+trc.label+", value: " + trc.toLatexRow());
+					+ trc.size() + "), \nignoring it: "+trc);
 			
 			
 		}
@@ -116,13 +131,13 @@ public class Table {
 				boolean first = (i==1);
 				switch (f) {
 					case LATEX:
-						rows[0] += (first?trc.label+TableRowColumn.latexSep:"");
+						rows[0] += (first?trc.getHeader()+TableRowColumn.latexSep:"");
 						rows[i] += (firstColumn&&addNumbersInFront?i+TableRowColumn.latexSep:"");
 						rows[i] += trc.getLatexEntry(i-1)
 								+ ((last) ? TableRowColumn.latexSep : TableRowColumn.latexSep);
 						break;
 					case GNUPLOT:
-						rows[0] += (first?"#"+trc.label+"\t":"");
+						rows[0] += (first?"#"+trc.getHeader()+"\t":"");
 						rows[i] += (firstColumn&&addNumbersInFront?i+"\t":"");
 						rows[i] += trc.getGnuPlotEntry(i-1) + ((last) ?""  : "\t");
 						break;
@@ -152,5 +167,45 @@ public class Table {
 		}
 		return (replaceCommaByPoints)?ret.replace(",","."):ret;
 	}
+	
+	public void sortByExperimentName(){
+		_sortByLabel();
+		_sortByExperimentName();
+		
+	}
+	public void sortByLabel(){
+		_sortByExperimentName();
+		_sortByLabel();
+	}
+	
+	private void _sortByLabel(){
+		List<String> l = new ArrayList<String>(labels);
+		List<TableRowColumn> newTrc = new ArrayList<TableRowColumn>();
+		
+		for (String s : l) {
+			for (TableRowColumn trc : tableRowColumns) {
+				if(trc.getLabel().equals(s)){
+					newTrc.add(trc);
+				}
+			}
+		}
+		tableRowColumns = newTrc;
+	}
+	private void _sortByExperimentName(){
+		List<String> l = new ArrayList<String>(experimentNames);
+		List<TableRowColumn> newTrc = new ArrayList<TableRowColumn>();
+		
+		for (String s : l) {
+			for (TableRowColumn trc : tableRowColumns) {
+				if(trc.getExperimentName().equals(s)){
+					newTrc.add(trc);
+				}
+			}
+		}
+		tableRowColumns = newTrc;
+	}
+	
+	
+	
 
 }
