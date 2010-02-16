@@ -1,5 +1,6 @@
 package org.dllearner.utilities.experiments;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -7,6 +8,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.jamonapi.Monitor;
@@ -70,6 +72,12 @@ public class Table {
 			labels.add(tableRowColumn.getLabel());
 			experimentNames.add(tableRowColumn.getExperimentName());
 			addTableRowColumn(tableRowColumn);
+		}
+	}
+	
+	public void addTable(Table t){
+		for (TableRowColumn  trc : t.tableRowColumns) {
+			addTableRowColumn(trc);
 		}
 	}
 	
@@ -205,7 +213,17 @@ public class Table {
 		tableRowColumns = newTrc;
 	}
 	
-	
+	public void write(String folder, String fileprefix){
+		Files.mkdir(folder);
+		Files.createFile(new File(folder+fileprefix+"_GNU_ROWS"), getGnuPlotAsRows());
+		Files.createFile(new File(folder+fileprefix+"_GNU_COLUMNS_I"), getGnuPlotAsColumn(true));
+		Files.createFile(new File(folder+fileprefix+"_GNU_COLUMNS"), getGnuPlotAsColumn());
+		
+		
+		Files.createFile(new File(folder+fileprefix+"_LATEX_ROWS"), getLatexAsRows());
+		Files.createFile(new File(folder+fileprefix+"_LATEX_COLUMNS"), getLatexAsColumn());
+		Files.createFile(new File(folder+fileprefix+"_LATEX_COLUMNS_I"), getLatexAsColumn(true));
+	}
 	
 
 }
