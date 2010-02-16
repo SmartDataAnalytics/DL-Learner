@@ -20,6 +20,8 @@ public class ExperimentCollector {
 	public static DecimalFormat dfhuman = new DecimalFormat("##.##%");
 	public static DecimalFormat dfRuntime = new DecimalFormat("####.");
 	List<IteratedConfig> experimentConfigs = new ArrayList<IteratedConfig>();
+	
+	
 
 	public ExperimentCollector(String filePrefix) {
 		details = dir + filePrefix + "_" + "details";
@@ -42,7 +44,7 @@ public class ExperimentCollector {
 		String headerGNU = "\t";
 		String headerLatex = "\t&\t";
 		for (IteratedConfig ec : experimentConfigs) {
-			 headerGNU += ec.label + "\t";
+			 headerGNU += ec.experimentName + "\t";
  			 Files.appendFile(new File(details), ec.toString());
 		}
 		for (int i = 0; i < iterations; i++) {
@@ -67,7 +69,7 @@ public class ExperimentCollector {
 		}
 
 		for (IteratedConfig ec : experimentConfigs) {
-			String label = ec.label ;
+			String label = ec.experimentName ;
 			String learningTimeLatex = label+" learn"+ "\t&\t";
 			String totalTimeLatex = label+" total"+ "\t&\t";
 			String fmeasureLatex = label+ "\t&\t";
@@ -83,7 +85,7 @@ public class ExperimentCollector {
 			
 		}
 		for (IteratedConfig ec : experimentConfigs) {
-			String label = ec.label;
+			String label = ec.experimentName;
 			String learningTimeHuman = label+" learn" + "\t&\t";
 			String totalTimeHuman = label+" total" + "\t&\t";
 			String fmeasureHuman = label + "\t&\t";
