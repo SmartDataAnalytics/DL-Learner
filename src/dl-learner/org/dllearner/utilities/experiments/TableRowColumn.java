@@ -24,6 +24,8 @@ public class TableRowColumn implements Serializable{
 	final FinalizedMonitor[] monitors;
 	boolean useStdDev = false;
 	
+	boolean hits_instead_of_average = false;
+	
 	DecimalFormat dfGnuPlotDefault = new DecimalFormat("######0.00####");
 	
 //	DecimalFormat dfStdDevLatex = new DecimalFormat("##.##%");
