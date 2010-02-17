@@ -3,7 +3,7 @@
 package org.dllearner.parser;
 
 /** Token Manager Error. */
-@SuppressWarnings("all")
+@SuppressWarnings("serial")
 public class TokenMgrError extends Error
 {
 

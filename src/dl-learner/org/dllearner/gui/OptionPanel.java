@@ -31,7 +31,7 @@ import javax.swing.JScrollPane;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.options.*;
+import org.dllearner.core.config.*;
 import org.dllearner.gui.widgets.WidgetPanelBoolean;
 import org.dllearner.gui.widgets.WidgetPanelDefault;
 import org.dllearner.gui.widgets.WidgetPanelDouble;

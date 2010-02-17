@@ -83,10 +83,6 @@ public class SparqlEndpoint {
 			return getEndpointDBpedia();
 		} else if (name.equals("LOCALDBPEDIA")) {
 			return getEndpointLOCALDBpedia();
-		} else if (name.equals("LOCALGEONAMES")) {
-			return getEndpointLOCALGeonames();
-		} else if (name.equals("LOCALGEODATA")) {
-			return getEndpointLOCALGeoData();
 		} else if (name.equals("LOCALJOSECKI") || name.equals("LOCALJOSEKI") ) {
 			return getEndpointlocalJoseki();
 		} else if (name.equals("LOCALJOSEKIBIBLE")||name.equals("LOCALJOSECKIBIBLE")) {
@@ -140,8 +136,7 @@ public class SparqlEndpoint {
 	public static SparqlEndpoint getEndpointDBpedia() {
 		URL u = null;
 		try { 
-			u = new URL("http://dbpedia.org/sparql");
-//			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
+			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -162,30 +157,6 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 
-	public static SparqlEndpoint getEndpointLOCALGeonames() {
-		URL u = null;
-		try { 
-			u = new URL("http://139.18.2.37:8890/sparql");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
-		defaultGraphURIs.add("http://geonames.org");
-		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
-	}	
-	
-	public static SparqlEndpoint getEndpointLOCALGeoData() {
-		URL u = null;
-		try { 
-			u = new URL("http://139.18.2.37:8890/sparql");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
-		defaultGraphURIs.add("http://linkedgeodata.org");
-		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
-	}		
-	
 	public static SparqlEndpoint getEndpointlocalJoseki() {
 		URL u = null;
 		try { 

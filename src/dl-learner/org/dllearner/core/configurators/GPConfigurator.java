@@ -24,13 +24,13 @@ import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class GPConfigurator  implements Configurator {
+public  class GPConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -50,7 +50,7 @@ this.gP = gP;
 * @throws LearningProblemUnsupportedException see 
 * @return GP
 **/
-public static GP getGP(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static GP getGP(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
 GP component = ComponentManager.getInstance().learningAlgorithm(GP.class, learningProblem, reasoningService);
 return component;
 }

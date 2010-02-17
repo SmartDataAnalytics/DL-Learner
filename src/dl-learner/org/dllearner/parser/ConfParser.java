@@ -168,7 +168,7 @@ public class ConfParser implements ConfParserConstants {
       // n.dump("");
       // System.out.println("Thank you.");
     } catch (Exception e) {
-      System.out.println("\u005cnParse exception occurred. Please follow the advise given below.");
+      System.out.println("\nParse exception occurred. Please follow the advise given below.");
       System.out.println(e.getMessage());
       e.printStackTrace();
       System.exit(0);
@@ -944,7 +944,7 @@ public class ConfParser implements ConfParserConstants {
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+      jj_entries_loop: for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext();) {
         int[] oldentry = (int[])(it.next());
         if (oldentry.length == jj_expentry.length) {
           for (int i = 0; i < jj_expentry.length; i++) {

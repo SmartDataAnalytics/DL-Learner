@@ -22,7 +22,6 @@ package org.dllearner.test;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 
 
@@ -83,8 +82,8 @@ public class JenaQueryToResultSpeedTest {
 		for (int i = 0; i < howOften; i++) {
 
 			// sqJena.getAsList();
-			ResultSet rs = sqJena.send();
-			ResultSetFormatter.toList(rs);
+			sqJena.send();
+			ResultSetFormatter.toList(sqJena.getResultSet());
 			p("Jena as List needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();

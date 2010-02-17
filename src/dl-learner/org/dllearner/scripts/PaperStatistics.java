@@ -32,8 +32,9 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -119,10 +120,8 @@ public class PaperStatistics {
 		String[] algorithmPostfix = new String[4];
 		algorithmPostfix[0] = "_refexamples";
 		algorithmPostfix[1] = "_refexamples_fast";
-		algorithmPostfix[2] = "_el";
-		algorithmPostfix[3] = "_el_disjunctive";
-//		algorithmPostfix[4] = "_gp";
-//		algorithmPostfix[5] = "_hybrid";		
+		algorithmPostfix[2] = "_gp";
+		algorithmPostfix[3] = "_hybrid";
 		int startAlgorithmNr = 0;
 
 		// only max. 4 folds for straight problem
@@ -215,7 +214,7 @@ public class PaperStatistics {
 	 * properly.
 	 */
 	@SuppressWarnings("unused")
-	public static void createStatisticsMLDMPaper(PosNegLPStandard learningProblem, String baseDir) {
+	public static void createStatisticsMLDMPaper(PosNegDefinitionLP learningProblem, String baseDir) {
 		// Algorithmus 1: hybrid GP (100% refinement)
 		// Algorithmus 2: 50% refinement, 40% crossover, 1% mutation
 		// Algorithmus 3: 80% crossover, 2% mutation
@@ -284,10 +283,10 @@ public class PaperStatistics {
 					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 					ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
 					// reasoner.prepareSubsumptionHierarchy();
-					// rs = new ReasonerComponent(reasoner);
-//					ReasonerComponent rs = cm.reasoningService(reasoner);
+					// rs = new ReasoningService(reasoner);
+					ReasoningService rs = cm.reasoningService(reasoner);
 					// learningProblem = new LearningProblem(rs, posExamples, negExamples);
-					learningProblem = cm.learningProblem(PosNegLPStandard.class, reasoner);
+					learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
 					
 					// TODO: set up pos/neg examples
 					cm.applyConfigEntry(learningProblem, "positiveExamples", null);

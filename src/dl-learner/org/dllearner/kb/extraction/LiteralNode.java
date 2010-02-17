@@ -70,7 +70,7 @@ public class LiteralNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
+	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 		return new ArrayList<BlankNode>();
 	}
 

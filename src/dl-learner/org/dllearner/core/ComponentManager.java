@@ -40,16 +40,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.cli.ConfMapper;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.datastructures.Maps;
 
 /**
  * Central manager class for DL-Learner. There are currently four types of
@@ -87,8 +84,7 @@ public final class ComponentManager {
 	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
 	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
-	private static Map<Class<? extends LearningProblem>, Collection<Class<? extends LearningAlgorithm>>> problemAlgorithmsMapping;
-	
+
 	private ConfMapper confMapper = new ConfMapper();
 	
 	// list of default values of config options
@@ -119,7 +115,7 @@ public final class ComponentManager {
 		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithm>>(classComparator);
 		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>>(
-				classComparator);		
+				classComparator);
 
 		// create classes from strings
 		for (String componentString : componentsString) {
@@ -146,14 +142,13 @@ public final class ComponentManager {
 				e.printStackTrace();
 			}
 		}
-		problemAlgorithmsMapping = Maps.revertCollectionMap(algorithmProblemsMapping);
 
 		componentNames = new HashMap<Class<? extends Component>, String>();
 		// read in all configuration options
 		componentOptions = new HashMap<Class<? extends Component>, List<ConfigOption<?>>>();
 		componentOptionsByName = new HashMap<Class<? extends Component>, Map<String, ConfigOption<?>>>();
 //		configOptionDefaults = new HashMap<ConfigOption<?>,Object>();
-				
+		
 		for (Class<? extends Component> component : components) {
 
 			String name = (String) invokeStaticMethod(component, "getName");
@@ -173,6 +168,8 @@ public final class ComponentManager {
 			
 		}
 
+		// System.out.println(components);
+		// System.out.println(learningProblems);
 	}
 
 	/**
@@ -357,8 +354,8 @@ public final class ComponentManager {
 	}
 
 	/**
-	 * This method returns an instance of <code>ReasonerComponent</code>. The
-	 * difference between <code>ReasonerComponent</code> and <code>ReasonerComponent</code>
+	 * This method returns an instance of <code>ReasoningService</code>. The
+	 * difference between <code>ReasoningService</code> and <code>ReasonerComponent</code>
 	 * is that the former delegates all calls to the latter and collects statistics
 	 * while doing this. This means that the reasoning service enables the
 	 * collection of query information, while the <code>ReasonerComponent</code>
@@ -368,9 +365,9 @@ public final class ComponentManager {
 	 * @param reasoner A reasoner component.
 	 * @return The reasoning service encapsulating the reasoner.
 	 */
-//	public ReasonerComponent reasoningService(ReasonerComponent reasoner) {
-//		return new ReasonerComponent(reasoner);
-//	}
+	public ReasoningService reasoningService(ReasonerComponent reasoner) {
+		return new ReasoningService(reasoner);
+	}
 	
 	/**
 	 * Factory method for creating a learning problem component.
@@ -379,13 +376,13 @@ public final class ComponentManager {
 	 * @param reasoner A reasoning service object.
 	 * @return A learning problem component.
 	 */
-	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasonerComponent reasoner) {
+	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasoningService reasoner) {
 		if (!learningProblems.contains(lpClass)) {
 			System.err.println("Warning: learning problem " + lpClass
 					+ " is not a registered learning problem component.");
 		}
 
-		T lp = invokeConstructor(lpClass, new Class[] { ReasonerComponent.class },
+		T lp = invokeConstructor(lpClass, new Class[] { ReasoningService.class },
 				new Object[] { reasoner });
 		pool.registerComponent(lp);
 		return lp;
@@ -402,7 +399,7 @@ public final class ComponentManager {
 	 * @throws LearningProblemUnsupportedException Thrown when the learning problem and
 	 * the learning algorithm are not compatible.
 	 */
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasonerComponent rs) throws LearningProblemUnsupportedException {
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass)) {
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
@@ -426,7 +423,7 @@ public final class ComponentManager {
 //			return null;
 		}
 
-		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasonerComponent.class }, new Object[] { lp, rs });
+		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasoningService.class }, new Object[] { lp, rs });
 		pool.registerComponent(la);
 		return la;
 	}
@@ -506,58 +503,50 @@ public final class ComponentManager {
 		doc += "*********************\n";
 		doc += "* Knowledge Sources *\n";
 		doc += "*********************\n\n";
-		doc += "BEGIN MANUAL PART\n";
-		doc += "END MANUAL PART\n\n";
 		for(Class<? extends Component> component : knowledgeSources) {
-			if(component != SparqlKnowledgeSource.class){continue;}
-			doc += getComponentConfigString(component, KnowledgeSource.class);
+			doc += getComponentConfigString(component);
 		}
 		
 		doc += "*************\n";
 		doc += "* Reasoners *\n";
 		doc += "*************\n\n";
 		for(Class<? extends Component> component : reasonerComponents) {
-			doc += getComponentConfigString(component, ReasonerComponent.class);
+			doc += getComponentConfigString(component);
 		}
 		
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
 		for(Class<? extends Component> component : learningProblems) {
-			doc += getComponentConfigString(component, LearningProblem.class);
+			doc += getComponentConfigString(component);
 		}
 		
 		doc += "***********************\n";
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
 		for(Class<? extends Component> component : learningAlgorithms) {
-			doc += getComponentConfigString(component, LearningAlgorithm.class);
+			doc += getComponentConfigString(component);
 		}
 		
 		Files.createFile(file, doc);
 	}
 	
-	private String getComponentConfigString(Class<? extends Component> component, Class<? extends Component> componentType) {
+	private String getComponentConfigString(Class<? extends Component> component) {
 		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
 		String str = componentDescription + "\n";
-		String cli = confMapper.getComponentTypeString(componentType);
+		String cli = confMapper.getComponentTypeString(component);
 		String usage = confMapper.getComponentString(component);
 	
 		for(int i=0; i<componentDescription.length(); i++) {
 			str += "=";
 		}
 		str += "\n\n";
-		if (componentType.equals(KnowledgeSource.class)){
-			str += "conf file usage: "+cli+" (\"$url\",  \""+usage.toUpperCase()+"\");\n\n";
-		}else{
-			str += "conf file usage: "+cli+" = "+usage+";\n\n";
-		}
+		str += "CLI usage: "+cli+" = "+usage+";\n\n";
+		
 		
 		for(ConfigOption<?> option : componentOptions.get(component)) {
-			String val = (option.getDefaultValue()==null)?"":option.getDefaultValue()+"";
-			str += option.toString() + 	
-				"conf file usage: "+usage+"."
-				+ option.getName()+" = "+val+";\n\n";
+			str += option.toString() + 	"CLI usage: "+usage+"."
+			+ option.getName()+" = "+option.getDefaultValue()+";\n\n";
 		}		
 		return str+"\n";
 	}
@@ -684,23 +673,6 @@ public final class ComponentManager {
 		return new LinkedList<Class<? extends LearningProblem>>(learningProblems);
 	}
 
-	/**
-	 * Returns the set of learning algorithms, which support the given learning problem type.
-	 * @param learningProblem A learning problem type.
-	 * @return The set of learning algorithms applicable for this learning problem.
-	 */
-	public List<Class<? extends LearningAlgorithm>> getApplicableLearningAlgorithms(Class<? extends LearningProblem> learningProblem) {
-		List<Class<? extends LearningAlgorithm>> algorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-		for(Entry<Class<? extends LearningProblem>,Collection<Class<? extends LearningAlgorithm>>> entry : problemAlgorithmsMapping.entrySet()) {
-			Class<? extends LearningProblem> prob = entry.getKey();
-			if(prob.isAssignableFrom(learningProblem)) {
-				algorithms.addAll(entry.getValue());
-			}
-		}
-//		System.out.println(learningProblem + ": " + algorithms);
-		return algorithms;
-	}
-	
 	/**
 	 * Returns a list of all available learning algorithms in this instance
 	 * of <code>ComponentManager</code>.

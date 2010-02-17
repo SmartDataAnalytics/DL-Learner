@@ -25,15 +25,15 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.CommonConfigMappings;
+import org.dllearner.core.config.CommonConfigOptions;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -78,7 +78,7 @@ public abstract class PosNegLP extends LearningProblem {
 		ONECHECK
 	};
 	
-	public PosNegLP(ReasonerComponent reasoningService) {
+	public PosNegLP(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
 	

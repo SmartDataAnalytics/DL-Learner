@@ -178,7 +178,7 @@ public class Files {
 			if(debug){System.exit(0);}
 		}
 	}
-	
+
 	public static void clearFile(File file) {
 		try{
 		createFile(file, "");
@@ -186,11 +186,6 @@ public class Files {
 			e.printStackTrace();
 			if(debug){System.exit(0);}
 		}
-	}
-	
-	
-	public static void deleteFile(String file) {
-		deleteFile(new File(file));
 	}
 	
 	public static void deleteFile(File file) {
@@ -236,27 +231,6 @@ public class Files {
 		    	
 		    	Files.deleteFile(new File(dir+File.separator+files[i]));
 		    }     
-	}
-	
-	/**
-	 * lists all files in a directory
-	 * 
-	 *
-	 * @param dir without a separator e.g. tmp/dir
-	 * @return a string array with filenames
-	 */
-	public static String[] listDir(String dir) {
-		
-			File f = new File(dir);
-			
-			if(debug){
-				System.out.println(dir);
-				System.exit(0);
-			}
-			
-		    return f.list();
-		   
-		   
 	}
 	
 	/**

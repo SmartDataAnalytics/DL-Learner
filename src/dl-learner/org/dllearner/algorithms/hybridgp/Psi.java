@@ -6,10 +6,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.dllearner.algorithms.gp.Program;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.PsiDown;
 import org.dllearner.refinementoperators.PsiUp;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -26,7 +26,7 @@ public class Psi implements GeneticRefinementOperator {
 	
 	// Cache, damit keine Konzepte doppelt ausgewertet werden
 	ConceptComparator conceptComparator = new ConceptComparator();
-	public SortedMap<Description,ScorePosNeg> evalCache = new TreeMap<Description,ScorePosNeg>(conceptComparator);
+	public SortedMap<Description,Score> evalCache = new TreeMap<Description,Score>(conceptComparator);
 	
 	// Cache, damit PsiDown bzw. PsiUp nicht mehrfach für gleiches Konzept
 	// aufgerufen werden
@@ -49,7 +49,7 @@ public class Psi implements GeneticRefinementOperator {
 	private long someTimeStart = 0;
 	public long someTime = 0;
 	
-	public Psi(PosNegLP learningProblem, ReasonerComponent reasoningService) { //, PsiUp pu, PsiDown pd) {
+	public Psi(PosNegLP learningProblem, ReasoningService reasoningService) { //, PsiUp pu, PsiDown pd) {
 		// this.pu = pu;
 		// this.pd = pd;
 		this.learningProblem = learningProblem;
@@ -188,9 +188,9 @@ public class Psi implements GeneticRefinementOperator {
 		
 		
 		Description conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
-		ConceptTransformation.transformToOrderedForm(conceptModForCache, conceptComparator);
+		ConceptTransformation.transformToOrderedNegationNormalForm(conceptModForCache, conceptComparator);
 		
-		ScorePosNeg score = program.getScore();
+		Score score = program.getScore();
 		// Eval-Cache füllen
 		evalCache.put(conceptModForCache, score);
 		
@@ -207,18 +207,18 @@ public class Psi implements GeneticRefinementOperator {
 		/////////// TESTCODE: umwandeln des erhaltenen Konzepts
 		// someTimeStart = System.nanoTime();
 		Description newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
-		ConceptTransformation.transformToOrderedForm(newConceptMod, conceptComparator);
+		ConceptTransformation.transformToOrderedNegationNormalForm(newConceptMod, conceptComparator);
 		// someTime += System.nanoTime() - someTimeStart;
 		///////////
 		
 		// versuchen Reasoner-Cache zu treffen
 		// Problem: Score hängt von Konzeptlänge ab!! => muss hier explizit
 		// reingerechnet werden
-		ScorePosNeg newScore = evalCache.get(newConceptMod);
+		Score newScore = evalCache.get(newConceptMod);
 		
 		if(newScore==null) {
 			psiReasoningStartTime = System.nanoTime();
-			newScore = (ScorePosNeg) learningProblem.computeScore(newConcept);
+			newScore = learningProblem.computeScore(newConcept);
 			psiReasoningTimeNs += System.nanoTime() - psiReasoningStartTime;
 			
 			evalCache.put(newConceptMod, newScore);

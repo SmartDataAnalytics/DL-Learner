@@ -22,17 +22,13 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
- * Implementation of owl:Nothing/BOTTOM.
+ * Implementation of owl:nothing/BOTTOM.
  * 
  * @author Jens Lehmann
  *
  */
 public class Nothing extends Description {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3053885252153066318L;
 	public static final Nothing instance = new Nothing();	
 	
     public String toString(String baseURI, Map<String,String> prefixes) {

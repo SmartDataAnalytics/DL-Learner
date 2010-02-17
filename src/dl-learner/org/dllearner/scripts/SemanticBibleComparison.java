@@ -40,14 +40,16 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -56,16 +58,16 @@ import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.ExampleContainer;
+import org.dllearner.utilities.owl.ReasoningServiceFactory;
+import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Stat;
 import org.dllearner.utilities.statistics.Table;
@@ -79,7 +81,7 @@ public class SemanticBibleComparison {
 	private static int nrOfFilesInExperiment = 200;
 	
 	
-	private static ReasonerComponent reasoningService;
+	private static ReasoningService reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
 	private static boolean flawInExperiment = false;
@@ -269,7 +271,7 @@ public class SemanticBibleComparison {
 				SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
 				SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
 				
-				ROLComponent2 la = experimentalSetup(exp,posEx,negEx);
+				ExampleBasedROLComponent la = experimentalSetup(exp,posEx,negEx);
 				
 				//SimpleClock init = new SimpleClock();
 				initAllComponents();
@@ -282,7 +284,7 @@ public class SemanticBibleComparison {
 				logger.warn(learningTimeClock.getAndSet("learning time")+" in stat: "+learningTime.getMean());
 				
 				
-				EvaluatedDescriptionPosNeg bestDescription =(la.getCurrentlyBestEvaluatedDescription());
+				EvaluatedDescription bestDescription =(la.getCurrentlyBestEvaluatedDescription());
 				
 				accFragment.addNumber(bestDescription.getAccuracy());
 				descDepth.addNumber((double)bestDescription.getDescriptionDepth());
@@ -296,9 +298,9 @@ public class SemanticBibleComparison {
 				descHasNrRes = (descHasNrRes || desc.contains("<")|| desc.contains(">"));
 				
 				// evaluate Concept versus Ontology
-				reasoningService = org.dllearner.utilities.components.ReasonerComponentFactory.getReasonerComponent(ontologyPath, ReasonerType.OWLAPI_PELLET);
-				SortedSet<Individual> retrieved = reasoningService.getIndividuals(bestDescription.getDescription());
-				EvaluatedDescriptionPosNeg onOnto = reEvaluateDescription(
+				reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
+				SortedSet<Individual> retrieved = reasoningService.retrieval(bestDescription.getDescription());
+				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
 				
 				logger.warn(bestDescription.getAccuracy());
@@ -379,8 +381,8 @@ public class SemanticBibleComparison {
 		
 	}
 	
-	public static ROLComponent2 experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
-		ROLComponent2 la = null;
+	public static ExampleBasedROLComponent experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
+		ExampleBasedROLComponent la = null;
 		if(exp.toString().contains("SPARQL"))
 			la = prepareSparqlExperiment(exp, posExamples, negExamples);
 		else if(exp.toString().contains("NORMAL")){
@@ -397,7 +399,7 @@ public class SemanticBibleComparison {
 			System.exit(0);
 			}
 		
-		ROLComponent2Configurator c = la.getConfigurator();
+		ExampleBasedROLComponentConfigurator c = la.getConfigurator();
 		
 		//defaultSettings:
 		c.setUseHasValueConstructor(false);
@@ -431,10 +433,10 @@ public class SemanticBibleComparison {
 	}
 	
 	
-	public static ROLComponent2 prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+	public static ExampleBasedROLComponent prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
 		
 
-		ROLComponent2 la = null;
+		ExampleBasedROLComponent la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(posExamples);
@@ -471,16 +473,18 @@ public class SemanticBibleComparison {
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory
 					.getOWLAPIReasoner(tmp);
+			ReasoningService rs = ComponentManager.getInstance()
+					.reasoningService(f);
 	
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getROLComponent2(lp, f);
+			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
-			Config conf = new Config(ComponentManager.getInstance(), ks, f, lp, la);
+			Config conf = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
 			new ConfigSave(conf).saveFile(new File(tmpFilename));
 			
 		}catch (Exception e) {
@@ -492,8 +496,8 @@ public class SemanticBibleComparison {
 		return la;
 	}
 	
-	public static ROLComponent2 prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
-		ROLComponent2 la = null;
+	public static ExampleBasedROLComponent prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+		ExampleBasedROLComponent la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(posExamples);
@@ -521,17 +525,17 @@ public class SemanticBibleComparison {
 			}else{
 				f = ComponentFactory.getOWLAPIReasoner(tmp);
 			}
-//			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
+			ReasoningService rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getROLComponent2(lp, f);
+			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
-			Config c = new Config(ComponentManager.getInstance(), ks, f, lp, la);
+			Config c = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
 			new ConfigSave(c).saveFile(new File(tmpFilename));
 			
 		}catch (Exception e) {
@@ -639,7 +643,7 @@ public class SemanticBibleComparison {
 	
 
 	
-	public static EvaluatedDescriptionPosNeg reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
+	public static EvaluatedDescription reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
 		SortedSet<Individual> PosAsPos = new TreeSet<Individual>();
 		SortedSet<Individual> PosAsNeg = new TreeSet<Individual>();
 		SortedSet<Individual> NegAsPos = new TreeSet<Individual>();
@@ -670,7 +674,7 @@ public class SemanticBibleComparison {
 		//System.out.println(NegAsNeg);
 		
 		
-		return new EvaluatedDescriptionPosNeg(d, PosAsPos, PosAsNeg, NegAsPos,NegAsNeg);
+		return new EvaluatedDescription(d, PosAsPos, PosAsNeg, NegAsPos,NegAsNeg);
 		
 	}
 	

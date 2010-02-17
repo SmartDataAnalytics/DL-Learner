@@ -262,12 +262,12 @@ Description Concept() :
   | LOOKAHEAD(2) ac = AtomicConcept() {return ac;}
   // | s=Id() {return new AtomicConcept(s);}
   // | s=String() {return new AtomicConcept(s);} 
-  // parse until next AND or OR
+  // Parser geht bis zum n�chsten AND oder OR
   | LOOKAHEAD( "(" Concept() And())    "(" c1=Concept() And() c2=Concept() ")" 
   	{return new Intersection(c1,c2);}
   | LOOKAHEAD( "(" Concept() Or())    "(" c1=Concept() Or() c2=Concept() ")"
   	{return new Union(c1,c2);}
-  // EXISTS or ALL is sufficient to chose the correct parser branch
+  // EXISTS oder ALL reicht aus um richtigen Zweig zu w�hlen
   // | Exists() s=Id() "." c=Concept()
   // {return new Exists(new AtomicRole(s),c); } 
   | Exists() ar=ObjectProperty() "." c=Concept()
@@ -287,8 +287,7 @@ Description Concept() :
   | LE() i=Integer() ar=ObjectProperty() "." c=Concept()
   	{return new ObjectMaxCardinalityRestriction(i,ar,c);}
   | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "TRUE" ")" { return new BooleanValueRestriction(dp, true); }
-  | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "FALSE" ")" { return new BooleanValueRestriction(dp, false); }
-  | "(" dp=DatatypeProperty() "STRINGVALUE" s=String() ")" { return new StringValueRestriction(dp, s); }    	
+  | "(" dp=DatatypeProperty() "IS" "FALSE" ")" { return new BooleanValueRestriction(dp, false); }    	
 }
 
 void Or() : {} { <OR> }

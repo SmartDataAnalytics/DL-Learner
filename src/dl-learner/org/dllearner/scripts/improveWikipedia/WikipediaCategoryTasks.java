@@ -24,8 +24,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
@@ -63,7 +63,7 @@ public class WikipediaCategoryTasks {
 	 * @param posExamples
 	 */
 	public SortedSet<String> calculateWrongIndividualsAndNewPosEx(
-			List<EvaluatedDescriptionPosNeg> conceptresults,
+			List<EvaluatedDescription> conceptresults,
 			SortedSet<String> posExamples) {
 
 		definitelyWrongIndividuals.clear();
@@ -92,11 +92,11 @@ public class WikipediaCategoryTasks {
 	 * @param reEvaluatedDesc
 	 */
 	public SortedSet<String> makeNewNegativeExamples(
-			List<EvaluatedDescriptionPosNeg> reEvaluatedDesc,
+			List<EvaluatedDescription> reEvaluatedDesc,
 			SortedSet<String> posExamples, double negFactor) {
 		negExamples.clear();
 
-		EvaluatedDescriptionPosNeg newDesc = reEvaluatedDesc.get(0);
+		EvaluatedDescription newDesc = reEvaluatedDesc.get(0);
 		logger.info("Best concept: " + newDesc.getDescription());
 
 		negExamples.addAll(Helper.getStringSet(newDesc.getCoveredPositives()));
@@ -149,7 +149,7 @@ public class WikipediaCategoryTasks {
 		// NEGATIVES
 
 		AutomaticNegativeExampleFinderSPARQL aneg = new AutomaticNegativeExampleFinderSPARQL(
-				fullPositiveSet, sparqlTasks, new TreeSet<String>());
+				fullPositiveSet, sparqlTasks);
 
 		aneg.makeNegativeExamplesFromParallelClasses(posExamples,
 				sparqlResultLimitNegativeExamples);

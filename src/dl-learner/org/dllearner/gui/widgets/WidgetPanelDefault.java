@@ -24,7 +24,7 @@ import java.awt.Color;
 import javax.swing.JLabel;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.gui.Config;
 
 /**

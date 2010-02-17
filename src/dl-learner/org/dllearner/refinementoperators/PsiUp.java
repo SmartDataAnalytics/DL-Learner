@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -27,11 +27,11 @@ public class PsiUp extends RefinementOperatorAdapter {
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
 	PosNegLP learningProblem;
-	ReasonerComponent reasoningService;
+	ReasoningService reasoningService;
 	
 	private TreeSet<Description> bottomSet;
 	
-	public PsiUp(PosNegLP learningProblem, ReasonerComponent reasoningService) {
+	public PsiUp(PosNegLP learningProblem, ReasoningService reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoningService = reasoningService;
 		
@@ -49,10 +49,10 @@ public class PsiUp extends RefinementOperatorAdapter {
 		bottomSet.add(mc);
 		
 		// speziellste Konzepte
-		bottomSet.addAll(reasoningService.getSuperClasses(new Nothing()));
+		bottomSet.addAll(reasoningService.getMoreGeneralConcepts(new Nothing()));
 		
 		// negierte allgemeinste Konzepte
-		Set<Description> tmp = reasoningService.getSubClasses(new Thing());
+		Set<Description> tmp = reasoningService.getMoreSpecialConcepts(new Thing());
 		for(Description c : tmp) 
 			bottomSet.add(new Negation(c));
 	
@@ -76,11 +76,11 @@ public class PsiUp extends RefinementOperatorAdapter {
 			return (Set<Description>) bottomSet.clone();			
 		} else if (concept instanceof NamedClass) {
 			// Top darf hier mit dabei sein
-			refinements.addAll(reasoningService.getSuperClasses(concept));
+			refinements.addAll(reasoningService.getMoreGeneralConcepts(concept));
 			
 		// negiertes atomares Konzept
 		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-			tmp.addAll(reasoningService.getSubClasses(concept.getChild(0)));
+			tmp.addAll(reasoningService.getMoreSpecialConcepts(concept.getChild(0)));
 			
 			// Bottom rausschmeissen
 			boolean containsBottom = false;

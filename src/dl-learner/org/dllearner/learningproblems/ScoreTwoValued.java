@@ -22,6 +22,7 @@ package org.dllearner.learningproblems;
 
 import java.util.Set;
 
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.Individual;
 
 /**
@@ -36,11 +37,9 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public class ScoreTwoValued extends ScorePosNeg {
+public class ScoreTwoValued extends Score {
 
-	private static final long serialVersionUID = 6264873890324824550L;
-	
-	private Set<Individual> posAsPos;	
+    private Set<Individual> posAsPos;	
     private Set<Individual> posAsNeg;
     private Set<Individual> negAsPos;
     private Set<Individual> negAsNeg;    
@@ -82,7 +81,7 @@ public class ScoreTwoValued extends ScorePosNeg {
 	 * score = accuracy - 1 - length * length penalty
 	 */
 	@Override
-	public double getScoreValue() {
+	public double getScore() {
 		return score;
 	}
 
@@ -118,7 +117,7 @@ public class ScoreTwoValued extends ScorePosNeg {
 	}		
 	
 	@Override
-	public ScorePosNeg getModifiedLengthScore(int newLength) {
+	public Score getModifiedLengthScore(int newLength) {
 		return new ScoreTwoValued(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 	}
 

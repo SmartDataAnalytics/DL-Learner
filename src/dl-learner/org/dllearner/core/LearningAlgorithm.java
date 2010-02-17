@@ -22,6 +22,7 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
@@ -53,7 +54,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	protected ReasonerComponent reasoner;
+	protected ReasoningService reasoningService;
 
 	/**
 	 * Each learning algorithm gets a learning problem and
@@ -62,9 +63,9 @@ public abstract class LearningAlgorithm extends Component {
 	 * @param reasoningService The reasoner connecting to the
 	 * underlying knowledge base.
 	 */
-	public LearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) {
+	public LearningAlgorithm(LearningProblem learningProblem, ReasoningService reasoningService) {
 		this.learningProblem = learningProblem;
-		this.reasoner = reasoningService;
+		this.reasoningService = reasoningService;
 	}
 	
 	/**
@@ -89,16 +90,15 @@ public abstract class LearningAlgorithm extends Component {
 	 * indeed changes the reasoning service.
 	 * @param reasoningService The new reasoning service.
 	 */
-	public void changeReasonerComponent(ReasonerComponent reasoningService) {
-		this.reasoner = reasoningService;
+	public void changeReasoningService(ReasoningService reasoningService) {
+		this.reasoningService = reasoningService;
 	}
 	
 	/**
 	 * This is the maximum number of results, which the learning
-	 * algorithms are asked to store. (Note, that algorithms are not 
-	 * required to store any results except the best one, so this limit
-	 * is used to limit the performance cost for those which 
-	 * choose to store results.)
+	 * algorithms need to keep. (Often algorithms do not need 
+	 * to store any results except the best one, so this limit
+	 * is used to limit the performance cost for storing results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
 	
@@ -143,8 +143,8 @@ public abstract class LearningAlgorithm extends Component {
 	 * 
 	 * @return Best score.
 	 */
-//	@Deprecated
-//	public abstract Score getSolutionScore();
+	@Deprecated
+	public abstract Score getSolutionScore();
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
@@ -203,10 +203,10 @@ public abstract class LearningAlgorithm extends Component {
 	/**
 	 * Returns a sorted set of the best descriptions found so far. We
 	 * assume that they are ordered such that the best ones come in
-	 * last. (In Java, iterators traverse a SortedSet in ascending order.)
+	 * first.
 	 * @return Best class descriptions found so far.
 	 */
-	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		TreeSet<EvaluatedDescription> ds = new TreeSet<EvaluatedDescription>();
 		ds.add(getCurrentlyBestEvaluatedDescription());
 		return ds;
@@ -230,14 +230,13 @@ public abstract class LearningAlgorithm extends Component {
 	 * 
 	 * @return A list of currently best class descriptions.
 	 */
-	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
-		TreeSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
+	public synchronized List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
+		SortedSet<EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
-		for(EvaluatedDescription ed : currentlyBest.descendingSet()) {
+		for(EvaluatedDescription ed : currentlyBest) {
 			// once we hit a description with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
-//			if(ed.getAccuracy() < accuracyThreshold) {
 			if(ed.getAccuracy() < accuracyThreshold) {
 				return returnList;
 			}
@@ -254,9 +253,7 @@ public abstract class LearningAlgorithm extends Component {
 				// be in the search of the learning algorith, which leads to
 				// unpredictable behaviour)
 				Description d = ed.getDescription().clone();
-				
-				//commented out because reasoner is called. leads in swing applications sometimes to exceptions
-//				ConceptTransformation.replaceRange(d, reasoner);
+				ConceptTransformation.replaceRange(d, reasoningService);
 				ed.setDescription(d);
 				
 				returnList.add(ed);
@@ -272,7 +269,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * @param nrOfDescriptions Maximum number of descriptions returned.
 	 * @return Return value is getCurrentlyBestDescriptions(nrOfDescriptions, 0.0, false).
 	 */
-	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
+	public synchronized List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, 0.0, false);
 	}
 	
@@ -281,7 +278,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * @param accuracyThreshold Only return solutions with this accuracy or higher.
 	 * @return Return value is getCurrentlyBestDescriptions(Integer.MAX_VALUE, accuracyThreshold, false).
 	 */
-	public synchronized  List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
+	public synchronized  List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, accuracyThreshold, false);
 	}
 		

@@ -25,12 +25,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.gui.Config;
 
 /**
  * Panel for option Boolean, defined in
- * {@link org.dllearner.core.options.BooleanConfigOption}.
+ * {@link org.dllearner.core.config.BooleanConfigOption}.
  * 
  * @author Jens Lehmann
  * @author Tilo Hielscher

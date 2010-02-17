@@ -17,7 +17,7 @@ class DLLearnerConnection
 
 		// read in ini values
 		$ini = parse_ini_file("settings.ini");
-		$this->endpointURL = $ini['endpointURL1'];
+		$this->endpointURL = $ini['endpointURL'];
 
 		// connect to DL-Learner-Web-Service
 		$this->client=new SoapClient($ini["wsdlURLLocal"],array('features' => SOAP_SINGLE_ELEMENT_ARRAYS));

@@ -55,13 +55,12 @@ public class RDFBlankNode implements RDFNode {
 	}
 	
 	// overidden Functions
-	@SuppressWarnings("all")
+
 	public RDFNode as(Class view) {
 		
 		return blankNode.as(view);
 	}
 
-	@SuppressWarnings("all")
 	public boolean canAs(Class view) {
 		
 		return blankNode.canAs(view);

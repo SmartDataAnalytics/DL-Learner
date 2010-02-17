@@ -66,7 +66,7 @@ public abstract class Node  {
 	 * @param manipulator
 	 */
 	public abstract List<BlankNode> expandProperties(
-			TupleAquisitor TupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes);
+			TupleAquisitor TupelAquisitor, Manipulator manipulator);
 
 	/**
 	 * output
@@ -94,7 +94,6 @@ public abstract class Node  {
 	public String getURIString() {
 		return uri;
 	}
-	
 	
 	public URI getURI() {
 		return URI.create(uri);

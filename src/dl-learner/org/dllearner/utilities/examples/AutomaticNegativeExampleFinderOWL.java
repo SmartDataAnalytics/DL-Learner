@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -37,7 +37,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	// LOGGER: ComponentManager
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
-	private ReasonerComponent reasoningService;
+	private ReasoningService reasoningService;
 	
 	private SortedSet<Individual> fullPositiveSet;
 
@@ -61,7 +61,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 */
 	public AutomaticNegativeExampleFinderOWL(
 			SortedSet<Individual> fullPositiveSet,
-			ReasonerComponent reasoningService) {
+			ReasoningService reasoningService) {
 		super();
 		this.fullPositiveSet = new TreeSet<Individual>();
 		this.fullPositiveSet.addAll(fullPositiveSet);
@@ -196,7 +196,7 @@ public class AutomaticNegativeExampleFinderOWL {
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
 			try{
-			this.fromParallelClasses.addAll(reasoningService.getIndividuals(oneClass));
+			this.fromParallelClasses.addAll(reasoningService.retrieval(oneClass));
 			}catch (Exception e) {
 				logger.warn("not implemented in "+this.getClass());
 			}
@@ -229,12 +229,12 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromSuperClasses(NamedClass concept, int depth) {
 
 		fromSuperclasses.clear();
-		SortedSet<Description> superClasses = reasoningService.getSuperClasses(concept);
+		SortedSet<Description> superClasses = reasoningService.getMoreGeneralConcepts(concept);
 		logger.debug("making neg Examples from " + superClasses.size() + " superclasses");
 
 		for (Description oneSuperClass : superClasses) {
 			logger.debug(oneSuperClass);
-			fromSuperclasses.addAll(reasoningService.getIndividuals(oneSuperClass));
+			fromSuperclasses.addAll(reasoningService.retrieval(oneSuperClass));
 		}
 		this.fromSuperclasses.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example from superclass: " + fromSuperclasses.size());
@@ -250,7 +250,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromDomain(ObjectProperty atomicRole){
 		fromDomain.clear();
 		logger.debug("making Negative Examples from Domain of : "+atomicRole);
-		fromDomain.addAll(reasoningService.getPropertyMembers(atomicRole).keySet());
+		fromDomain.addAll(reasoningService.getRoleMembers(atomicRole).keySet());
 		fromDomain.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example size from Domain: "+this.fromDomain.size());
 	}
@@ -265,7 +265,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromRange(ObjectProperty atomicRole){
 		fromRange.clear();
 		logger.debug("making Negative Examples from Range of : "+atomicRole);
-		Collection<SortedSet<Individual>> tmp = reasoningService.getPropertyMembers(atomicRole).values();
+		Collection<SortedSet<Individual>> tmp = reasoningService.getRoleMembers(atomicRole).values();
 		for (SortedSet<Individual> set : tmp) {
 			fromRange.addAll(set);
 		}

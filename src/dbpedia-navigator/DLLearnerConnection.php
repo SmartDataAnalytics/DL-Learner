@@ -21,11 +21,7 @@ class DLLearnerConnection
 	
 	// ID of the DBpedia knowledge source
 	private $ksID;
-
-	private $ignoredConcepts;
-	
-	private $ignoredRoles;
-	
+		
 	function DLLearnerConnection($id=0,$ksID=0)
 	{
 		ini_set('default_socket_timeout',200);
@@ -36,8 +32,6 @@ class DLLearnerConnection
 		$this->lang=$settings->language;
 		$this->DBPediaUrl=$settings->dbpediauri;
 		$this->endpoint=$settings->endpoint;
-		$this->ignoredConcepts=$settings->ignoredConcepts;
-		$this->ignoredRoles=$settings->ignoredRoles;
 		$this->client=new SoapClient("main.wsdl",array('features' => SOAP_SINGLE_ELEMENT_ARRAYS));
 		$this->id=$id;
 		$this->ksID=$ksID;
@@ -53,7 +47,6 @@ class DLLearnerConnection
 	function getConceptFromExamples($posExamples,$negExamples,$number)
 	{
 		require_once("Settings.php");
-		require_once("helper_functions.php");
 		$settings=new Settings();
 		
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
@@ -62,11 +55,8 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", true);
 		if(empty($negExamples)){
-			if ($settings->classSystem=="YAGO") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/ontology/");
-			else if ($settings->classSystem=="DBpedia") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/class/yago/","http://dbpedia.org/ontology/Resource");
-			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/",$filterClasses);
+			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/");
 			$negExamples=$negExamples->item;
-			//$negExamples=getNegativeExamplesFromParallelClass($posExamples);
 		}
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		$this->client->setReasoner($this->id, "fastInstanceChecker");
@@ -80,14 +70,11 @@ class DLLearnerConnection
 		$algorithmID=$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "forceRefinementLengthIncrease", true);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useHasValueConstructor", true);
-		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useCardinalityRestrictions", false);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "valueFrequencyThreshold", 2);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "guaranteeXgoodDescriptions", 3);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "maxExecutionTimeInSeconds", 3);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useNegation", false);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useAllConstructor", false);
-		$this->client->applyConfigEntryStringArray($this->id, $algorithmID, "ignoredConcepts",$this->ignoredConcepts);
-		$this->client->applyConfigEntryStringArray($this->id, $algorithmID, "ignoredRoles",$this->ignoredRoles);
 		$start = microtime(true);
 		
 		$this->client->initAll($this->id);
@@ -144,7 +131,7 @@ class DLLearnerConnection
 	
 	function getNaturalDescription($concept)
 	{
-		return $this->client->getNaturalDescription($this->id, $concept);
+		return $this->client->getNaturalDescription($concept);
 	}
 	
 	function getConceptDepth()
@@ -170,23 +157,12 @@ class DLLearnerConnection
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("An article with that name does not exist. The Search is started ..."); 
 		$ret=array();
-		$geonames="";
 		foreach ($result['results']['bindings'] as $results){
 			if (!(isset($results['xml:lang'])&&($results['xml:lang']!=$this->lang))){
-				if (isset($results['obj'])){
-					$ret[0][$results['pred']['value']][]=$results['obj'];
-					if ($results['pred']['value']=="http://www.w3.org/2002/07/owl#sameAs"&&strlen($results['obj']['value'])>24&&substr($results['obj']['value'],0,24)=='http://sws.geonames.org/')
-						$geonames=$results['obj']['value'];
-				}
+				if (isset($results['obj'])) $ret[0][$results['pred']['value']][]=$results['obj'];
 				else if (isset($results['sub'])) $ret[1][$results['pred']['value']][]=$results['sub'];
 			}
 		}
-		//geonames
-		/*if (strlen($geonames)>0){
-			$query="SELECT * WHERE {<".$geonames."> <http://www.geonames.org/ontology#parentFeature> ?parent.?parent <http://www.w3.org/2002/07/owl#sameAs> ?parentName.<".$geonames."> <http://www.geonames.org/ontology#childrenFeatures> ?children.<".$geonames."> <http://www.geonames.org/ontology#nearbyFeatures> ?neighbours.}";
-			$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query, true),true);
-			var_dump($result);
-		}*/		
 		
 		return $ret;
 	}

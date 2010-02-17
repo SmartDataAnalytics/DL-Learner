@@ -26,7 +26,6 @@ import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
 import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
 import org.coode.xml.XMLWriterNamespaceManager;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -43,19 +42,6 @@ import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxObjectRender
  */
 public class OWLAPIRenderers {
 
-	/**
-	 * Converts an OWL API axiom to a Manchester OWL syntax string.
-	 * 
-	 * @param description Input OWLAxiom.
-	 * @return Manchester OWL syntax string.
-	 */
-	public static String toManchesterOWLSyntax(OWLAxiom description) {
-		StringWriter sw = new StringWriter();
-		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw);
-		description.accept(renderer);
-		return sw.toString();
-	}	
-	
 	/**
 	 * Converts an OWL API description to a Manchester OWL syntax string.
 	 * 

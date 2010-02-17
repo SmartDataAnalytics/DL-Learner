@@ -52,7 +52,7 @@ public class SPARQLTasks {
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
-//		super();
+		super();
 		this.cache = null;
 		this.sparqlEndpoint = sparqlEndpoint;
 	}
@@ -64,7 +64,7 @@ public class SPARQLTasks {
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
-//		super();
+		super();
 		this.cache = cache;
 		this.sparqlEndpoint = sparqlEndpoint;
 	}
@@ -238,7 +238,7 @@ public class SPARQLTasks {
 		String sparqlQueryString = "";
 		try {
 			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(conceptKBSyntax, sparqlResultLimit, false, false);
+					.getSparqlQuery(conceptKBSyntax, sparqlResultLimit);
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
@@ -478,16 +478,10 @@ public class SPARQLTasks {
 	 * @return jena ResultSet
 	 */
 	public ResultSetRewindable queryAsResultSet(String sparqlQueryString) {
-		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
-		if(cache == null) {
-			return sq.send();
-		} else {
-			// get JSON from cache and convert to result set
-			String json = cache.executeSparqlQuery(sq);
-			return SparqlQuery.convertJSONtoResultSet(json);
-		}
+		return SparqlQuery.convertJSONtoResultSet(query(sparqlQueryString));
+
 	}
-	
+
 	/**
 	 * low level, executes query returns JSON.
 	 * 
@@ -511,15 +505,6 @@ public class SPARQLTasks {
 		return jsonString;
 	}
 
-	public boolean ask(String askQueryString) {
-		if(cache == null) {
-			SparqlQuery sq = new SparqlQuery(askQueryString, sparqlEndpoint);
-			return sq.sendAsk();
-		} else {
-			return cache.executeSparqlAskQuery(new SparqlQuery(askQueryString, sparqlEndpoint));
-		}
-	}
-	
 	/**
 	 * a String Helper which constructs the limit clause of a sparql query. if
 	 * sparqlResultLimit is zero, returns nothing

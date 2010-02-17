@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -33,13 +33,10 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 /**
  * Utility methods for constructing refinement operators.
@@ -49,33 +46,23 @@ import com.jamonapi.MonitorFactory;
  */
 public final class Utility {
 		
-	private ReasonerComponent reasoner;
-	ClassHierarchy sh; 
-	private Map<ObjectProperty,Description> opDomains;
+	private ReasoningService rs;
+	SubsumptionHierarchy sh; 
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();	
 	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances
-	private boolean instanceBasedDisjoints = true;	
+	private boolean instanceBasedDisjoints = false;	
 	
 	// cache for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
 		
-	// cache for applicaple object properties
-	private Map<Description, SortedSet<ObjectProperty>> appOPCache = new TreeMap<Description, SortedSet<ObjectProperty>>(conceptComparator);
-	
-	public Utility(ReasonerComponent rs) {
-		throw new Error("not implemented yet");
-	}
-	
-	public Utility(ReasonerComponent rs, Map<ObjectProperty,Description> opDomains, boolean instanceBasedDisjoints) {
-		this.reasoner = rs;
-		sh = rs.getClassHierarchy();
-		// we cache object property domains
-		this.opDomains = opDomains;
-		this.instanceBasedDisjoints = instanceBasedDisjoints;
+
+	public Utility(ReasoningService rs) {
+		this.rs = rs;
+		sh = rs.getSubsumptionHierarchy();
 	}
 	
 	/**
@@ -89,18 +76,12 @@ public final class Utility {
 	 * 
 	 */
 	public SortedSet<ObjectProperty> computeApplicableObjectProperties(Description index) {
-		// use a cache, because large ontologies can have many object properties
-		SortedSet<ObjectProperty> applicableObjectProperties = appOPCache.get(index);
-		if(applicableObjectProperties == null) {
-			Set<ObjectProperty> objectProperties = reasoner.getObjectProperties();
-			applicableObjectProperties = new TreeSet<ObjectProperty>();
-			for(ObjectProperty op : objectProperties) {
-				Description domain = opDomains.get(op);
-				if(!isDisjoint(index,domain)) {
-					applicableObjectProperties.add(op);
-				}
-			}
-			appOPCache.put(index, applicableObjectProperties);
+		Set<ObjectProperty> objectProperties = rs.getObjectProperties();
+		SortedSet<ObjectProperty> applicableObjectProperties = new TreeSet<ObjectProperty>();
+		for(ObjectProperty op : objectProperties) {
+			Description domain = rs.getDomain(op);
+			if(!isDisjoint(index,domain))
+				applicableObjectProperties.add(op);
 		}
 		return applicableObjectProperties;		
 	}
@@ -118,7 +99,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public SortedSet<ObjectProperty> computeMgr(SortedSet<ObjectProperty> applicableObjectProperties) {
-		return Helper.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
+		return Helper.intersection(rs.getMostGeneralRoles(), applicableObjectProperties);
 	}
 	
 	public Set<NamedClass> getClassCandidates(Description index, Set<NamedClass> existingClasses) {
@@ -133,8 +114,7 @@ public final class Utility {
 		// there are 4 checks a class has to satisfy to get into the set;
 		// for 2 of them we can stop further traversal in the subsumption
 		// hierarchy
-		for(Description d : sh.getSubClasses(upperClass)) {
-//			System.out.println("d: " + d);
+		for(Description d : sh.getMoreSpecialConcepts(upperClass)) {
 			// owl:Nothing is never a candidate (not in EL)
 			if(!(d instanceof Nothing)) {
 				NamedClass candidate = (NamedClass) d;
@@ -143,16 +123,14 @@ public final class Utility {
 				// not satisfied
 				// check1: disjointness with index
 				// check3: no superclass exists already
-				// check5: disjointness
-				if(!isDisjoint(candidate,index) && checkSubClasses(existingClasses,candidate) && checkDisjoints(existingClasses,candidate)) {
+				if(!isDisjoint(candidate,index) || !checkSubClasses(existingClasses,candidate)) {
 					// check whether the class is meaningful, i.e. adds something to the index
 					// to do this, we need to make sure that the class is not a superclass of the
 					// index (otherwise we get nothing new)
-					if(!isDisjoint(new Negation(candidate),index) && checkSuperClasses(existingClasses,candidate)) {
+					if(!isDisjoint(new Negation(candidate),index) || !checkSuperClasses(existingClasses,candidate)) {
 						// candidate went successfully through all checks
 						candidates.add(candidate);
 					} else {
-//						System.out.println("k32: " + candidate + " index " + index + " cond1 " + isDisjoint(new Negation(candidate),index) + " cond2 " + checkSuperClasses(existingClasses,candidate));
 						// descend subsumption hierarchy to find candidates
 						candidates.addAll(getClassCandidatesRecursive(index, existingClasses, candidate));
 					}
@@ -162,19 +140,17 @@ public final class Utility {
 		return candidates;
 	}
 	
-	// returns true if the candidate is not subclass of an existing class,
+	// returns true of the candidate is not subclass of an existing class,
 	// false otherwise (check 3)
 	private boolean checkSubClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
 		for(NamedClass nc : existingClasses) {
-//			System.out.println("csc: " + nc + candidate);
-			if(sh.isSubclassOf(candidate, nc)) {
+			if(sh.isSubclassOf(candidate, nc))
 				return false;
-			}
 		}
 		return true;
 	}
 	
-	// returns true if the candidate is not superclass of an existing class,
+	// returns true of the candidate is not superclass of an existing class,
 	// false otherwise (check 4)
 	private boolean checkSuperClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
 		for(NamedClass nc : existingClasses) {
@@ -184,20 +160,9 @@ public final class Utility {
 		return true;
 	}	
 	
-	// returns false if any of the classes is disjoint with the new one; true otherwise
-	private boolean checkDisjoints(Set<NamedClass> existingClasses, NamedClass candidate) {
-		for(NamedClass nc : existingClasses) {
-			if(isDisjoint(nc, candidate))
-				return false;
-		}
-		return true;
-	}	
-		
-	
 	public boolean isDisjoint(Description d1, Description d2) {
 //		System.out.println("d1: " + d1);
 //		System.out.println("d2: " + d2);
-//		System.out.println("cache: " + cachedDisjoints);
 		
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
@@ -211,9 +176,7 @@ public final class Utility {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				Monitor mon = MonitorFactory.start("disjointness reasoning");
-				result = reasoner.isSuperClassOf(new Nothing(), d);	
-				mon.stop();
+				result = rs.subsumes(new Nothing(), d);				
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -236,8 +199,8 @@ public final class Utility {
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		SortedSet<Individual> d1Instances = reasoner.getIndividuals(d1);
-		SortedSet<Individual> d2Instances = reasoner.getIndividuals(d2);
+		SortedSet<Individual> d1Instances = rs.retrieval(d1);
+		SortedSet<Individual> d2Instances = rs.retrieval(d2);
 		for(Individual d1Instance : d1Instances) {
 			if(d2Instances.contains(d1Instance))
 				return false;

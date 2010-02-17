@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -32,8 +32,9 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
@@ -62,10 +63,13 @@ public class ComponentTest {
 		
 		// create OWL API reasoning service with standard settings
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		
+		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		reasoner.init();
+		ReasoningService rs = cm.reasoningService(reasoner);
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://localhost/foo#heinz");
 		positiveExamples.add("http://localhost/foo#alex");
@@ -75,17 +79,23 @@ public class ComponentTest {
 		negativeExamples.add("http://localhost/foo#hanna");
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
 		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
+		
 		lp.init();
+		
 		
 		// create the learning algorithm
 		LearningAlgorithm la = null;
 		try {
-			la = cm.learningAlgorithm(ROLComponent2.class, lp, reasoner);
-			la.init();
+			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+		try{
+			la.init();
+		}catch (Exception e){
+		}
+			
 		// start the algorithm and print the best concept found
 		la.start();
 		System.out.println(la.getCurrentlyBestEvaluatedDescriptions(10, 0.8, true));

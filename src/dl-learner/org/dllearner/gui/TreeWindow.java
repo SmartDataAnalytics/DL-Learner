@@ -28,9 +28,9 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 
-import org.dllearner.algorithms.refinement2.ExampleBasedNode;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.algorithms.refexamples.ExampleBasedNode;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 
 /**
  * TreeWindow
@@ -61,8 +61,8 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 					this.getClass().getResource("icon.gif")));
 
 		// tree model
-		if (config.getLearningAlgorithm() instanceof ROLComponent2) {
-			ROLComponent2 ebrol = (ROLComponent2) config
+		if (config.getLearningAlgorithm() instanceof ExampleBasedROLComponent) {
+			ExampleBasedROLComponent ebrol = (ExampleBasedROLComponent) config
 					.getLearningAlgorithm();
 			this.rootNode = ebrol.getStartNode();
 
@@ -78,19 +78,14 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 			// ebNodeModel.getChildren((ExampleBasedNode) first));
 			
 			// collect some helper values for display and accuracy calculations
-			PosNegLPStandard lp = (PosNegLPStandard) config.getLearningProblem();
+			PosNegDefinitionLP lp = (PosNegDefinitionLP) config.getLearningProblem();
 			Set<String> posExamples = lp.getConfigurator().getPositiveExamples();
 			Set<String> negExamples = lp.getConfigurator().getNegativeExamples();
-			String baseURI = config.getReasoner().getBaseURI();
+			String baseURI = config.getReasoningService().getBaseURI();
 			int nrOfPositiveExamples = posExamples.size();
 			int nrOfNegativeExamples = negExamples.size();
 			
 			tree = new SearchTree(ebNodeModel, nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
-			// we need to call this, otherwise the width of the elements below the root node 
-			// corresponds to that of the toString() method on ExampleBasedNode, although we
-			// use a different method to create a string representation of a node
-			tree.updateUI();
-//			ebNodeModel.nodeChanged(rootNode);
 //			tree.addTreeWillExpandListener(this);
 			this.add(new JScrollPane(tree));
 		}

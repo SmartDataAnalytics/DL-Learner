@@ -28,7 +28,7 @@ import org.dllearner.kb.OWLFile;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class OWLFileConfigurator  implements Configurator {
+public  class OWLFileConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

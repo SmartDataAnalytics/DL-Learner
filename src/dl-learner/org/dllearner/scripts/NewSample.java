@@ -33,15 +33,16 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
 
@@ -91,13 +92,13 @@ public class NewSample {
 		negExamples.add("http://example.com/foo#west9");
 		negExamples.add("http://example.com/foo#west10");
 
-		List<? extends EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
+		List<EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
 		int x = 0;
 		for (EvaluatedDescription ed : results) {
 			System.out.println("solution: " + x);
 			System.out.println("  description: \t"
 					+ ed.getDescription().toManchesterSyntaxString(null, null));
-			System.out.println("  accuracy: \t" + df.format(((EvaluatedDescriptionPosNeg)ed).getAccuracy() * 100) + "%");
+			System.out.println("  accuracy: \t" + df.format(ed.getAccuracy() * 100) + "%");
 			System.out.println();
 			x++;
 		}
@@ -105,7 +106,7 @@ public class NewSample {
 		Files.createFile(new File("log/jamon_sample.html"), MonitorFactory.getReport());
 	}
 
-	public static List<? extends EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
+	public static List<EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
 			SortedSet<String> negExamples, int maxNrOfResults) throws ComponentInitException,
 			LearningProblemUnsupportedException {
 
@@ -113,11 +114,18 @@ public class NewSample {
 		logger.info("positive examples: \t" + posExamples.size());
 		logger.info("negative examples: \t" + negExamples.size());
 
+		// the component manager is the central object to create
+		// and configure components
+		ComponentManager cm = ComponentManager.getInstance();
+
 		// knowledge source
+		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		
 		URL fileURL = null;
 		try {
 			fileURL = new File(owlFile).toURI().toURL();
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
@@ -126,12 +134,15 @@ public class NewSample {
 		tmp.add(ks);
 		// reasoner
 		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
+		ReasoningService rs = cm.reasoningService(f);
+		
 
 		// learning problem
-		PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard( f, posExamples, negExamples);
+		PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP( rs, posExamples, negExamples);
 		
+
 		// learning algorithm
-		ROLComponent2 la = ComponentFactory.getROLComponent2( lp, f);
+		ExampleBasedROLComponent la = ComponentFactory.getExampleBasedROLComponent( lp, rs);
 		//OPTIONAL PARAMETERS
 		la.getConfigurator().setUseAllConstructor( false);
 		la.getConfigurator().setUseExistsConstructor(true);
@@ -149,7 +160,7 @@ public class NewSample {
 
 		// all components need to be initialised before they can be used
 		ks.init();
-		f.init();
+		f.init();	
 		lp.init();
 		la.init();
 

@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
@@ -39,10 +40,8 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ScoreThreeValued extends ScorePosNeg {
+public class ScoreThreeValued extends Score {
 	
-	private static final long serialVersionUID = -1780084688122949685L;
-
 	public enum ScoreMethod {POSITIVE, FULL};
 	
 	// configuration options
@@ -166,7 +165,7 @@ public class ScoreThreeValued extends ScorePosNeg {
     }
 
     @Override
-    public double getScoreValue() {
+    public double getScore() {
         return score;
     }
     
@@ -232,7 +231,7 @@ public class ScoreThreeValued extends ScorePosNeg {
 	}
 
 	@Override
-	public ScorePosNeg getModifiedLengthScore(int newLength) {
+	public Score getModifiedLengthScore(int newLength) {
 		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}
 

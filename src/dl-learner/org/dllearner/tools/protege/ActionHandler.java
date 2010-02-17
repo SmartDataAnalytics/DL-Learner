@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,111 +19,108 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Iterator;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.protege.editor.owl.OWLEditorKit;
 
 /**
- * This class processes input from the user.
- * 
+ * This class  processes input from the user. 
  * @author Christian Koetteritzsch
  * 
  */
-public class ActionHandler implements ActionListener {
+public class ActionHandler implements ActionListener, ItemListener,
+		MouseListener, ListSelectionListener, ListDataListener {
 
 	// This is the DLLearnerModel.
 
-	private final DLLearnerModel model;
-	
+	private DLLearnerModel model;
+	private OWLEditorKit editorKit;
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
+	private String id;
 	// this is a boolean that checked if the advanced button was pressed or not.
 	private boolean toggled;
 	// This is the Tread of the DL-Learner
+	private Thread dlLearner;
 	private EvaluatedDescription evaluatedDescription;
 	// This is the view of the DL-Learner tab.
-	private Timer timer;
-	private LearningAlgorithm la;
-	private SuggestionRetriever retriever;
-	private HelpTextPanel helpPanel;
-	private final Color colorRed = new Color(139, 0, 0);
-	private final Color colorGreen = new Color(0, 139, 0);
-	private final DLLearnerView view;
-	private static final String HELP_BUTTON_STRING = "help";
-	private static final String ADD_BUTTON_STRING = "<html>ADD</html>";
-	private static final String ADVANCED_BUTTON_STRING = "Advanced";
-	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
-	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expression</html>";
-	private static JOptionPane optionPane;
+	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	private int counter;
+	private EvaluatedDescription oldEvaluatedDescription;
 
 	/**
 	 * This is the constructor for the action handler.
 	 * 
+	 * @param a
+	 *            ActionHandler
 	 * @param m
 	 *            DLLearnerModel
 	 * @param view
 	 *            DLlearner tab
-	 * 
+	 * @param i
+	 *            id if it is a subclass or an equivalent class
+	 * @param editor OWLEditorKit
 	 */
-	public ActionHandler(DLLearnerModel m, DLLearnerView view) {
+	public ActionHandler(ActionHandler a, DLLearnerModel m,
+			OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view,
+			String i, OWLEditorKit editor) {
+		this.editorKit = editor;
 		this.view = view;
+		this.id = i;
+		counter = 0;
 		this.model = m;
 		toggled = false;
-		helpPanel = new HelpTextPanel(view);
-		optionPane = new JOptionPane();
-		
 
 	}
 
 	/**
 	 * When a Button is pressed this method select the right.
-	 * 
-	 * @param z
-	 *            ActionEvent
+	 * @param z ActionEvent 
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
-				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
-			model.setKnowledgeSource();
-			view.getSuggestClassPanel().getSuggestModel().clear();
-			view.getSuggestClassPanel().repaint();
-			model.setLearningProblem();
-			model.setLearningAlgorithm();
-			view.getRunButton().setEnabled(false);
-			view.getHintPanel().setForeground(Color.RED);
-			CELOE celoe = (CELOE) model.getLearningAlgorithm();
-
-			String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-					+ celoe.getMinimumHorizontalExpansion()
-					+ " and "
-					+ celoe.getMaximumHorizontalExpansion() + ".</font></html>";
-			view.setHelpButtonVisible(true);
-			view.setHintMessage(moreInformationsMessage);
-			retriever = new SuggestionRetriever();
-			retriever.addPropertyChangeListener(view.getStatusBar());
-			retriever.execute();
+		
+		if(z.getActionCommand().equals("comboBoxChanged")) {
+			view.getPosAndNegSelectPanel().setOptionSpinner();
+		}
+			
+		if (z.getActionCommand().equals("Suggest " + id)) {
+			if (model.getAlreadyLearned()) {
+				model.unsetListModel();
+			}
+			if (view.getPosAndNegSelectPanel().getPosAndNegSelectPanel()
+					.getComponentCount() <= 2) {
+				view
+						.renderErrorMessage("Could not start learning. No Examples where available");
+			} else {
+				model.setKnowledgeSource();
+				model.setReasoner();
+				model.setPositiveAndNegativeExamples();
+				model.setLearningProblem();
+				model.setLearningAlgorithm();
+				this.dlLearner = new Thread(model);
+				dlLearner.start();
+				view.getRunButton().setEnabled(false);
+				view.renderErrorMessage("Learning started");
+				view.getPosAndNegSelectPanel().unsetCheckBoxes();
+			}
 		}
 
-		if (z.getActionCommand().equals(ADD_BUTTON_STRING)) {
+		if (z.getActionCommand().equals("ADD")) {
 			if (evaluatedDescription != null) {
 				model
 						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
@@ -134,11 +131,23 @@ public class ActionHandler implements ActionListener {
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "<html><font size=\"3\">class expression added</font></html>";
-			view.setHintMessage(message);
-			view.setHelpButtonVisible(false);
+			String message = "Concept added";
+			view.renderErrorMessage(message);
 		}
-		if (z.toString().contains(ADVANCED_BUTTON_STRING)) {
+
+		if (z.getActionCommand().equals("?")) {
+			if (z.getSource().toString().contains("PosHelpButton")) {
+				String help = "A Instance that follows from the classdescription.\nPer Default all that belongs to the class.";
+				view.getPosAndNegSelectPanel().renderHelpMessage(help);
+			}
+
+			if (z.getSource().toString().contains("NegHelpButton")) {
+				String help = "A Instance tht doesn't follow from the classdescription.";
+				view.getPosAndNegSelectPanel().renderHelpMessage(help);
+			}
+
+		}
+		if (z.getActionCommand().equals("")) {
 			if (!toggled) {
 				toggled = true;
 				view.setIconToggled(toggled);
@@ -149,204 +158,171 @@ public class ActionHandler implements ActionListener {
 				view.setExamplePanelVisible(toggled);
 			}
 		}
-		if (z.toString().contains(HELP_BUTTON_STRING)) {
-
-			Set<String> uris = model.getOntologyURIString();
-			String currentClass = "";
-			for (String uri : uris) {
-				if (model.getCurrentConcept().toString().contains(uri)) {
-					currentClass = model.getCurrentConcept()
-							.toManchesterSyntaxString(uri, null);
-				}
-			}
-			
-			//helpPanel.renderHelpTextMessage(currentClass);
-			//view.getLearnerView().add();
-			//help = new JTextPane();
-			//help.setText(helpText);
-			optionPane.setPreferredSize(new Dimension(300, 200));
-			JOptionPane.showMessageDialog(view.getLearnerView(), helpPanel.renderHelpTextMessage(currentClass), "Help",
-					JOptionPane.INFORMATION_MESSAGE);
+		if (z.getActionCommand().equals("Why")) {
+			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
+					evaluatedDescription);
 		}
 	}
 
 	/**
-	 * Resets the toggled Button after the plugin is closed.
+	 * 
+	 * @return id StringID if it is a Subclass or an equivalent class.
+	 */
+	public String getID() {
+		return id;
+	}
+
+	
+	/**
+	 * select/deselect the Check boxes.
+	 * @param i ItemEvent
+	 */
+	public void itemStateChanged(ItemEvent i) {
+		if (i.getItem().toString().contains("Positive")) {
+			for (int j = 0; j < model.getPosVector().size(); j++) {
+				if (i.getItem().toString().contains(
+						model.getPosVector().get(j).getText().toString())) {
+					if (!model.getPosVector().get(j).isSelected()) {
+						model.getPosVector().get(j).setSelected(true);
+						break;
+					}
+					if (model.getPosVector().get(j).isSelected()) {
+						model.getPosVector().get(j).setSelected(false);
+						break;
+					}
+				}
+			}
+		}
+		if (i.getItem().toString().contains("Negative")) {
+			for (int j = 0; j < model.getNegVector().size(); j++) {
+				if (i.getItem().toString().contains(
+						model.getNegVector().get(j).getText().toString())) {
+					if (!model.getNegVector().get(j).isSelected()) {
+						model.getNegVector().get(j).setSelected(true);
+						break;
+					}
+					if (model.getNegVector().get(j).isSelected()) {
+						model.getNegVector().get(j).setSelected(false);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Nothing happens here.
+	 * @param e ListSelectionEvent 
+	 */
+	public void valueChanged(ListSelectionEvent e) {
+
+	}
+
+	/**
+	 * Nothing happens here.
+	 * @param m MouseEvent
+	 */
+	public void mouseReleased(MouseEvent m) {
+
+	}
+
+ 	/**
+	 * Nothing happens here.
+	 * @param m MouseEvent
+	 */
+	public void mouseEntered(MouseEvent m) {
+
+	}
+
+	/**
+	 * Choses the right EvaluatedDescription object after a concept is chosen in the list.
+	 * @param m MouseEvent
+	 */
+	public void mouseClicked(MouseEvent m) {
+		EvaluatedDescription eDescription = null;
+		oldEvaluatedDescription = evaluatedDescription;
+		String desc = view.getSuggestClassPanel().getSuggestList()
+				.getSelectedValue().toString();
+		if (model.getEvaluatedDescriptionList() != null) {
+			for (Iterator<EvaluatedDescription> i = model
+					.getEvaluatedDescriptionList().iterator(); i.hasNext();) {
+				eDescription = i.next();
+				if (desc.equals(eDescription.getDescription()
+						.toManchesterSyntaxString(
+								editorKit.getModelManager().getActiveOntology().getURI()
+										+ "#", null))) {
+					evaluatedDescription = eDescription;
+					break;
+				}
+
+			}
+		}
+		System.out.println("old: " + oldEvaluatedDescription);
+		if (oldEvaluatedDescription != null) {
+
+			if (oldEvaluatedDescription != evaluatedDescription) {
+				counter = 0;
+			}
+			counter++;
+		} else {
+			counter++;
+		}
+		if (counter == 2) {
+			counter = 0;
+			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
+					evaluatedDescription);
+		}
+		System.out.println("Counter: " + counter);
+	}
+
+	/**
+	 * Nothing happens here.
+	 * @param m MouseEvent
+	 */
+	public void mouseExited(MouseEvent m) {
+
+	}
+
+	/**
+	 * Sets the ADD button enable after a concept is chosen.
+	 * @param m MouseEvent
+	 */
+	public void mousePressed(MouseEvent m) {
+		if (!view.getAddButton().isEnabled()) {
+			view.getAddButton().setEnabled(true);
+		}
+	}
+
+	/**
+	 * Destroys the Thread after the Pluigin is closed.
+	 */
+	public void destroyDLLearnerThread() {
+		dlLearner = null;
+	}
+
+	/**
+	 *  Resets the toggled Button after the plugin is closed.
 	 */
 	public void resetToggled() {
 		toggled = false;
 	}
 
-	/**
-	 * This Methode sets the evaluated class expression that is selected in the
-	 * panel.
-	 * 
-	 * @param desc
-	 *            evaluated descriptions
-	 */
-	public void setEvaluatedClassExpression(EvaluatedDescription desc) {
-		this.evaluatedDescription = desc;
+	@Override
+	public void contentsChanged(ListDataEvent listEvent) {
+		System.out.println(listEvent);
+		
 	}
 
-	/**
-	 * Inner Class that retrieves the concepts given by the DL-Learner.
-	 * 
-	 * @author Christian Koetteritzsch
-	 * 
-	 */
-	class SuggestionRetriever
-			extends
-			SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
+	@Override
+	public void intervalAdded(ListDataEvent listEvent) {
+		// TODO Auto-generated method stub
+		
+	}
 
-		private Thread dlLearner;
-		private final DefaultListModel dm = new DefaultListModel();
-		private boolean isFinished; 
-
-		@SuppressWarnings("unchecked")
-		@Override
-		protected List<? extends EvaluatedDescription> doInBackground()
-				throws Exception {
-			setProgress(0);
-			la = model.getLearningAlgorithm();
-			view.setStatusBarVisible(true);
-			view.getStatusBar().setMaximumValue(
-					view.getPosAndNegSelectPanel().getOptionPanel()
-							.getMaxExecutionTime());
-			timer = new Timer();
-			isFinished = false;
-			timer.schedule(new TimerTask() {
-				int progress = 0;
-
-				@Override
-				public void run() {
-					progress += 1;
-					setProgress(progress);
-					if(progress == view.getPosAndNegSelectPanel().getOptionPanel()
-							.getMaxExecutionTime() - 1) {
-						isFinished = true;
-					}
-					if (la != null) {
-						publish(la.getCurrentlyBestEvaluatedDescriptions(view
-								.getPosAndNegSelectPanel().getOptionPanel()
-								.getNrOfConcepts()));
-						CELOE celoe = (CELOE) model.getLearningAlgorithm();
-						view.getHintPanel().setForeground(Color.RED);
-						String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-								+ celoe.getMinimumHorizontalExpansion()
-								+ " and "
-								+ celoe.getMaximumHorizontalExpansion()
-								+ ".</font></html>";
-						view.setHintMessage(moreInformationsMessage);
-					}
-				}
-
-			}, 1000, 1000);
-
-			dlLearner = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						model.run();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
-			});
-			dlLearner.start();
-
-			try {
-				dlLearner.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			List<? extends EvaluatedDescription> result = la
-					.getCurrentlyBestEvaluatedDescriptions(view
-							.getPosAndNegSelectPanel().getOptionPanel()
-							.getNrOfConcepts());
-
-			return result;
-		}
-
-		@Override
-		public void done() {
-
-			timer.cancel();
-
-			List<? extends EvaluatedDescription> result = null;
-			try {
-				result = get();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
-			setProgress(0);
-			view.stopStatusBar();
-			updateList(result);
-			view.algorithmTerminated();
-
-		}
-
-		@Override
-		protected void process(
-				List<List<? extends EvaluatedDescription>> resultLists) {
-
-			for (List<? extends EvaluatedDescription> list : resultLists) {
-				updateList(list);
-			}
-		}
-
-		private void updateList(
-				final List<? extends EvaluatedDescription> result) {
-
-			Runnable doUpdateList = new Runnable() {
-
-				public void run() {
-					model.setSuggestList(result);
-					dm.clear();
-					int i = 0;
-					for (EvaluatedDescription eval : result) {
-						Set<String> ont = model.getOntologyURIString();
-						for (String ontology : ont) {
-							if (eval.getDescription().toString().contains(
-									ontology)) {
-								if (((EvaluatedDescriptionClass) eval)
-										.isConsistent()) {
-									dm.add(i, new SuggestListItem(colorGreen,
-											eval.getDescription()
-													.toManchesterSyntaxString(
-															ontology, null),
-											((EvaluatedDescriptionClass) eval)
-													.getAccuracy() * 100));
-									i++;
-									break;
-								} else {
-									dm.add(i, new SuggestListItem(colorRed,
-											eval.getDescription()
-													.toManchesterSyntaxString(
-															ontology, null),
-											((EvaluatedDescriptionClass) eval)
-													.getAccuracy() * 100));
-									if(isFinished) {
-										view.setIsInconsistent(true);
-									}
-									i++;
-									break;
-								}
-							}
-						}
-					}
-
-					view.getSuggestClassPanel().setSuggestList(dm);
-					view.getLearnerView().repaint();
-				}
-			};
-			SwingUtilities.invokeLater(doUpdateList);
-
-		}
-
+	@Override
+	public void intervalRemoved(ListDataEvent listEvent) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

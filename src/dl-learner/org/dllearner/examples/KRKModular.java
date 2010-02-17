@@ -16,12 +16,13 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
@@ -31,7 +32,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.kb.KBFile;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -255,17 +256,17 @@ public class KRKModular {
 		sources.add(new KBFile(kb));
 		ReasonerComponent r = new FastInstanceChecker(sources);
 		r.init();
-//		ReasonerComponent rs = new ReasonerComponent(r); 
+		ReasoningService rs = new ReasoningService(r); 
 		
 		//cm.learningProblem(lpClass, reasoner)
-		LearningProblem lp = new PosNegLPStandard(r);
+		LearningProblem lp = new PosNegDefinitionLP(rs);
 		//cm.getConfigOptionValue(lp, "");
 		cm.applyConfigEntry(lp, "positiveExamples",pos);
 		cm.applyConfigEntry(lp, "negativeExamples",neg);
 		
 		lp.init();
 		
-		la = cm.learningAlgorithm(ROLComponent2.class, lp, r);
+		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
 		SortedSet<String> ignoredConcepts = getIgnoredConcepts(pos, neg);
 		
 		cm.applyConfigEntry(la,"useAllConstructor",false);
@@ -470,7 +471,7 @@ public class KRKModular {
 		try{
 			
 			for (ReasonerComponent onereasoner : allReasoners) {
-				ret.addAll(onereasoner.getIndividuals(d));
+				ret.addAll(onereasoner.retrieval(d));
 			}
 			
 		}catch (Exception e) {e.printStackTrace();}

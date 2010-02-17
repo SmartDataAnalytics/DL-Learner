@@ -34,13 +34,13 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.el.ELDescriptionEdge;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
 
 /**
@@ -50,7 +50,7 @@ import org.dllearner.core.owl.Thing;
  * 
  * <p>Properties:
  * <ul>
- *   <li>complete? (still open)</li>
+ *   <li>complete</li>
  *   <li>proper</li>
  *   <li>finite</li>
  *   <li>uses class/property hierarchy</li>
@@ -66,10 +66,10 @@ public class ELDown extends RefinementOperatorAdapter {
 
 //	private static Logger logger = Logger.getLogger(ELDown.class);	
 	
-	private ReasonerComponent rs;
+	private ReasoningService rs;
 	
 	// hierarchies
-	private ClassHierarchy subsumptionHierarchy;
+	private SubsumptionHierarchy subsumptionHierarchy;
 	private ObjectPropertyHierarchy opHierarchy;
 	
 	// domains and ranges
@@ -85,11 +85,11 @@ public class ELDown extends RefinementOperatorAdapter {
 	// utility class
 	private Utility utility;
 	
-	public ELDown(ReasonerComponent rs) {
+	public ELDown(ReasoningService rs) {
 		this.rs = rs;
 		utility = new Utility(rs);
-		subsumptionHierarchy = rs.getClassHierarchy();
-		opHierarchy = rs.getObjectPropertyHierarchy();
+		subsumptionHierarchy = rs.getSubsumptionHierarchy();
+		opHierarchy = rs.getRoleHierarchy();
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -149,7 +149,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		// loop through all classes in label
 		for(NamedClass nc : node.getLabel()) {
 			// find all more special classes for the given label
-			for(Description moreSpecial : rs.getSubClasses(nc)) {
+			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
 				if(moreSpecial instanceof NamedClass) {
 					// clone operation
 					ELDescriptionTree clonedTree = tree.clone();
@@ -220,7 +220,7 @@ public class ELDown extends RefinementOperatorAdapter {
 			// recursive call on child node and property range as index
 			Description range = rs.getRange(edge.getLabel());
 //			System.out.println(tree + "\nrecurse to:\n"  + edge.getTree());
-			refinements.addAll(refine(tree, edge.getNode(), range, minimize));
+			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
 		}
 		
 		// we found out that, in case we start from the TOP concept
@@ -250,18 +250,18 @@ public class ELDown extends RefinementOperatorAdapter {
 		ELDescriptionEdge edge = node.getEdges().get(edgeNumber);
 		ObjectProperty op = edge.getLabel();
 		// find all more special properties
-		for(ObjectProperty op2 : rs.getSubProperties(op)) {
+		for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
 			// we check whether the range of this property is not disjoint
 			// with the existing child node (we do not perform a full disjointness
 			// check, but only compare with the flattened concept to keep the number
 			// of possible disjointness checks finite)
-			if(!utility.isDisjoint(getFlattenedConcept(edge.getNode()), opRanges.get(op2))) {
+			if(!utility.isDisjoint(getFlattenedConcept(edge.getTree()), opRanges.get(op2))) {
 				// clone operation
 				ELDescriptionTree clonedTree = tree.clone();
 				// find cloned edge and replace its label
-				clonedTree.getNode(position).refineEdge(edgeNumber, op2);
-//				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
-//				clonedEdge.setLabel(op2);
+				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
+				clonedEdge.setLabel(op2);
+				// TODO simulation update
 				refinements.add(clonedTree);				
 			}
 

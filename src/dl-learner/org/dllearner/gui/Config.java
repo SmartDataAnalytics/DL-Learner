@@ -36,19 +36,18 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.parser.ParseException;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
- * Reasoner, ReasonerComponent, LearningProblem, LearningAlgorithm; also inits of
+ * Reasoner, ReasoningService, LearningProblem, LearningAlgorithm; also inits of
  * these components.
  * 
  * @author Jens Lehmann
@@ -62,7 +61,7 @@ public class Config {
 	// the components currently active
 	private KnowledgeSource source;
 	private ReasonerComponent reasoner;
-//	private ReasonerComponent rs;
+	private ReasoningService rs;
 	private LearningProblem lp;
 	private LearningAlgorithm la;
 
@@ -92,11 +91,12 @@ public class Config {
 	 * @param lp
 	 * @param la
 	 */
-	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, LearningProblem lp, LearningAlgorithm la) {
+	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, ReasoningService rs, LearningProblem lp, LearningAlgorithm la) {
 		super();
 		this.cm = cm;
 		this.source = source;
 		this.reasoner = reasoner;
+		this.rs = rs;
 		this.lp = lp;
 		this.la = la;
 	}
@@ -149,7 +149,7 @@ public class Config {
 			}
 			source = sources.iterator().next();
 			reasoner = start.getReasonerComponent();
-//			rs = start.getReasonerComponent();
+			rs = start.getReasoningService();
 			lp = start.getLearningProblem();
 			la = start.getLearningAlgorithm();
 
@@ -260,7 +260,7 @@ public class Config {
 	 */
 	public ReasonerComponent newReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
-//		rs = cm.reasoningService(reasoner);
+		rs = cm.reasoningService(reasoner);
 		return reasoner;
 	}
 
@@ -272,13 +272,22 @@ public class Config {
 	 */
 	public ReasonerComponent changeReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
-//		rs = cm.reasoningService(reasoner);
-		lp.changeReasonerComponent(reasoner);
-		la.changeReasonerComponent(reasoner);
+		rs = cm.reasoningService(reasoner);
+		lp.changeReasoningService(rs);
+		la.changeReasoningService(rs);
 		needsInit[1] = true;
 		needsInit[2] = true;
 		needsInit[3] = true;
 		return reasoner;
+	}
+
+	/**
+	 * Get ReasoningService.
+	 * 
+	 * @return ReasoningService
+	 */
+	public ReasoningService getReasoningService() {
+		return this.rs;
 	}
 
 	/**
@@ -296,7 +305,7 @@ public class Config {
 	 * @return A learning problem instance.
 	 */	
 	public LearningProblem newLearningProblem(Class<? extends LearningProblem> clazz) {
-		lp = cm.learningProblem(clazz, reasoner);
+		lp = cm.learningProblem(clazz, rs);
 		return lp;
 	}
 
@@ -307,7 +316,7 @@ public class Config {
 	 * @return A learning problem instance.
 	 */	
 	public LearningProblem changeLearningProblem(Class<? extends LearningProblem> clazz) {
-		lp = cm.learningProblem(clazz, reasoner);
+		lp = cm.learningProblem(clazz, rs);
 		la.changeLearningProblem(lp);
 		needsInit[2] = true;
 		needsInit[3] = true;		
@@ -333,7 +342,7 @@ public class Config {
 	 */
 	public LearningAlgorithm newLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
 			throws LearningProblemUnsupportedException {
-		la = cm.learningAlgorithm(clazz, lp, reasoner);
+		la = cm.learningAlgorithm(clazz, lp, rs);
 		return la;
 	}
 
@@ -347,7 +356,7 @@ public class Config {
 	 */
 	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
 			throws LearningProblemUnsupportedException {
-		la = cm.learningAlgorithm(clazz, lp, reasoner);
+		la = cm.learningAlgorithm(clazz, lp, rs);
 		needsInit[3] = true;		
 		return la;
 	}
@@ -548,16 +557,6 @@ public class Config {
 							.size() == 0
 					|| ((Set<String>) cm.getConfigOptionValue(component, "negativeExamples"))
 							.size() == 0) {
-				return false;
-			}
-		} else if (component instanceof PosOnlyLP) {
-			if (cm.getConfigOptionValue(component, "positiveExamples") == null
-					|| ((Set<String>) cm.getConfigOptionValue(component, "positiveExamples"))
-							.size() == 0) {
-				return false;
-			}
-		} else if (component instanceof ClassLearningProblem) {
-			if (cm.getConfigOptionValue(component, "classToDescribe") == null) {
 				return false;
 			}
 		} else if (component instanceof SparqlKnowledgeSource) {

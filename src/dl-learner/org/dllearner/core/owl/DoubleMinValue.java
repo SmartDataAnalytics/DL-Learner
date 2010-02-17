@@ -30,10 +30,6 @@ import java.util.Map;
  */
 public class DoubleMinValue implements SimpleDoubleDataRange {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8808907963085216763L;
 	private double value;
 	
 	public DoubleMinValue(double value) {
@@ -67,13 +63,5 @@ public class DoubleMinValue implements SimpleDoubleDataRange {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " >= " + value;
 	}	
 }

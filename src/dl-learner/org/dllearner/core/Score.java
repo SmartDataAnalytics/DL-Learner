@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -17,35 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package org.dllearner.core;
 
-import java.io.Serializable;
+import java.util.Set;
+
+import org.dllearner.core.owl.Individual;
 
 /**
  * The score class is used to store how well a class description did
- * on a learning problem. Depending on the learning problem at hand,
- * different criteria can be used. (Similar learning problems probably
- * score class descriptions/hypothesis in a similar way.)
- * 
- * TODO: Maybe we don't really need a score, but only EvaluatedDescription.
+ * on a learning problem.
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class Score implements Serializable{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6479328496461875019L;
-
-	/**
-	 * This method returns a value, which indicates how accurate a
-	 * class description solves a learning problem. 
-	 * 
-	 * @see LearningProblem#getAccuracy(Description)
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
-	 */	
+public abstract class Score {
+	
+	// accuracy
 	public abstract double getAccuracy();
+	
+	// example coverage
+	public abstract Set<Individual> getCoveredPositives();
+	public abstract Set<Individual> getCoveredNegatives();
+	public abstract Set<Individual> getNotCoveredPositives();
+	public abstract Set<Individual> getNotCoveredNegatives();	
+	
+	// older methods (not frequently used anymore)
+	public abstract double getScore();
+	/**
+	 * The score of a concept depends on how good it classifies the
+	 * examples of a learning problem and the length of the concept
+	 * itself. If a given concept is known to have equal classification
+	 * properties than the concept this score object is based on, then
+	 * this method can be used to calculate its score value by using the
+	 * length of this concept as parameter.
+	 * 
+	 * @param newLength Length of the concept.
+	 * @return Score.
+	 */
+	public abstract Score getModifiedLengthScore(int newLength);
 	
 }

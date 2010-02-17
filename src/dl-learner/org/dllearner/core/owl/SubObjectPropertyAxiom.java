@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class SubObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1085651734702155330L;
 	private ObjectProperty role;
 	private ObjectProperty subRole;
 	
@@ -43,13 +39,5 @@ public class SubObjectPropertyAxiom extends PropertyAxiom {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "Subrole(" + subRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
 	}	
 }

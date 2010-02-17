@@ -37,9 +37,7 @@ class Utilities {
 	 */
 	public static function loadWSDLfiles($wsdluri) {
 		$main = self :: getRequest($wsdluri);
-//		echo "loaded";
 		$other = self :: getXSDImports($main);
-//		print_r($other);
 		$newMain = self :: changeXSDImports($main);
 		self :: writeToFile("main.wsdl", $newMain);
 		$x = 0;
@@ -73,10 +71,6 @@ class Utilities {
 	 * Extracts XSD imports from WSDL file.
 	 */
 	public static function getXSDImports($wsdlFileContent) {
-		/*
-		preg_match_all('/\"[^\"\?]*?\?xsd=[^\"]*?\"/',$wsdlFileContent, $matches);
-		return $matches;
-		*/
 		$before = "<xsd:import schemaLocation=\"";
 		$after = "\" namespace=\"";
 		$ret = array ();

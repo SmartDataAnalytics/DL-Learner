@@ -43,6 +43,4 @@ public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, Prop
 
 	void visit(UntypedConstant untypedConstant);
 
-	void visit(Annotation annotation);
-
 }

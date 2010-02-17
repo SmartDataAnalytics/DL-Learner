@@ -19,8 +19,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.io.Serializable;
-import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -31,22 +29,14 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class Individual implements Entity, NamedKBElement, Comparable<Individual>, Serializable {
+public class Individual implements NamedKBElement, Comparable<Individual> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1831526393296388784L;
 	private String name;
 
 	public String getName() {
 		return name;
 	}
 
-    public URI getURI() {
-    	return URI.create(name);
-    }	
-	
 	public Individual(String name) {
 		this.name = name;
 	}
@@ -56,15 +46,11 @@ public class Individual implements Entity, NamedKBElement, Comparable<Individual
 	}
 
 	public int compareTo(Individual o) {
-//		System.out.println(o);
 		return name.compareTo(o.name);
 	}
     
 	@Override
 	public boolean equals(Object o) {
-		if(o==null) {
-			return false;
-		}
 		return (compareTo((Individual)o)==0);
 	}
 	

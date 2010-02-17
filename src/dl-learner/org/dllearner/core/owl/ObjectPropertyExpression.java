@@ -19,8 +19,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.io.Serializable;
-
 /**
  * An object property expression is an object property construct, which
  * can be used in axioms, e.g. complex class descriptions. It can be
@@ -29,12 +27,8 @@ import java.io.Serializable;
  * @author Jens Lehmann
  *
  */
-public abstract class ObjectPropertyExpression implements PropertyExpression, Serializable {
+public abstract class ObjectPropertyExpression implements PropertyExpression {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5590591991241290070L;
 	protected String name;
 	
 	public ObjectPropertyExpression(String name) {

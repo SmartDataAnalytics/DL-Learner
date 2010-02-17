@@ -38,6 +38,6 @@
 		
 		$url='http://'.$_SERVER['HTTP_HOST'].'/dbpedia-navigator/'.$last_action.$attributes;
 		
-		print '<font style="font-size:9px"><a href="'.$url.'">'.$url.'</a></font><br/><br/>';
+		print '<a href="'.$url.'">'.$url.'</a><br/><br/>';
 	}
 ?>

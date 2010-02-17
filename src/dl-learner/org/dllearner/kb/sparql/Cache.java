@@ -278,12 +278,12 @@ public class Cache implements Serializable {
 		readTime.stop();
 		
 		if (result != null) {
-//			query.setJson(result);
-//			
-//		    query.setRunning(false);
-//			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
-//			SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+query.getSparqlEndpoint().getHTTPRequest());
-//			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
+			query.setJson(result);
+			
+		    query.setRunning(false);
+			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
+			SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+query.getSparqlEndpoint().getHTTPRequest());
+			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
 			
 			//SparqlQuery.writeToSparqlLog("JSON: "+result);
 			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
@@ -295,8 +295,7 @@ public class Cache implements Serializable {
 			String json = query.getJson();
 			if (json!=null){
 				addToCache(query.getSparqlQueryString(), json);
-//				SparqlQuery.writeToSparqlLog("result added to cache: "+json);
-				logger.debug("result added to SPARQL cache: "+json);
+				SparqlQuery.writeToSparqlLog("result added to cache: "+json);
 				result=json;
 				//query.setJson(result);
 			} else {
@@ -310,19 +309,6 @@ public class Cache implements Serializable {
 		}
 		totaltime.stop();
 		return result;
-	}
-	
-	public boolean executeSparqlAskQuery(SparqlQuery query) {
-		String str = getCacheEntry(query.getSparqlQueryString());
-		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
-		if(str != null) {
-			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
-			return Boolean.parseBoolean(str);
-		} else {
-			Boolean result = query.sendAsk();
-			addToCache(query.getSparqlQueryString(), result.toString());
-			return result;
-		}
 	}
 	
 	/**

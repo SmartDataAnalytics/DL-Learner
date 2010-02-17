@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,142 +19,87 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 /**
- * This class is the panel for the suggest list. It shows the descriptions made
- * by the DL-Learner.
- * 
+ * This class is the panel for the suggest list.
+ * It shows the descriptions made by the DL-Learner.
  * @author Christian Koetteritzsch
- * 
+ *
  */
 public class SuggestClassPanel extends JPanel {
-
+	
 	private static final long serialVersionUID = 724628423947230L;
+	
+	 // Description List
+	 
+	private JList descriptions;
+	
+	 // Panel for the description list
+	 
+	private JPanel suggestPanel;
+	
+	 // Date for the description list
+	 
+	private DefaultListModel model;
+	
+	 //Scroll panel if the suggestions are longer than the Panel itself
 
-	// Description List
-
-	private final JList descriptions;
-
-	// Panel for the description list
-
-	private final JPanel suggestPanel;
-
-	// Scroll panel if the suggestions are longer than the Panel itself
-
-	private final JScrollPane suggestScroll;
-	private DefaultListModel suggestModel;
-	private DLLearnerModel model;
-	private DLLearnerView view;
-
+	private JScrollPane suggestScroll;
 	/**
-	 * This is the constructor for the suggest panel. It creates a new Scroll
-	 * panel and puts the Suggest List in it.
-	 * @param m model of the DL-Learner
-	 * @param v view of the DL-Learner
+	 * This is the constructor for the suggest panel.
+	 * It creates a new Scroll panel and puts the Suggest List in it. 
 	 */
-	public SuggestClassPanel(DLLearnerModel m, DLLearnerView v) {
+	public SuggestClassPanel() {
 		super();
-		this.model = m;
-		this.view = v;
-		suggestModel = new DefaultListModel();
-		this.setLayout(new BorderLayout());
-		// renders scroll bars if necessary
-		suggestScroll = new JScrollPane(
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		descriptions = new JList(suggestModel);
-		descriptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		suggestScroll = new JScrollPane();
+		//renders scroll bars if necessary
+		suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		model = new DefaultListModel();
+		descriptions = new JList(model);
 		suggestPanel = new JPanel();
 		descriptions.setVisible(true);
-		descriptions.setVisibleRowCount(6);
-		descriptions.getPreferredScrollableViewportSize();
 		suggestPanel.add(descriptions);
+		suggestScroll.setPreferredSize(new Dimension(490, 108));
 		suggestScroll.setViewportView(descriptions);
-		descriptions.setCellRenderer(new SuggestListCellRenderer());
-		add(BorderLayout.CENTER, suggestScroll);
+		add(suggestScroll);
 	}
-
+	
 	/**
-	 * this method adds an new Scroll Panel and returns the updated
-	 * SuggestClassPanel.
-	 * 
+	 * this method adds an new Scroll Panel and returns the updated SuggestClassPanel.
 	 * @return updated SuggestClassPanel
 	 */
 	public SuggestClassPanel updateSuggestClassList() {
 		add(suggestScroll);
 		return this;
-
+		
 	}
-
 	/**
 	 * This method is called after the model for the suggest list is updated.
-	 * 
-	 * @param desc
-	 *            List model of descriptions made by the DL-Learner
+	 *  
+	 * @param desc List model of descriptions made by the DL-Learner
 	 */
 	public void setSuggestList(DefaultListModel desc) {
-		if (desc.size() != 0) {
-			if (suggestModel.size() == 0) {
-				for (int i = 0; i < desc.size(); i++) {
-					suggestModel.add(i, desc.get(i));
-				}
-			} else {
-				for (int i = 0; i < suggestModel.size(); i++) {
-					if (!((SuggestListItem) suggestModel.get(i)).getValue()
-							.equals(((SuggestListItem) desc.get(i)).getValue())) {
-						descriptions.getSelectedIndex();
-						suggestModel.set(i, desc.get(i));
-						if (descriptions.getSelectedIndex() == i) {
-							view
-									.getMoreDetailForSuggestedConceptsPanel()
-									.renderDetailPanel(
-											model
-													.getCurrentlySelectedClassDescription(i));
-							view.setGraphicalPanel();
-
-						}
-					}
-				}
-				for (int i = suggestModel.getSize(); i < desc.size(); i++) {
-					suggestModel.add(i, desc.get(i));
-				}
-			}
-		}
+		descriptions.setForeground(Color.GREEN);
+		descriptions.setModel(desc);
 	}
-
 	/**
 	 * This method returns the current Description list.
-	 * 
 	 * @return JList of Descriptions
 	 */
 	public JList getSuggestList() {
 		return descriptions;
 	}
-
+	
 	/**
-	 * This method adds the suggest list to the Mouse Listener.
-	 * 
-	 * @param action
-	 *            ActionHandler
+	 * this method adds the suggest list to the Mouse Listener.
+	 * @param action ActionHandler
 	 */
-	public void addSuggestPanelMouseListener(SuggestClassPanelHandler handle) {
-		descriptions.addMouseListener(handle);
-	}
-
-	/**
-	 * Thsi method returns the list model for the suggest list.
-	 * 
-	 * @return list model for the suggest list
-	 */
-	public DefaultListModel getSuggestModel() {
-		return suggestModel;
-	}
-
+	public void addSuggestPanelMouseListener(ActionHandler action) {
+		descriptions.addMouseListener(action);
+		
+	}          
 }

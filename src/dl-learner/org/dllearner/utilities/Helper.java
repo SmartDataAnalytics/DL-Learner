@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.AssertionalAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -332,7 +332,7 @@ public class Helper {
 	 * DEPRECATED METHOD (RELIED ON OLD CONFIG).
 	 * 
 	 */
-//	public static void autoDetectConceptsAndRoles(ReasonerComponent rs) {
+//	public static void autoDetectConceptsAndRoles(ReasoningService rs) {
 //		// einige Sachen, die momentan nur vom Refinement-Algorithmus
 //		// unterstützt werden (später ev. auch von anderen Algorithmen)
 //		// if (Config.algorithm == Algorithm.REFINEMENT) {
@@ -450,9 +450,7 @@ public class Helper {
 	 * the RDF, RDFS, OWL standards.
 	 * 
 	 * @param concepts The set from which concepts will be removed.
-	 * @deprecated Deprecated method, because it is not needed anymore. 
 	 */
-	@Deprecated
 	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
 		Iterator<NamedClass> it = concepts.iterator();
 		while (it.hasNext()) {
@@ -482,18 +480,18 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
-	public static Set<NamedClass> computeConcepts(ReasonerComponent rs) {
+	public static Set<NamedClass> computeConcepts(ReasoningService rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
 		Set<NamedClass> concepts = rs.getNamedClasses();
-//		Helper.removeUninterestingConcepts(concepts);
+		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
-	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
-		Set<NamedClass> concepts = new TreeSet<NamedClass>(rs.getNamedClasses());
-//		Helper.removeUninterestingConcepts(concepts);
+	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasoningService rs, Set<NamedClass> ignoredConcepts) {
+		Set<NamedClass> concepts = rs.getNamedClasses();
+		Helper.removeUninterestingConcepts(concepts);
 		for (NamedClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
 			if (!success)
@@ -504,7 +502,7 @@ public class Helper {
 	
 	// concepts case 3: allowed list
 	// superseeded by checkConcepts()
-//	public static void checkAllowedList(ReasonerComponent rs, Set<AtomicConcept> allowedConcepts) {
+//	public static void checkAllowedList(ReasoningService rs, Set<AtomicConcept> allowedConcepts) {
 //		// check whether allowed concepts exist in knowledgebase(s)
 //		Set<AtomicConcept> allowed = new HashSet<AtomicConcept>();
 //		allowed.addAll(allowedConcepts);
@@ -525,7 +523,7 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static ObjectProperty checkRoles(ReasonerComponent rs, Set<ObjectProperty> roles) {
+	public static ObjectProperty checkRoles(ReasoningService rs, Set<ObjectProperty> roles) {
 		Set<ObjectProperty> existingRoles = rs.getObjectProperties();
 		for (ObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
@@ -541,7 +539,7 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static NamedClass checkConcepts(ReasonerComponent rs, Set<NamedClass> concepts) {
+	public static NamedClass checkConcepts(ReasoningService rs, Set<NamedClass> concepts) {
 		Set<NamedClass> existingConcepts = rs.getNamedClasses();
 		for (NamedClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
@@ -551,27 +549,23 @@ public class Helper {
 	}
 
 	// creates a flat ABox by querying a reasoner
-	public static FlatABox createFlatABox(ReasonerComponent rs)
+	public static FlatABox createFlatABox(ReasoningService rs)
 			throws ReasoningMethodUnsupportedException {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		if(!rs.getNamedClasses().isEmpty()) {
-			for (NamedClass atomicConcept : rs.getNamedClasses()) {
-				aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
-						.getIndividuals(atomicConcept)));
-				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
-						.getIndividuals(negatedAtomicConcept)));
-				aBox.concepts.add(atomicConcept.getName());
-			}			
+		for (NamedClass atomicConcept : rs.getNamedClasses()) {
+			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
+					.retrieval(atomicConcept)));
+			Negation negatedAtomicConcept = new Negation(atomicConcept);
+			aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
+					.retrieval(negatedAtomicConcept)));
+			aBox.concepts.add(atomicConcept.getName());
 		}
 
-		if(!rs.getObjectProperties().isEmpty()) {
-			for (ObjectProperty atomicRole : rs.getObjectProperties()) {
-				aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
-				aBox.roles.add(atomicRole.getName());
-			}			
+		for (ObjectProperty atomicRole : rs.getObjectProperties()) {
+			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getRoleMembers(atomicRole)));
+			aBox.roles.add(atomicRole.getName());
 		}
 
 		aBox.domain = getStringSet(rs.getIndividuals());
@@ -620,12 +614,4 @@ public class Helper {
 		System.out.println("remaining individuals: " + inds);
 		System.out.println();
 	}
-	
-	public static String arrayContent(int[] ar) {
-		String str = ""; 
-		for(int i=0; i<ar.length; i++) {
-			str += ar[i] + ",";
-		}
-		return str;
-	}	
 }

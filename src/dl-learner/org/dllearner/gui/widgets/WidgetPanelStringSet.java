@@ -38,7 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -213,7 +213,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("positiveExamples")
 					|| configOption.getName().equalsIgnoreCase("negativeExamples")) {
 				// fill lists
-				Set<Individual> individualsSet = config.getReasoner()
+				Set<Individual> individualsSet = config.getReasoningService()
 						.getIndividuals();
 				if(individualsSet != null) {
 					LinkedList<Individual> individuals = new LinkedList<Individual>(
@@ -233,7 +233,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("allowedConcepts")
 					|| configOption.getName().equalsIgnoreCase("ignoredConcepts")) {
 				// fill lists
-				Set<NamedClass> atomicsSet = config.getReasoner()
+				Set<NamedClass> atomicsSet = config.getReasoningService()
 						.getNamedClasses();
 				if(atomicsSet != null) {
 					LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
@@ -247,7 +247,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("allowedRoles")
 					|| configOption.getName().equalsIgnoreCase("ignoredRoles")) {
 				// fill lists
-				Set<ObjectProperty> atomicsSet = config.getReasoner()
+				Set<ObjectProperty> atomicsSet = config.getReasoningService()
 						.getObjectProperties();
 				if(atomicsSet != null) {
 					LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(

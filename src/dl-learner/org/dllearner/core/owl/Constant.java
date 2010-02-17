@@ -25,12 +25,8 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public abstract class Constant implements KBElement, Comparable<Constant> {
+public abstract class Constant implements KBElement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2331790456049452753L;
 	String literal;
 	
 	public Constant(String literal) {
@@ -43,5 +39,4 @@ public abstract class Constant implements KBElement, Comparable<Constant> {
 	public String getLiteral() {
 		return literal;
 	}
-		
 }

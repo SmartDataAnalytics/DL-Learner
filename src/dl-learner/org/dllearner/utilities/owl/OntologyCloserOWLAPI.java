@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
@@ -30,17 +31,17 @@ import uk.ac.manchester.cs.owl.OWLObjectIntersectionOfImpl;
 public class OntologyCloserOWLAPI {
 
 	OWLOntology onto;
-	OWLAPIReasoner rs;
-//	ReasonerComponent rs;
+	OWLAPIReasoner reasoner;
+	ReasoningService rs;
 	HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>> indToRestr;
 	OWLDataFactory factory;
 	OWLOntologyManager manager;
 	public int numberOfStatementsChanged = 0;
 
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
-		this.rs = reasoner;
+		this.reasoner = reasoner;
 		this.indToRestr = new HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>>();
-//		this.rs = new ReasonerComponent(reasoner);
+		this.rs = new ReasoningService(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
 		this.onto = reasoner.getOWLAPIOntologies().get(0);
@@ -59,7 +60,7 @@ public class OntologyCloserOWLAPI {
 		for (ObjectProperty oneRole : allRoles) {
 
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getPropertyMembers(oneRole);
+					.getRoleMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				// only where roles exist
@@ -100,7 +101,7 @@ public class OntologyCloserOWLAPI {
 		// collect info for roles and individuals
 		for (ObjectProperty oneRole : allRoles) {
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getPropertyMembers(oneRole);
+					.getRoleMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
@@ -193,7 +194,7 @@ public class OntologyCloserOWLAPI {
 					new HashMap<String, String>()));
 			// System.out.println(d.toString());
 			sc.setTime();
-			this.rs.getIndividuals(d);
+			this.rs.retrieval(d);
 
 			System.out.println("retrieved: " + ind.size() + " instances");
 			sc.printAndSet();

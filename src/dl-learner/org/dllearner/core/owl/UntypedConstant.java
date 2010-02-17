@@ -30,10 +30,6 @@ import java.util.Map;
  */
 public class UntypedConstant extends Constant {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2569002545544130198L;
 	private String lang;
 	private boolean hasLang = false;
 	
@@ -73,17 +69,6 @@ public class UntypedConstant extends Constant {
 			return literal;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		if(hasLang)
-			return literal + "@" + lang;
-		else
-			return literal;		
-	}		
-	
 	/**
 	 * @return the lang
 	 */
@@ -104,24 +89,4 @@ public class UntypedConstant extends Constant {
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}	
-	
-	@Override
-	public String toString() {
-		if(hasLang) {
-			return literal + "@" + lang;
-		} else {
-			return literal;
-		}
-	}
-	
-	@Override
-	public int compareTo(Constant o) {
-		if(o instanceof TypedConstant) {
-			return -1;
-		}
-		String str = literal + lang;
-		String str2 = ((UntypedConstant)o).literal + ((UntypedConstant)o).lang;
-		return str.compareTo(str2);
-	}
-
 }

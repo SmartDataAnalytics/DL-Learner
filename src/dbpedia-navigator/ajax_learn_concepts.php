@@ -9,14 +9,8 @@
 		
 	if (isset($_SESSION['positive'])) $positives=$_SESSION['positive'];
 	if (isset($_SESSION['negative'])) $negatives=$_SESSION['negative'];
-	if (isset($_SESSION['id'])){
-		$id=$_SESSION['id'];
-		$ksID=$_SESSION['ksID'];
-	}
-	else{
-		print "Your Session expired. Please reload.";
-		die();
-	}
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
 	session_write_close();
 	setRunning($id,"true");
 	$concept="";
@@ -41,18 +35,16 @@
 		
 		$classes=array();
 		$noclass=array();
-		if ($settings->classSystem=="YAGO") $rekursion=1;
-		else if ($settings->classSystem=="DBpedia") $rekursion=0;
 		foreach ($all as $pos){
 			$newclasses=array();
 			$query="SELECT category FROM articlecategories WHERE name='$pos'";
 			$res=$databaseConnection->query($query);
 			if (mysql_num_rows($res)<1) $noclass[]=$pos; 
 			while ($result=$databaseConnection->nextEntry($res)){
-				if ($result['category']!="http://dbpedia.org/ontology/Resource") $classes[$pos][]=$result['category'];
-				if ($result['category']!="http://dbpedia.org/ontology/Resource") $newclasses[]=$result['category'];
+				$classes[$pos][]=$result['category'];
+				$newclasses[]=$result['category'];
 			}
-			for ($i=0;$i<$rekursion;$i++){
+			for ($i=0;$i<1;$i++){
 				$tempclasses=array();
 				foreach ($newclasses as $clas){
 					$query="SELECT father FROM classhierarchy WHERE child='$clas'";
@@ -115,8 +107,7 @@
 				foreach ($concepts as $conc){
 					foreach ($conc as $con){
 						$label=$sc->getNaturalDescription($con['descriptionKBSyntax']);
-						if (strlen($label)<=0) $label=$con['descriptionManchesterSyntax'];
-						$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" title=\"".$con['descriptionManchesterSyntax']."\"/>".$label."</a></td></tr>";
+						$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" />".$label."</a></td></tr>";
 					}
 				}
 				$concept.="</table>";

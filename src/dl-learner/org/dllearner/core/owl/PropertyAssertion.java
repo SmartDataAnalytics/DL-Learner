@@ -25,9 +25,4 @@ package org.dllearner.core.owl;
  */
 public abstract class PropertyAssertion extends AssertionalAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -150218033647420267L;
-
 }

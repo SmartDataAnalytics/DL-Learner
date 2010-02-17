@@ -30,7 +30,7 @@ include('Utilities.php');
 // load WSDL files (has to be done due to a Java web service bug)
 ini_set("soap.wsdl_cache_enabled","0");
 $wsdluri="http://localhost:8181/services?wsdl";
-// Utilities::loadWSDLfiles($wsdluri);
+Utilities::loadWSDLfiles($wsdluri);
 
 // specifiy ontology
 $ontology = 'file:'.realpath("../../examples/family/father.owl");
@@ -51,7 +51,7 @@ $posExamples = array('http://example.com/father#stefan',
 $negExamples = array('http://example.com/father#heinz',
                      'http://example.com/father#anna',
                      'http://example.com/father#michelle');
-$client->setLearningProblem($id, "posNegLPStandard");
+$client->setLearningProblem($id, "posNegDefinition");
 $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
@@ -67,7 +67,7 @@ echo 'start learning ... ';
 // get only concept
 // $concept = $client->learn($id, "manchester");
 // get concept and additional information in JSON syntax
-$concept = $client->learnDescriptionsEvaluatedLimit($id, 5);
+$concept = $client->learnDescriptionsEvaluated($id, 5);
 echo 'OK <br />';
 
 echo 'solution: <pre>';

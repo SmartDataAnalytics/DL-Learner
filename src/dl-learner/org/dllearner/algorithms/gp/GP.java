@@ -30,22 +30,22 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.hybridgp.Psi;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.configurators.GPConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -126,7 +126,7 @@ public class GP extends LearningAlgorithm {
     
     private long startTime;
 
-    private ScorePosNeg bestScore;
+    private Score bestScore;
     private Description bestConcept;
     
     // private GeneticRefinementOperator psi;
@@ -140,7 +140,7 @@ public class GP extends LearningAlgorithm {
      * 1.0 and a probability of mutation of 0.01.
      * 
      */
-    public GP(PosNegLP learningProblem, ReasonerComponent rs) {
+    public GP(PosNegLP learningProblem, ReasoningService rs) {
        	super(learningProblem, rs);
     	this.configurator = new GPConfigurator(this);
     }
@@ -270,14 +270,14 @@ public class GP extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
-//		reasoner.prepareSubsumptionHierarchy();
-//		reasoner.prepareRoleHierarchy();		
+		reasoningService.prepareSubsumptionHierarchy();
+		reasoningService.prepareRoleHierarchy();		
 	}
 	
 	@Override
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
-    	psi = new Psi((PosNegLP)learningProblem, reasoner);
+    	psi = new Psi((PosNegLP)learningProblem, reasoningService);
     	
     	System.out.println();
     	System.out.println("Starting Genetic Programming Learner");
@@ -440,11 +440,11 @@ public class GP extends LearningAlgorithm {
                     i++;
                 // mutation
                 }  else if(rand >= crossoverBoundary && rand < mutationBoundary) {
-                	newIndividuals[i] = GPUtilities.mutation(learningProblem, reasoner, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.mutation(learningProblem, reasoningService, individuals[selectedIndividuals[i]]);
                 // hill climbing
                 } else if(rand >= mutationBoundary && rand < hillClimbingBoundary) {
                 	// System.out.println("hill climbing");
-                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, reasoner, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, reasoningService, individuals[selectedIndividuals[i]]);
                 // refinement operator
                 } else if(rand >= hillClimbingBoundary && rand < refinementBoundary) {
                 	newIndividuals[i] = psi.applyOperator(individuals[selectedIndividuals[i]]);
@@ -532,19 +532,19 @@ public class GP extends LearningAlgorithm {
 
         // nachschauen, ob ev. noch bessere Konzepte im Psi-Cache sind
         boolean betterValueFoundInPsiCache = false;
-        double bestValue = bestScore.getScoreValue();
+        double bestValue = bestScore.getScore();
         
         if(refinementProbability > 0) {
         	// das Problem ist hier, dass die gecachte Score nicht unbedingt
         	// der echten Score entsprechen muss, d.h. hier muss die
         	// Konzeptlänge mit einberechnet werden => deswegen werden
         	// neue Score-Objekte generiert
-        	Set<Entry<Description,ScorePosNeg>> entrySet = psi.evalCache.entrySet();
-        	for(Entry<Description,ScorePosNeg> entry : entrySet) {
-        		ScorePosNeg tmpScore = entry.getValue();
+        	Set<Entry<Description,Score>> entrySet = psi.evalCache.entrySet();
+        	for(Entry<Description,Score> entry : entrySet) {
+        		Score tmpScore = entry.getValue();
         		Description c = entry.getKey();
         		tmpScore = tmpScore.getModifiedLengthScore(c.getLength());
-        		double tmpScoreValue = tmpScore.getScoreValue();
+        		double tmpScoreValue = tmpScore.getScore();
         		if(tmpScoreValue>bestValue) {
         			bestValue = tmpScoreValue;
         			betterValueFoundInPsiCache = true;
@@ -583,7 +583,7 @@ public class GP extends LearningAlgorithm {
         }
           
         /*
-        Collection<Concept> test = ReasonerComponent.retrievals;
+        Collection<Concept> test = ReasoningService.retrievals;
 //         for(Concept c : )
         
         test.removeAll(psi.evalCache.keySet());
@@ -618,9 +618,9 @@ public class GP extends LearningAlgorithm {
         	// int depth = rand.nextInt(initMaxDepth-initMinDepth)+initMinDepth;
         	
         	if(grow)
-        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, reasoner, depth, adc);
+        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, reasoningService, depth, adc);
         	else
-        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, reasoner, depth, adc);		
+        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, reasoningService, depth, adc);		
     	}    	
     	
     	/*
@@ -843,7 +843,7 @@ public class GP extends LearningAlgorithm {
         // long algorithmTime = System.nanoTime() - Main.getAlgorithmStartTime();
         long algorithmTime = System.nanoTime() - startTime;
         System.out.println("overall algorithm runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime));
-        // System.out.println("instance checks: " + learningProblem.getReasonerComponent().getNrOfInstanceChecks());
+        // System.out.println("instance checks: " + learningProblem.getReasoningService().getNrOfInstanceChecks());
         // System.out.println("fitness evals: " + Program.fitnessEvaluations);
         // System.out.println("nr. of individuals: " + individuals.length + " (" + numberOfSelectedIndividuals + " selected)");
         
@@ -946,8 +946,8 @@ public class GP extends LearningAlgorithm {
         System.exit(0);
     }
 
-//    @Override
-	public ScorePosNeg getSolutionScore() {
+    @Override
+	public Score getSolutionScore() {
 		return bestScore;
 	}
 
@@ -957,9 +957,9 @@ public class GP extends LearningAlgorithm {
 	}    
     
 	@Override
-	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		// return fittestIndividual.getTree();
-		return new EvaluatedDescriptionPosNeg(bestConcept,bestScore);
+		return new EvaluatedDescription(bestConcept,bestScore);
 	}
 
 	@Override

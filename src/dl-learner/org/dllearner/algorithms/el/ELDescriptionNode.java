@@ -19,16 +19,16 @@
  */
 package org.dllearner.algorithms.el;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -36,9 +36,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 /**
  * Represents an EL description tree, which corresponds to a
@@ -60,32 +57,25 @@ import com.jamonapi.MonitorFactory;
 public class ELDescriptionNode {
 
 	// the reference tree for storing values, must not be null
-	protected ELDescriptionTree tree;
+	private ELDescriptionTree tree;
 	
-	protected TreeSet<NamedClass> label = new TreeSet<NamedClass>();
+	private NavigableSet<NamedClass> label;
 	
-	protected List<ELDescriptionEdge> edges = new LinkedList<ELDescriptionEdge>();
+	private List<ELDescriptionEdge> edges;
 
-	protected int level;
+	private int level;
 	
 	// parent node in the tree;
 	// null indicates that this node is a root node
-	protected ELDescriptionNode parent = null;
+	private ELDescriptionNode parent = null;
 		
 	// simulation information (list or set?)
 	protected Set<ELDescriptionNode> in = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> inSC1 = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> inSC2 = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> inSC1 = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> inSC2 = new HashSet<ELDescriptionNode>();
 	protected Set<ELDescriptionNode> out = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> outSC1 = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> outSC2 = new HashSet<ELDescriptionNode>();
-	
-	/**
-	 * Internal constructor used for cloning nodes.
-	 */
-	protected ELDescriptionNode() {
-		
-	}
+	private Set<ELDescriptionNode> outSC1 = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> outSC2 = new HashSet<ELDescriptionNode>();
 	
 	/**
 	 * Constructs an EL description tree with empty root label.
@@ -94,16 +84,11 @@ public class ELDescriptionNode {
 		this(tree, new TreeSet<NamedClass>());
 	}	
 	
-	// convenience constructor
-	public ELDescriptionNode(ELDescriptionTree tree, NamedClass... label) {
-		this(tree, new TreeSet<NamedClass>(Arrays.asList(label)));
-	}	
-	
 	/**
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionTree tree, NavigableSet<NamedClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();	
 		this.tree = tree;
@@ -112,18 +97,12 @@ public class ELDescriptionNode {
 		// this is the root node of the overall tree
 		tree.rootNode = this;
 		tree.addNodeToLevel(this, level);
-		tree.size += label.size();
+		
+		// TODO simulation update
 	}
 	
-	// convenience constructor
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NamedClass... label) {
-		this(parentNode, parentProperty, new TreeSet<NamedClass>(Arrays.asList(label)));
-	}
-	
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, Set<NamedClass> label) {
-//		this.label = label;
-		// we first need to add the edge and update the simulation and then add
-		// all classes iteratively to the label (each time updating the simulation again)
+	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NavigableSet<NamedClass> label) {
+		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();
 		parent = parentNode;
 		// the reference tree is the same as for the parent tree
@@ -134,69 +113,9 @@ public class ELDescriptionNode {
 		ELDescriptionEdge edge = new ELDescriptionEdge(parentProperty, this);
 		parent.edges.add(edge);
 		// we need to update the set of nodes on a particular level
-		tree.addNodeToLevel(this, level);		
+		tree.addNodeToLevel(this, level);
 		
-		// simulation update
-//		Monitor mon = MonitorFactory.start("simulation update");
-		// the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
-		
-		// loop over all nodes on the same level, which are not in the in set
-		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
-		for(ELDescriptionNode w : nodes) {
-			// to save space, we do not add reflexive relations
-			if(w != this) {
-				// (w,v') is automatically added
-				tree.extendSimulation(w, this);
-				
-				// check conditions for (v',w)
-				boolean sc1 = false, sc2 = false;
-				
-				if(w.label.size() == 0) {
-					tree.extendSimulationSC1(this, w);
-					sc1 = true;
-				}
-				
-				if(w.edges.size() == 0) {
-					tree.extendSimulationSC2(this, w);
-					sc2 = true;
-				}
-				
-				if(sc1 && sc2) {
-					tree.extendSimulationSC12(this, w);
-				}	
-				
-				update.add(w.parent);
-			}
-		}
-		update.add(this.parent);
-		
-//		if(inSC1.contains(w) && tree.checkSC2(this, w)) {
-//			tree.extendSimulation(this, w);
-//			update.add(w.parent);
-//		}		
-		
-		// loop over all nodes in out set
-//		for(ELDescriptionNode w : out) {
-//			if(!tree.checkSC1(this, w)) {
-//				tree.shrinkSimulation(this, w);
-//				update.add(w.parent);
-//			}
-//		}
-		
-//		System.out.println(update);
-		
-		// apply updates recursively top-down
-		tree.updateSimulation(update);
-//		mon.stop();
-		
-		// add all classes in label
-		for(NamedClass nc : label) {
-			extendLabel(nc);
-		}
-		
-		// 1 for the edge (labels are already taken care of by extendLabel)
-		tree.size += 1;
+		// TODO simulation update
 	}
 	
 	/**
@@ -274,7 +193,7 @@ public class ELDescriptionNode {
 				return label.first();
 			} else {
 				ELDescriptionEdge edge = edges.get(0);
-				Description child = edge.getNode().transformToDescription();
+				Description child = edge.getTree().transformToDescription();
 				return new ObjectSomeRestriction(edge.getLabel(),child);
 			}
 		// return an intersection of labels and edges
@@ -284,7 +203,7 @@ public class ELDescriptionNode {
 				is.addChild(nc);
 			}
 			for(ELDescriptionEdge edge : edges) {
-				Description child = edge.getNode().transformToDescription();
+				Description child = edge.getTree().transformToDescription();
 				ObjectSomeRestriction osr = new ObjectSomeRestriction(edge.getLabel(),child);
 				is.addChild(osr);
 			}
@@ -304,22 +223,20 @@ public class ELDescriptionNode {
 		int[] position = new int[level-1];
 		ELDescriptionNode root = this;
 		while(root.parent != null) {
-			position[root.level-2] = root.getChildNumber();
+			position[root.level-2] = getChildNumber();
 			root = root.parent;	
 		}
 		return position;
 	}
 	
 	// returns the child number of this node, i.e. whether it is 
-	// the first, second, third etc. child;
-	// TODO: might be a bit faster to store this explicitly
+	// the first, second, third etc. child
 	private int getChildNumber() {
 		int count = 0;
 		for(ELDescriptionEdge edge : parent.edges) {
-			if(edge.getNode() == this) {
+			if(edge.getTree() == this) {
 				return count;
 			}
-			count++;
 		}
 		throw new RuntimeException("Inconsistent tree. Child tree not reachable from parent.");
 	}
@@ -332,7 +249,92 @@ public class ELDescriptionNode {
 	public void replaceInLabel(NamedClass oldClass, NamedClass newClass) {
 		label.remove(oldClass);
 		label.add(newClass);
-		labelSimulationUpdate();
+		
+		// simulation update
+		
+		
+		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
+		Set<ELDescriptionNode> tmp = Helper.difference(nodes, in);
+		for(ELDescriptionNode node : tmp) {
+			if(isSublabel(label, node.label)) {
+				// TODO continue later
+			}
+		}
+		
+	}
+	
+	// SC satisfied if both SC1 and SC2 satisfied
+	private boolean checkSC(ELDescriptionNode node1, ELDescriptionNode node2) {
+		return checkSC1(node1, node2) && checkSC2(node1, node2);
+	}	
+	
+	// tests simulation condition 1 (SC1)
+	private boolean checkSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
+		return isSublabel(node1.label, node2.label);
+	}
+	
+	private boolean isSublabel(NavigableSet<NamedClass> subLabel, NavigableSet<NamedClass> superLabel) {
+		// implemented according to definition in article
+		// (TODO can probably be done more efficiently)
+		for(NamedClass nc : superLabel) {
+			if(!containsSubclass(nc, subLabel)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean containsSubclass(NamedClass superClass, NavigableSet<NamedClass> label) {
+		for(NamedClass nc : label) {
+			if(tree.subsumptionHierarchy.isSubclassOf(nc, superClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// tests simulation condition 2 (SC2)
+	private boolean checkSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
+		List<ELDescriptionEdge> edges1 = node1.getEdges();
+		List<ELDescriptionEdge> edges2 = node2.getEdges();
+		
+		for(ELDescriptionEdge edge : edges1) {
+			// try to find an edge satisfying SC2 in the set
+			if(!checkSC2Edge(edge, edges2)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	// check whether edges contains an element satisfying SC2
+	private boolean checkSC2Edge(ELDescriptionEdge edge, List<ELDescriptionEdge> edges) {
+		ObjectProperty op1 = edge.getLabel();
+		ELDescriptionNode node1 = edge.getTree();
+		
+		for(ELDescriptionEdge edge2 : edges) {
+			ObjectProperty op2 = edge2.getLabel();
+			// we first check the condition on the properties
+			if(tree.roleHierarchy.isSubpropertyOf(op1, op2)) {
+				// check condition on simulations of referred nodes
+				ELDescriptionNode node2 = edge2.getTree();
+				if(node1.in.contains(node2) || node2.in.contains(node1)) {
+					// we found a node satisfying the condition, so we can return
+					return true;
+				}				
+			}
+		}
+		
+		// none of the edges in the set satisfies the 2nd simulation criterion
+		// wrt. the first edge
+		return false;
+	}
+
+	// adds (node1,node2) to simulation, takes care of all helper sets
+	private void extendSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.add(node2);
+		node2.in.add(node1);
 	}
 	
 	/**
@@ -341,117 +343,8 @@ public class ELDescriptionNode {
 	 */
 	public void extendLabel(NamedClass newClass) {
 		label.add(newClass);
-		labelSimulationUpdate();
-		tree.size += 1;
-//		System.out.println(tree);
-//		System.out.println(tree.size);
-	}	
-	
-	// simulation update when extending or refining label 
-	// (same in both cases)
-	private void labelSimulationUpdate() {
-//		Monitor mon = MonitorFactory.start("simulation update");
-		// compute the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
 		
-		Set<ELDescriptionNode> tmp = tree.getNodesOnLevel(level);
-		for(ELDescriptionNode w : tmp) {
-			if(w != this) {
-				// SC1(v,w) can only change from false to true
-				if(!inSC1.contains(w) && tree.checkSC1(this, w)) {
-					tree.extendSimulationSC1(this, w);
-					if(inSC2.contains(w)) {
-						tree.extendSimulationSC12(this, w);		
-					}
-					update.add(w.getParent());
-				}
-				// SC1(w,v) can only change from true to false
-				if(outSC1.contains(w) && !tree.checkSC1(w, this)) {
-					tree.shrinkSimulationSC1(w, this);
-					if(outSC2.contains(w)) {
-						tree.shrinkSimulationSC12(w, this);		
-					}
-					update.add(w.getParent());
-				}
-			}
-		}
-		if(parent != null) {
-			update.add(parent);
-		}
-		
-		/*
-		// loop over all nodes on the same level, which are not in the in set
-		Set<ELDescriptionNode> tmp = new HashSet<ELDescriptionNode>(tree.getNodesOnLevel(level));
-		tmp.removeAll(in);
-		for(ELDescriptionNode w : tmp) {
-			if(w != this) {
-				// we only need to recompute SC1
-				if(inSC1.contains(w) && tree.checkSC2(this, w)) {
-					System.out.println("satisfied");
-					tree.extendSimulation(this, w);
-					update.add(w.parent);
-				}
-			}
-		}
-		
-		// loop over all nodes in out set (we make a copy, because out
-		// is potentially modified, so we cannot safely iterate over it)
-		tmp = new HashSet<ELDescriptionNode>(out);
-		for(ELDescriptionNode w : tmp) {
-			if(w != this) {
-				if(!tree.checkSC1(w, this)) {
-//					tree.shrinkSimulation(w, this);
-					tree.shrinkSimulationSC1(w, this);
-					tree.shrinkSimulationSC12(w, this);
-					update.add(w.parent);
-				}
-			}
-		}
-		*/
-		
-		// apply updates recursively top-down
-		tree.updateSimulation(update);	
-//		mon.stop();
-	}
-
-	public void refineEdge(int edgeNumber, ObjectProperty op) {
-		edges.get(edgeNumber).setLabel(op);
-		
-//		Monitor mon = MonitorFactory.start("simulation update");
-		// compute the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
-		update.add(this);
-		
-		/*
-		// loop over all nodes on the same level, which are not in the in set
-		Set<ELDescriptionNode> tmp = new HashSet<ELDescriptionNode>(tree.getNodesOnLevel(level));
-		tmp.removeAll(in);
-		for(ELDescriptionNode w : tmp) {
-			if(w != this) {
-				// we only need to recompute SC1
-				if(inSC2.contains(w) && tree.checkSC1(this, w)) {
-					tree.extendSimulation(this, w);
-					update.add(w.parent);
-				}
-			}
-		}
-		
-		// loop over all nodes in out set
-		for(ELDescriptionNode w : out) {
-			if(w != this) {
-				if(!tree.checkSC2(this, w)) {
-					tree.shrinkSimulation(this, w);
-					update.add(w.parent);
-				}
-			}
-		}
-		*/
-		
-//		update.add(this.parent);
-		
-		// apply updates recursively top-down
-		tree.updateSimulation(update);	
-//		mon.stop();
+		// TODO simulation update
 	}
 	
 	/**
@@ -494,140 +387,8 @@ public class ELDescriptionNode {
 		String str = indentString + label.toString() + "\n";
 		for(ELDescriptionEdge edge : edges) {
 			str += indentString + "-- " + edge.getLabel() + " -->\n";
-			str += edge.getNode().toString(indent + 2);
+			str += edge.getTree().toString(indent + 2);
 		}
 		return str;
-	}
-
-	public String toDescriptionString() {
-		String str = "";
-		if(label.isEmpty()) {
-			str = "TOP";
-		} else {
-			Iterator<NamedClass> it = label.iterator();
-			while(it.hasNext()) {
-				NamedClass nc = it.next();
-				if(it.hasNext()) {
-					str += nc.toString() + " AND ";
-				} else {
-					str += nc.toString();
-				}
-			}
-		}
-		for(ELDescriptionEdge edge : edges) {
-			str += " AND EXISTS " + edge.getLabel().toString() + ".(";
-			str += edge.getNode().toDescriptionString() + ")";
-		}
-		return str;		
-	}
-	
-	private String toDescriptionString(Set<ELDescriptionNode> nodes) {
-		String str = "";
-		// comma separated list of descriptions
-		for(ELDescriptionNode node : nodes) {
-			str += node.toDescriptionString() + ",";
-		}
-		// remove last comma
-		if(str.length() > 0) {
-			str = str.substring(0, str.length()-1);
-		}
-		return str;
-	}
-	
-	public String toSimulationString() {
-		String str = "";
-		str += "in: " + toDescriptionString(in) + "\n";
-		str += "inSC1: " + toDescriptionString(inSC1) + "\n";
-		str += "inSC2: " + toDescriptionString(inSC2) + "\n";
-		str += "out: " + toDescriptionString(out) + "\n";
-		str += "outSC1: " + toDescriptionString(outSC1) + "\n";
-		str += "outSC2: " + toDescriptionString(outSC2) + "\n";		
-		return str;
-	}
-	
-	/**
-	 * A convenience method (for debugging purposes) to get a comma separated list of nodes, where the
-	 * nodes are given names (to make them readable).
-	 * @param nodes The node objects.
-	 * @param nodeNames A mapping to node names.
-	 * @return A comma separated list of the node names.
-	 */
-	public static String toString(Set<ELDescriptionNode> nodes, Map<ELDescriptionNode,String> nodeNames) {
-		String str = "";
-		// comma separated list of descriptions
-		for(ELDescriptionNode node : nodes) {
-			str += nodeNames.get(node) + ",";
-		}
-		// remove last comma
-		if(str.length() > 0) {
-			str = str.substring(0, str.length()-1);
-		}
-		return str;
-	}
-	
-	public String toSimulationString(Map<ELDescriptionNode,String> nodeNames) {
-		String str = "";
-		str += "  in: " + toString(in, nodeNames) + "\n";
-		str += "  inSC1: " + toString(inSC1, nodeNames) + "\n";
-		str += "  inSC2: " + toString(inSC2, nodeNames) + "\n";
-		str += "  out: " + toString(out, nodeNames) + "\n";
-		str += "  outSC1: " + toString(outSC1, nodeNames) + "\n";
-		str += "  outSC2: " + toString(outSC2, nodeNames) + "\n";		
-		return str;
-	}
-	
-	public ELDescriptionNode getParent() {
-		return parent;
-	}
-	
-	public ELDescriptionEdge getParentEdge() {
-		int childNr = getChildNumber();
-		return parent.edges.get(childNr);
-	}
-
-	/**
-	 * @return the in
-	 */
-	public Set<ELDescriptionNode> getIn() {
-		return in;
-	}
-
-	/**
-	 * @return the inSC1
-	 */
-	public Set<ELDescriptionNode> getInSC1() {
-		return inSC1;
-	}
-
-	/**
-	 * @return the inSC2
-	 */
-	public Set<ELDescriptionNode> getInSC2() {
-		return inSC2;
-	}
-
-	/**
-	 * @return the out
-	 */
-	public Set<ELDescriptionNode> getOut() {
-		return out;
-	}
-
-	/**
-	 * @return the outSC1
-	 */
-	public Set<ELDescriptionNode> getOutSC1() {
-		return outSC1;
-	}
-
-	/**
-	 * @return the outSC2
-	 */
-	public Set<ELDescriptionNode> getOutSC2() {
-		return outSC2;
-	}
-
-	public ELDescriptionTree getTree() {
-		return tree;
 	}
 }

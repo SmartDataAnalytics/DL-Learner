@@ -4,7 +4,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 
@@ -15,11 +15,11 @@ public class AutomaticPositiveExampleFinderOWL {
 		.getLogger(AutomaticPositiveExampleFinderOWL.class);
 
 	
-	private ReasonerComponent reasoningService;
+	private ReasoningService reasoningService;
 	
 	private SortedSet<Individual> posExamples;
 	
-	public AutomaticPositiveExampleFinderOWL(ReasonerComponent reasoningService) {
+	public AutomaticPositiveExampleFinderOWL(ReasoningService reasoningService) {
 	
 		this.posExamples = new TreeSet<Individual>();
 		this.reasoningService = reasoningService;
@@ -29,7 +29,7 @@ public class AutomaticPositiveExampleFinderOWL {
 	public void makePositiveExamplesFromConcept(Description concept){
 		logger.debug("making Positive Examples from Concept: "+concept);
 		this.posExamples.clear();
-		this.posExamples.addAll(reasoningService.getIndividuals(concept));
+		this.posExamples.addAll(reasoningService.retrieval(concept));
 		//this.posExamples = sparqltasks.retrieveInstancesForClassDescription(conceptKBSyntax, 0);
 		logger.debug("pos Example size: "+posExamples.size());
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,80 +19,52 @@
  */
 package org.dllearner.tools.protege;
 
-import java.util.Set;
-
-import javax.swing.JComponent;
-
-import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
-import org.protege.editor.owl.ui.editor.AbstractOWLDescriptionEditor;
-import org.semanticweb.owl.model.OWLDescription;
+import org.protege.editor.owl.ui.view.AbstractOWLClassViewComponent;
+import org.semanticweb.owl.model.OWLClass;
+import org.protege.editor.owl.ui.framelist.OWLFrameList2;
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * This is the class that must be implemented to get the plugin integrated in
- * protege.
- * 
+ * This is the class that must be implemented to get the plugin integrated
+ * in protege.
  * @author Christian Koetteritzsch
- * 
+ *
  */
-public class ProtegePlugin extends AbstractOWLDescriptionEditor {
-	private static final long serialVersionUID = 728362819273927L;
-	private DLLearnerView view;
-	private static final String EQUIVALENT_CLASS_STRING = "Equivalent classes axiom";
-	private static final String SUPERCLASS_STRING = "SubClass axiom";
+public class ProtegePlugin  extends AbstractOWLClassViewComponent {
+private static final long serialVersionUID = 728362819273927L;
+/**
+ * List of the lists for equibvalent classes and so on.
+ */
+private OWLFrameList2<OWLClass> list;
 
+	@Override
+	/**
+	 * This method initializes the view of the plugin.
+	 */
+	public void initialiseClassView() throws Exception {
+		list = new OWLFrameList2<OWLClass>(getOWLEditorKit(), new ButtonList(getOWLEditorKit()));
+		setLayout(new BorderLayout());
+		JScrollPane hallo = new JScrollPane(list);
+		add(hallo);
+		
+		
+	}
 	
 	@Override
-	public JComponent getComponent() {
-		return view.getLearnerView();
-	}
+	/**
+	 * updates the view if somthing changes
+	 */
+	protected OWLClass updateView(OWLClass selectedClass) {
+        list.setRootObject(selectedClass);
+        return selectedClass;
+    }
 
 	@Override
-	public Set<OWLDescription> getDescriptions() {
-		if(view.getDLLearnerModel().getLearningAlgorithm() != null) {
-			if(view.getDLLearnerModel().getLearningAlgorithm().isRunning()) {
-				view.getDLLearnerModel().getLearningAlgorithm().stop();
-				view.unsetEverything();
-			}
-		}
-		return view.getSolutions();
-	}
-
-	@Override
-	public boolean isValidInput() {
-		view.getSuggestClassPanel().getSuggestModel().clear();
-		//view.getSuggestClassPanel().repaint();
-		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
-			view.makeView("equivalent class");
-		} else if(this.getAxiomType().toString().equals(SUPERCLASS_STRING)) {
-			view.makeView("super class");
-		}
-		view.getMoreDetailForSuggestedConceptsPanel().unsetPanel();
-		return true;
-	}
-
-	@Override
-	public boolean setDescription(OWLDescription arg0) {
-		return true;
-	}
-
-	@Override
-	public void initialise() throws Exception {
-		view = new DLLearnerView(super.getOWLEditorKit());
-	}
-
-	@Override
-	public void dispose() throws Exception {
-		view.dispose();
-		view = null;
-	}
-
-	@Override
-	public void addStatusChangedListener(
-			InputVerificationStatusChangedListener arg0) {
-	}
-
-	@Override
-	public void removeStatusChangedListener(
-			InputVerificationStatusChangedListener arg0) {
-	}
+	/**
+	 * destroys every listener when protege is closed
+	 */
+    public void disposeView() {
+        list.dispose();
+    }
 }

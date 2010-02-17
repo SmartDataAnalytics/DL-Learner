@@ -23,9 +23,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.gui.Config;
 
 /**

@@ -28,23 +28,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.swing.ProgressMonitor;
-
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.CommonConfigOptions;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.config.StringTupleListConfigOption;
+import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
-import org.dllearner.core.options.StringTupleListConfigOption;
-import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
@@ -75,9 +73,16 @@ import com.jamonapi.MonitorFactory;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	private ProgressMonitor mon;
 	
-	private static final boolean debugExitAfterExtraction = false; // switches
+	private static final boolean debug = false;
+	
+	//private static final boolean threaded = debug && true ;
+	
+
+	// tupleaquisitor
+	//private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
+	//	 sysex 
+	private static final boolean debugExitAfterExtraction = debug && false; // switches
 
 
 	private SparqlKnowledgeSourceConfigurator configurator;
@@ -105,8 +110,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	
 	private OWLOntology fragment;
-	
-	private Manipulator manipulator = null;
 	
 	
 
@@ -231,14 +234,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		logger.info("SparqlModul: Collecting Ontology");
 		SimpleClock totalTime = new SimpleClock();
 		//SimpleClock extractionTime = new SimpleClock();
-		if(mon != null){
-			mon.setNote("Collecting Ontology");
-		}
+
 		logger.trace(getURL());
 		logger.trace(getSparqlEndpoint());
 		logger.trace(configurator.getInstances());
 		Manager m = new Manager();
-		m.addProgressMonitor(mon);
 
 		// get Options for Manipulator
 		Manipulator manipulator = getManipulator();
@@ -250,8 +250,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 						.getGetAllSuperClasses(), configurator
 						.getCloseAfterRecursion(), configurator
 						.getGetPropertyInformation(), configurator
-						.getBreakSuperClassRetrievalAfter(),
-						configurator.getDissolveBlankNodes());
+						.getBreakSuperClassRetrievalAfter());
 
 		// give everything to the manager
 		m.useConfiguration(configuration);
@@ -436,11 +435,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 
 	public Manipulator getManipulator() {
-		
-		if(this.manipulator!=null){
-			return this.manipulator;
-		}
-		
 		// get Options for Filters
 		if (configurator.getPredefinedManipulator() != null) {
 			return Manipulator.getManipulatorByName(configurator
@@ -458,11 +452,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		}
 
 	}
-	
-	public void setManipulator(Manipulator m ){
-		this.manipulator = m;
-		
-	}
 
 	public TupleAquisitor getTupleAquisitor() {
 		TupleAquisitor ret = null;
@@ -473,6 +462,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			ret = new SparqlTupleAquisitor(getSparqlQueryMaker(),
 					getSPARQLTasks());
 		}
+		ret.setDissolveBlankNodes(configurator.getDissolveBlankNodes());
 		return ret;
 
 	}
@@ -507,11 +497,28 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public int getNrOfExtractedAxioms() {
 		return nrOfExtractedAxioms;
 	}
-	
-	public void addProgressMonitor(ProgressMonitor mon){
-		this.mon = mon;
-	}
 
-	
+	/*
+	 * public static void main(String[] args) throws MalformedURLException {
+	 * String query = "SELECT ?pred ?obj\n" + "WHERE {<http://dbpedia.org/resource/Leipzig>
+	 * ?pred ?obj}"; URL url = new
+	 * URL("http://dbpedia.openlinksw.com:8890/sparql"); SparqlEndpoint sse =
+	 * new SparqlEndpoint(url); SparqlQuery q = new SparqlQuery(query, sse);
+	 * String[][] array = q.getAsStringArray(); for (int i = 0; i <
+	 * array.length; i++) { for (int j = 0; j < array[0].length; j++)
+	 * System.out.print(array[i][j] + " "); System.out.println(); } }
+	 */
+
+	/*
+	 * SparqlOntologyCollector oc= // new
+	 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
+	 * numberOfRecursions, filterMode, //
+	 * Datastructures.setToArray(predList),Datastructures.setToArray(
+	 * objList),Datastructures.setToArray(classList),format,url,useLits);
+	 * //HashMap<String, String> parameters = new HashMap<String, String>();
+	 * //parameters.put("default-graph-uri", "http://dbpedia.org");
+	 * //parameters.put("format", "application/sparql-results.xml");
+	 * 
+	 */
 
 }

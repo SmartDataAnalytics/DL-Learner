@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -28,19 +28,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Property;
-import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectPropertyExpression;
@@ -60,8 +55,6 @@ public class ConceptTransformation {
 	private static long onnfTimeNsStart = 0;
 	public static long shorteningTimeNs = 0;
 	private static long shorteningTimeNsStart = 0;
-	
-	private static ConceptComparator descComp = new ConceptComparator();
 	
 	public static void cleanConceptNonRecursive(Description concept) {
 		// cleaningTimeNsStart = System.nanoTime();
@@ -168,21 +161,6 @@ public class ConceptTransformation {
 					// All
 					else
 						return new ObjectSomeRestriction(r,transformToNegationNormalForm(c));					
-				} else if(child instanceof ObjectCardinalityRestriction) {
-					ObjectCardinalityRestriction card = (ObjectCardinalityRestriction)child;
-					ObjectPropertyExpression r = card.getRole();
-					int number = card.getCardinality();
-					// Negation nach innen
-					Description c = new Negation(child.getChild(0));
-					// <= n is transformed to >= n+1 
-					if(child instanceof ObjectMaxCardinalityRestriction)
-						return new ObjectMinCardinalityRestriction(number+1,r,transformToNegationNormalForm(c));
-					// >= n is transformed to <= n-1
-					else if(child instanceof ObjectMinCardinalityRestriction)
-						return new ObjectMinCardinalityRestriction(number+1,r,transformToNegationNormalForm(c));
-					// >= n is transformed to <= n-1
-					else
-						throw new RuntimeException("Conversion to negation normal form not supported for " + concept);			
 				} else if(child instanceof Intersection) {
 					// wg. Negation wird Konjunktion zu Disjunktion
 					Union md = new Union();
@@ -308,11 +286,11 @@ public class ConceptTransformation {
 	// wandelt ein Konzept in geordnete Negationsnormalform um;
 	// es wird angenommen, dass das Eingabekonzept in Negationsnormalform und
 	// "sauber" ist
-	public static void transformToOrderedForm(Description concept, Comparator<Description> conceptComparator) {
+	public static void transformToOrderedNegationNormalForm(Description concept, Comparator<Description> conceptComparator) {
 		
 		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
 		for(Description child : concept.getChildren()) {
-			transformToOrderedForm(child, conceptComparator);
+			transformToOrderedNegationNormalForm(child, conceptComparator);
 		}
 		
 		onnfTimeNsStart = System.nanoTime();
@@ -378,12 +356,6 @@ public class ConceptTransformation {
 			return concept;
 	}
 	
-	/**
-	 * Tries to shorten a concept, e.g. male AND male is shortened to male. 
-	 * @param concept The input concepts.
-	 * @param conceptComparator A comparator for concepts.
-	 * @return A shortened version of the concept (equal to the input concept if it cannot be shortened).
-	 */
 	public static Description getShortConcept(Description concept, ConceptComparator conceptComparator) {
 		shorteningTimeNsStart = System.nanoTime();
 		// deep copy des Konzepts, da es nicht verändert werden darf
@@ -476,7 +448,7 @@ public class ConceptTransformation {
 	// replaces EXISTS hasChild.TOP with EXISTS hasChild.Person, 
 	// i.e. TOP is replaced by the range of the property; 
 	// this is semantically equivalent, but easier to read for some people
-	public static void replaceRange(Description description, ReasonerComponent rs) {
+	public static void replaceRange(Description description, ReasoningService rs) {
 		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Thing) {
 			ObjectPropertyExpression p = ((ObjectSomeRestriction)description).getRole();
 			if(p instanceof ObjectProperty) {
@@ -491,143 +463,4 @@ public class ConceptTransformation {
 		}
 	}
 	
-	/**
-	 * Tests whether a description is a subdescription in the sense that when
-	 * parts of <code>description</code> can be removed to yield <code>subdescription</code>.
-	 * 
-	 * @param description A description.
-	 * @param subDescription A potential subdescription.
-	 * @return True if <code>subdescription</code> is indeed a sub description and false
-	 * otherwise.
-	 */
-	public static boolean isSubdescription(Description description, Description subDescription) {
-//		if(description instanceof Thing) {
-//			return (subDescription instanceof Thing);
-//		} else if(description instanceof Nothing) {
-//			return (subDescription instanceof Thing);
-//		} else if(description instanceof NamedClass) {
-//			return ((subDescription instanceof NamedClass) && (((NamedClass)description).getName().equals(((NamedClass)subDescription).getName())));
-//		}
-		
-		List<Description> children = description.getChildren();
-		List<Description> subChildren = subDescription.getChildren();
-
-		// no children: both have to be equal
-		if(children.size()==0) {
-			return (descComp.compare(description, subDescription)==0);
-		// one child: both have to be of the same class, type, and the first
-		// child has to be sub description of the other child
-		} else if(children.size()==1) {
-			return (subChildren.size() == 1) && description.getClass().equals(subDescription.getClass()) && isSubdescription(children.get(0), subChildren.get(0));
-		// intersection or union
-		} else {
-			// test whether subdescription corresponds to an element of the 
-			// intersection/union
-			if(subChildren.size()<2) {
-				for(Description child : children) {
-					if(isSubdescription(child, subDescription)) {
-						return true;
-					}
-				}
-				return false;
-			}
-			
-			// make sure that both are of the same type and subdescription actually has fewer children
-			if(!description.getClass().equals(subDescription.getClass()) || subChildren.size() > children.size()) {
-				return false;
-			}
-			
-			// comparing everything is quadratic; the faster linear variant (below)
-			// using 
-			
-			for(Description subChild : subChildren) {
-				boolean foundMatch = false;
-				for(Description child : children) {
-					if(isSubdescription(child, subChild)) {
-						foundMatch = true;
-						break;
-					}
-				}
-				if(!foundMatch) {
-					return false;
-				}
-			}
-			
-			return true;
-			
-//			// method core; traverse the descriptions in linear time using ordered
-//			// normal form (TODO: does not always work e.g. A2 \sqcap (A1 \sqcup A3)
-			// and A1 \sqcap A2 -> it won't find the A2 match because it has advanced
-			// beyond it already)
-//			int j = 0;
-//			for(Description child : children) {
-//				if(isSubdescription(child, subChildren.get(j))) {
-//					j++;
-//				}
-//				if(j == subChildren.size()) {
-//					return true;
-//				}
-//			}
-//			// there is at least one child we could not match
-//			return false;
-		}
-	}
-	
-	/**
-	 * Counts occurrences of \forall in description.
-	 * @param description A description.
-	 * @return Number of \forall occurrences.
-	 */
-	public static int getForallOccurences(Description description) {
-		int count = 0;
-		if(description instanceof ObjectAllRestriction) {
-			count++;
-		}
-		for(Description child : description.getChildren()) {
-			count += getForallOccurences(child);
-		}
-		return count;
-	}
-	
-	/**
-	 * Gets the "contexts" of all \forall occurrences in a description. A context
-	 * is a set of properties, i.e. in \exists hasChild.\exists hasBrother.\forall hasChild.male,
-	 * the context of the only \forall occurrence is [hasChild, hasBrother, hasChild]. 
-	 * @param description A description.
-	 * @return Set of property contexts.
-	 */
-	public static SortedSet<PropertyContext> getForallContexts(Description description) {
-		return getForallContexts(description, new PropertyContext());
-	}
-	
-	private static SortedSet<PropertyContext> getForallContexts(Description description, PropertyContext currentContext) {
-		// the context changes if we have a restriction
-		if(description instanceof Restriction) {
-			Property op = (Property) ((Restriction)description).getRestrictedPropertyExpression();
-			// object restrictions
-			if(op instanceof ObjectProperty) {
-				currentContext.add((ObjectProperty)op);
-				// if we have an all-restriction, we return it; otherwise we only change the context
-				// and call the method on the child
-				if(description instanceof ObjectAllRestriction) {
-					TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
-					contexts.add(currentContext);
-					contexts.addAll(getForallContexts(description.getChild(0), currentContext));
-					return contexts;
-				} else {
-					return getForallContexts(description.getChild(0), currentContext);
-				}
-			// we have a data restriction => no \forall can occur in those
-			} else {
-				return new TreeSet<PropertyContext>();
-			}
-		// for non-restrictions, we collect contexts over all children
-		} else {
-			TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
-			for(Description child : description.getChildren()) {
-				contexts.addAll(getForallContexts(child, currentContext));
-			}
-			return contexts;
-		}
-	}
 }

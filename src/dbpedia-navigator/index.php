@@ -5,37 +5,6 @@ ini_set('max_execution_time',200);
 ini_set("soap.wsdl_cache_enabled","1");
 
 session_start();
-
-//what happens onLoad
-$onLoad="onLoad=\"document.getElementById('label').focus();";
-if (isset($_GET['positives'])||isset($_GET['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".@$_GET['positives']."&negatives=".@$_GET['negatives']."');";
-else if (isset($_SESSION['positives'])||isset($_SESSION['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".$_SESSION['positives']."&negatives=".$_SESSION['negatives']."');";
-if (isset($_GET['showArticle'])){
-	session_unset();
-	$onLoad.="get_article('label=".$_GET['showArticle']."&cache=-2');";
-}
-else if (isset($_GET['search'])){
-	session_unset();
-	$onLoad.="search_it('label=".$_GET['search']."&number=10');";
-}
-else if (isset($_GET['showClass'])){
-	session_unset();
-	$onLoad.="get_class('class=http://dbpedia.org/class/yago/".$_GET['showClass']."&cache=-1');";
-}
-else if (isset($_GET['searchInstances'])){
-	session_unset();
-	$onLoad.="getSubjectsFromCategory('category=http://dbpedia.org/class/yago/".$_GET['searchInstances']."&number=10');";
-}
-else if (isset($_GET['searchConceptInstances'])){
-	session_unset();
-	$onLoad.="getSubjectsFromConcept('kb=".htmlentities(urldecode($_GET['concept']))."&number=10');";
-}
-else if (isset($_SESSION['currentArticle'])){
-	$onLoad.="get_article('label=&cache=".$_SESSION['currentArticle']."');";
-}
-
-$onLoad.="\"";
-
 require_once('DLLearnerConnection.php');
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
@@ -44,6 +13,22 @@ $_SESSION['ksID']=$ids[1];
 
 require_once('Settings.php');
 $settings=new Settings();
+
+//what happens onLoad
+$onLoad="onLoad=\"document.getElementById('label').focus();";
+if (isset($_GET['positives'])||isset($_GET['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".@$_GET['positives']."&negatives=".@$_GET['negatives']."');";
+else if (isset($_SESSION['positives'])||isset($_SESSION['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".$_SESSION['positives']."&negatives=".$_SESSION['negatives']."');";
+if (isset($_GET['showArticle'])) $onLoad.="get_article('label=".$_GET['showArticle']."&cache=-1');";
+else if (isset($_GET['search'])) $onLoad.="search_it('label=".$_GET['search']."&number=10');";
+else if (isset($_GET['showClass'])) $onLoad.="get_class('class=http://dbpedia.org/class/yago/".$_GET['showClass']."&cache=-1');";
+else if (isset($_GET['searchInstances'])) $onLoad.="getSubjectsFromCategory('category=http://dbpedia.org/class/yago/".$_GET['searchInstances']."&number=10');";
+else if (isset($_GET['searchConceptInstances'])) $onLoad.="getSubjectsFromConcept('kb=".htmlentities(urldecode($_GET['concept']))."&number=10');";
+else if (isset($_SESSION['currentArticle'])){
+	$onLoad.="get_article('label=&cache=".$_SESSION['currentArticle']."');";
+}
+
+$onLoad.="\"";
+
   
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
@@ -101,14 +86,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		
 		<div class="box" id="credits">
 			<p>DBpedia Navigator is powered by ... <br />
-			&nbsp; <a href="http://dl-learner.org" target="_blank">DL-Learner</a><br />
-			&nbsp; <a href="http//dbpedia.org" target="_blank">DBpedia</a><br/>
-			&nbsp; <a href="http://virtuoso.openlinksw.com/wiki/main/" target="_blank">OpenLink Virtuoso</a><br />
-			... and implemented by <a href="http://jens-lehmann.org" target="_blank">Jens Lehmann</a> and
-			Sebastian Knappe at	the <a href="http:/aksw.org" target="_blank">AKSW</a> research group (University of Leipzig).</p>
+			&nbsp; <a href="http://dl-learner.org">DL-Learner</a><br />
+			&nbsp; <a href="http//dbpedia.org">DBpedia</a><br/>
+			&nbsp; <a href="http://virtuoso.openlinksw.com/wiki/main/">OpenLink Virtuoso</a><br />
+			... and implemented by <a href="http://jens-lehmann.org">Jens Lehmann</a> and
+			Sebastian Knappe at	the <a href="http:/aksw.org">AKSW</a> research group (University of Leipzig).</p>
 			
-			<a href="http://www.w3.org/2004/OWL/" target="_blank"><img src="images/sw-owl-green.png" alt="OWL logo" /></a>
-			<a href="http://www.w3.org/2001/sw/DataAccess/" target="_blank"><img src="images/sw-sparql-green.png" alt="SPARQL logo"/></a>
+			<a href="http://www.w3.org/2004/OWL/"><img src="images/sw-owl-green.png" alt="OWL logo" /></a>
+			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="images/sw-sparql-green.png" alt="SPARQL logo"/></a>
 		</div>
 		
 	</div><!-- END leftSidebar -->
@@ -167,12 +152,45 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			$uri = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 			
 			echo '<div><a href="http://validator.w3.org/check?uri='.$uri.'"';
-			echo ' target="_blank"><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
+			echo '><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
 			echo '<a href="http://jigsaw.w3.org/css-validator/validator?uri='.$uri.'"';
-			echo ' target="_blank"><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
+			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
 			?>	
-		</div>
+		</div>	
+		<p><a href='rebuild.php'>rebuild [restart session and redownload WSDL file (for debugging)]</a></p>
 </div>
+
+<div id="todo">
+<b>ToDo:</b>
+<ul style="float:left">
+	<li>Get learning component fast.</li>
+	<li>Get local DBpedia SPARQL endpoint working (next DBpedia release expected at the endof January and then every
+	two months, so it would be nice to have a script based partly automated or at least documented solution for
+	creating a DBpedia mirror).</li>
+	<li>Improve stability: Fix sometimes occurring PHP errors and warnings (check PHP error log).</li>
+	<li>For each result, display a "+" which shows more information about the concept in an overlay box, e.g. its 
+	Description Logic or OWL syntax, its classification accuracy on the examples, and which
+	examples it classifies (in-)correctly.</li>
+	<li>Create a small number of test cases (e.g. 3), which can be used to verify that DBpedia Navigator is 
+	working in typical scenarios (in particular cases where concepts with length greater one are learned).</li>
+	<li>Make DBpedia Navigator RESTful, e.g. URLs $base/showArticle/$URL for displaying an article;
+	$base/search/$phrase for searching; $base/listInstances/$complexClass for listing the instances of
+	a learned. Maybe session variables (in particuar the selected positive and negative examples) can 
+	also be given, e.g. $base/search/$phrase?positives=[$URL1,$URL2,$URL3]&negatives=[$URL4]. The supported
+	URI design should be briefly documented (e.g. on a dbpedia.org wiki page). A good URI design allows
+	easier external access (just give someone a link instead of saying exactly which actions have to be done to
+	get to a state), simplifies debugging the application, and may be of use for creating further
+	features.</li> 
+	<li>[if possible] When expensive SPARQL queries or learning problems have been posed, there should be
+	some way to abandon these if the user has already switched to doing something else. Example: The user
+	has added 3 positive and 1 negative examples. This is executed as a learning problem, but has no solution (so
+	DL-Learner would run forever unless we pose some internal time limit). The user adds another negative example a 
+	second later, so instead of letting the previous learning problem run for a long time (and needing much resources),
+	it should be stopped by DBpedia Navigator.</li>
+	<li>[if possible] Find an easy way to validate HTML/JS in AJAX applications.</li> 
+</ul>
+</div>
+
   </body>
 </html>
 			

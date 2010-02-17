@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class FunctionalObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2571916949143387591L;
 	private ObjectProperty role;
 	
 	public FunctionalObjectPropertyAxiom(ObjectProperty role) {
@@ -43,13 +39,5 @@ public class FunctionalObjectPropertyAxiom extends PropertyAxiom {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "FUNCTIONALOBJECTPROPERTYAXIOM NOT IMPLEMENTED";
 	}	
 }

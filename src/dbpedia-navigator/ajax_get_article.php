@@ -1,32 +1,14 @@
 <?php
-	include_once('helper_functions.php');
-	include_once('Settings.php');
-	// include all templates
-	include_once('templates/AbstractTemplate.php');
-	include_once('templates/CityTemplate.php');
-	include_once('templates/DefaultTemplate.php');
-	include_once('templates/PersonTemplate.php');
-	include_once('templates/PlaceTemplate.php');
-	include_once('templates/PopulatedPlaceTemplate.php');
-		
+	include('helper_functions.php');
+	
 	session_start();	
 
 	$subject=$_POST['label'];
 	$fromCache=$_POST['cache'];
-	if ($fromCache==-2) $fromrest=true;
-	else $fromrest=false;
 		
 	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
-	if (isset($_SESSION['id'])){
-		$id=$_SESSION['id'];
-		$ksID=$_SESSION['ksID'];
-	}
-	else{
-		print "Your Session expired. Please reload.";
-		die();
-	}
-	
-	$settings=new Settings();
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
 	
 	//write last action into session
 	if (strpos($subject,"http://dbpedia.org/resource/")===0) $actionuri=substr (strrchr ($subject, "/"), 1);
@@ -65,9 +47,7 @@
 			require_once("DLLearnerConnection.php");
 			$sc=new DLLearnerConnection($id,$ksID);
 			$alltriples=$sc->getTriples($uri);
-			// triples where resource is subject
 			$triples=$alltriples[0];
-			// triples where resource is object
 			$subjecttriples=$alltriples[1];
 						
 			//BUILD ARTICLE			
@@ -75,15 +55,14 @@
 			// dbpedia.org/search
 			
 			//BUILD ARTICLE TITLE
-			if (isset($triples['http://www.w3.org/2000/01/rdf-schema#label'])&&strlen($triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'])>0)
+			if (strlen($triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'])>0)
 				$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
 			else
-				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($uri, "/"), 1)));
-			if (strpos($artTitle,'"')==strlen($artTitle)-1) $artTitle=substr($artTitle,0,strlen($artTitle)-1);		
-				
+				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($url, "/"), 1)));
+			
 			// display a picture if there is one
 			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
-			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/caption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
+			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
 			else $alt='Picture of '.$artTitle;
 						
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction'])&&@fopen($triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'], 'r')){
@@ -102,20 +81,15 @@
 			}
 			
 			// add short description in english
-			$content.="<h4>Short Description</h4><p>";
-			if (isset($triples['http://dbpedia.org/property/abstract']))
-				$content.=urldecode($triples['http://dbpedia.org/property/abstract'][0]['value']);
-			else
-				$content.="No Short Description available.";
-			$content.="</p>";
+			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0]['value'])."</p>";
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0]['value'].'" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');return false;">view Wikipedia article</a>, '; 
-			$content .= '<img src="images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="'.$uri.'" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');return false;">view DBpedia resource description</a>';
+				$content .= '<p><img src="images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view Wikipedia article</a>, '; 
+			$content .= '<img src="images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="#" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view DBpedia resource description</a>';
 			//display photo collection, if there is one
 			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])){
-				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="'.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');return false;">view photo collection</a></p>';
+				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
 			}
 			
 			//display owl:sameAs properties
@@ -137,9 +111,8 @@
 			
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])){
 				// display a list of classes
-				if ($settings->classSystem=="YAGO") $content.='<br/><hr><h4>YAGO Classes</h4><br/>';
-				else if ($settings->classSystem=="DBpedia") $content.='<br/><hr><h4>DBpedia Classes</h4><br/>';
-				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],$settings->classSystem).'</p>';
+				$content.='<br/><hr><h4>YAGO Classes</h4><br/>';
+				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
 			}
 
 			//skos-subjects
@@ -261,33 +234,74 @@
 				$pages=substr($pages,0,strlen($pages)-2);
 				$content.='<br/><hr><h4>Wikipedia articles in different languages</h4><br/><p>'.$pages.'</p>';
 			}
-						
-			$content .= '<br/><hr><h4>Further Information</h4><br/>';
-			
-			$template="";
-			// detect appropriate template (currently always default)
-			if (isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])) foreach ($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'] as $classes){
-				if($class['value'] == 'http://dbpedia.org/ontology/City') {
-					$template = new CityTemplate();
-				} else if($class['value'] == 'http://dbpedia.org/ontology/Person') {
-					$template = new PersonTemplate();
-				}
-			}
-			if ($template=="") $template = new DefaultTemplate();
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
-			filterTriples(&$triples, &$subjecttriples);			
+			if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])) unset($triples['http://www.w3.org/2002/07/owl#sameAs']);
+			if (isset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs'])) unset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs']);
+			if (isset($triples['http://xmlns.com/foaf/0.1/page'])) unset($triples['http://xmlns.com/foaf/0.1/page']);
+			if (isset($triples['http://xmlns.com/foaf/0.1/depiction'])) unset($triples['http://xmlns.com/foaf/0.1/depiction']);
+			if (isset($triples['http://dbpedia.org/property/abstract'])) unset($triples['http://dbpedia.org/property/abstract']);
+			if (isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])) unset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);
+			if (isset($triples['http://dbpedia.org/property/redirect'])) unset($triples['http://dbpedia.org/property/redirect']);
+			if (isset($triples['http://dbpedia.org/property/reference'])) unset($triples['http://dbpedia.org/property/reference']);
+			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])) unset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long']);
+			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])) unset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat']);
+			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])) unset($triples['http://dbpedia.org/property/hasPhotoCollection']);
+			if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])) unset($triples['http://www.w3.org/2004/02/skos/core#subject']);
+			if (isset($triples['http://www.w3.org/2000/01/rdf-schema#label'])) unset($triples['http://www.w3.org/2000/01/rdf-schema#label']);
+			if (isset($triples['http://www.w3.org/2000/01/rdf-schema#comment'])) unset($triples['http://www.w3.org/2000/01/rdf-schema#comment']);
+			if (isset($triples['http://dbpedia.org/property/latSec'])) unset($triples['http://dbpedia.org/property/latSec']);
+			if (isset($triples['http://dbpedia.org/property/lonSec'])) unset($triples['http://dbpedia.org/property/lonSec']);
+			if (isset($triples['http://dbpedia.org/property/lonDeg'])) unset($triples['http://dbpedia.org/property/lonDeg']);
+			if (isset($triples['http://dbpedia.org/property/latMin'])) unset($triples['http://dbpedia.org/property/latMin']);
+			if (isset($triples['http://dbpedia.org/property/lonMin'])) unset($triples['http://dbpedia.org/property/lonMin']);
+			if (isset($triples['http://dbpedia.org/property/latDeg'])) unset($triples['http://dbpedia.org/property/latDeg']);
+			if (isset($triples['http://dbpedia.org/property/lonMin'])) unset($triples['http://dbpedia.org/property/lonMin']);
+			if (isset($triples['http://www.georss.org/georss/point'])) unset($triples['http://www.georss.org/georss/point']);
+			if (isset($triples['http://dbpedia.org/property/audioProperty'])) unset($triples['http://dbpedia.org/property/audioProperty']);
+			if (isset($triples['http://dbpedia.org/property/wikiPageUsesTemplate'])) unset($triples['http://dbpedia.org/property/wikiPageUsesTemplate']);
+			if (isset($triples['http://dbpedia.org/property/relatedInstance'])) unset($triples['http://dbpedia.org/property/relatedInstance']);
+			if (isset($triples['http://dbpedia.org/property/boxWidth'])) unset($triples['http://dbpedia.org/property/boxWidth']);
+			if (isset($triples['http://dbpedia.org/property/pp'])) unset($triples['http://dbpedia.org/property/pp']);
+			if (isset($triples['http://dbpedia.org/property/caption'])) unset($triples['http://dbpedia.org/property/caption']);
+			if (isset($subjecttriples['http://dbpedia.org/property/caption'])) unset($subjecttriples['http://dbpedia.org/property/caption']);
+			if (isset($triples['http://dbpedia.org/property/s'])) unset($triples['http://dbpedia.org/property/s']);
+			if (isset($triples['http://dbpedia.org/property/lifetimeProperty'])) unset($triples['http://dbpedia.org/property/lifetimeProperty']);
+			if (isset($triples['http://dbpedia.org/property/imagesize'])) unset($triples['http://dbpedia.org/property/imagesize']);
+			if (isset($triples['http://dbpedia.org/property/id'])) unset($triples['http://dbpedia.org/property/id']);
+			if (isset($triples['http://dbpedia.org/property/issue'])) unset($triples['http://dbpedia.org/property/issue']);
+			if (isset($triples['http://dbpedia.org/property/hips'])&&$triples['http://dbpedia.org/property/hips'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/hips']);
+			if (isset($triples['http://dbpedia.org/property/weight'])&&$triples['http://dbpedia.org/property/weight'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/weight']);
+			if (isset($triples['http://dbpedia.org/property/waist'])&&$triples['http://dbpedia.org/property/waist'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/waist']);
+			if (isset($triples['http://dbpedia.org/property/height'])&&$triples['http://dbpedia.org/property/height'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/height']);
+			if (isset($triples['http://www.geonames.org/ontology#featureCode'])) unset($triples['http://www.geonames.org/ontology#featureCode']);
+			if (isset($triples['http://www.geonames.org/ontology#featureClass'])) unset($triples['http://www.geonames.org/ontology#featureClass']);
+			if (isset($triples['http://dbpedia.org/property/dmozProperty'])) unset($triples['http://dbpedia.org/property/dmozProperty']);
+			if (isset($triples['http://dbpedia.org/property/color'])) unset($triples['http://dbpedia.org/property/color']);
+			if (isset($triples['http://dbpedia.org/property/imageCaption'])) unset($triples['http://dbpedia.org/property/imageCaption']);
+			if (isset($triples['http://dbpedia.org/property/name'])) unset($triples['http://dbpedia.org/property/name']);
+			if (isset($triples['http://dbpedia.org/property/audioIpaProperty'])) unset($triples['http://dbpedia.org/property/audioIpaProperty']);
+			if (isset($subjecttriples['http://dbpedia.org/property/redirect'])) unset($subjecttriples['http://dbpedia.org/property/redirect']);
+			if (isset($triples['http://dbpedia.org/property/audioDeProperty'])) unset($triples['http://dbpedia.org/property/audioDeProperty']);
+			if (isset($triples['http://dbpedia.org/property/art'])) unset($triples['http://dbpedia.org/property/art']);
+			if (isset($subjecttriples['http://dbpedia.org/property/babAsProperty'])) unset($subjecttriples['http://dbpedia.org/property/babAsProperty']);
+			if (isset($triples['http://dbpedia.org/property/babAsProperty'])) unset($triples['http://dbpedia.org/property/babAsProperty']);
+			if (isset($triples['http://dbpedia.org/property/imageWidth'])) unset($triples['http://dbpedia.org/property/imageWidth']);
+			if (isset($triples['http://dbpedia.org/property/rangeMapWidth'])) unset($triples['http://dbpedia.org/property/rangeMapWidth']);
+			if (isset($triples['http://dbpedia.org/property/rangeMapCaption'])) unset($triples['http://dbpedia.org/property/rangeMapCaption']);
+			if (isset($subjecttriples['http://dbpedia.org/property/nihongoProperty'])) unset($subjecttriples['http://dbpedia.org/property/nihongoProperty']);
+			if (isset($triples['http://dbpedia.org/property/shortDescription'])) unset($triples['http://dbpedia.org/property/shortDescription']);
+			if (isset($triples['http://dbpedia.org/property/refLabelProperty'])) unset($triples['http://dbpedia.org/property/refLabelProperty']);
+			if (isset($triples['http://dbpedia.org/property/noteLabelProperty'])) unset($triples['http://dbpedia.org/property/noteLabelProperty']);
+			if (isset($triples['http://dbpedia.org/property/wikisourcelangProperty'])) unset($triples['http://dbpedia.org/property/wikisourcelangProperty']);
 			
-			// display template for this instance (currently the template is similar to the remaining
-			// instance view apart from beautifications)
-			$content .= $template->printTemplate($triples,$subjecttriples);
-			/*if (count($triples)>0||count($subjecttriples)>0){
+			if (count($triples)>0){
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
 				
 				// display the remaining properties as list which can be used for further navigation
 				$content .= get_triple_table($triples,$subjecttriples);
-			}*/
+			}
 			
 			//Restart the Session
 			session_start();
@@ -304,24 +318,19 @@
 			$_SESSION['nextArticle']++;
 				
 			//Add Positives to Session
-			$noChange="false";
 			if (!isset($_SESSION['positive'])){
 				$array=array($uri => $artTitle);
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				if (!isset($array[$uri])||$fromrest){
-					$array[$uri]=$artTitle;
-					if (count($array)>10){
-						foreach ($array as $key=>$value){
-							unset($array[$key]);
-							break;
-						}
+				$array[$uri]=$artTitle;
+				if (count($array)>3){
+					foreach ($array as $key=>$value){
+						unset($array[$key]);
+						break;
 					}
 				}
-				else
-					$noChange="true";
 				$_SESSION['positive']=$array;
 			}
 									
@@ -340,24 +349,19 @@
 		$uri=$_SESSION['articles'][$fromCache]['uri'];
 		
 		//Add Positives to Session
-		$noChange="false";
 		if (!isset($_SESSION['positive'])){
 			$array=array($uri => $artTitle);
 			$_SESSION['positive']=$array;
 		}
 		else{
 			$array=$_SESSION['positive'];
-			if (!isset($array[$uri])||$fromrest){
-				$array[$uri]=$artTitle;
-				if (count($array)>10){
-					foreach ($array as $key=>$value){
-						unset($array[$key]);
-						break;
-					}
+			$array[$uri]=$artTitle;
+			if (count($array)>3){
+				foreach ($array as $key=>$value){
+					unset($array[$key]);
+					break;
 				}
 			}
-			else
-				$noChange="true";
 			$_SESSION['positive']=$array;
 		}
 	}
@@ -366,7 +370,7 @@
 	if (isset($_SESSION['articles'])){
 		foreach ($_SESSION['articles'] as $key => $value)
 		{
-			$lastArticles.="<a href=\"\" onclick=\"get_article('label=".$value['subject']."&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
+			$lastArticles.="<a href=\"\" onclick=\"get_article('label=&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
 		}
 	}
 	
@@ -382,8 +386,6 @@
 	print $interests[0];
 	print '$$$';
 	print $interests[1];
-	print '$$$';
-	print $noChange;
 	print '$$$';
 	print $lat;
 	print '$$$';

@@ -1,39 +1,9 @@
 <?php
-function getLabel($uri,$label)
-{
-	$res=urldecode(str_replace("_"," ",substr (strrchr ($uri, "/"), 1)));
-	if (strlen($label)>strlen($res)-5||preg_match('/[0-9]$/',$res)===1){
-		$res=$label;
-	}
-	$res=utf8_to_html($res);
-	
-	$final='';
-	$offset=0;
-	preg_match_all("/[^-\040]([A-Z])[^A-Z]/",$res,$treffer,PREG_OFFSET_CAPTURE);
-	foreach ($treffer[1] as $treff){
-		if ($res[$treff[1]-1]!=' '&&$res[$treff[1]-1]!='-'&&$treff[1]!=0){
-			$final.=substr($res,$offset,$treff[1]-$offset).' ';
-			$offset=$treff[1];
-		}
-	}
-	$final.=substr($res,$offset);
-	
-	$res=$final;
-	
-	//replacements
-	$res=str_replace('Cities','City',$res);
-	$res=str_replace('Players','Player',$res);
-	
-	return $res;
-}
-
 function subjectToURI($subject)
 {
 	//if the subject is already a URI return it
-	if (strpos($subject,"http://dbpedia.org/resource/")===0){
-		$part=substr (strrchr ($subject, "/"), 1);
-		return substr($subject,0,strlen($subject)-strlen($part)).urlencode($part);
-	}
+	if (strpos($subject,"http://dbpedia.org/resource/")===0)
+		return $subject;
 	//delete whitespaces at beginning and end
 	$subject=trim($subject);
 	//get first letters big
@@ -61,28 +31,29 @@ function getTagCloud($tags,$label)
 	$distribution=$diff/3;
 	
 	$ret="<p>";
+	$ret.='<a style="font-size:xx-large;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',document.getElementById(\'hidden_number\').value);">All</a>&nbsp;';
+	if ($nc) $ret.='<a style="font-size:xx-small;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',document.getElementById(\'hidden_number\').value);">No Category</a>&nbsp;';
 	foreach ($tags as $tag=>$count){
-		if ($count==$min) $style="font-size:9px;";
-		else if ($count==$max) $style="font-size:17px;";
-		else if ($count>($min+2*$distribution)) $style="font-size:15px;";
-		else if ($count>($min+$distribution)) $style="font-size:13px;";
-		else $style="font-size:11px;";
+		if ($count==$min) $style="font-size:xx-small;";
+		else if ($count==$max) $style="font-size:xx-large;";
+		else if ($count>($min+2*$distribution)) $style="font-size:large;";
+		else if ($count>($min+$distribution)) $style="font-size:medium;";
+		else $style="font-size:small;";
 		
-		$lab=getLabel($tag,$label[$tag]);
+		$lab=urldecode(str_replace("_"," ",substr (strrchr ($tag, "/"), 1)));
+		if (strlen($label[$tag])>strlen($lab)-3||preg_match('/[0-9]/',$lab)===1){
+			$lab=$label[$tag];
+		}
 		//$tag_with_entities=htmlentities("\"".$tag."\"");
-		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value,\''.utf8_to_html($lab).'\');">'.utf8_to_html($lab).'</a>&nbsp;';
+		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.$lab.'</a>&nbsp;';
 	}
 	$ret.="</p><br/>";
-	$ret.='<span id="FilterTags">You currently don\'t filter your search results.</span>';
-	$ret.=' You can <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',document.getElementById(\'hidden_number\').value,\'all\');">show all results</a>&nbsp;';
-	if ($nc) $ret.=' or <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',document.getElementById(\'hidden_number\').value,\'No Category\');">show results with no category</a>&nbsp;';
-	$ret.='<br/><br/>';
 	return $ret;
 }
 
 function getResultsTable($names,$labels,$classes,$number)
 {
-	$ret="<p>You got ".count($names)." results. Show best ";
+	$ret="<p>These are the results of your search. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"search_it('label='+document.getElementById('label').value+'&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
@@ -148,7 +119,7 @@ function utf8_to_html($string)
 
 function getCategoryResultsTable($names,$labels,$category,$number)
 {
-	$ret="<p>You got ".count($names)." results. Show best ";
+	$ret="<p>These are your the results of your search. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"getSubjectsFromCategory('category=".$category."&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
@@ -191,7 +162,7 @@ function getCategoryResultsTable($names,$labels,$category,$number)
 
 function getConceptResultsTable($names,$labels,$kb,$number)
 {
-	$ret="<p>You got ".count($names)." results. Show best ";
+	$ret="<p>These are your results. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"getSubjectsFromConcept('kb=".$kb."&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
@@ -262,90 +233,87 @@ function setRunning($id,$running)
 
 function get_triple_table($triples,$subjecttriples) {
 
-	if ((is_array($triples)&&count($triples)>0)||(is_array($subjecttriples)&&count($subjecttriples)>0)){
-		$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
-		$i=1;
-		if (is_array($triples)&&count($triples)>0) foreach($triples as $predicate=>$object) {
-			$number=count($object);
-			if ($i>0) $backgroundcolor="eee";
-			else $backgroundcolor="ffffff";
-			$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
-			$table .= '<td>';
-			if ($number>1) $table.='<ul>';
-			$k=1;
-			foreach($object as $element) {
-				if ($k>3) $display=" style=\"display:none\"";
-				else $display="";
-				if ($element['type']=="uri"){
-					if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
-						$label=str_replace('_',' ',substr($element['value'],28));
-						if (strlen($label)>60) $label=substr($label,0,60).'...';
-						if ($number>1) $table.='<li'.$display.'>';
-						$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
-						if ($number>1) $table.='</li>';
-					}
-					else{
-						if ($number>1) $table.='<li'.$display.'>';
-						$label=urldecode($element['value']);
-						if (strlen($label)>60) $label=substr($label,0,60).'...';
-						$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
-						if ($number>1) $table.='</li>';
-					}
+	$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
+	$i=1;
+	foreach($triples as $predicate=>$object) {
+		$number=count($object);
+		if ($i>0) $backgroundcolor="eee";
+		else $backgroundcolor="ffffff";
+		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
+		$table .= '<td>';
+		if ($number>1) $table.='<ul>';
+		$k=1;
+		foreach($object as $element) {
+			if ($k>3) $display=" style=\"display:none\"";
+			else $display="";
+			if ($element['type']=="uri"){
+				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
+					$label=str_replace('_',' ',substr($element['value'],28));
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					if ($number>1) $table.='<li'.$display.'>';
+					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					if ($number>1) $table.='</li>';
 				}
 				else{
 					if ($number>1) $table.='<li'.$display.'>';
-					$table .= $element['value'];
+					$label=urldecode($element['value']);
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
 					if ($number>1) $table.='</li>';
 				}
-				$k++;
 			}
-			if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
-			if ($number>1) $table.='</ul>';
-			$table .= '</td>';
-			$i*=-1;
-		}
-		if (is_array($subjecttriples)&&count($subjecttriples)>0) foreach($subjecttriples as $predicate=>$object) {
-			$number=count($object);
-			if ($i>0) $backgroundcolor="eee";
-			else $backgroundcolor="ffffff";
-			$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">is '.nicePredicate($predicate).' of </a></td>';
-			$table .= '<td>';
-			if ($number>1) $table.='<ul>';
-			$k=1;
-			foreach($object as $element) {
-				if ($k>3) $display=" style=\"display:none\"";
-				else $display="";
-				if ($element['type']=="uri"){
-					if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
-						$label=str_replace('_',' ',substr($element['value'],28));
-						if (strlen($label)>60) $label=substr($label,0,60).'...';
-						if ($number>1) $table.='<li'.$display.'>';
-						$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
-						if ($number>1) $table.='</li>';
-					}
-					else{
-						if ($number>1) $table.='<li'.$display.'>';
-						$label=urldecode($element['value']);
-						if (strlen($label)>60) $label=substr($label,0,60).'...';
-						$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
-						if ($number>1) $table.='</li>';
-					}
-				}
-				else{
-					if ($number>1) $table.='<li'.$display.'>';
-					$table .= $element['value'];
-					if ($number>1) $table.='</li>';
-				}
-				$k++;
+			else{
+				if ($number>1) $table.='<li'.$display.'>';
+				$table .= $element['value'];
+				if ($number>1) $table.='</li>';
 			}
-			if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
-			if ($number>1) $table.='</ul>';
-			$table .= '</td>';
-			$i*=-1;
+			$k++;
 		}
-		$table .= '</table>';
+		if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
+		if ($number>1) $table.='</ul>';
+		$table .= '</td>';
+		$i*=-1;
 	}
-	else $table="No Tripel left.";
+	foreach($subjecttriples as $predicate=>$object) {
+		$number=count($object);
+		if ($i>0) $backgroundcolor="eee";
+		else $backgroundcolor="ffffff";
+		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">is '.nicePredicate($predicate).' of </a></td>';
+		$table .= '<td>';
+		if ($number>1) $table.='<ul>';
+		$k=1;
+		foreach($object as $element) {
+			if ($k>3) $display=" style=\"display:none\"";
+			else $display="";
+			if ($element['type']=="uri"){
+				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
+					$label=str_replace('_',' ',substr($element['value'],28));
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					if ($number>1) $table.='<li'.$display.'>';
+					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					if ($number>1) $table.='</li>';
+				}
+				else{
+					if ($number>1) $table.='<li'.$display.'>';
+					$label=urldecode($element['value']);
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
+					if ($number>1) $table.='</li>';
+				}
+			}
+			else{
+				if ($number>1) $table.='<li'.$display.'>';
+				$table .= $element['value'];
+				if ($number>1) $table.='</li>';
+			}
+			$k++;
+		}
+		if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
+		if ($number>1) $table.='</ul>';
+		$table .= '</td>';
+		$i*=-1;
+	}
+	$table .= '</table>';
 	return $table;
 }
 
@@ -386,7 +354,7 @@ function nicePredicate($predicate)
 	return urldecode($name);
 }
 
-function formatClassArray($ar,$classSystem) {
+function formatClassArray($ar) {
 	include_once('Settings.php');
 	include_once('DatabaseConnection.php');
 	//connect to the database
@@ -397,13 +365,15 @@ function formatClassArray($ar,$classSystem) {
 	
 	$string="<ul>";
 	for($i=0; $i<count($ar); $i++) {
-		if ($classSystem=="YAGO") $prefix = 'http://dbpedia.org/class/yago/';
-		else if ($classSystem=="DBpedia") $prefix='http://dbpedia.org/ontology/';
-		if (substr($ar[$i]['value'],0,strlen($prefix))!=$prefix||$ar[$i]['value']=='http://dbpedia.org/ontology/Resource') continue;
+		$yagoPrefix = 'http://dbpedia.org/class/yago/';
+		if(substr($ar[$i]['value'],0,30)!=$yagoPrefix) continue;
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
-		$label=getLabel($ar[$i]['value'],$result['label']);
+		$label=urldecode(str_replace("_"," ",substr (strrchr ($ar[$i]['value'], "/"), 1)));
+		if (strlen($result['label'])>strlen($label)-3||preg_match('/[0-9]/',$label)===1){
+			$label=$result['label'];
+		}
 		$label=utf8_to_html($label);
 		$string .= '<li>' . formatClass($ar[$i]['value'],$label).'</li>';
 	}
@@ -464,7 +434,7 @@ function getClassView($fathers,$childs,$title,$class)
 	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
 	$ret.='<tr><td style="font-size:14px;"><b>Current class</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
-	$ret.='<tr><td><b>'.$title.'</b></td></tr>';
+	$ret.='<tr><td><b>'.$title.'</b> ('.urldecode(str_replace("_"," ",substr (strrchr ($class, "/"), 1))).')</td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
 	$ret.='<tr><td>';
 	$ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category='.$class.'&number=10\');" title="Search Instances of Shown class."/>';
@@ -522,145 +492,5 @@ function createCharacteristics($char)
 	}
 	$ret.='</table>';
 	return $ret;
-}
-
-function filterTriples($triples,$subjecttriples){
-	if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])) unset($triples['http://www.w3.org/2002/07/owl#sameAs']);
-			if (isset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs'])) unset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs']);
-			if (isset($triples['http://xmlns.com/foaf/0.1/page'])) unset($triples['http://xmlns.com/foaf/0.1/page']);
-			if (isset($triples['http://xmlns.com/foaf/0.1/depiction'])) unset($triples['http://xmlns.com/foaf/0.1/depiction']);
-			if (isset($triples['http://dbpedia.org/property/abstract'])) unset($triples['http://dbpedia.org/property/abstract']);
-			if (isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])) unset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);
-			if (isset($triples['http://dbpedia.org/property/redirect'])) unset($triples['http://dbpedia.org/property/redirect']);
-			if (isset($triples['http://dbpedia.org/property/reference'])) unset($triples['http://dbpedia.org/property/reference']);
-			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])) unset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long']);
-			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])) unset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat']);
-			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])) unset($triples['http://dbpedia.org/property/hasPhotoCollection']);
-			if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])) unset($triples['http://www.w3.org/2004/02/skos/core#subject']);
-			if (isset($triples['http://www.w3.org/2000/01/rdf-schema#label'])) unset($triples['http://www.w3.org/2000/01/rdf-schema#label']);
-			if (isset($triples['http://www.w3.org/2000/01/rdf-schema#comment'])) unset($triples['http://www.w3.org/2000/01/rdf-schema#comment']);
-			if (isset($triples['http://dbpedia.org/property/latSec'])) unset($triples['http://dbpedia.org/property/latSec']);
-			if (isset($triples['http://dbpedia.org/property/lonSec'])) unset($triples['http://dbpedia.org/property/lonSec']);
-			if (isset($triples['http://dbpedia.org/property/lonDeg'])) unset($triples['http://dbpedia.org/property/lonDeg']);
-			if (isset($triples['http://dbpedia.org/property/latMin'])) unset($triples['http://dbpedia.org/property/latMin']);
-			if (isset($triples['http://dbpedia.org/property/lonMin'])) unset($triples['http://dbpedia.org/property/lonMin']);
-			if (isset($triples['http://dbpedia.org/property/latDeg'])) unset($triples['http://dbpedia.org/property/latDeg']);
-			if (isset($triples['http://dbpedia.org/property/lonMin'])) unset($triples['http://dbpedia.org/property/lonMin']);
-			if (isset($triples['http://www.georss.org/georss/point'])) unset($triples['http://www.georss.org/georss/point']);
-			if (isset($triples['http://dbpedia.org/property/audioProperty'])) unset($triples['http://dbpedia.org/property/audioProperty']);
-			if (isset($triples['http://dbpedia.org/property/wikiPageUsesTemplate'])) unset($triples['http://dbpedia.org/property/wikiPageUsesTemplate']);
-			if (isset($triples['http://dbpedia.org/property/relatedInstance'])) unset($triples['http://dbpedia.org/property/relatedInstance']);
-			if (isset($triples['http://dbpedia.org/property/boxWidth'])) unset($triples['http://dbpedia.org/property/boxWidth']);
-			if (isset($triples['http://dbpedia.org/property/pp'])) unset($triples['http://dbpedia.org/property/pp']);
-			if (isset($triples['http://dbpedia.org/property/caption'])) unset($triples['http://dbpedia.org/property/caption']);
-			if (isset($subjecttriples['http://dbpedia.org/property/caption'])) unset($subjecttriples['http://dbpedia.org/property/caption']);
-			if (isset($triples['http://dbpedia.org/property/s'])) unset($triples['http://dbpedia.org/property/s']);
-			if (isset($triples['http://dbpedia.org/property/lifetimeProperty'])) unset($triples['http://dbpedia.org/property/lifetimeProperty']);
-			if (isset($triples['http://dbpedia.org/property/imagesize'])) unset($triples['http://dbpedia.org/property/imagesize']);
-			if (isset($triples['http://dbpedia.org/property/id'])) unset($triples['http://dbpedia.org/property/id']);
-			if (isset($triples['http://dbpedia.org/property/issue'])) unset($triples['http://dbpedia.org/property/issue']);
-			if (isset($triples['http://dbpedia.org/property/hips'])&&$triples['http://dbpedia.org/property/hips'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/hips']);
-			if (isset($triples['http://dbpedia.org/property/weight'])&&$triples['http://dbpedia.org/property/weight'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/weight']);
-			if (isset($triples['http://dbpedia.org/property/waist'])&&$triples['http://dbpedia.org/property/waist'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/waist']);
-			if (isset($triples['http://dbpedia.org/property/height'])&&$triples['http://dbpedia.org/property/height'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/height']);
-			if (isset($triples['http://www.geonames.org/ontology#featureCode'])) unset($triples['http://www.geonames.org/ontology#featureCode']);
-			if (isset($triples['http://www.geonames.org/ontology#featureClass'])) unset($triples['http://www.geonames.org/ontology#featureClass']);
-			if (isset($triples['http://dbpedia.org/property/dmozProperty'])) unset($triples['http://dbpedia.org/property/dmozProperty']);
-			if (isset($triples['http://dbpedia.org/property/color'])) unset($triples['http://dbpedia.org/property/color']);
-			if (isset($triples['http://dbpedia.org/property/imageCaption'])) unset($triples['http://dbpedia.org/property/imageCaption']);
-			if (isset($triples['http://dbpedia.org/property/name'])) unset($triples['http://dbpedia.org/property/name']);
-			if (isset($triples['http://dbpedia.org/property/audioIpaProperty'])) unset($triples['http://dbpedia.org/property/audioIpaProperty']);
-			if (isset($subjecttriples['http://dbpedia.org/property/redirect'])) unset($subjecttriples['http://dbpedia.org/property/redirect']);
-			if (isset($triples['http://dbpedia.org/property/audioDeProperty'])) unset($triples['http://dbpedia.org/property/audioDeProperty']);
-			if (isset($triples['http://dbpedia.org/property/art'])) unset($triples['http://dbpedia.org/property/art']);
-			if (isset($subjecttriples['http://dbpedia.org/property/babAsProperty'])) unset($subjecttriples['http://dbpedia.org/property/babAsProperty']);
-			if (isset($triples['http://dbpedia.org/property/babAsProperty'])) unset($triples['http://dbpedia.org/property/babAsProperty']);
-			if (isset($triples['http://dbpedia.org/property/imageWidth'])) unset($triples['http://dbpedia.org/property/imageWidth']);
-			if (isset($triples['http://dbpedia.org/property/rangeMapWidth'])) unset($triples['http://dbpedia.org/property/rangeMapWidth']);
-			if (isset($triples['http://dbpedia.org/property/rangeMapCaption'])) unset($triples['http://dbpedia.org/property/rangeMapCaption']);
-			if (isset($subjecttriples['http://dbpedia.org/property/nihongoProperty'])) unset($subjecttriples['http://dbpedia.org/property/nihongoProperty']);
-			if (isset($triples['http://dbpedia.org/property/shortDescription'])) unset($triples['http://dbpedia.org/property/shortDescription']);
-			if (isset($triples['http://dbpedia.org/property/refLabelProperty'])) unset($triples['http://dbpedia.org/property/refLabelProperty']);
-			if (isset($triples['http://dbpedia.org/property/noteLabelProperty'])) unset($triples['http://dbpedia.org/property/noteLabelProperty']);
-			if (isset($triples['http://dbpedia.org/property/wikisourcelangProperty'])) unset($triples['http://dbpedia.org/property/wikisourcelangProperty']);
-			if (isset($triples['http://dbpedia.org/property/lk'])) unset($triples['http://dbpedia.org/property/lk']);
-			if (isset($triples['http://dbpedia.org/property/abbr'])) unset($triples['http://dbpedia.org/property/abbr']);
-			if (isset($triples['http://dbpedia.org/property/x'])) unset($triples['http://dbpedia.org/property/x']);
-			if (isset($triples['http://dbpedia.org/property/y'])) unset($triples['http://dbpedia.org/property/y']);
-			if (isset($triples['http://dbpedia.org/property/imageFlagSize'])) unset($triples['http://dbpedia.org/property/imageFlagSize']);
-			if (isset($triples['http://dbpedia.org/property/imageCoatOfArmsSize'])) unset($triples['http://dbpedia.org/property/imageCoatOfArmsSize']);
-			if (isset($triples['http://dbpedia.org/property/wikiaProperty'])) unset($triples['http://dbpedia.org/property/wikiaProperty']);
-			if (isset($triples['http://dbpedia.org/property/coorDmProperty'])) unset($triples['http://dbpedia.org/property/coorDmProperty']);
-			if (isset($triples['http://dbpedia.org/property/nuts'])) unset($triples['http://dbpedia.org/property/nuts']);
-			if (isset($triples['http://dbpedia.org/property/years'])) unset($triples['http://dbpedia.org/property/years']);
-			if (isset($triples['http://dbpedia.org/property/dateofbirth'])) unset($triples['http://dbpedia.org/property/dateofbirth']);
-			if (isset($triples['http://dbpedia.org/property/caps_percent_28goals_percent_29'])) unset($triples['http://dbpedia.org/property/caps_percent_28goals_percent_29']);
-			if (isset($triples['http://dbpedia.org/property/nationalcaps_percent_28goals_percent_29'])) unset($triples['http://dbpedia.org/property/nationalcaps_percent_28goals_percent_29']);
-			if (isset($triples['http://dbpedia.org/property/ntupdate'])) unset($triples['http://dbpedia.org/property/ntupdate']);
-			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics2Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics2Property']);
-			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property']);
-			if (isset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before'])) unset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before']);
-			if (isset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title'])) unset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title']);
-			if (isset($triples['http://dbpedia.org/property/accessdate'])) unset($triples['http://dbpedia.org/property/accessdate']);
-			if (isset($triples['http://dbpedia.org/property/state'])) unset($triples['http://dbpedia.org/property/state']);
-			if (isset($triples['http://dbpedia.org/property/coordinates'])) unset($triples['http://dbpedia.org/property/coordinates']);
-			if (isset($triples['http://dbpedia.org/property/lga'])) unset($triples['http://dbpedia.org/property/lga']);
-			if (isset($triples['http://dbpedia.org/property/fedgov'])) unset($triples['http://dbpedia.org/property/fedgov']);
-			if (isset($triples['http://dbpedia.org/property/dist'])) unset($triples['http://dbpedia.org/property/dist']);
-			if (isset($triples['http://dbpedia.org/property/dir'])) unset($triples['http://dbpedia.org/property/dir']);
-			if (isset($triples['http://dbpedia.org/property/float'])) unset($triples['http://dbpedia.org/property/float']);
-			if (isset($triples['http://dbpedia.org/property/left'])) unset($triples['http://dbpedia.org/property/left']);
-			if (isset($triples['http://dbpedia.org/property/quick'])) unset($triples['http://dbpedia.org/property/quick']);
-			if (isset($triples['http://dbpedia.org/property/clear'])) unset($triples['http://dbpedia.org/property/clear']);
-			if (isset($triples['http://dbpedia.org/property/utc'])) unset($triples['http://dbpedia.org/property/utc']);
-			if (isset($triples['http://dbpedia.org/property/utcDst'])) unset($triples['http://dbpedia.org/property/utcDst']);
-			if (isset($triples['http://dbpedia.org/property/spokenWikipedia2Property'])) unset($triples['http://dbpedia.org/property/spokenWikipedia2Property']);
-}
-
-function getNegativeExamplesFromParallelClass($posExamples){
-	include_once('Settings.php');
-	include_once('DatabaseConnection.php');
-	//connect to the database
-	$settings=new Settings();
-	$databaseConnection=new DatabaseConnection($settings->database_type);
-	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
-	$databaseConnection->select_database($settings->database_name);
-	
-	$examples=array();
-	foreach ($posExamples as $pos){
-		$query="SELECT category FROM articlecategories WHERE name='".$pos."' AND category!='http://dbpedia.org/ontology/Resource'";
-		$res=$databaseConnection->query($query);
-		if ($databaseConnection->numberOfEntries($res)>0) $zufall = rand(1,$databaseConnection->numberOfEntries($res));
-		$i=1;
-		while ($result=$databaseConnection->nextEntry($res)){
-			if ($i==$zufall) $class=$result['category'];
-			$i++;
-		}
-		$query="SELECT father FROM classhierarchy WHERE child='".$class."'";
-		$res=$databaseConnection->query($query);
-		if ($databaseConnection->numberOfEntries($res)>0) $zufall = rand(1,$databaseConnection->numberOfEntries($res));
-		$i=1;
-		while ($result=$databaseConnection->nextEntry($res)){
-			if ($i==$zufall) $father=$result['father'];
-			$i++;
-		}	
-		
-		$query="SELECT child FROM classhierarchy WHERE father='".$father."' AND child!='".$class."'";
-		$res=$databaseConnection->query($query);
-		if ($databaseConnection->numberOfEntries($res)>0) $zufall = rand(1,$databaseConnection->numberOfEntries($res));
-		$i=1;
-		while ($result=$databaseConnection->nextEntry($res)){
-			if ($i==$zufall) $child=$result['child'];
-			$i++;
-		}
-		$query="SELECT name FROM articlecategories WHERE category='".$child."' AND name!='".$pos."' ORDER BY RAND() LIMIT 1";
-		$res=$databaseConnection->query($query);
-		if ($databaseConnection->numberOfEntries($res)>0){
-			$result=$databaseConnection->nextEntry($res);
-			$examples[]=$result['name'];
-		}	
-	}
-	
-	return $examples;
 }
 ?>

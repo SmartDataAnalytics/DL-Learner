@@ -1,12 +1,11 @@
 package org.dllearner.kb.sparql;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
@@ -14,8 +13,6 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -24,7 +21,6 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
@@ -46,12 +42,12 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 
 	private String query="";
 	
-	private ReasonerComponent service;
+	private SPARQLTasks tasks;
 	
-	public NaturalLanguageDescriptionConvertVisitor(ReasonerComponent service)
+	public NaturalLanguageDescriptionConvertVisitor()
 	{
 		//stack.push("subject");
-		this.service=service;
+		tasks=new SPARQLTasks(new Cache("cache"),SparqlEndpoint.getEndpointDBpedia());
 	}
 	
 	private String getDescription()
@@ -64,40 +60,21 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		return query;
 	}
 	
-	public static String getNaturalLanguageDescription(Description description, ReasonerComponent service)
+	public static String getNaturalLanguageDescription(Description description)
 	{
-		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(service);
+		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor();
 		description.accept(visitor);
 		String ret = visitor.getDescription();
 		return ret;
 	}
 	
-	public static String getNaturalLanguageDescription(String descriptionKBSyntax, ReasonerComponent service) throws ParseException
+	public static String getNaturalLanguageDescription(String descriptionKBSyntax) throws ParseException
 	{	
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
-		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(service);
+		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor();
 		d.accept(visitor);
 		String ret = visitor.getDescription();
 		return ret;
-	}
-	
-	private String getLabelFromReasoner(Entity ent)
-	{
-		String label;
-//		try{
-			Set<Constant> set=service.getLabel(ent);
-			if (set.size()>0){
-				Iterator<Constant> iter=set.iterator();
-				label=iter.next().getLiteral();
-			}
-			else label="";
-//		}
-//		catch (ReasoningMethodUnsupportedException e)
-//		{
-//			label="";
-//		}
-		
-		return label;
 	}
 	
 	/**
@@ -107,7 +84,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public static void main(String[] args) {
 		try {
-			/*SortedSet<String> s = new TreeSet<String>();
+			SortedSet<String> s = new TreeSet<String>();
 			HashMap<String,String> result = new HashMap<String,String>();
 			String conj="(\"http://dbpedia.org/class/yago/Person100007846\" AND \"http://dbpedia.org/class/yago/Head110162991\")";
 			s.add("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
@@ -121,7 +98,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			s.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
 			s.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 			for (String kbsyntax : s) {
-				result.put(kbsyntax,NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(kbsyntax,"DBPEDIA"));
+				result.put(kbsyntax,NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(kbsyntax));
 			}
 			System.out.println("************************");
 			for (String string : result.keySet()) {
@@ -129,12 +106,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 				System.out.println("Query:\n"+result.get(string));
 				System.out.println("************************");
 			}
-			System.out.println("Finished");*/
-			//String conj="EXISTS \"http://xmlns.com/foaf/0.1/page\".<= 0 \"http://www.w3.org/2004/02/skos/core#subject\".TOP";
-			//String conj="(\"Male\" AND (\"hasDog\" = 18))";
-//			ObjectValueRestriction rest=new ObjectValueRestriction(new ObjectProperty("hasAge"),new Individual("18"));
-			//System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(rest));
-		} catch (/*Parse*/Exception e) {
+			System.out.println("Finished");
+		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -154,8 +127,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectAllRestriction description) {
 		logger.trace("ObjectAllRestriction");
-		String label=getLabelFromReasoner((ObjectProperty)description.getRole());
-		if (label.length()>0) query+="all "+label+" are ";
+		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getRole().toString()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		if (label.size()>0) query+="all "+label.first()+" are ";
 		else query+="all "+description.getRole().toString().substring(description.getRole().toString().lastIndexOf("/")+1)+" are ";
 		description.getChild(0).accept(this);
 		logger.trace(description.getRole().toString());
@@ -167,8 +140,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectSomeRestriction description) {
 		logger.trace("ObjectSomeRestriction");
-		String label=getLabelFromReasoner((ObjectProperty)description.getRole());
-		if (label.length()>0) query+="has "+label+" which is ";
+		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getRole().toString()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		if (label.size()>0) query+="has "+label.first()+" which is ";
 		else query+="has "+description.getRole().toString().substring(description.getRole().toString().lastIndexOf("/")+1)+" which is ";
 		description.getChild(0).accept(this);
 		logger.trace(description.getRole().toString());
@@ -226,9 +199,6 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectMinCardinalityRestriction description) {
 		logger.trace("ObjectMinCardinalityRestriction");
-		if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
-		query+="at least "+description.getCardinality()+" "+description.getRole().toString()+" which is ";
-		description.getChild(0).accept(this);
 	}
 
 	/* (non-Javadoc)
@@ -236,9 +206,6 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectExactCardinalityRestriction description) {
 		logger.trace("ObjectExactCardinalityRestriction");
-		if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
-		query+="exactly "+description.getCardinality()+" "+description.getRole().toString()+" which is ";
-		description.getChild(0).accept(this);
 	}
 
 	/* (non-Javadoc)
@@ -246,30 +213,13 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectMaxCardinalityRestriction description) {
 		logger.trace("ObjectMaxCardinalityRestriction");
-		if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
-		query+="at most "+description.getCardinality()+" "+description.getRole().toString()+" which is ";
-		description.getChild(0).accept(this);		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
-		Individual ind = description.getIndividual();
-		String label=getLabelFromReasoner(ind);
-		String indLabel;
-		if (label.length()>0)
-			indLabel =label;
-		else 
-			indLabel =ind.getName();
-		label=getLabelFromReasoner(op);
-		String propLabel;
-		if (label.length()>0)
-			propLabel =label;
-		else 
-			propLabel =op.getName();		
-		query += propLabel + " is " + indLabel;
+		logger.trace("ObjectValueRestriction");
 	}
 
 	/* (non-Javadoc)
@@ -277,8 +227,6 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(DatatypeValueRestriction description) {
 		logger.trace("DatatypeValueRestriction");
-		//if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
-		query+=description.getRestrictedPropertyExpression().toString()+" has the value "+description.getValue();
 	}
 
 	/* (non-Javadoc)
@@ -293,17 +241,10 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			if (query.endsWith("and ")) query=query.substring(0, query.length()-5);
 			if (query.endsWith("or ")) query=query.substring(0, query.length()-4);
 		}
-		//SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		String l=getLabelFromReasoner(description);
+		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		String l=label.first();
 		String l2=description.getName().substring(description.getName().lastIndexOf("/")+1, description.getName().length()).replace('_', ' ');
-		if ((l.length()==0)||(l.length()+5<l2.length()&&!l2.matches(".*[0-9]"))) l=l2;
-		
-		//replacements
-		l=l.replaceAll("Cities", "City");
-		l=l.replaceAll("Players", "Player");
-		
-		l=l.replaceAll("([^-\040])([A-Z])([^A-Z])", "$1 $2$3");
-				
+		if (l.length()+3<l2.length()&&!l2.matches(".*[0-9].*")) l=l2;
 		if (l.toLowerCase().startsWith("a")||l.toLowerCase().startsWith("e")||l.toLowerCase().startsWith("i")||l.toLowerCase().startsWith("o")||l.toLowerCase().startsWith("u")) query+="an "+l;
 		else query+="a "+l;
 	}

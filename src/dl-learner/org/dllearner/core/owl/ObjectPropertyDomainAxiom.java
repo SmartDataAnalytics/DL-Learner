@@ -27,11 +27,6 @@ import java.util.Map;
  */
 public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5667601806790834821L;
-
 	public ObjectPropertyDomainAxiom(ObjectProperty property, Description domain) {
 		super(property, domain);
 	}	
@@ -70,14 +65,6 @@ public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OBJECTPROPERTYDOMAIN NOT IMPLEMENTED";
 	}	
 	
 }

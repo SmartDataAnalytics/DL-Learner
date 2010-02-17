@@ -19,26 +19,22 @@
  */
 package org.dllearner.test;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.File;
+import java.io.FileWriter;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
-import org.dllearner.kb.aquisitors.TupleAquisitor;
+import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.extraction.Node;
-import org.dllearner.kb.extraction.OWLAPIOntologyCollector;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
+import org.dllearner.scripts.NT2RDF;
+import org.dllearner.utilities.JamonMonitorLogger;
 
 /**
  * Test class, uses the whole thing
@@ -54,7 +50,6 @@ public class SparqlExtractionTest {
 	public static void main(String[] args) {
 		System.out.println("Start");
 		
-		
 //		 create logger (a simple logger which outputs
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
@@ -62,67 +57,37 @@ public class SparqlExtractionTest {
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);		
-		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
-		logger.warn("If you use a remote sparql endpoint over http, it will be very slow due to network latency");
+		Logger.getLogger(SparqlQuery.class).setLevel(Level.DEBUG);
+		
 		// String test2 = "http://www.extraction.org/config#dbpediatest";
 		// String test = "http://www.extraction.org/config#localjoseki";
 		try {
 			// URI u = new URI(test);
-			int recursionDepth=1;
+			int recursionDepth=2;
 			Manager m = new Manager();
-			Manipulator manipulator = Manipulator.getDefaultManipulator();
-
-			TupleAquisitor tupleAquisitor = 
-				new SparqlTupleAquisitor(SparqlQueryMaker.getAllowYAGOFilter(),SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA"));
-			
-			boolean getAllSuperClasses = true;
-			boolean closeAfterRecursion = true;
-			boolean getPropertyInformation = false;
-			boolean dissolveBlankNodes = false;
-			int breakSuperClassesAfter = 1000;
-			
-			String ontologyURI = "http://www.fragment.org/fragment";
-			String physicalURI= "fragmentOntology.owl";
-			OWLAPIOntologyCollector collector= new OWLAPIOntologyCollector( ontologyURI,  physicalURI);
-		
-			
 			Configuration conf = new Configuration (
-					tupleAquisitor,
-					manipulator, 
+					new SparqlTupleAquisitorImproved(SparqlQueryMaker.getAllowYAGOFilter(),
+							SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA"),recursionDepth),
+					Manipulator.getDefaultManipulator(), 
 					recursionDepth,
-					getAllSuperClasses,
-					closeAfterRecursion,
-					getPropertyInformation,
-					breakSuperClassesAfter,
-					dissolveBlankNodes,
-					collector
+					true,
+					true,
+					false,
+					200
 					);
-			
-
-			
 			m.useConfiguration(conf);
 			@SuppressWarnings("unused")
-			String example = "http://dbpedia.org/resource/Angela_Merkel";
+			String u2 = "http://dbpedia.org/resource/Angela_Merkel";
 			
-			Set<String> startingInstances = new TreeSet<String>();
-			startingInstances.add(example);
+			String filename = "cache/"+System.currentTimeMillis() + ".nt";
+			FileWriter fw = new FileWriter(new File(filename), true);
+			//fw.write(m.extract(u2));
+			fw.flush();
+			fw.close();
 			
-			List<Node> seedNodes=new ArrayList<Node>();
+			NT2RDF.convertNT2RDF(filename);
 			
-			//if(!threaded){
-			seedNodes = m.extract(startingInstances);
-			
-			
-			boolean saveOntology = true;
-			
-			
-			m.getOWLAPIOntologyForNodes(seedNodes, saveOntology);
-		
-			URL ontologyFragmentURL = m.getPhysicalOntologyURL();
-			
-			logger.info("the ontology has been saved at: "+ontologyFragmentURL);
-			
-			//JamonMonitorLogger.printAllSortedByLabel();
+			JamonMonitorLogger.printAllSortedByLabel();
 
 		} catch (Exception e) {
 			e.printStackTrace();

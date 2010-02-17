@@ -22,7 +22,6 @@
 		$query="SELECT label FROM rank WHERE name='$pos' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
-		if (strlen($result['label'])<=0) $ptemp[$pos]=urldecode(str_replace("_"," ",substr (strrchr ($pos, "/"), 1))); 
 		$ptemp[$pos]=$result['label'];
 	}
 	
@@ -31,7 +30,6 @@
 		$query="SELECT label FROM rank WHERE name='$neg' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
-		if (strlen($result['label'])<=0) $ntemp[$neg]=urldecode(str_replace("_"," ",substr (strrchr ($neg, "/"), 1)));
 		$ntemp[$neg]=$result['label'];
 	}
 			

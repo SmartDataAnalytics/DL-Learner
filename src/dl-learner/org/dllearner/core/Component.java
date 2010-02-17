@@ -22,11 +22,11 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.Configurator;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
 
 /**
  * Base class of all components. See also http://dl-learner.org/wiki/Architecture.
@@ -36,23 +36,18 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
  */
 public abstract class Component {
 	
-	protected Configurator configurator;
+protected Configurator configurator;
 	
-	/**
-	 * For each component, a configurator class is generated in package
-	 * org.dllearner.core.configurators using the script 
-	 * {@link org.dllearner.scripts.ConfigJavaGenerator}. The configurator
-	 * provides set and get methods for the configuration options of 
-	 * a component.
-	 * @return An object allowing to configure this component.
-	 */
 	public abstract Configurator getConfigurator();
+		//return configurator;
+	//}
+	
+	
 	
 	/**
 	 * Returns the name of this component. By default, "unnamed 
 	 * component" is returned, but all implementations of components
-	 * are strongly encouraged to provide a static method returning 
-	 * the name.
+	 * are strongly encouraged to overwrite this method.
 	 * @return The name of this component.
 	 */
 	public static String getName() {
@@ -88,15 +83,6 @@ public abstract class Component {
 	 * perform an action (usually setting an internal variable to 
 	 * an appropriate value).
 	 * 
-	 * Since the availability of configurators, it is optional for 
-	 * components to implement this method. Instead of using this method
-	 * to take an action based on a configuration value, components can
-	 * also use the getters defined in the components configurator. 
-	 * 
-	 * Important note: Never call this method directly. All calls are
-	 * done via the {@link org.dllearner.core.ComponentManager}.
-	 * 
-	 * @see #getConfigurator()
 	 * @param <T> Type of the config entry (Integer, String etc.).
 	 * @param entry A configuration entry.
 	 * @throws InvalidConfigOptionValueException This exception is thrown if the
@@ -108,8 +94,15 @@ public abstract class Component {
 	 * an interval for the value). This means that, as a component developer, you
 	 * often do not need to implement further validity checks.  
 	 */
-	protected <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		
-	}
+	public abstract <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException;
 	
+	/**
+	 * Gets the value of a configuration option of this component.
+	 * 
+	 * @param <T> Option type.
+	 * @param option A configuration option of this component.
+	 * @return Current value of the configuration option.
+	 */
+// now implemented in ComponentManager
+//	public abstract <T> T getConfigValue(ConfigOption<T> option) throws UnknownConfigOptionException;
 }

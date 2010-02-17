@@ -29,7 +29,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
@@ -37,9 +37,9 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
 
@@ -89,13 +89,13 @@ public class Sample {
 		negExamples.add("http://example.com/foo#west9");
 		negExamples.add("http://example.com/foo#west10");
 
-		List<? extends EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
+		List<EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
 		int x = 0;
 		for (EvaluatedDescription ed : results) {
 			System.out.println("solution: " + x);
 			System.out.println("  description: \t"
 					+ ed.getDescription().toManchesterSyntaxString(null, null));
-			System.out.println("  accuracy: \t" + df.format(((EvaluatedDescriptionPosNeg)ed).getAccuracy() * 100) + "%");
+			System.out.println("  accuracy: \t" + df.format(ed.getAccuracy() * 100) + "%");
 			System.out.println();
 			x++;
 		}
@@ -103,7 +103,7 @@ public class Sample {
 		Files.createFile(new File("log/jamon_sample.html"), MonitorFactory.getReport());
 	}
 
-	public static List<? extends EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
+	public static List<EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
 			SortedSet<String> negExamples, int maxNrOfResults) throws ComponentInitException,
 			LearningProblemUnsupportedException {
 
@@ -125,14 +125,16 @@ public class Sample {
 		
 		// reasoner
 		ReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);
+		ReasoningService rs = cm.reasoningService(r);
+		
 
 		// learning problem
-		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, r);
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
 		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
 		// learning algorithm
-		LearningAlgorithm la = cm.learningAlgorithm(ROLComponent2.class, lp, r);
+		LearningAlgorithm la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
 		cm.applyConfigEntry(la, "useAllConstructor", false);
 		cm.applyConfigEntry(la, "useExistsConstructor", true);
 		cm.applyConfigEntry(la, "useCardinalityRestrictions", false);

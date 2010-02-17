@@ -30,10 +30,6 @@ import java.util.Map;
  */
 public class ClassAssertionAxiom extends AssertionalAxiom {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -790952686329481774L;
 	private Description concept;
 	private Individual individual;
 	
@@ -74,14 +70,5 @@ public class ClassAssertionAxiom extends AssertionalAxiom {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
 	}	
 }

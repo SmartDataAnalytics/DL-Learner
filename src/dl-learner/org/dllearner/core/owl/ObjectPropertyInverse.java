@@ -38,11 +38,6 @@ import org.dllearner.utilities.Helper;
  */
 public class ObjectPropertyInverse extends ObjectPropertyExpression {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5416117104822700896L;
-
 	public ObjectPropertyInverse(String name) {
 		super(name);
 	}
@@ -61,13 +56,5 @@ public class ObjectPropertyInverse extends ObjectPropertyExpression {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OBJECTPROPERTYINVERSE NOT IMPLEMENTED";
 	}	
 }

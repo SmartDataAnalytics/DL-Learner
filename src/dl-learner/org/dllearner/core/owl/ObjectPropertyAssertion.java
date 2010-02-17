@@ -30,10 +30,6 @@ import java.util.Map;
  */
 public class ObjectPropertyAssertion extends PropertyAssertion {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7546114914807945292L;
 	private ObjectProperty role;
 	private Individual individual1;
 	private Individual individual2;
@@ -75,13 +71,5 @@ public class ObjectPropertyAssertion extends PropertyAssertion {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OBJECTPROPERTYASSERTION NOT IMPLEMENTED";
 	}	
 }

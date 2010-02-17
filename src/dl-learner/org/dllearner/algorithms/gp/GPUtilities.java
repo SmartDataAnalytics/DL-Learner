@@ -8,8 +8,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -22,8 +23,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.PosNegLPStrict;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;
@@ -54,7 +54,7 @@ public class GPUtilities {
 	
     private static Random rand = new Random();
     
-    private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis) {
+    private static Score calculateFitness(LearningProblem learningProblem, Description hypothesis) {
     	return calculateFitness(learningProblem, hypothesis, null);
     }
     
@@ -63,7 +63,7 @@ public class GPUtilities {
     // (macht aber nicht so viel Sinn, da man das bei richtigen Reasoning-Algorithmen
     // ohnehin mit einer Erweiterung der Wissensbasis um die Inklusion Target SUBSETOF ReturnType
     // erschlagen kann)
-	private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis, Description adc) {
+	private static Score calculateFitness(LearningProblem learningProblem, Description hypothesis, Description adc) {
 		Description extendedHypothesis;
 		
 		// return type temporarily disabled 
@@ -87,13 +87,13 @@ public class GPUtilities {
 //		} else
 			extendedHypothesis = hypothesis;		
 		
-		ScorePosNeg score;
+		Score score;
 		if(adc != null)
 			// TODO: ADC-Support
 			// score = learningProblem.computeScore(extendedHypothesis, adc);
 			throw new RuntimeException("ADC not supported");
 		else
-			score = (ScorePosNeg) learningProblem.computeScore(extendedHypothesis);
+			score = learningProblem.computeScore(extendedHypothesis);
 		
 		// System.out.println(hypothesis);
 		// System.out.println(score.getScore());
@@ -135,7 +135,7 @@ public class GPUtilities {
      * Perform a point mutation on the given program.
      * @param p The program to be mutated.
      */
-    public static Program mutation(LearningProblem learningProblem, ReasonerComponent rs, Program p) {
+    public static Program mutation(LearningProblem learningProblem, ReasoningService rs, Program p) {
     	mutation++;
     	if(p.getAdc() != null) {
     		// TODO: hier kann man noch mehr Feinabstimmung machen, d.h.
@@ -143,23 +143,23 @@ public class GPUtilities {
     		if(Math.random()<0.5) {
     			Description mainTree = mutation(learningProblem, rs, p.getTree(),true);
     			Description adc = p.getAdc();
-    			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
+    			Score score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);
     		}
     		else {
     			Description mainTree = p.getTree();
     			Description adc = mutation(learningProblem, rs, p.getAdc(),false);
-    			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
+    			Score score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);    			
     		}
     	} else {
     		Description tree = mutation(learningProblem, rs,p.getTree(),false);
-    		ScorePosNeg score = calculateFitness(learningProblem, tree);
+    		Score score = calculateFitness(learningProblem, tree);
             return new Program(score, tree);
     	}
     }
 
-    private static Description mutation(LearningProblem learningProblem, ReasonerComponent rs, Description tree, boolean useADC) {
+    private static Description mutation(LearningProblem learningProblem, ReasoningService rs, Description tree, boolean useADC) {
     	// auch bei Mutation muss darauf geachtet werden, dass 
     	// Baum nicht modifiziert wird (sonst w�rde man automatisch auch
     	// andere "selected individuals" modifizieren)
@@ -304,7 +304,7 @@ public class GPUtilities {
 
     // m�sste auch mit ADC funktionieren, da nur am Hauptbaum etwas 
     // ver�ndert wird
-    public static Program hillClimbing(LearningProblem learningProblem, ReasonerComponent rs, Program p) {
+    public static Program hillClimbing(LearningProblem learningProblem, ReasoningService rs, Program p) {
     	hillClimbing++;
     	// checken, ob Bedingungen f�r hill-climbing erf�llt sind
     	if(!rs.getReasonerType().equals(ReasonerType.FAST_RETRIEVAL)
@@ -327,7 +327,7 @@ public class GPUtilities {
     // Alternativen zu speichern und dann ein Element zuf�llig auszuw�hlen,
     // aber w�rde man das nicht machen, dann w�re das ein starker Bias
     // zu z.B. Disjunktion (weil die als erstes getestet wird)
-    private static Description hillClimbing(LearningProblem learningProblem, ReasonerComponent rs, Description node, ScoreThreeValued score) {
+    private static Description hillClimbing(LearningProblem learningProblem, ReasoningService rs, Description node, ScoreThreeValued score) {
     	SortedSetTuple<Individual> tuple = new SortedSetTuple<Individual>(score.getPosClassified(),score.getNegClassified());
     	SortedSetTuple<String> stringTuple = Helper.getStringTuple(tuple);
     	// FlatABox abox = FlatABox.getInstance();
@@ -340,7 +340,7 @@ public class GPUtilities {
     	// double bestScore = score.getScore()+Config.accuracyPenalty/2;
     	double bestScore = 0;
     	Map<Integer,List<String>> bestNeighbours = new TreeMap<Integer,List<String>>();
-    	ScorePosNeg tmpScore;
+    	Score tmpScore;
     	SortedSetTuple<String> tmp, tmp2;
     	// FlatABox abox = ((FastRetrievalReasoner)learningProblem.getReasoner().getFastRetrieval().getAbox();
     	// FlatABox abox = Main.getFlatAbox();
@@ -363,16 +363,16 @@ public class GPUtilities {
     		
     		tmp2 = FastRetrieval.calculateDisjunctionSets(stringTuple, tmp);
     		tmpScore = getScore(node.getLength()+2, learningProblem, rs, Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,1,concept,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,1,concept,true);
     		
     		tmp2 = FastRetrieval.calculateConjunctionSets(stringTuple, tmp);
     		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,2,concept,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,2,concept,true);    		
     	}
     	
@@ -380,16 +380,16 @@ public class GPUtilities {
     	for(String role : abox.roles) {
     		tmp = FastRetrieval.calculateAllSet(abox,role,stringTuple);
     		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,3,role,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,3,role,true);    		
 
     		tmp = FastRetrieval.calculateExistsSet(abox,role,stringTuple);
     		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,4,role,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,4,role,true);    		
     	}
     	
@@ -452,14 +452,14 @@ public class GPUtilities {
     	}
     }
     
-    private static ScoreThreeValued getScore(int conceptLength, LearningProblem learningProblem, ReasonerComponent rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
+    private static ScoreThreeValued getScore(int conceptLength, LearningProblem learningProblem, ReasoningService rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
     	// es muss hier die Helper-Methode verwendet werden, sonst werden
     	// Individuals gel�scht !!
     	SortedSet<Individual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified); 
     	// learningProblem.getReasoner().getIndividuals();
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
-    	PosNegLPStrict lp = (PosNegLPStrict)learningProblem;
+    	PosNegDefinitionLPStrict lp = (PosNegDefinitionLPStrict)learningProblem;
     	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), lp.isPenaliseNeutralExamples(), lp.getPercentPerLengthUnit(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
     }
     
@@ -489,7 +489,7 @@ public class GPUtilities {
     	return returnMap;
     }
     
-    private static Description pickTerminalSymbol(LearningProblem learningProblem, ReasonerComponent rs, boolean useADC) {
+    private static Description pickTerminalSymbol(LearningProblem learningProblem, ReasoningService rs, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int nr;
         int nrOfConcepts = rs.getNamedClasses().size();
@@ -619,7 +619,7 @@ public class GPUtilities {
      * @param depth Depth of the tree.
      * @return The created program.
      */
-    public static Program createFullRandomProgram(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean adc) {
+    public static Program createFullRandomProgram(LearningProblem learningProblem, ReasoningService rs, int depth, boolean adc) {
     	if(adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, true),
@@ -629,7 +629,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, false));
     }
 
-    private static Description createFullRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    private static Description createFullRandomTree(LearningProblem learningProblem, ReasoningService rs, int depth, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int numberOfRoles = rs.getObjectProperties().size(); //  abox.roles.size();
         
@@ -680,7 +680,7 @@ public class GPUtilities {
      * @param depth The maximum depth of the program tree.
      * @return The created program.
      */
-    public static Program createGrowRandomProgram(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean adc) {
+    public static Program createGrowRandomProgram(LearningProblem learningProblem, ReasoningService rs, int depth, boolean adc) {
     	if(adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem,rs,depth,true),
@@ -690,7 +690,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem, rs, depth,false));    	
     }
 
-    public static Description createGrowRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    private static Description createGrowRandomTree(LearningProblem learningProblem, ReasoningService rs, int depth, boolean useADC) {
     	/*
         private static Concept pickAlphabetSymbol(boolean useADC) {
             FlatABox abox = FlatABox.getInstance();

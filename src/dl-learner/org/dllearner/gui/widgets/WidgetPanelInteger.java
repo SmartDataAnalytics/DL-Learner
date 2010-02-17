@@ -28,7 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.options.IntegerConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.gui.Config;
 
 /**

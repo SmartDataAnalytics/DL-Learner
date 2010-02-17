@@ -8,14 +8,8 @@
 	$kb=str_replace('\"','"',$kb);
 			
 	session_start();
-	if (isset($_SESSION['id'])){
-		$id=$_SESSION['id'];
-		$ksID=$_SESSION['ksID'];
-	}
-	else{
-		print "Your Session expired. Please reload.";
-		die();
-	}
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
 	//write last action into session
 	$actionuri=urlencode($kb);
 	$_SESSION['lastAction']='searchConceptInstances/'.$actionuri;
@@ -32,14 +26,12 @@
 	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
 	$databaseConnection->select_database($settings->database_name);
 	
-	if ($settings->classSystem=="YAGO") $test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/class\/yago\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
-	else if ($settings->classSystem=="DBpedia") $test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/ontology\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
+	$test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/class\/yago\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
 			
 	$content="";
 	if ($test){
-		if ($settings->classSystem=="YAGO") preg_match_all("/\"http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
-		else if ($settings->classSystem=="DBpedia") preg_match_all("/\"http:\/\/dbpedia\.org\/ontology\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
-		
+		preg_match_all("/\"http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
+
 		$final='';
 		$i=1;
 		$pos=0;
@@ -64,7 +56,7 @@
 		for ($j=1;$j<$i-1;$j++)
 			$temp.='cat'.$j.'.name=cat'.($j+1).'.name AND ';
 		
-		$query=$temp.'('.$final.') ORDER BY number DESC LIMIT '.$number;
+		$query=$temp.'('.$final.') LIMIT '.$number;
 		
 		$res=$databaseConnection->query($query);
 		$bestsearches="";

@@ -29,15 +29,23 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.core.configurators.KBFileConfigurator;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
+import org.dllearner.reasoning.OWLAPIAxiomConvertVisitor;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owl.util.SimpleURIMapper;
 
 /**
  * KB files are an internal convenience format used in DL-Learner. Their
@@ -150,25 +158,24 @@ public class KBFile extends KnowledgeSource {
 	
 	@Override
 	public void export(File file, org.dllearner.core.OntologyFormat format){
-		kb.export(file, format);
-//		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-//        URI ontologyURI = URI.create("http://example.com");
-//        URI physicalURI = file.toURI();
-//        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
-//        manager.addURIMapper(mapper);
-//        OWLOntology ontology;
-//		try {
-//			ontology = manager.createOntology(ontologyURI);
-//			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
-//			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
-//			manager.saveOntology(ontology);			
-//		} catch (OWLOntologyCreationException e) {
-//			e.printStackTrace();
-//		} catch (UnknownOWLOntologyException e) {
-//			e.printStackTrace();
-//		} catch (OWLOntologyStorageException e) {
-//			e.printStackTrace();
-//		}
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        URI ontologyURI = URI.create("http://example.com");
+        URI physicalURI = file.toURI();
+        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
+        manager.addURIMapper(mapper);
+        OWLOntology ontology;
+		try {
+			ontology = manager.createOntology(ontologyURI);
+			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
+			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
+			manager.saveOntology(ontology);			
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (UnknownOWLOntologyException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public URL getURL() {

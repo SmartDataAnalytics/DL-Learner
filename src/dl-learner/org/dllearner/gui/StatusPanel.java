@@ -34,7 +34,7 @@ public class StatusPanel extends JPanel {
 
 	private static final long serialVersionUID = 2426470148153461670L;
 	
-	private String tabInitText = "<html>Please fill in the mandatory config options and proceed to the next tab.<br />(Move the mouse over an option name to view a short description of it.)</html>";
+	private String tabInitText = "Please fill in the mandatory config options and proceed to the next tab.";
 	
 	private String tabCompleteText = "All mandatory options filled in. You can continue to the next tab.";
 	

@@ -24,13 +24,13 @@ import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class RandomGuesserConfigurator  implements Configurator {
+public  class RandomGuesserConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -50,19 +50,19 @@ this.randomGuesser = randomGuesser;
 * @throws LearningProblemUnsupportedException see 
 * @return RandomGuesser
 **/
-public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
 RandomGuesser component = ComponentManager.getInstance().learningAlgorithm(RandomGuesser.class, learningProblem, reasoningService);
 return component;
 }
 
 /**
-* numberOfGuesses number of randomly generated concepts/trees.
+* numberOfTrees number of randomly generated concepts/trees.
 * mandatory: false| reinit necessary: true
-* default value: 100
+* default value: 5
 * @return int 
 **/
-public int getNumberOfGuesses() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuesser,  "numberOfGuesses") ;
+public int getNumberOfTrees() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuesser,  "numberOfTrees") ;
 }
 /**
 * maxDepth maximum depth of generated concepts/trees.
@@ -75,12 +75,12 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuess
 }
 
 /**
-* @param numberOfGuesses number of randomly generated concepts/trees.
+* @param numberOfTrees number of randomly generated concepts/trees.
 * mandatory: false| reinit necessary: true
-* default value: 100
+* default value: 5
 **/
-public void setNumberOfGuesses(int numberOfGuesses) {
-ComponentManager.getInstance().applyConfigEntry(randomGuesser, "numberOfGuesses", numberOfGuesses);
+public void setNumberOfTrees(int numberOfTrees) {
+ComponentManager.getInstance().applyConfigEntry(randomGuesser, "numberOfTrees", numberOfTrees);
 reinitNecessary = true;
 }
 /**

@@ -23,16 +23,12 @@ function loadGoogleMap(Lat,Lng,Label)
 	}
 }
     	
-function show_results(class, number, label) 
+function show_results(class, number) 
 {
 	var links=document.getElementById('results').getElementsByTagName('p');
 	var j=0;
 	var names;
 	var hasClass;
-	
-	if (class=='all'&&document.getElementById('FilterTags')) document.getElementById('FilterTags').innerHTML='You currently don\'t filter your search results.';
-	else if (document.getElementById('FilterTags')) document.getElementById('FilterTags').innerHTML='Filtered by class: '+label+'.';
-		
 	for (var i=0;i<links.length;i++){
 		if (class=='all'){
 			if ((j+1)>number&&j<(number+25)) links[i].style.display='block';

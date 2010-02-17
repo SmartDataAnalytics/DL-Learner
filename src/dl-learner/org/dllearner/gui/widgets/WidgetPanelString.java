@@ -27,12 +27,12 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.gui.Config;
 
 /**
  * Panel for option String, defined in
- * {@link org.dllearner.core.options.StringConfigOption}.
+ * {@link org.dllearner.core.config.StringConfigOption}.
  * 
  * @author Jens Lehmann
  * @author Tilo Hielscher

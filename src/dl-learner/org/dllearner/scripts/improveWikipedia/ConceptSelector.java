@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.SetManipulation;
 
@@ -47,14 +47,14 @@ public class ConceptSelector {
 
 	}
 
-	public List<EvaluatedDescriptionPosNeg> getAllConceptsWithoutOR(
-			List<EvaluatedDescriptionPosNeg> concepts) {
+	public List<EvaluatedDescription> getAllConceptsWithoutOR(
+			List<EvaluatedDescription> concepts) {
 		return getConceptsNotContainingString(concepts, "OR");
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<EvaluatedDescriptionPosNeg> getConceptsNotContainingString(
-			List<EvaluatedDescriptionPosNeg> concepts, String filterString,
+	public List<EvaluatedDescription> getConceptsNotContainingString(
+			List<EvaluatedDescription> concepts, String filterString,
 			int limitSize) {
 		// List<EvaluatedDescription> tmp =
 		// getConceptsNotContainingString(filterString);
@@ -68,11 +68,11 @@ public class ConceptSelector {
 		 */
 	}
 
-	public List<EvaluatedDescriptionPosNeg> getConceptsNotContainingString(
-			List<EvaluatedDescriptionPosNeg> concepts, String filterString) {
+	public List<EvaluatedDescription> getConceptsNotContainingString(
+			List<EvaluatedDescription> concepts, String filterString) {
 
-		List<EvaluatedDescriptionPosNeg> result = new ArrayList<EvaluatedDescriptionPosNeg>();
-		for (EvaluatedDescriptionPosNeg description : concepts) {
+		List<EvaluatedDescription> result = new ArrayList<EvaluatedDescription>();
+		for (EvaluatedDescription description : concepts) {
 			if (!description.toString().contains(filterString)) {
 				result.add(description);
 			}
@@ -81,7 +81,7 @@ public class ConceptSelector {
 		return result;
 	}
 
-	public void recordConceptClasses(List<EvaluatedDescriptionPosNeg> concepts) {
+	public void recordConceptClasses(List<EvaluatedDescription> concepts) {
 		StringBuffer result = new StringBuffer();
 		StringBuffer result1 = new StringBuffer("\n\n ***********Entity*****\n");
 		StringBuffer result2 = new StringBuffer("\n\n ***********OR*****\n");
@@ -89,7 +89,7 @@ public class ConceptSelector {
 		int result2count = 1;
 
 		int x = 0;
-		for (EvaluatedDescriptionPosNeg description : concepts) {
+		for (EvaluatedDescription description : concepts) {
 			if (x < 50) {
 				x++;
 				result.append(description + "\n");

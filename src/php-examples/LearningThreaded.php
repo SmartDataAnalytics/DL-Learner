@@ -41,12 +41,6 @@ $client = new SoapClient("main.wsdl");
 
 // load owl file in reasoner
 $id = $client->generateID();
-
-$state = $client->getState($id);
-
-var_dump($state);
-echo 'STATE END';
-
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
 $rID = $client->setReasoner($id, "owlapi");
 
@@ -68,7 +62,7 @@ $negExamples = array(
 	'http://localhost/foo#mandy',
 	'http://localhost/foo#miriam',
 	'http://localhost/foo#hanna');
-$client->setLearningProblem($id, "posNegLPStandard");
+$client->setLearningProblem($id, "posNegDefinition");
 $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
@@ -100,7 +94,7 @@ do {
 	
 } while($running);
 	
-// print best concepts found (not all of which are
+// print best concepts found (not all of are
 // necessarily perfect solutions)
 echo '<br />Algorithm finished. Best concepts: ';
 echo '<pre>';

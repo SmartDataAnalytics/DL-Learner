@@ -32,10 +32,6 @@ import java.util.Map;
  */
 public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9190086621306032225L;
 	DataRange dataRange;
 	
 	/**
@@ -92,7 +88,8 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return restrictedPropertyExpression.toManchesterSyntaxString(baseURI, prefixes) + dataRange.toManchesterSyntaxString(baseURI, prefixes);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**

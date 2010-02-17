@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectAllRestriction;
@@ -62,7 +62,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 public class RhoDown extends RefinementOperatorAdapter {
 
 //	private PosNegLP learningProblem;
-	private ReasonerComponent rs;
+	private ReasoningService rs;
 	
 	// gibt die Gr��e an bis zu der die Refinements des Top-Konzepts
 	// bereits berechnet worden => entspricht der max. L�nge der Menge M
@@ -97,7 +97,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
-	public RhoDown(ReasonerComponent reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+	public RhoDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
 	boolean useExistsConstructor, boolean useNegation, boolean useBooleanDatatypes) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
@@ -108,7 +108,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		
 //		this.learningProblem = learningProblem;
-//		rs = learningProblem.getReasonerComponent();
+//		rs = learningProblem.getReasoningService();
 	}
 
 	@Override
@@ -160,8 +160,8 @@ public class RhoDown extends RefinementOperatorAdapter {
 			// beachte: die Funktion gibt bereits nur nicht-äquivalente Konzepte zurück
 			// TODO: der Cast auf SortedSet ist nur ein Hack und muss später geeignet
 			// behandelt werden
-			refinements = rs.getSubClasses(concept);
-			// refinements.addAll(learningProblem.getReasonerComponent().getMoreSpecialConcepts(concept));
+			refinements = rs.getMoreSpecialConcepts(concept);
+			// refinements.addAll(learningProblem.getReasoningService().getMoreSpecialConcepts(concept));
 			
 			// Bottom rausschmeißen (nicht im Operator vorgesehen)
 			// Iterator<Concept> it = refinements.iterator();
@@ -176,7 +176,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 		// negiertes atomares Konzept
 		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
 		
-			tmp = rs.getSuperClasses(concept.getChild(0));
+			tmp = rs.getMoreGeneralConcepts(concept.getChild(0));
 			
 			 //Iterator<Concept> it = tmp.iterator();
 			 //while(it.hasNext()) {
@@ -283,7 +283,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = rs.getSubProperties(ar);
+			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectSomeRestriction(moreSpecialRole, concept.getChild(0)));
 			}
@@ -310,7 +310,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = rs.getSubProperties(ar);
+			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, concept.getChild(0)));
 			}
@@ -460,7 +460,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 					
 					// Umwandlung aller Konzepte in Negationsnormalform
 					for(Description concept : baseSet) {
-						ConceptTransformation.transformToOrderedForm(concept, conceptComparator);
+						ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
 					}
 					
 					if(applyExistsFilter) {
@@ -525,14 +525,14 @@ public class RhoDown extends RefinementOperatorAdapter {
 		// TODO: Spezialfälle, dass zwischen Top und Bottom nichts liegt behandeln
 		if(topRefinementsLength==0 && maxLength>0) {
 			// Konzepte der Länge 1 = alle Konzepte, die in der Subsumptionhierarchie unter Top liegen
-			Set<Description> m1 = rs.getSubClasses(new Thing()); 
+			Set<Description> m1 = rs.getMoreSpecialConcepts(new Thing()); 
 			m.put(1,m1);
 		}
 		
 		if(topRefinementsLength<2 && maxLength>1) {	
 			// Konzepte der Länge 2 = Negation aller Konzepte, die über Bottom liegen
 			if(useNegation) {
-				Set<Description> m2tmp = rs.getSuperClasses(new Nothing());
+				Set<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
 				Set<Description> m2 = new TreeSet<Description>(conceptComparator);
 				for(Description c : m2tmp) {
 					m2.add(new Negation(c));
@@ -550,7 +550,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 				//	m3.add(new Exists(r, new Top()));
 				//}
 				// new operator: only uses most general roles
-				for(ObjectProperty r : rs.getMostGeneralProperties()) {
+				for(ObjectProperty r : rs.getMostGeneralRoles()) {
 					m3.add(new ObjectSomeRestriction(r, new Thing()));
 				}				
 
@@ -591,7 +591,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 							// 	m.get(i+2).add(new All(r,c));
 							// }
 							
-							for(ObjectProperty r : rs.getMostGeneralProperties()) {
+							for(ObjectProperty r : rs.getMostGeneralRoles()) {
 								m.get(i+2).add(new ObjectAllRestriction(r,c));
 							}
 						}

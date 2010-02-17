@@ -1,10 +1,4 @@
 <?php
-
-//
-// TODO: 
-// - move configuration for settings.ini
-// - ignoredConcepts and ignoredRoles are not working yet
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -46,8 +40,6 @@ class Settings{
 	public $endpoint="DBPEDIA";
 	//public $endpoint="LOCALDBPEDIA";
 	
-	public $dbpediaPropertyPrefix = 'http://dbpedia.org/ontology/';
-	public $dbpediaClassPrefix = 'http://dbpedia.org/ontology/';
 	
 	// in mikrosekunden
 	public $sparqlttl=60000000;
@@ -62,15 +54,6 @@ class Settings{
 	
 	public $useCache=true;
 	
-	public $ignoredConcepts=array();
-	public $ignoredRoles=array();
-
-	//public $classSystem="YAGO";
-	public $classSystem="DBpedia";
-	//the name of the used database
-	//public $database_name='navigator_db';
-	public $database_name='navigator_db_new';
-
 	//the type of database server
 	public $database_type='mysql';
 	//the server, where the mysql databank is located
@@ -79,7 +62,8 @@ class Settings{
 	public $database_user='navigator';
 	//the password of that user
 	public $database_pass='dbpedia';
-	
+	//the name of the used database
+	public $database_name='navigator_db';
 }
 
 ?>

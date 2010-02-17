@@ -28,10 +28,6 @@ import java.util.Set;
  */
 public class DisjointClassesAxiom extends TerminologicalAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7788863077013583508L;
 	private Set<Description> descriptions;
 	
 	public DisjointClassesAxiom(Set<Description> descriptions) {
@@ -77,14 +73,6 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 	 */
 	public Set<Description> getDescriptions() {
 		return descriptions;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "DISJOINT_CLASSES_AXIOM NOT IMPLEMENTED";
 	}	
 	
 }

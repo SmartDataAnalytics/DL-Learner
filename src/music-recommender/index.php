@@ -56,47 +56,26 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<head>
 		<title>DL-Learner Music Recommender</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-		<?php $xajax->printJavascript('../music-recommender/xajax/'); ?>
+		<?php $xajax->printJavascript('../dbpedia-navigator/xajax/'); ?>
 		<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
-		<style type="text/css">
-		<!-- 
-		body { height:100%;color: #000; background: #bff2bf; padding: 10px; margin: 1px; text-align: center;  }
-		#a {padding:10px;margin:10px;height:86%;background: #dff9df;}
-		#b {padding:10px;margin:10px;height:86%;}
-		#c {padding:10px;margin:10px;height:86%;background: #669966;}
-
-		//--></style>
-
 	</head>
 	<body>
-	<div id="a">
-		<h1>Music Recommender</h1> 
-	</div>
+		<h1>Music Recommender</h1>
 
-	<div id="b">
 		<h2>Search</h2>
 		<!-- search form -->
 		<input type="text" id="label" />
-		<button type="submit" onclick="xajax_doSearch(document.getElementById('label').value);">search</button>
-		<p>Enter an artist and click the search button. </p><!--(TODO: Enable search also for tracks and tags.)-->
+		<button onclick="xajax_doSearch(document.getElementById('label').value);">search</button>
+		<p>Enter an artist and click the search button. (TODO: Enable search also for tracks and tags. Enable hitting enter instead of clicking button.)</p>
 		<p>Example artist: Allison Crowe</p>
-	</div>
-		<!-- suche nach Titlen -->
-		<div id="c" style="color: #fff;">
-		<input type="text" id="label2" />
-		<button type="submit" onclick="xajax_doSearchTitle(document.getElementById('label2').value);">Titlen</button>
-		<p>Enter a Title and click the Title button. </p>
-	</div>
 
 		<!-- search result display -->
-	<div id="searchElement" style="max-width:500px;">
-	</div>
-	 <div id="song">
+		<div id="searchElement" style="max-width:500px;"></div>
+
 		<h2>Song List</h2>
 		<a href="http://mediaplayer.yahoo.com/example1.mp3">song 1</a> <br />
 		<a href="http://mediaplayer.yahoo.com/example2.mp3">song 2</a> <br />
 		<a href="http://mediaplayer.yahoo.com/example3.mp3">song 3</a>
-	</div> 
 
 	</body>
 </html>

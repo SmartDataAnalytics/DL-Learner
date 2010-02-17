@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -36,7 +36,7 @@ public class OntologyCloser {
 	boolean isKB = true;
 
 	// Set<KnowledgeSource> ks;
-	ReasonerComponent rs;
+	ReasoningService rs;
 	HashMap<Individual, Set<ObjectExactCardinalityRestriction>> indToRestr;
 	HashMap<Individual, Set<Description>> indToNamedClass;
 	HashSet<Description> classes;
@@ -56,8 +56,7 @@ public class OntologyCloser {
 		}
 		this.indToRestr = new HashMap<Individual, Set<ObjectExactCardinalityRestriction>>();
 		this.classes = new HashSet<Description>();
-//		this.rs = new ReasonerComponent(owlapi);
-		rs = owlapi;
+		this.rs = new ReasoningService(owlapi);
 
 	}
 	
@@ -78,8 +77,7 @@ public class OntologyCloser {
 			e.printStackTrace();
 		}
 		sc.printAndSet();
-//		this.rs = new ReasonerComponent(owlapi);
-		rs = owlapi;
+		this.rs = new ReasoningService(owlapi);
 		
 	}
 
@@ -96,7 +94,7 @@ public class OntologyCloser {
 
 			// System.out.println(oneRole.getClass());
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getPropertyMembers(oneRole);
+					.getRoleMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
@@ -126,7 +124,7 @@ public class OntologyCloser {
 
 			// System.out.println(oneRole.getClass());
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getPropertyMembers(oneRole);
+					.getRoleMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
@@ -177,7 +175,7 @@ public class OntologyCloser {
 
 			// System.out.println(oneRole.getClass());
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getPropertyMembers(oneRole);
+					.getRoleMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				//if (fillers.size() > 0) {
@@ -256,7 +254,7 @@ public class OntologyCloser {
 					new HashMap<String, String>()));
 			// System.out.println(d.toString());
 			sc.setTime();
-			this.rs.getIndividuals(d);
+			this.rs.retrieval(d);
 
 			System.out.println("retrieved: " + ind.size() + " instances");
 			sc.printAndSet();

@@ -23,17 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
-import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.el.ELLearningAlgorithm;
-import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -41,10 +38,9 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosNegLPStrict;
-import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -54,10 +50,6 @@ import org.dllearner.reasoning.OWLAPIReasoner;
  * Contains mappings from component classes to strings.
  * Developer please edit the buildMappings() function to add new 
  * CLI mappings.
- * 
- * TODO: For the web service, it may be interesting to hide some components
- * and/or configuration options or even limit the maximum value of certain
- * options.
  * 
  * @author Jens Lehmann
  *
@@ -76,9 +68,6 @@ public class ConfMapper {
 	private static Map<String,Class<? extends Component>> componentTypeMapping = new TreeMap<String,Class<? extends Component>>();
 	private static Map<Class<? extends Component>, String> inverseTypeMapping = new HashMap<Class<? extends Component>,String>();	
 	
-	// set of available components
-	private static Set<String> components = new TreeSet<String>();
-	
 	public ConfMapper() {
 		buildMappings();
 		buildKeys();
@@ -92,18 +81,15 @@ public class ConfMapper {
 		reasonerMapping.put("owlAPIReasoner", OWLAPIReasoner.class);
 		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
 		reasonerMapping.put("fastRetrievalReasoner", FastRetrievalReasoner.class);
-		learningProblemMapping.put("posNegLPStandard", PosNegLPStandard.class);
-		learningProblemMapping.put("posNegLPStrict", PosNegLPStrict.class);
-		learningProblemMapping.put("classLearning", ClassLearningProblem.class);
-		learningProblemMapping.put("posOnlyLP", PosOnlyLP.class);
+		learningProblemMapping.put("posNegDefinitionLP", PosNegDefinitionLP.class);
+		learningProblemMapping.put("posNegInclusionLP", PosNegInclusionLP.class);
+		learningProblemMapping.put("posOnlyDefinitionLP", PosOnlyDefinitionLP.class);
 		learningAlgorithmMapping.put("random", RandomGuesser.class);
 		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
 		learningAlgorithmMapping.put("gp", GP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
-		learningAlgorithmMapping.put("refexamples", ROLComponent2.class);
-		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
-		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
-		learningAlgorithmMapping.put("celoe", CELOE.class);
+		learningAlgorithmMapping.put("refexamples", ExampleBasedROLComponent.class);
+		learningAlgorithmMapping.put("dbpediaNavigationSuggestor", DBpediaNavigationSuggestor.class);	
 		
 		// you do not need to edit anything below
 		
@@ -117,8 +103,6 @@ public class ConfMapper {
 		for(Entry<String, Class<? extends Component>> entry : componentMapping.entrySet()) {
 			inverseMapping.put(entry.getValue(), entry.getKey());
 		}		
-		
-		components = componentTypeMapping.keySet();
 	}
 	
 	private static void buildKeys() {
@@ -184,7 +168,7 @@ public class ConfMapper {
 	}	
 	
 	public Set<String> getComponents() {
-		return components;
+		return componentMapping.keySet();
 	}	
 	
 }

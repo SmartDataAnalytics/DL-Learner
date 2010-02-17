@@ -29,7 +29,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class OWLAPIReasonerConfigurator  implements Configurator {
+public  class OWLAPIReasonerConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

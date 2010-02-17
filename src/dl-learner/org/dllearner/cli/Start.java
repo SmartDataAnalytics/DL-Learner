@@ -37,13 +37,17 @@ import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.Info;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -53,16 +57,17 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
-import org.dllearner.core.options.StringTupleListConfigOption;
-import org.dllearner.core.options.URLConfigOption;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -70,15 +75,17 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.FastRetrievalReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
@@ -98,14 +105,14 @@ import com.jamonapi.MonitorFactory;
  */
 public class Start {
 
-	private static Logger logger = Logger.getLogger(Start.class);
-	private static Logger rootLogger = Logger.getRootLogger();
+	private static Logger logger = Logger.getRootLogger();
 
 	private static ConfMapper confMapper = new ConfMapper();
 	
 	private Set<KnowledgeSource> sources;
 	private LearningAlgorithm la;
 	private LearningProblem lp;
+	private ReasoningService rs;
 	private ReasonerComponent rc;
 
 	/**
@@ -133,57 +140,34 @@ public class Start {
 		if (args.length > 1 && args[0].equals("-q")) {
 			inQueryMode = true;
 		}
-		
+
 		// create loggers (a simple logger which outputs
 		// its messages to the console and a log file)
 		
 		// logger 1 is the console, where we print only info messages;
 		// the logger is plain, i.e. does not output log level etc.
 		Layout layout = new PatternLayout();
-
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		// setting a threshold suppresses log messages below this level;
-		// this means that if you want to e.g. see all trace messages on
-		// console, you have to set the threshold and log level to trace
-		// (but we recommend just setting the log level to trace and observe
-		// the log file)
 		consoleAppender.setThreshold(Level.INFO);
 		
 		// logger 2 is writes to a file; it records all debug messages
-		// (you can choose HTML or TXT)
-		boolean htmlLog = false;
-		Layout layout2 = null;
+		// and includes the log level
+		Layout layout2 = new SimpleLayout();
 		FileAppender fileAppenderNormal = null;
-		String fileName;
-		if(htmlLog) {
-			layout2 = new HTMLLayout();
-			fileName = "log/log.html";
-		} else {
-			// simple variant: layout2 = new SimpleLayout();
-			layout2 = new PatternLayout("%r [%t] %-5p %c :\n%m%n\n");
-			fileName = "log/log.txt";
-		}
+		File f = new File("log/sparql.txt");
 		try {
-			fileAppenderNormal = new FileAppender(layout2, fileName, false);
+		    	fileAppenderNormal = new FileAppender(layout2, "log/log.txt", false);
+		    	f.delete();
+		    	f.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
-		
-		// add both loggers
-		rootLogger.removeAllAppenders();
-		rootLogger.addAppender(consoleAppender);
-		rootLogger.addAppender(fileAppenderNormal);
-		rootLogger.setLevel(Level.DEBUG);
-		
-		// SPARQL log
-		File f = new File("log/sparql.txt");
-    	f.delete();
-    	try {
-			f.createNewFile();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
+//		fileAppenderNormal.setThreshold(Level.DEBUG);
+		
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.addAppender(fileAppenderNormal);
+		logger.setLevel(Level.DEBUG);
 		
 //		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
 //		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
@@ -205,9 +189,7 @@ public class Start {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
 		start.start(inQueryMode);
-		
 		// write JaMON report in HTML file
 		File jamonlog = new File("log/jamon.html");
 		Files.createFile(jamonlog, MonitorFactory.getReport());
@@ -261,7 +243,7 @@ public class Start {
 
 		
 		// step 2: detect used reasoner
-		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasonerComponent").start();
+		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasoningService").start();
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
 		Class<? extends ReasonerComponent> rcClass;
 		if(reasonerOption != null) {
@@ -275,6 +257,7 @@ public class Start {
 		rc = cm.reasoner(rcClass, sources);
 		configureComponent(cm, rc, parser);
 		initComponent(cm, rc);
+		rs = cm.reasoningService(rc);
 		rsMonitor.stop();
 
 		// step 3: detect learning problem
@@ -287,17 +270,14 @@ public class Start {
 				handleError("Invalid value \"" + problemOption.getStringValue() + "\" in " + problemOption + ". Valid values are " + confMapper.getLearningProblems() + ".");
 			}			
 		} else {
-			lpClass = PosNegLPStandard.class;
+			lpClass = PosNegDefinitionLP.class;
 		}
-		lp = cm.learningProblem(lpClass, rc);
-		if(lpClass == PosNegLPStandard.class || lpClass == PosOnlyLP.class) {
-			SortedSet<String> posExamples = parser.getPositiveExamples();
-			cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		}
-		if(lpClass == PosNegLPStandard.class) {
-			SortedSet<String> negExamples = parser.getNegativeExamples();
+		lp = cm.learningProblem(lpClass, rs);
+		SortedSet<String> posExamples = parser.getPositiveExamples();
+		SortedSet<String> negExamples = parser.getNegativeExamples();
+		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
+		if (lpClass != PosOnlyDefinitionLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
-		}
 		configureComponent(cm, lp, parser);
 		initComponent(cm, lp);
 		lpMonitor.stop();
@@ -312,10 +292,10 @@ public class Start {
 				handleError("Invalid value \"" + algorithmOption.getStringValue() + "\" in " + algorithmOption + ". Valid values are " + confMapper.getLearningAlgorithms() + ".");
 			}			
 		} else {
-			laClass = ROLComponent2.class;
+			laClass = ExampleBasedROLComponent.class;
 		}		
 		try {
-			la = cm.learningAlgorithm(laClass, lp, rc);
+			la = cm.learningAlgorithm(laClass, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
 			e.printStackTrace();
 		}
@@ -324,28 +304,53 @@ public class Start {
 		laMonitor.stop();
 
 		// perform file exports
-		performExports(parser, baseDir, sources, rc);
+		performExports(parser, baseDir, sources, rs);
 
 		// handle any CLI options
-		processCLIOptions(cm, parser, rc, lp);
-		
-		// newline to separate init phase from learning phase
-		if(logger.isInfoEnabled()) {
-			System.out.println("");
-		}
+		processCLIOptions(cm, parser, rs, lp);
 	}
 
 	public void start(boolean inQueryMode) {
 		if (inQueryMode)
-			processQueryMode(lp, rc);
+			processQueryMode(lp, rs);
 		else {
 			// start algorithm
 			long algStartTime = System.nanoTime();
 			la.start();
 			long algDuration = System.nanoTime() - algStartTime;
 
-			printConclusions(rc, algDuration);
+			printConclusions(rs, algDuration);
 		}
+	}
+
+	/**
+	 * @deprecated See ConfMapper.
+	 * creates a mapping from components to option prefix strings
+	 */
+	@Deprecated
+	public static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
+		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
+		// knowledge sources
+		componentPrefixMapping.put(SparqlKnowledgeSource.class, "sparql");
+		// reasoners
+		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
+		componentPrefixMapping.put(FastInstanceChecker.class, "fastInstanceChecker");
+		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
+		componentPrefixMapping.put(FastRetrievalReasoner.class, "fastRetrieval");
+
+		// learning problems - configured via + and - flags for examples
+		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
+		componentPrefixMapping.put(PosNegInclusionLP.class, "posNegInclusionLP");
+		componentPrefixMapping.put(PosOnlyDefinitionLP.class, "posOnlyDefinitionLP");
+
+		// learning algorithms
+		componentPrefixMapping.put(ROLearner.class, "refinement");
+		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
+		componentPrefixMapping.put(GP.class, "gp");
+		componentPrefixMapping.put(BruteForceLearner.class, "bruteForce");
+		componentPrefixMapping.put(RandomGuesser.class, "random");
+
+		return componentPrefixMapping;
 	}
 	
 	/**
@@ -390,19 +395,6 @@ public class Start {
 					ConfigEntry<String> entry = new ConfigEntry<String>(
 							(StringConfigOption) configOption, option.getStringValue());
 					cm.applyConfigEntry(component, entry);
-
-				} else if (configOption instanceof URLConfigOption && option.isStringOption()) {
-
-						ConfigEntry<URL> entry = null;
-						try {
-							entry = new ConfigEntry<URL>(
-									(URLConfigOption) configOption, new URL(option.getStringValue()));
-						} catch (MalformedURLException e) {
-							handleError("The type of conf file entry \"" + option.getFullName()
-									+ "\" is not correct: value \"" + option.getValue()
-									+ "\" not valid a URL!");							
-						}
-						cm.applyConfigEntry(component, entry);
 
 				} else if (configOption instanceof IntegerConfigOption && option.isIntegerOption()) {
 
@@ -455,14 +447,8 @@ public class Start {
 				System.exit(0);
 			}
 
-		} else {
-			List<ConfigOption<?>> options = ComponentManager.getConfigOptions(component.getClass());
-			Set<String> optionStrings = new TreeSet<String>();
-			for(ConfigOption<?> o : options) {
-				optionStrings.add(o.getName());
-			}
-			handleError("Unknown option \"" + option.getSubOption() + "\" for component \"" + cm.getComponentName(component.getClass()) + "\". Valid options are " + optionStrings + ".");
-		}
+		} else
+			handleError("Unknow option " + option + ".");
 	}
 
 	/**
@@ -511,9 +497,7 @@ public class Start {
 				} else {
 					String formatString = arguments.get(1);
 
-					if(formatString.equals("OWL")) {
-						ksClass = OWLFile.class;
-					} else if (formatString.equals("RDF/XML"))
+					if (formatString.equals("RDF/XML"))
 						ksClass = OWLFile.class;
 					else if (formatString.equals("KB"))
 						ksClass = KBFile.class;
@@ -535,7 +519,7 @@ public class Start {
 	}
 
 	private static void performExports(ConfParser parser, String baseDir,
-			Set<KnowledgeSource> sources, ReasonerComponent rs) {
+			Set<KnowledgeSource> sources, ReasoningService rs) {
 		List<List<String>> exports = parser.getFunctionCalls().get("export");
 
 		if (exports == null)
@@ -572,7 +556,7 @@ public class Start {
 	}
 
 	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
-			ReasonerComponent rs, LearningProblem lp) {
+			ReasoningService rs, LearningProblem lp) {
 		// CLI options (i.e. options which are related to the CLI
 		// user interface but not to one of the components)
 		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
@@ -640,7 +624,7 @@ public class Start {
 				} else if (name.equals("showSubsumptionHierarchy")) {
 					if (cliOption.getStringValue().equals("true")) {
 						System.out.println("Subsumption Hierarchy:");
-						System.out.println(rs.getClassHierarchy());
+						System.out.println(rs.getSubsumptionHierarchy());
 					}
 					// satisfiability check
 				} else if (name.equals("checkSatisfiability")) {
@@ -659,19 +643,19 @@ public class Start {
 				} else if (name.equals("logLevel")) {
 					String level = cliOption.getStringValue();
 					if (level.equals("off"))
-						rootLogger.setLevel(Level.OFF);
+						logger.setLevel(Level.OFF);
 					else if (level.equals("trace"))
-						rootLogger.setLevel(Level.TRACE);
+						logger.setLevel(Level.TRACE);
 					else if (level.equals("info"))
-						rootLogger.setLevel(Level.INFO);
+						logger.setLevel(Level.INFO);
 					else if (level.equals("debug"))
-						rootLogger.setLevel(Level.DEBUG);
+						logger.setLevel(Level.DEBUG);
 					else if (level.equals("warn"))
-						rootLogger.setLevel(Level.WARN);
+						logger.setLevel(Level.WARN);
 					else if (level.equals("error"))
-						rootLogger.setLevel(Level.ERROR);
+						logger.setLevel(Level.ERROR);
 					else if (level.equals("fatal"))
-						rootLogger.setLevel(Level.FATAL);
+						logger.setLevel(Level.FATAL);
 				} else
 					handleError("Unknown CLI option \"" + name + "\".");
 			}
@@ -700,7 +684,7 @@ public class Start {
 				+ Helper.prettyPrintNanoSeconds(initTime, false, false) + ")");
 	}
 
-	private static void printConclusions(ReasonerComponent rs, long algorithmDuration) {
+	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
 		if (rs.getNrOfRetrievals() > 0) {
 			logger.info("number of retrievals: " + rs.getNrOfRetrievals());
 			logger.info("retrieval reasoning time: "
@@ -747,7 +731,7 @@ public class Start {
 	}
 
 	// performs a query - used for debugging learning examples
-	private static void processQueryMode(LearningProblem lp, ReasonerComponent rs) {
+	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
 
 		logger.info("Entering query mode. Enter a concept for performing "
 				+ "retrieval or q to quit. Use brackets for complex expresssions,"
@@ -831,11 +815,11 @@ public class Start {
 
 						// pose retrieval query
 						Set<Individual> result = null;
-						result = rs.getIndividuals(concept);
+						result = rs.retrieval(concept);
 
 						logger.info("retrieval result (" + result.size() + "): " + result);
 
-						ScorePosNeg score = (ScorePosNeg) lp.computeScore(concept);
+						Score score = lp.computeScore(concept);
 						logger.info(score);
 
 					}
@@ -845,8 +829,7 @@ public class Start {
 		} while (!(queryStr.equalsIgnoreCase("q") || queryStr.equalsIgnoreCase("quit")));
 
 	}
-	
-	
+
 	/**
 	 * error handling over the logger
 	 * 
@@ -875,6 +858,104 @@ public class Start {
 
 	public ReasonerComponent getReasonerComponent() {
 		return rc;
+	}
+	
+	public ReasoningService getReasoningService() {
+		return rs;
+	}
+
+	/**
+	 * @deprecated See ConfMapper.
+	 * @param componentSuperClass
+	 * @return String.
+	 */
+	@Deprecated
+	public static String getCLIMapping(String componentSuperClass){
+		HashMap<String, String> m = new HashMap<String, String>();
+		m.put("KnowledgeSource", "import");
+		m.put("ReasonerComponent", "reasoner");
+		m.put("PosNegLP", "problem");
+		m.put("PosOnlyLP", "problem");
+		m.put("LearningAlgorithm", "algorithm");
+		return m.get(componentSuperClass);
+	}
+
+	/**
+	 * Set Reasoner class. Define here all possible reasoners.
+	 * 
+	 * @deprecated See ConfMapper.
+	 * @param reasonerOption
+	 *            from config file
+	 * @return reasonerClass reasoner class
+	 */
+	@Deprecated
+	public static Class<? extends ReasonerComponent> getReasonerClass(ConfFileOption reasonerOption) {
+		Class<? extends ReasonerComponent> reasonerClass = null;
+		if (reasonerOption == null || reasonerOption.getStringValue().equals("fastInstanceChecker"))
+			reasonerClass = FastInstanceChecker.class;
+		else if (reasonerOption.getStringValue().equals("owlAPI"))
+			reasonerClass = OWLAPIReasoner.class;
+		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
+			reasonerClass = FastRetrievalReasoner.class;
+		else if (reasonerOption.getStringValue().equals("dig"))
+			reasonerClass = DIGReasoner.class;
+		else {
+			handleError("Unknown value " + reasonerOption.getStringValue()
+					+ " for option \"reasoner\".");
+		}
+		return reasonerClass;
+	}
+
+	/**
+	 * Set LearningProblem class. Define here all possible problems.
+	 * 
+	 * @deprecated See ConfMapper.
+	 * @param problemOption
+	 *            from config file
+	 * @return lpClass learning problem class
+	 */
+	@Deprecated
+	public static Class<? extends LearningProblem> getLearningProblemClass(
+			ConfFileOption problemOption) {
+		Class<? extends LearningProblem> lpClass = null;
+		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinitionLP"))
+			lpClass = PosNegDefinitionLP.class;
+		else if (problemOption.getStringValue().equals("posNegInclusionLP"))
+			lpClass = PosNegInclusionLP.class;
+		else if (problemOption.getStringValue().equals("posOnlyDefinitionLP"))
+			lpClass = PosOnlyDefinitionLP.class;
+		else
+			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
+
+		return lpClass;
+	}
+
+	/**
+	 * Set LearningAlorithm class. Define here all possible learning algorithms.
+	 * 
+	 * @deprecated See ConfMapper.
+	 * @param algorithmOption
+	 *            from config file
+	 * @return laClass learning algorithm class
+	 */
+	@Deprecated
+	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(
+			ConfFileOption algorithmOption) {
+		Class<? extends LearningAlgorithm> laClass = null;
+		if (algorithmOption == null || algorithmOption.getStringValue().equals("refexamples"))
+			laClass = ExampleBasedROLComponent.class;
+		else if (algorithmOption.getStringValue().equals("refinement"))
+			laClass = ROLearner.class;
+		else if (algorithmOption.getStringValue().equals("gp"))
+			laClass = GP.class;
+		else if (algorithmOption.getStringValue().equals("bruteForce"))
+			laClass = BruteForceLearner.class;
+		else if (algorithmOption.getStringValue().equals("randomGuesser"))
+			laClass = RandomGuesser.class;
+		else
+			handleError("Unknown value in " + algorithmOption);
+
+		return laClass;
 	}
 
 }

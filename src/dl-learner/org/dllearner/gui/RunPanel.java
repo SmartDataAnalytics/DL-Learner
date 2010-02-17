@@ -46,15 +46,11 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 
 /**
  * @author Tilo Hielscher
@@ -222,7 +218,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		// start
 		if (e.getSource() == runButton) {
 			algorithmThread = new AlgorithmThread();
-			config.getReasoner().resetStatistics();
+			config.getReasoningService().resetStatistics();
 			algorithmThread.start();
 //			algorithmStartTime = System.nanoTime();
 //			algorithmThread.
@@ -279,32 +275,32 @@ public class RunPanel extends JPanel implements ActionListener {
 		percent[0].setText("100%");
 		
 		// update overall reasoning time
-			overallReasoningTime = config.getReasoner().getOverallReasoningTimeNs();
+			overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
 			bar[1].update((double) overallReasoningTime / (double) algorithmRunTime);
 			time[1].setText(makeTime(overallReasoningTime));
 			percent[1].setText(Percent(overallReasoningTime, algorithmRunTime));
 		
-		if (config.getReasoner().getNrOfInstanceChecks() > 0) {
-			instanceCheckReasoningTime = config.getReasoner()
+		if (config.getReasoningService().getNrOfInstanceChecks() > 0) {
+			instanceCheckReasoningTime = config.getReasoningService()
 					.getInstanceCheckReasoningTimeNs();
-			name[2].setText(names[2] + " (" + config.getReasoner().getNrOfInstanceChecks()
+			name[2].setText(names[2] + " (" + config.getReasoningService().getNrOfInstanceChecks()
 					+ ")");
 			bar[2].update((double) instanceCheckReasoningTime / (double) algorithmRunTime);
 			time[2].setText(makeTime(instanceCheckReasoningTime));
 			percent[2].setText(Percent(instanceCheckReasoningTime, algorithmRunTime));
 		}
-		if (config.getReasoner().getNrOfRetrievals() > 0) {
-			retrievalReasoningTime = config.getReasoner().getRetrievalReasoningTimeNs();
-			name[3].setText(names[3] + " (" + config.getReasoner().getNrOfRetrievals()
+		if (config.getReasoningService().getNrOfRetrievals() > 0) {
+			retrievalReasoningTime = config.getReasoningService().getRetrievalReasoningTimeNs();
+			name[3].setText(names[3] + " (" + config.getReasoningService().getNrOfRetrievals()
 					+ ")");
 			bar[3].update((double) retrievalReasoningTime / (double) algorithmRunTime);
 			time[3].setText(makeTime(retrievalReasoningTime));
 			percent[3].setText(Percent(retrievalReasoningTime, algorithmRunTime));
 		}
-		if (config.getReasoner().getNrOfSubsumptionChecks() > 0) {
-			subsumptionReasoningTime = config.getReasoner().getSubsumptionReasoningTimeNs();
+		if (config.getReasoningService().getNrOfSubsumptionChecks() > 0) {
+			subsumptionReasoningTime = config.getReasoningService().getSubsumptionReasoningTimeNs();
 			name[4].setText(names[4] + " ("
-					+ config.getReasoner().getNrOfSubsumptionChecks() + ")");
+					+ config.getReasoningService().getNrOfSubsumptionChecks() + ")");
 			bar[4].update((double) subsumptionReasoningTime / (double) algorithmRunTime);
 			time[4].setText(makeTime(subsumptionReasoningTime));
 			percent[4].setText(Percent(subsumptionReasoningTime, algorithmRunTime));
@@ -381,9 +377,9 @@ public class RunPanel extends JPanel implements ActionListener {
 		gbc.weighty = wy;
 	}
 
-	private String getSolutionString(List<? extends EvaluatedDescription> solutions) {
-		String baseURI = config.getReasoner().getBaseURI();
-		Map<String,String> prefixes = config.getReasoner().getPrefixes();
+	private String getSolutionString(List<EvaluatedDescription> solutions) {
+		String baseURI = config.getReasoningService().getBaseURI();
+		Map<String,String> prefixes = config.getReasoningService().getPrefixes();
 		String string = "";
 		for (EvaluatedDescription d : solutions) {
 			string += "accuracy: " + (df.format(d.getAccuracy()*100)) + "%: \t"
@@ -419,8 +415,8 @@ public class RunPanel extends JPanel implements ActionListener {
 //		System.out.println("TEST");
 		
 		// enable tree button
-		if((config.getLearningAlgorithm() instanceof ROLComponent2)
-				&& (config.getLearningProblem() instanceof PosNegLPStandard)) {
+		if((config.getLearningAlgorithm() instanceof ExampleBasedROLComponent)
+				&& (config.getLearningProblem() instanceof PosNegDefinitionLP)) {
 			treeButton.setEnabled(true);
 		}
 	}

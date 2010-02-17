@@ -19,7 +19,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -31,12 +30,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ObjectProperty extends ObjectPropertyExpression implements Property, Comparable<ObjectProperty>{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3343070247923446690L;
+public class ObjectProperty extends ObjectPropertyExpression implements Property, Comparable<ObjectProperty> {
 
 	public ObjectProperty(String name) {
 		super(name);
@@ -45,10 +39,6 @@ public class ObjectProperty extends ObjectPropertyExpression implements Property
 	public int getLength() {
 		return 1;
 	}
-	
-    public URI getURI() {
-    	return URI.create(name);
-    }	
 	
 	@Override		
 	public String toString() {
@@ -70,30 +60,4 @@ public class ObjectProperty extends ObjectPropertyExpression implements Property
 	public int compareTo(ObjectProperty o) {
 		return name.compareTo(o.name);
 	}    
-	
-	@Override
-	public boolean equals(Object nc) {
-		// standard equals code - always return true for object identity and
-		// false if classes differ
-		if(nc == this) {
-			return true;
-		} else if(getClass() != nc.getClass()) {
-			return false;
-		}
-		// compare on URIs
-		return ((ObjectProperty)nc).name.equals(name);
-	}
-	
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return Helper.getAbbreviatedString(name, baseURI, prefixes);
-	}	
 }

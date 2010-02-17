@@ -6,7 +6,6 @@ package org.dllearner.parser;
  * Describes the input token stream.
  */
 
-@SuppressWarnings("all")
 public class Token {
 
   /**

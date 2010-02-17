@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -43,16 +43,16 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 		double acc1 = ed1.getAccuracy();
 		double acc2 = ed2.getAccuracy();
 		if(acc1 > acc2)
-			return 1;
-		else if(acc1 < acc2)
 			return -1;
+		else if(acc1 < acc2)
+			return 1;
 		else {
 			int length1 = ed1.getDescriptionLength();
 			int length2 = ed2.getDescriptionLength();
 			if(length1 < length2)
-				return 1;
-			else if(length1 > length2)
 				return -1;
+			else if(length1 > length2)
+				return 1;
 			else
 				return cc.compare(ed1.getDescription(), ed2.getDescription());
 		}

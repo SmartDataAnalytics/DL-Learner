@@ -21,7 +21,7 @@ package org.dllearner.gui;
 
 import javax.swing.JTree;
 
-import org.dllearner.algorithms.refinement2.ExampleBasedNode;
+import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 
 /**
  * Own JTree implemenation with improved formatting.
@@ -42,7 +42,6 @@ public class SearchTree extends JTree {
 		this.nrOfPositiveExamples = nrOfPositiveExamples;
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		this.baseURI = baseURI;
-//		setRowHeight(0);
 	}
 	
 	@Override
@@ -54,6 +53,5 @@ public class SearchTree extends JTree {
             boolean hasFocus) {
 		ExampleBasedNode node = (ExampleBasedNode) value;
 		return node.getShortDescriptionHTML(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
-//		return node.toString();
 	}
 }

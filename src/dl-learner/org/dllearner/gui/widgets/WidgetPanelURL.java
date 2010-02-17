@@ -23,20 +23,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.options.URLConfigOption;
-import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.gui.Config;
 import org.dllearner.gui.ExampleFileChooser;
 import org.dllearner.kb.OWLFile;
@@ -57,9 +51,6 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 	private URL value;
 	private JTextField stringField;
 
-	private JComboBox comboBox;
-	private List<NamedClass> classes;
-	
 	/**
 	 * Provides a widget for URL options.
 	 * 
@@ -79,7 +70,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 		if (e.getSource() == chooseLocalButton) {
 			JFileChooser fc;
 			if (component instanceof OWLFile) {
-				fc = new ExampleFileChooser("owl","rdf","nt");
+				fc = new ExampleFileChooser("owl");
 			} else {
 				fc = new ExampleFileChooser("kb");
 			}
@@ -106,16 +97,6 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 				e1.printStackTrace();
 			}
 			fireValueChanged(value);
-		} else if (e.getSource() == comboBox) {
-			// pick the selected class
-			NamedClass clazz = classes.get(comboBox.getSelectedIndex());
-			try {
-				value = new URL(clazz.getName());
-			} catch (MalformedURLException e1) {
-				// cannot happen
-				e1.printStackTrace();
-			}
-			fireValueChanged(value);
 		}
 	}
 
@@ -126,45 +107,30 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 		// get current value of this option for the given component
 		value = config.getConfigOptionValue(component, configOption);
 
-		// if the option value is an OWL class, we offer a dropdown box
-		if(((URLConfigOption) configOption).refersToOWLClass()) {
-			comboBox = new JComboBox();
-			ReasonerComponent reasoner = config.getReasoner();
-			String baseURI = reasoner.getBaseURI();
-			Map<String,String> prefixes = reasoner.getPrefixes();
-			classes = new LinkedList<NamedClass>(reasoner.getNamedClasses());
-			for(NamedClass clazz : classes) {
-				comboBox.addItem(clazz.toManchesterSyntaxString(baseURI, prefixes));
-			}
-			comboBox.addActionListener(this);
-			comboBox.setSelectedIndex(0);
-			add(comboBox);
-		} else {
-			// text field for strings
-			stringField = new JTextField(35);
-			if (value != null) {
-				stringField.setText(value.toString());
-			}
-			stringField.setToolTipText(configOption.getAllowedValuesDescription());
-
-			// set button (value is only updated when this button is pressed =>
-			// would be better without set)
-			setButton = new JButton("Set");
-			setButton.addActionListener(this);
-
-			add(stringField);
-			add(setButton);
-
-			// if the URL can refer to a file, we add the possibility to
-			// choose a local file
-			if (((URLConfigOption) configOption).refersToFile()) {
-				chooseLocalButton = new JButton("Choose Local File");
-				chooseLocalButton.addActionListener(this);
-				add(new JLabel(" or "));
-				add(chooseLocalButton);
-			}			
+		// text field for strings
+		stringField = new JTextField(35);
+		if (value != null) {
+			stringField.setText(value.toString());
 		}
-				
+		stringField.setToolTipText(configOption.getAllowedValuesDescription());
+
+		// set button (value is only updated when this button is pressed =>
+		// would better without set)
+		setButton = new JButton("Set");
+		setButton.addActionListener(this);
+
+		add(stringField);
+		add(setButton);
+
+		// if the URL can refer to a file, we add the possibility to
+		// choose a local file
+		if (((URLConfigOption) configOption).refersToFile()) {
+			chooseLocalButton = new JButton("Choose Local File");
+			chooseLocalButton.addActionListener(this);
+			add(new JLabel(" or "));
+			add(chooseLocalButton);
+		}
+
 	}
 
 }

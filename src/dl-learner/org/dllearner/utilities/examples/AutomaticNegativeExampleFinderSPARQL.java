@@ -36,12 +36,10 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	private SPARQLTasks sparqltasks;
 
-	private SortedSet<String> filterClasses;
 	
 	private SortedSet<String> fullPositiveSet;
 	
 	private SortedSet<String> fromRelated  = new TreeSet<String>();
-	private SortedSet<String> fromNearbyClasses  = new TreeSet<String>();
 	private SortedSet<String> fromSuperclasses = new TreeSet<String>();;
 	private SortedSet<String> fromParallelClasses = new TreeSet<String>();;
 	private SortedSet<String> fromRandom = new TreeSet<String>();;
@@ -60,12 +58,12 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	 */
 	public AutomaticNegativeExampleFinderSPARQL(
 			SortedSet<String> fullPositiveSet,
-			SPARQLTasks st, SortedSet<String> filterClasses) {
+			SPARQLTasks st) {
 		super();
 		this.fullPositiveSet = new TreeSet<String>(); 
 		this.fullPositiveSet.addAll(fullPositiveSet);
 		this.sparqltasks = st;
-		this.filterClasses=filterClasses;
+
 	}
 	
 	
@@ -88,7 +86,6 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	 */
 	public SortedSet<String> getNegativeExamples(int neglimit, boolean stable ) {
 		SortedSet<String> negatives = new TreeSet<String>();
-		negatives.addAll(fromNearbyClasses);
 		negatives.addAll(fromParallelClasses);
 		negatives.addAll(fromRelated);
 		negatives.addAll(fromSuperclasses);
@@ -161,49 +158,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		this.fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "o"));
 
 	}*/
-	
-	public void makeNegativeExamplesFromNearbyClasses(SortedSet<String> positiveSet, int sparqlResultLimit){
-		SortedSet<String> classes = new TreeSet<String>();
-		Iterator<String> instanceIter = positiveSet.iterator();
-		while(classes.isEmpty() && instanceIter.hasNext()) {
-			classes.addAll(sparqltasks.getClassesForInstance(instanceIter.next(), 100));
-		}
-		String concept=classes.first();
-		if (filterClasses!=null&&filterClasses.size()>0){
-			boolean br=false;
-			for (String oneClass : classes){
-				Iterator<String> iter=filterClasses.iterator();
-				while (iter.hasNext()){
-					if (oneClass.startsWith(iter.next())){
-						break;
-					}
-					else{
-						concept=oneClass;
-						br=true;
-						break;
-					}
-				}
-				if (br) break;
-			}
-		}
-		concept = concept.replaceAll("\"", "");
-		SortedSet<String> superClasses = sparqltasks.getSuperClasses(concept, 1);
-		
-		classes = new TreeSet<String>();
-		for (String oneSuperClass : superClasses) {
-			classes.addAll(sparqltasks.getSubClasses(oneSuperClass, 1));
-		}
-		classes.remove(concept);
-		for (String oneClass : classes) {
-			try{
-				fromNearbyClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
-						+ oneClass + "\"", sparqlResultLimit));
-			} catch (Exception e){}
-		}
-		
-		this.fromNearbyClasses.removeAll(fullPositiveSet);
-	}
-	
+
 	/**
 	 * makes negEx from classes, the posEx belong to.
 	 * Gets all Classes from PosEx, gets Instances from these Classes, returns all

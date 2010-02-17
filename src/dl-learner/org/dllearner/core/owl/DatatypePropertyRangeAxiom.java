@@ -27,11 +27,6 @@ import java.util.Map;
  */
 public class DatatypePropertyRangeAxiom extends PropertyRangeAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6632066237684906382L;
-
 	public DatatypePropertyRangeAxiom(DatatypeProperty property, DataRange domain) {
 		super(property, domain);
 	}
@@ -74,15 +69,6 @@ public class DatatypePropertyRangeAxiom extends PropertyRangeAxiom {
 	 */
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
 	}	
 
 }

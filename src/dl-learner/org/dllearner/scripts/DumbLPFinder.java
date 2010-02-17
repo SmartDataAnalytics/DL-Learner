@@ -31,29 +31,28 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.components.ReasonerComponentFactory;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.learn.ConfWriter;
+import org.dllearner.utilities.owl.ReasoningServiceFactory;
+import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.Stat;
 
-// TODO: Write something about the use of this class here.
 public class DumbLPFinder {
 
 	private static Logger logger = Logger.getRootLogger();
 
-	private static ReasonerComponent reasoningService;
+	private static ReasoningService reasoningService;
 
 	private static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 
@@ -80,8 +79,8 @@ public class DumbLPFinder {
 		Stat acc = new Stat();
 		// String fileURL = new File(ontologyFile).toURI().toString();
 
-		reasoningService = ReasonerComponentFactory.getReasonerComponent(
-				ontologyPath, ReasonerType.OWLAPI_PELLET);
+		reasoningService = ReasoningServiceFactory.getReasoningService(
+				ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 
 		Files.mkdir(baseDir);
 		
@@ -120,7 +119,7 @@ public class DumbLPFinder {
 
 				}
 
-				EvaluatedDescriptionPosNeg d;
+				EvaluatedDescription d;
 
 				d = learnSPARQL(positiveEx, negativeEx);
 				acc.addNumber(d.getAccuracy());
@@ -143,7 +142,7 @@ public class DumbLPFinder {
 
 	}
 
-	private static void writeFiles(String filename, EvaluatedDescriptionPosNeg d,
+	private static void writeFiles(String filename, EvaluatedDescription d,
 			SortedSet<Individual> positiveEx, SortedSet<Individual> negativeEx) {
 		String div = (System.currentTimeMillis() % 10000) + "";
 		if (d.getAccuracy() >= 0.99) {
@@ -171,7 +170,7 @@ public class DumbLPFinder {
 	}
 
 	@SuppressWarnings("unused")
-	private static String accString(EvaluatedDescriptionPosNeg d) {
+	private static String accString(EvaluatedDescription d) {
 
 		String acc = (d.getAccuracy()) + "";
 		try {
@@ -183,7 +182,7 @@ public class DumbLPFinder {
 		return acc;
 	}
 
-	private static String fileString( EvaluatedDescriptionPosNeg d,
+	private static String fileString( EvaluatedDescription d,
 			SortedSet<Individual> p, SortedSet<Individual> n) {
 
 		String str = "/**\n" + d.getDescription().toKBSyntaxString() + "\n" + d
@@ -207,10 +206,10 @@ public class DumbLPFinder {
 		return str;
 	}
 
-	private static EvaluatedDescriptionPosNeg learnSPARQL(
+	private static EvaluatedDescription learnSPARQL(
 			SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
 
-		ROLComponent2 la = null;
+		ExampleBasedROLComponent la = null;
 
 		try {
 
@@ -233,14 +232,16 @@ public class DumbLPFinder {
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory
 					.getOWLAPIReasoner(tmp);
+			ReasoningService rs = ComponentManager.getInstance()
+					.reasoningService(f);
 
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 
 			// learning algorithm
-			la = ComponentFactory.getROLComponent2(lp, f);
+			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			la.getConfigurator().setNoisePercentage(0.0);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(30);

@@ -29,7 +29,7 @@ import org.dllearner.reasoning.DIGReasoner;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class DIGReasonerConfigurator  implements Configurator {
+public  class DIGReasonerConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -39,11 +39,11 @@ public class PsiDown extends RefinementOperatorAdapter {
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
 	PosNegLP learningProblem;
-	ReasonerComponent reasoningService;
+	ReasoningService reasoningService;
 	
 	private TreeSet<Description> topSet;
 	
-	public PsiDown(PosNegLP learningProblem, ReasonerComponent reasoningService) {
+	public PsiDown(PosNegLP learningProblem, ReasoningService reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoningService = reasoningService;
 		
@@ -61,10 +61,10 @@ public class PsiDown extends RefinementOperatorAdapter {
 		topSet.add(md);
 		
 		// allgemeinste Konzepte
-		topSet.addAll(reasoningService.getSubClasses(new Thing()));
+		topSet.addAll(reasoningService.getMoreSpecialConcepts(new Thing()));
 		
 		// negierte speziellste Konzepte
-		Set<Description> tmp = reasoningService.getSuperClasses(new Nothing());
+		Set<Description> tmp = reasoningService.getMoreGeneralConcepts(new Nothing());
 		for(Description c : tmp) 
 			topSet.add(new Negation(c));
 	
@@ -92,10 +92,10 @@ public class PsiDown extends RefinementOperatorAdapter {
 			// beachte weiter: die zurückgegebenen Instanzen dürfen nicht verändert werden,
 			// da beim Caching der Subsumptionhierarchie (momentan) keine Kopien gemacht werden
 			// Bottom wird hier ggf. automatisch mit zurückgegeben
-			refinements.addAll(reasoningService.getSubClasses(concept));
+			refinements.addAll(reasoningService.getMoreSpecialConcepts(concept));
 		// negiertes atomares Konzept
 		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-			tmp.addAll(reasoningService.getSuperClasses(concept.getChild(0)));
+			tmp.addAll(reasoningService.getMoreGeneralConcepts(concept.getChild(0)));
 			
 			// Top rausschmeissen
 			boolean containsTop = false;
