@@ -30,6 +30,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.experiments.Jamon;
 import org.dllearner.utilities.experiments.Table;
 import org.dllearner.utilities.experiments.TableRowColumn;
+import org.dllearner.utilities.experiments.TableRowColumn.Display;
 
 import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
@@ -101,7 +102,6 @@ public class TestQueries {
 			concepts = Files.readFileAsArray(new File(conceptFile));
 			Map<String,Monitor> mm1 = new HashMap<String, Monitor>();
 			Map<String,Monitor> mm2 = new HashMap<String, Monitor>();
-			Map<String,Monitor> mm3 = new HashMap<String, Monitor>();
 			for (int i = 0; i < concepts.length; i++) {
 				Description d = KBParser.parseConcept(concepts[i]);
 				SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
@@ -115,27 +115,21 @@ public class TestQueries {
 				
 				String label1 = "Time "+d.getLength();
 				String label2 = "Length "+d.getLength();
-				String label3 = "Hits "+d.getLength();
 				Monitor m1 = MonitorFactory.getTimeMonitor(label1).start();
 				Monitor m2 = MonitorFactory.getMonitor(label2, Jamon.COUNT);
-				
-				Monitor m3 = MonitorFactory.getMonitor(label3, Jamon.COUNT);
+
 				m2.add(d.getLength());
-				m3.add(1.0d);
 				sparqlTasks.queryAsResultSet(q);
 				m1.stop();
 				mm1.put(label1, m1);
 				mm2.put(label2, m2);
-				mm3.put(label3, m3);
 				
 			}
 			
 			Monitor[] mons1 = new Monitor[mm1.size()];
 			Monitor[] mons2 = new Monitor[mm1.size()];
-			Monitor[] mons3 = new Monitor[mm1.size()];
 			SortedSet<String> keys1 = new TreeSet<String>(mm1.keySet());
 			SortedSet<String> keys2 = new TreeSet<String>(mm2.keySet());
-			SortedSet<String> keys3 = new TreeSet<String>(mm3.keySet());
 			int i = 0;
 			for(String key:keys1){
 				mons1[i] = mm1.get(key);
@@ -146,15 +140,16 @@ public class TestQueries {
 				mons2[i] = mm2.get(key);
 				i++;
 			}
-			i = 0;
-			for(String key:keys3){
-				mons3[i] = mm3.get(key);
-				i++;
-			}
 			Table t = new Table();
+
+			TableRowColumn tc =  new TableRowColumn(mons2, "testqueries", "length");
+			tc.setDisplay(Display.TOTAL);
+			t.addTableRowColumn(tc);
 			
-			t.addTableRowColumn(new TableRowColumn(mons2, "testqueries", "length"));
-			t.addTableRowColumn(new TableRowColumn(mons3, "testqueries", "hits"));
+			tc =  new TableRowColumn(mons2, "testqueries", "length");
+			tc.setDisplay(Display.HITS);
+			t.addTableRowColumn(tc);
+			
 			t.addTableRowColumn(new TableRowColumn(mons1, "testqueries", "time"));
 			t.write(resultFolder, "testqueries");
 		

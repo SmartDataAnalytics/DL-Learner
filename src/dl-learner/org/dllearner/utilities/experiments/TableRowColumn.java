@@ -13,6 +13,10 @@ public class TableRowColumn implements Serializable{
 	enum Formats {
 		LATEX, GNUPLOT
 	}
+	
+	public enum Display {
+		AVG, HITS, TOTAL
+	}
 
 	public static String latexSep = "\t&\t";
 	public static String latexEnd = "\\\\";
@@ -24,7 +28,7 @@ public class TableRowColumn implements Serializable{
 	final FinalizedMonitor[] monitors;
 	boolean useStdDev = false;
 	
-	boolean hits_instead_of_average = false;
+	Display display = Display.AVG;
 	
 	DecimalFormat dfGnuPlotDefault = new DecimalFormat("######0.00####");
 	
@@ -107,11 +111,24 @@ public class TableRowColumn implements Serializable{
 	}
 
 	public String getLatexEntry(int i) {
-		return latexFormat(monitors[i], monitors[i].getAvg()) + " "+ (useStdDev ? "(\\pm"+latexFormat(monitors[i], monitors[i].getStdDev()) + ") " : "");
+		return latexFormat(monitors[i], getValue(i)) + " "+ (useStdDev ? "(\\pm"+latexFormat(monitors[i], monitors[i].getStdDev()) + ") " : "");
 	}
 
 	public String getGnuPlotEntry(int i) {
-		return dfGnuPlotDefault.format(monitors[i].getAvg()) + "";
+		return dfGnuPlotDefault.format(getValue(i)) + "";
+	}
+	
+	public void setDisplay(Display d){
+		display = d;
+	}
+	
+	private double getValue(int i){
+		switch(display){
+			case AVG: return monitors[i].getAvg();
+			case HITS: return monitors[i].getHits();
+			case TOTAL: return monitors[i].getTotal();
+		}
+		return monitors[i].getAvg();
 	}
 	
 	private String latexFormat(FinalizedMonitor monitors, double value){
