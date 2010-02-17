@@ -88,9 +88,9 @@ public class TestIterativeLearning {
 	static MonKeyImp logIterationTime = new MonKeyImp("Iteration Time", Jamon.MS);
 
 	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[] { logPrecision,
-			logRecall, logFMeasure, logLearningTime, logIterationTime }));
+			logRecall, logFMeasure, logAccuracy, logLearningTime, logIterationTime }));
 
-	static int iterations = 5;
+	static int iterations = 7;
 	static int folds = 10;
 	static int printSentences = 3;
 
@@ -158,14 +158,11 @@ public class TestIterativeLearning {
 				conductExperiment(examples, experimentConfig);
 			}
 			Table expTable = new Table();
-			expTable.addTableRowColumn(experimentConfig.getTableRows());
-			expTable.write(resultFolder, experimentConfig.experimentName);
+			expTable.addTableRowColumns(experimentConfig.getTableRows());
+			expTable.write(resultFolder, "passiveNoZu_"+experimentConfig.experimentName);
 			masterTable.addTable(expTable);
-			masterTable.sortByExperimentName();
-			masterTable.write(resultFolder, "passiveNoZu_by_expname");
-			masterTable.sortByLabel();
-			masterTable.write(resultFolder, "passiveNoZu_by_label");
-
+			masterTable.write(resultFolder, "passiveNoZu_master");
+			
 			JamonMonitorLogger.writeHTMLReport("/tmp/tiger.html");
 			logger.info(experimentConfig);
 
@@ -189,19 +186,25 @@ public class TestIterativeLearning {
 
 		List<Examples> runs = new ArrayList<Examples>();
 		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
-//		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
+		runs.add(new ExMakerRandomizer(allExamples).split(0.7d));
 //		
 		/*CLEANUP*/
 		positives = null;
 		negatives = null;
 		allExamples = null;
 
-		List<IteratedConfig> configs = getConfigs();
+		List<IteratedConfig> configs = getConfigsZU();
 		Table masterTable = new Table();
 		for (IteratedConfig experimentConfig : configs) {
+			experimentConfig.init(mks);
 			logger.info("next: passiveWithZu." + experimentConfig.experimentName);
 			int i = 1;
 			for (Examples examples : runs) {
@@ -210,13 +213,10 @@ public class TestIterativeLearning {
 
 			}
 			Table expTable = new Table();
-			expTable.addTableRowColumn(experimentConfig.getTableRows());
-			expTable.write(resultFolder, "passiveWithZu"+experimentConfig.experimentName);
+			expTable.addTableRowColumns(experimentConfig.getTableRows());
+			expTable.write(resultFolder, "passiveWithZu_"+experimentConfig.experimentName);
 			masterTable.addTable(expTable);
-			masterTable.sortByExperimentName();
-			masterTable.write(resultFolder, "passiveWithZu_by_expname");
-			masterTable.sortByLabel();
-			masterTable.write(resultFolder, "passiveWithZu_by_label");
+			masterTable.write(resultFolder, "passiveWithZu_master");
 
 			JamonMonitorLogger.writeHTMLReport("/tmp/tiger.html");
 			logger.info(experimentConfig);
@@ -229,13 +229,12 @@ public class TestIterativeLearning {
 
 		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
 		IteratedConfig baseline = new IteratedConfig("baseline_5_5", iterations);
-
+		
 		IteratedConfig reducedExamples = new IteratedConfig("reducedExamples_2_2", iterations);
 		reducedExamples.initialsplits = 2;
 		reducedExamples.splits = 2;
-		// reducedExamples.adaptMaxRuntime=false;
-		// reducedExamples.maxExecutionTime = 20;
 		reducedExamples.factor = 6.0d;
+		
 
 		IteratedConfig fixRuntime = new IteratedConfig("fixRuntime_20s", iterations);
 		fixRuntime.adaptMaxRuntime = false;
@@ -245,10 +244,37 @@ public class TestIterativeLearning {
 		useLemma.useDataHasValue = false;
 
 		l.add(baseline);
-//		l.add(reducedExamples);
-//		l.add(fixRuntime);
-//		l.add(useLemma);
+		l.add(reducedExamples);
+		l.add(fixRuntime);
+		l.add(useLemma);
 
+		return l;
+	}
+	public static List<IteratedConfig> getConfigsZU() {
+		
+		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
+		IteratedConfig baseline = new IteratedConfig("baseline", iterations);
+		
+		
+		IteratedConfig increasedNegativeExamples = new IteratedConfig("increasedNegativeExamples", iterations);
+		increasedNegativeExamples.negativeSplitAdd = 10;
+		
+		
+		IteratedConfig noNoise = new IteratedConfig("noNoise", iterations);
+		noNoise.factor  = 4.0d;
+		noNoise.noise = 0;
+		noNoise.noiseIterationFactor = 0;
+		
+		
+		
+		IteratedConfig useLemma = new IteratedConfig("useLemma_false", iterations);
+		useLemma.useDataHasValue = false;
+		
+		l.add(baseline);
+		l.add(increasedNegativeExamples);
+		l.add(noNoise);
+		l.add(useLemma);
+		
 		return l;
 	}
 
@@ -257,12 +283,17 @@ public class TestIterativeLearning {
 		tmp.addPosTrain(allExamples.getPosTrain());
 		tmp.addNegTrain(allExamples.getNegTrain());
 
-		Examples learn = new ExMakerFixedSize(tmp).select(config.initialsplits, config.initialsplits);
+		Examples learn = new ExMakerFixedSize(tmp).select(config.initialsplits, config.initialsplits+config.negativeSplitAdd);
 		tmp = null;
 		logger.debug("Total set \n" + allExamples);
 		logger.debug("Initial training set \n" + learn);
 
 		SortedSet<String> posAsPos = new TreeSet<String>();
+		SortedSet<String> posAsNeg = new TreeSet<String>();
+		SortedSet<String> negAsNeg = new TreeSet<String>();
+		SortedSet<String> negAsPos = new TreeSet<String>();
+		
+		
 		SortedSet<String> retrieved = new TreeSet<String>();
 		SortedSet<String> newTestRetrieved = new TreeSet<String>();
 		SortedSet<String> newTrainRetrieved = new TreeSet<String>();
@@ -271,6 +302,7 @@ public class TestIterativeLearning {
 		double precision = 0.0;
 		double recall = 0.0;
 		double fmeasure = 0.0;
+		double accuracy = 0.0;
 
 		for (int i = 0; config.stopCondition(i, precision, recall, fmeasure, lastConcept); i++) {
 			Monitor iterationTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class,
@@ -288,21 +320,27 @@ public class TestIterativeLearning {
 			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "queryTime")
 					.start();
 			retrieved = getSentences(ed, config.resultLimit);
+			logger.debug("retrieved: "+retrieved.size());
 			queryTime.stop();
 			// remove all that are not to be tested
 			newTestRetrieved = Helper.intersection(allExamples.getTestExamples(), retrieved);
 			newTrainRetrieved = Helper.intersection(allExamples.getTrainExamples(), retrieved);
-
-			SortedSet<String> posAsNegInformative = Helper.difference(allExamples.getPositiveExamples(),
-					retrieved);
+			logger.debug("intersection with testset: "+newTestRetrieved.size());
 			
-			retrieved = null;
+			
 			
 			// logger.debug("Retrieved "+retrieved.size()+" sentences");
 
 			/* MASHING */
 			// Menge aller positiven geschn. mit den gefundenen
+			
+			
+			
 			posAsPos = Helper.intersection(newTestRetrieved, allExamples.getPosTest());
+			negAsPos = Helper.intersection(newTestRetrieved, allExamples.getNegTest());
+			posAsNeg = Helper.difference(allExamples.getPosTest(), newTestRetrieved);
+			negAsNeg = Helper.difference(allExamples.getNegTest(), newTestRetrieved );
+//			logger.debug("" + posAsPos.size()+"|"+negAsPos.size()+"|"+posAsNeg.size()+"|"+negAsPos.size());
 			logger.debug("Number of retrieved positives: " + posAsPos.size());
 			logger.debug("Number of total positives: " + allExamples.getPosTest().size());
 
@@ -312,11 +350,13 @@ public class TestIterativeLearning {
 			config.add(logRecall, i, recall);
 			fmeasure = fmeasure(precision, recall);
 			config.add(logFMeasure, i, fmeasure);
+			accuracy = accuracy(posAsPos.size(), negAsNeg.size(), posAsNeg.size(), negAsPos.size());
+			config.add(logAccuracy, i, accuracy);
 
 			// Menge aller positiven geschn. mit den gefundenen
-			SortedSet<String> negAsPos = Helper.intersection(newTestRetrieved, allExamples.getNegTest());
+			
 			logger.debug("Number of retrieved negatives: " + negAsPos.size());
-			logger.debug("Number of total negatives: " + allExamples.getNegTest().size());
+			logger.debug("Number of total negatives in test set: " + allExamples.getNegTest().size());
 			logger.debug("Total: " + posAsPos.size() + " + " + negAsPos.size() + " = "
 					+ newTestRetrieved.size());
 
@@ -336,11 +376,11 @@ public class TestIterativeLearning {
 			logger.debug("Misclassified: " + misclassifiedNegInStore.size()
 					+ " negative sentences in store (printing " + printSentences + "):");
 			_getLabels(misclassifiedNegInStore, printSentences);
-			logger.debug("Not found positives: " + posAsNegInformative.size()
+			logger.debug("Not found positives: " + posAsNeg.size()
 					+ " positive sentences in store (printing " + printSentences + "):");
-			_getLabels(posAsNegInformative, printSentences);
+			_getLabels(posAsNeg, printSentences);
 
-			newlyFound = new ExMakerFixedSize(newlyFound).select(config.splits, config.splits);
+			newlyFound = new ExMakerFixedSize(newlyFound).select(config.splits, config.splits+config.negativeSplitAdd);
 
 			learn.addPosTrain(newlyFound.getPosTrain());
 			learn.addNegTrain(newlyFound.getNegTrain());
@@ -361,7 +401,11 @@ public class TestIterativeLearning {
 	}
 
 	public static double accuracy(int posAsPos, int negAsNeg, int posAsNeg, int negAsPos) {
-		return 0.0d;
+		int upper = posAsPos+negAsNeg;
+		int lower = posAsPos+negAsNeg + posAsNeg + negAsPos;
+		double accuracy = ((double)upper)/((double)lower);
+		logger.debug("Accuracy: " + df.format(accuracy));
+		return accuracy;
 	}
 
 	public static double fmeasure(double precision, double recall) {
@@ -549,7 +593,7 @@ public class TestIterativeLearning {
 
 		int maxExecutionTime = config.maxExecutionTime;
 		int valueFrequencyThreshold = ex.getPosTrain().size();
-		int noise = config.noise + (iteration);
+		int noise = config.noise + (config.noiseIterationFactor * iteration);
 		if (config.adaptMaxRuntime) {
 			maxExecutionTime = (int) Math.floor(config.factor * (double) ex.sizeOfTrainingSets());
 			// valueFrequencyThreshold = (int)

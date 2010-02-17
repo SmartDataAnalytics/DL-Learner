@@ -60,10 +60,6 @@ public class TableRowColumn implements Serializable{
 		return experimentName+" "+label+" "+toGnuPlotRow();
 	}
 	
-	public String getHeader(){
-		return experimentName+" "+label;
-	}
-	
 	public int size() {
 		return monitors.length;
 	}
