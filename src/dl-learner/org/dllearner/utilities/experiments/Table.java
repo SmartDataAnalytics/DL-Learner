@@ -13,7 +13,6 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 public class Table implements Serializable{
 	private static final long serialVersionUID = -7191672899557577952L;
@@ -25,9 +24,7 @@ public class Table implements Serializable{
 	enum Formats {
 		LATEX, GNUPLOT
 	};
-
 	
-//	private Map<String, TableRowColumn> m = new HashMap<String, TableRowColumn>();
 	private SortedSet<String> experimentNames = new TreeSet<String>();
 	private SortedSet<String> labels = new TreeSet<String>();
 	
@@ -38,10 +35,6 @@ public class Table implements Serializable{
 		int tablesize = 10;
 		int nrOfMonitors = 10;
 		Table t = new Table();
-//		ITable st = (ITable) MonProxyFactory.monitor(new Table());
-//		Table t = (Table)t;
-			MonitorFactory.getMonitor(new MyMonKey("aa","aa"));
-			MonitorFactory.getTimeMonitor("ss");
 		
 		Random r = new Random();
 		for (int i = 0; i < tablesize; i++) {
@@ -53,18 +46,33 @@ public class Table implements Serializable{
 					m[a].add(r.nextDouble());
 
 				}
-//				System.out.println("avg: " + m[a].getAvg());
 			}
 			TableRowColumn trc = new TableRowColumn(m, "Test","entry_" + i);
-//			trc.deleteAll();
 			trc.useStdDev=false;
 			t.addTableRowColumn(trc);
 		}
 		
+		for (int i = 0; i < tablesize; i++) {
+			Monitor[] m = new Monitor[nrOfMonitors];
+			for (int a = 0; a < nrOfMonitors; a++) {
+				m[a] = JamonMonitorLogger.getStatisticMonitor("test" + i + "" + a,
+						(a==0)?"":JamonMonitorLogger.PERCENTAGE);
+				for (int b = 0; b < 2; b++) {
+					m[a].add(r.nextDouble());
+					
+				}
+			}
+			TableRowColumn trc = new TableRowColumn(m, "Whatever","bentry_" + i);
+			trc.useStdDev=false;
+			t.addTableRowColumn(trc);
+		}
+		
+		
 		System.out.println(t.getLatexAsColumn(true));
-		t.serialize("test.ser");
-		Table n = deserialize("test.ser");
-		System.out.println(n.getLatexAsColumn(true));
+		t.sortByLabel();
+		System.out.println(t.getLatexAsColumn(true));
+		t.sortByExperimentName();
+		System.out.println(t.getGnuPlotAsColumn(true));
 //		System.out.println(t.getLatexAsRows());
 //		System.out.println(t.getGnuPlotAsColumn(true));
 //		System.out.println(t.getGnuPlotAsRows());
@@ -73,21 +81,31 @@ public class Table implements Serializable{
 //		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
 	}
 
-	public void addTableRowColumn(List<TableRowColumn> trcs) {
-		for (TableRowColumn tableRowColumn : trcs) {
-			labels.add(tableRowColumn.getLabel());
-			experimentNames.add(tableRowColumn.getExperimentName());
-			addTableRowColumn(tableRowColumn);
-		}
-	}
 	
+	
+	/**
+	 * passes each it TableRowColumn one by one to addTableRowColumn
+	 * @param t
+	 */
 	public void addTable(Table t){
 		for (TableRowColumn  trc : t.tableRowColumns) {
 			addTableRowColumn(trc);
 		}
 	}
 	
+	/**
+	 * passes it one by one to addTableRowColumn
+	 * @param trcs
+	 */
+	public void addTableRowColumns(List<TableRowColumn> trcs) {
+		for (TableRowColumn tableRowColumn : trcs) {
+			addTableRowColumn(tableRowColumn);
+		}
+	}
+	
 	public void addTableRowColumn(TableRowColumn trc) {
+		labels.add(trc.getLabel());
+		experimentNames.add(trc.getExperimentName());
 		try{
 			trc.toLatexRow();
 		}catch (NullPointerException e) {
@@ -139,21 +157,23 @@ public class Table implements Serializable{
 		
 		for (int a = 0; a < tableRowColumns.size(); a++) {
 			TableRowColumn trc = tableRowColumns.get(a);
+			String header = trc.getExperimentName()+" "+trc.getLabel();
 			boolean firstColumn = (a==0);
+			boolean lastColumn = (a + 1 == tableRowColumns.size());
 			for (int i = 1; i < length+1; i++) {
-				boolean last = (a + 1 == tableRowColumns.size());
-				boolean first = (i==1);
+				
+				boolean firstRow = (i==1);
 				switch (f) {
 					case LATEX:
-						rows[0] += (first?trc.getHeader()+TableRowColumn.latexSep:"");
-						rows[i] += (firstColumn&&addNumbersInFront?i+TableRowColumn.latexSep:"");
-						rows[i] += trc.getLatexEntry(i-1)
-								+ ((last) ? TableRowColumn.latexSep : TableRowColumn.latexSep);
+						rows[0] += ((firstColumn&&firstRow&&addNumbersInFront)?TableRowColumn.latexSep:"");
+						rows[0] += (firstRow?header+TableRowColumn.latexSep:"");
+						rows[i] += ((firstColumn&&addNumbersInFront)?i+TableRowColumn.latexSep:"");
+						rows[i] += trc.getLatexEntry(i-1)+ ((lastColumn) ? TableRowColumn.latexSep : TableRowColumn.latexSep);
 						break;
 					case GNUPLOT:
-						rows[0] += (first?"#"+trc.getHeader()+"\t":"");
+						rows[0] += (firstRow?"#"+header+"\t":"");
 						rows[i] += (firstColumn&&addNumbersInFront?i+"\t":"");
-						rows[i] += trc.getGnuPlotEntry(i-1) + ((last) ?""  : "\t");
+						rows[i] += trc.getGnuPlotEntry(i-1) + ((lastColumn) ?""  : "\t");
 						break;
 					}
 			}
@@ -198,7 +218,7 @@ public class Table implements Serializable{
 		
 		for (String s : l) {
 			for (TableRowColumn trc : tableRowColumns) {
-				if(trc.getLabel().equals(s)){
+				if(trc.getLabel().startsWith(s) && trc.getLabel().contains(s)){
 					newTrc.add(trc);
 				}
 			}
@@ -220,6 +240,7 @@ public class Table implements Serializable{
 	}
 	
 	public void write(String folder, String fileprefix){
+		logger.info("Writing results to "+folder+fileprefix);
 		Files.mkdir(folder);
 		Files.createFile(new File(folder+fileprefix+"_GNU_ROWS"), getGnuPlotAsRows());
 		Files.createFile(new File(folder+fileprefix+"_GNU_COLUMNS_I"), getGnuPlotAsColumn(true));
