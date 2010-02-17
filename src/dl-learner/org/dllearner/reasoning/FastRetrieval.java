@@ -4,18 +4,18 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.FlatABox;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Thing;
+import org.dllearner.dl.All;
+import org.dllearner.dl.AtomicConcept;
+import org.dllearner.dl.Bottom;
+import org.dllearner.dl.Concept;
+import org.dllearner.dl.Conjunction;
+import org.dllearner.dl.Disjunction;
+import org.dllearner.dl.Exists;
+import org.dllearner.dl.FlatABox;
+import org.dllearner.dl.Negation;
+import org.dllearner.dl.Top;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.SortedSetTuple;
 
 public class FastRetrieval {
 
@@ -25,48 +25,31 @@ public class FastRetrieval {
 		this.abox = abox;
 	}
 	
-	public SortedSetTuple<String> calculateSets(Description concept) {
+	public SortedSetTuple<String> calculateSets(Concept concept) {
 		return calculateSetsADC(concept, null);
 	}
 	
 	// Algorithmus wird ueber Rekursion und 
 	// Delegation zur Helper-Klasse implementiert
-	public SortedSetTuple<String> calculateSetsADC(Description concept, SortedSetTuple<String> adcSet) {
-		if(concept instanceof Thing) {
+	public SortedSetTuple<String> calculateSetsADC(Concept concept, SortedSetTuple<String> adcSet) {
+		if(concept instanceof Top) {
 			return new SortedSetTuple<String>(abox.top,abox.bottom);
-		} else if(concept instanceof Nothing) {
+		} else if(concept instanceof Bottom) {
 			return new SortedSetTuple<String>(abox.bottom,abox.top);
-		} else if(concept instanceof NamedClass) {
-			SortedSet<String> pos = abox.getPositiveInstances(((NamedClass)concept).getName());
-			SortedSet<String> neg = abox.getNegativeInstances(((NamedClass)concept).getName());
+		} else if(concept instanceof AtomicConcept) {
+			SortedSet<String> pos = abox.getPositiveInstances(((AtomicConcept)concept).getName());
+			SortedSet<String> neg = abox.getNegativeInstances(((AtomicConcept)concept).getName());
 			return new SortedSetTuple<String>(pos,neg);
 		} else if(concept instanceof Negation) {
 			return calculateNegationSet(calculateSetsADC(concept.getChild(0), adcSet));
-		} else if(concept instanceof Intersection) {
-			// this should never happen, but it does; we work around the issue
-			if(concept.getChildren().size()==1)
-				return calculateSetsADC(concept.getChild(0),adcSet);			
-			SortedSetTuple<String> res = 
-			calculateConjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
-			for(int i=2; i < concept.getChildren().size(); i++) {
-				res = calculateConjunctionSets(res,calculateSetsADC(concept.getChild(i),adcSet));
-			}
-			return res;
-		} else if(concept instanceof Union) {
-			// this should never happen, but it does; we work around the issue
-			if(concept.getChildren().size()==1)
-				return calculateSetsADC(concept.getChild(0),adcSet);
-			
-			SortedSetTuple<String> res = 
-			calculateDisjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
-			for(int i=2; i < concept.getChildren().size(); i++) {
-				res = calculateDisjunctionSets(res,calculateSetsADC(concept.getChild(i),adcSet));
-			}
-			return res;			
-		} else if(concept instanceof ObjectAllRestriction) {
-			return calculateAllSet(abox,((ObjectAllRestriction)concept).getRole().getName(),calculateSetsADC(concept.getChild(0),adcSet));
-		} else if(concept instanceof ObjectSomeRestriction) {
-			return calculateExistsSet(abox,((ObjectSomeRestriction)concept).getRole().getName(),calculateSetsADC(concept.getChild(0),adcSet));
+		} else if(concept instanceof Conjunction) {
+			return calculateConjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
+		} else if(concept instanceof Disjunction) {
+			return calculateDisjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
+		} else if(concept instanceof All) {
+			return calculateAllSet(abox,((All)concept).getRole().getName(),calculateSetsADC(concept.getChild(0),adcSet));
+		} else if(concept instanceof Exists) {
+			return calculateExistsSet(abox,((Exists)concept).getRole().getName(),calculateSetsADC(concept.getChild(0),adcSet));
 		}
 			
 		throw new Error("Unknown concept type " + concept);

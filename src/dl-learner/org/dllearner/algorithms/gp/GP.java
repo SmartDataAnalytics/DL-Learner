@@ -20,32 +20,36 @@
 
 package org.dllearner.algorithms.gp;
 
+import static org.dllearner.Config.GP.algorithmType;
+import static org.dllearner.Config.GP.crossoverProbability;
+import static org.dllearner.Config.GP.elitism;
+import static org.dllearner.Config.GP.generations;
+import static org.dllearner.Config.GP.hillClimbingProbability;
+import static org.dllearner.Config.GP.initMaxDepth;
+import static org.dllearner.Config.GP.initMinDepth;
+import static org.dllearner.Config.GP.mutationProbability;
+import static org.dllearner.Config.GP.numberOfIndividuals;
+import static org.dllearner.Config.GP.numberOfSelectedIndividuals;
+import static org.dllearner.Config.GP.postConvergenceGenerations;
+import static org.dllearner.Config.GP.refinementProbability;
+import static org.dllearner.Config.GP.selectionType;
+import static org.dllearner.Config.GP.tournamentSize;
+import static org.dllearner.Config.GP.useFixedNumberOfGenerations;
+
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.dllearner.Config;
+import org.dllearner.LearningProblem;
+import org.dllearner.Score;
+import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.hybridgp.Psi;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.GPConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.dl.Concept;
+import org.dllearner.dl.Top;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -55,15 +59,8 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class GP extends LearningAlgorithm {
-	
-	private GPConfigurator configurator;
-	@Override
-	public GPConfigurator getConfigurator(){
-		return configurator;
-	}
-	
-	
+public class GP implements LearningAlgorithm {
+
     // NumberFormat f;
 	DecimalFormat df = new DecimalFormat("0.00");
  
@@ -77,6 +74,8 @@ public class GP extends LearningAlgorithm {
          * In this type of algorithm offspring is produced by a number of indivuals.
          * The offspring then replaces the weakest individuals of the previous
          * generation.
+         * 
+         * @see #setNumberOfSelectedIndividuals(int)
          */    	
     	STEADY_STATE};     
     
@@ -94,26 +93,6 @@ public class GP extends LearningAlgorithm {
     	FPS,
     	TOURNAMENT_SELECTION};
 	
-    // configuration options
-    private SelectionType selectionType = SelectionType.RANK_SELECTION;
-	private int tournamentSize = 3;
-	private boolean elitism = true;
-	private AlgorithmType algorithmType = AlgorithmType.STEADY_STATE;
-	private double mutationProbability = 0.03d;
-	private double crossoverProbability = 0.95d;
-	private double hillClimbingProbability = 0.0d;
-	private double refinementProbability = 0.0;
-	private int numberOfIndividuals = 100;
-	private int numberOfSelectedIndividuals = 96;
-	private boolean useFixedNumberOfGenerations = false;
-	private int generations = 20;
-	private int postConvergenceGenerations = 50;
-	private boolean adc = false;
-	private int initMinDepth = 4;
-	private int initMaxDepth = 6;
-	private int maxConceptLength = 75;
-//	private boolean useMultiStructures = true;    	
-    	
     private Program[] individuals;
     
     private Program fittestIndividual;
@@ -126,12 +105,13 @@ public class GP extends LearningAlgorithm {
     
     private long startTime;
 
-    private ScorePosNeg bestScore;
-    private Description bestConcept;
+    private Score bestScore;
+    private Concept bestConcept;
+    
+    private LearningProblem learningProblem;
     
     // private GeneticRefinementOperator psi;
     private Psi psi;
-    
     
     /**
      * Creates an algorithm object. By default a steady state algorithm with
@@ -140,144 +120,13 @@ public class GP extends LearningAlgorithm {
      * 1.0 and a probability of mutation of 0.01.
      * 
      */
-    public GP(PosNegLP learningProblem, ReasonerComponent rs) {
-       	super(learningProblem, rs);
-    	this.configurator = new GPConfigurator(this);
+    public GP(LearningProblem learningProblem) {
+    	this.learningProblem = learningProblem;
     }
-      
-	public static String getName() {
-		return "genetic programming learning algorithm";
-	} 	    
     
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(PosNegLP.class);
-		return problems;
-	}	
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption selectionType = new StringConfigOption("selectionType", "selection type", "rankSelection");
-		selectionType.setAllowedValues(new String[] {"rankSelection", "fps", "tournament"});
-		options.add(selectionType);
-		IntegerConfigOption tournamentSize = new IntegerConfigOption("tournamentSize", "tournament size (applies only to tournament selection)", 3);
-		tournamentSize.setLowerLimit(2);
-		tournamentSize.setUpperLimit(20);
-		options.add(tournamentSize);
-		options.add(new BooleanConfigOption("elitism", "specifies whether to use elitism in selection", true));
-		StringConfigOption algorithmType = new StringConfigOption("algorithmType", "algorithm type", "steadyState");
-		algorithmType.setAllowedValues(new String[] {"generational", "steadyState"});
-		options.add(algorithmType);
-		DoubleConfigOption mutationProb = new DoubleConfigOption("mutationProbability", "mutation probability", 0.03);
-		mutationProb.setLowerLimit(0.0);
-		mutationProb.setUpperLimit(1.0);
-		options.add(mutationProb);
-		DoubleConfigOption crossoverProb = new DoubleConfigOption("crossoverProbability", "crossover probability", 0.95);
-		crossoverProb.setLowerLimit(0.0);
-		crossoverProb.setUpperLimit(1.0);
-		options.add(crossoverProb);
-		DoubleConfigOption hillClimbingProb = new DoubleConfigOption("hillClimbingProbability", "hill climbing probability", 0.0);
-		hillClimbingProb.setLowerLimit(0.0);
-		hillClimbingProb.setUpperLimit(1.0);
-		options.add(hillClimbingProb);
-		DoubleConfigOption refinementProb = new DoubleConfigOption("refinementProbability", "refinement operator probability (values higher than 0 turn this into a hybrid GP algorithm - see publication)", 0.00);
-		refinementProb.setLowerLimit(0.0);
-		refinementProb.setUpperLimit(1.0);
-		options.add(refinementProb);
-		IntegerConfigOption numberOfInd = new IntegerConfigOption("numberOfIndividuals", "number of individuals", 100);
-		numberOfInd.setLowerLimit(1);
-		options.add(numberOfInd);
-		IntegerConfigOption numberOfSelInd = new IntegerConfigOption("numberOfSelectedIndividuals", "number of selected individuals", 92);
-		numberOfSelInd.setLowerLimit(1);
-		options.add(numberOfSelInd);
-		options.add(new BooleanConfigOption("useFixedNumberOfGenerations", "specifies whether to use a fixed number of generations", false));
-		IntegerConfigOption gen = new IntegerConfigOption("generations", "number of generations (only valid if a fixed number of generations is used)", 20);
-		gen.setLowerLimit(1);
-		options.add(gen);
-		IntegerConfigOption post = new IntegerConfigOption("postConvergenceGenerations", "number of generations after which to stop if no improvement wrt. the best solution has been achieved", 50);
-		post.setLowerLimit(1);
-		options.add(post);		
-		options.add(new BooleanConfigOption("adc", "whether to use automatically defined concept (this invents new helper concepts, but enlarges the search space", false));
-		IntegerConfigOption initMin = new IntegerConfigOption("initMinDepth", "minimum depth to use when creating the initial population", 4);
-		initMin.setLowerLimit(1);
-		options.add(initMin);
-		IntegerConfigOption initMax = new IntegerConfigOption("initMaxDepth", "maximum depth to use when creating the initial population", 6);
-		initMax.setLowerLimit(1);
-		options.add(initMax);		
-		IntegerConfigOption max = new IntegerConfigOption("maxConceptLength", "maximum concept length (higher length means lowest possible fitness)", 75);
-		max.setLowerLimit(1);
-		options.add(max);		
-//		options.add(new BooleanConfigOption("useMultiStructures", "specifies whether to use e.g. (a AND b AND c) instead of ((A and b) and c) - there is no apparent reason to set this to false", true));
-		return options;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if(name.equals("selectionType")) {
-			String value = (String) entry.getValue();
-			if(value.equals("fps"))
-				selectionType = SelectionType.FPS;
-			else if(value.equals("tournament"))
-				selectionType = SelectionType.TOURNAMENT_SELECTION;
-			else
-				selectionType = SelectionType.RANK_SELECTION;
-		} else if(name.equals("tournamentSize")) {
-			tournamentSize = (Integer) entry.getValue();
-		} else if(name.equals("elitism")) {
-			elitism = (Boolean) entry.getValue();
-		} else if(name.equals("algorithmType")) {
-			String value = (String) entry.getValue();
-			if(value.equals("generational"))
-				algorithmType = AlgorithmType.GENERATIONAL;
-			else 
-				algorithmType = AlgorithmType.STEADY_STATE;
-		} else if(name.equals("mutationProbability")) {
-			mutationProbability = (Double) entry.getValue();
-		} else if(name.equals("crossoverProbability")) {
-			crossoverProbability = (Double) entry.getValue();
-		} else if(name.equals("refinementProbability")) {
-			refinementProbability = (Double) entry.getValue();
-		} else if(name.equals("hillClimbingProbability")) {
-			hillClimbingProbability = (Double) entry.getValue();
-		} else if(name.equals("numberOfIndividuals")) {
-			numberOfIndividuals = (Integer) entry.getValue();
-		} else if(name.equals("numberOfSelectedIndividuals")) {
-			numberOfSelectedIndividuals = (Integer) entry.getValue();
-		} else if(name.equals("useFixedNumberOfGenerations")) {
-			useFixedNumberOfGenerations = (Boolean) entry.getValue();
-		} else if(name.equals("generations")) {
-			generations = (Integer) entry.getValue();
-		} else if(name.equals("postConvergenceGenerations")) {
-			postConvergenceGenerations = (Integer) entry.getValue();
-		} else if(name.equals("adc")) {
-			adc = (Boolean) entry.getValue();
-		} else if(name.equals("initMinDepth")) {
-			initMinDepth = (Integer) entry.getValue();
-		} else if(name.equals("initMaxDepth")) {
-			initMaxDepth = (Integer) entry.getValue();
-		} else if(name.equals("maxConceptLength")) {
-			maxConceptLength = (Integer) entry.getValue();
-		}		
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#init()
-	 */
-	@Override
-	public void init() {
-//		reasoner.prepareSubsumptionHierarchy();
-//		reasoner.prepareRoleHierarchy();		
-	}
-	
-	@Override
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
-    	psi = new Psi((PosNegLP)learningProblem, reasoner);
+    	psi = new Psi(learningProblem);
     	
     	System.out.println();
     	System.out.println("Starting Genetic Programming Learner");
@@ -440,11 +289,11 @@ public class GP extends LearningAlgorithm {
                     i++;
                 // mutation
                 }  else if(rand >= crossoverBoundary && rand < mutationBoundary) {
-                	newIndividuals[i] = GPUtilities.mutation(learningProblem, reasoner, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.mutation(learningProblem, individuals[selectedIndividuals[i]]);
                 // hill climbing
                 } else if(rand >= mutationBoundary && rand < hillClimbingBoundary) {
                 	// System.out.println("hill climbing");
-                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, reasoner, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, individuals[selectedIndividuals[i]]);
                 // refinement operator
                 } else if(rand >= hillClimbingBoundary && rand < refinementBoundary) {
                 	newIndividuals[i] = psi.applyOperator(individuals[selectedIndividuals[i]]);
@@ -513,9 +362,9 @@ public class GP extends LearningAlgorithm {
             // alle Individuen auf maximale Konzeptlänge überprüfen um mögliche
             // Speicherprobleme zu verhindern
             for(int i=0; i<numberOfIndividuals; i++) {
-            	if(individuals[i].getTree().getLength()>maxConceptLength) {
-            		System.out.println("Warning: GP produced concept longer then " + maxConceptLength + ". Replacing it with TOP.");
-            		individuals[i] = GPUtilities.createProgram(learningProblem, new Thing());
+            	if(individuals[i].getTree().getLength()>Config.GP.maxConceptLength) {
+            		System.out.println("Warning: GP produced concept longer then " + Config.GP.maxConceptLength + ". Replacing it with TOP.");
+            		individuals[i] = GPUtilities.createProgram(learningProblem, new Top());
             	}            		
             }
             
@@ -532,19 +381,18 @@ public class GP extends LearningAlgorithm {
 
         // nachschauen, ob ev. noch bessere Konzepte im Psi-Cache sind
         boolean betterValueFoundInPsiCache = false;
-        double bestValue = bestScore.getScoreValue();
-        
-        if(refinementProbability > 0) {
+        double bestValue = bestScore.getScore(); 
+        if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
         	// das Problem ist hier, dass die gecachte Score nicht unbedingt
         	// der echten Score entsprechen muss, d.h. hier muss die
         	// Konzeptlänge mit einberechnet werden => deswegen werden
         	// neue Score-Objekte generiert
-        	Set<Entry<Description,ScorePosNeg>> entrySet = psi.evalCache.entrySet();
-        	for(Entry<Description,ScorePosNeg> entry : entrySet) {
-        		ScorePosNeg tmpScore = entry.getValue();
-        		Description c = entry.getKey();
+        	Set<Entry<Concept,Score>> entrySet = psi.evalCache.entrySet();
+        	for(Entry<Concept,Score> entry : entrySet) {
+        		Score tmpScore = entry.getValue();
+        		Concept c = entry.getKey();
         		tmpScore = tmpScore.getModifiedLengthScore(c.getLength());
-        		double tmpScoreValue = tmpScore.getScoreValue();
+        		double tmpScoreValue = tmpScore.getScore();
         		if(tmpScoreValue>bestValue) {
         			bestValue = tmpScoreValue;
         			betterValueFoundInPsiCache = true;
@@ -564,7 +412,7 @@ public class GP extends LearningAlgorithm {
         System.out.println("runtime in ms: " + Helper.prettyPrintNanoSeconds(endTime - startTime));
         System.out.println("fitness evaluations: "
                 + GPUtilities.fitnessEvaluations);
-        if(refinementProbability > 0) {
+        if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
         	System.out.println("operator applications: " + psi.getNrOfRequests() + " psi, " + GPUtilities.crossover + " crossover, " +
         			GPUtilities.mutation + " mutation, " + GPUtilities.hillClimbing + " hillClimbing");
         }
@@ -583,7 +431,7 @@ public class GP extends LearningAlgorithm {
         }
           
         /*
-        Collection<Concept> test = ReasonerComponent.retrievals;
+        Collection<Concept> test = ReasoningService.retrievals;
 //         for(Concept c : )
         
         test.removeAll(psi.evalCache.keySet());
@@ -618,9 +466,9 @@ public class GP extends LearningAlgorithm {
         	// int depth = rand.nextInt(initMaxDepth-initMinDepth)+initMinDepth;
         	
         	if(grow)
-        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, reasoner, depth, adc);
+        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem,depth);
         	else
-        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, reasoner, depth, adc);		
+        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, depth);		
     	}    	
     	
     	/*
@@ -825,7 +673,7 @@ public class GP extends LearningAlgorithm {
     private void printStatistics(Program fittestIndividual) {
         // output statistics: best individual, average fitness, etc.
         double averageFitness = getFitnessSum() / numberOfIndividuals;
-        Description n = fittestIndividual.getTree();
+        Concept n = fittestIndividual.getTree();
 
         int misClassifications = fittestIndividual.getScore().getNotCoveredPositives().size()
         + fittestIndividual.getScore().getCoveredNegatives().size();
@@ -843,7 +691,7 @@ public class GP extends LearningAlgorithm {
         // long algorithmTime = System.nanoTime() - Main.getAlgorithmStartTime();
         long algorithmTime = System.nanoTime() - startTime;
         System.out.println("overall algorithm runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime));
-        // System.out.println("instance checks: " + learningProblem.getReasonerComponent().getNrOfInstanceChecks());
+        // System.out.println("instance checks: " + learningProblem.getReasoningService().getNrOfInstanceChecks());
         // System.out.println("fitness evals: " + Program.fitnessEvaluations);
         // System.out.println("nr. of individuals: " + individuals.length + " (" + numberOfSelectedIndividuals + " selected)");
         
@@ -854,7 +702,7 @@ public class GP extends LearningAlgorithm {
         
         // System.out.println();
         System.out.println("best definition found: " + n);
-        if(refinementProbability > 0) {
+        if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
         	double cacheHitRate=0;
         	double pdCacheHitRate=0, puCacheHitRate=0;
         	if(psi.getNrOfRequests()>0) {
@@ -873,7 +721,7 @@ public class GP extends LearningAlgorithm {
         	System.out.println("Psi application time percentage: " + df.format(psiTimePercent) + "%; " + df.format(psiWOReasoningTimePercent) + "% excluding reasoning");
         }
         	
-        if(adc)
+        if(Config.GP.adc)
         	System.out.println("ADC: " + fittestIndividual.getAdc());
         // TODO: hier muss noch eine Zusammenfassung rein, die sowohl f�r zweiwertiges als auch
         // dreiwertiges Lernproblem funktioniert
@@ -946,35 +794,18 @@ public class GP extends LearningAlgorithm {
         System.exit(0);
     }
 
-//    @Override
-	public ScorePosNeg getSolutionScore() {
+	public Score getSolutionScore() {
 		return bestScore;
 	}
 
-	@Override
-	public Description getCurrentlyBestDescription() {
-		return bestConcept;
-	}    
-    
-	@Override
-	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+	public Concept getBestSolution() {
 		// return fittestIndividual.getTree();
-		return new EvaluatedDescriptionPosNeg(bestConcept,bestScore);
+		return bestConcept;
 	}
 
-	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
-	 */
-	@Override
-	public boolean isRunning() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
     /**
@@ -1022,5 +853,4 @@ public class GP extends LearningAlgorithm {
     //public void setAlgorithmType(AlgorithmType algorithmType) {
     //    this.algorithmType = algorithmType;
     //}
-	
 }

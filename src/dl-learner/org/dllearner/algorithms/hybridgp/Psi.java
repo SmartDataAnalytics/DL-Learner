@@ -5,33 +5,30 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.dllearner.LearningProblem;
+import org.dllearner.Score;
 import org.dllearner.algorithms.gp.Program;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.refinementoperators.PsiDown;
-import org.dllearner.refinementoperators.PsiUp;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.dl.Concept;
+import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.ConceptTransformation;
 
 public class Psi implements GeneticRefinementOperator {
 
 	PsiUp pu;
 	PsiDown pd;
-	PosNegLP learningProblem;
+	LearningProblem learningProblem;
 	int nrOfPositiveExamples;
 	int nrOfNegativeExamples;
 	Random random;
 	
 	// Cache, damit keine Konzepte doppelt ausgewertet werden
 	ConceptComparator conceptComparator = new ConceptComparator();
-	public SortedMap<Description,ScorePosNeg> evalCache = new TreeMap<Description,ScorePosNeg>(conceptComparator);
+	public SortedMap<Concept,Score> evalCache = new TreeMap<Concept,Score>(conceptComparator);
 	
 	// Cache, damit PsiDown bzw. PsiUp nicht mehrfach für gleiches Konzept
 	// aufgerufen werden
-	public SortedMap<Description,Set<Description>> pdCache = new TreeMap<Description,Set<Description>>(conceptComparator);
-	public SortedMap<Description,Set<Description>> puCache = new TreeMap<Description,Set<Description>>(conceptComparator);
+	public SortedMap<Concept,Set<Concept>> pdCache = new TreeMap<Concept,Set<Concept>>(conceptComparator);
+	public SortedMap<Concept,Set<Concept>> puCache = new TreeMap<Concept,Set<Concept>>(conceptComparator);
 	
 	// Statistiken
 	int conceptCacheHits = 0;
@@ -49,18 +46,18 @@ public class Psi implements GeneticRefinementOperator {
 	private long someTimeStart = 0;
 	public long someTime = 0;
 	
-	public Psi(PosNegLP learningProblem, ReasonerComponent reasoningService) { //, PsiUp pu, PsiDown pd) {
+	public Psi(LearningProblem learningProblem) { //, PsiUp pu, PsiDown pd) {
 		// this.pu = pu;
 		// this.pd = pd;
 		this.learningProblem = learningProblem;
-		pu = new PsiUp(learningProblem, reasoningService);
-		pd = new PsiDown(learningProblem, reasoningService);
+		pu = new PsiUp(learningProblem);
+		pd = new PsiDown(learningProblem);
 		nrOfPositiveExamples = learningProblem.getPositiveExamples().size();
 		nrOfNegativeExamples = learningProblem.getNegativeExamples().size();
 		random = new Random();
 	}
 	
-	public Description applyPsi(Description concept, int coveredPositives, int coveredNegatives) {
+	public Concept applyPsi(Concept concept, int coveredPositives, int coveredNegatives) {
 		// Wahrscheinlichkeit für upward refinement berechnen
 		double tmp = coveredNegatives/(double)nrOfNegativeExamples;
 		double tmp2 = coveredPositives/(double)nrOfPositiveExamples;
@@ -95,7 +92,7 @@ public class Psi implements GeneticRefinementOperator {
 		
 		// someTimeStart = System.nanoTime();
 		// downward oder upward refinement operator anwenden
-		Set<Description> refinements;
+		Set<Concept> refinements;
 		if(downward) {
 			pdRequests++;
 			// Cache aufrufen
@@ -140,7 +137,7 @@ public class Psi implements GeneticRefinementOperator {
 			
 		
 		// ein refinement zufällig auswählen
-		Description[] array = refinements.toArray(new Description[0]);
+		Concept[] array = refinements.toArray(new Concept[0]);
 		// kein refinement gefunden
 		if(array.length==0) {
 			if(debug) {
@@ -152,12 +149,12 @@ public class Psi implements GeneticRefinementOperator {
 		}
 			
 		int position = random.nextInt(array.length);
-		Description returnConcept = array[position];
+		Concept returnConcept = array[position];
 		ConceptTransformation.cleanConcept(returnConcept);
 		
 		// das Rückgabekonzept wird geklont, damit alle parent-Links repariert
 		// werden (damit andere GP-Operatoren korrekt funktionieren)
-		Description returnConceptClone = (Description)returnConcept.clone();
+		Concept returnConceptClone = (Concept)returnConcept.clone();
 		returnConceptClone.setParent(null);
 		
 		if(debug) {
@@ -172,7 +169,7 @@ public class Psi implements GeneticRefinementOperator {
 		psiApplicationStartTime = System.nanoTime();
 		nrOfRequests++;
 		
-		Description concept = program.getTree();
+		Concept concept = program.getTree();
 		// es muss sichergestellt sein, dass Konjunktionen nur als MultConjunctions
 		// vorhanden sind (analog bei Disjunktion) => effizienter wäre eine Auslagerung
 		// dieses Codes in die Konzepterzeugung, da die Transformation häufig nichts
@@ -183,14 +180,14 @@ public class Psi implements GeneticRefinementOperator {
 		// sich lohnt Operatoren zu definieren, die keine Negationsnormalform
 		// erfordern)
 		
-		Description conceptMod = ConceptTransformation.transformToNegationNormalForm(concept);
+		Concept conceptMod = ConceptTransformation.transformToNegationNormalForm(concept);
 		// um mehr Cache Hits zu bekommen, wird noch vereinfach und geordnet
 		
 		
-		Description conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
-		ConceptTransformation.transformToOrderedForm(conceptModForCache, conceptComparator);
+		Concept conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
+		ConceptTransformation.transformToOrderedNegationNormalForm(conceptModForCache, conceptComparator);
 		
-		ScorePosNeg score = program.getScore();
+		Score score = program.getScore();
 		// Eval-Cache füllen
 		evalCache.put(conceptModForCache, score);
 		
@@ -199,26 +196,26 @@ public class Psi implements GeneticRefinementOperator {
 		int coveredPositives = score.getCoveredPositives().size();
 		int coveredNegatives = score.getCoveredNegatives().size();
 		// someTimeStart = System.nanoTime();
-		Description newConcept = applyPsi(conceptMod, coveredPositives, coveredNegatives);
+		Concept newConcept = applyPsi(conceptMod, coveredPositives, coveredNegatives);
 		ConceptTransformation.cleanConcept(newConcept);
 		// someTime += System.nanoTime() - someTimeStart;
 		// newConcept.setParent(null);
 		
 		/////////// TESTCODE: umwandeln des erhaltenen Konzepts
 		// someTimeStart = System.nanoTime();
-		Description newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
-		ConceptTransformation.transformToOrderedForm(newConceptMod, conceptComparator);
+		Concept newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
+		ConceptTransformation.transformToOrderedNegationNormalForm(newConceptMod, conceptComparator);
 		// someTime += System.nanoTime() - someTimeStart;
 		///////////
 		
 		// versuchen Reasoner-Cache zu treffen
 		// Problem: Score hängt von Konzeptlänge ab!! => muss hier explizit
 		// reingerechnet werden
-		ScorePosNeg newScore = evalCache.get(newConceptMod);
+		Score newScore = evalCache.get(newConceptMod);
 		
 		if(newScore==null) {
 			psiReasoningStartTime = System.nanoTime();
-			newScore = (ScorePosNeg) learningProblem.computeScore(newConcept);
+			newScore = learningProblem.computeScore(newConcept);
 			psiReasoningTimeNs += System.nanoTime() - psiReasoningStartTime;
 			
 			evalCache.put(newConceptMod, newScore);
@@ -281,11 +278,11 @@ public class Psi implements GeneticRefinementOperator {
 		return puRequests;
 	}
 
-	public SortedMap<Description, Set<Description>> getPdCache() {
+	public SortedMap<Concept, Set<Concept>> getPdCache() {
 		return pdCache;
 	}
 
-	public SortedMap<Description, Set<Description>> getPuCache() {
+	public SortedMap<Concept, Set<Concept>> getPuCache() {
 		return puCache;
 	}
 	

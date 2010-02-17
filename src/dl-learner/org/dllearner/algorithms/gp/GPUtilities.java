@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.gp;
 
+
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -7,28 +9,29 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.FlatABox;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.PosNegLPStrict;
-import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.learningproblems.ScoreThreeValued;
+import org.dllearner.Config;
+import org.dllearner.LearningProblem;
+import org.dllearner.Main;
+import org.dllearner.Score;
+import org.dllearner.ScoreThreeValued;
+import org.dllearner.dl.All;
+import org.dllearner.dl.AtomicConcept;
+import org.dllearner.dl.AtomicRole;
+import org.dllearner.dl.Bottom;
+import org.dllearner.dl.Concept;
+import org.dllearner.dl.Conjunction;
+import org.dllearner.dl.Disjunction;
+import org.dllearner.dl.Exists;
+import org.dllearner.dl.FlatABox;
+import org.dllearner.dl.Individual;
+import org.dllearner.dl.MultiConjunction;
+import org.dllearner.dl.MultiDisjunction;
+import org.dllearner.dl.Negation;
+import org.dllearner.dl.Top;
 import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.SortedSetTuple;
 
 
 /**
@@ -54,7 +57,7 @@ public class GPUtilities {
 	
     private static Random rand = new Random();
     
-    private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis) {
+    private static Score calculateFitness(LearningProblem learningProblem, Concept hypothesis) {
     	return calculateFitness(learningProblem, hypothesis, null);
     }
     
@@ -63,37 +66,32 @@ public class GPUtilities {
     // (macht aber nicht so viel Sinn, da man das bei richtigen Reasoning-Algorithmen
     // ohnehin mit einer Erweiterung der Wissensbasis um die Inklusion Target SUBSETOF ReturnType
     // erschlagen kann)
-	private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis, Description adc) {
-		Description extendedHypothesis;
+	private static Score calculateFitness(LearningProblem learningProblem, Concept hypothesis, Concept adc) {
+		Concept extendedHypothesis;
 		
-		// return type temporarily disabled 
-		// => it is probably more appropriate to have the 
-		// number of superclasses of a target concept
-		// as parameter of the learning problem
-//		
-//		if (!Config.returnType.equals("")) {
-//			System.out.println("return type");
-//			
-//			Concept newRoot;
-//			if(Config.GP.useMultiStructures)
-//				newRoot = new MultiConjunction(new AtomicConcept(Config.returnType),hypothesis);
-//			else
-//				newRoot = new Conjunction(new AtomicConcept(Config.returnType),hypothesis);			
-//			// parent wieder auf null setzen, damit es nicht inkonsistent wird
-//			// TODO: ist nicht wirklich elegant und auch inkompatibel mit
-//			// dem Hill-Climbing-Operator
-//			hypothesis.setParent(null);
-//			extendedHypothesis = newRoot;
-//		} else
+		if (!Config.returnType.equals("")) {
+			System.out.println("return type");
+			
+			// newRoot.addChild(new AtomicConcept(Config.returnType));
+			// newRoot.addChild(hypothesis);
+			Concept newRoot;
+			if(Config.GP.useMultiStructures)
+				newRoot = new MultiConjunction(new AtomicConcept(Config.returnType),hypothesis);
+			else
+				newRoot = new Conjunction(new AtomicConcept(Config.returnType),hypothesis);			
+			// parent wieder auf null setzen, damit es nicht inkonsistent wird
+			// TODO: ist nicht wirklich elegant und auch inkompatibel mit
+			// dem Hill-Climbing-Operator
+			hypothesis.setParent(null);
+			extendedHypothesis = newRoot;
+		} else
 			extendedHypothesis = hypothesis;		
 		
-		ScorePosNeg score;
-		if(adc != null)
-			// TODO: ADC-Support
-			// score = learningProblem.computeScore(extendedHypothesis, adc);
-			throw new RuntimeException("ADC not supported");
+		Score score;
+		if(Config.GP.adc)
+			score = learningProblem.computeScore(extendedHypothesis, adc);
 		else
-			score = (ScorePosNeg) learningProblem.computeScore(extendedHypothesis);
+			score = learningProblem.computeScore(extendedHypothesis);
 		
 		// System.out.println(hypothesis);
 		// System.out.println(score.getScore());
@@ -123,11 +121,11 @@ public class GPUtilities {
 		return score;
 	}    
     
-	public static Program createProgram(LearningProblem learningProblem, Description mainTree) {
+	public static Program createProgram(LearningProblem learningProblem, Concept mainTree) {
 		return new Program(calculateFitness(learningProblem, mainTree), mainTree);
-	}
+	}	
 	
-	private static Program createProgram(LearningProblem learningProblem, Description mainTree, Description adc) {
+	private static Program createProgram(LearningProblem learningProblem, Concept mainTree, Concept adc) {
 		return new Program(calculateFitness(learningProblem, mainTree,adc), mainTree, adc);
 	}
 	
@@ -135,35 +133,35 @@ public class GPUtilities {
      * Perform a point mutation on the given program.
      * @param p The program to be mutated.
      */
-    public static Program mutation(LearningProblem learningProblem, ReasonerComponent rs, Program p) {
+    public static Program mutation(LearningProblem learningProblem, Program p) {
     	mutation++;
-    	if(p.getAdc() != null) {
+    	if(Config.GP.adc) {
     		// TODO: hier kann man noch mehr Feinabstimmung machen, d.h.
     		// Mutation abh�ngig von Knotenanzahl
     		if(Math.random()<0.5) {
-    			Description mainTree = mutation(learningProblem, rs, p.getTree(),true);
-    			Description adc = p.getAdc();
-    			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
+    			Concept mainTree = mutation(learningProblem, p.getTree(),true);
+    			Concept adc = p.getAdc();
+    			Score score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);
     		}
     		else {
-    			Description mainTree = p.getTree();
-    			Description adc = mutation(learningProblem, rs, p.getAdc(),false);
-    			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
+    			Concept mainTree = p.getTree();
+    			Concept adc = mutation(learningProblem, p.getAdc(),false);
+    			Score score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);    			
     		}
     	} else {
-    		Description tree = mutation(learningProblem, rs,p.getTree(),false);
-    		ScorePosNeg score = calculateFitness(learningProblem, tree);
+    		Concept tree = mutation(learningProblem, p.getTree(),false);
+    		Score score = calculateFitness(learningProblem, tree);
             return new Program(score, tree);
     	}
     }
 
-    private static Description mutation(LearningProblem learningProblem, ReasonerComponent rs, Description tree, boolean useADC) {
+    private static Concept mutation(LearningProblem learningProblem, Concept tree, boolean useADC) {
     	// auch bei Mutation muss darauf geachtet werden, dass 
     	// Baum nicht modifiziert wird (sonst w�rde man automatisch auch
     	// andere "selected individuals" modifizieren)
-    	Description t = (Description) tree.clone();
+    	Concept t = (Concept) tree.clone();
     	// bis auf Klon Mutation genau wie vorher
         int size = t.getNumberOfNodes();
         // TODO: auch Mutationen von Einzelknoten erlauben
@@ -183,22 +181,22 @@ public class GPUtilities {
             */
         	// neue Implementierung
             int randNr = rand.nextInt(size) + 1;
-            Description st = t.getSubtree(randNr);
-            Description stParent = st.getParent();
+            Concept st = t.getSubtree(randNr);
+            Concept stParent = st.getParent();
             stParent.getChildren().remove(st);
-            Description treeNew = createGrowRandomTree(learningProblem, rs, 3, useADC);
+            Concept treeNew = createGrowRandomTree(learningProblem,3, useADC);
             stParent.addChild(treeNew);
         } else
         	// return createLeafNode(useADC);
-        	return pickTerminalSymbol(learningProblem,rs,useADC);
+        	return pickTerminalSymbol(learningProblem,useADC);
         return t;
     }
 
-    private static void swapSubtrees(Description t1, Description t2) {
+    private static void swapSubtrees(Concept t1, Concept t2) {
         if (t1.getParent() != null && t2.getParent() != null) {
             // handling children
-            Description t1Parent = t1.getParent();
-            Description t2Parent = t2.getParent();
+            Concept t1Parent = t1.getParent();
+            Concept t2Parent = t2.getParent();
             // t1 is first child
             if (t1Parent.getChild(0).equals(t1))
                 t1Parent.getChildren().add(0, t2);
@@ -230,16 +228,16 @@ public class GPUtilities {
      */
     public static Program[] crossover(LearningProblem learningProblem, Program p1, Program p2) {
     	crossover++;
-    	if(p1.getAdc() != null) {
-    		Description[] pt;
+    	if(Config.GP.adc) {
+    		Concept[] pt;
     		Program result[] = new Program[2];
     		
     		// es wird entweder ADC oder Hauptbaum einem Crossover
     		// unterzogen und dann ein neues Programm erstellt
     		if(Math.random()<0.5) {
     			pt = crossover(p1.getTree(), p2.getTree()); 
-    			result[0] = createProgram(learningProblem, pt[0], p1.getAdc());
-                result[1] = createProgram(learningProblem, pt[1], p2.getAdc());
+    			result[0] = createProgram(learningProblem, pt[0],p1.getAdc());
+                result[1] = createProgram(learningProblem, pt[1],p2.getAdc());
     		} else {
     			pt = crossover(p1.getAdc(), p2.getAdc());
     			result[0] = createProgram(learningProblem, p1.getTree(),pt[0]);
@@ -247,7 +245,7 @@ public class GPUtilities {
     		}
             return result;      		
     	} else {
-            Description[] pt = crossover(p1.getTree(), p2.getTree());
+            Concept[] pt = crossover(p1.getTree(), p2.getTree());
             Program result[] = new Program[2];
             result[0] = createProgram(learningProblem,pt[0]);
             result[1] = createProgram(learningProblem,pt[1]);
@@ -255,18 +253,18 @@ public class GPUtilities {
     	}
     }
 
-    private static Description[] crossover(Description tree1, Description tree2) {
-        Description tree1cloned = (Description) tree1.clone();
-        Description tree2cloned = (Description) tree2.clone();
+    private static Concept[] crossover(Concept tree1, Concept tree2) {
+        Concept tree1cloned = (Concept) tree1.clone();
+        Concept tree2cloned = (Concept) tree2.clone();
 
-        Description[] results = new Description[2];
+        Concept[] results = new Concept[2];
         int rand1 = rand.nextInt(tree1.getNumberOfNodes());
         int rand2 = rand.nextInt(tree2.getNumberOfNodes());
-        Description t1 = tree1cloned.getSubtree(rand1);
-        Description t2 = tree2cloned.getSubtree(rand2);
+        Concept t1 = tree1cloned.getSubtree(rand1);
+        Concept t2 = tree2cloned.getSubtree(rand2);
 
         if (t1.isRoot() && !t2.isRoot()) {
-            Description t2Parent = t2.getParent();
+            Concept t2Parent = t2.getParent();
             // t2 is first child
             if (t2Parent.getChild(0).equals(t2))
                 t2Parent.getChildren().add(0, t1);
@@ -279,7 +277,7 @@ public class GPUtilities {
             results[0] = t2;
             results[1] = tree2cloned;
         } else if (!t1.isRoot() && t2.isRoot()) {
-            Description t1Parent = t1.getParent();
+            Concept t1Parent = t1.getParent();
             // t2 is first child
             if (t1Parent.getChild(0).equals(t1))
                 t1Parent.getChildren().add(0, t2);
@@ -304,10 +302,10 @@ public class GPUtilities {
 
     // m�sste auch mit ADC funktionieren, da nur am Hauptbaum etwas 
     // ver�ndert wird
-    public static Program hillClimbing(LearningProblem learningProblem, ReasonerComponent rs, Program p) {
+    public static Program hillClimbing(LearningProblem learningProblem, Program p) {
     	hillClimbing++;
     	// checken, ob Bedingungen f�r hill-climbing erf�llt sind
-    	if(!rs.getReasonerType().equals(ReasonerType.FAST_RETRIEVAL)
+    	if(!learningProblem.getReasoningService().getReasonerType().equals(ReasonerType.FAST_RETRIEVAL)
     			|| !(p.getScore() instanceof ScoreThreeValued)) {
     		throw new Error("Hill climbing can only be used with the fast-retrieval-algorithm on a three valued learning problem.");
     	}
@@ -315,11 +313,11 @@ public class GPUtilities {
     	// SortedSetTuple s = new SortedSetTuple(p.getScore().getDefPosSet(),p.getScore().getDefNegSet());
     	// Knoten kopieren, damit er sich nicht ver�ndert (es wird sonst der
     	// parent-Link ver�ndert)
-    	Description treecloned = (Description) p.getTree().clone();
-    	if(p.getAdc() != null)
-    		return createProgram(learningProblem,hillClimbing(learningProblem,rs,treecloned,(ScoreThreeValued)p.getScore()),p.getAdc());
+    	Concept treecloned = (Concept) p.getTree().clone();
+    	if(Config.GP.adc)
+    		return createProgram(learningProblem,hillClimbing(learningProblem,treecloned,(ScoreThreeValued)p.getScore()),p.getAdc());
     	else
-    		return createProgram(learningProblem,hillClimbing(learningProblem,rs,treecloned,(ScoreThreeValued)p.getScore()));
+    		return createProgram(learningProblem,hillClimbing(learningProblem,treecloned,(ScoreThreeValued)p.getScore()));
     }
     
     // one-step hill-climbing
@@ -327,30 +325,20 @@ public class GPUtilities {
     // Alternativen zu speichern und dann ein Element zuf�llig auszuw�hlen,
     // aber w�rde man das nicht machen, dann w�re das ein starker Bias
     // zu z.B. Disjunktion (weil die als erstes getestet wird)
-    private static Description hillClimbing(LearningProblem learningProblem, ReasonerComponent rs, Description node, ScoreThreeValued score) {
+    private static Concept hillClimbing(LearningProblem learningProblem, Concept node, ScoreThreeValued score) {
     	SortedSetTuple<Individual> tuple = new SortedSetTuple<Individual>(score.getPosClassified(),score.getNegClassified());
     	SortedSetTuple<String> stringTuple = Helper.getStringTuple(tuple);
     	// FlatABox abox = FlatABox.getInstance();
-    	Description returnNode = node;
+    	Concept returnNode = node;
     	// damit stellen wir sicher, dass nur Konzepte in die Auswahl
     	// genommen werden, die besser klassifizieren als das �bergebene
     	// Konzept (falls das nicht existiert, dann hill climbing = reproduction)
-    	System.err.println("Next line needs fixing to work.");
-    	System.exit(0);
-    	// double bestScore = score.getScore()+Config.accuracyPenalty/2;
-    	double bestScore = 0;
+    	double bestScore = score.getScore()+Config.accuracyPenalty/2;
     	Map<Integer,List<String>> bestNeighbours = new TreeMap<Integer,List<String>>();
-    	ScorePosNeg tmpScore;
+    	Score tmpScore;
     	SortedSetTuple<String> tmp, tmp2;
     	// FlatABox abox = ((FastRetrievalReasoner)learningProblem.getReasoner().getFastRetrieval().getAbox();
-    	// FlatABox abox = Main.getFlatAbox();
-    	FlatABox abox = null;
-		try {
-			abox = Helper.createFlatABox(rs);
-		} catch (ReasoningMethodUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	FlatABox abox = Main.getFlatAbox();
     	
     	// TODO: testen, ob aktuelles Konzept zu speziell bzw. allgemein ist;
     	// dann kann man das effizienter implementieren
@@ -362,34 +350,34 @@ public class GPUtilities {
     		// TODO: double retrieval nutzen
     		
     		tmp2 = FastRetrieval.calculateDisjunctionSets(stringTuple, tmp);
-    		tmpScore = getScore(node.getLength()+2, learningProblem, rs, Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		tmpScore = getScore(node.getLength()+2, learningProblem,Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,1,concept,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,1,concept,true);
     		
     		tmp2 = FastRetrieval.calculateConjunctionSets(stringTuple, tmp);
-    		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		tmpScore = getScore(node.getLength()+2,learningProblem,Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,2,concept,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,2,concept,true);    		
     	}
     	
     	// Tests f�r All und Exists
     	for(String role : abox.roles) {
     		tmp = FastRetrieval.calculateAllSet(abox,role,stringTuple);
-    		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		tmpScore = getScore(node.getLength()+2,learningProblem,Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,3,role,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,3,role,true);    		
 
     		tmp = FastRetrieval.calculateExistsSet(abox,role,stringTuple);
-    		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
-    		if(tmpScore.getScoreValue()==bestScore)
+    		tmpScore = getScore(node.getLength()+2,learningProblem,Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
+    		if(tmpScore.getScore()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,4,role,false);
-    		else if(tmpScore.getScoreValue()>bestScore)
+    		else if(tmpScore.getScore()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,4,role,true);    		
     	}
     	
@@ -422,45 +410,45 @@ public class GPUtilities {
     		// returnNode = new Disjunction();
     		// returnNode.addChild(new AtomicConcept(name));    		
     		// returnNode.addChild(node);
-//    		if(useMultiStructures)
-    			returnNode = new Union(new NamedClass(name),node);
-//    		else
-//    			returnNode = new Disjunction(new AtomicConcept(name),node);
+    		if(Config.GP.useMultiStructures)
+    			returnNode = new MultiDisjunction(new AtomicConcept(name),node);
+    		else
+    			returnNode = new Disjunction(new AtomicConcept(name),node);
     	// wegen else if schlie�en sich die F�lle gegenseitig aus
     	} else if(nr<sizeSum2) {
     		name = bestNeighbours.get(2).get(nr-sizeSum1);
     		// returnNode = new Conjunction();
     		// returnNode.addChild(new AtomicConcept(name));    		
     		// returnNode.addChild(node);
-//    		if(useMultiStructures)
-    			returnNode = new Intersection(new NamedClass(name),node);
-//    		else
-//    			returnNode = new Conjunction(new AtomicConcept(name),node);
+    		if(Config.GP.useMultiStructures)
+    			returnNode = new MultiConjunction(new AtomicConcept(name),node);
+    		else
+    			returnNode = new Conjunction(new AtomicConcept(name),node);
     	} else if(nr<sizeSum3) {
     		name = bestNeighbours.get(3).get(nr-sizeSum2);
     		// returnNode = new Exists(new AtomicRole(name));
     		// returnNode.addChild(node);
-    		returnNode = new ObjectSomeRestriction(new ObjectProperty(name),node);
+    		returnNode = new Exists(new AtomicRole(name),node);
     	} else {
     		name = bestNeighbours.get(4).get(nr-sizeSum3);
     		// returnNode = new All(new AtomicRole(name));
     		// returnNode.addChild(node);   
-    		returnNode = new ObjectAllRestriction(new ObjectProperty(name),node);
+    		returnNode = new All(new AtomicRole(name),node);
     	}
     		
     	return returnNode;
     	}
     }
     
-    private static ScoreThreeValued getScore(int conceptLength, LearningProblem learningProblem, ReasonerComponent rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
+    private static ScoreThreeValued getScore(int conceptLength, LearningProblem learningProblem, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
     	// es muss hier die Helper-Methode verwendet werden, sonst werden
     	// Individuals gel�scht !!
-    	SortedSet<Individual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified); 
+    	SortedSet<Individual> neutClassified = Helper.intersection(learningProblem.getReasoningService().getIndividuals(),posClassified); 
     	// learningProblem.getReasoner().getIndividuals();
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
-    	PosNegLPStrict lp = (PosNegLPStrict)learningProblem;
-    	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), lp.isPenaliseNeutralExamples(), lp.getPercentPerLengthUnit(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
+    	
+    	return new ScoreThreeValued(conceptLength, posClassified, neutClassified, negClassified, learningProblem.getPositiveExamples(),learningProblem.getNeutralExamples(),learningProblem.getNegativeExamples());
     }
     
     // aktualisiert die besten Knoten
@@ -489,10 +477,10 @@ public class GPUtilities {
     	return returnMap;
     }
     
-    private static Description pickTerminalSymbol(LearningProblem learningProblem, ReasonerComponent rs, boolean useADC) {
+    private static Concept pickTerminalSymbol(LearningProblem learningProblem, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int nr;
-        int nrOfConcepts = rs.getNamedClasses().size();
+        int nrOfConcepts = learningProblem.getReasoningService().getAtomicConcepts().size();
         
         // ein Blattknoten kann folgendes sein:
         // Top, Bottom, Konzept => alles am Besten gleichwahrscheinlich         
@@ -502,16 +490,16 @@ public class GPUtilities {
         	nr = rand.nextInt(2+nrOfConcepts);
         	
         if(nr==0)
-        	return new Thing();
+        	return new Top();
         else if(nr==1)
-            return new Nothing();
+            return new Bottom();
         // die Zahl kann nur vorkommen, wenn ADC aktiviert ist
         else if(nr==2+nrOfConcepts) {
         	// System.out.println("== ADC 2 ==");
         	return new ADC();
          }
         else
-            return (NamedClass) rs.getAtomicConceptsList().get(nr-2).clone();    	  	
+            return (AtomicConcept) learningProblem.getReasoningService().getAtomicConceptsList().get(nr-2).clone();    	  	
     }
     
     // Funktion nach Umstelllung der Konstruktoren nicht mehr ben�tigt
@@ -619,45 +607,45 @@ public class GPUtilities {
      * @param depth Depth of the tree.
      * @return The created program.
      */
-    public static Program createFullRandomProgram(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean adc) {
-    	if(adc) {
+    public static Program createFullRandomProgram(LearningProblem learningProblem, int depth) {
+    	if(Config.GP.adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
-    		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, true),
-    				createFullRandomTree(learningProblem, rs, depth, false));
+    		return createProgram(learningProblem, createFullRandomTree(learningProblem, depth, true),
+    				createFullRandomTree(learningProblem, depth, false));
     	}
     	else
-    		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, false));
+    		return createProgram(learningProblem, createFullRandomTree(learningProblem, depth, false));
     }
 
-    private static Description createFullRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    private static Concept createFullRandomTree(LearningProblem learningProblem, int depth, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
-        int numberOfRoles = rs.getObjectProperties().size(); //  abox.roles.size();
+        int numberOfRoles = learningProblem.getReasoningService().getAtomicRoles().size(); //  abox.roles.size();
         
         if (depth > 1) {
             int nr = rand.nextInt(3+2*numberOfRoles);
             // System.out.println(nr);
             // Node node = createNonLeafNodeEqualProp();
         	// Concept node = pickFunctionSymbol();
-            Description child1 = createFullRandomTree(learningProblem, rs, depth-1, useADC);
+            Concept child1 = createFullRandomTree(learningProblem, depth-1, useADC);
             if(nr == 0 || nr == 1) {
-            	Description child2 = createFullRandomTree(learningProblem, rs, depth-1, useADC);
+            	Concept child2 = createFullRandomTree(learningProblem, depth-1, useADC);
             	if(nr == 0) {
-//            		if(useMultiStructures)
-            			return new Union(child1,child2);
-//            		else
-//            			return new Disjunction(child1,child2);
+            		if(Config.GP.useMultiStructures)
+            			return new MultiDisjunction(child1,child2);
+            		else
+            			return new Disjunction(child1,child2);
             	} else {
-//            		if(useMultiStructures)
-            			return new Intersection(child1, child2);
-//            		else
-//            			return new Conjunction(child1, child2);
+            		if(Config.GP.useMultiStructures)
+            			return new MultiConjunction(child1, child2);
+            		else
+            			return new Conjunction(child1, child2);
             	}
             } else if(nr==2) {
             	return new Negation(child1);
             } else if(nr - 3 < numberOfRoles)
-            	return new ObjectSomeRestriction(rs.getAtomicRolesList().get(nr-3),child1);
+            	return new Exists(learningProblem.getReasoningService().getAtomicRolesList().get(nr-3),child1);
             else
-            	return new ObjectAllRestriction(rs.getAtomicRolesList().get(nr-3-numberOfRoles),child1);
+            	return new All(learningProblem.getReasoningService().getAtomicRolesList().get(nr-3-numberOfRoles),child1);
             
             /*
             if(node instanceof Disjunction || node instanceof Conjunction) {
@@ -671,7 +659,7 @@ public class GPUtilities {
             // return node;
         } else {
             // return createLeafNode(useADC);
-        	return pickTerminalSymbol(learningProblem, rs, useADC);
+        	return pickTerminalSymbol(learningProblem, useADC);
         }
     }
 
@@ -680,17 +668,17 @@ public class GPUtilities {
      * @param depth The maximum depth of the program tree.
      * @return The created program.
      */
-    public static Program createGrowRandomProgram(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean adc) {
-    	if(adc) {
+    public static Program createGrowRandomProgram(LearningProblem learningProblem, int depth) {
+    	if(Config.GP.adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
-    		return createProgram(learningProblem, createGrowRandomTree(learningProblem,rs,depth,true),
-    				createGrowRandomTree(learningProblem,rs,depth,false));
+    		return createProgram(learningProblem, createGrowRandomTree(learningProblem,depth,true),
+    				createGrowRandomTree(learningProblem,depth,false));
     	}
     	else
-    		return createProgram(learningProblem, createGrowRandomTree(learningProblem, rs, depth,false));    	
+    		return createProgram(learningProblem, createGrowRandomTree(learningProblem, depth,false));    	
     }
 
-    public static Description createGrowRandomTree(LearningProblem learningProblem, ReasonerComponent rs, int depth, boolean useADC) {
+    private static Concept createGrowRandomTree(LearningProblem learningProblem, int depth, boolean useADC) {
     	/*
         private static Concept pickAlphabetSymbol(boolean useADC) {
             FlatABox abox = FlatABox.getInstance();
@@ -725,8 +713,8 @@ public class GPUtilities {
         */
     	
         // FlatABox abox = FlatABox.getInstance();
-        int numberOfConcepts = rs.getNamedClasses().size();
-        int numberOfRoles = rs.getObjectProperties().size();
+        int numberOfConcepts = learningProblem.getReasoningService().getAtomicConcepts().size();
+        int numberOfRoles = learningProblem.getReasoningService().getAtomicRoles().size();
         // TODO: ev. größere Wahrscheinlichkeit für Konjunktion/Disjunktion (?),
         // mit größerer Konzept-, und Rollenanzahl kommen die sonst kaum noch vor
         int numberOfAlphabetSymbols = numberOfConcepts + 2*numberOfRoles + 5; //7;// 5;
@@ -762,30 +750,30 @@ public class GPUtilities {
         	// Concept node = pickAlphabetSymbol(useADC);
         	
             if(nr==0)
-            	return new Thing();
+            	return new Top();
             else if(nr==1)
-            	return new Nothing();
+            	return new Bottom();
             // ADC bekommt die h�chste Nummer, die nur in diesem Fall m�glich ist
             else if(nr==numberOfConcepts + 2*numberOfRoles + 5) 
             	return new ADC(); 
             else if(nr>=2 && nr < numberOfConcepts+2)
-            	return (NamedClass)rs.getAtomicConceptsList().get(nr-2).clone();
+            	return (AtomicConcept)learningProblem.getReasoningService().getAtomicConceptsList().get(nr-2).clone();
             else if(nr==numberOfConcepts+2) {
-//            	if(useMultiStructures)
-            		return new Intersection(createGrowRandomTree(learningProblem, rs, depth-1, useADC),createGrowRandomTree(learningProblem, rs, depth-1, useADC));
-//            	else
-//            		return new Conjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
+            	if(Config.GP.useMultiStructures)
+            		return new MultiConjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
+            	else
+            		return new Conjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
             } else if(nr==numberOfConcepts+3) {
-//            	if(useMultiStructures)
-            		return new Union(createGrowRandomTree(learningProblem, rs, depth-1, useADC),createGrowRandomTree(learningProblem, rs, depth-1, useADC));
-//            	else
-//            		return new Disjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
+            	if(Config.GP.useMultiStructures)
+            		return new MultiDisjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
+            	else
+            		return new Disjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
             } else if(nr==numberOfConcepts+4)
-            	return new Negation(createGrowRandomTree(learningProblem, rs, depth-1, useADC));
+            	return new Negation(createGrowRandomTree(learningProblem, depth-1, useADC));
             else if(nr>=numberOfConcepts+5 && nr<numberOfConcepts+5+numberOfRoles)
-            	return new ObjectSomeRestriction(rs.getAtomicRolesList().get(nr-numberOfConcepts-5),createGrowRandomTree(learningProblem, rs, depth-1, useADC));
+            	return new Exists(learningProblem.getReasoningService().getAtomicRolesList().get(nr-numberOfConcepts-5),createGrowRandomTree(learningProblem,depth-1, useADC));
             else
-            	return new ObjectAllRestriction(rs.getAtomicRolesList().get(nr-numberOfConcepts-5-numberOfRoles),createGrowRandomTree(learningProblem, rs, depth-1, useADC));        	
+            	return new All(learningProblem.getReasoningService().getAtomicRolesList().get(nr-numberOfConcepts-5-numberOfRoles),createGrowRandomTree(learningProblem,depth-1, useADC));        	
         	
             /*
         	if(node instanceof Disjunction || node instanceof Conjunction) {
@@ -799,7 +787,7 @@ public class GPUtilities {
             // return node;
         } else {
             // return createLeafNode(useADC);
-        	return pickTerminalSymbol(learningProblem, rs, useADC);
+        	return pickTerminalSymbol(learningProblem, useADC);
         }
     }
 
@@ -813,14 +801,14 @@ public class GPUtilities {
         return checkTree(prog.getTree(), true);
     }
         
-    public static boolean checkTree(Description node, boolean isRootNode) {
+    public static boolean checkTree(Concept node, boolean isRootNode) {
         if(isRootNode && node.getParent()!=null) {
         	System.out.println("inconsistent root");
             return false;
         }
         
         // Kinder �berpr�fen
-        for(Description child : node.getChildren()) {
+        for(Concept child : node.getChildren()) {
             if(!child.getParent().equals(node)) {
                 System.out.println("inconsistent tree " + node + " (child " + child + ")");
                 return false;

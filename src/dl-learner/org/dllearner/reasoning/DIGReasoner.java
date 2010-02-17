@@ -17,17 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package org.dllearner.reasoning;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -37,28 +34,18 @@ import java.util.TreeSet;
 import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.DIGReasonerConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.utilities.Files;
+import org.dllearner.Config;
+import org.dllearner.OntologyFileFormat;
+import org.dllearner.dl.AtomicConcept;
+import org.dllearner.dl.AtomicRole;
+import org.dllearner.dl.Bottom;
+import org.dllearner.dl.Concept;
+import org.dllearner.dl.Individual;
+import org.dllearner.dl.KB;
+import org.dllearner.dl.Top;
+import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.RoleComparator;
+import org.dllearner.utilities.RoleComparator;
 import org.kr.dl.dig.v1_1.Concepts;
 import org.kr.dl.dig.v1_1.Csynonyms;
 import org.kr.dl.dig.v1_1.IdType;
@@ -70,743 +57,691 @@ import org.kr.dl.dig.v1_1.Rsynonyms;
 import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
 
 /**
- * DIG 1.1 implementation of the reasoner interface.
+ * DIG 1.1 implementation of the reasoner interface. 
  * 
  * @author Jens Lehmann
- * 
+ *
  */
-public class DIGReasoner extends ReasonerComponent {
-	
-	private DIGReasonerConfigurator configurator;
-	@Override
-	public DIGReasonerConfigurator getConfigurator(){
-		return configurator;
-	}
-	
-
-	URL reasonerURL;
+public class DIGReasoner extends AbstractReasoner {
 
 	// Variablen für Reasoner
 	DIGHTTPConnector connector;
 	String identifier;
 	URI kbURI;
 	private String asksPrefix;
+	Map<URL,OntologyFileFormat> imports;
+	KB kb;
 	// Cache für Konzepte, Rollen und Individuen
-	Set<NamedClass> atomicConcepts;
-	Set<ObjectProperty> atomicRoles;
+	Set<AtomicConcept> atomicConcepts;
+	Set<AtomicRole> atomicRoles;
 	SortedSet<Individual> individuals;
-
+	
 	// Cache für Subsumptionhierarchie
-	// Comparator ist notwendig, da sonst z.B. verschiedene Instanzen des
-	// atomaren Konzepts male
+	// Comparator ist notwendig, da sonst z.B. verschiedene Instanzen des atomaren Konzepts male
 	// unterschiedlich sind;
 	// alternativ wäre auch eine Indizierung über Strings möglich
 	ConceptComparator conceptComparator = new ConceptComparator();
 	RoleComparator roleComparator = new RoleComparator();
-	ClassHierarchy subsumptionHierarchy;
-	ObjectPropertyHierarchy roleHierarchy;
+	SubsumptionHierarchy subsumptionHierarchy;
+	RoleHierarchy roleHierarchy;
 	// enthält atomare Konzepte, sowie Top und Bottom
-	Set<Description> allowedConceptsInSubsumptionHierarchy;
-
-	private boolean writeDIGProtocol;
-	private File digProtocolFile;
-	private static String defaultDIGProtocolFile = "log/digProtocol.txt";
+	Set<Concept> allowedConceptsInSubsumptionHierarchy;
 	
-	
-	
-	public DIGReasoner(Set<KnowledgeSource> sources) {
-		super(sources);
-		this.configurator =  new DIGReasonerConfigurator(this);
-		try {
-			reasonerURL = new URL("http://localhost:8081");
-		} catch (MalformedURLException e) {
-		}
-	}
-
-	@Override
-	public void init() throws ComponentInitException {
-		// if a DIG protocol is written clear the file first
-		if(writeDIGProtocol) {
-			if(digProtocolFile == null)
-				digProtocolFile = new File(defaultDIGProtocolFile);
-			Files.clearFile(digProtocolFile);
-			connector = new DIGHTTPConnector(reasonerURL, digProtocolFile);
-		} else {
-			connector = new DIGHTTPConnector(reasonerURL);
-		}
-		
-		try {
-			identifier = connector.getIdentifier();
-		} catch (IOException e1) {
-			throw new ComponentInitException("Communication problem with DIG Reasoner. Please make sure there is a DIG reasoner running at " + reasonerURL + " and try again.", e1);
-		}
+	/**
+	 * Creates a DIG reasoner object.
+	 * 
+	 * @param kb Internal knowledge base.
+	 * @param url URL of the DIG reasoner e.g. http://localhost:8081.
+	 * @param imports Files to import (format and physical location of each file).
+	 */
+	public DIGReasoner(KB kb, URL url, Map<URL,OntologyFileFormat> imports) {
+		this.imports = imports;
+		this.kb = kb;
+		connector = new DIGHTTPConnector(url);		
+		identifier = connector.getIdentifier();
 		kbURI = connector.newKB();
-
+		
 		// asks-Prefix entsprechend der KB-URI initialisieren
 		asksPrefix = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
-		asksPrefix += "<asks xmlns=\"http://dl.kr.org/dig/2003/02/lang\" "
-				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-				+ "xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n"
-				+ "http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\"" + kbURI + "\">";
-
-		// momementan wird davon ausgegangen, dass toDIG(kbURI) den gesamten
-		// tells-Request liefert
-		StringBuilder sb = new StringBuilder();
-		// sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-		// sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
-		// "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-		// "xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
-		// "http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
-		for (KnowledgeSource source : sources) {
-			sb.append(source.toDIG(kbURI));
-
-			ResponseDocument rd = null;
-			try {
-				rd = connector.tells(sb.toString());
-			} catch (IOException e) {
-				throw new ComponentInitException("Could not read knowledge source " + source + ".", e);
-			}
-			if (!rd.getResponse().isSetOk()) {
+		asksPrefix += "<asks xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
+		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+		"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
+		"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">";
+		
+		// erzeuge tell-Anfrage für Knowledgebase
+		if(kb.getNumberOfAxioms()>0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+			sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
+					"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+					"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
+					"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
+			sb.append(DIGConverter.getDIGString(kb));
+			sb.append("</tells>");
+			
+			ResponseDocument rd = connector.tells(sb.toString());
+			if(!rd.getResponse().isSetOk()) {
 				System.err.println("DIG-Reasoner cannot read knowledgebase.");
 				System.exit(0);
 			}
 		}
-		// sb.append("</tells>");
+		
+		String importDIGString = "";
+		
+		// Ontologien mit Hilfe von KAON2 importieren - direkt zur
+		// KB hinzufügen
+		for(URL file : imports.keySet()) {
+			/*
+			// System.out.println("Importing " + file + " using KAON2.");
+			Ontology ontology = KAON2Reasoner.importKB(file);
+			try {
+				KAON2Reasoner.importKAON2Ontology(kb, ontology);
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			*/
+			
+			// mit Hilfe von Jena wird OWL zu DIG konvertiert
+			// (allein diese Funktion sorgt leider dafür, dass 
+			// DL-Learner stark anwächst, da verschieden Jena-Bibliotheken
+			// eingebunden werden müssen)
+			long importStartTime = System.currentTimeMillis();
+			
+			// if the ontology format is N-Triples then Jena is used, otherwise the OWL API
+			if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES)) {
+				System.out.print("Converting import file " + file + " to DIG using Jena ... ");
+				
+				importDIGString = JenaOWLDIGConverter.getTellsString(file, imports.get(file), kbURI);
+			} else {
+				System.out.println("Converting import file " + file + " to DIG using OWL API:");
+				
+				importDIGString = OWLAPIDIGConverter.getTellsString(file, imports.get(file), kbURI);
+			}
+				
+			ResponseDocument rdImport = connector.tells(importDIGString);
+			if(!rdImport.getResponse().isSetOk()) {
+				System.err.println("DIG-Reasoner cannot read knowledgebase.");
+				System.exit(0);
+			} else {
+				long importTime = System.currentTimeMillis() - importStartTime;
+				if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES))
+					System.out.println("OK (" + importTime + " ms)");
+				// (" + JenaOWLDIGConverter.nrOfStatementsLastConversion + " statements, "+ importTime + " ms)");
+				
+			}
+				
+		}
+			
+		// es wird jetzt immer der DIG-Reasoner abgefragt (auch ohne Importe), 
+		// da so gleich auch äquivalente Konzepte rausgefiltert werden
+		
 
+		
 		// DIG-Abfragen nach Konzepten, Rollen, Individuals
 		atomicConcepts = getAtomicConceptsDIG();
 		atomicRoles = getAtomicRolesDIG();
 		individuals = getIndividualsDIG();
-		
-	}
 
-	public static String getName() {
-		return "DIG reasoner";
 	}
 	
-
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("reasonerUrl", "URL of the DIG reasoner"));
-		options.add(new BooleanConfigOption("writeDIGProtocol",
-				"specifies whether or not to write a protocoll of send and received DIG requests",
-				false));
-		options.add(new StringConfigOption("digProtocolFile", "the file to store the DIG protocol",
-				defaultDIGProtocolFile));
-		return options;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("reasonerUrl")) {
-			String s = (String) entry.getValue();
-			try {
-				reasonerURL = new URL(s);
-			} catch (MalformedURLException e) {
-				// e.printStackTrace();
-				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
-			}
-		} else if(name.equals("writeDIGProtocol")) {
-			writeDIGProtocol = (Boolean) entry.getValue();
-		} else if(name.equals("digProtocolFile")) {
-			digProtocolFile = new File((String) entry.getValue());
-		}
-	}
-
 	/**
-	 * Construct a subsumption hierarchy using DIG queries. After calling this
+	 * Construct a subsumption hierarchy using DIG queries. After calling this 
 	 * method one can ask for children or parents in the subsumption hierarchy.
 	 */
-//	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
-//		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
-//		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
-//		allowedConceptsInSubsumptionHierarchy.add(new Thing());
-//		allowedConceptsInSubsumptionHierarchy.add(new Nothing());
-//
-//		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
-//				conceptComparator);
-//		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
-//				conceptComparator);
-//
-//		// Subsumptionhierarchy berechnen
-//		// TODO: kann man effizienter auch in einer Abfrage machen
-//
-//		// Refinements von Top
-//		TreeSet<Description> tmp = getMoreSpecialConceptsDIG(new Thing());
-//		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-//		subsumptionHierarchyDown.put(new Thing(), tmp);
-//
-//		// Refinements von Bottom
-//		tmp = getMoreGeneralConceptsDIG(new Nothing());
-//		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-//		subsumptionHierarchyUp.put(new Nothing(), tmp);
-//
-//		// Refinement atomarer Konzepte
-//		for (NamedClass atom : atomicConcepts) {
-//			tmp = getMoreSpecialConceptsDIG(atom);
-//			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-//			subsumptionHierarchyDown.put(atom, tmp);
-//
-//			tmp = getMoreGeneralConceptsDIG(atom);
-//			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-//			subsumptionHierarchyUp.put(atom, tmp);
-//		}
-//
-//		subsumptionHierarchy = new ClassHierarchy(
-//				subsumptionHierarchyUp, subsumptionHierarchyDown);
-//	}
-
+	public void prepareSubsumptionHierarchy() {
+		allowedConceptsInSubsumptionHierarchy = new TreeSet<Concept>(conceptComparator);		
+		allowedConceptsInSubsumptionHierarchy.addAll(Config.Refinement.allowedConcepts);
+		allowedConceptsInSubsumptionHierarchy.add(new Top());
+		allowedConceptsInSubsumptionHierarchy.add(new Bottom());		
+		
+		TreeMap<Concept,TreeSet<Concept>> subsumptionHierarchyUp = new TreeMap<Concept,TreeSet<Concept>>(conceptComparator);
+		TreeMap<Concept,TreeSet<Concept>> subsumptionHierarchyDown = new TreeMap<Concept,TreeSet<Concept>>(conceptComparator);
+		
+		// Subsumptionhierarchy berechnen
+		// TODO: kann man effizienter auch in einer Abfrage machen
+		
+		// Refinements von Top
+		TreeSet<Concept> tmp = getMoreSpecialConceptsDIG(new Top());	
+		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+		subsumptionHierarchyDown.put(new Top(), tmp);
+		
+		// Refinements von Bottom
+		tmp = getMoreGeneralConceptsDIG(new Bottom());
+		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+		subsumptionHierarchyUp.put(new Bottom(), tmp);
+		
+		// Refinement atomarer Konzepte
+		for(AtomicConcept atom : atomicConcepts) {
+			tmp = getMoreSpecialConceptsDIG(atom);
+			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+			subsumptionHierarchyDown.put(atom, tmp);
+			
+			tmp = getMoreGeneralConceptsDIG(atom);
+			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+			subsumptionHierarchyUp.put(atom, tmp);			
+		}
+		
+		subsumptionHierarchy = new SubsumptionHierarchy(Config.Refinement.allowedConcepts, subsumptionHierarchyUp, subsumptionHierarchyDown);
+	}
+	
 	/**
 	 * Constructs a role hierarchy using DIG queries. After calling this method,
 	 * one can query parents or children of roles.
 	 * 
-	 * TODO Does not yet take ignored roles into account.
+	 * @todo Does not yet take ignored roles into account.  
 	 */
-//	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-//				roleComparator);
-//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-//				roleComparator);
-// 
-//		// Refinement atomarer Konzepte
-//		for (ObjectProperty role : atomicRoles) {
-//			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
-//			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));
-//		}
-//
-//		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
-//				roleHierarchyDown);
-//	}
-
+	@Override
+	public void prepareRoleHierarchy() {	
+		TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyUp = new TreeMap<AtomicRole,TreeSet<AtomicRole>>(roleComparator);
+		TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyDown = new TreeMap<AtomicRole,TreeSet<AtomicRole>>(roleComparator);
+		
+		// Refinement atomarer Konzepte
+		for(AtomicRole role : atomicRoles) {
+			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
+			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));		
+		}
+		
+		roleHierarchy = new RoleHierarchy(Config.Refinement.allowedRoles, roleHierarchyUp, roleHierarchyDown);
+	}	
+	
 	// eigentlich müsste man klonen um sicherzustellen, dass der parent-Link
 	// bei null bleibt; bei der aktuellen Implementierung ist der parent-Link
 	// nicht immer null, was bei GP negative Auswirkungen haben könnte
 	// Update: wird durch klonen innerhalb der GP-Operationen erledigt
-	public Set<NamedClass> getNamedClasses() {
+	public Set<AtomicConcept> getAtomicConcepts() {
 		/*
-		 * if(Config.algorithm == Config.Algorithm.GP || Config.algorithm ==
-		 * Config.Algorithm.HYBRID_GP) { Set<AtomicConcept> returnSet = new
-		 * HashSet<AtomicConcept>(); for(AtomicConcept ac : atomicConcepts)
-		 * returnSet.add((AtomicConcept)ac.clone()); return returnSet; }
-		 */
+		if(Config.algorithm == Config.Algorithm.GP || Config.algorithm == Config.Algorithm.HYBRID_GP) {
+			Set<AtomicConcept> returnSet = new HashSet<AtomicConcept>();
+			for(AtomicConcept ac : atomicConcepts)
+				returnSet.add((AtomicConcept)ac.clone());
+			return returnSet;
+		}
+		*/
 		return atomicConcepts;
 	}
-
-	private Set<NamedClass> getAtomicConceptsDIG() {
+	
+	private Set<AtomicConcept> getAtomicConceptsDIG() {
 		String atomicConceptsDIG = asksPrefix;
 		atomicConceptsDIG += "<allConceptNames id=\"ask_names\"/></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(atomicConceptsDIG);
 		// Struktur: einzelnes conceptSet außen, dann mehrere synonyms, die dann
 		// die Konzept inkl. Top und Bottom enthalten
 		Csynonyms[] synonymsArray = rd.getResponses().getConceptSetArray();
 		Concepts[] conceptsArray = synonymsArray[0].getSynonymsArray();
-
-		Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
-		for (Concepts concepts : conceptsArray) {
+		
+		Set<AtomicConcept> atomicConcepts = new TreeSet<AtomicConcept>(conceptComparator);
+		for(Concepts concepts : conceptsArray) {
 			boolean topOrBottomFound = false;
-			if (concepts.getBottomArray().length != 0 || concepts.getTopArray().length != 0)
+			if(concepts.getBottomArray().length != 0 || concepts.getTopArray().length!=0)
 				topOrBottomFound = true;
-
+			
 			// nur weitersuchen falls das Konzept nicht äquivalent zu Top
 			// oder Bottom ist
-			if (!topOrBottomFound) {
+			if(!topOrBottomFound) {
 				boolean nonAnonymousConceptFound = false;
-				NamedClass foundConcept = null;
+				AtomicConcept foundConcept = null;
 				Named[] catoms = concepts.getCatomArray();
-				for (Named catom : catoms) {
+				for(Named catom : catoms) {
 					String name = catom.getName();
-					if (!name.startsWith("anon")) {
-						if (!nonAnonymousConceptFound) {
+					if(!name.startsWith("anon")) {
+						if(!nonAnonymousConceptFound) {
 							nonAnonymousConceptFound = true;
-							foundConcept = new NamedClass(catom.getName());
+							foundConcept = new AtomicConcept(catom.getName());
 							atomicConcepts.add(foundConcept);
 						} else {
-							System.out
-									.println("Warning: Background knowledge contains synonym concepts. "
-											+ "We decide to pick "
-											+ foundConcept
-											+ ". \nDIG-XML:\n" + concepts);
+							System.out.println("Warning: Background knowledge contains synonym concepts. " +
+									"We decide to pick " + foundConcept + ". \nDIG-XML:\n"+concepts);							
 						}
 					}
 				}
 			}
 		}
-
+		
 		return atomicConcepts;
-	}
-
-	public Set<ObjectProperty> getObjectProperties() {
+	}	
+	
+	public Set<AtomicRole> getAtomicRoles() {
 		return atomicRoles;
 	}
-
-	private Set<ObjectProperty> getAtomicRolesDIG() {
+	
+	private Set<AtomicRole> getAtomicRolesDIG() {
 		String atomicRolesDIG = asksPrefix;
 		atomicRolesDIG += "<allRoleNames id=\"ask_roles\"/></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(atomicRolesDIG);
 		// Struktur: einzelnes roleSet außen, dann synonyms mit ratoms
 		// innen
 		Rsynonyms[] synonymsArray = rd.getResponses().getRoleSetArray();
 		Roles[] rolesArray = synonymsArray[0].getSynonymsArray();
-
-		Set<ObjectProperty> digAtomicRoles = new HashSet<ObjectProperty>();
-		for (Roles roles : rolesArray) {
+		
+		Set<AtomicRole> digAtomicRoles = new HashSet<AtomicRole>();
+		for(Roles roles : rolesArray) {
 			// hier koennen wiederum mehrere ratoms enthalten sein,
 			// aber wir wollen nur eins auslesen
 			Named[] ratoms = roles.getRatomArray();
 			Named role = ratoms[0];
-			digAtomicRoles.add(new ObjectProperty(role.getName()));
-
-			if (ratoms.length > 1)
-				System.out.println("Warning: Background knowledge contains synonym roles. "
-						+ "Will ignore all but the first. \nDIG-XML:\n" + roles);
+			digAtomicRoles.add(new AtomicRole(role.getName()));				
+			
+			if(ratoms.length>1)
+				System.out.println("Warning: Background knowledge contains synonym roles. " +
+						"Will ignore all but the first. \nDIG-XML:\n"+roles);
 		}
-
+		
 		return digAtomicRoles;
-	}
-
-	public SortedSet<Individual> getIndividuals() {
+	}		
+	
+	public SortedSet<Individual> getIndividuals() {	
 		return individuals;
 	}
 
 	private SortedSet<Individual> getIndividualsDIG() {
 		String individualsDIG = asksPrefix;
 		individualsDIG += "<allIndividuals id=\"ask_individuals\"/></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(individualsDIG);
 		// Struktur: einzelnes individualSet außen, dann Liste von
 		// individual-Elementen
 		IndividualSet[] individualsArray = rd.getResponses().getIndividualSetArray();
 		Named[] namedIndividuals = individualsArray[0].getIndividualArray();
-
+		
 		SortedSet<Individual> digIndividuals = new TreeSet<Individual>();
-		for (Named named : namedIndividuals)
-			digIndividuals.add(new Individual(named.getName()));
-
+		for(Named named : namedIndividuals)
+			digIndividuals.add(new Individual(named.getName()));						
+		
 		return digIndividuals;
 	}
-
-	@Override
+	
 	public ReasonerType getReasonerType() {
 		return ReasonerType.DIG;
 	}
-
+	
 	@Override
-	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
-		// System.out.println("subsumes(" + superConcept + "," + subConcept +
-		// ")");
+	public boolean subsumes(Concept superConcept, Concept subConcept) {
+		// System.out.println("subsumes(" + superConcept + "," + subConcept + ")");
 		String subsumesDIG = asksPrefix;
 		subsumesDIG += "<subsumes id=\"query_subsume\">";
-		subsumesDIG += DIGConverter.getDIGString(superConcept);
+		subsumesDIG += DIGConverter.getDIGString(superConcept);		
 		subsumesDIG += DIGConverter.getDIGString(subConcept);
 		subsumesDIG += "</subsumes></asks>";
-
+		
 		return parseBooleanAnswer(subsumesDIG);
 	}
-
-//	@Override
-//	public Set<Description> subsumesImpl(Description superConcept, Set<Description> subConcepts) {
-//		String subsumesDIG = asksPrefix;
-//		int id = 0;
-//		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
-//		// ausgegeben werden
-//		Map<String, Description> queryMap = new HashMap<String, Description>();
-//		for (Description subConcept : subConcepts) {
-//			queryMap.put("query" + id, subConcept);
-//			subsumesDIG += "<subsumes id=\"query" + id + "\">";
-//			subsumesDIG += DIGConverter.getDIGString(superConcept);
-//			subsumesDIG += DIGConverter.getDIGString(subConcept);
-//			subsumesDIG += "</subsumes>";
-//			id++;
-//		}
-//		subsumesDIG += "</asks>";
-//
-//		ResponsesDocument rd = connector.asks(subsumesDIG);
-//		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
-//
-//		Set<Description> returnSet = new HashSet<Description>();
-//		for (IdType idType : subsumedConceptsIds) {
-//			returnSet.add(queryMap.get(idType.getId()));
-//		}
-//		return returnSet;
-//	}
-
+	
 	@Override
-	public Set<Description> isSuperClassOfImpl(Set<Description> superConcepts, Description subConcept) {
+	public Set<Concept> subsumes(Concept superConcept, Set<Concept> subConcepts) {
 		String subsumesDIG = asksPrefix;
 		int id = 0;
-		Map<String, Description> queryMap = new HashMap<String, Description>();
-		for (Description superConcept : superConcepts) {
-			queryMap.put("query" + id, superConcept);
-			subsumesDIG += "<subsumes id=\"query" + id + "\">";
-			subsumesDIG += DIGConverter.getDIGString(superConcept);
+		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
+		// ausgegeben werden
+		Map<String,Concept> queryMap = new HashMap<String,Concept>();
+		for(Concept subConcept : subConcepts) {
+			queryMap.put("query"+id, subConcept);
+			subsumesDIG += "<subsumes id=\"query"+id+"\">";
+			subsumesDIG += DIGConverter.getDIGString(superConcept);		
 			subsumesDIG += DIGConverter.getDIGString(subConcept);
 			subsumesDIG += "</subsumes>";
 			id++;
 		}
 		subsumesDIG += "</asks>";
-
+		
 		ResponsesDocument rd = connector.asks(subsumesDIG);
 		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
-
-		Set<Description> returnSet = new HashSet<Description>();
-		for (IdType idType : subsumedConceptsIds) {
+		
+		Set<Concept> returnSet = new HashSet<Concept>();
+		for(IdType idType : subsumedConceptsIds) {
 			returnSet.add(queryMap.get(idType.getId()));
 		}
 		return returnSet;
 	}
-
-	/*
-	 * // es wird geklont, damit Subsumptionhierarchie nicht von außen verändert
-	 * werden // kann @SuppressWarnings("unchecked") @Override public SortedSet<Concept>
-	 * getMoreGeneralConcepts(Concept concept) { return (TreeSet<Concept>)
-	 * subsumptionHierarchyUp.get(concept).clone(); // return
-	 * subsumptionHierarchyUp.get(concept); // ohne klonen geht es nicht }
-	 * 
-	 * @SuppressWarnings("unchecked") @Override public SortedSet<Concept>
-	 * getMoreSpecialConcepts(Concept concept) { return (TreeSet<Concept>)
-	 * subsumptionHierarchyDown.get(concept).clone(); // return
-	 * subsumptionHierarchyDown.get(concept); // ohne klonen geht es nicht }
-	 */
-
-//	@Override
-//	public ObjectPropertyHierarchy getRoleHierarchy() {
-//		return roleHierarchy;
-//	}
-
+	
 	@Override
-	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
+	public Set<Concept> subsumes(Set<Concept> superConcepts, Concept subConcept) {
+		String subsumesDIG = asksPrefix;
+		int id = 0;
+		Map<String,Concept> queryMap = new HashMap<String,Concept>();
+		for(Concept superConcept : superConcepts) {
+			queryMap.put("query"+id, superConcept);
+			subsumesDIG += "<subsumes id=\"query"+id+"\">";
+			subsumesDIG += DIGConverter.getDIGString(superConcept);		
+			subsumesDIG += DIGConverter.getDIGString(subConcept);
+			subsumesDIG += "</subsumes>";
+			id++;
+		}
+		subsumesDIG += "</asks>";
+		
+		ResponsesDocument rd = connector.asks(subsumesDIG);
+		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
+		
+		Set<Concept> returnSet = new HashSet<Concept>();
+		for(IdType idType : subsumedConceptsIds) {
+			returnSet.add(queryMap.get(idType.getId()));
+		}
+		return returnSet;
+	}
+	
+	/*
+	// es wird geklont, damit Subsumptionhierarchie nicht von außen verändert werden
+	// kann
+	@SuppressWarnings("unchecked")
+	@Override
+	public SortedSet<Concept> getMoreGeneralConcepts(Concept concept) {
+		return (TreeSet<Concept>) subsumptionHierarchyUp.get(concept).clone();	
+		// return subsumptionHierarchyUp.get(concept); // ohne klonen geht es nicht
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public SortedSet<Concept> getMoreSpecialConcepts(Concept concept) {
+		return (TreeSet<Concept>) subsumptionHierarchyDown.get(concept).clone();
+		// return subsumptionHierarchyDown.get(concept); // ohne klonen geht es nicht
+	}
+	*/
+		
+	@Override
+	public SubsumptionHierarchy getSubsumptionHierarchy() {
+		return subsumptionHierarchy;
+	}
+	
+	@Override
+	public RoleHierarchy getRoleHierarchy() {
+		return roleHierarchy;
+	}
+	
+	private TreeSet<Concept> getMoreGeneralConceptsDIG(Concept concept) {
 		String moreGeneralDIG = asksPrefix;
 		moreGeneralDIG += "<parents id=\"query_parents\">";
 		moreGeneralDIG += DIGConverter.getDIGString(concept);
 		moreGeneralDIG += "</parents></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(moreGeneralDIG);
-		TreeSet<Description> resultsSet = new TreeSet<Description>(conceptComparator);
-		// ein Array, der Synomyms-Elemente enthält, die dann Mengen von
+		TreeSet<Concept> resultsSet = new TreeSet<Concept>(conceptComparator);
+		// ein Array, der Synomyms-Elemente enthält, die dann Mengen von 
 		// äquivalenten Konzepten enthalten;
 		// (es wird hier nur das erste Element des ConceptSetArrays gelesen,
 		// da nur ein solches Element bei dieser Abfrage erwartet wird)
 		Concepts[] conceptsArray = rd.getResponses().getConceptSetArray()[0].getSynonymsArray();
-
-		for (int i = 0; i < conceptsArray.length; i++) {
+		
+		for(int i=0; i<conceptsArray.length; i++) {
 			// es werden nur atomare Konzepte erwartet
 			Named[] atoms = conceptsArray[i].getCatomArray();
 
-			for (Named atom : atoms) {
-				NamedClass ac = new NamedClass(atom.getName());
-				if (allowedConceptsInSubsumptionHierarchy.contains(ac))
+			for(Named atom : atoms) {
+				AtomicConcept ac = new AtomicConcept(atom.getName());
+				if(allowedConceptsInSubsumptionHierarchy.contains(ac))
 					resultsSet.add(ac);
 			}
-
+							
 			// hinzufügen von Top, falls notwendig
-			if (conceptsArray[i].getTopArray().length > 0)
-				resultsSet.add(new Thing());
-
+			if(conceptsArray[i].getTopArray().length>0)
+				resultsSet.add(new Top());
+			
 			// falls bisher kein erlaubtes Konzept gefunden wurden, dann gibt es
-			// entweder keine allgemeineren Konzepte oder es handelt sich um
+			// entweder keine allgemeineren Konzepte oder es handelt sich um 
 			// nicht erlaubte (von Jena erzeugte) Konzepte, die nicht äquivalent
-			// zu einem erlaubten Konzept sind; in dem Fall muss die Methode
-			// rekursiv
+			// zu einem erlaubten Konzept sind; in dem Fall muss die Methode rekursiv
 			// noch einmal aufgerufen werden
-			if (resultsSet.size() == 0 && atoms.length > 0) {
-				// wir wählen das erste Konzept aus, welches ein ignoriertes
-				// Konzept ist
+			if(resultsSet.size()==0 && atoms.length>0) {
+				// wir wählen das erste Konzept aus, welches ein ignoriertes Konzept ist
 				// (sonst wäre es weiter oben gefunden wurden)
-				NamedClass ignoredAtomicConcept = new NamedClass(atoms[0].getName());
-				resultsSet.addAll(getSuperClassesImpl(ignoredAtomicConcept));
+				AtomicConcept ignoredAtomicConcept = new AtomicConcept(atoms[0].getName());
+				resultsSet.addAll(getMoreGeneralConceptsDIG(ignoredAtomicConcept));
 			}
-
+			
 		}
-
+		
 		return resultsSet;
 	}
-
-	@Override
-	protected TreeSet<Description> getSubClassesImpl(Description concept) {
+	
+	private TreeSet<Concept> getMoreSpecialConceptsDIG(Concept concept) {
 		String moreSpecialDIG = asksPrefix;
 		moreSpecialDIG += "<children id=\"query_children\">";
 		moreSpecialDIG += DIGConverter.getDIGString(concept);
 		moreSpecialDIG += "</children></asks>";
-
+		
 		// Kommentare siehe getMoreGeneralConcepts(Concept)
 		ResponsesDocument rd = connector.asks(moreSpecialDIG);
-		TreeSet<Description> resultsSet = new TreeSet<Description>(conceptComparator);
+		TreeSet<Concept> resultsSet = new TreeSet<Concept>(conceptComparator);
 		Concepts[] conceptsArray = rd.getResponses().getConceptSetArray()[0].getSynonymsArray();
-
-		for (int i = 0; i < conceptsArray.length; i++) {
+		
+		for(int i=0; i<conceptsArray.length; i++) {
 			Named[] atoms = conceptsArray[i].getCatomArray();
-			for (Named atom : atoms) {
-				NamedClass ac = new NamedClass(atom.getName());
-				if (allowedConceptsInSubsumptionHierarchy.contains(ac))
+			for(Named atom : atoms) {
+				AtomicConcept ac = new AtomicConcept(atom.getName());
+				if(allowedConceptsInSubsumptionHierarchy.contains(ac))
 					resultsSet.add(ac);
-			}
-
+			}			
+			
 			// hinzufügen von Bottom, falls notwendig
-			if (conceptsArray[i].getBottomArray().length > 0)
-				resultsSet.add(new Nothing());
-
-			if (resultsSet.size() == 0 && atoms.length > 0) {
-				NamedClass ignoredAtomicConcept = new NamedClass(atoms[0].getName());
-				resultsSet.addAll(getSubClassesImpl(ignoredAtomicConcept));
+			if(conceptsArray[i].getBottomArray().length>0)
+				resultsSet.add(new Bottom());
+			
+			if(resultsSet.size()==0 && atoms.length>0) {
+				AtomicConcept ignoredAtomicConcept = new AtomicConcept(atoms[0].getName());
+				resultsSet.addAll(getMoreSpecialConceptsDIG(ignoredAtomicConcept));
 			}
-		}
-
+		}	
+		
 		return resultsSet;
-	}
-
-	@Override
-	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
+	}	
+	
+	private TreeSet<AtomicRole> getMoreGeneralRolesDIG(AtomicRole role) {
 		String moreGeneralRolesDIG = asksPrefix;
 		moreGeneralRolesDIG += "<rparents id=\"query_parents\">";
 		moreGeneralRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
 		moreGeneralRolesDIG += "</rparents></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(moreGeneralRolesDIG);
-		TreeSet<ObjectProperty> resultsSet = new TreeSet<ObjectProperty>(roleComparator);
-		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();
-
-		for (int i = 0; i < rolesArray.length; i++) {
+		TreeSet<AtomicRole> resultsSet = new TreeSet<AtomicRole>(roleComparator);
+		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();		
+		
+		for(int i=0; i<rolesArray.length; i++) {
 			Named[] atoms = rolesArray[i].getRatomArray();
-
-			for (Named atom : atoms) {
-				ObjectProperty ar = new ObjectProperty(atom.getName());
-				// if(Config.Refinement.allowedRoles.contains(ar))
+			
+			for(Named atom : atoms) {
+				AtomicRole ar = new AtomicRole(atom.getName());
+				//if(Config.Refinement.allowedRoles.contains(ar))
 				resultsSet.add(ar);
-			}
+			}				
 		}
-
+		
 		// System.out.println(rd);
-
+		
 		return resultsSet;
 	}
-
-	@Override
-	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
+	
+	private TreeSet<AtomicRole> getMoreSpecialRolesDIG(AtomicRole role) {
 		String moreSpecialRolesDIG = asksPrefix;
 		moreSpecialRolesDIG += "<rchildren id=\"query_children\">";
 		moreSpecialRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
 		moreSpecialRolesDIG += "</rchildren></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(moreSpecialRolesDIG);
-		TreeSet<ObjectProperty> resultsSet = new TreeSet<ObjectProperty>(roleComparator);
-		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();
-
-		for (int i = 0; i < rolesArray.length; i++) {
+		TreeSet<AtomicRole> resultsSet = new TreeSet<AtomicRole>(roleComparator);
+		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();		
+		
+		for(int i=0; i<rolesArray.length; i++) {
 			Named[] atoms = rolesArray[i].getRatomArray();
-
-			for (Named atom : atoms) {
-				ObjectProperty ar = new ObjectProperty(atom.getName());
-				// if(Config.Refinement.allowedRoles.contains(ar))
+			
+			for(Named atom : atoms) {
+				AtomicRole ar = new AtomicRole(atom.getName());
+				//if(Config.Refinement.allowedRoles.contains(ar))
 				resultsSet.add(ar);
-			}
+			}				
 		}
-
+		
 		return resultsSet;
 	}
-
-	@Override
-	public boolean hasTypeImpl(Description concept, Individual individual) {
+	
+	@Override		
+	public boolean instanceCheck(Concept concept, Individual individual) {
 		String instanceCheckDIG = asksPrefix;
 		instanceCheckDIG += "<instance id= \"query_instance\">";
-		instanceCheckDIG += "<individual name=\"" + individual.getName() + "\"/>";
+		instanceCheckDIG += "<individual name=\""+individual.getName()+"\"/>";
 		instanceCheckDIG += DIGConverter.getDIGString(concept);
 		instanceCheckDIG += "</instance></asks>";
-
-		return parseBooleanAnswer(instanceCheckDIG);
+		
+		return parseBooleanAnswer(instanceCheckDIG);	
 	}
-
-	@Override
-	public SortedSet<Individual> hasTypeImpl(Description concept, Set<Individual> individuals) {
+	
+	@Override	
+	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals) {
 		String instanceCheckDIG = asksPrefix;
 		int id = 0;
 		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
 		// ausgegeben werden
-		Map<String, String> queryMap = new HashMap<String, String>();
-		for (Individual individual : individuals) {
-			queryMap.put("query" + id, individual.getName());
-			instanceCheckDIG += "<instance id= \"query" + id + "\">";
-			instanceCheckDIG += "<individual name=\"" + individual.getName() + "\"/>";
+		Map<String,String> queryMap = new HashMap<String,String>();
+		for(Individual individual : individuals) {
+			queryMap.put("query"+id, individual.getName());
+			instanceCheckDIG += "<instance id= \"query"+id+"\">";
+			instanceCheckDIG += "<individual name=\""+individual.getName()+"\"/>";
 			instanceCheckDIG += DIGConverter.getDIGString(concept);
 			instanceCheckDIG += "</instance>";
 			id++;
 		}
 		instanceCheckDIG += "</asks>";
-
+		
 		ResponsesDocument rd = connector.asks(instanceCheckDIG);
 		IdType[] ids = rd.getResponses().getTrueArray();
-
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();
-		for (IdType idType : ids) {
+		
+		Set<Individual> returnSet = new HashSet<Individual>();
+		for(IdType idType : ids) {
 			returnSet.add(new Individual(queryMap.get(idType.getId())));
 		}
-		return returnSet;
+		return returnSet;		
 	}
-
-	@Override
-	public SortedSet<Individual> getIndividualsImpl(Description concept) {
-
+	
+	@Override	
+	public SortedSet<Individual> retrieval(Concept concept) {
+		
 		String retrievalDIG = asksPrefix;
 		retrievalDIG += "<instances id= \"query_instance\">";
 		retrievalDIG += DIGConverter.getDIGString(concept);
 		retrievalDIG += "</instances></asks>";
-
+		
 		ResponsesDocument rd = connector.asks(retrievalDIG);
 		// System.out.println(rd);
 		Named[] individuals = rd.getResponses().getIndividualSetArray()[0].getIndividualArray();
-
+		
 		SortedSet<Individual> results = new TreeSet<Individual>();
-		for (Named individual : individuals)
+		for(Named individual : individuals)
 			results.add(new Individual(individual.getName()));
 		return results;
 	}
-
+	
 	// ToDo: gibt momentan nur einen Wert bei äquivalenten Klassen aus
-	@Override
-	public Set<NamedClass> getTypesImpl(Individual individual) {
+	@Override		
+	public Set<AtomicConcept> getConcepts(Individual individual) {
 		String typesDIG = asksPrefix;
 		typesDIG += "<types id=\"query_types\">";
 		typesDIG += "<individual name=\"" + individual.getName() + "\" />";
-		typesDIG += "</types></asks>";
-
+		typesDIG += "</types></asks>"; 
+		
 		ResponsesDocument rd = connector.asks(typesDIG);
-		TreeSet<NamedClass> resultsSet = new TreeSet<NamedClass>(conceptComparator);
+		TreeSet<AtomicConcept> resultsSet = new TreeSet<AtomicConcept>(conceptComparator);
 		Concepts[] conceptsArray = rd.getResponses().getConceptSetArray()[0].getSynonymsArray();
-
-		for (int i = 0; i < conceptsArray.length; i++) {
+		
+		for(int i=0; i<conceptsArray.length; i++) {
 			Named[] atoms = conceptsArray[i].getCatomArray();
-			for (Named atom : atoms) {
-				NamedClass ac = new NamedClass(atom.getName());
-				if (allowedConceptsInSubsumptionHierarchy.contains(ac))
-					// if(Config.Refinement.allowedConcepts.contains(ac))
+			for(Named atom : atoms) {
+				AtomicConcept ac = new AtomicConcept(atom.getName());
+				if(allowedConceptsInSubsumptionHierarchy.contains(ac))
+				// if(Config.Refinement.allowedConcepts.contains(ac))
 					resultsSet.add(ac);
 			}
-		}
-
+		}			
+		
 		// System.out.println("document:");
 		// System.out.println(rd);
 		// System.out.println("parsed:");
 		// System.out.println(resultsSet);
-
+		
 		return resultsSet;
 	}
-
+			
 	// es sieht so aus, als ob die XSD-Datei kaputt ist - es gibt zumindest
 	// keine getter um ein IndividualPairSet zu finden; in der XSD-Datei ist
 	// das in Responsegroup auch nicht definiert
 	// => deswegen wird hier die XML-Cursor-API verwendet
-	@Override
-	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
+	@Override		
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) {
 		String relatedIndividualsDIG = asksPrefix;
 		relatedIndividualsDIG += "<relatedIndividuals id=\"related_individuals\">";
 		relatedIndividualsDIG += "<ratom name=\"" + atomicRole.getName() + "\" />";
-		relatedIndividualsDIG += "</relatedIndividuals></asks>";
-
+		relatedIndividualsDIG += "</relatedIndividuals></asks>"; 		
+		
 		ResponsesDocument rd = connector.asks(relatedIndividualsDIG);
 		Map<Individual, SortedSet<Individual>> resultMap = new TreeMap<Individual, SortedSet<Individual>>();
-
+		
 		QName name = new QName("name");
 		XmlCursor cursor = rd.newCursor();
 		cursor.toFirstChild(); // Responses
 		cursor.toFirstChild(); // IndividualPairSet
-
+		
 		int childNumber = 0;
 		Individual ind1;
 		Individual ind2;
-
+		
 		// so lange noch Kinder existieren
-		while (cursor.toChild(childNumber)) {
+		while(cursor.toChild(childNumber)) {
 			// Cursor steht jetzt bei einem IndividualPair
 			cursor.toFirstChild();
-			// jetzt steht er bei einem Individual, dessen Namen wir auslesen
-			// können
+			// jetzt steht er bei einem Individual, dessen Namen wir auslesen können
 			ind1 = new Individual(cursor.getAttributeText(name).toString());
 			cursor.toNextSibling();
 			ind2 = new Individual(cursor.getAttributeText(name).toString());
-
+			
 			Helper.addMapEntry(resultMap, ind1, ind2);
-
+			
 			// Cursor wieder hoch auf IndividualPairSet bewegen
 			cursor.toParent();
 			cursor.toParent();
 			childNumber++;
 		}
-
+		
 		/*
-		 * System.out.println("document:"); System.out.println(rd);
-		 * System.out.println("parsed:"); System.out.println(resultMap);
-		 */
-
+		System.out.println("document:");
+		System.out.println(rd);
+		System.out.println("parsed:");
+		System.out.println(resultMap);
+		*/		
+		
 		return resultMap;
 	}
-
-	@Override
-	public boolean isSatisfiableImpl() {
+	
+	@Override	
+	public boolean isSatisfiable() {
 		String satisfiableDIG = asksPrefix;
 		// wenn Top erfüllbar ist, dann gibt es auch ein Modell für die KB
 		// (satisfiability für KB ist nicht Teil von DIG 1.1)
 		satisfiableDIG += "<satisfiable id=\"query_satisfiable\"><top/></satisfiable>";
 		satisfiableDIG += "</asks>";
-
+		
 		return parseBooleanAnswer(satisfiableDIG);
 	}
-
+	
 	private boolean parseBooleanAnswer(String asks) {
 		ResponsesDocument rd = connector.asks(asks);
-		if (rd.getResponses().getTrueArray().length == 1)
+		if(rd.getResponses().getTrueArray().length == 1)
 			return true;
 		else
-			return false;
+			return false;		
 	}
 
 	public String getIdentifier() {
 		return identifier;
 	}
-
-	@Override
+	
 	public void releaseKB() {
 		connector.releaseKB(kbURI);
 	}
 
-	// TODO: not working yet - it is probably better to include a method
-	// in knowledge source to save the corresponding source to a file
-	public void saveOntology(File file, OntologyFormat format) {
+	public void saveOntology(File file, OntologyFileFormat format) {
 		// KAON2-Reasoner erzeugen und den die Ontologie speichern lassen
 		// (später könnte man das über Jena erledigen, allerdings funktioniert
 		// das mit KAON2 auch gut)
-		// KAON2Reasoner kaon2Reasoner = new KAON2Reasoner(kb,imports);
-		// kaon2Reasoner.saveOntology(file, format);
-		throw new UnsupportedOperationException("Saving ontologies not yet implemented.");
+		KAON2Reasoner kaon2Reasoner = new KAON2Reasoner(kb,imports);
+		kaon2Reasoner.saveOntology(file, format);
 	}
-
-	public URL getReasonerURL() {
-		return reasonerURL;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#getBaseURI()
-	 */
-	public String getBaseURI() {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#getPrefixes()
-	 */
-	public Map<String, String> getPrefixes() {
-		return null;
-	}
-
-//	@Override
-//	public boolean hasDatatypeSupport() {
-//		return false;
-//	}
-
 }

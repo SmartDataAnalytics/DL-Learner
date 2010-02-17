@@ -1,0 +1,310 @@
+SPARQL-module
+
+The SPARQL module is integrated into the DL-Learner and cannot be run alone any more.
+You can just ignore the second part of this file, although it might describe some things
+in more detail.
+
+
+Here are some things that have to be included in the .conf file
+to get a working example:
+
+loadJarFile("lib/modules/sparqlModule.jar");
+runPreprocessingModule("org.dllearner.modules.SparqlModule");
+
+Options:
+========
+
+sparqlModule.numberOfRecursion = 2; 
+(range: 1-3)
+Influences how deep the Ontology will be cut out
+Default: not sure 2 at the moment
+1: means only the selected individuals are loaded
+2: adds classes of the individuals and properties
+3: adds classes of properties of individuals and superclasses of classes
+
+
+sparqlModule.filterMode = 0;
+(range 0-2)
+These are presets for SPARQL filters (see below for configurations)
+0 only yago classes
+1 only categories
+2 skos and categories
+
+
+With the next options SPARQL filters can be configured in more detail.
+USE EITHER THIS or the filtermode above.
+
+sparqlModule.sparqlPredicateFilterList={"http://www.w3.org/2004/02/skos/core",
+			"http://xmlns.com/foaf/0.1/",	
+			"http://dbpedia.org/property/wikipage-",
+			"http://www.w3.org/2002/07/owl#sameAs",
+			"http://dbpedia.org/property/reference"};
+
+sparqlModule.sparqlObjectFilterList={"http://dbpedia.org/resource/Category:Articles_",
+		     "http://dbpedia.org/resource/Category:Wikipedia_",
+			"http://xmlns.com/foaf/0.1/",
+			"http://dbpedia.org/resource/Category",
+			"http://dbpedia.org/resource/Template",
+		       "http://upload.wikimedia.org/wikipedia/commons"};
+
+
+With the next option you can state namespaces that shall be typed as classes:
+sparqlModule.classList={"http://dbpedia.org/class/yago",
+			"http://dbpedia.org/resource/Category:",
+			"http://dbpedia.org/resource/Template:",
+			"http://www.w3.org/2004/02/skos/core",
+			"http://dbpedia.org/class/"};
+
+Hint: You can maybe export the ontology with the help of kaon2 in rdf format using:
+export("file.owl");
+But it is untested.
+
+
+
+Attention*******************************************
+below is a description of how to run the sparql module as a standalone application
+this was disabled though and does NOT work at the moment
+
+Algorithm:
+=========
+
+Start with:
+java dbpedia.SparqlModule ListOfIndividuals
+
+ListOfIndividuals= Individual | ListOfIndividuals | {}
+
+The String[] args of the main method is taken as input at the moment.
+This will be changed later, it is only for testing.
+
+Example:
+java dbpedia.SparqlModule http://dbpedia.org/resource/Angela_Merkel http://dbpedia.org/resource/Gerhard_Schr%C3%B6der http://dbpedia.org/resource/Helmut_Kohl http://dbpedia.org/resource/Helmut_Schmidt http://dbpedia.org/resource/Ludwig_Erhard http://dbpedia.org/resource/Willy_Brandt
+
+See bottom for more examples
+
+*Sparql-Queries***
+
+Example Sparql-Query see Options below for more info about FILTERS:
+
+SELECT * WHERE { 
+<http://dbpedia.org/resource/Angela_Merkel> ?predicate ?object.
+FILTER( 
+(!isLiteral(?object))
+&&( !regex(str(?predicate), 'http://www.w3.org/2004/02/skos/core#') )
+&&( !regex(str(?predicate), 'http://xmlns.com/foaf/0.1/') )
+&&( !regex(str(?predicate), 'http://dbpedia.org/property/wikipage-') )
+&&( !regex(str(?predicate), 'http://www.w3.org/2002/07/owl#sameAs') )
+&&( !regex(str(?predicate), 'http://dbpedia.org/property/reference') )
+&&( !regex((?object), 'http://xmlns.com/foaf/0.1/') )).}
+
+
+*Typing***
+DBpedia is not typed at all.
+I replaced/added the following to comply to OWL-DL:
+
+Resources are sorted in three categories (Class, Property, Instance) 
+(implemented as HashSets) according to their uris
+Properties are typed as Properties
+Classes see below Options
+Instances is what is left
+
+*Output***
+The Ontology is written to a file System.currentMillisec().nt
+
+
+
+*Cache***
+the cache remembers: a timestamp, the original sparql-query, the result
+key is the subject http://dbpedia.org/resource/Angela_Merkel which is first urlencoded 
+and so serves as the hash for the filename.
+Cache validates if timestamp too old and Sparql-Query the same 
+before returning the SPARQL xml-result
+
+
+
+
+
+Options:
+========
+
+All Options cannot be altered right now, except in the source.
+This will be later moved to the constructor.
+Default is always used.
+Some are marked with "NYI", these are Not Yet Implemented and are just ideas I had.
+
+Main-Algorithm:
+---------------
+
+*NumberOfRecursion (int)***
+
+how deep will the Ontology be cut out
+
+Default: ??? not sure 2 at the moment
+
+*ClassRepeat NYI (int)***
+
+Recursion can be increased, if the Object is a class.
+This will result in deeper, richer hierarchies
+
+
+Server:
+------
+
+there are no options planned right now hardcoded with:
+dbpedia.openlinksw.com:8890
+
+
+Sparql-queries:
+---------------
+
+*SparqlFilterPredicate (String[])***
+
+removes all rows with the specified String in the PREDICATE from the ResultSet
+(integrated in SPARQL query with FILTER !regex)
+
+Default:
+"http://www.w3.org/2004/02/skos/core#" // conflict: no properties between classes allowed
+"http://xmlns.com/foaf/0.1/"  //foaf is not well defined/unnecessary
+"http://dbpedia.org/property/wikipage-" // foreign wikis -fr -es, etc.
+"http://www.w3.org/2002/07/owl#sameAs" // contradicts with owl-dl maybe changed later so it will be replaced by owl:equivalentClass for Classes
+"http://dbpedia.org/property/reference" //links to homepages
+
+*SparqlFilterObject (String[])***
+(integrated in SPARQL query with FILTER !regex)
+
+removes all rows with the specified String in the OBJECT from the ResultSet
+
+Default:
+http://xmlns.com/foaf/0.1/   //foaf is not well defined/unnecessary
+
+*useLiterals (boolean)***
+(integrated in SPARQL query with FILTER !isLiteral)
+
+removes all rows with literals as objects from the ResultSet
+
+Default: false
+
+
+
+Type Information:
+-----------------
+
+options that are used to type resources to retain OWL-DL
+
+*IsClass (String[])***
+
+specifies URI's that can be considered classes (and therefore will be typed as classes)
+
+Default:
+"http://dbpedia.org/resource/Category:" //dbpedia categories
+"http://www.w3.org/2004/02/skos/core"  // concept
+"http://dbpedia.org/class/yago" // yago classes
+"http://dbpedia.org/class/" // "yago" is missing in some of the Datasets from DBpedia, 
+I don't actually know if this is a mistake or on purpose
+
+
+Cache:
+------
+
+
+*freshdays (int)***
+
+Determines how many days a cached query stays valid
+
+Default: 15 days
+
+*path (String)***
+
+path of the cache-folder
+
+Default: cache
+
+
+
+Syntactic Sugar NYI
+----------------
+Instead of choosing example individuals to put into main, 
+it could be nice to choose 2 Categories.
+The module automatically downloads the individals for both classes itself,
+removes the category from the definiton and then runs the DL-Learner.
+
+
+
+
+
+Examples:
+=========
+
+German Leaders:
+
+Input:
+http://dbpedia.org/resource/Adolf_Hitler http://dbpedia.org/resource/Prince_Chlodwig_zu_HohenloheSchillingsf%C3%BCrst http://dbpedia.org/resource/Prince_Maximilian_of_Baden http://dbpedia.org/resource/Franz_von_Papen http://dbpedia.org/resource/Joseph_Goebbels http://dbpedia.org/resource/Gerhard_Schr%C3%B6der http://dbpedia.org/resource/Angela_Merkel http://dbpedia.org/resource/Helmut_Kohl http://dbpedia.org/resource/Helmut_Schmidt http://dbpedia.org/resource/Ludwig_Erhard http://dbpedia.org/resource/Willy_Brandt
+
+conf:
+
++test("http://dbpedia.org/resource/Adolf_Hitler").
++test("http://dbpedia.org/resource/Prince_Chlodwig_zu_Hohenlohe-Schillingsf%C3%BCrst").
++test("http://dbpedia.org/resource/Prince_Maximilian_of_Baden").
++test("http://dbpedia.org/resource/Franz_von_Papen").
++test("http://dbpedia.org/resource/Joseph_Goebbels").
++test("http://dbpedia.org/resource/Gerhard_Schr%C3%B6der").
++test("http://dbpedia.org/resource/Angela_Merkel").
++test("http://dbpedia.org/resource/Helmut_Kohl").
++test("http://dbpedia.org/resource/Helmut_Schmidt").
++test("http://dbpedia.org/resource/Ludwig_Erhard").
++test("http://dbpedia.org/resource/Willy_Brandt").
+
+
+Greek Philosophers:
+
+Input
+
+  http://dbpedia.org/resource/Socrates  http://dbpedia.org/resource/Plato  http://dbpedia.org/resource/Pythagoras  http://dbpedia.org/resource/Zeno_of_Elea  http://dbpedia.org/resource/Democritus  http://dbpedia.org/resource/Theophrastus  http://dbpedia.org/resource/Anaxagoras  http://dbpedia.org/resource/Alexander_the_Great  http://dbpedia.org/resource/Hephaestion  http://dbpedia.org/resource/Diotima  http://dbpedia.org/resource/Nicomachus  http://dbpedia.org/resource/Harpalus  http://dbpedia.org/resource/Menaechmus
+
+Conf
+
++test("http://dbpedia.org/resource/Socrates").
++test("http://dbpedia.org/resource/Plato").
++test("http://dbpedia.org/resource/Pythagoras").
+
++test("http://dbpedia.org/resource/Zeno_of_Elea").
+//was a pre-Socratic Greek philosopher
++test("http://dbpedia.org/resource/Democritus").
+//was a pre-Socratic Greek philosopher 
+//+test("http://dbpedia.org/resource/Theophrastus").
+//a native of Eressos in Lesbos, was the successor of Aristotle in the Peripatetic school.
++test("http://dbpedia.org/resource/Anaxagoras").
+//was a pre-Socratic Greek philosopher. 
+
+-test("http://dbpedia.org/resource/Alexander_the_Great").
+-test("http://dbpedia.org/resource/Hephaestion").
+//makedonischer Adeliger, der engste Freund, General, Leibwächter und vielleicht auch Geliebter Alexanders des Großen. 
+-test("http://dbpedia.org/resource/Diotima").
+//ist eine literarische Figur Platons, eine Seherin aus Mantinäa,
+-test("http://dbpedia.org/resource/Nicomachus").
+//Nicomachus spätantiker römischer Schriftsteller und Politiker
+-test("http://dbpedia.org/resource/Harpalus").
+//Harpalus was an aristocrat of Macedon and boyhood friend of Alexander the Great 
+-test("http://dbpedia.org/resource/Menaechmus").
+//was a Greek mathematician and geometer born in Alopeconnesus 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

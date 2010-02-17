@@ -1,8 +1,10 @@
 package org.dllearner.algorithms.refinement;
 
-import org.dllearner.utilities.owl.ConceptComparator;
+import java.util.Comparator;
 
-public class NodeComparator implements Heuristic {
+import org.dllearner.utilities.ConceptComparator;
+
+public class NodeComparator implements Comparator<Node> {
 
 	// Vergleich von Konzepten, falls alle anderen Kriterien fehlschlagen
 	ConceptComparator conceptComparator = new ConceptComparator();

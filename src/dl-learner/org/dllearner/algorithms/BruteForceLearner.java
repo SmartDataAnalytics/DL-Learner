@@ -1,142 +1,60 @@
-/**
- * Copyright (C) 2007, Jens Lehmann
- *
- * This file is part of DL-Learner.
- * 
- * DL-Learner is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * DL-Learner is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package org.dllearner.algorithms;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.Union;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.Config;
+import org.dllearner.LearningProblem;
+import org.dllearner.Score;
+import org.dllearner.dl.All;
+import org.dllearner.dl.AtomicConcept;
+import org.dllearner.dl.AtomicRole;
+import org.dllearner.dl.Bottom;
+import org.dllearner.dl.Concept;
+import org.dllearner.dl.Conjunction;
+import org.dllearner.dl.Disjunction;
+import org.dllearner.dl.Exists;
+import org.dllearner.dl.Negation;
+import org.dllearner.dl.Top;
 
 /**
- * A brute force learning algorithm.
- * 
- * The algorithm works by generating all concepts starting with the shortest
- * ones.
+ * TODO: Man könnte den Speicherbedarf gegen Null gehen lassen, wenn man gar keine Programme
+ * generiert, also in einer Menge speichert, sondern sofort testet. Allerdings ist das
+ * schwierig, da Programme kleinerer Länge immer weiterverwendet werden.
  * 
  * @author Jens Lehmann
  *
  */
-public class BruteForceLearner extends LearningAlgorithm {
+public class BruteForceLearner implements LearningAlgorithm {
+    
+	LearningProblem learningProblem;
 	
-	private BruteForceLearnerConfigurator configurator;
-	@Override
-	public BruteForceLearnerConfigurator getConfigurator(){
-		return configurator;
-	}
-	
+    // Set<String> posExamples = null;   
+    // Set<String> negExamples = null;    
     
-	private LearningProblem learningProblem;
-	private ReasonerComponent rs;
-	
-    private Description bestDefinition;
-    private ScorePosNeg bestScore;
+    private Concept bestDefinition;
+    private Score bestScore;
+    // private Set<String> bestDefPosSet = new TreeSet<String>();
+    // private Set<String> bestDefNegSet = new TreeSet<String>();     
+    // int bestScore;
+    // int maxScore;
     
-    //changing this wont have any effect any more
-    private Integer maxLength = 7;
-    private String returnType;
+    // Liste aller generierten Programme
+    // private List<Node> generatedPrograms = new LinkedList<Node>();
+    // Programme nach Anzahl Knoten sortiert
+    private Map<Integer,List<Concept>> generatedDefinitions = new HashMap<Integer,List<Concept>>();
     
-    private boolean stop = false;
-    private boolean isRunning = false;
-    
-    // list of all generated concepts sorted by length
-    private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
-    
-    public BruteForceLearner(LearningProblem learningProblem, ReasonerComponent rs) {
-    	super(learningProblem, rs);
+    public BruteForceLearner(LearningProblem learningProblem) {
     	this.learningProblem = learningProblem;
-    	this.rs = rs;
-    	this.configurator = new BruteForceLearnerConfigurator(this);
+    	
+       
     }
     
-	public static String getName() {
-		return "brute force learning algorithm";
-	}    
-    
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(LearningProblem.class);
-		return problems;
-	}
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("maxLength", "maximum length of generated concepts", 7));
-		options.add(CommonConfigOptions.getReturnType());
-		return options;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if(name.equals("maxLength"))
-			maxLength = (Integer) entry.getValue();
-		else if(name.equals("returnType"))
-			returnType = (String) returnType;
-	}
-
-//	public Object getConfigValue(String optionName) throws UnknownConfigOptionException {
-//		if(optionName.equals("maxLength"))
-//			return maxLength;
-//		else
-//			throw new UnknownConfigOptionException(getClass(), optionName);
-//	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#init()
-	 */
-	@Override
-	public void init() {
-
-	}	
-    
-	@Override
     public void start() {
-		isRunning = true;
        	// FlatABox abox = FlatABox.getInstance();
+    	int maxLength = Config.maxLength;
     	
         System.out.print("Generating definitions up to length " + maxLength + " ... ");
         long generationStartTime = System.currentTimeMillis();
@@ -144,18 +62,52 @@ public class BruteForceLearner extends LearningAlgorithm {
         for(int i=1; i<=maxLength; i++)
             generatePrograms(i);
         
-        if(stop)
-        	return;
-        	
         long generationTime = System.currentTimeMillis() - generationStartTime;
         System.out.println("OK (" + generationTime + " ms)");
+        
+        // es wird angenommen, dass nur ein Konzept gelernt wird
+        /*
+        for(String s : abox.exampleConceptsPos.keySet()) {
+            posExamples = abox.exampleConceptsPos.get(s);
+        }
+        for(String s : abox.exampleConceptsNeg.keySet()) {
+            negExamples = abox.exampleConceptsNeg.get(s); 
+        }
+        */
         
         testGeneratedDefinitions(maxLength);
     
         // System.out.println("test duration: " + testDuration + " ms");
         System.out.println();
         System.out.println("Best definition found: \n" + bestDefinition);
+        // System.out.println("classified positive: " + bestScore.getPosClassified());
+        // System.out.println("classified negative: " + bestScore.getNegClassified());
+        
+        /*
+        // HIER WIRD ANGENOMMEN, DASS NUR EIN KONZEPT GERLERNT WIRD
+        Set<String> posExamples = null;
+        Set<String> negExamples = null;
+        Set<String> neutralExamples;
 
+        // es wird angenommen, dass nur ein Konzept gelernt wird
+        for(String s : abox.exampleConceptsPos.keySet()) {
+            posExamples = abox.exampleConceptsPos.get(s);
+        }
+        for(String s : abox.exampleConceptsNeg.keySet()) {
+            negExamples = abox.exampleConceptsNeg.get(s); 
+        }
+        neutralExamples = Helper.intersection(abox.top,posExamples);
+        neutralExamples = Helper.intersection(neutralExamples,negExamples);
+        
+        Set<String> bestDefNeutralSet = Helper.intersection(abox.top,bestDefPosSet);
+        bestDefNeutralSet = Helper.intersection(bestDefNeutralSet,bestDefNegSet);
+        
+        // Fehler berechnen
+        // int numberOfErrors = Helper.intersection(bestDefPosSet)
+        
+        
+        DecimalFormat df = new DecimalFormat("0.00");
+        */
         System.out.println();
         System.out.println("Classification results:");
         System.out.println(bestScore);
@@ -163,7 +115,7 @@ public class BruteForceLearner extends LearningAlgorithm {
         //System.out.println("false negatives: " + Helper.intersection(bestDefNegSet,posExamples));
         //System.out.print("Score: " + bestScore + " Max: " + maxScore + " Difference: " + (maxScore-bestScore));
         //System.out.println(" Accuracy: " + df.format((double)bestScore/maxScore*100) + "%");
-      	isRunning = false;
+      	
     }
     
     private void testGeneratedDefinitions(int maxLength) {
@@ -173,30 +125,29 @@ public class BruteForceLearner extends LearningAlgorithm {
         double bestScorePoints = Double.NEGATIVE_INFINITY;
         int overallCount = 0;
         int count = 0;
-        ScorePosNeg tmp;
+        Score tmp;
         double score;
         
-        for(int i=1; i<=maxLength && !stop; i++) {
+        for(int i=1; i<=maxLength; i++) {
             long startTime = System.currentTimeMillis();
             System.out.print("Testing definitions of length " + i + " ... ");
             count = 0;
-            for(Description program : generatedDefinitions.get(i)) {
-            	// stop testing further when algorithm is stopped
-            	if(stop)
-            		break;
-            	
-            	// if a return type is already given an appropriate tree is 
-            	// generated here
-            	Description newRoot;
-            	if(returnType != null) {
-            		newRoot = new Intersection(new NamedClass(returnType),program);
+            for(Concept program : generatedDefinitions.get(i)) {
+            	// falls return type angegeben ist, dann wird hier ein
+            	// entsprechender Baum konstruiert
+            	Concept newRoot;
+            	if(!Config.returnType.equals("")) {
+            		newRoot = new Conjunction(new AtomicConcept(Config.returnType),program);
             	} else
             		newRoot = program;
             	
-            	tmp = (ScorePosNeg) learningProblem.computeScore(newRoot);
-                score = tmp.getScoreValue();
-                
-                // TODO: find termination criterion
+                // int score = computeScore(abox,program);
+                // tmp = new Score(newRoot); // newRoot.computeScore();
+            	tmp = learningProblem.computeScore(newRoot);
+                score = tmp.getScore();
+                // später Abbruch bei maximaler Punktzahl einführen
+                //if(score == maxScore)
+                //    return;
                 if(score > bestScorePoints) {
                     bestDefinition = newRoot;
                     bestScorePoints = score;
@@ -213,57 +164,58 @@ public class BruteForceLearner extends LearningAlgorithm {
         System.out.println("Overall: " + overallCount + " definitions tested (" + testDuration + " ms)");
     }
     
+
+    
     private void generatePrograms(int length) {
-        generatedDefinitions.put(length,new LinkedList<Description>());
+        generatedDefinitions.put(length,new LinkedList<Concept>());
         if(length==1) {
-            generatedDefinitions.get(1).add(new Thing());
-            generatedDefinitions.get(1).add(new Nothing());
-            for(NamedClass atomicConcept : rs.getNamedClasses()) {
+            generatedDefinitions.get(1).add(new Top());
+            generatedDefinitions.get(1).add(new Bottom());
+            for(AtomicConcept atomicConcept : learningProblem.getReasoningService().getAtomicConcepts()) {
                 generatedDefinitions.get(1).add(atomicConcept);
             }
         }
         
         if(length>1) {
-            // negation
-            for(Description childNode : generatedDefinitions.get(length-1)) {
-                Description root = new Negation(childNode);
+            // Negation
+            for(Concept childNode : generatedDefinitions.get(length-1)) {
+                Concept root = new Negation(childNode);
                 generatedDefinitions.get(length).add(root);
             }
         }
         
-        // minimum length 3, otherwise conjunctions and disjunctions cannot be
-        // constructed
+        // Mindestlänge 3, da man sonst mit Disjunktion und Konjunktion nichts
+        // konstruieren kann
         if(length>2) {
-            // choose conjunction or disjunction
+            // Konjunktion oder Disjunktion auswählen
             for(int i=0; i<=1; i++) {
-            	// let variable run from 1 to (length-1)/2 (rounded down)
-            	// = length of left subtree
+                // Variable von 1 bis angerundet (length-1)/2 gehen lassen
+                // = Länge des linken Teilbaumes
                 for(int z=1; z<=Math.floor(0.5*(length-1)); z++) {
-
-                	// cycle through all concepts of length z (left subtree)
-                    for(Description leftChild : generatedDefinitions.get(z)) { 
-                    	// cycle thorugh all concept of lengt "length-z-1" (right subtree) 
-                        for(Description rightChild : generatedDefinitions.get(length-z-1)) {
-                            // create concept tree
-                            Description root;
+                    // alle Programme der Länge z durchgehen (linker Teilbaum)
+                    for(Concept leftChild : generatedDefinitions.get(z)) { 
+                        // alle Programme der Länge length-z-1 durchgehen (rechter Teilbaum)
+                        for(Concept rightChild : generatedDefinitions.get(length-z-1)) {
+                            // Baum erzeugen
+                            Concept root;
                             if(i==0) {
-                            	root = new Union(leftChild,rightChild);
+                            	root = new Disjunction(leftChild,rightChild);
                             } else {
-                                root = new Intersection(leftChild,rightChild);  
+                                root = new Conjunction(leftChild,rightChild);  
                             }
                             
-                            // Please not that we only set links here, i.e.:
-                            // 1. Every modification of a generated concept can influence
-                            //    other concepts.
-                            // 2. It is not specified where the parent link of a concept
-                            //    points to, because one node can be child of several nodes.
-                            //
-                            // For the currently implemented reasoning algorithms this 
-                            // does not matter, because they do not modify concepts and
-                            // do not care about the parent link.
-                            //
-                            // This way we save space (1 new concept in the brute force
-                            // learner consumes space for only one tree node).
+                            // man beachte, dass hier nur Links gesetzt werden, d.h.
+                            // dass:
+                            // 1. jede Modifikation an einem generierten Programm auch
+                            //    andere Programme beeinflussen kann
+                            // 2. wohin der parent-Link eines Knotens zeigt ist nicht
+                            //    spezifiziert, da ein Knoten Kind mehererer anderer
+                            //    Knoten sein kann
+                            // Das wird gemacht, da der Retrieval-Algorithmus den parent-
+                            // Link nicht benötigt und die Bäume nicht modifiziert, abgesehen
+                            // vom posSet und negSet, welches aber für jeden Baum neu
+                            // berechnet wird. Das speichern der Programme ist auf diese
+                            // Weise platzsparend, also 1 Programm = 1 Knoten.
                             // root.addChild(leftChild);
                             // root.addChild(rightChild);
                             // System.out.println(root);
@@ -274,63 +226,30 @@ public class BruteForceLearner extends LearningAlgorithm {
                 }
             }
             
-            // EXISTS and ALL 
-            for(Description childNode : generatedDefinitions.get(length-2)) {
-            	for(ObjectProperty atomicRole : rs.getObjectProperties()) {
-                    Description root1 = new ObjectSomeRestriction(atomicRole,childNode);
+            // Exists und All (zählen als Länge 2 wegen Quantor und Rollennamen)
+            for(Concept childNode : generatedDefinitions.get(length-2)) {
+                // for(String roleName : abox.roles) {
+            	for(AtomicRole atomicRole : learningProblem.getReasoningService().getAtomicRoles()) {
+                    Concept root1 = new Exists(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root1);
                     
-                    Description root2 = new ObjectAllRestriction(atomicRole,childNode);
+                    Concept root2 = new All(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root2);
                 }
             }            
         }
     }
 
-//    @Override
-	public ScorePosNeg getSolutionScore() {
+	public Score getSolutionScore() {
 		return bestScore;
 	}
 
-	@Override
-	public Description getCurrentlyBestDescription() {
+	public Concept getBestSolution() {
 		return bestDefinition;
-	}    
-    
-	@Override
-	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescriptionPosNeg(bestDefinition,bestScore);
 	}
 
-	@Override
 	public void stop() {
-		stop = true;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#pause()
-	 */
-	@Override
-	public void pause() {
 		// TODO Auto-generated method stub
 		
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#resume()
-	 */
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
-	 */
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}
-
 }

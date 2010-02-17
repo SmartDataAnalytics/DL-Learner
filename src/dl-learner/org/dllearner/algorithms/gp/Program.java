@@ -20,8 +20,8 @@
 
 package org.dllearner.algorithms.gp;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.Score;
+import org.dllearner.dl.Concept;
 
 /**
  * This class represents a program, i.e. an individual.
@@ -33,13 +33,13 @@ public class Program {
 
 	// public static int fitnessEvaluations = 0;
 
-	private Description hypothesis;
+	private Concept hypothesis;
 
 	// private Concept extendedHypothesis;
 
-	private Description adc;
+	private Concept adc;
 
-	private ScorePosNeg score;
+	private Score score;
 
 	// private Score scoreAdc;
 	
@@ -50,12 +50,14 @@ public class Program {
 	/**
 	 * Create a new program.
 	 * 
+	 * @param concept
+	 *            The program tree.
 	 */
-	public Program(ScorePosNeg score, Description hypothesis) {
+	public Program(Score score, Concept hypothesis) {
 		this(score, hypothesis, null);
 	}
 
-	public Program(ScorePosNeg score, Description hypothesis, Description adc) {
+	public Program(Score score, Concept hypothesis, Concept adc) {
 		// this.learningProblem = learningProblem;
 		this.score = score;
 		this.hypothesis = hypothesis;
@@ -64,7 +66,7 @@ public class Program {
 		// Implementierung falsch !!
 		// fitness = score.getScore() - hypothesis.getLength() * Config.percentPerLengthUnit;
 		// => in getScore() ist jetzt schon der length penalty integriert
-		fitness = score.getScoreValue();
+		fitness = score.getScore();
 		// fitnessEvaluations++;
 		
 		// System.out.println("new program: " + hypothesis);
@@ -124,15 +126,15 @@ public class Program {
 	 * 
 	 * @return The program tree.
 	 */
-	public Description getTree() {
+	public Concept getTree() {
 		return hypothesis;
 	}
 
-	public ScorePosNeg getScore() {
+	public Score getScore() {
 		return score;
 	}
 
-	public Description getAdc() {
+	public Concept getAdc() {
 		return adc;
 	}
 }

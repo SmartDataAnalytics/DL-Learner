@@ -1,5 +1,0 @@
-http://example.com/foo#east1
-http://example.com/foo#east2
-http://example.com/foo#east3
-http://example.com/foo#east4
-http://example.com/foo#east5

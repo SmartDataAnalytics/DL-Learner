@@ -60,27 +60,27 @@ public class PokerTransformer {
 			lineNumber++;
 		}
 		
-		List<PokerHand> hands = new LinkedList<PokerHand>();
+		List<Hand> hands = new LinkedList<Hand>();
 		for(String s : pokerExamples) {
 			// System.out.println(s);
 			StringTokenizer st = new StringTokenizer(s,",");
 			
 			// 5 Karten einlesen
-			PokerCard[] cards = new PokerCard[5];
+			Card[] cards = new Card[5];
 			for(int i=0; i<=4; i++) {
 				String suit = st.nextToken();
 				String rank = st.nextToken();
-				cards[i] = new PokerCard(new Integer(suit),new Integer(rank));
+				cards[i] = new Card(new Integer(suit),new Integer(rank));
 			}
 			
 			// Klasse auslesen
 			String handType = st.nextToken();
-			PokerHand hand = new PokerHand(cards, new Integer(handType));
+			Hand hand = new Hand(cards, new Integer(handType));
 			
 			// prüfen, ob Deck schon existiert (nicht gerade effizient,
 			// aber OK)
 			boolean handExists = false;
-			for(PokerHand d : hands) {
+			for(Hand d : hands) {
 				if(equalDecks(d,hand)) {
 					handExists = true;
 					break;
@@ -112,7 +112,7 @@ public class PokerTransformer {
 			
 			// für jede Karte die entsprechende Ausgabe machen
 			int handNumber = 0;
-			for(PokerHand deck : hands) {
+			for(Hand deck : hands) {
 				String handID = "hand" + handNumber;
 				
 				// Ausgabe der Hand (damit für Reasoner klar ist, dass es
@@ -120,10 +120,10 @@ public class PokerTransformer {
 				write(fos, "deck("+handID+").");
 				
 				int cardNumber = handNumber*5;
-				PokerCard[] cards = deck.getCards();
+				Card[] cards = deck.getCards();
 				// for(Card card : deck.getCards()) {
 				for(int i=0; i<5; i++) {
-					PokerCard card = cards[i];
+					Card card = cards[i];
 					String cardID = "card" + cardNumber;
 					
 					// Ausgabe der Karte (damit klar ist, dass es sich um ein
@@ -139,7 +139,7 @@ public class PokerTransformer {
 					
 					// sameSuit, nextRank und sameRank ausgeben
 					for(int j=i+1; j<5; j++) {
-						PokerCard otherCard = cards[j];
+						Card otherCard = cards[j];
 						String otherCardID = "card" + (handNumber*5+j);
 						if(card.hasSameSuit(otherCard))
 							write(fos, "sameSuit("+cardID+","+otherCardID+").");
@@ -150,7 +150,7 @@ public class PokerTransformer {
 					// nextRank ist nicht symmetrisch, deshalb müssen alle 
 					// 4 anderen Karten geprüft werden
 					for(int j=0; j<5; j++) {
-						PokerCard otherCard = cards[j];
+						Card otherCard = cards[j];
 						String otherCardID = "card" + (handNumber*5+j);
 						if(card.hasNextRank(otherCard)) {
 							// Spezialfall: Ass
@@ -217,8 +217,8 @@ public class PokerTransformer {
 		}
 	}
 		
-	public boolean equalDecks(PokerHand deck1, PokerHand deck2) {
-		PokerCard[] deck1Cards = deck1.getCards();
+	public boolean equalDecks(Hand deck1, Hand deck2) {
+		Card[] deck1Cards = deck1.getCards();
 		for(int i=0; i<5; i++) {
 			if(!isInCards(deck1Cards[i],deck2))
 				return false;
@@ -226,8 +226,8 @@ public class PokerTransformer {
 		return true;
 	}
 	
-	public boolean isInCards(PokerCard card, PokerHand deck) {
-		PokerCard[] cards = deck.getCards();
+	public boolean isInCards(Card card, Hand deck) {
+		Card[] cards = deck.getCards();
 		for(int j=0; j<5; j++) {
 			// Test auf Gleichheit
 			if(card.getSuit()==cards[j].getSuit() && card.getRank()==cards[j].getRank())
@@ -236,8 +236,8 @@ public class PokerTransformer {
 		return false;
 	}
 	
-	public boolean hasKing(PokerHand deck) {
-		PokerCard[] cards = deck.getCards();
+	public boolean hasKing(Hand deck) {
+		Card[] cards = deck.getCards();
 		for(int j=0; j<5; j++) {
 			if(cards[j].getRank()==13)
 				return true;

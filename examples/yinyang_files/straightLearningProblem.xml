@@ -7,13 +7,13 @@ xmlns="http://www.di.uniba.it/learning"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.di.uniba.it/learning/../LearningProblem.xsd" 
 
-knowledgeBase="file:../poker/straight.owl" 
+knowledgeBase="file:straight.owl" 
 positiveExampleSource="straightPositives.txt" 
 negativeExampleSource="straightNegatives.txt" 
 abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 
 learn="true" 
 normalize="true" 
-consistencyCheck="true"
+consistencyCheck="false"
 reasonerURL ="http://localhost:8081"
 
 

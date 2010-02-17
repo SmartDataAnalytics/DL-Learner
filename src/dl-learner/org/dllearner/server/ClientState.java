@@ -1,225 +1,571 @@
-/**
- * Copyright (C) 2007-2009, Jens Lehmann
- *
- * This file is part of DL-Learner.
- * 
- * DL-Learner is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * DL-Learner is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+
 package org.dllearner.server;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import org.dllearner.core.Component;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.Config;
+import org.dllearner.ConfigurationManager;
+import org.dllearner.ConfigurationOption;
+import org.dllearner.Main;
+import org.dllearner.OntologyFileFormat;
+import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.dl.AtomicConcept;
+import org.dllearner.dl.AtomicRole;
+import org.dllearner.dl.Individual;
+import org.dllearner.dl.KB;
+import org.dllearner.reasoning.Reasoner;
+import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
+import org.dllearner.reasoning.ReasoningService;
 
-/**
- * Stores the state of a DL-Learner client session.
- * 
- * @author Jens Lehmann
- *
- */
 public class ClientState {
+	
+	private String  reasonerURL="http://localhost:8081";
+	//private String  reasonerURL="http://localhost:3490";
+	
+	private SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
+	public SortedSet<Individual> getPosExamples() {	return this.positiveExamples;}
+	
+	private SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
+	public SortedSet<Individual> getNegExamples() {	return this.negativeExamples;}
+	
+	private SortedSet<String> ignoredConcept = new TreeSet<String>();
+	
+	
+	private Reasoner reasoner;
+	public Reasoner getReasoner() {	return reasoner;}
+	
+	private ReasoningService rs;
+	public ReasoningService getRs() {	return rs;	}
+	
+	private String currentOntologyURL=null; 
+	private boolean debug_flag=true;
+	private LearnMonitor lm=null;
+	
+	private  String lastResult="";
+	public String getLastResult(){	
+		try{
+			return ROL.getBestSolution().toString();
+		}catch (Exception e) {}
+		return this.lastResult;	}
+	public void setLastResult(String lastResult) {this.lastResult = lastResult;}
+	
+	private  String status="maiden-like";
+	public void setStatus(String status) {this.status = status;}
+	
+	ConfigurationManager confMgr;
+	public void addOption(ConfigurationOption c){confMgr.applyConfigurationOption(c);}
+	ROLearner ROL;
 
-	// stores the mapping between component IDs and component
-	// (note that this allows us to keep all references to components even
-	// if they are not used anymore e.g. a deleted knowledge source)
-	private Map<Integer,Component> componentIDs = new HashMap<Integer,Component>(); 
-	
-	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
-	
-	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
-	
-	private LearningProblem learningProblem;
-	
-	private ReasonerComponent reasonerComponent;
-	
-	private LearningAlgorithm learningAlgorithm;
+	public ClientState() {
+		
+		
+		TreeSet<ConfigurationOption> s=new TreeSet<ConfigurationOption>();
+		//s.add(new ConfigurationOption("refinement","quiet","true"));
+		/*s.add(new ConfigurationOption());
+		s.add(new ConfigurationOption());
+		s.add(new ConfigurationOption());
+		s.add(new ConfigurationOption());
+		s.add(new ConfigurationOption());
+		s.add(new ConfigurationOption());*/
+		
+		confMgr = new ConfigurationManager(s);
+		addOption(new ConfigurationOption("refinement","quiet","true"));
+		//confMgr.applyOptions();
 
-	private Random rand=new Random();
-	
-	private boolean isAlgorithmRunning = false;
-	
-	private int generateComponentID(Component component) {
-		int id;
-		do {
-			id = rand.nextInt();
-		} while(componentIDs.keySet().contains(id));
-		componentIDs.put(id, component);
-		return id;		
 	}
 	
-	private int generateQueryID(SparqlQuery query) {
-		int id;
-		Random rand = new Random();
-		do {
-			id = rand.nextInt();
-		} while (queryIDs.keySet().contains(id));
-		queryIDs.put(id, query);
-		return id;
+	
+	
+	
+	public void addPositiveExample(String posExample) {
+		positiveExamples.add(new Individual(posExample));
+		p("added pos: "+posExample);
 	}
 	
-	public int addQuery(SparqlQuery query){
-		return this.generateQueryID(query);
+	
+	public void addNegativeExample(String negExample) {
+		negativeExamples.add(new Individual(negExample));
+		p("added neg: "+negExample);
+	}	
+	
+	public void addIgnoredConcept(String concept) {
+		ignoredConcept.add(concept);
+		p("added ignoredConcepts: "+concept);
 	}
 	
-	public SparqlQuery getQuery(int id){
-		return queryIDs.get(id);
-	}
-	
-	/**
-	 * @return the isAlgorithmRunning
-	 */
-	@Deprecated
-	public boolean isAlgorithmRunning() {
-		return isAlgorithmRunning;
-	}
-
-	/**
-	 * @param isAlgorithmRunning the isAlgorithmRunning to set
-	 */
-	@Deprecated
-	public void setAlgorithmRunning(boolean isAlgorithmRunning) {
-		this.isAlgorithmRunning = isAlgorithmRunning;
-	}
-	
-//	public Component getComponent(Class<? extends Component> componentClass) throws UnknownComponentException {
-//		if(learningProblem.getClass().equals(componentClass))
-//			return learningProblem;
-//		else if(learningAlgorithm.getClass().equals(componentClass))
-//			return learningAlgorithm;
-//		else if(reasonerComponent.getClass().equals(componentClass))
-//			return reasonerComponent;
-//		else if(KnowledgeSource.class.isAssignableFrom(componentClass)) {
-//			
-//			
-//			for(KnowledgeSource ks : knowledgeSources) {
-//				if(ks.getClass().equals(componentClass))
-//					return ks;
-//			}
-//			throw new UnknownComponentException(componentClass.getName());
-//		} else
-//			throw new UnknownComponentException(componentClass.getName());
-//	}
-
-	/**
-	 * Removes a knowledge source with the given URL (independant of its type).
-	 * @param url URL of the OWL file or SPARQL Endpoint.
-	 * @return True if a knowledge source was deleted, false otherwise.
-	 */
-	public boolean removeKnowledgeSource(String url) {
-		Iterator<KnowledgeSource> it = knowledgeSources.iterator(); 
-		while(it.hasNext()) {
-			KnowledgeSource source = it.next();
-			if((source instanceof OWLFile && ((OWLFile)source).getURL().toString().equals(url))
-				|| (source instanceof SparqlKnowledgeSource && ((SparqlKnowledgeSource)source).getURL().toString().equals(url)) ) {
-				it.remove();
-				return true;
-			}
+	public String[] selectInstancesForAConcept(String Concept)throws NoOntologySelectedException{
+		if(Concept.endsWith("#Thing"))return new String[]{};
+		AtomicConcept SelectedConcept=new AtomicConcept(Concept);
+		ArrayList<String> al=new ArrayList<String>();
+		Individual indtmp=null;
+		//Set<AtomicConcept> ConceptSet=null;
+		AtomicConcept ac=null;
+		
+		
+		System.out.println("selectInstancesForAConcept: "+Concept);
+		// add all positives
+		Set<Individual> positives=rs.retrieval(SelectedConcept);
+		Iterator<Individual> i = positives.iterator();
+		while(i.hasNext()){
+			indtmp=i.next();
+			p("added "+indtmp.getName()+" to positives");
+			al.add("added "+indtmp.getName()+" to positives");
+			positiveExamples.add(indtmp);
 		}
-		return false;
+		
+		//find more general concepts
+		ArrayList<AtomicConcept> superConcepts=new ArrayList<AtomicConcept>();
+		try{
+			//ConceptSet = rs.getSubsumptionHierarchy().getMoreGeneralConcepts(new AtomicConcept(Concept));
+			//System.out.println(ConceptSet);
+			//Concept c=new AtomicConcept(Concept);
+			/*Set<AtomicConcept> s=rs.getAtomicConcepts();
+			Set<Concept> sc=new TreeSet<Concept>();
+			Iterator a=s.iterator();
+			while (a.hasNext()) {
+				sc.add((Concept) a.next());
+			}
+			sc=rs.subsumes(sc,new AtomicConcept(Concept));*/
+			superConcepts=subsumesAll(SelectedConcept);
+		
+			//System.out.println("sizebefore: "+"size after:"+sc);
+		}catch (Exception e) {e.printStackTrace();}
+		
+		
+//		remove top
+		for (int j = 0; j < superConcepts.size(); ) {
+			//TODO no unique name assumption? 
+			if(superConcepts.get(j).getName().equals(SelectedConcept.getName())){
+				superConcepts.remove(j);
+				j=0;
+				continue;
+			}
+			if(superConcepts.get(j).getName().equals("TOP")){
+				superConcepts.remove(j);
+				j=0;
+				continue;
+			}
+			j++;
+		}
+		
+		System.out.println("Found all those:"+ superConcepts);
+		
+		ac=null;
+		
+		if(superConcepts.size()==0){return al2s(al); }//TODO
+		else 
+		{	// add all negatives of all superclasses;
+			
+			//Iterator it=ConceptSet.iterator();
+			for (int jj = 0; jj < superConcepts.size(); jj++) 
+			{
+				ac=superConcepts.get(jj);
+				p("next this: "+ac.getName());
+				Set<Individual> negatives=rs.retrieval(ac);
+				Iterator<Individual> i2 = negatives.iterator();
+				indtmp=null;
+				while(i2.hasNext()){
+					
+					indtmp=(Individual)i2.next();
+					
+					if(!positives.contains(indtmp)){
+						
+						p("added "+indtmp.getName()+" to NEGATIVES");
+						al.add("added "+indtmp.getName()+" to NEGATIVES");
+						negativeExamples.add(indtmp);
+					}
+					else{
+						p("skipped "+indtmp.getName());
+						al.add("skipped "+indtmp.getName());
+					}
+					
+				}
+			}//endfor
+			return al2s(al);
+		}
+		
+			
 	}
-
-	/**
-	 * @return the learningProblem
-	 */
-	public LearningProblem getLearningProblem() {
-		return learningProblem;
+	
+	
+	
+	public String[] selectAConcept(String Concept, int Percentage)throws NoOntologySelectedException{
+		if(Concept.endsWith("#Thing"))return new String[]{};
+		AtomicConcept SelectedConcept=new AtomicConcept(Concept);
+		ArrayList<String> ret=new ArrayList<String>();
+		Individual indtmp=null;
+		//Set<AtomicConcept> ConceptSet=null;
+		//AtomicConcept ac=null;
+		Random r=new Random();
+		
+		
+		System.out.println("selectAConcept: "+Concept);
+		// add all positives
+		Set<Individual> positives=rs.retrieval(SelectedConcept);
+		Iterator<Individual> i = positives.iterator();
+		while(i.hasNext()){
+			indtmp=(Individual)i.next();
+			p("added "+indtmp.getName()+" to positives");
+			ret.add("added "+indtmp.getName()+" to positives");
+			positiveExamples.add(indtmp);
+		}
+		
+		//find All other Instances concepts
+		Set<Individual> otherInstances=rs.getIndividuals();
+		Iterator<Individual> it=otherInstances.iterator();
+		while(it.hasNext()){
+			indtmp=(Individual)it.next();
+			
+			if(!positives.contains(indtmp) && (r.nextDouble()*100)<=Percentage){
+				
+				p("added "+indtmp.getName()+" to NEGATIVES");
+				ret.add("added "+indtmp.getName()+" to NEGATIVES");
+				negativeExamples.add(indtmp);
+			}
+		}//while
+		
+		return al2s(ret);
+			
 	}
-
-	/**
-	 * @param learningProblem the learningProblem to set
-	 */
-	public int setLearningProblem(LearningProblem learningProblem) {
-		this.learningProblem = learningProblem;
-		return generateComponentID(learningProblem);
+	
+	
+	public ArrayList<AtomicConcept> subsumesAll(AtomicConcept c){
+		Set<AtomicConcept> s=rs.getAtomicConcepts();
+		ArrayList<AtomicConcept> ret=new ArrayList<AtomicConcept>();
+		Iterator<AtomicConcept> i=s.iterator();
+		while (i.hasNext()) {
+			AtomicConcept element = (AtomicConcept) i.next();
+			if(rs.subsumes(element, c))
+				{
+				ret.add(element);
+				}
+			
+		}
+		return ret;
 	}
-
-	/**
-	 * @return the reasonerComponent
-	 */
-	public ReasonerComponent getReasonerComponent() {
-		return reasonerComponent;
+	public String[] getPositiveExamples(){
+		String[] ret=new String[positiveExamples.size()];
+		Iterator<Individual> i=positiveExamples.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((Individual)i.next()).getName();
+		}
+		//p("getPositiveEx");
+		return ret;
 	}
-
+	public String[] getNegativeExamples(){
+		String[] ret=new String[negativeExamples.size()];
+		Iterator<Individual> i=negativeExamples.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((Individual)i.next()).getName();
+		}
+		//p("getNegativeEx");
+		return ret;
+	}
+	
+	public String[] getIgnoredConcepts() {	
+		String[] ret=new String[ignoredConcept.size()];
+		Iterator<String> i=ignoredConcept.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((String)i.next());
+		}
+		//p("getNegativeEx");
+		return ret;
+		}
+	
+	public String getSubsumptionHierarchy() throws NoOntologySelectedException {	
+		try{
+		return this.rs.getSubsumptionHierarchy().toString();
+		}catch (Exception e) {throw new NoOntologySelectedException("Subsumptionhierarchy",e.getMessage());}
+		
+		}
+	
+	
+	
+	public boolean removeNegativeExample(String NegExample){
+		p("removed from neg: "+NegExample);
+		return negativeExamples.remove(new Individual(NegExample));
+	}
+	public boolean removePositiveExample(String PosExample){
+		p("removed from pos: "+PosExample);
+		return positiveExamples.remove(new Individual(PosExample));
+	}
+	
+	public boolean removeAllPositiveExamples(){
+		positiveExamples = new TreeSet<Individual>();
+		p("removing all positive examples");
+		return true;
+	}
+	public boolean removeAllNegativeExamples(){
+		negativeExamples = new TreeSet<Individual>();
+		p("removing all negative examples");
+		return true;
+	}
+	
+	public boolean removeAllExamples(){
+		positiveExamples = new TreeSet<Individual>();
+		negativeExamples = new TreeSet<Individual>();
+		p("removing all examples");
+		return true;
+	}
+	
+	public void removeIgnoredConcept(String concept) {
+		//ignoredConcept.add(concept);
+		this.ignoredConcept.remove(concept);
+		p("removed ignoredConcepts: "+concept);
+	}
+	
+	public String[] getInstances()throws NoOntologySelectedException{
+		try{
+		SortedSet<Individual> s=rs.getIndividuals();
+		//System.out.println(s);
+		String[] ret=new String[s.size()];
+		Iterator<Individual> i=s.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((Individual)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		//p("getInstances");
+		return ret;
+		}catch (Exception e) {throw new NoOntologySelectedException("Failed to get instances, no ontology selected","");}
+	}
+	
+	public String getCurrentOntologyURL()throws NoOntologySelectedException{
+		p("getCurrentOntology: "+currentOntologyURL);
+		if(currentOntologyURL==null)throw new NoOntologySelectedException("Select Ontology First","quatsch");
+		else return currentOntologyURL;
+	}
+	
+	public String getAlgorithmStatus(){
+		return this.status;
+	}
+	
 	/**
-	 * Sets the reasoner component and creates the corresponding
-	 * <code>ReasonerComponent</code> instance.
+	 * Specifies the URI of the ontology containing the background 
+	 * knowledge. Reads the ontology and sends it to the reasoner.
 	 * 
-	 * @param reasonerComponent the reasonerComponent to set
+	 * @param ontologyURI The URI of the ontology to use.
 	 */
-	public int setReasonerComponent(ReasonerComponent reasonerComponent) {
-		this.reasonerComponent = reasonerComponent;
-//		reasoningService = new ReasonerComponent(reasonerComponent);
-		return generateComponentID(reasonerComponent);
+	// gleiche Methoden mit verschiedenen Parametern sind offenbar problematisch
+	/*
+	@WebMethod
+	public void readOntology(String ontologyURI) {
+		readOntology(ontologyURI, "RDF/XML");
 	}
-
-	/**
-	 * @return the learningAlgorithm
-	 */
-	public LearningAlgorithm getLearningAlgorithm() {
-		return learningAlgorithm;
-	}
-
-	/**
-	 * @param learningAlgorithm the learningAlgorithm to set
-	 */
-	public int setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
-		this.learningAlgorithm = learningAlgorithm;
-		return generateComponentID(learningAlgorithm);
-	}
-
-	/**
-	 * @param id A component ID.
-	 * @return The component associated with this ID.
-	 * @see java.util.Map#get(java.lang.Object)
-	 */
-	public Component getComponent(int id) {
-		return componentIDs.get(id);
-	}
-
-	/**
-	 * Adds a knowledge source to the client session. Use the 
-	 * returned value to refer to this knowledge source.
-	 * @param ks The knowledge source to add.
-	 * @return The component ID for the newly added knowledge source.
-	 */
-	public int addKnowledgeSource(KnowledgeSource ks) {
-		knowledgeSources.add(ks);
-		return generateComponentID(ks);
+	*/
+	
+	
+	public void removeOntology() {
+		this.currentOntologyURL=null;
+		this.reasoner=null;
+		this.rs=null;
+		this.positiveExamples = new TreeSet<Individual>();
+		this.negativeExamples = new TreeSet<Individual>();
+		this.ignoredConcept=new TreeSet<String>();
+		p("removing Ontology");
 		
 	}
-
-	public boolean removeKnowledgeSource(int componentID) {
-		return knowledgeSources.remove(componentIDs.get(componentID));
-	}
 	
 	/**
-	 * @return the knowledgeSources
+	 * Specifies the URI of the ontology containing the background 
+	 * knowledge and its format. Reads the ontology and sends it to
+	 * the reasoner.
+	 * 
+	 * @param ontologyURI The URI of the ontology to use.
+	 * @param format "RDF/XML" or "N-TRIPLES".
 	 */
-	public Set<KnowledgeSource> getKnowledgeSources() {
-		return knowledgeSources;
+	
+	
+	public void readOntology(String ontologyURL, String format) throws OntologyURLNotValid{
+		this.currentOntologyURL=ontologyURL;
+		p("trying to read: "+ontologyURL+" ::"+format);
+		try{
+		// this.ontologyURL = ontologyURL;
+		// this.ontologyFormat = format;
+		
+		// TODO: potentielles Sicherheitsrisiko, da man damit derzeit auch lokale Dateien
+		// laden könnte (Fix: nur http:// zulassen, kein file://)
+		URL ontology = null;
+		try {
+			ontology = new URL(ontologyURL);
+		} catch (MalformedURLException e1) {
+			this.removeOntology();
+			throw new OntologyURLNotValid("The URL of the Ontology is not correct<br>\nCheck settings and URL","OntologyURLNotValid");
+			
+		}
+		
+		OntologyFileFormat ofFormat;
+		if (format.equals("RDF/XML"))
+			ofFormat = OntologyFileFormat.RDF_XML;
+		else
+			ofFormat = OntologyFileFormat.N_TRIPLES;
+		
+		Map<URL, OntologyFileFormat> m = new HashMap<URL, OntologyFileFormat>();
+		m.put(ontology, ofFormat);
+		
+		// Default-URI für DIG-Reasoner setzen
+		
+		try {
+			Config.digReasonerURL = new URL(reasonerURL);
+		} catch (MalformedURLException e) {
+			// Exception tritt nie auf, da URL korrekt
+			e.printStackTrace();
+		}		
+		
+		 reasoner = Main.createReasoner(new KB(), m);
+		 rs = new ReasoningService(reasoner);
+		
+		 Main.autoDetectConceptsAndRoles(rs);
+			reasoner.prepareSubsumptionHierarchy();
+			if (Config.Refinement.improveSubsumptionHierarchy) {
+				try {
+					reasoner.prepareRoleHierarchy();
+					reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+				} catch (ReasoningMethodUnsupportedException e) {
+					// solange DIG-Reasoner eingestellt ist, schlägt diese Operation nie fehl
+					e.printStackTrace();
+				}
+			}
+			p(rs.getSubsumptionHierarchy().toString());
+			//rs.getRoleMembers(arg0)
+		}
+		catch (Exception e) { //TODO
+			this.removeOntology();
+			throw new OntologyURLNotValid("The URL of the Ontology is not correct<br>\nCheck settings and URL","OntologyURLNotValid");
+			}
+		/*catch (JenaException e) {
+			e.printStackTrace();}
+		*/
+		
+		/*catch(Exception e2) {
+			
+			//p("exception:"+e.getMessage());
+			e2.printStackTrace();
+		}*/
+		p("Ontology read: "+currentOntologyURL);
+	}
+	
+	
+	public void learnMonitored(){
+		addOption(new ConfigurationOption("refinement","ignoredConcepts",ignoredConcept));
+		this.lm=new LearnMonitor(this);
+		this.lm.start();
+		//this.lm.learn(this);
+	}
+	
+	/*public void relearn(){
+		//TreeSet<String> s=new TreeSet<String>();
+		//new ConfigurationOption();
+		this.lm=new LearnMonitor(this);
+		this.lm.start();
+		//this.lm.learn(this);
+	}*/
+	
+	
+	public String[] getAtomicConcepts()throws NoOntologySelectedException{
+		try{
+		return SortedSet2StringListConcepts( rs.getAtomicConcepts());
+		}catch (Exception e) {throw new NoOntologySelectedException("Select Ontology First","ddddd");}
+	}
+	
+	public String[] retrieval(String Concept)throws NoOntologySelectedException{
+		return SortedSet2StringListIndividuals(rs.retrieval(new AtomicConcept(Concept)));
+	}
+	
+	public String[] getAtomicRoles()throws NoOntologySelectedException{
+		return SortedSet2StringListRoles( rs.getAtomicRoles());
+	}
+	
+	public String[] getIndividualsForARole(String Role)throws NoOntologySelectedException{
+		Map<Individual,SortedSet<Individual>> m=rs.getRoleMembers(new AtomicRole(Role));
+		Set<Individual> s=m.keySet();
+		return SortedSet2StringListIndividuals(s);
+	}
+	
+	public  synchronized void stop(){
+			System.out.println("ROL"+this.ROL);
+		
+			System.out.println("lm"+lm);
+			System.out.println("lmstate"+lm.getState());
+			System.out.println("lmalive"+lm.isAlive());
+			System.out.println("lminterrupt"+lm.isInterrupted());
+			this.ROL.stop();
+			//lm.end();
+			/*try{
+				synchronized (this.lm) {
+					//this.lm.yield();
+				}
+				}catch (Exception e) {e.printStackTrace();}*/
+			System.out.println("lmstate"+lm.getState());
+			System.out.println("lmalive"+lm.isAlive());
+			System.out.println("lminterrupt"+lm.isInterrupted());
+			
+			//this.ROL.stop();
+			//this.lm.interrupt();
+			
+			//this.lm.end();
+			//this.lm.notify();
+	}
+	
+	public String[] SortedSet2StringListIndividuals(Set<Individual> s){
+		
+		String[] ret=new String[s.size()];
+		Iterator<Individual> i=s.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((Individual)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		return ret;
+	}
+	
+	public String[] SortedSet2StringListConcepts(Set<AtomicConcept> s){
+		
+		String[] ret=new String[s.size()];
+		Iterator<AtomicConcept> i=s.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((AtomicConcept)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		return ret;
+	}
+	public String[] SortedSet2StringListRoles(Set<AtomicRole> s){
+		
+		String[] ret=new String[s.size()];
+		Iterator<AtomicRole> i=s.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((AtomicRole)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		return ret;
+	}
+	
+	public String[] al2s(ArrayList<String> al){
+		String[] ret=new String[al.size()];
+		for (int i = 0; i < al.size(); i++) {
+			ret[i]=al.get(i);
+		}
+		return ret;
+	}
+	public void p(String s){
+		if(debug_flag){
+			System.out.println("\t"+s);
+		}
+		
 	}
 }

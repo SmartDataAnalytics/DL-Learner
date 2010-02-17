@@ -3,8 +3,8 @@ package org.dllearner.algorithms.refinement;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.dl.Concept;
+import org.dllearner.utilities.ConceptComparator;
 
 public class Node {
 
@@ -14,7 +14,7 @@ public class Node {
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.TOP;
 	
 	// alle Eigenschaften eines Knotens im Suchbaum
-	private Description concept;
+	private Concept concept;
 	private int horizontalExpansion;
 	private int coveredNegativeExamples;
 	private boolean isTooWeak;
@@ -29,12 +29,12 @@ public class Node {
 	// private Set<Node> children = new HashSet<Node>();
 	private Set<Node> children = new TreeSet<Node>(nodeComparator);
 	// es wird auch eine Liste von Kindern gehalten
-	private Set<Description> childConcepts = new TreeSet<Description>(conceptComparator);
+	private Set<Concept> childConcepts = new TreeSet<Concept>(conceptComparator);
 	
 	// verwendeter Operator für Expansion des Knotens
 	// private RefinementOperator operator;
 	
-	public Node(Description concept) {
+	public Node(Concept concept) {
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
@@ -69,7 +69,7 @@ public class Node {
         return children.add(child);
     }
 	
-	public Description getConcept() {
+	public Concept getConcept() {
 		return concept;
 	}
 	public int getCoveredNegativeExamples() {
@@ -144,7 +144,7 @@ public class Node {
 		return children;
 	}
 
-	public Set<Description> getChildConcepts() {
+	public Set<Concept> getChildConcepts() {
 		return childConcepts;
 	}
 

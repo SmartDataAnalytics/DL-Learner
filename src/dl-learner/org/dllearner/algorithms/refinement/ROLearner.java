@@ -1,10 +1,7 @@
 package org.dllearner.algorithms.refinement;
 
-import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,104 +9,30 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.ROLearnerConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.Union;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.refinementoperators.RhoDown;
-import org.dllearner.utilities.Files;
+import org.dllearner.Config;
+import org.dllearner.LearningProblem;
+import org.dllearner.Main;
+import org.dllearner.Score;
+import org.dllearner.algorithms.LearningAlgorithm;
+import org.dllearner.dl.Concept;
+import org.dllearner.dl.MultiConjunction;
+import org.dllearner.dl.MultiDisjunction;
+import org.dllearner.dl.Top;
+import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 
-public class ROLearner extends LearningAlgorithm {
-	
-	private ROLearnerConfigurator configurator;
-	@Override
-	public ROLearnerConfigurator getConfigurator(){
-		return configurator;
-	}
-	
-	private static Logger logger = Logger
-	.getLogger(LearningAlgorithm.class);	
-	
-	private String logLevel = CommonConfigOptions.logLevelDefault;
-	
-	public enum Heuristic {	LEXICOGRAPHIC, FLEXIBLE	}
-	
-	// configuration options
-	private boolean writeSearchTree;
-	private File searchTreeFile;
-	private boolean replaceSearchTree = false;
-	private static String defaultSearchTreeFile = "log/searchTree.txt";
-	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
-	Set<NamedClass> allowedConcepts;
-	Set<ObjectProperty> allowedRoles;
-	Set<NamedClass> ignoredConcepts;
-	Set<ObjectProperty> ignoredRoles;
-	// these are computed as the result of the previous four settings
-	Set<NamedClass> usedConcepts;
-	Set<ObjectProperty> usedRoles;	
-	private boolean applyAllFilter = true;
-	private boolean applyExistsFilter = true;	
-	private boolean useTooWeakList = true;
-	private boolean useOverlyGeneralList = true;
-	private boolean useShortConceptConstruction = true;
-	private double horizontalExpansionFactor = 0.6;
-	private boolean improveSubsumptionHierarchy = true;
-	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
-	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
-	//this was added so you can switch algorithm without removing everything not applicable
-	@SuppressWarnings("unused")
-	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
-	private boolean useNegation = CommonConfigOptions.useNegationDefault;
-	//TODO different standard options to CommonConfigOptions 
-	private boolean useBooleanDatatypes = false;
-	
-	
-	
-	//extended Options
-	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
-	private boolean maxExecutionTimeShown = false;
-	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
-	private boolean minExecutionTimeShown = false;
-	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
-	private boolean guaranteeXgoodShown = false;
-	
-	
-	private boolean quiet = false;
+public class ROLearner implements LearningAlgorithm {
 	
 	private boolean stop = false;
-	private boolean isRunning = false;
 	
 	private Comparator<Node> nodeComparator;
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	// comparator for evaluated descriptions
-	private EvaluatedDescriptionPosNegComparator edComparator = new EvaluatedDescriptionPosNegComparator();
 	DecimalFormat df = new DecimalFormat();	
 	
-	private PosNegLP learningProblem;
+	private LearningProblem learningProblem;
+	// private LearningProblem learningProblem2;
 	
 	// Menge von Kandidaten für Refinement
 	// (wird für Direktzugriff auf Baumknoten verwendet)
@@ -122,18 +45,18 @@ public class ROLearner extends LearningAlgorithm {
 	// keine Funktion im Algorithmus
 	private TreeSet<Node> candidatesStable = new TreeSet<Node>(nodeComparatorStable);
 	// vorhandene Konzepte, die irgendwann als proper eingestuft worden
-	private SortedSet<Description> properRefinements = new TreeSet<Description>(conceptComparator);
+	private SortedSet<Concept> properRefinements = new TreeSet<Concept>(conceptComparator);
 	// speichert Konzept und deren Evaluierung, um sie leicht wiederzufinden für
 	// Strategien wie Konzeptverkürzung etc.
 	// Zahl = covered negatives, -1 = too weak
 	// private Map<Concept, Integer> evaluationCache = new TreeMap<Concept, Integer>(conceptComparator);
 	// Blacklists
-	private SortedSet<Description> tooWeakList = new TreeSet<Description>(conceptComparator);
-	private SortedSet<Description> overlyGeneralList = new TreeSet<Description>(conceptComparator);
+	private SortedSet<Concept> tooWeakList = new TreeSet<Concept>(conceptComparator);
+	private SortedSet<Concept> overlyGeneralList = new TreeSet<Concept>(conceptComparator);
 	
 	// Lösungen protokollieren
 	boolean solutionFound = false;
-	List<Description> solutions = new LinkedList<Description>();	
+	List<Concept> solutions = new LinkedList<Concept>();	
 	
 	// verwendeter Refinement-Operator (momentan werden für Statistik RhoDown-spezifische
 	// Sachen abgefragt)
@@ -143,17 +66,8 @@ public class ROLearner extends LearningAlgorithm {
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
 	boolean showBenchmarkInformation = false;
-	// the previous best node (used only for logging, such that we can
-	// detect whether a new best node has been found since the last time
-	// statistics were printed)
-	private Node previousBestNode;
-	
-	// record start node such that other applications can
-	// get information about the search tree
-	private Node startNode;
-	
 	// boolean createTreeString = false;
-	// String searchTree = new String();
+	String searchTree = new String();
 	TreeSet<Node> expandedNodes = new TreeSet<Node>(nodeComparatorStable);
 	
 	// Konfiguration des Algorithmus
@@ -176,7 +90,6 @@ public class ROLearner extends LearningAlgorithm {
 	private int conceptTestsReasoner = 0;
 	
 	// Zeitvariablen
-	private long runtime;
 	private long algorithmStartTime;
 	private long propernessCalcTimeNs = 0;
 	private long propernessCalcReasoningTimeNs = 0;	
@@ -187,216 +100,129 @@ public class ROLearner extends LearningAlgorithm {
 	private long improperConceptsRemovalTimeNs = 0;
 	long someTimeNs = 0;
 	int someCount = 0;
-	
-	// prefixes
-	private String baseURI;
 
-	public ROLearner(PosNegLP learningProblem, ReasonerComponent reasoningService) {
-		super(learningProblem, reasoningService);
+	// soll später einen Operator und eine Heuristik entgegennehmen
+	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
+	public ROLearner(LearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
-		this.configurator =  new ROLearnerConfigurator(this);
-		baseURI = reasoningService.getBaseURI();
-		
-	}
-	
-	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(PosNegLP.class);
-		return problems;
-	}
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
-		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", defaultSearchTreeFile));
-		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));
-		StringConfigOption heuristicOption = new StringConfigOption("heuristic", "specifiy the heuristic to use", "lexicographic");
-		heuristicOption.setAllowedValues(new String[] {"lexicographic", "flexible"});
-		options.add(heuristicOption);
-		options.add(new BooleanConfigOption("applyAllFilter", "usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)", true));
-		options.add(new BooleanConfigOption("applyExistsFilter", "usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)", true));
-		options.add(new BooleanConfigOption("useTooWeakList", "try to filter out too weak concepts without sending them to the reasoner", true));
-		options.add(new BooleanConfigOption("useOverlyGeneralList", "try to find overly general concept without sending them to the reasoner", true));
-		options.add(new BooleanConfigOption("useShortConceptConstruction", "shorten concept to see whether they already exist", true));
-		DoubleConfigOption horizExp = new DoubleConfigOption("horizontalExpansionFactor", "horizontal expansion factor (see publication for description)", 0.6);
-		horizExp.setLowerLimit(0.0);
-		horizExp.setUpperLimit(1.0);
-		options.add(horizExp);
-		options.add(new BooleanConfigOption("improveSubsumptionHierarchy", "simplify subsumption hierarchy to reduce search space (see publication for description)", true));
-		// TODO: replace by a general verbosity option for all components
-		options.add(new BooleanConfigOption("quiet", "may be deprecated soon", false));
-		// allowed/ignored concepts/roles could also be a reasoner option (?)
-		options.add(CommonConfigOptions.allowedConcepts());
-		options.add(CommonConfigOptions.ignoredConcepts());
-		options.add(CommonConfigOptions.allowedRoles());
-		options.add(CommonConfigOptions.ignoredRoles());
-		options.add(CommonConfigOptions.useAllConstructor());
-		options.add(CommonConfigOptions.useExistsConstructor());
-		options.add(CommonConfigOptions.useNegation());	
-		options.add(CommonConfigOptions.useCardinalityRestrictions());	
-		options.add(CommonConfigOptions.useBooleanDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
-		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
-		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
-		options.add(CommonConfigOptions.getLogLevel());
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		return options;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings({"unchecked"})
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if(name.equals("writeSearchTree"))
-			writeSearchTree = (Boolean) entry.getValue();
-		else if(name.equals("searchTreeFile"))
-			searchTreeFile = new File((String)entry.getValue());
-		else if(name.equals("replaceSearchTree"))
-			replaceSearchTree = (Boolean) entry.getValue();
-		else if(name.equals("heuristic")) {
-			String value = (String) entry.getValue();
-			if(value.equals("lexicographic"))
-				heuristic = Heuristic.LEXICOGRAPHIC;
-			else
-				heuristic = Heuristic.FLEXIBLE;
-		} else if(name.equals("allowedConcepts")) {
-			allowedConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
-		} else if(name.equals("allowedRoles")) {
-			allowedRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
-		} else if(name.equals("ignoredConcepts")) {
-			ignoredConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
-		} else if(name.equals("ignoredRoles")) {
-			ignoredRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
-		} else if(name.equals("applyAllFilter")) {
-			applyAllFilter = (Boolean) entry.getValue();
-		} else if(name.equals("applyExistsFilter")) {
-			applyExistsFilter = (Boolean) entry.getValue();
-		} else if(name.equals("useTooWeakList")) {
-			useTooWeakList = (Boolean) entry.getValue();
-		} else if(name.equals("useOverlyGeneralList")) {
-			useOverlyGeneralList = (Boolean) entry.getValue();
-		} else if(name.equals("useShortConceptConstruction")) {
-			useShortConceptConstruction = (Boolean) entry.getValue();
-		} else if(name.equals("horzontalExpansionFactor")) {
-			horizontalExpansionFactor = (Double) entry.getValue();
-		} else if(name.equals("improveSubsumptionHierarchy")) {
-			improveSubsumptionHierarchy = (Boolean) entry.getValue();
-		} else if(name.equals("useAllConstructor")) {
-			useAllConstructor = (Boolean) entry.getValue();
-		} else if(name.equals("useExistsConstructor")) {
-			useExistsConstructor = (Boolean) entry.getValue();
-		}else if(name.equals("useCardinalityRestrictions")) {
-				useCardinalityRestrictions = (Boolean) entry.getValue();
-		} else if(name.equals("useNegation")) {
-			useNegation = (Boolean) entry.getValue();
-		} else if(name.equals("useBooleanDatatypes")) {
-			useBooleanDatatypes = (Boolean) entry.getValue();
-		}else if(name.equals("maxExecutionTimeInSeconds")) {
-			maxExecutionTimeInSeconds = (Integer) entry.getValue();
-		}else if(name.equals("minExecutionTimeInSeconds")) {
-			minExecutionTimeInSeconds = (Integer) entry.getValue();
-		}else if(name.equals("guaranteeXgoodDescriptions")) {
-			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
-		} else if(name.equals("logLevel")) {
-			logLevel = ((String)entry.getValue()).toUpperCase();
-		}
-			
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#init()
-	 */
-	@Override
-	public void init() {
-		// set log level if the option has been set
-		if(!logLevel.equals(CommonConfigOptions.logLevelDefault))		
-			logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
-		
-		if(searchTreeFile == null)
-			searchTreeFile = new File(defaultSearchTreeFile);
-
-		if(writeSearchTree)
-			Files.clearFile(searchTreeFile);
-		
-		// adjust heuristic
-		if(heuristic == Heuristic.LEXICOGRAPHIC) {
-			nodeComparator = new NodeComparator();
-		} else {
-			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());
-		}
-		
 		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(reasoner, applyAllFilter, applyExistsFilter, useAllConstructor, useExistsConstructor, useNegation, useBooleanDatatypes);
+		operator = new RhoDown(learningProblem);
+		
+		// Heuristik je nach Konfiguration einstellen
+		if(Config.Refinement.heuristic == Config.Refinement.Heuristic.LEXICOGRAPHIC)
+			nodeComparator = new NodeComparator();
+		else
+			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size());
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);
 		// newCandidates = new TreeSet<Node>(nodeComparator);
 		
-		if(allowedConcepts != null) {
-			// sanity check to control if no non-existing concepts are in the list
-			Helper.checkConcepts(reasoner, allowedConcepts);
-			usedConcepts = allowedConcepts;
-		} else if(ignoredConcepts != null) {
-			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
-		} else {
-			usedConcepts = Helper.computeConcepts(reasoner);
+		// System.out.println("===");		
+		
+		
+		// short concept test
+		// Concept c = DLLearner.parseConcept("((male OR (male OR EXISTS hasChild.TOP)) AND male)");
+		// c = ConceptTransformation.transformToMultiClean(c);
+		// System.out.println("parsed: " + c);
+		// Concept c2 = ConceptTransformation.getShortConcept(c, conceptComparator);
+		// ConceptTransformation.cleanConcept(c);
+		// System.out.println("old:    " + c);
+		// System.out.println("new:    " + c2);
+		// System.exit(0);
+		
+		// Subsumption-Test
+		// Concept superConcept = DLLearner.parseConcept("BOTTOM");
+		// Concept subConcept = DLLearner.parseConcept("TOP");
+		// Concept subConcept = DLLearner.parseConcept("(male AND TOP)");
+		
+		// boolean result = learningProblem.getReasoningService().subsumes(superConcept, subConcept);
+		// System.out.println(result);
+		// System.exit(0);
+		
+		// Set<Concept> superConcepts = new HashSet<Concept>();
+		// superConcepts.add(c1);
+		// superConcepts.add(c2);
+		// Set<Concept> result = learningProblem.getReasoningService().subsumes(superConcepts, subConcept);
+		// System.out.println(result);
+		// System.exit(0);
+		
+		// boolean result = learningProblem.getReasoningService().subsumes(c1, c2);
+		// System.out.println(c1 + " subsumes " + c2 + ": " +result);
+		// System.exit(0);
+		
+		// Subsumption-Hierarchie-Test
+		// Concept c = DLLearner.parseConcept("top");
+		// System.out.println(learningProblem.getReasoningService().getMoreGeneralConcepts(c));
+		// System.exit(0);
+		
+		// Zerlegungstest
+		
+		/*
+		int length = 10;
+		
+		System.out.println("length " + length);
+		long startTime = System.nanoTime();
+		List<List<Integer>> combos2 = ((RhoDown)operator).getCombos(length);
+		long duration = System.nanoTime() - startTime;
+		for(List<Integer> combo : combos2) {
+			System.out.println(combo);
 		}
 		
-		if(allowedRoles != null) {
-			Helper.checkRoles(reasoner, allowedRoles);
-			usedRoles = allowedRoles;
-		} else if(ignoredRoles != null) {
-			Helper.checkRoles(reasoner, ignoredRoles);
-			usedRoles = Helper.difference(reasoner.getObjectProperties(), ignoredRoles);
-		} else {
-			usedRoles = reasoner.getObjectProperties();
-		}
+		System.out.println("--");
+		startTime = System.nanoTime();
+		RhoDown.summen(length,length,"",0);
+		long duration2 = System.nanoTime() - startTime;
+		System.out.println("--");
 		
-		// prepare subsumption and role hierarchies, because they are needed
-		// during the run of the algorithm
-//		reasoner.prepareSubsumptionHierarchy(usedConcepts);
-		if(improveSubsumptionHierarchy)
-			reasoner.getClassHierarchy().thinOutSubsumptionHierarchy();
-//		reasoner.prepareRoleHierarchy(usedRoles);
-	}
+		System.out.println("duration 1: " + Helper.prettyPrintNanoSeconds(duration));
+		System.out.println("duration 2: " + Helper.prettyPrintNanoSeconds(duration2));
+		
+		System.exit(0);	
+		*/
+		
+		
+		// Refinement-Test
+		/*
+		// RhoDown rho = new RhoDown(learningProblem);
+		Concept concept = DLLearner.parseConcept("male");
+		concept = ConceptTransformation.transformToMulti(concept);
 	
-	public static String getName() {
-		return "refinement operator based learning algorithm";
+		Set<Concept> refinements = operator.refine(concept, 3, null);
+		
+		
+		System.out.println("=== testing refinements of " + concept + " ===");
+		// rho.computeTopRefinements(5);
+		// for(Concept c : rho.topRefinementsCumulative.get(5)) {
+		// for(Concept c : rho.m.get(3)) {
+		for(Concept c : refinements) {
+			System.out.println(c);
+		}
+		*/
+		
+		
+		// start();
 	}
-	
-	private int coveredNegativesOrTooWeak(Description concept) {
-		return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
-	}
-	
-	private int getNumberOfNegatives() {
-		return learningProblem.getNegativeExamples().size();
-	}
-	
+		
 	// Kernalgorithmus
-	@Override
 	@SuppressWarnings("unchecked")
 	public void start() {
-		isRunning = true;
-		runtime=System.currentTimeMillis();
+
 		// Suche wird mit Top-Konzept gestartet
-		Thing top = new Thing();
+		Top top = new Top();
 		Node topNode = new Node(top);
 		// int coveredNegativeExamples = learningProblem.coveredNegativeExamplesOrTooWeak(top);
 		// aus Top folgen immer alle negativen Beispiele, d.h. es ist nur eine Lösung, wenn
 		// es keine negativen Beispiele gibt
-		int coveredNegativeExamples = getNumberOfNegatives();
+		int coveredNegativeExamples = learningProblem.getNegativeExamples().size();
 		topNode.setCoveredNegativeExamples(coveredNegativeExamples);
 		// topNode.setHorizontalExpansion(1); // die 0 ist eigentlich richtig, da keine Refinements
 		// der Länge 1 untersucht wurden
 		candidates.add(topNode);
 		candidatesStable.add(topNode);
-		startNode = topNode;
 		// Abbruchvariable => beachten, dass bereits TOP eine Lösung sein kann
 		solutionFound = (coveredNegativeExamples == 0);
-		solutions = new LinkedList<Description>();
+		solutions = new LinkedList<Concept>();
 		if(solutionFound)
 			solutions.add(top);
 		
@@ -408,16 +234,13 @@ public class ROLearner extends LearningAlgorithm {
 		
 		algorithmStartTime = System.nanoTime();
 		
-		//second set of lines below, sometimes doesn't go into while, see above
-		handleStoppingConditions();
-		
 		// TODO: effizienter Traversal der Subsumption-Hierarchie
 		// TODO: Äquivalenzen nutzen
 		// TODO: Gibt es auch eine andere Abbruchbedingung? Es könnte sein, dass irgendwann keine
 		// proper refinements mehr gefunden werden, aber wie stelle man das fest?
 		while(!solutionFound && !stop) {
 			
-			if(!quiet) 
+			if(!Config.Refinement.quiet) 
 				printStatistics(false);			
 			
 			// besten Knoten nach Heuristik auswählen
@@ -434,7 +257,7 @@ public class ROLearner extends LearningAlgorithm {
 			// minimum horizontal expansion berechnen
 			if(bestNode.getHorizontalExpansion()>maximumHorizontalExpansion)
 				maximumHorizontalExpansion = bestNode.getHorizontalExpansion();
-			minimumHorizontalExpansion = (int) Math.floor(horizontalExpansionFactor*maximumHorizontalExpansion);
+			minimumHorizontalExpansion = (int) Math.floor(Config.Refinement.horizontalExpansionFactor*maximumHorizontalExpansion);
 			
 			// neu: es werden solange Knoten erweitert bis wirklich jeder Knoten die
 			// notwendige minimum horizontal expansion hat
@@ -491,7 +314,7 @@ public class ROLearner extends LearningAlgorithm {
 			//	System.out.println(n);
 			//}
 			
-			if(writeSearchTree) {
+			if(Config.Refinement.writeSearchTree) {
 				// String treeString = "";
 				String treeString = "best expanded node: " + bestNode+ "\n";
 				if(expandedNodes.size()>1) {
@@ -503,33 +326,24 @@ public class ROLearner extends LearningAlgorithm {
 				expandedNodes.clear();
 				treeString += "horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion + "\n";
 				treeString += topNode.getTreeString();
-				treeString += "\n";
 				// System.out.println(treeString);
-				// searchTree += treeString + "\n";
+				searchTree += treeString + "\n";
 				// TODO: ev. immer nur einen search tree speichern und den an die
 				// Datei anhängen => spart Speicher
-				if(replaceSearchTree)
-					Files.createFile(searchTreeFile, treeString);
-				else
-					Files.appendFile(searchTreeFile, treeString);
-			}//write search tree
+				Main.createFile(Config.Refinement.searchTreeFile, searchTree);
+			}
 			
 			// Anzahl Schleifendurchläufe
 			loop++;
 			
-			if(!quiet)
-				logger.debug("--- loop " + loop + " finished ---");	
+			if(!Config.Refinement.quiet)
+				System.out.println("--- loop " + loop + " finished ---");	
 			
-			handleStoppingConditions();
-			
-		}//end while
-		
-		
-		
+		}
 		
 		// Suchbaum in Datei schreiben
-//		if(writeSearchTree)
-//			Files.createFile(searchTreeFile, searchTree);
+		if(Config.Refinement.writeSearchTree)
+			Main.createFile(Config.Refinement.searchTreeFile, searchTree);
 		
 		// Ergebnisausgabe
 		/*
@@ -542,40 +356,25 @@ public class ROLearner extends LearningAlgorithm {
 		// solutionsSorted.addAll(solutions);
 		
 		// System.out.println("retrievals:");
-		// for(Concept c : ReasonerComponent.retrievals) {
+		// for(Concept c : ReasoningService.retrievals) {
 		// 	System.out.println(c);
 		// }
 		
 		if(solutionFound) {
-			logger.info("\nsolutions:");
-			int show=1;
-			for(Description c : solutions) {
-				logger.info(show+": " +c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
-				//TODO remove this line maybe
-				// watch for String.replace Quick hack
-				logger.info("   MANCHESTER: " + 
-						c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).
-						replace("\"", ""));
-				logger.info("   KBSyntax: " + c.toKBSyntaxString());
-				if(show>=5){break;}
-				show++;
+			System.out.println();
+			System.out.println("solutions:");
+			for(Concept c : solutions) {
+				System.out.println("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 			}
-			
 		}
-		logger.info("  horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
-		logger.info("  size of candidate set: " + candidates.size());
-		
-		//logger.trace("test");
-		//logger.trace(solutions.size());
-		printBestSolutions(0);
+		System.out.println("horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
+		System.out.println("size of candidate set: " + candidates.size());
 		printStatistics(true);
 		
 		if(stop)
-			logger.info("Algorithm stopped.");
+			System.out.println("Algorithm stopped.");
 		else
-			logger.info("Algorithm terminated succesfully.");
-		
-		isRunning = false;
+			System.out.println("Algorithm terminated succesfully.");
 	}
 	
 	// einfache Erweiterung des Knotens (ohne properness)
@@ -590,7 +389,7 @@ public class ROLearner extends LearningAlgorithm {
 		// gefunden wurden
 		long propCalcNsStart = System.nanoTime();
 		
-		if(writeSearchTree)
+		if(Config.Refinement.writeSearchTree)
 			expandedNodes.add(node);
 		
 		if(node.getChildren().size()>maxNrOfChildren)
@@ -632,7 +431,7 @@ public class ROLearner extends LearningAlgorithm {
 	// für alle proper refinements von concept bis maxLength werden Kinderknoten
 	// für node erzeugt;
 	// recDepth dient nur zur Protokollierung
-	private void extendNodeProper(Node node, Description concept, int maxLength, int recDepth) {
+	private void extendNodeProper(Node node, Concept concept, int maxLength, int recDepth) {
 		
 		// führe Methode nicht aus, wenn Algorithmus gestoppt wurde (alle rekursiven Funktionsaufrufe
 		// werden nacheinander abgebrochen, so dass ohne weitere Reasoninganfragen relativ schnell beendet wird)
@@ -645,7 +444,7 @@ public class ROLearner extends LearningAlgorithm {
 		// Refinements berechnen => hier dürfen dürfen refinements <= horizontal expansion
 		// des Konzepts nicht gelöscht werden!
 		long refinementCalcTimeNsStart = System.nanoTime();
-		Set<Description> refinements = operator.refine(concept, maxLength, null);
+		Set<Concept> refinements = operator.refine(concept, maxLength, null);
 		refinementCalcTimeNs += System.nanoTime() - refinementCalcTimeNsStart;
 		
 		if(refinements.size()>maxNrOfRefinements)
@@ -666,11 +465,11 @@ public class ROLearner extends LearningAlgorithm {
 		
 		// alle Konzepte, die länger als horizontal expansion sind, müssen ausgewertet
 		// werden
-		Set<Description> toEvaluateConcepts = new TreeSet<Description>(conceptComparator);
-		Iterator<Description> it = refinements.iterator();
+		Set<Concept> toEvaluateConcepts = new TreeSet<Concept>(conceptComparator);
+		Iterator<Concept> it = refinements.iterator();
 		// for(Concept refinement : refinements) {
 		while(it.hasNext()) {
-			Description refinement = it.next();
+			Concept refinement = it.next();
 			if(refinement.getLength()>node.getHorizontalExpansion()) {
 				// TODO: an dieser Stelle könnte man Algorithmen ansetzen lassen, die
 				// versuchen properness-Anfragen zu vermeiden:
@@ -683,9 +482,9 @@ public class ROLearner extends LearningAlgorithm {
 				boolean propernessDetected = false;
 				
 				// 1. short concept construction
-				if(useShortConceptConstruction) {
+				if(Config.Refinement.useShortConceptConstruction) {
 					// kurzes Konzept konstruieren
-					Description shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
+					Concept shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
 					int n = conceptComparator.compare(shortConcept, concept);
 					
 					// Konzepte sind gleich also Refinement improper
@@ -696,9 +495,9 @@ public class ROLearner extends LearningAlgorithm {
 				}
 				
 				// 2. too weak test
-				if(!propernessDetected && useTooWeakList) {
-					if(refinement instanceof Intersection) {
-						boolean tooWeakElement = containsTooWeakElement((Intersection)refinement);
+				if(!propernessDetected && Config.Refinement.useTooWeakList) {
+					if(refinement instanceof MultiConjunction) {
+						boolean tooWeakElement = containsTooWeakElement((MultiConjunction)refinement);
 						if(tooWeakElement) {
 							propernessTestsAvoidedByTooWeakList++;
 							conceptTestsTooWeakList++;
@@ -734,13 +533,13 @@ public class ROLearner extends LearningAlgorithm {
 		
 		// System.out.println(toEvaluateConcepts.size());
 		
-		Set<Description> improperConcepts = null;
+		Set<Concept> improperConcepts = null;
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			long propCalcReasoningStart = System.nanoTime();
-			improperConcepts = reasoner.isSuperClassOf(toEvaluateConcepts, concept);
+			improperConcepts = learningProblem.getReasoningService().subsumes(toEvaluateConcepts, concept);
 			propernessTestsReasoner+=toEvaluateConcepts.size();
-			// boolean isProper = !learningProblem.getReasonerComponent().subsumes(refinement, concept);
+			// boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
 			propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
 		}
 
@@ -749,12 +548,12 @@ public class ROLearner extends LearningAlgorithm {
 		// alle proper concepts bleiben übrig (einfache Umbenennung)
 		if(improperConcepts != null)
 			toEvaluateConcepts.removeAll(improperConcepts);
-		Set<Description> properConcepts = toEvaluateConcepts;
+		Set<Concept> properConcepts = toEvaluateConcepts;
 		// alle proper concepts von refinements löschen
 		refinements.removeAll(properConcepts);
 		improperConceptsRemovalTimeNs += System.nanoTime() - improperConceptsRemovalTimeNsStart;
 		
-		for(Description refinement : properConcepts) {
+		for(Concept refinement : properConcepts) {
 			long redundancyCheckTimeNsStart = System.nanoTime();
 			boolean nonRedundant = properRefinements.add(refinement);
 			redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
@@ -804,10 +603,10 @@ public class ROLearner extends LearningAlgorithm {
 				int quality = -2;
 				
 				// overly general list verwenden
-				if(useOverlyGeneralList && refinement instanceof Union) {
-					if(containsOverlyGeneralElement((Union)refinement)) {
+				if(Config.Refinement.useOverlyGeneralList && refinement instanceof MultiDisjunction) {
+					if(containsOverlyGeneralElement((MultiDisjunction)refinement)) {
 						conceptTestsOverlyGeneralList++;
-						quality = getNumberOfNegatives();
+						quality = learningProblem.getNegativeExamples().size();
 						qualityKnown = true;
 						newNode.setQualityEvaluationMethod(Node.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
 					}	
@@ -817,7 +616,7 @@ public class ROLearner extends LearningAlgorithm {
 				if(!qualityKnown) {
 					long propCalcReasoningStart2 = System.nanoTime();
 					conceptTestsReasoner++;
-					quality = coveredNegativesOrTooWeak(refinement);
+					quality = learningProblem.coveredNegativeExamplesOrTooWeak(refinement);
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(Node.QualityEvaluationMethod.REASONER);
 				}
@@ -839,7 +638,7 @@ public class ROLearner extends LearningAlgorithm {
 					// candidatesStable.add(newNode);
 				
 					
-					if(quality == getNumberOfNegatives())
+					if(quality == learningProblem.getNegativeExamples().size())
 						overlyGeneralList.add(refinement);
 					
 					// System.out.print(".");
@@ -857,7 +656,7 @@ public class ROLearner extends LearningAlgorithm {
 			if(refinement.getLength()>node.getHorizontalExpansion()) {
 				// Test auf properness
 				long propCalcReasoningStart = System.nanoTime();
-				boolean isProper = !learningProblem.getReasonerComponent().subsumes(refinement, concept);
+				boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
 				propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
 				
 				if(isProper) {
@@ -913,7 +712,7 @@ public class ROLearner extends LearningAlgorithm {
 		// es sind jetzt noch alle Konzepte übrig, die improper refinements sind
 		// auf jedem dieser Konzepte wird die Funktion erneut aufgerufen, da sich
 		// proper refinements ergeben könnten
-		for(Description refinement : refinements) {
+		for(Concept refinement : refinements) {
 			// for(int i=0; i<=recDepth; i++)
 			//	System.out.print("  ");
 			// System.out.println("call: " + refinement + " [maxLength " + maxLength + "]");
@@ -938,44 +737,32 @@ public class ROLearner extends LearningAlgorithm {
 		long algorithmRuntime = System.nanoTime() - algorithmStartTime;
 		
 		if(!finalStats) {
-			Node bestNode = candidatesStable.last();
-			boolean newBestNodeFound = false;
-			if(!bestNode.equals(previousBestNode)) {
-				newBestNodeFound = true;
-				previousBestNode = bestNode;
-			}
-			if(newBestNodeFound)
-				logger.info("currently best node: " + bestNode);
-			
 			// Refinementoperator auf Konzept anwenden
 			String bestNodeString = "currently best node: " + candidatesStable.last();
 			// searchTree += bestNodeString + "\n";
-			if(!newBestNodeFound)
-				logger.debug(bestNodeString);
+			System.out.println(bestNodeString);
 			String expandedNodeString = "next expanded node: " + candidates.last();
 			// searchTree += expandedNodeString + "\n";
-			logger.debug(expandedNodeString);		
-			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
+			System.out.println(expandedNodeString);		
+			System.out.println("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
 			String expansionString = "horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion;
 			// searchTree += expansionString + "\n";
-			logger.debug(expansionString);
-			logger.debug("size of candidate set: " + candidates.size());
+			System.out.println(expansionString);
+			System.out.println("size of candidate set: " + candidates.size());
 			// System.out.println("properness max recursion depth: " + maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " + maxNrOfRefinements);
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
-			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(reasoner.getSubsumptionReasoningTimeNs()));
-			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(reasoner.getInstanceCheckReasoningTimeNs()));					
 		}
 		
 		if(showBenchmarkInformation) {
 			
 
-			long reasoningTime = reasoner.getOverallReasoningTimeNs();
+			long reasoningTime = learningProblem.getReasoningService().getOverallReasoningTimeNs();
 			double reasoningPercentage = 100 * reasoningTime/(double)algorithmRuntime;
 			long propWithoutReasoning = propernessCalcTimeNs-propernessCalcReasoningTimeNs;
 			double propPercentage = 100 * propWithoutReasoning/(double)algorithmRuntime;
 			double deletionPercentage = 100 * childConceptsDeletionTimeNs/(double)algorithmRuntime;
-			long subTime = reasoner.getSubsumptionReasoningTimeNs();
+			long subTime = learningProblem.getReasoningService().getSubsumptionReasoningTimeNs();
 			double subPercentage = 100 * subTime/(double)algorithmRuntime;
 			double refinementPercentage = 100 * refinementCalcTimeNs/(double)algorithmRuntime;
 			double redundancyCheckPercentage = 100 * redundancyCheckTimeNs/(double)algorithmRuntime;
@@ -1005,158 +792,38 @@ public class ROLearner extends LearningAlgorithm {
 			System.out.println("onnf time percentage: " + df.format(onnfTimePercentage) + "%");
 			System.out.println("shortening time percentage: " + df.format(shorteningTimePercentage) + "%");			
 		}
-		logger.debug("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
+		System.out.println("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
 				+ "/" + propernessTestsAvoidedByTooWeakList);
-		logger.debug("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
+		System.out.println("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
 				+ conceptTestsTooWeakList + "/" + conceptTestsOverlyGeneralList + "/" + redundantConcepts);	
 	}
 	
-	private boolean containsTooWeakElement(Intersection mc) {
-		for(Description child : mc.getChildren()) {
+	private boolean containsTooWeakElement(MultiConjunction mc) {
+		for(Concept child : mc.getChildren()) {
 			if(tooWeakList.contains(child))
 				return true;
 		}
 		return false;
 	}
 	
-	private boolean containsOverlyGeneralElement(Union md) {
-		for(Description child : md.getChildren()) {
+	private boolean containsOverlyGeneralElement(MultiDisjunction md) {
+		for(Concept child : md.getChildren()) {
 			if(overlyGeneralList.contains(child))
 				return true;
 		}
 		return false;
 	}	
 	
-	@Override
-	public Description getCurrentlyBestDescription() {
+	public Concept getBestSolution() {
 		return candidatesStable.last().getConcept();
-	}	
-	
-	@Override
-	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescriptionPosNeg(candidatesStable.last().getConcept(), getSolutionScore());
-	}
-	
-	@Override
-	public TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
-		int count = 0;
-		SortedSet<Node> rev = candidatesStable.descendingSet();
-		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
-		for(Node eb : rev) {
-			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getSolutionScore(eb.getConcept())));
-			// return a maximum of 200 elements (we need a maximum, because the
-			// candidate set can be very large)
-			if(count > 200)
-				return cbd;
-			count++;
-		}
-		return cbd; 
-	}	
-	
-	public void printBestSolutions(int nrOfSolutions){
-		if(!logLevel.equalsIgnoreCase("TRACE")){return;}
-		if(nrOfSolutions==0)nrOfSolutions=solutions.size();
-		int i=0;
-		for(;i<nrOfSolutions; i++) {
-			Description d = solutions.get(i);
-			logger.trace("  " + d.toString(baseURI,null) + " (length " + d.getLength() + " " +
-					"" );
-		}
-			
 	}
 
-	@Override
-	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfSolutions) {
-		List<Description> best = new LinkedList<Description>();
-		int i=0;
-		for(Node n : candidatesStable.descendingSet()) {
-			best.add(n.getConcept());
-			if(i==nrOfSolutions)
-				return best;
-			i++;
-		}
-		return best;
-	}
-	
-//	@Override
-	public ScorePosNeg getSolutionScore() {
-		return (ScorePosNeg) learningProblem.computeScore(getCurrentlyBestDescription());
-	}
-	
-	
-	public ScorePosNeg getSolutionScore(Description d) {
-		return (ScorePosNeg) learningProblem.computeScore(d);
+	public Score getSolutionScore() {
+		return learningProblem.computeScore(getBestSolution());
 	}
 
-	@Override
 	public void stop() {
 		stop = true;
-	}
-
-	/**
-	 * @return the startNode
-	 */
-	public Node getStartNode() {
-		return startNode;
-	}
-	
-	private void handleStoppingConditions(){
-		solutionFound = (guaranteeXgoodDescriptions() );
-		solutionFound = (minExecutionTimeReached()&& solutionFound);
-		if(maxExecutionTimeReached()) { stop();
-			if(solutions.size()>0)solutionFound = true;
-		}
-	}
-
-	
-	private boolean guaranteeXgoodDescriptions(){
-		if(guaranteeXgoodShown)return true;
-		if(solutions.size()>guaranteeXgoodDescriptions){
-			logger.info("Minimum number ("+guaranteeXgoodDescriptions+") of good descriptions reached, stopping now...");
-			guaranteeXgoodShown=true;
-			return true;}
-		else return false;
-		
-	}
-	
-	
-	private boolean maxExecutionTimeReached(){
-		if(maxExecutionTimeInSeconds==0)return false;
-		if(maxExecutionTimeShown)return true;
-		long needed = System.currentTimeMillis()- this.runtime;
-		long maxMilliSeconds = maxExecutionTimeInSeconds *1000 ;
-		if(maxMilliSeconds<needed){
-			logger.info("Maximum time ("+maxExecutionTimeInSeconds+" seconds) reached, stopping now...");
-			maxExecutionTimeShown=true;
-			return true;}
-		else return false;
-		
-	}
-	
-	
-
-	/**
-	 * true if minExecutionTime reached
-	 * @return true
-	 */
-	private boolean minExecutionTimeReached(){
-		if(minExecutionTimeShown)return true;
-		long needed = System.currentTimeMillis()- this.runtime;
-		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
-		if(minMilliSeconds<needed){
-			logger.info("Minimum time ("+minExecutionTimeInSeconds+" seconds) reached, stopping when next solution is found");
-			minExecutionTimeShown=true;
-			return true;}
-		else return false;
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
-	 */
-	@Override
-	public boolean isRunning() {
-		return isRunning;
 	}
 
 }
