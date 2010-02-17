@@ -143,7 +143,6 @@ public class TestQueries {
 			Table t = new Table();
 
 			TableRowColumn tc =  new TableRowColumn(mons2, "testqueries", "length");
-			tc.setDisplay(Display.TOTAL);
 			t.addTableRowColumn(tc);
 			
 			tc =  new TableRowColumn(mons2, "testqueries", "length");
