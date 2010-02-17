@@ -93,6 +93,8 @@ public class TestIterativeLearning {
 	static int iterations = 7;
 	static int folds = 10;
 	static int printSentences = 3;
+	
+	static SortedSet<String> concepts = new TreeSet<String>();
 
 	// no randomization in examples
 
@@ -119,6 +121,12 @@ public class TestIterativeLearning {
 //		passiveNoZU();
 		 passiveWithZu();
 
+		 String a="\n";
+		 for(String s: concepts){
+			 a+=s+"\n";
+		 }
+		 logger.info(a);
+		 
 		logger.info("finished, needed: " + (System.currentTimeMillis() - n));
 		JamonMonitorLogger.writeHTMLReport("log/tiger.html");
 
@@ -314,6 +322,7 @@ public class TestIterativeLearning {
 			EvaluatedDescription ed = learn(learn, config, i);
 			lLearningTime.stop();
 			lastConcept = PrefixMap.toKBSyntaxString(ed.getDescription());
+			concepts.add(ed.getDescription().toKBSyntaxString(null,null));
 			logger.debug("USING CONCEPT: " + lastConcept);
 
 			/* RETRIEVING */
