@@ -17,6 +17,7 @@ public class FinalizedMonitor implements Serializable{
 	final double lastValue;
 	final double max;
 	final double min;
+	final double total;
 	
 	
 	public FinalizedMonitor(Monitor m){
@@ -28,6 +29,7 @@ public class FinalizedMonitor implements Serializable{
 		lastValue = m.getLastValue();
 		max = m.getMax();
 		min = m.getMin();
+		total = m.getTotal();
 		
 		
 	}
@@ -70,6 +72,9 @@ public class FinalizedMonitor implements Serializable{
 
 	public double getMin() {
 		return min;
+	}
+	public double getTotal() {
+		return total;
 	}
 	
 	
