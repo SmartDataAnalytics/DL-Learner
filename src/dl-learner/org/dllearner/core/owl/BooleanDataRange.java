@@ -28,12 +28,8 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class BooleanDataRange implements DataRange {
+public class BooleanDataRange extends DataRange {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5269818053715347143L;
 	private boolean isTrue;
 	
 	public BooleanDataRange(boolean isTrue) {
@@ -62,24 +58,8 @@ public class BooleanDataRange implements DataRange {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-	public String toKBSyntaxString (String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
 	}	
 }

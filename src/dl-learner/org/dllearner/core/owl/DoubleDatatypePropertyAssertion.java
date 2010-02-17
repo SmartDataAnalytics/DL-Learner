@@ -27,10 +27,6 @@ import java.util.Map;
  */
 public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5879849456632960783L;
 	private double value;
 	
 	public DoubleDatatypePropertyAssertion(DatatypeProperty datatypeProperty, Individual individual, double value) {
@@ -44,13 +40,6 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 	public String toString(String baseURI, Map<String, String> prefixes) {
 		return datatypeProperty.toString(baseURI, prefixes) + "(" + individual.toString(baseURI, prefixes) + "," + value +")";
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
-	 */
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return datatypeProperty.toKBSyntaxString(baseURI, prefixes) + "(" + individual.toKBSyntaxString(baseURI, prefixes) + "," + value +")";
-	}
 
 	public double getValue() {
 		return value;
@@ -63,13 +52,5 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "DOUBLEDATAPROPASSERTION NOT IMPLEMENTED";
 	}	
 }

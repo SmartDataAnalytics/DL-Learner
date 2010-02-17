@@ -28,15 +28,12 @@ import java.util.Map;
 public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4076807871628918900L;
-
-	public ObjectPropertyRangeAxiom(ObjectProperty property, Description range) {
-		super(property, range);
+	public ObjectPropertyRangeAxiom(ObjectProperty property, Description domain) {
+		super(property, domain);
 	}	
 	
+
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
@@ -51,16 +48,7 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OPRANGE(" + property.toKBSyntaxString(baseURI, prefixes) + ") = " + range.toKBSyntaxString(baseURI, prefixes); 	
-	}
 
-	@Override
-	public Description getRange() {
-		return (Description) range;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Axiom#accept(org.dllearner.core.owl.AxiomVisitor)
 	 */
@@ -74,15 +62,6 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 	 */
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OBJECTPROPERTYRANGE NOT IMPLEMENTED";
-	}
-
+	}	
 	
 }

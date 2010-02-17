@@ -23,6 +23,6 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public interface DataRange extends PropertyRange {
+public abstract class DataRange implements PropertyRange {
 
 }

@@ -1,22 +1,3 @@
-/**
- * Copyright (C) 2007-2008, Jens Lehmann
- *
- * This file is part of DL-Learner.
- * 
- * DL-Learner is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * DL-Learner is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package org.dllearner.utilities;
 
 import java.util.Iterator;
@@ -29,9 +10,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.AssertionalAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -44,18 +24,16 @@ import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
- * TODO: JavaDoc
+ * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller
+ * sind.
  * 
- * @author Jens Lehmann
+ * @author jl
  * 
  */
 public class Helper {
 
-	private static Logger logger = Logger.getLogger(Helper.class);	
-	
 	// findet alle atomaren Konzepte in einem Konzept
 	public static List<NamedClass> getAtomicConcepts(Description concept) {
 		List<NamedClass> ret = new LinkedList<NamedClass>();
@@ -170,21 +148,6 @@ public class Helper {
 
 		return str;
 	}
-	
-	public static String prettyPrintMilliSeconds(long milliSeconds) {
-	
-
-		long seconds = milliSeconds / 1000;
-		milliSeconds = milliSeconds % 1000;
-
-		// Mikrosekunden werden immer angezeigt, Sekunden nur falls größer 0
-		String str = "";
-		if (seconds > 0)
-			str = seconds + "s ";
-		str += milliSeconds + "ms";
-		
-		return str;
-	}
 
 	public static <T1, T2> void addMapEntry(Map<T1, SortedSet<T2>> map, T1 keyEntry, T2 setEntry) {
 		if (map.containsKey(keyEntry)) {
@@ -208,6 +171,7 @@ public class Helper {
 	 * @param <T>
 	 * @param set1
 	 * @param set2
+	 * @return
 	 */
 	public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
 		// TODO: effizientere Implementierung (längere Liste klonen und Elemente
@@ -332,7 +296,7 @@ public class Helper {
 	 * DEPRECATED METHOD (RELIED ON OLD CONFIG).
 	 * 
 	 */
-//	public static void autoDetectConceptsAndRoles(ReasonerComponent rs) {
+//	public static void autoDetectConceptsAndRoles(ReasoningService rs) {
 //		// einige Sachen, die momentan nur vom Refinement-Algorithmus
 //		// unterstützt werden (später ev. auch von anderen Algorithmen)
 //		// if (Config.algorithm == Algorithm.REFINEMENT) {
@@ -449,10 +413,9 @@ public class Helper {
 	 * concepts are those having prefix "anon" and concepts belonging to
 	 * the RDF, RDFS, OWL standards.
 	 * 
-	 * @param concepts The set from which concepts will be removed.
-	 * @deprecated Deprecated method, because it is not needed anymore. 
+	 * @param concepts
+	 * @return
 	 */
-	@Deprecated
 	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
 		Iterator<NamedClass> it = concepts.iterator();
 		while (it.hasNext()) {
@@ -460,20 +423,21 @@ public class Helper {
 			
 			// ignore some concepts (possibly produced by Jena)
 			if (conceptName.startsWith("anon")) {
-				logger.debug("  Ignoring concept "
+				System.out
+						.println("  Ignoring concept "
 								+ conceptName
 								+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
 				it.remove();
 			} else if (conceptName.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-				logger.debug("  Ignoring concept " + conceptName
+				System.out.println("  Ignoring concept " + conceptName
 						+ " (RDF construct produced by Jena when reading in OWL file).");
 				it.remove();
 			} else if (conceptName.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
-				logger.debug("  Ignoring concept " + conceptName
+				System.out.println("  Ignoring concept " + conceptName
 						+ " (RDF Schema construct produced by Jena when reading in OWL file).");
 				it.remove();
 			} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
-				logger.debug("  Ignoring concept " + conceptName
+				System.out.println("  Ignoring concept " + conceptName
 						+ " (OWL construct produced by Jena when reading in OWL file).");
 				it.remove();
 			}
@@ -482,29 +446,32 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
-	public static Set<NamedClass> computeConcepts(ReasonerComponent rs) {
+	public static Set<NamedClass> computeConcepts(ReasoningService rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
-		Set<NamedClass> concepts = rs.getNamedClasses();
-//		Helper.removeUninterestingConcepts(concepts);
+		Set<NamedClass> concepts = rs.getAtomicConcepts();
+		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
-	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
-		Set<NamedClass> concepts = new TreeSet<NamedClass>(rs.getNamedClasses());
-//		Helper.removeUninterestingConcepts(concepts);
+	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasoningService rs, Set<NamedClass> ignoredConcepts) {
+		Set<NamedClass> concepts = rs.getAtomicConcepts();
+		Helper.removeUninterestingConcepts(concepts);
 		for (NamedClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
-			if (!success)
-				logger.warn("Warning: Ignored concept " + ac + " does not exist in knowledge base.");
+			if (!success) {
+				System.out.println("Warning: Ignored concept " + ac
+						+ " does not exist in knowledge base.");
+				System.exit(0);
+			}
 		}
 		return concepts;
 	}
 	
 	// concepts case 3: allowed list
 	// superseeded by checkConcepts()
-//	public static void checkAllowedList(ReasonerComponent rs, Set<AtomicConcept> allowedConcepts) {
+//	public static void checkAllowedList(ReasoningService rs, Set<AtomicConcept> allowedConcepts) {
 //		// check whether allowed concepts exist in knowledgebase(s)
 //		Set<AtomicConcept> allowed = new HashSet<AtomicConcept>();
 //		allowed.addAll(allowedConcepts);
@@ -525,8 +492,8 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static ObjectProperty checkRoles(ReasonerComponent rs, Set<ObjectProperty> roles) {
-		Set<ObjectProperty> existingRoles = rs.getObjectProperties();
+	public static ObjectProperty checkRoles(ReasoningService rs, Set<ObjectProperty> roles) {
+		Set<ObjectProperty> existingRoles = rs.getAtomicRoles();
 		for (ObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
 				return ar;
@@ -536,13 +503,13 @@ public class Helper {
 	
 	/**
 	 * Checks whether the roles exist in background knowledge
-	 * @param concepts The concepts to check.
+	 * @param roles The roles to check.
 	 * @return The first non-existing role or null if they are all in the
 	 * background knowledge.
 	 */
 	// 
-	public static NamedClass checkConcepts(ReasonerComponent rs, Set<NamedClass> concepts) {
-		Set<NamedClass> existingConcepts = rs.getNamedClasses();
+	public static NamedClass checkConcepts(ReasoningService rs, Set<NamedClass> concepts) {
+		Set<NamedClass> existingConcepts = rs.getAtomicConcepts();
 		for (NamedClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
 				return ar;
@@ -551,31 +518,29 @@ public class Helper {
 	}
 
 	// creates a flat ABox by querying a reasoner
-	public static FlatABox createFlatABox(ReasonerComponent rs)
+	public static FlatABox createFlatABox(ReasoningService rs)
 			throws ReasoningMethodUnsupportedException {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		if(!rs.getNamedClasses().isEmpty()) {
-			for (NamedClass atomicConcept : rs.getNamedClasses()) {
-				aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
-						.getIndividuals(atomicConcept)));
-				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
-						.getIndividuals(negatedAtomicConcept)));
-				aBox.concepts.add(atomicConcept.getName());
-			}			
+		for (NamedClass atomicConcept : rs.getAtomicConcepts()) {
+			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
+					.retrieval(atomicConcept)));
+			Negation negatedAtomicConcept = new Negation(atomicConcept);
+			aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
+					.retrieval(negatedAtomicConcept)));
+			aBox.concepts.add(atomicConcept.getName());
 		}
 
-		if(!rs.getObjectProperties().isEmpty()) {
-			for (ObjectProperty atomicRole : rs.getObjectProperties()) {
-				aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
-				aBox.roles.add(atomicRole.getName());
-			}			
+		for (ObjectProperty atomicRole : rs.getAtomicRoles()) {
+			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getRoleMembers(atomicRole)));
+			aBox.roles.add(atomicRole.getName());
 		}
 
 		aBox.domain = getStringSet(rs.getIndividuals());
 		aBox.top = aBox.domain;
+		// ab hier keine �nderungen mehr an FlatABox
+		aBox.prepare();
 
 		// System.out.println(aBox);
 
@@ -620,12 +585,4 @@ public class Helper {
 		System.out.println("remaining individuals: " + inds);
 		System.out.println();
 	}
-	
-	public static String arrayContent(int[] ar) {
-		String str = ""; 
-		for(int i=0; i<ar.length; i++) {
-			str += ar[i] + ",";
-		}
-		return str;
-	}	
 }

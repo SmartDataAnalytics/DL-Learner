@@ -17,8 +17,8 @@ http://localhost/foo#mark
 http://localhost/foo#melvin
 http://localhost/foo#neil
 http://localhost/foo#nero
-// http://localhost/foo#owen
-// http://localhost/foo#paul
+http://localhost/foo#owen
+http://localhost/foo#paul
 http://localhost/foo#peter
 http://localhost/foo#umo
 // http://localhost/foo#walt

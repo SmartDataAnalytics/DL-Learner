@@ -4,11 +4,6 @@ import java.util.Map;
 
 public class ObjectMinCardinalityRestriction extends ObjectCardinalityRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7729018670336927250L;
-
 	public ObjectMinCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
 		super(number,role,c);
 	}
@@ -19,11 +14,7 @@ public class ObjectMinCardinalityRestriction extends ObjectCardinalityRestrictio
 	}
 
 	public String toString(String baseURI, Map<String,String> prefixes) {
-		return ">= " + number + " " + role.toString(baseURI, prefixes) + "." + getChild(0).toString(baseURI, prefixes);
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return ">= " + number + " " + role.toKBSyntaxString(baseURI, prefixes) + "." + getChild(0).toKBSyntaxString(baseURI, prefixes);
+		return ">= " + number + " " + role.toString(baseURI, prefixes) + " " + getChild(0).toString(baseURI, prefixes);
 	}
 	
 	@Override

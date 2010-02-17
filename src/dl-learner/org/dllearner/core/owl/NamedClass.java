@@ -19,8 +19,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.io.Serializable;
-import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -32,29 +30,17 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class NamedClass extends Description implements Entity, NamedKBElement, Comparable<NamedClass>, Serializable {
+public class NamedClass extends Description implements NamedKBElement {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -2316344469212256752L;
-	private String name;
+    String name;
     
 	public NamedClass(String name) {
         this.name = name;
     }    
     
-	public NamedClass(URI uri) {
-        this.name = uri.toString();
-    }
-	
     public String getName() {
 		return name;
 	}
-    
-    public URI getURI() {
-    	return URI.create(name);
-    }
     
 	public int getLength() {
 		return 1;
@@ -65,11 +51,12 @@ public class NamedClass extends Description implements Entity, NamedKBElement, C
 		return 0;
 	}
 
+    @Override
+    public String toString() {
+    	    return name;
+    }	
+	
     public String toString(String baseURI, Map<String,String> prefixes) {
-    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
-    }
-    
-    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
     	return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
     }
 	
@@ -92,26 +79,4 @@ public class NamedClass extends Description implements Entity, NamedKBElement, C
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return Helper.getAbbreviatedString(name, baseURI, prefixes);
 	}	
-	
-	public int compareTo(NamedClass o) {
-		return name.compareTo(o.name);
-	}	
-	
-	@Override
-	public boolean equals(Object nc) {
-		// standard equals code - always return true for object identity and
-		// false if classes differ
-		if(nc == this) {
-			return true;
-		} else if(getClass() != nc.getClass()) {
-			return false;
-		}
-		// compare on URIs
-		return ((NamedClass)nc).name.equals(name);
-	}
-	
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
 }

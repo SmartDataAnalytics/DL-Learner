@@ -25,14 +25,4 @@ package org.dllearner.core.owl;
  */
 public abstract class DatatypeCardinalityRestriction extends CardinalityRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5027383671603031229L;
-
-	public DatatypeCardinalityRestriction(DatatypeProperty datatypeProperty,
-			DataRange dataRange, int cardinality) {
-		super(datatypeProperty, dataRange, cardinality);
-	}
-
 }

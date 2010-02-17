@@ -27,11 +27,6 @@ import java.util.Map;
  */
 public class ObjectExactCardinalityRestriction extends ObjectCardinalityRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5472599301526939702L;
-
 	public ObjectExactCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
 		super(number,role,c);
 	}
@@ -42,11 +37,7 @@ public class ObjectExactCardinalityRestriction extends ObjectCardinalityRestrict
 	}	
 
 	public String toString(String baseURI, Map<String,String> prefixes) {
-		return "= " + number + " " + role.toString(baseURI, prefixes) + "." + getChild(0).toString(baseURI, prefixes);
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return "= " + number + " " + role.toKBSyntaxString(baseURI, prefixes) + "." + getChild(0).toKBSyntaxString(baseURI, prefixes);
+		return "= " + number + " " + role.toString(baseURI, prefixes) + " " + getChild(0).toString(baseURI, prefixes);
 	}
 
 	@Override

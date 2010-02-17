@@ -19,8 +19,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.io.Serializable;
-import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -29,12 +27,8 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class DatatypeProperty implements Comparable<DatatypeProperty>, Property, NamedKBElement, Serializable {
+public class DatatypeProperty extends PropertyExpression implements Property, NamedKBElement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8452865438915671952L;
 	protected String name;
 	
 	public DatatypeProperty(String name) {
@@ -52,57 +46,14 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 		return name;
 	}
 
-    public URI getURI() {
-    	return URI.create(name);
-    }	
-	
-	@Override
-	public String toString() {
-		return toString(null, null);
-	}
-	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return  Helper.getAbbreviatedString(name, baseURI, prefixes);
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
 	}
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(DatatypeProperty o) {
-		return name.compareTo(o.name);
-	}	
-	
-	@Override
-	public boolean equals(Object nc) {
-		// standard equals code - always return true for object identity and
-		// false if classes differ
-		if(nc == this) {
-			return true;
-		} else if(getClass() != nc.getClass()) {
-			return false;
-		}
-		// compare on URIs
-		return ((DatatypeProperty)nc).name.equals(name);
-	}
-	
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return Helper.getAbbreviatedString(name, baseURI, prefixes);
 	}	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -20,11 +20,10 @@
 package org.dllearner.test;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -32,9 +31,10 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.reasoning.DIGReasoner;
 
 /**
  * Test for component based design.
@@ -47,32 +47,34 @@ public class ComponentTest {
 	/**
 	 * @param args
 	 * @throws ComponentInitException 
-	 * @throws MalformedURLException 
 	 */
-	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
+	public static void main(String[] args) throws ComponentInitException {
 		
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String example = "examples/family/uncle.owl";
-		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
+		String example = "examples/father.owl";
+		cm.applyConfigEntry(source, "url", new File(example).toURI().toString());
 		source.init();
 		
-		// create OWL API reasoning service with standard settings
-		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		// create DIG reasoning service with standard settings
+		ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
+		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		reasoner.init();
+		ReasoningService rs = cm.reasoningService(reasoner);
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		Set<String> positiveExamples = new TreeSet<String>();
-		positiveExamples.add("http://localhost/foo#heinz");
-		positiveExamples.add("http://localhost/foo#alex");
+		positiveExamples.add("http://example.com/father#stefan");
+		positiveExamples.add("http://example.com/father#markus");
+		positiveExamples.add("http://example.com/father#martin");
 		Set<String> negativeExamples = new TreeSet<String>();
-		negativeExamples.add("http://localhost/foo#jan");
-		negativeExamples.add("http://localhost/foo#anna");
-		negativeExamples.add("http://localhost/foo#hanna");
+		negativeExamples.add("http://example.com/father#heinz");
+		negativeExamples.add("http://example.com/father#anna");
+		negativeExamples.add("http://example.com/father#michelle");
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
 		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
 		lp.init();
@@ -80,15 +82,18 @@ public class ComponentTest {
 		// create the learning algorithm
 		LearningAlgorithm la = null;
 		try {
-			la = cm.learningAlgorithm(ROLComponent2.class, lp, reasoner);
-			la.init();
+			la = cm.learningAlgorithm(RandomGuesser.class, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+		cm.applyConfigEntry(la, "numberOfTrees", 100);
+		cm.applyConfigEntry(la, "maxDepth", 5);
+		la.init();
+		
 		// start the algorithm and print the best concept found
 		la.start();
-		System.out.println(la.getCurrentlyBestEvaluatedDescriptions(10, 0.8, true));
+		System.out.println(la.getBestSolution());
 	}
 
 }

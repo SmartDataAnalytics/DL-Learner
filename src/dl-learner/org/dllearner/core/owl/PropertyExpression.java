@@ -23,6 +23,6 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public interface PropertyExpression extends KBElement {
+public abstract class PropertyExpression implements KBElement {
 
 }

@@ -29,15 +29,11 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public abstract class Description implements Cloneable, PropertyRange, KBElement{
+public abstract class Description implements Cloneable, PropertyRange, KBElement {
 	
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -3439073654652166607L;
-	protected Description parent = null;
+    protected Description parent = null;
     protected List<Description> children = new LinkedList<Description>();
-    
+
     public abstract int getArity();
     
     /**
@@ -105,8 +101,9 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     /**
      * Returns a clone of this description.
      */
+    @SuppressWarnings("unchecked")
 	@Override    
-    public Description clone() {
+    public Object clone() {
         Description node = null;
         try {
             node = (Description) super.clone();
@@ -130,16 +127,14 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     
     /**
      * Adds a description as child of this one. The parent link
-     * of the description will point to this one. For instance,
-     * if the description is an intersection, then this method adds
-     * an element to the intersection, e.g. A AND B becomes A AND B
-     * AND C. 
+     * of the concept will point to this one.
      * 
-     * @param child The child description.
+     * @param child
+     * @return
      */
-    public void addChild(Description child) {
+    public boolean addChild(Description child) {
         child.setParent(this);
-        children.add(child);
+        return children.add(child);
     }
 
     /**
@@ -162,16 +157,6 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     public void removeChild(Description child) {
     	child.setParent(null);
     	children.remove(child);
-    }
-    
-    public void removeChild(int index) {
-    	children.get(index).setParent(null);
-    	children.remove(index);
-    }
-    
-    public void replaceChild(int index, Description newChild) {
-    	children.remove(index);
-    	children.add(index, newChild);
     }
     
     /**
@@ -205,11 +190,6 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 		return toString(null, null);
 	}
 	
-	
-	public String toKBSyntaxString() {
-		return toKBSyntaxString(null, null);
-	}
-	
 	/**
 	 * Returns a manchester syntax string of this description. For a
 	 * reference, see 
@@ -220,5 +200,4 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	public abstract String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes);
 	
 	public abstract void accept(DescriptionVisitor visitor);
-
 }

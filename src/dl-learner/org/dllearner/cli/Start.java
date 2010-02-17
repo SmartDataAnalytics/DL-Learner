@@ -21,7 +21,6 @@ package org.dllearner.cli;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -36,14 +35,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.HTMLLayout;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.dllearner.Info;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -53,42 +52,39 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
-import org.dllearner.core.options.StringTupleListConfigOption;
-import org.dllearner.core.options.URLConfigOption;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.config.StringTupleListConfigOption;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.utilities.Files;
+import org.dllearner.reasoning.FastRetrievalReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.datastructures.Datastructures;
-import org.dllearner.utilities.datastructures.StringTuple;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.RoleComparator;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import org.dllearner.utilities.RoleComparator;
+import org.dllearner.utilities.StringTuple;
 
 /**
  * Startup file for Command Line Interface.
@@ -98,134 +94,45 @@ import com.jamonapi.MonitorFactory;
  */
 public class Start {
 
-	private static Logger logger = Logger.getLogger(Start.class);
-	private static Logger rootLogger = Logger.getRootLogger();
-
-	private static ConfMapper confMapper = new ConfMapper();
+	private static Logger logger = Logger.getRootLogger();	
 	
-	private Set<KnowledgeSource> sources;
 	private LearningAlgorithm la;
 	private LearningProblem lp;
-	private ReasonerComponent rc;
-
+	private ReasoningService rs;
+	
 	/**
 	 * Entry point for CLI interface.
 	 * 
-	 * @param args Command line arguments.
+	 * @param args
 	 */
-	public static void main(String[] args) {
-		
-		System.out.println("DL-Learner " + Info.build + " command line interface");
-		
-		if(args.length == 0) {
-			System.out.println("You need to give a conf file as argument.");
-			System.exit(0);
-		}
-		
+	public static void main(String[] args) throws ComponentInitException {
 		File file = new File(args[args.length - 1]);
-		
-		if(!file.exists()) {
-			System.out.println("File \"" + file + "\" does not exist.");
-			System.exit(0);			
-		}
 
 		boolean inQueryMode = false;
-		if (args.length > 1 && args[0].equals("-q")) {
+		if (args.length > 1 && args[0].equals("-q"))
 			inQueryMode = true;
-		}
-		
-		// create loggers (a simple logger which outputs
-		// its messages to the console and a log file)
-		
-		// logger 1 is the console, where we print only info messages;
-		// the logger is plain, i.e. does not output log level etc.
-		Layout layout = new PatternLayout();
-
+	
+		// create logger (a simple logger which outputs
+		// its messages to the console)
+		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		// setting a threshold suppresses log messages below this level;
-		// this means that if you want to e.g. see all trace messages on
-		// console, you have to set the threshold and log level to trace
-		// (but we recommend just setting the log level to trace and observe
-		// the log file)
-		consoleAppender.setThreshold(Level.INFO);
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.DEBUG);
 		
-		// logger 2 is writes to a file; it records all debug messages
-		// (you can choose HTML or TXT)
-		boolean htmlLog = false;
-		Layout layout2 = null;
-		FileAppender fileAppenderNormal = null;
-		String fileName;
-		if(htmlLog) {
-			layout2 = new HTMLLayout();
-			fileName = "log/log.html";
-		} else {
-			// simple variant: layout2 = new SimpleLayout();
-			layout2 = new PatternLayout("%r [%t] %-5p %c :\n%m%n\n");
-			fileName = "log/log.txt";
-		}
-		try {
-			fileAppenderNormal = new FileAppender(layout2, fileName, false);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-		
-		// add both loggers
-		rootLogger.removeAllAppenders();
-		rootLogger.addAppender(consoleAppender);
-		rootLogger.addAppender(fileAppenderNormal);
-		rootLogger.setLevel(Level.DEBUG);
-		
-		// SPARQL log
-		File f = new File("log/sparql.txt");
-    	f.delete();
-    	try {
-			f.createNewFile();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-//		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
-//		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
-//		Logger.getLogger(TypedSparqlQuery.class).setLevel(Level.WARN);
-
 		Start start = null;
-		try {
-			start = new Start(file);
-		} catch (FileNotFoundException e) {
-			System.out.println("The specified file " + file + " does not exist. See stack trace below.");
-			e.printStackTrace();
-			System.exit(0);
-		} catch (ComponentInitException e) {
-			System.out.println("A component could not be initialised. See stack trace below.");
-			e.printStackTrace();
-			System.exit(0);
-		} catch (ParseException e) {
-			System.out.println("The specified file " + file + " is not a valid conf file. See stack trace below.");
-			e.printStackTrace();
-			System.exit(0);
-		}
-		
+		start = new Start(file);
 		start.start(inQueryMode);
-		
-		// write JaMON report in HTML file
-		File jamonlog = new File("log/jamon.html");
-		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 
 	/**
 	 * Initialise all components based on conf file.
-	 * 
-	 * @param file
-	 *            Conf file to read.
-	 * @throws ComponentInitException
-	 * @throws ParseException 
-	 * @throws FileNotFoundException 
+	 * @param file Conf file to read. 
+	 * @throws ComponentInitException 
 	 */
-	public Start(File file) throws ComponentInitException, FileNotFoundException, ParseException {
-		String baseDir = file.getParentFile().getPath();
-
+	public Start(File file) throws ComponentInitException {
+		String baseDir = file.getParentFile().getPath();		
+		
 		// create component manager instance
 		String message = "starting component manager ... ";
 		long cmStartTime = System.nanoTime();
@@ -233,17 +140,15 @@ public class Start {
 		long cmTime = System.nanoTime() - cmStartTime;
 		message += "OK (" + Helper.prettyPrintNanoSeconds(cmTime) + ")";
 		logger.info(message);
-
-		// create a mapping between components and prefixes in the conf file and back
-//		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
-//		Map<String, Class<? extends Component>> prefixComponentMapping = invertComponentPrefixMapping(componentPrefixMapping);
+		
+		// create a mapping between components and prefixes in the conf file
+		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
 
 		// parse conf file
 		ConfParser parser = ConfParser.parseFile(file);
 
 		// step 1: detect knowledge sources
-		Monitor ksMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initKnowledgeSource").start();
-		sources = new HashSet<KnowledgeSource>();
+		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = getImportedFiles(parser, baseDir);
 		for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
 			KnowledgeSource ks = cm.knowledgeSource(entry.getValue());
@@ -251,112 +156,123 @@ public class Start {
 			// configuration option "url"), so this may need to be changed in
 			// the
 			// future
-			cm.applyConfigEntry(ks, "url", entry.getKey());
+			cm.applyConfigEntry(ks, "url", entry.getKey().toString());
 
 			sources.add(ks);
-			configureComponent(cm, ks, parser);
+			configureComponent(cm, ks, componentPrefixMapping, parser);
 			initComponent(cm, ks);
 		}
-		ksMonitor.stop();
 
-		
 		// step 2: detect used reasoner
-		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasonerComponent").start();
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-		Class<? extends ReasonerComponent> rcClass;
-		if(reasonerOption != null) {
-			rcClass = confMapper.getReasonerComponentClass(reasonerOption.getStringValue());
-			if(rcClass == null) {
-				handleError("Invalid value \"" + reasonerOption.getStringValue() + "\" in " + reasonerOption + ". Valid values are " + confMapper.getReasoners() + ".");
-			}			
-		} else {
-			rcClass = FastInstanceChecker.class;
+		Class<? extends ReasonerComponent> reasonerClass = null;
+		// default value
+		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
+			reasonerClass = DIGReasoner.class;
+		else if(reasonerOption.getStringValue().equals("owlAPI"))
+			reasonerClass = OWLAPIReasoner.class;
+		else if(reasonerOption.getStringValue().equals("fastRetrieval"))
+			reasonerClass = FastRetrievalReasoner.class;
+		else {
+			handleError("Unknown value " + reasonerOption.getStringValue()
+					+ " for option \"reasoner\".");
 		}
-		rc = cm.reasoner(rcClass, sources);
-		configureComponent(cm, rc, parser);
-		initComponent(cm, rc);
-		rsMonitor.stop();
+		ReasonerComponent reasoner = cm.reasoner(reasonerClass, sources);
+		configureComponent(cm, reasoner, componentPrefixMapping, parser);
+		initComponent(cm, reasoner);
+		rs = cm.reasoningService(reasoner);
 
 		// step 3: detect learning problem
-		Monitor lpMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningProblem").start();
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
-		Class<? extends LearningProblem> lpClass;
-		if(problemOption != null) {
-			lpClass = confMapper.getLearningProblemClass(problemOption.getStringValue());
-			if(lpClass == null) {
-				handleError("Invalid value \"" + problemOption.getStringValue() + "\" in " + problemOption + ". Valid values are " + confMapper.getLearningProblems() + ".");
-			}			
-		} else {
-			lpClass = PosNegLPStandard.class;
-		}
-		lp = cm.learningProblem(lpClass, rc);
-		if(lpClass == PosNegLPStandard.class || lpClass == PosOnlyLP.class) {
-			SortedSet<String> posExamples = parser.getPositiveExamples();
-			cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		}
-		if(lpClass == PosNegLPStandard.class) {
-			SortedSet<String> negExamples = parser.getNegativeExamples();
-			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
-		}
-		configureComponent(cm, lp, parser);
-		initComponent(cm, lp);
-		lpMonitor.stop();
+		Class<? extends LearningProblem> lpClass = null;
+		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
+			lpClass = PosNegDefinitionLP.class;
+		else if (problemOption.getStringValue().equals("posNegInclusion"))
+			lpClass = PosNegInclusionLP.class;
+		else if (problemOption.getStringValue().equals("posOnlyDefinition"))
+			lpClass = PosOnlyDefinitionLP.class;
+		else
+			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
 
+		lp = cm.learningProblem(lpClass, rs);
+		SortedSet<String> posExamples = parser.getPositiveExamples();
+		SortedSet<String> negExamples = parser.getNegativeExamples();
+		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
+		if(lpClass != PosOnlyDefinitionLP.class)
+			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
+		configureComponent(cm, lp, componentPrefixMapping, parser);
+		initComponent(cm, lp);
+		
 		// step 4: detect learning algorithm
-		Monitor laMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningAlgorithm").start();
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
-		Class<? extends LearningAlgorithm> laClass;
-		if(algorithmOption != null) {
-			laClass = confMapper.getLearningAlgorithmClass(algorithmOption.getStringValue());
-			if(laClass == null) {
-				handleError("Invalid value \"" + algorithmOption.getStringValue() + "\" in " + algorithmOption + ". Valid values are " + confMapper.getLearningAlgorithms() + ".");
-			}			
-		} else {
-			laClass = ROLComponent2.class;
-		}		
+		Class<? extends LearningAlgorithm> laClass = null;
+		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
+			laClass = ROLearner.class;
+		else if(algorithmOption.getStringValue().equals("refexamples"))
+			laClass = ExampleBasedROLComponent.class;		
+		else if(algorithmOption.getStringValue().equals("gp"))
+			laClass = GP.class;
+		else if(algorithmOption.getStringValue().equals("bruteForce"))
+			laClass = BruteForceLearner.class;
+		else if(algorithmOption.getStringValue().equals("randomGuesser"))
+			laClass = RandomGuesser.class;		
+		else
+			handleError("Unknown value in " + algorithmOption);
+
 		try {
-			la = cm.learningAlgorithm(laClass, lp, rc);
+			la = cm.learningAlgorithm(laClass, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		configureComponent(cm, la, parser);
+		configureComponent(cm, la, componentPrefixMapping, parser);
 		initComponent(cm, la);
-		laMonitor.stop();
 
 		// perform file exports
-		performExports(parser, baseDir, sources, rc);
+		performExports(parser, baseDir, sources, rs);
 
 		// handle any CLI options
-		processCLIOptions(cm, parser, rc, lp);
-		
-		// newline to separate init phase from learning phase
-		if(logger.isInfoEnabled()) {
-			System.out.println("");
-		}
+		processCLIOptions(cm, parser, rs, lp);		
 	}
-
+	
 	public void start(boolean inQueryMode) {
 		if (inQueryMode)
-			processQueryMode(lp, rc);
+			processQueryMode(lp, rs);
 		else {
 			// start algorithm
 			long algStartTime = System.nanoTime();
 			la.start();
 			long algDuration = System.nanoTime() - algStartTime;
 
-			printConclusions(rc, algDuration);
-		}
+			printConclusions(rs, algDuration);
+		}		
 	}
 	
-	/**
-	 * convenience method basically every prefix (e.g. "refinement" in
-	 * "refinement.horizontalExpFactor) corresponds to a specific component -
-	 * this way the CLI will automatically support any configuration options
-	 * supported by the component
-	 */
+	// creates a mapping from components to option prefix strings
+	private static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
+		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
+		// knowledge sources
+		componentPrefixMapping.put(SparqlKnowledgeSource.class, "sparql");
+		// reasoners
+		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
+		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
+		// learning problems - configured via + and - flags for examples
+		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
+		// learning algorithms
+		componentPrefixMapping.put(ROLearner.class, "refinement");
+		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
+		componentPrefixMapping.put(GP.class, "gp");
+		return componentPrefixMapping;
+	}
+
+	// convenience method
+	// basically every prefix (e.g. "refinement" in
+	// "refinement.horizontalExpFactor)
+	// corresponds to a specific component - this way the CLI will automatically
+	// support any configuration options supported by the component
 	private static void configureComponent(ComponentManager cm, Component component,
-			ConfParser parser) {
-		String prefix = confMapper.getComponentString(component.getClass());
+			Map<Class<? extends Component>, String> componentPrefixMapping, ConfParser parser) {
+		String prefix = componentPrefixMapping.get(component.getClass());
 		if (prefix != null)
 			configureComponent(cm, component, parser.getConfOptionsByPrefix(prefix));
 	}
@@ -376,7 +292,7 @@ public class Start {
 		// the name of the option is suboption-part (the first part refers
 		// to its component)
 		String optionName = option.getSubOption();
-
+		
 		ConfigOption<?> configOption = cm.getConfigOption(component.getClass(), optionName);
 		// check whether such an option exists
 		if (configOption != null) {
@@ -390,19 +306,6 @@ public class Start {
 					ConfigEntry<String> entry = new ConfigEntry<String>(
 							(StringConfigOption) configOption, option.getStringValue());
 					cm.applyConfigEntry(component, entry);
-
-				} else if (configOption instanceof URLConfigOption && option.isStringOption()) {
-
-						ConfigEntry<URL> entry = null;
-						try {
-							entry = new ConfigEntry<URL>(
-									(URLConfigOption) configOption, new URL(option.getStringValue()));
-						} catch (MalformedURLException e) {
-							handleError("The type of conf file entry \"" + option.getFullName()
-									+ "\" is not correct: value \"" + option.getValue()
-									+ "\" not valid a URL!");							
-						}
-						cm.applyConfigEntry(component, entry);
 
 				} else if (configOption instanceof IntegerConfigOption && option.isIntegerOption()) {
 
@@ -436,119 +339,104 @@ public class Start {
 							(StringSetConfigOption) configOption, option.getSetValues());
 					cm.applyConfigEntry(component, entry);
 
-				} else if (configOption instanceof StringTupleListConfigOption
-						&& option.isListOption()) {
+				} else if (configOption instanceof StringTupleListConfigOption && option.isListOption()) {
 
 					ConfigEntry<List<StringTuple>> entry = new ConfigEntry<List<StringTuple>>(
 							(StringTupleListConfigOption) configOption, option.getListTuples());
 					cm.applyConfigEntry(component, entry);
 
 				} else {
-					handleError("The type of conf file entry \"" + option.getFullName()
-							+ "\" is not correct: value \"" + option.getValue()
-							+ "\" not valid for option type \"" + configOption.getClass().getName()
-							+ "\".");
+					handleError("The type of conf file entry \"" + option.getFullName() + "\" is not correct: value \"" + option.getValue() + "\" not valid for option type \"" + configOption.getClass().getName() + "\".");
 				}
 
 			} catch (InvalidConfigOptionValueException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
 				System.exit(0);
 			}
 
-		} else {
-			List<ConfigOption<?>> options = ComponentManager.getConfigOptions(component.getClass());
-			Set<String> optionStrings = new TreeSet<String>();
-			for(ConfigOption<?> o : options) {
-				optionStrings.add(o.getName());
-			}
-			handleError("Unknown option \"" + option.getSubOption() + "\" for component \"" + cm.getComponentName(component.getClass()) + "\". Valid options are " + optionStrings + ".");
-		}
+		} else
+			handleError("Unknow option " + option + ".");
 	}
 
-	/**
-	 * detects all imported files and their format
-	 */
+	// detects all imported files and their format
 	public static Map<URL, Class<? extends KnowledgeSource>> getImportedFiles(ConfParser parser,
 			String baseDir) {
 		List<List<String>> imports = parser.getFunctionCalls().get("import");
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = new HashMap<URL, Class<? extends KnowledgeSource>>();
 
-		if (imports != null) {
-			for (List<String> arguments : imports) {
-				// step 1: detect URL
-				URL url = null;
-				try {
-					String fileString = arguments.get(0);
-					if (fileString.startsWith("http:") || fileString.startsWith("file:")) {
-						url = new URL(fileString);
-					} else {
-						File f = new File(baseDir, arguments.get(0));
-						url = f.toURI().toURL();
-					}
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
-
-				// step 2: detect format
-				Class<? extends KnowledgeSource> ksClass;
-				if (arguments.size() == 1) {
-					String filename = url.getPath();
-					String ending = filename.substring(filename.lastIndexOf(".") + 1);
-
-					if (ending.equals("rdf") || ending.equals("owl"))
-						ksClass = OWLFile.class;
-					else if (ending.equals("nt"))
-						ksClass = OWLFile.class;
-					else if (ending.equals("kb"))
-						ksClass = KBFile.class;
-					else {
-						System.err.println("Warning: no format given for " + arguments.get(0)
-								+ " and could not detect it. Chosing RDF/XML.");
-						ksClass = OWLFile.class;
-					}
-
-					importedFiles.put(url, ksClass);
+		if(imports != null) {
+		for (List<String> arguments : imports) {
+			// step 1: detect URL
+			URL url = null;
+			try {
+				String fileString = arguments.get(0);
+				if (fileString.startsWith("http:")) {
+					url = new URL(fileString);
 				} else {
-					String formatString = arguments.get(1);
-
-					if(formatString.equals("OWL")) {
-						ksClass = OWLFile.class;
-					} else if (formatString.equals("RDF/XML"))
-						ksClass = OWLFile.class;
-					else if (formatString.equals("KB"))
-						ksClass = KBFile.class;
-					else if (formatString.equals("SPARQL"))
-						ksClass = SparqlKnowledgeSource.class;
-					else if (formatString.equals("NT"))
-						ksClass = OWLFile.class;
-					else {
-						throw new RuntimeException("Unsupported knowledge source format "
-								+ formatString + ". Exiting.");
-					}
-
-					importedFiles.put(url, ksClass);
+					File f = new File(baseDir, arguments.get(0));
+					url = f.toURI().toURL();
 				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
 			}
+
+			// step 2: detect format
+			Class<? extends KnowledgeSource> ksClass;
+			if (arguments.size() == 1) {
+				String filename = url.getPath();
+				String ending = filename.substring(filename.lastIndexOf(".") + 1);
+
+				if (ending.equals("rdf") || ending.equals("owl"))
+					ksClass = OWLFile.class;
+				else if (ending.equals("nt"))
+					ksClass = OWLFile.class;
+				else if (ending.equals("kb"))
+					ksClass = KBFile.class;
+				else {
+					System.err.println("Warning: no format given for " + arguments.get(0)
+							+ " and could not detect it. Chosing RDF/XML.");
+					ksClass = OWLFile.class;
+				}
+
+				importedFiles.put(url, ksClass);
+			} else {
+				String formatString = arguments.get(1);
+
+				if (formatString.equals("RDF/XML"))
+					ksClass = OWLFile.class;
+				else if (formatString.equals("KB"))
+					ksClass = KBFile.class;
+				else if (formatString.equals("SPARQL"))
+					ksClass = SparqlKnowledgeSource.class;
+				else if (formatString.equals("NT"))
+					ksClass = OWLFile.class;
+				else {
+					throw new RuntimeException("Unsupported knowledge source format "
+							+ formatString + ". Exiting.");
+				}
+
+				importedFiles.put(url, ksClass);
+			}
+		}
 		}
 
 		return importedFiles;
 	}
 
-	private static void performExports(ConfParser parser, String baseDir,
-			Set<KnowledgeSource> sources, ReasonerComponent rs) {
+	private static void performExports(ConfParser parser, String baseDir, Set<KnowledgeSource> sources, ReasoningService rs) {
 		List<List<String>> exports = parser.getFunctionCalls().get("export");
 
 		if (exports == null)
 			return;
-
+		
 		File file = null;
-		OntologyFormat format = null;
+		OntologyFormat format = null;		
 		for (List<String> export : exports) {
 			file = new File(baseDir, export.get(0));
 			if (export.size() == 1)
 				// use RDF/XML by default
 				format = OntologyFormat.RDF_XML;
-			// rs.saveOntology(file, OntologyFileFormat.RDF_XML);
+				// rs.saveOntology(file, OntologyFileFormat.RDF_XML);
 			else {
 				String formatString = export.get(1);
 				// OntologyFileFormat format;
@@ -560,19 +448,19 @@ public class Start {
 			}
 		}
 		// hack: ideally we would have the possibility to export each knowledge
-		// source to specified files with specified formats (and maybe including
+		// source to specified files with specified formats (and maybe including 
 		// the option to merge them all in one file)
 		// however implementing this requires quite some effort so for the
 		// moment we just stick to exporting KB files (moreover all but the last
 		// export statement are ignored)
-		for (KnowledgeSource source : sources) {
-			if (source instanceof KBFile)
-				((KBFile) source).export(file, format);
+		for(KnowledgeSource source : sources) {
+			if(source instanceof KBFile)
+				((KBFile)source).export(file, format);
 		}
 	}
 
 	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
-			ReasonerComponent rs, LearningProblem lp) {
+			ReasoningService rs, LearningProblem lp) {
 		// CLI options (i.e. options which are related to the CLI
 		// user interface but not to one of the components)
 		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
@@ -581,21 +469,18 @@ public class Start {
 			for (ConfFileOption cliOption : cliOptions) {
 				String name = cliOption.getSubOption();
 				if (name.equals("showExamples")) {
-					// show examples (display each one if they do not take up
-					// much space,
+					// show examples (display each one if they do not take up much space,
 					// otherwise just show the number of examples)
 					SortedSet<String> posExamples = parser.getPositiveExamples();
-					SortedSet<String> negExamples = parser.getNegativeExamples();
+					SortedSet<String> negExamples = parser.getNegativeExamples();					
 					boolean oneLineExampleInfo = true;
-					int maxExampleStringLength = Math.max(posExamples.toString().length(),
-							negExamples.toString().length());
+					int maxExampleStringLength = Math.max(posExamples.toString().length(), negExamples
+							.toString().length());
 					if (maxExampleStringLength > 100)
 						oneLineExampleInfo = false;
 					if (oneLineExampleInfo) {
-						System.out.println("positive examples[" + posExamples.size() + "]: "
-								+ posExamples);
-						System.out.println("negative examples[" + negExamples.size() + "]: "
-								+ negExamples);
+						System.out.println("positive examples[" + posExamples.size() + "]: " + posExamples);
+						System.out.println("negative examples[" + negExamples.size() + "]: " + negExamples);
 					} else {
 						System.out.println("positive examples[" + posExamples.size() + "]: ");
 						for (String ex : posExamples)
@@ -603,7 +488,7 @@ public class Start {
 						System.out.println("negative examples[" + negExamples.size() + "]: ");
 						for (String ex : negExamples)
 							System.out.println("  " + ex);
-					}
+					}				
 				} else if (name.equals("showIndividuals")) {
 					if (cliOption.getStringValue().equals("true")) {
 						int stringLength = rs.getIndividuals().toString().length();
@@ -617,30 +502,30 @@ public class Start {
 					}
 				} else if (name.equals("showConcepts")) {
 					if (cliOption.getStringValue().equals("true")) {
-						int stringLength = rs.getNamedClasses().toString().length();
+						int stringLength = rs.getAtomicConcepts().toString().length();
 						if (stringLength > maxLineLength) {
-							System.out.println("concepts[" + rs.getNamedClasses().size() + "]: ");
-							for (NamedClass ac : rs.getNamedClasses())
+							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: ");
+							for (NamedClass ac : rs.getAtomicConcepts())
 								System.out.println("  " + ac);
 						} else
-							System.out.println("concepts[" + rs.getNamedClasses().size() + "]: "
-									+ rs.getNamedClasses());
+							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: "
+									+ rs.getAtomicConcepts());
 					}
 				} else if (name.equals("showRoles")) {
 					if (cliOption.getStringValue().equals("true")) {
-						int stringLength = rs.getObjectProperties().toString().length();
+						int stringLength = rs.getAtomicRoles().toString().length();
 						if (stringLength > maxLineLength) {
-							System.out.println("roles[" + rs.getObjectProperties().size() + "]: ");
-							for (ObjectProperty r : rs.getObjectProperties())
+							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: ");
+							for (ObjectProperty r : rs.getAtomicRoles())
 								System.out.println("  " + r);
 						} else
-							System.out.println("roles[" + rs.getObjectProperties().size() + "]: "
-									+ rs.getObjectProperties());
+							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: "
+									+ rs.getAtomicRoles());
 					}
 				} else if (name.equals("showSubsumptionHierarchy")) {
 					if (cliOption.getStringValue().equals("true")) {
 						System.out.println("Subsumption Hierarchy:");
-						System.out.println(rs.getClassHierarchy());
+						System.out.println(rs.getSubsumptionHierarchy());
 					}
 					// satisfiability check
 				} else if (name.equals("checkSatisfiability")) {
@@ -656,32 +541,31 @@ public class Start {
 						if (!satisfiable)
 							System.exit(0);
 					}
-				} else if (name.equals("logLevel")) {
+				} else if( name.equals("logLevel")) {
 					String level = cliOption.getStringValue();
-					if (level.equals("off"))
-						rootLogger.setLevel(Level.OFF);
-					else if (level.equals("trace"))
-						rootLogger.setLevel(Level.TRACE);
-					else if (level.equals("info"))
-						rootLogger.setLevel(Level.INFO);
-					else if (level.equals("debug"))
-						rootLogger.setLevel(Level.DEBUG);
-					else if (level.equals("warn"))
-						rootLogger.setLevel(Level.WARN);
-					else if (level.equals("error"))
-						rootLogger.setLevel(Level.ERROR);
-					else if (level.equals("fatal"))
-						rootLogger.setLevel(Level.FATAL);
+					if(level.equals("off"))
+						logger.setLevel(Level.OFF);
+					else if(level.equals("trace"))
+						logger.setLevel(Level.TRACE);					
+					else if(level.equals("info"))
+						logger.setLevel(Level.INFO);
+					else if(level.equals("debug"))
+						logger.setLevel(Level.DEBUG);
+					else if(level.equals("warn"))
+						logger.setLevel(Level.WARN);
+					else if(level.equals("error"))
+						logger.setLevel(Level.ERROR);
+					else if(level.equals("fatal"))
+						logger.setLevel(Level.FATAL);	
 				} else
 					handleError("Unknown CLI option \"" + name + "\".");
 			}
 		}
 	}
 
-	private static void initComponent(ComponentManager cm, Component component)
-			throws ComponentInitException {
-		String startMessage = "initialising component \""
-				+ cm.getComponentName(component.getClass()) + "\" ... ";
+	private static void initComponent(ComponentManager cm, Component component) throws ComponentInitException {
+		String startMessage = "initialising component \"" + cm.getComponentName(component.getClass())
+				+ "\" ... ";
 		long initStartTime = System.nanoTime();
 		component.init();
 		// standard messsage is just "OK" but can be more detailed for certain
@@ -696,28 +580,29 @@ public class Start {
 		}
 
 		long initTime = System.nanoTime() - initStartTime;
-		logger.info(startMessage + message + " ("
-				+ Helper.prettyPrintNanoSeconds(initTime, false, false) + ")");
+		logger.info(startMessage + message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
+				+ ")");
 	}
 
-	private static void printConclusions(ReasonerComponent rs, long algorithmDuration) {
+	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
 		if (rs.getNrOfRetrievals() > 0) {
-			logger.info("number of retrievals: " + rs.getNrOfRetrievals());
-			logger.info("retrieval reasoning time: "
+			System.out.println("number of retrievals: " + rs.getNrOfRetrievals());
+			System.out
+					.println("retrieval reasoning time: "
 							+ Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs())
 							+ " ( " + Helper.prettyPrintNanoSeconds(rs.getTimePerRetrievalNs())
 							+ " per retrieval)");
 		}
 		if (rs.getNrOfInstanceChecks() > 0) {
-			logger.info("number of instance checks: " + rs.getNrOfInstanceChecks() + " ("
+			System.out.println("number of instance checks: " + rs.getNrOfInstanceChecks() + " ("
 					+ rs.getNrOfMultiInstanceChecks() + " multiple)");
-			logger.info("instance check reasoning time: "
+			System.out.println("instance check reasoning time: "
 					+ Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()) + " ( "
 					+ Helper.prettyPrintNanoSeconds(rs.getTimePerInstanceCheckNs())
 					+ " per instance check)");
 		}
 		if (rs.getNrOfSubsumptionHierarchyQueries() > 0) {
-			logger.info("subsumption hierarchy queries: "
+			System.out.println("subsumption hierarchy queries: "
 					+ rs.getNrOfSubsumptionHierarchyQueries());
 			/*
 			 * System.out.println("subsumption hierarchy reasoning time: " +
@@ -729,9 +614,9 @@ public class Start {
 			 */
 		}
 		if (rs.getNrOfSubsumptionChecks() > 0) {
-			logger.info("(complex) subsumption checks: " + rs.getNrOfSubsumptionChecks()
+			System.out.println("(complex) subsumption checks: " + rs.getNrOfSubsumptionChecks()
 					+ " (" + rs.getNrOfMultiSubsumptionChecks() + " multiple)");
-			logger.info("subsumption reasoning time: "
+			System.out.println("subsumption reasoning time: "
 					+ Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()) + " ( "
 					+ Helper.prettyPrintNanoSeconds(rs.getTimePerSubsumptionCheckNs())
 					+ " per subsumption check)");
@@ -739,34 +624,33 @@ public class Start {
 		DecimalFormat df = new DecimalFormat();
 		double reasoningPercentage = 100 * rs.getOverallReasoningTimeNs()
 				/ (double) algorithmDuration;
-		logger.info("overall reasoning time: "
+		System.out.println("overall reasoning time: "
 				+ Helper.prettyPrintNanoSeconds(rs.getOverallReasoningTimeNs()) + " ("
 				+ df.format(reasoningPercentage) + "% of overall runtime)");
-		logger.info("overall algorithm runtime: "
+		System.out.println("overall algorithm runtime: "
 				+ Helper.prettyPrintNanoSeconds(algorithmDuration));
 	}
 
 	// performs a query - used for debugging learning examples
-	private static void processQueryMode(LearningProblem lp, ReasonerComponent rs) {
+	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
 
-		logger.info("Entering query mode. Enter a concept for performing "
-				+ "retrieval or q to quit. Use brackets for complex expresssions,"
-				+ "e.g. (a AND b).");
+		System.out.println("Entering query mode. Enter a concept for performing "
+				+ "retrieval or q to quit. Use brackets for complex expresssions," +
+						"e.g. (a AND b).");
 		String queryStr = "";
 		do {
 
-			logger.info("enter query: ");
+			System.out.print("enter query: ");
 			// read input string
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
 			try {
 				queryStr = input.readLine();
-				logger.debug(queryStr);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			if (!(queryStr.equalsIgnoreCase("q") || queryStr.equalsIgnoreCase("quit"))) {
+			
+			if (!queryStr.equals("q")) {
 
 				// parse concept
 				Description concept = null;
@@ -798,73 +682,58 @@ public class Start {
 					// substract existing roles/concepts from detected
 					// roles/concepts -> the resulting sets should be
 					// empty, otherwise print a warning (the DIG reasoner
-					// will just treat them as concepts about which it
+					// will just treat them as concepts about which it 
 					// has no knowledge - this makes it hard to
-					// detect typos
-					// (note that removeAll currently gives a different
-					// result here, because the comparator of the argument
+					// detect typos 
+					// (note that removeAll currently gives a different 
+					// result here, because the comparator of the argument 
 					// is used)
-					for (NamedClass ac : rs.getNamedClasses())
+					for (NamedClass ac : rs.getAtomicConcepts())
 						occurringConcepts.remove(ac);
-					for (ObjectProperty ar : rs.getObjectProperties())
+					for (ObjectProperty ar : rs.getAtomicRoles())
 						occurringRoles.remove(ar);
 
 					boolean nonExistingConstructs = false;
 					if (occurringConcepts.size() != 0 || occurringRoles.size() != 0) {
-						logger
-								.debug("You used non-existing atomic concepts or roles. Please correct your query.");
+						System.out
+								.println("You used non-existing atomic concepts or roles. Please correct your query.");
 						if (occurringConcepts.size() > 0)
-							logger.debug("non-existing concepts: " + occurringConcepts);
+							System.out.println("non-existing concepts: " + occurringConcepts);
 						if (occurringRoles.size() > 0)
-							logger.debug("non-existing roles: " + occurringRoles);
+							System.out.println("non-existing roles: " + occurringRoles);
 						nonExistingConstructs = true;
 					}
 
 					if (!nonExistingConstructs) {
-
-						if (!queryStr.startsWith("(")
-								&& (queryStr.contains("AND") || queryStr.contains("OR"))) {
-							logger.info("Make sure you did not forget to use outer brackets.");
+						
+						if(!queryStr.startsWith("(") && (queryStr.contains("AND") || queryStr.contains("OR"))) {
+							System.out.println("Make sure you did not forget to use outer brackets.");					
 						}
-
-						logger.info("The query is: " + concept.toKBSyntaxString() + ".");
-
+						
+						System.out.println("The query is: " + concept + ".");
+						
 						// pose retrieval query
 						Set<Individual> result = null;
-						result = rs.getIndividuals(concept);
+						result = rs.retrieval(concept);
 
-						logger.info("retrieval result (" + result.size() + "): " + result);
+						System.out.println("retrieval result: " + result);
 
-						ScorePosNeg score = (ScorePosNeg) lp.computeScore(concept);
-						logger.info(score);
+						Score score = lp.computeScore(concept);
+						System.out.println(score);
 
 					}
 				}
-			}// end if
+			}
 
-		} while (!(queryStr.equalsIgnoreCase("q") || queryStr.equalsIgnoreCase("quit")));
+		} while (!queryStr.equals("q"));
 
 	}
-	
-	
-	/**
-	 * error handling over the logger
-	 * 
-	 * @param message
-	 *            is a string and you message for problem
-	 */
-	public static void handleError(String message) {
+
+	private static void handleError(String message) {
 		logger.error(message);
 		System.exit(0);
 	}
 
-	/**
-	 * @return the sources
-	 */
-	public Set<KnowledgeSource> getSources() {
-		return sources;
-	}	
-	
 	public LearningAlgorithm getLearningAlgorithm() {
 		return la;
 	}
@@ -873,8 +742,8 @@ public class Start {
 		return lp;
 	}
 
-	public ReasonerComponent getReasonerComponent() {
-		return rc;
+	public ReasoningService getReasoningService() {
+		return rs;
 	}
 
 }

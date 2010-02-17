@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -24,10 +24,13 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.owl.RoleComparator;
+import org.dllearner.utilities.RoleComparator;
 
 /**
- * Represents a hierarchy of object properties (roles in Description Logics).
+ * Represents a hierarchy of roles.
+ * 
+ * @todo Currently, the role hierarchy pruning algorithm (analogous to the
+ * subsumption hierarchy) is not implemented. 
  * 
  * @author Jens Lehmann
  *
@@ -35,12 +38,12 @@ import org.dllearner.utilities.owl.RoleComparator;
 public class ObjectPropertyHierarchy {
 
 	RoleComparator rc = new RoleComparator();
-	TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyUp;
-	TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyDown;	
+	TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp;
+	TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyDown;	
 	TreeSet<ObjectProperty> mostGeneralRoles = new TreeSet<ObjectProperty>(rc);
 	TreeSet<ObjectProperty> mostSpecialRoles = new TreeSet<ObjectProperty>(rc);
 	
-	public ObjectPropertyHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyDown) {
+	public ObjectPropertyHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		
@@ -53,38 +56,19 @@ public class ObjectPropertyHierarchy {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")	
 	public SortedSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
 		// we clone all concepts before returning them such that they cannot be
 		// modified externally
-		return new TreeSet<ObjectProperty>(roleHierarchyUp.get(role));	
+		return (TreeSet<ObjectProperty>) roleHierarchyUp.get(role).clone();	
 	}
 	
+	@SuppressWarnings("unchecked")
 	public SortedSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
-		return new TreeSet<ObjectProperty>(roleHierarchyDown.get(role));
-	}
+		return (TreeSet<ObjectProperty>) roleHierarchyDown.get(role).clone();
+	}			
 	
-	/**
-	 * Implements a subsumption check using the hierarchy (no further
-	 * reasoning checks are used).
-	 * @param subProperty The (supposedly) more special property.
-	 * @param superProperty The (supposedly) more general property.
-	 * @return True if <code>subProperty</code> is a subproperty of <code>superProperty</code>.
-	 */
-	public boolean isSubpropertyOf(ObjectProperty subProperty, ObjectProperty superProperty) {
-		if(subProperty.equals(superProperty)) {
-			return true;
-		} else {
-//			System.out.println("oph: " + subProperty + " " + superProperty);
-			for(ObjectProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
-				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
-					return true;
-				}
-			}
-			// we cannot reach the class via any of the upper classes,
-			// so it is not a super class
-			return false;
-		}
-	}	
+	
 	
 	@Override
 	public String toString() {
@@ -95,7 +79,7 @@ public class ObjectPropertyHierarchy {
 		return str;
 	}
 	
-	private String toString(TreeMap<ObjectProperty,SortedSet<ObjectProperty>> hierarchy, ObjectProperty role, int depth) {
+	private String toString(TreeMap<ObjectProperty,TreeSet<ObjectProperty>> hierarchy, ObjectProperty role, int depth) {
 		String str = "";
 		for(int i=0; i<depth; i++)
 			str += "  ";

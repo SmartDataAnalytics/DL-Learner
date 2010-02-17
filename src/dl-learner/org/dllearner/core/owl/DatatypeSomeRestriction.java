@@ -32,25 +32,14 @@ import java.util.Map;
  */
 public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9190086621306032225L;
-	DataRange dataRange;
-	
-	/**
-	 * @param datatypeProperty
-	 */
-	public DatatypeSomeRestriction(DatatypeProperty datatypeProperty, DataRange dataRange) {
-		super(datatypeProperty);
-		this.dataRange = dataRange;
-	}
+
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#getArity()
 	 */
 	@Override
 	public int getArity() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -58,21 +47,16 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
 	public int getLength() {
-		return 1 + dataRange.getLength();
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + dataRange.toString(baseURI, prefixes);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
-	 */
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + dataRange.toKBSyntaxString(baseURI, prefixes);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/* (non-Javadoc)
@@ -92,13 +76,7 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return restrictedPropertyExpression.toManchesterSyntaxString(baseURI, prefixes) + dataRange.toManchesterSyntaxString(baseURI, prefixes);
-	}
-
-	/**
-	 * @return the dataRange
-	 */
-	public DataRange getDataRange() {
-		return dataRange;
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

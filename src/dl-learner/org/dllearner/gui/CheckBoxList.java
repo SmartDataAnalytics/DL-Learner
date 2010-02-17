@@ -21,12 +21,7 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 
-import org.dllearner.gui.widgets.WidgetPanelStringSet;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.HashSet;
@@ -34,34 +29,23 @@ import java.util.LinkedList;
 import java.util.Set;
 
 /**
- * CheckBoxList constitute a list of CheckBoxes.
+ * CheckBoxList constitute a list of CheckBox's
  * 
  * @author Tilo Hielscher
  */
-public class CheckBoxList extends JPanel implements ActionListener {
+public class CheckBoxList extends JPanel {
 	private static final long serialVersionUID = -7119007550662195455L;
 	private JPanel checkBoxPanel = new JPanel();
 	private LinkedList<JCheckBox> list = new LinkedList<JCheckBox>();
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
-	private WidgetPanelStringSet widgetPanel;
 
 	/**
 	 * Make a JPanel with GridBagLayout.
-	 * @param panel The StringPanel the check box list is added to.
-	 * (TODO Actually, there shouldn't be a dependency of a 
-	 * visual element to its parent.) 
 	 */
-	public CheckBoxList(WidgetPanelStringSet panel) {
-		this.widgetPanel = panel;
+	public CheckBoxList() {
 		checkBoxPanel.setLayout(gridbag);
-		
-		JScrollPane scrollPane = new JScrollPane(checkBoxPanel);
-//		scrollPane.setSize(new Dimension(500,100));
-		scrollPane.setPreferredSize(new Dimension(500, 300));
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		add(scrollPane, BorderLayout.CENTER);
-		
+		add(checkBoxPanel, BorderLayout.CENTER);
 		constraints.anchor = GridBagConstraints.WEST;
 	}
 
@@ -73,21 +57,19 @@ public class CheckBoxList extends JPanel implements ActionListener {
 	 *            will add to list.
 	 */
 	public void add(String label) {
-		JCheckBox chkBox = new JCheckBox(label);
-		list.add(chkBox);
-		chkBox.addActionListener(this);
+		list.add(new JCheckBox(label));
 		update();
 	}
 
-	
-	// Return a set of selected items.
-	private Set<String> getSelections() {
+	/**
+	 * Return a set of selected items.
+	 */
+	public Set<String> getSelections() {
 		Set<String> selectionSet = new HashSet<String>();
-//		selectionSet.clear(); // remove all
+		selectionSet.clear(); // remove all
 		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).isSelected()) {
+			if (list.get(i).isSelected())
 				selectionSet.add(list.get(i).getText());
-			}
 		}
 		return selectionSet;
 	}
@@ -100,15 +82,16 @@ public class CheckBoxList extends JPanel implements ActionListener {
 	 */
 	public void setSelections(Set<String> selectionSet) {
 		for (int i = 0; i < this.list.size(); i++) {
-			if (selectionSet.contains(list.get(i).getText())) {
+			if (selectionSet.contains(list.get(i).getText()))
 				list.get(i).setSelected(true);
-			} else {
+			else
 				this.list.get(i).setSelected(false);
-			}
 		}
 	}
 
-	// update checkbox
+	/**
+	 * update JCheckBox's
+	 */
 	private void update() {
 		checkBoxPanel.removeAll();
 		for (int i = 0; i < list.size(); i++) {
@@ -118,6 +101,9 @@ public class CheckBoxList extends JPanel implements ActionListener {
 		}
 	}
 
+	/**
+	 * Define GridBagConstraints
+	 */
 	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
 			int wy) {
 		gbc.gridx = gx;
@@ -126,13 +112,5 @@ public class CheckBoxList extends JPanel implements ActionListener {
 		gbc.gridheight = gh;
 		gbc.weightx = wx;
 		gbc.weighty = wy;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		Set<String> value = getSelections();
-		widgetPanel.fireValueChanged(value);
-		
-//		widgetPanel.specialSet();
 	}
 }

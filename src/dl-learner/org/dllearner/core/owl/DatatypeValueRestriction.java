@@ -22,71 +22,14 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
- * Examples for datatype value restrictions:
- * Male AND hasAge HASVALUE 18
- * Male AND hasDriverLicense HASVALUE true
- * 
  * @author Jens Lehmann
  *
  */
-public abstract class DatatypeValueRestriction extends ValueRestriction {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3263813180892609631L;
-
-	public DatatypeValueRestriction(DatatypeProperty restrictedPropertyExpression, Constant value) {
-		super(restrictedPropertyExpression, value);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toManchesterSyntaxString(baseURI, prefixes);
-	}
+public class DatatypeValueRestriction extends ValueRestriction {
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#getArity()
+	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
 	 */
-	@Override
-	public int getArity() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#getLength()
-	 */
-	// we do not add the + 1 here because e.g. for boolean values we
-	// probably do not want to add it while for double value we may
-	// add it (because "<=" ">=" are possible while boolean has only "=") 
-//	public int getLength() {
-//		return 1 + restrictedPropertyExpression.getLength() + value.getLength();
-//	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
-	 */
-	public String toString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toString(baseURI, prefixes);
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " = " + value.toKBSyntaxString(baseURI, prefixes);
-	}
-
-	@Override
-	public DatatypeProperty getRestrictedPropertyExpression() {
-		return (DatatypeProperty) restrictedPropertyExpression;
-	}
-	
-	@Override
-	public Constant getValue() {
-		return (Constant) value;
-	}	
-	
 	@Override
 	public void accept(DescriptionVisitor visitor) {
 		visitor.visit(this);
@@ -94,5 +37,14 @@ public abstract class DatatypeValueRestriction extends ValueRestriction {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

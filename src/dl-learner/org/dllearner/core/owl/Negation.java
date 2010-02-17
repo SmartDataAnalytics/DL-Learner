@@ -14,22 +14,12 @@ public class Negation extends Description {
     }
     */
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3007095278542800128L;
-
 	public Negation(Description c) {
 		addChild(c);
 	}
 	
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "(NOT " +children.get(0).toString(baseURI, prefixes) + ")";
-    }
-    
-    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-        //TODO brackets removed, but they maybe have to be here
-    	return "NOT " +children.get(0).toKBSyntaxString(baseURI, prefixes) + "";
     }
 
 	public int getLength() {
@@ -58,6 +48,6 @@ public class Negation extends Description {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-        return "(not " +children.get(0).toManchesterSyntaxString(baseURI, prefixes) + ")";		
+        return "(not " +children.get(0).toString(baseURI, prefixes) + ")";		
 	}	
 }

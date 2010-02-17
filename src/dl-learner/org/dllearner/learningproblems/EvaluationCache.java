@@ -27,9 +27,9 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Union;
+import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.SortedSetTuple;
 
 /**
  * Caches results of previous concept evaluation to speed up
@@ -37,7 +37,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * which tries to infer the covered examples of a given concept
  * from previous results.
  * 
- * TODO Under construction.
+ * @todo Under construction.
  * @author Jens Lehmann
  *
  */

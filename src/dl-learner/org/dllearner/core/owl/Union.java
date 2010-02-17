@@ -5,11 +5,6 @@ import java.util.Map;
 
 public class Union extends Description {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4475957631228826618L;
-
 	public Union() {
 		
 	}
@@ -50,25 +45,6 @@ public class Union extends Description {
 			ret += children.get(i).toString(baseURI, prefixes) + " OR "; 
 		}
 		ret += children.get(children.size()-1).toString(baseURI, prefixes) + ")";
-		return ret;
-	}	
-	
-	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		
-		if(children.size()==0)
-			return "EMPTY_OR";
-		
-		String ret = "(";
-		String bracketCollect = "";
-		for(int i=0; i<children.size()-1; i++) {
-			ret += children.get(i).toKBSyntaxString(baseURI, prefixes) + " OR "; 
-			if( i != (children.size()-2) ) { 
-				ret += "(";
-				bracketCollect += ")";
-			}
-		}
-		ret += children.get(children.size()-1).toKBSyntaxString(baseURI, prefixes) + ")";
-		ret += bracketCollect;
 		return ret;
 	}	
 	

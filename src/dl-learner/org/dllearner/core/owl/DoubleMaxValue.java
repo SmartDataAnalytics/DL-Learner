@@ -28,12 +28,8 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class DoubleMaxValue implements SimpleDoubleDataRange {
+public class DoubleMaxValue extends DoubleDataRange {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 465847501541695475L;
 	private double value;
 	
 	public DoubleMaxValue(double value) {
@@ -58,23 +54,12 @@ public class DoubleMaxValue implements SimpleDoubleDataRange {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
 	}	
 	
 }

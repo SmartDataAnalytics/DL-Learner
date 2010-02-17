@@ -25,31 +25,4 @@ package org.dllearner.core.owl;
  */
 public abstract class CardinalityRestriction extends Restriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2405514686030313790L;
-	int cardinality;
-	PropertyRange propertyRange;
-	
-	public CardinalityRestriction(PropertyExpression propertyExpression, PropertyRange propertyRange, int cardinality) {
-		super(propertyExpression);
-		this.propertyRange = propertyRange;
-		this.cardinality = cardinality;
-	}
-
-	/**
-	 * @return the cardinality
-	 */
-	public int getCardinality() {
-		return cardinality;
-	}
-
-	/**
-	 * @return the propertyRange
-	 */
-	public PropertyRange getPropertyRange() {
-		return propertyRange;
-	}
-
 }

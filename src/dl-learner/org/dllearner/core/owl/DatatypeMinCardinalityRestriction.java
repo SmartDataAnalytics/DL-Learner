@@ -27,22 +27,6 @@ import java.util.Map;
  */
 public class DatatypeMinCardinalityRestriction extends DatatypeCardinalityRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7192239562553467873L;
-
-	/**
-	 * @param datatypeProperty
-	 * @param dataRange
-	 * @param cardinality
-	 */
-	public DatatypeMinCardinalityRestriction(DatatypeProperty datatypeProperty,
-			DataRange dataRange, int cardinality) {
-		super(datatypeProperty, dataRange, cardinality);
-		// TODO Auto-generated constructor stub
-	}
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Concept#getArity()
 	 */
@@ -64,11 +48,6 @@ public class DatatypeMinCardinalityRestriction extends DatatypeCardinalityRestri
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,6 +1,6 @@
 Requirements
 ============
-Java 6 is required. (All other libraries are included in the release.)
+Java 6 and a reasoner is required.
 
 Installation
 ============
@@ -8,6 +8,8 @@ No further installation is necessary. Just download and extract DL-Learner.
 
 Running Instructions
 ====================
+The instructions assume that you have a usable reasoner running (usually a
+DIG capable reasoner running on http://localhost:8081).
 
 Linux (and other systems)
 
@@ -20,27 +22,16 @@ Windows:
 Run "dllearner.bat" followed by the name of the file to process, e.g. 
 "dllearner.bat examples/father.conf".
 
-As a convenience method, you can also run "quickstart". The script will present a 
-numbered list of all examples found in the examples folder, where you can choose 
-an examples. You can also call "gui" and load one of the conf files, change try
-differnt configuration options etc.
+All:
 
-Note: You can also use the "java" command to run the program directly. Have a look at 
+You can use the "java" command to run the program directly. Have a look at 
 "dllearner" and "dllearner.bat" to see what the command looks like.
 
 Web-Service
 ===========
 
 If you want to run DL-Learner as a Web Service, you can run the scripts "ws" or
-"ws.bat". They create an own local webserver running DL-Learner. Some simple
-PHP examples for using the web service are available at our SVN Repository:
-http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/
-
-
-Developers
-====================
-
-An example script on how to use DL-Learner is available in Java at
-src/dl-learner/org/dllearner/scripts/NewSample.java. Please drop us a note 
-(mail: lehmann@informatik.uni-leipzig.de) if you plan to use DL-Learner or
-have further questions.
+"ws.bat". They create an own local webserver running DL-Learner. An example
+PHP client is also provided by DL-Learner. It can be downloaded at the 
+sourceforge.net project website:
+http://sourceforge.net/project/showfiles.php?group_id=203619

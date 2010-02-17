@@ -27,11 +27,6 @@ import java.util.Map;
  */
 public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4545077497129132116L;
-
 	public DatatypePropertyDomainAxiom(DatatypeProperty property, Description domain) {
 		super(property, domain);
 	}
@@ -57,15 +52,6 @@ public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
-	 */
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Axiom#accept(org.dllearner.core.owl.AxiomVisitor)
 	 */
 	@Override
@@ -78,15 +64,6 @@ public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 	 */
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
 	}	
 
 }

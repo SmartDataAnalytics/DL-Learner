@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class InverseObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6402501966040365366L;
 	private ObjectProperty inverseRole;
 	private ObjectProperty role;
 	
@@ -30,10 +26,6 @@ public class InverseObjectPropertyAxiom extends PropertyAxiom {
 	
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "Inverse(" + inverseRole + "," + role.toString(baseURI, prefixes) + ")";
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return "Inverse(" + inverseRole.toKBSyntaxString(baseURI, prefixes) + "," + role.toKBSyntaxString(baseURI, prefixes) + ")";
 	}	
 	
 	@Override
@@ -43,13 +35,5 @@ public class InverseObjectPropertyAxiom extends PropertyAxiom {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "INVERSEOBJECTPROPERTYAXIOM NOT IMPLEMENTED";
 	}	
 }

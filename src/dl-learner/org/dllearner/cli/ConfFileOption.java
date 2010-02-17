@@ -23,7 +23,7 @@ package org.dllearner.cli;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.StringTuple;
 
 /**
  * Represents one configuration option in a conf file, e.g.

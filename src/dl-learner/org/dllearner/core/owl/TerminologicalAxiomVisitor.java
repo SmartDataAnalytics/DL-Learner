@@ -29,5 +29,4 @@ public interface TerminologicalAxiomVisitor {
 	
 	public void visit(SubClassAxiom axiom);
 	
-	public void visit(DisjointClassesAxiom axiom);
 }

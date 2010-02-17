@@ -1,27 +1,7 @@
-/**
- * Copyright (C) 2007-2009, Jens Lehmann
- *
- * This file is part of DL-Learner.
- * 
- * DL-Learner is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * DL-Learner is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package org.dllearner.reasoning;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -29,58 +9,46 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.SortedSetTuple;
 
-/**
- * 
- * Reasoner for fast retrieval inference (other tasks redirected to OWL API reasoner). Not actively used anymore.
- * 
- * @author Jens Lehmann
- *
- */
 public class FastRetrievalReasoner extends ReasonerComponent {
 
-	private FastRetrievalReasonerConfigurator configurator;
-	@Override
-	public FastRetrievalReasonerConfigurator getConfigurator(){
-		return configurator;
-	}
-	
 	FlatABox abox;
 	FastRetrieval fastRetrieval;
 	Set<NamedClass> atomicConcepts;
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 	
+	ReasoningService rs;
 	ReasonerComponent rc;
 	
 	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
-		super(sources);
-		this.configurator = new FastRetrievalReasonerConfigurator(this);
-		
-		rc = ComponentFactory.getOWLAPIReasoner(sources);
+		rc = new DIGReasoner(sources);
 		try {
 			rc.init();
 		} catch (ComponentInitException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		atomicConcepts = rc.getNamedClasses();
-		atomicRoles = rc.getObjectProperties();
+		atomicConcepts = rc.getAtomicConcepts();
+		atomicRoles = rc.getAtomicRoles();
 		individuals = rc.getIndividuals();
-//		rs = new ReasonerComponent(rc);
+		rs = new ReasoningService(rc);
 		try {
-			abox = Helper.createFlatABox(rc);
+			abox = Helper.createFlatABox(rs);
 		} catch (ReasoningMethodUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,11 +57,9 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}	
 	
 	public FastRetrievalReasoner(FlatABox abox) {
-		super(null);
-		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		this.abox = abox;
 		fastRetrieval = new FastRetrieval(abox);
-
+		
 		// atomare Konzepte und Rollen initialisieren
 		atomicConcepts = new HashSet<NamedClass>();
 		for(String concept : abox.concepts) {
@@ -109,33 +75,31 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		
 	}
 	
-	@Override
 	public ReasonerType getReasonerType() {
 		return ReasonerType.FAST_RETRIEVAL;
 	}
 
 	@Override		
-	public SortedSetTuple<Individual> doubleRetrievalImpl(Description concept) {
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept) {
 		return Helper.getIndividualTuple(fastRetrieval.calculateSets(concept));
 	}	
 	
-//	@Override		
-//	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
-//		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
-//		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
-//	}	
+	@Override		
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
+		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
+		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
+	}	
 	
 	@Override		
-	public SortedSet<Individual> getIndividualsImpl(Description concept) {
+	public SortedSet<Individual> retrieval(Description concept) {
 		return Helper.getIndividualSet(fastRetrieval.calculateSets(concept).getPosSet());
 	}
 	
-	public Set<NamedClass> getNamedClasses() {
+	public Set<NamedClass> getAtomicConcepts() {
 		return atomicConcepts;
 	}
 
-	@Override
-	public Set<ObjectProperty> getObjectProperties() {
+	public Set<ObjectProperty> getAtomicRoles() {
 		return atomicRoles;
 	}
 
@@ -149,47 +113,44 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 
 	// C \sqsubseteq D is rewritten to a retrieval for \not C \sqcap D
 	@Override
-	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
-//		Negation neg = new Negation(subConcept);
-//		Intersection c = new Intersection(neg,superConcept);
-//		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rc.isSuperClassOf(superConcept, subConcept);
+	public boolean subsumes(Description superConcept, Description subConcept) {
+		Negation neg = new Negation(subConcept);
+		Intersection c = new Intersection(neg,superConcept);
+		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
 	}
 	
-//	@Override
-//	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-//		rs.prepareRoleHierarchy(allowedRoles);
-//	}	
+	@Override
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
+		rs.prepareRoleHierarchy(allowedRoles);
+	}	
 	
-//	@Override
-//	public ObjectPropertyHierarchy getRoleHierarchy() {
-//		return rs.getRoleHierarchy();
-//	}	
+	@Override
+	public ObjectPropertyHierarchy getRoleHierarchy() {
+		return rs.getRoleHierarchy();
+	}	
 	
-//	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
-//		rs.prepareSubsumptionHierarchy(allowedConcepts);
-//	}
+	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
+		rs.prepareSubsumptionHierarchy(allowedConcepts);
+	}
 
-//	@Override
-//	public ClassHierarchy getClassHierarchy() {
-//		return rs.getClassHierarchy();
-//	}	
+	@Override
+	public SubsumptionHierarchy getSubsumptionHierarchy() {
+		return rs.getSubsumptionHierarchy();
+	}	
 	
 	@Override
-	public boolean isSatisfiableImpl() {
-		return rc.isSatisfiable();
+	public boolean isSatisfiable() {
+		return rs.isSatisfiable();
 	}
 	
 	@Override
-	public boolean hasTypeImpl(Description concept, Individual individual) {
+	public boolean instanceCheck(Description concept, Individual individual) {
 		return fastRetrieval.calculateSets(concept).getPosSet().contains(individual.getName());
 	}
 	
 	public static String getName() {
 		return "fast retrieval reasoner";
-	} 	
-	
-	
+	} 		
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
@@ -208,32 +169,4 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#getBaseURI()
-	 */
-	public String getBaseURI() {
-		return rc.getBaseURI();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#getPrefixes()
-	 */
-	public Map<String, String> getPrefixes() {
-		return rc.getPrefixes();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.ReasonerComponent#releaseKB()
-	 */
-	@Override
-	public void releaseKB() {
-		rc.releaseKB();
-	}
-
-
-//	@Override
-//	public boolean hasDatatypeSupport() {
-//		return true;
-//	}
 }

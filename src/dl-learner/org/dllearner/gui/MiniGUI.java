@@ -46,10 +46,11 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.reasoning.DIGReasoner;
 
 /**
@@ -63,7 +64,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -4247224068574471307L;
 
 	private static ComponentManager cm = ComponentManager.getInstance();
-	private ReasonerComponent rs;
+	private ReasoningService rs;
 	private File selectedFile;
 	
 	private JButton openButton;
@@ -150,8 +151,8 @@ public class MiniGUI extends JPanel implements ActionListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-//				rs = cm.reasoningService(reasoner);
-				Set<Individual> individualsSet = reasoner.getIndividuals();
+				rs = cm.reasoningService(reasoner);
+				Set<Individual> individualsSet = rs.getIndividuals();
 				individuals = new LinkedList<Individual>(individualsSet);
 				
 				DefaultListModel listModel = new DefaultListModel();
@@ -168,7 +169,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 				exampleSet.add(individuals.get(i).toString());
 			
 			// create a positive only learning problem
-			LearningProblem lp = cm.learningProblem(PosOnlyLP.class, rs);
+			LearningProblem lp = cm.learningProblem(PosOnlyDefinitionLP.class, rs);
 			cm.applyConfigEntry(lp, "positiveExamples", exampleSet);
 			try {
 				lp.init();
@@ -197,7 +198,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 			// wait for a solution (note that not all learning problems have a
 			// solution (100% accuracy), so one usually has to run the algorithm in its own
 			// thread, such that it can be aborted after some time
-			Description solution = la.getCurrentlyBestDescription();
+			Description solution = la.getBestSolution();
 			solutionDisplay.setText(solution.toString());
 		}
 	}

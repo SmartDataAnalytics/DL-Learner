@@ -2,7 +2,7 @@ package org.dllearner.algorithms.refinement;
 
 import java.util.Comparator;
 
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.ConceptComparator;
 
 /**
  * Der Comparator ist stable, weil er nur nach covered negatives,

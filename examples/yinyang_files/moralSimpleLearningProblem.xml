@@ -19,9 +19,7 @@ reasonerURL ="http://localhost:8081"
 
 >
 
-<Experiments>
-	<kFoldCrossValidation k="5"/>
-	</Experiments>
+<Experiments/>
 <Namespaces>
 	<Namespace uri="http://localhost/foo#"></Namespace>
 </Namespaces>

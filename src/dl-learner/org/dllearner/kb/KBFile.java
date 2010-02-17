@@ -21,23 +21,30 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.configurators.KBFileConfigurator;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.URLConfigOption;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
+import org.dllearner.reasoning.OWLAPIAxiomConvertVisitor;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owl.util.SimpleURIMapper;
 
 /**
  * KB files are an internal convenience format used in DL-Learner. Their
@@ -49,18 +56,15 @@ import org.dllearner.reasoning.DIGConverter;
  */
 public class KBFile extends KnowledgeSource {
 
-	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(KBFile.class);
-	
+	// private File file;
+	private URL url;
 	private KB kb;
-	
-	private KBFileConfigurator configurator;
 
 	/**
 	 * Default constructor (needed for reflection in ComponentManager).
 	 */
 	public KBFile() {
-		configurator = new KBFileConfigurator(this);
+		
 	}
 	
 	/**
@@ -72,26 +76,17 @@ public class KBFile extends KnowledgeSource {
 	 * @param kb A KB object.
 	 */
 	public KBFile(KB kb) {
-		configurator = new KBFileConfigurator(this);
 		this.kb = kb;
 	}
-	
-	@Override
-	public KBFileConfigurator getConfigurator(){
-		return configurator;
-	}	
 	
 	public static String getName() {
 		return "KB file";
 	}
-	
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-//		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, true, true));
-		URLConfigOption urlOption = new URLConfigOption("url", "URL pointer to the KB file",null, false, true);
-		urlOption.setRefersToFile(true);
-		options.add(urlOption);
+		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system"));
+		options.add(new StringConfigOption("url", "URL pointer to the KB file"));
 		return options;
 	}
 
@@ -100,7 +95,21 @@ public class KBFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-	
+		String option = entry.getOptionName();
+		if (option.equals("filename")) {
+			// file = new File((String)entry.getValue());
+			try {
+				url = new File((String)entry.getValue()).toURI().toURL();
+			} catch (MalformedURLException e) {
+				throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
+			}
+		} else if(option.equals("url")) {
+			try {
+				url = new URL((String)entry.getValue());
+			} catch (MalformedURLException e) {
+				throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -109,25 +118,13 @@ public class KBFile extends KnowledgeSource {
 	@Override
 	public void init() throws ComponentInitException {
 		try {
-			
-			// we either need a specified URL (if object is created  
-			// via component manager) or the kb object has been
-			// passed directly (via constructor)
-			if(kb == null) {
-				if(configurator.getUrl() != null) {
-					kb = KBParser.parseKBFile(configurator.getUrl());
-					logger.trace("KB File " + configurator.getUrl() + " parsed successfully.");
-				} else {
-					throw new ComponentInitException("No URL option or kb object given. Cannot initialise KBFile component.");
-				}
-			}
-						
+			if(url != null)
+				kb = KBParser.parseKBFile(url);
 		} catch (IOException e) {
-			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be read.", e);
+			throw new ComponentInitException("KB file " + url + " could not be read.", e);
 		} catch (ParseException e) {
-			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be parsed correctly.", e);
+			throw new ComponentInitException("KB file " + url + " could not be parsed correctly.", e);
 		}
-		
 	}
 	
 	/*
@@ -150,29 +147,52 @@ public class KBFile extends KnowledgeSource {
 	
 	@Override
 	public void export(File file, org.dllearner.core.OntologyFormat format){
-		kb.export(file, format);
-//		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-//        URI ontologyURI = URI.create("http://example.com");
-//        URI physicalURI = file.toURI();
-//        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
-//        manager.addURIMapper(mapper);
-//        OWLOntology ontology;
-//		try {
-//			ontology = manager.createOntology(ontologyURI);
-//			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
-//			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
-//			manager.saveOntology(ontology);			
-//		} catch (OWLOntologyCreationException e) {
-//			e.printStackTrace();
-//		} catch (UnknownOWLOntologyException e) {
-//			e.printStackTrace();
-//		} catch (OWLOntologyStorageException e) {
-//			e.printStackTrace();
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        URI ontologyURI = URI.create("http://example.com");
+        URI physicalURI = file.toURI();
+        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
+        manager.addURIMapper(mapper);
+        OWLOntology ontology;
+		try {
+			ontology = manager.createOntology(ontologyURI);
+			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
+			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
+			manager.saveOntology(ontology);			
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+//		Reasoner kaon2Reasoner = KAON2Reasoner.getKAON2Reasoner(kb);
+//		
+//		String kaon2Format = null;
+//		if(format.equals(org.dllearner.core.OntologyFormat.RDF_XML))
+//			kaon2Format = OntologyFileFormat.OWL_RDF;
+//		else {
+//			System.err.println("Warning: Cannot export format " + format + ". Exiting.");
+//			System.exit(0);
 //		}
+//		
+//		try {
+//			kaon2Reasoner.getOntology().saveOntology(kaon2Format,file,"ISO-8859-1");
+//		} catch (KAON2Exception e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}		
 	}
 	
 	public URL getURL() {
-		return configurator.getUrl();
+		return url;
 	}
 
 	@Override

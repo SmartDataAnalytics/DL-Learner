@@ -30,26 +30,17 @@ import java.util.Map;
  */
 public class ObjectAllRestriction extends ObjectQuantorRestriction {
     
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -882418755852820088L;
-
 	public ObjectAllRestriction(ObjectPropertyExpression role, Description c) {
 		super(role, c);
 	}
 		
     public String toString(String baseURI, Map<String,String> prefixes) {
-        return "ALL " + restrictedPropertyExpression.toString(baseURI, prefixes) + "." + children.get(0).toString(baseURI, prefixes);
-    }
-    
-    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-        return "ALL " + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + "." + children.get(0).toKBSyntaxString(baseURI, prefixes);
+        return "ALL " + role + "." + children.get(0).toString(baseURI, prefixes);
     }
       
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-	    return restrictedPropertyExpression.toString(baseURI, prefixes) + " only " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
+	    return role.toString(baseURI, prefixes) + " some " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
 	}	   
     
 	/* (non-Javadoc)

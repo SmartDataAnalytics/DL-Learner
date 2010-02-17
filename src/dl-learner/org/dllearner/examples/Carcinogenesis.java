@@ -24,19 +24,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.DifferentIndividualsAxiom;
-import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
@@ -87,45 +81,14 @@ public class Carcinogenesis {
 	// mapping of symbols to names of chemical elements
 	private static Map<String, String> chemElements;
 
-	// structures in newgroups.pl
-	private static Set<String> newGroups = new TreeSet<String>();
-	
-	// types of atoms, bonds, and structures
+	// types of atoms and bonds
 	private static Set<String> atomTypes = new TreeSet<String>();
 	private static Set<String> bondTypes = new TreeSet<String>();
-	private static Set<String> structureTypes = new TreeSet<String>();
 
 	// we need a counter for bonds, because they are instances in OWL
 	// but not in Prolog
 	private static int bondNr = 0;
-	private static int structureNr = 0;
-	
-	// list of all individuals in the knowlege base
-//	private static Set<String> individuals = new TreeSet<String>();	
-	// list of all compounds
-	private static Set<String> compounds = new TreeSet<String>(); 
-	// compounds with positive ames test
-	private static Set<String> compoundsAmes = new TreeSet<String>();
-	// list of all bonds
-	private static Set<String> bonds = new TreeSet<String>();
-	
-	// list of all "hasProperty" test
-	private static Set<String> tests = new TreeSet<String>();
-	
-	// we ignore the ames test since its distribution in PTE-2 is so
-	// different from the training substances that a different testing
-	// strategy was probably in use
-	private static boolean ignoreAmes = false;
-	private static boolean ignoreSalmonella = false;;
-	private static boolean ignoreCytogenCa = false;
-	private static boolean includeMutagenesis = true;
-	// if true we learn carcinogenic, if false we learn non-carcinogenic
-	private static boolean learnCarcinogenic = true;
-	private static boolean useNewGroups = true;
-	
-	private static boolean createPTE1Conf = false;
-	private static boolean createPTE2Conf = false;
-	
+
 	/**
 	 * @param args
 	 *            No arguments supported.
@@ -136,13 +99,11 @@ public class Carcinogenesis {
 	public static void main(String[] args) throws FileNotFoundException, IOException,
 			ParseException {
 
-		String[] files = new String[] { "newgroups.pl", "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
-				"ind_nos.pl", "ind_pos.pl"};
-		// "pte2/canc_nos.pl", "pte2/pte2ames.pl", "pte2/pte2atoms.pl",
-		//		"pte2/pte2bonds.pl", "pte2/pte2gentox.pl", "pte2/pte2ind_nos.pl", "pte2/pte2newgroups.pl"
+		String[] files = new String[] { "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
+				"ind_nos.pl", "ind_pos.pl", "newgroups.pl",
 		// "train.b" => not a pure Prolog file but Progol/Aleph specific
-		// };
-		File owlFile = new File("examples/carcinogenesis/carcinogenesis.owl");
+		};
+		File owlFile = new File("examples/carcinogenesis/pte.owl");
 
 		Program program = null;
 		long startTime, duration;
@@ -171,7 +132,6 @@ public class Carcinogenesis {
 		// prepare mapping
 		KB kb = new KB();
 		createChemElementsMapping();
-		createNewGroups();
 		// create subclasses of atom
 		NamedClass atomClass = getAtomicConcept("Atom");
 		for (String element : chemElements.values()) {
@@ -180,27 +140,7 @@ public class Carcinogenesis {
 			kb.addAxiom(sc);
 		}
 		// define properties including domain and range
-		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = " + getURI2("Atom") + ".\n";
-		kbString += "DPRANGE(" + getURI2("charge") + ") = DOUBLE.\n";
-		if(!ignoreAmes) {
-			kbString += "DPDOMAIN(" + getURI2("amesTestPositive") + ") = " + getURI2("Compound") + ".\n";
-			kbString += "DPRANGE(" + getURI2("amesTestPositive") + ") = BOOLEAN.\n";
-		}
-		if(includeMutagenesis) {
-			kbString += "DPDOMAIN(" + getURI2("isMutagenic") + ") = " + getURI2("Compound") + ".\n";
-			kbString += "DPRANGE(" + getURI2("isMutagenic") + ") = BOOLEAN.\n";
-		}
-		kbString += "OPDOMAIN(" + getURI2("hasAtom") + ") = " + getURI2("Compound") + ".\n";
-		kbString += "OPRANGE(" + getURI2("hasAtom") + ") = " + getURI2("Atom") + ".\n";
-		kbString += "OPDOMAIN(" + getURI2("hasBond") + ") = " + getURI2("Compound") + ".\n";
-		kbString += "OPRANGE(" + getURI2("hasBond") + ") = " + getURI2("Bond") + ".\n";
-		kbString += "OPDOMAIN(" + getURI2("inBond") + ") = " + getURI2("Bond") + ".\n";
-		kbString += "OPRANGE(" + getURI2("inBond") + ") = " + getURI2("Atom") + ".\n";
-		kbString += "OPDOMAIN(" + getURI2("hasStructure") + ") = " + getURI2("Compound") + ".\n";
-		kbString += "OPRANGE(" + getURI2("hasStructure") + ") = " + getURI2("Structure") + ".\n";
-		kbString += getURI2("Di") + " SUB " + getURI2("Structure") + ".\n";
-		kbString += getURI2("Halide") + " SUB " + getURI2("Structure") + ".\n";
-		kbString += getURI2("Ring") + " SUB " + getURI2("Structure") + ".\n";
+		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = " + getURI2("Atom") + ".";
 		KB kb2 = KBParser.parseKBFile(kbString);
 		kb.addKB(kb2);
 
@@ -213,38 +153,6 @@ public class Carcinogenesis {
 			for (Axiom axiom : axioms)
 				kb.addAxiom(axiom);
 		}
-		
-		if(includeMutagenesis)
-			addMutagenesis(kb);
-		
-		// special handling for ames test (we assume the ames test
-		// was performed on all compounds but only the positive ones
-		// are in ames.pl [the rest is negative in Prolog by CWA], so
-		// we add negative test results here)
-		for(String compound : compounds) {
-			if(!ignoreAmes && !compoundsAmes.contains(compound)) {
-				BooleanDatatypePropertyAssertion ames = getBooleanDatatypePropertyAssertion(compound, "amesTestPositive", false);
-				kb.addAxiom(ames);
-			}
-		}
-		
-		// disjoint classes axioms
-		// OWL API is also buggy here, it adds a strange unused prefix
-		// and cannot parser its own generated file
-//		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(atomTypes);
-//		kb.addAxiom(disjointAtomTypes);
-		String[] mainClasses = new String[] {"Compound", "Atom", "Bond", "Structure"};
-		Set<String> mainClassesSet = new HashSet<String>(Arrays.asList(mainClasses));
-		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(mainClassesSet);
-		kb.addAxiom(disjointAtomTypes);		
-		
-		// all different axiom (UNA)
-		// exporting differentIndividuals axioms is broken in OWL API
-//		individuals.addAll(compounds);
-//		individuals.addAll(bonds);
-//		DifferentIndividualsAxiom una = getDifferentIndividualsAxiom(individuals);
-//		kb.addAxiom(una);
-		
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
@@ -260,14 +168,8 @@ public class Carcinogenesis {
 		// generating conf files
 		File confTrainFile = new File("examples/carcinogenesis/train.conf");
 		Files.clearFile(confTrainFile);
-		String confHeader = "import(\"carcinogenesis.owl\");\n\n";
-		confHeader += "reasoner = fastInstanceChecker;\n";
-		confHeader += "algorithm = refexamples;\n";
-		confHeader += "refexamples.noisePercentage = 31;\n";
-		confHeader += "refexamples.startClass = " + getURI2("Compound") + ";\n";
-		confHeader += "refexamples.writeSearchTree = false;\n";
-		confHeader += "refexamples.searchTreeFile = \"log/carcinogenesis/searchTree.log\";\n";
-		confHeader += "\n";
+		String confHeader = "import(\"pte.owl\");\n\n";
+		confHeader += "reasoner = owlAPI;\n";
 		Files.appendFile(confTrainFile, confHeader);
 		
 		// generating training examples
@@ -280,63 +182,36 @@ public class Carcinogenesis {
 		appendNegExamples(confTrainFile, negTrainExamples);
 		
 		// generating test examples for PTE-1
-		// => put all in one file, because they were used as training for PTE-2
 		File confPTE1File = new File("examples/carcinogenesis/testpte1.conf");
+		Files.clearFile(confPTE1File);
 		File testPTE1Positives = new File(prologDirectory + "pte1.f");
 		File testPTE1Negatives = new File(prologDirectory + "pte1.n");
 		
 		List<Individual> posPTE1Examples = getExamples(testPTE1Positives);
 		List<Individual> negPTE1Examples = getExamples(testPTE1Negatives);
-		appendPosExamples(confTrainFile, posPTE1Examples);
-		appendNegExamples(confTrainFile, negPTE1Examples);
-		if(createPTE1Conf) {
-			Files.clearFile(confPTE1File);
-			Files.appendFile(confPTE1File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
-			appendPosExamples(confPTE1File, posPTE1Examples);
-			appendNegExamples(confPTE1File, negPTE1Examples);
-		}
+		appendPosExamples(confPTE1File, posPTE1Examples);
+		appendNegExamples(confPTE1File, negPTE1Examples);		
 		
-		// create a PTE-2 test file
-		if(createPTE2Conf) {
-			File confPTE2File = new File("examples/carcinogenesis/testpte2.conf");
-			Files.clearFile(confPTE2File);
-			Files.appendFile(confPTE2File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
-			Files.appendFile(confPTE2File, getPTE2Examples());
-		}
-
+		// TODO: how to get PTE-2 predictions? the pte-2 directory suggests
+		// that all are positive which is not true (according to the papers)
+		// solution: go to "http://ntp-server.niehs.nih.gov/" and click
+		// on "Testing Status of Agents at NTP"
 	}
 
-	private static List<Axiom> mapClause(Clause clause) throws IOException, ParseException {
+	private static List<Axiom> mapClause(Clause clause) {
 		List<Axiom> axioms = new LinkedList<Axiom>();
 		Atom head = clause.getHead();
 		String headName = head.getName();
 		// Body body = clause.getBody();
 		// ArrayList<Literal> literals = body.getLiterals();
 		// handle: atm(compound,atom,element,atomtype,charge)
-		
-		// Ames-Test: http://en.wikipedia.org/wiki/Ames_test
-		// problem: the file apparently mentions only positive
-		// tests (why is it different from the other tests e.g. in
-		// gentoxprops.pl?) => we need to add negative axioms for the
-		// remaining stuff or use closed world assumption in the 
-		// TBox dematerialisation later on
-		if(headName.equals("ames")) {
-			if(!ignoreAmes) {
-			String compoundName = head.getArgument(0).toPLString();
-			BooleanDatatypePropertyAssertion ames = getBooleanDatatypePropertyAssertion(compoundName, "amesTestPositive", true);
-			axioms.add(ames);
-			compoundsAmes.add(compoundName);
-			}
-		} else if (headName.equals("atm")) {
+		if (headName.equals("atm")) {
+
 			String compoundName = head.getArgument(0).toPLString();
 			String atomName = head.getArgument(1).toPLString();
 			String elementName = head.getArgument(2).toPLString();
 			String type = head.getArgument(3).toPLString();
 			double charge = Double.parseDouble(head.getArgument(4).toPLString());
-			// make the compound an instance of the Compound class
-			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Compound", compoundName);
-			axioms.add(cmpAxiom);
-			compounds.add(compoundName);
 			// relate compound and atom
 			ObjectPropertyAssertion ra = getRoleAssertion("hasAtom", compoundName, atomName);
 			axioms.add(ra);
@@ -363,7 +238,6 @@ public class Carcinogenesis {
 			String bondType = head.getArgument(3).toPLString();
 			String bondClass = "Bond-" + bondType;
 			String bondInstance = "bond" + bondNr;
-			bonds.add(bondInstance);
 			ObjectPropertyAssertion op = getRoleAssertion("hasBond", compoundName, "bond" + bondNr);
 			axioms.add(op);
 			// make Bond-X subclass of Bond if that hasn't been done already
@@ -382,94 +256,15 @@ public class Carcinogenesis {
 			ObjectPropertyAssertion op2 = getRoleAssertion("inBond", bondInstance, atom2Name);
 			axioms.add(op1);
 			axioms.add(op2);
-		} else if (headName.equals("has_property")) {
-			String compoundName = head.getArgument(0).toPLString();
-			String testName = head.getArgument(1).toPLString();
-			if(!(ignoreSalmonella && testName.equals("salmonella"))
-				&& !(ignoreCytogenCa && testName.equals("cytogen_ca"))) {
-				String resultStr = head.getArgument(2).toPLString();
-				boolean testResult = (resultStr.equals("p")) ? true : false;
-					
-				// create a new datatype property if it does not exist already
-				if(!tests.contains(testName)) {
-					String axiom1 = "DPDOMAIN(" + getURI2(testName) + ") = " + getURI2("Compound") + ".\n";
-					String axiom2 = "DPRANGE(" + getURI2(testName) + ") = BOOLEAN.\n";
-					KB kb = KBParser.parseKBFile(axiom1 + axiom2);
-					axioms.addAll(kb.getAxioms());
-				}
-				// create an axiom with the test result
-				DatatypePropertyAssertion dpa = getBooleanDatatypePropertyAssertion(compoundName, testName,
-						testResult);
-				axioms.add(dpa);
-			}
-		// either parse this or ashby_alert - not both - ashby_alert contains
-		// all information in ind already
-		} else if (headName.equals("ind") || headName.equals("ring_no")) {
-			// parse this only if the new groups are not parsed
-//			if(!useNewGroups) {
-			String compoundName = head.getArgument(0).toPLString();
-			String structureName = head.getArgument(1).toPLString();
-			int count = Integer.parseInt(head.getArgument(2).toPLString());
-			// upper case first letter
-			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
-			String structureInstance = structureName + "-" + structureNr;
-			
-			addStructureSubclass(axioms, structureClass);	
-			
-			for(int i=0; i<count; i++) {
-				ObjectPropertyAssertion op = getRoleAssertion("hasStructure", compoundName, structureInstance);
-				axioms.add(op);
-				// make e.g. halide10-382 instance of Bond-3
-				ClassAssertionAxiom ca = getConceptAssertion(structureClass, structureInstance);
-				axioms.add(ca);
-				structureNr++;
-			}
-//			}
-		} else if (headName.equals("ashby_alert")) {
-			// ... currently ignored ...
-		} else if (newGroups.contains(headName)) {
-			if(useNewGroups) {
-			String compoundName = head.getArgument(0).toPLString();
-			String structureName = headName;
-			// upper case first letter
-			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
-			String structureInstance = structureName + "-" + structureNr;
-			
-			addStructureSubclass(axioms, structureClass);
-			
-				ObjectPropertyAssertion op = getRoleAssertion("hasStructure", compoundName, structureInstance);
-				axioms.add(op);
-				ClassAssertionAxiom ca = getConceptAssertion(structureClass, structureInstance);
-				axioms.add(ca);
-				structureNr++;
-			}
 		} else {
 			// print clauses which are not supported yet
 			System.out.println("unsupported clause");
 			System.out.println(clause.toPLString());
 			System.out.println(clause);
-			System.exit(0);
 		}
 		return axioms;
 	}
 
-	private static void addStructureSubclass(List<Axiom> axioms, String structureClass) {
-		// build in more fine-grained subclasses e.g. Di+number is subclass of Di
-		if (!structureTypes.contains(structureClass)) {
-			NamedClass nc = getAtomicConcept("Structure");
-			if(structureClass.contains("Di"))
-				nc = getAtomicConcept("Di");
-			else if(structureClass.contains("ring") || structureClass.contains("Ring"))
-				nc = getAtomicConcept("Ring");
-			else if(structureClass.contains("halide") || structureClass.contains("Halide"))
-				nc = getAtomicConcept("Halide");
-			NamedClass subClass = getAtomicConcept(structureClass);
-			SubClassAxiom sc = new SubClassAxiom(subClass, nc);
-			axioms.add(sc);
-			structureTypes.add(structureClass);
-		}			
-	}
-	
 	// takes a *.f or *.n file as input and returns the 
 	// contained examples
 	private static List<Individual> getExamples(File file) throws FileNotFoundException, IOException, ParseException {
@@ -484,24 +279,18 @@ public class Carcinogenesis {
 		return ret;
 	}
 	
-	public static void appendPosExamples(File file, List<Individual> examples) {
+	private static void appendPosExamples(File file, List<Individual> examples) {
 		StringBuffer content = new StringBuffer();
 		for(Individual example : examples) {
-			if(learnCarcinogenic)
-				content.append("+\""+example.toString()+"\"\n");
-			else
-				content.append("-\""+example.toString()+"\"\n");
+			content.append("+\""+example.toString()+"\"\n");
 		}
 		Files.appendFile(file, content.toString());
 	}
 	
-	public static void appendNegExamples(File file, List<Individual> examples) {
+	private static void appendNegExamples(File file, List<Individual> examples) {
 		StringBuffer content = new StringBuffer();
 		for(Individual example : examples) {
-			if(learnCarcinogenic)
-				content.append("-\""+example.toString()+"\"\n");
-			else
-				content.append("+\""+example.toString()+"\"\n");
+			content.append("-\""+example.toString()+"\"\n");
 		}
 		Files.appendFile(file, content.toString());
 	}	
@@ -523,13 +312,6 @@ public class Carcinogenesis {
 		return new ObjectPropertyAssertion(ar, ind1, ind2);
 	}
 
-	private static BooleanDatatypePropertyAssertion getBooleanDatatypePropertyAssertion(
-			String individual, String datatypeProperty, boolean value) {
-		Individual ind = getIndividual(individual);
-		DatatypeProperty dp = getDatatypeProperty(datatypeProperty);
-		return new BooleanDatatypePropertyAssertion(dp, ind, value);
-	}	
-	
 	private static DoubleDatatypePropertyAssertion getDoubleDatatypePropertyAssertion(
 			String individual, String datatypeProperty, double value) {
 		Individual ind = getIndividual(individual);
@@ -537,22 +319,6 @@ public class Carcinogenesis {
 		return new DoubleDatatypePropertyAssertion(dp, ind, value);
 	}
 
-	@SuppressWarnings({"unused"})
-	private static DisjointClassesAxiom getDisjointClassesAxiom(Set<String> classes) {
-		Set<Description> descriptions = new HashSet<Description>();
-		for(String namedClass : classes)
-			descriptions.add(new NamedClass(getURI(namedClass)));
-		return new DisjointClassesAxiom(descriptions);
-	}
-	
-	@SuppressWarnings({"unused"})
-	private static DifferentIndividualsAxiom getDifferentIndividualsAxiom(Set<String> individuals) {
-		Set<Individual> inds = new HashSet<Individual>();
-		for(String i : individuals)
-			inds.add(new Individual(i));
-		return new DifferentIndividualsAxiom(inds);
-	}	
-	
 	private static Individual getIndividual(String name) {
 		return new Individual(ontologyURI + "#" + name);
 	}
@@ -618,161 +384,5 @@ public class Carcinogenesis {
 		chemElements.put("ti", "Titanium");
 		chemElements.put("v", "Vanadium");
 		chemElements.put("zn", "Zinc");
-	}
-	
-	private static void createNewGroups() {		
-		String[] groups = new String[] {"six_ring", "non_ar_6c_ring",
-				"ketone", "amine", "alcohol", "ether", "ar_halide",
-				"five_ring", "non_ar_5c_ring", "alkyl_halide",
-				"methyl", "non_ar_hetero_5_ring", "nitro", "sulfo",
-				"methoxy", "amine", "aldehyde", "sulfide",
-				"non_ar_hetero_6_ring", "phenol", "carboxylic_acid",
-				"ester", "imine", 
-		};
-		
-		List<String> list = Arrays.asList(groups);
-		newGroups.addAll(list);
-	}
-
-	/**
-	 * <p>To find out whether a substance is carinogenetic go to 
-	 * "http://ntp-server.niehs.nih.gov/" and click
-	 * on "Testing Status of Agents at NTP".</p>
-	 * 
-	 * Levels:
-	 * <ul>
-	 * 	<li>CE = clear evidence</li>
-	 *  <li>SE = some evidence</li>
-	 *  <li>E = equivocal evidence</li>
-	 *  <li>NE = no evidence</li>
-	 * </ul>
-	 * Levels CE and SE are positive examples. E and NE negative examples.
-	 * Experiments are performed on rats and mice of both genders, so we
-	 * have four evidence values. An example is positive if at least one
-	 * value is SE or CE.
-	 * 
-	 * <p>Some values are taken from the IJCAI-97 paper of Muggleton.</p>
-	 * 
-	 * <p>Positives (19): <br />
-	 * <ul>
-	 * <li>t3 (SE+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCACAFD4-123F-7908-7B521E4F665EFBD9</li>
-	 * <li>t4 (3CE+NE) - contradicts IJCAI-97 paper and should probably be case 75-52-5 instead of 75-52-8: http://ntp.niehs.nih.gov/index.cfm?objectid=BCE49084-123F-7908-7BE127F7AF1FFBB5</li>
-	 * <li>t5: paper</li>
-	 * <li>t7: paper</li>
-	 * <li>t8: paper</li>
-	 * <li>t9 (3CE+SE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD7C6869-123F-7908-7BDEA4CFAA55CEA8</li>
-	 * <li>t10: paper</li>
-	 * <li>t12 (2SE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCB0ADE0-123F-7908-7BEC101C7309C4DE</li>
-	 * <li>t14 (2CE+2NE) probably 111-42-2 instead of 11-42-2: http://ntp.niehs.nih.gov/index.cfm?objectid=BCC60FF1-123F-7908-7B2D579AA48DE90C</li>
-	 * <li>t15: paper</li>
-	 * <li>t16 (2CE+SE+E): http://ntp.niehs.nih.gov/index.cfm?objectid=BCC5D9CE-123F-7908-7B959CCE5262468A</li>
-	 * <li>t18 (2SE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCA087AA-123F-7908-7B79FDFDE3CDCF87</li>
-	 * <li>t19 (2CE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCAE5690-123F-7908-7B02E35E2BB57694</li>
-	 * <li>t20 (2SE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCF95607-123F-7908-7B0761D3C515CC12</li>
-	 * <li>t21 (CE+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCFCB63C-123F-7908-7BF910C2783AE9FE</li>
-	 * <li>t22 (SE+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD8345C2-123F-7908-7BC52FEF80F110E1</li>
-	 * <li>t23 (4CE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCADD2D9-123F-7908-7B5C8180FE80B22F</li>
-	 * <li>t24 (CE+E): http://ntp.niehs.nih.gov/index.cfm?objectid=BCFB19FF-123F-7908-7B845E176F13E6E1</li>
-	 * <li>t25 (3CE+SE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD2D2A62-123F-7908-7B0DA824E782754C</li>
-	 * <li>t30 (2CE+SE+E) : http://ntp.niehs.nih.gov/index.cfm?objectid=BCB13734-123F-7908-7BEBA533E35A48B7</li>
-	 * </ul>
-	 * </p>
-	 * 
-	 * <p>Negatives (10):
-	 * <ul>
-	 * <li>t1 (4NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD9FF53C-123F-7908-7B123DAE0A25B122 </li>
-	 * <li>t2 (4NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCF8651E-123F-7908-7B21DD5ED83CD0FF </li>
-	 * <li><strike>t4: paper</strike></li>
-	 * <li>t6: paper</li>
-	 * <li>t11: paper</li>
-	 * <li>t13 (4NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD136ED6-123F-7908-7B619EE79F2FD062</li>
-	 * <li>t17: paper</li>
-	 * <li>t26 (2E+2NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD1E6209-123F-7908-7B95EB8BAE662CE7</li>
-	 * <li>t27 (E+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCAC5D00-123F-7908-7BC46ECB72A6C91B</li>
-	 * <li>t28 (E+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD34E02A-123F-7908-7BC6791917B591DF</li>
-	 * </ul>
-	 * </p>
-	 * 
-	 * <p>Unclear (1):
-	 * <ul>
-	 * <li>t29: probably a negative (see http://ntp.niehs.nih.gov/index.cfm?objectid=BD855EA1-123F-7908-7B573FC3C08188DC) but
-	 * no tests directly for this substance</li>
-	 * </ul>
-	 * 
-	 * <p>The following examples are probably not part of the IJCAI PTE-2 challenge
-	 * (reports younger than 1998):
-	 * <ul>
-	 * <li>pos: t21 (5/99), t25 (9/04), t30(10/01)</li>
-	 * <li>neg: t26 (5/99), t27 (05/01), t28 (05/00), t29 (09/02)</li>
-	 * </ul>
-	 * </p>
-	 * </p>
-	 * @return A string for all examples as used in the conf file.
-	 */
-	public static String getPTE2Examples() {
-		String[] pos = new String[] {"t3","t4","t5","t7","t8",
-				"t9",
-				"t10","t12",
-				"t14","t15","t16","t18","t19","t20",
-				"t21",
-				"t22",
-				"t23",
-				"t24",
-				"t25",
-				"t30"};
-		String[] neg = new String[] {"t1", "t2",
-				"t6", "t11", "t13",
-				"t17","t26","t27",
-				"t28","t29"
-				};
-
-		String ret = "";
-		for(String posEx : pos) {
-			if(learnCarcinogenic)
-				ret += "+" + getURI2(posEx) + "\n";
-			else
-				ret += "-" + getURI2(posEx) + "\n";
-		}
-		for(String negEx : neg) {
-			if(learnCarcinogenic)
-				ret += "-" + getURI2(negEx) + "\n";
-			else
-				ret += "+" + getURI2(negEx) + "\n";
-		}
-		
-		return ret;
-	}
-	
-	private static void addMutagenesis(KB kb) {
-		String[] mutagenicCompounds = new String[] {
-			"d101", "d104", "d106", "d107", "d112", "d113", "d117", 
-			"d121", "d123", "d126", "d128", "d13", "d135", "d137", 
-			"d139", "d140", "d143", "d144", "d145", "d146", "d147",
-			"d152", "d153", "d154", "d155", "d156", "d159", "d160",
-			"d161", "d163", "d164", "d166", "d168", "d171", "d173",
-			"d174", "d177", "d179", "d18", "d180", "d182", "d183",
-			"d185", "d186", "d187", "d188", "d189", "d19", "d191",
-			"d192", "d193", "d195", "d197", "d2", "d201", "d202", 
-			"d205", "d206", "d207", "d211", "d214", "d215", "d216",
-			"d224", "d225", "d227", "d228", "d229", "d231", "d235",
-			"d237", "d239", "d242", "d245", "d246", "d249", "d251",
-			"d254", "d257", "d258", "d261", "d264", "d266", "d269",
-			"d27", "d270", "d271", "d28", "d288", "d292", "d297",
-			"d300", "d308", "d309", "d311", "d313", "d314", "d322",
-			"d323", "d324", "d329", "d330", "d332", "d334", "d35",
-			"d36", "d37", "d38", "d41", "d42", "d48", "d50", "d51",
-			"d54", "d58", "d61", "d62", "d63", "d66", "d69", "d72",
-			"d76", "d77", "d78", "d84", "d86", "d89", "d92", "d96"};
-		TreeSet<String> mutagenic = new TreeSet<String>(Arrays.asList(mutagenicCompounds));
-	
-		for(String compound : compounds) {
-			if(mutagenic.contains(compound)) {
-				BooleanDatatypePropertyAssertion muta = getBooleanDatatypePropertyAssertion(compound, "isMutagenic", true);
-				kb.addAxiom(muta);
-			} else {
-				BooleanDatatypePropertyAssertion muta = getBooleanDatatypePropertyAssertion(compound, "isMutagenic", false);
-				kb.addAxiom(muta);
-			}
-		}
 	}
 }

@@ -22,18 +22,14 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
- * Double data range restricted by a minimum value, e.g. 
+ * Double data range restricted by a maximum value, e.g. 
  * hasAge >= 18. 
  * 
  * @author Jens Lehmann
  *
  */
-public class DoubleMinValue implements SimpleDoubleDataRange {
+public class DoubleMinValue extends DoubleDataRange {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8808907963085216763L;
 	private double value;
 	
 	public DoubleMinValue(double value) {
@@ -58,22 +54,11 @@ public class DoubleMinValue implements SimpleDoubleDataRange {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return " >= " + value;
-	}	
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " >= " + value;
+		// TODO Auto-generated method stub
+		return null;
 	}	
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " >= " + value;
 	}	
 }

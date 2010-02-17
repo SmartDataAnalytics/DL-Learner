@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
@@ -31,7 +32,7 @@ import org.dllearner.utilities.Helper;
  * Computes the score (a negative value) by comparing the classification results
  * with ideal results.
  * 
- * TODO: The implementation is not very efficient, because some things are 
+ * @todo: The implementation is not very efficient, because some things are 
  * only computed to be able to present the score results. This means that
  * it would be better to compute only the necessary computations and do
  * the other ones only when they are needed to calculate statistical values.
@@ -39,10 +40,8 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ScoreThreeValued extends ScorePosNeg {
+public class ScoreThreeValued extends Score {
 	
-	private static final long serialVersionUID = -1780084688122949685L;
-
 	public enum ScoreMethod {POSITIVE, FULL};
 	
 	// configuration options
@@ -166,7 +165,7 @@ public class ScoreThreeValued extends ScorePosNeg {
     }
 
     @Override
-    public double getScoreValue() {
+    public double getScore() {
         return score;
     }
     
@@ -232,24 +231,8 @@ public class ScoreThreeValued extends ScorePosNeg {
 	}
 
 	@Override
-	public ScorePosNeg getModifiedLengthScore(int newLength) {
+	public Score getModifiedLengthScore(int newLength) {
 		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Score#getAccuracy()
-	 */
-	@Override
-	public double getAccuracy() {
-		return accuracy;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
-	 */
-	@Override
-	public Set<Individual> getNotCoveredNegatives() {
-		return negAsNeg;
 	}	
     
 }

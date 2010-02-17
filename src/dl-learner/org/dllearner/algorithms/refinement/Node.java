@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.ConceptComparator;
 
 public class Node {
 

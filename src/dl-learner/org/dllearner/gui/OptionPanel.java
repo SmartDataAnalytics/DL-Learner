@@ -1,3 +1,5 @@
+package org.dllearner.gui;
+
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -17,7 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -31,47 +32,37 @@ import javax.swing.JScrollPane;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.options.*;
-import org.dllearner.gui.widgets.WidgetPanelBoolean;
-import org.dllearner.gui.widgets.WidgetPanelDefault;
-import org.dllearner.gui.widgets.WidgetPanelDouble;
-import org.dllearner.gui.widgets.WidgetPanelInteger;
-import org.dllearner.gui.widgets.WidgetPanelString;
-import org.dllearner.gui.widgets.WidgetPanelStringSet;
-import org.dllearner.gui.widgets.WidgetPanelStringTupleList;
-import org.dllearner.gui.widgets.WidgetPanelURL;
+import org.dllearner.core.config.*;
 
 /**
  * OptionPanel reads all possible options and use all widgets. Definition map is
  * here.
  * 
  * @author Tilo Hielscher
- * @author Jens Lehmann
  * 
  */
 public class OptionPanel extends JPanel {
 
 	private static final long serialVersionUID = -3053205578443575240L;
-	
 	private Config config;
-//	private Class<? extends Component> componentClass;
+	private Class<? extends Component> componentOption;
+	private List<ConfigOption<?>> optionList;
 	private JPanel centerPanel = new JPanel();
 	private Component component;
+	private Component oldComponent;
 	private GridBagLayout gridBagLayout = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
 
-	/**
-	 * Constructs a panel which displays all options of a component
-	 * and their current value.
-	 * @param config The central configuration handler (used to 
-	 * retrieve option values).
-	 * @param component The active component (i.e. the one 
-	 */
-	public OptionPanel(Config config, Component component) {
+	public OptionPanel(Config config, Component component, Component oldComponent,
+			Class<? extends Component> componentOption) {
 		super(new BorderLayout());
-		
+
 		this.config = config;
 		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
+
+		optionList = ComponentManager.getConfigOptions(componentOption);
 
 		// define GridBagLayout
 		centerPanel.setLayout(gridBagLayout);
@@ -86,47 +77,48 @@ public class OptionPanel extends JPanel {
 		showWidgets();
 	}
 
-	/** 
-	 * Update this option panel by completely rebuilding its
-	 * content.
-	 * @param newComponent The new active component. 
-	 */
-	public void rebuild(Component newComponent) {
-		this.component = newComponent;
+	/** update this OptionPanel */
+	public void update(Component component, Component oldComponent,
+			Class<? extends Component> componentOption) {
+		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
 		showWidgets();
+
 	}
 
 	/**
 	 * Define here what core.config.class is what type of widget.
 	 * WidgetPanelDefault is for none defined classes.
 	 */
-	@SuppressWarnings("unchecked")
 	private void showWidgets() {
-		//	clear panel
-		centerPanel.removeAll(); 
-		
 		JPanel widgetPanel;
-		List<ConfigOption<?>> optionList = ComponentManager.getConfigOptions(component.getClass());		
-				
+		optionList = ComponentManager.getConfigOptions(componentOption);
+		centerPanel.removeAll(); // clear panel
 		for (int i = 0; i < optionList.size(); i++) {
 			buildConstraints(constraints, 0, i, 1, 1, 0, 0);
-			ConfigOption option = optionList.get(i);
-			if (option instanceof IntegerConfigOption) {
-				widgetPanel = new WidgetPanelInteger(config, component, (IntegerConfigOption) option);
-			} else if (option instanceof BooleanConfigOption) {
-				widgetPanel = new WidgetPanelBoolean(config, component, (BooleanConfigOption) option);
-			} else if (option instanceof DoubleConfigOption) {
-				widgetPanel = new WidgetPanelDouble(config, component, (DoubleConfigOption) option);
-			} else if (option instanceof StringConfigOption) {
-				widgetPanel = new WidgetPanelString(config, component, (StringConfigOption) option);
-			} else if (option instanceof URLConfigOption) {
-				widgetPanel = new WidgetPanelURL(config, component, (URLConfigOption) option);
-			} else if (option instanceof StringSetConfigOption) {
-				widgetPanel = new WidgetPanelStringSet(config, component, (StringSetConfigOption) option);
-			} else if (option instanceof StringTupleListConfigOption) {
-				widgetPanel = new WidgetPanelStringTupleList(config, component, (StringTupleListConfigOption) option);
+			if (optionList.get(i).getClass().toString().contains("IntegerConfigOption")) {
+				widgetPanel = new WidgetPanelInteger(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("BooleanConfigOption")) {
+				widgetPanel = new WidgetPanelBoolean(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("DoubleConfigOption")) {
+				widgetPanel = new WidgetPanelDouble(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("StringConfigOption")) {
+				widgetPanel = new WidgetPanelString(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("StringSetConfigOption")) {
+				widgetPanel = new WidgetPanelStringSet(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains(
+					"StringTupleListConfigOption")) {
+				widgetPanel = new WidgetPanelStringTupleList(config, component, oldComponent,
+						componentOption, optionList.get(i));
 			} else {
-				widgetPanel = new WidgetPanelDefault(config, component, option);
+				widgetPanel = new WidgetPanelDefault(config, component,
+				/* oldComponent, */componentOption, optionList.get(i));
 			}
 			gridBagLayout.setConstraints(widgetPanel, constraints);
 			centerPanel.add(widgetPanel);
@@ -134,7 +126,9 @@ public class OptionPanel extends JPanel {
 		centerPanel.updateUI(); // update graphic
 	}
 
-	// define grid bag constraints
+	/**
+	 * Define GridBagConstraints
+	 */
 	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
 			int wy) {
 		gbc.gridx = gx;

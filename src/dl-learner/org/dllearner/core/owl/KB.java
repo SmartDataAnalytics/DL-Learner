@@ -1,29 +1,13 @@
 package org.dllearner.core.owl;
 
-import java.io.File;
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLOntologyStorageException;
-import org.semanticweb.owl.model.UnknownOWLOntologyException;
-import org.semanticweb.owl.util.SimpleURIMapper;
-
 public class KB implements KBElement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1114373618440145279L;
-	// private Set<Axiom> axioms = new HashSet<Axiom>();
 	private Set<AssertionalAxiom> abox = new HashSet<AssertionalAxiom>();
 	private Set<TerminologicalAxiom> tbox = new HashSet<TerminologicalAxiom>();
 	private Set<PropertyAxiom> rbox = new HashSet<PropertyAxiom>();
@@ -218,20 +202,6 @@ public class KB implements KBElement {
 		return str;
 	}
 	
-	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		StringBuffer strbuff = new StringBuffer();
-		strbuff.append("// TBox["+tbox.size()+"]:\n");
-		for(Axiom a : tbox)
-			strbuff.append("  " + a.toKBSyntaxString(baseURI, prefixes)+"\n");
-		strbuff.append("\n// RBox["+rbox.size()+"]:\n");
-		for(Axiom a : rbox)
-			strbuff.append("  " + a.toKBSyntaxString(baseURI, prefixes)+"\n");
-		strbuff.append("\n// ABox["+abox.size()+"]:\n");
-		for(Axiom a : abox)
-			strbuff.append("  " + a.toKBSyntaxString(baseURI, prefixes)+"\n");
-		return strbuff.toString();
-	}
-	
 	public Set<Individual> findRelatedIndividuals(Individual individual) {
 		return findRelatedIndividuals(individual, new TreeSet<Individual>());
 	}
@@ -269,52 +239,6 @@ public class KB implements KBElement {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/**
-	 * Returns all axioms in the ontology. Note that calling this
-	 * method is not efficient for large knowledge bases, since
-	 * internally all axioms are separated into ABox, RBox, and 
-	 * TBox, which means that a union of these sets is computed
-	 * and returned here.
-	 * 
-	 * @return All axioms in the ontology.
-	 */
-	public Set<Axiom> getAxioms() {
-		Set<Axiom> axioms = new HashSet<Axiom>();
-		axioms.addAll(abox);
-		axioms.addAll(rbox);
-		axioms.addAll(tbox);
-		return axioms;
-	}
+	}	
 	
-	public void export(File file, org.dllearner.core.OntologyFormat format){
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        URI ontologyURI = URI.create("http://example.com");
-        URI physicalURI = file.toURI();
-        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
-        manager.addURIMapper(mapper);
-        OWLOntology ontology;
-		try {
-			ontology = manager.createOntology(ontologyURI);
-			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
-			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, this);
-			manager.saveOntology(ontology);			
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		} catch (UnknownOWLOntologyException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

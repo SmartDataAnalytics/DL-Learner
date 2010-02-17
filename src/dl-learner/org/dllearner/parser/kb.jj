@@ -36,7 +36,7 @@ import java.net.URL;
 
 public class KBParser {
 
-	public static String internalNamespace = "http://localhost/foo#";
+	public static final String internalNamespace = "http://localhost/foo#";
 
 	// method to give all internal stuff an URI (not necessary for DLs, but for OWL ontologies
 	// and it should be possible to represent the internal KB as OWL ontology)
@@ -48,24 +48,11 @@ public class KBParser {
 	}
 	
 	public static Description parseConcept(String string) throws ParseException {
-		// when just parsing the string as concept, we have no guarantee
-		// that the parser uses all symbols, e.g. a AND b returns just a
-		// because the brackets were forgotten;
-		// so instead we create an equivalent class axiom and return its
-		// right hand side
-		String eq = "tmp = " + string + ".";
-		KBParser parser = new KBParser(new StringReader(eq));
-		EquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
-		return eqAxiom.getConcept2();
+		KBParser parser = new KBParser(new StringReader(string));
+		return parser.Concept();
 	}
 
-	//TODO beware of this function it is evil (author: Sebastian Hellmann)
-    public static Description parseConcept(String string, String namespace) throws ParseException {
-             internalNamespace = namespace;
-              return parseConcept(string);
-    }
-
-	public static KB parseKBFile(String content) throws ParseException {
+	public static KB parseKBFile(String content) throws IOException, ParseException {
 		KBParser parser = new KBParser(new StringReader(content));
 		return parser.KB();
 	}
@@ -139,11 +126,7 @@ KB KB() :
   	| 	rBoxAxiom = ObjectPropertyDomainAxiom()
   		{ kb.addRBoxAxiom(rBoxAxiom); }
   	| 	rBoxAxiom = DatatypePropertyDomainAxiom()
-  		{ kb.addRBoxAxiom(rBoxAxiom); }  
-  	| 	rBoxAxiom = ObjectPropertyRangeAxiom()
-  		{ kb.addRBoxAxiom(rBoxAxiom); }
-  	| 	rBoxAxiom = DatatypePropertyRangeAxiom()
-  		{ kb.addRBoxAxiom(rBoxAxiom); }  
+  		{ kb.addRBoxAxiom(rBoxAxiom); }  		
   		// da Konfigurationsoptionen ausgeschlossen sind, reicht es bis zum "=" zu suchen
   	|	LOOKAHEAD(Concept() "=") equality = TBoxEquiv()
   		{ kb.addTBoxAxiom(equality); }
@@ -240,9 +223,9 @@ ObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() : {ObjectProperty op; Descri
 DatatypePropertyRangeAxiom DatatypePropertyRangeAxiom() : {DatatypeProperty op; DataRange range; }
 {
 	( "DPRANGE" | "DATATYPEPROPERTYRANGE") "(" op=DatatypeProperty() ")" "=" 
-	( "DOUBLE" { range = Datatype.DOUBLE; }
-	| "BOOLEAN" { range = Datatype.BOOLEAN; }
-	| "INTEGER" { range = Datatype.INT; } )
+	( "DOUBLE" { range = new Datatype(Datatype.Type.DOUBLE); }
+	| "BOOLEAN" { range = new Datatype(Datatype.Type.BOOLEAN); }
+	| "INTEGER" { range = new Datatype(Datatype.Type.INT); } )
 	<COMMAND_END>
 	{ return new DatatypePropertyRangeAxiom(op, range); }
 }
@@ -252,22 +235,21 @@ Description Concept() :
 	Description c,c1,c2;
 	NamedClass ac;
 	ObjectProperty ar;
-	DatatypeProperty dp;
 	String s;
 	int i;
 }
 {
     Top() {return new Thing();}
   | Bottom() {return new Nothing();}
-  | LOOKAHEAD(2) ac = AtomicConcept() {return ac;}
+  | ac = AtomicConcept() {return ac;}
   // | s=Id() {return new AtomicConcept(s);}
   // | s=String() {return new AtomicConcept(s);} 
-  // parse until next AND or OR
+  // Parser geht bis zum n�chsten AND oder OR
   | LOOKAHEAD( "(" Concept() And())    "(" c1=Concept() And() c2=Concept() ")" 
   	{return new Intersection(c1,c2);}
   | LOOKAHEAD( "(" Concept() Or())    "(" c1=Concept() Or() c2=Concept() ")"
   	{return new Union(c1,c2);}
-  // EXISTS or ALL is sufficient to chose the correct parser branch
+  // EXISTS oder ALL reicht aus um richtigen Zweig zu w�hlen
   // | Exists() s=Id() "." c=Concept()
   // {return new Exists(new AtomicRole(s),c); } 
   | Exists() ar=ObjectProperty() "." c=Concept()
@@ -285,10 +267,7 @@ Description Concept() :
   // | LE() i=Integer() s=Id() "." c=Concept()
   //	{return new LessEqual(i,new AtomicRole(s),c);}
   | LE() i=Integer() ar=ObjectProperty() "." c=Concept()
-  	{return new ObjectMaxCardinalityRestriction(i,ar,c);}
-  | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "TRUE" ")" { return new BooleanValueRestriction(dp, true); }
-  | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "FALSE" ")" { return new BooleanValueRestriction(dp, false); }
-  | "(" dp=DatatypeProperty() "STRINGVALUE" s=String() ")" { return new StringValueRestriction(dp, s); }    	
+  	{return new ObjectMaxCardinalityRestriction(i,ar,c);}  	
 }
 
 void Or() : {} { <OR> }

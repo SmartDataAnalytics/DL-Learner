@@ -25,6 +25,6 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public interface DoubleDataRange extends DataRange {
+public abstract class DoubleDataRange extends DataRange {
 	
 }

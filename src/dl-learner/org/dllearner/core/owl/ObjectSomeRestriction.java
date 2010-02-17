@@ -29,26 +29,17 @@ import java.util.Map;
  */
 public class ObjectSomeRestriction extends ObjectQuantorRestriction {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 858960420513908151L;
-
-	public ObjectSomeRestriction(ObjectPropertyExpression role, Description c) {
+    public ObjectSomeRestriction(ObjectPropertyExpression role, Description c) {
     	super(role,c);
     }
     
     public String toString(String baseURI, Map<String,String> prefixes) {
-        return "EXISTS " + restrictedPropertyExpression.toString(baseURI, prefixes) + "." + children.get(0).toString(baseURI, prefixes);
-    }
-    
-    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-        return "EXISTS " + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + "." + children.get(0).toKBSyntaxString(baseURI, prefixes);
+        return "EXISTS " + role.toString(baseURI, prefixes) + "." + children.get(0).toString(baseURI, prefixes);
     }
 
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-	    return restrictedPropertyExpression.toString(baseURI, prefixes) + " some " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
+	    return role.toString(baseURI, prefixes) + " only " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
 	}		
     
 	/* (non-Javadoc)

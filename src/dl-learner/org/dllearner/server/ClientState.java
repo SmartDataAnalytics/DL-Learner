@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -31,9 +31,10 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.SparqlQueryThreaded;
 
 /**
  * Stores the state of a DL-Learner client session.
@@ -50,11 +51,12 @@ public class ClientState {
 	
 	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
 	
-	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
+	private Map<Integer, SparqlQueryThreaded> queryIDs = new HashMap<Integer, SparqlQueryThreaded>();
 	
 	private LearningProblem learningProblem;
 	
 	private ReasonerComponent reasonerComponent;
+	private ReasoningService reasoningService;
 	
 	private LearningAlgorithm learningAlgorithm;
 
@@ -71,7 +73,7 @@ public class ClientState {
 		return id;		
 	}
 	
-	private int generateQueryID(SparqlQuery query) {
+	private int generateQueryID(SparqlQueryThreaded query) {
 		int id;
 		Random rand = new Random();
 		do {
@@ -81,18 +83,17 @@ public class ClientState {
 		return id;
 	}
 	
-	public int addQuery(SparqlQuery query){
+	public int addQuery(SparqlQueryThreaded query){
 		return this.generateQueryID(query);
 	}
 	
-	public SparqlQuery getQuery(int id){
+	public SparqlQueryThreaded getQuery(int id){
 		return queryIDs.get(id);
 	}
 	
 	/**
 	 * @return the isAlgorithmRunning
 	 */
-	@Deprecated
 	public boolean isAlgorithmRunning() {
 		return isAlgorithmRunning;
 	}
@@ -100,7 +101,6 @@ public class ClientState {
 	/**
 	 * @param isAlgorithmRunning the isAlgorithmRunning to set
 	 */
-	@Deprecated
 	public void setAlgorithmRunning(boolean isAlgorithmRunning) {
 		this.isAlgorithmRunning = isAlgorithmRunning;
 	}
@@ -166,13 +166,13 @@ public class ClientState {
 
 	/**
 	 * Sets the reasoner component and creates the corresponding
-	 * <code>ReasonerComponent</code> instance.
+	 * <code>ReasoningService</code> instance.
 	 * 
 	 * @param reasonerComponent the reasonerComponent to set
 	 */
 	public int setReasonerComponent(ReasonerComponent reasonerComponent) {
 		this.reasonerComponent = reasonerComponent;
-//		reasoningService = new ReasonerComponent(reasonerComponent);
+		reasoningService = new ReasoningService(reasonerComponent);
 		return generateComponentID(reasonerComponent);
 	}
 
@@ -192,8 +192,15 @@ public class ClientState {
 	}
 
 	/**
-	 * @param id A component ID.
-	 * @return The component associated with this ID.
+	 * @return the reasoningService
+	 */
+	public ReasoningService getReasoningService() {
+		return reasoningService;
+	}
+
+	/**
+	 * @param key
+	 * @return
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
 	public Component getComponent(int id) {
@@ -201,10 +208,8 @@ public class ClientState {
 	}
 
 	/**
-	 * Adds a knowledge source to the client session. Use the 
-	 * returned value to refer to this knowledge source.
-	 * @param ks The knowledge source to add.
-	 * @return The component ID for the newly added knowledge source.
+	 * @param e
+	 * @return
 	 */
 	public int addKnowledgeSource(KnowledgeSource ks) {
 		knowledgeSources.add(ks);

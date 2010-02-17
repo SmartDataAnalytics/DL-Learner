@@ -1,6 +1,6 @@
 package org.dllearner.algorithms.refinement;
 
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.ConceptComparator;
 
 public class NodeComparator implements Heuristic {
 

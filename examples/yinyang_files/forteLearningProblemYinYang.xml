@@ -6,7 +6,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://www.di.uniba.it/learning/ ../LearningProblem.xsd" 
 
-	knowledgeBase="file:../forte/forte_family.owl" 
+	knowledgeBase="file:../forte/forte.owl" 
 	positiveExampleSource="fortePositivesYinYang.txt" 
 	negativeExampleSource="forteNegativesYinYang.txt" 
 	abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 

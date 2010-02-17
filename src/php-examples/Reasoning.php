@@ -47,7 +47,7 @@ $client->init($id, $rID);
 
 // create a concept in internal DL-Learner syntax
 // ( = all female persons having at least one child)
-$concept = '("http://example.com/father#female" AND EXISTS "http://example.com/father#hasChild".TOP)';
+$concept = '"http://example.com/father#female" AND EXISTS "http://example.com/father#hasChild".TOP';
 $instances = $client->retrieval($id, $concept);
 
 // print instances    

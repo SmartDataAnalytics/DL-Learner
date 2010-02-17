@@ -19,8 +19,8 @@
  */
 package org.dllearner.test;
 
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -51,17 +51,17 @@ public class JenaQueryToResultSpeedTest {
 
 	
 	public static void testJenaAsXML(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
-		sqJena.send();
-		sqJena.getXMLString();
+		ResultSet rs = sqJena.send();
+		SparqlQuery.getAsXMLString(rs);
 		long now = System.currentTimeMillis();
 		long tmp = now;
 		for (int i = 0; i < howOften; i++) {
 
-			sqJena.send();
-			sqJena.getXMLString();		
+			rs = sqJena.send();
+			SparqlQuery.getAsXMLString(rs);			
 			p("Jena as XML needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();
@@ -73,7 +73,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsList(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		//sqJena.getAsList();
@@ -97,17 +97,17 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsJSON(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
-		sqJena.send();
-		sqJena.getJson();
+		ResultSet rs = sqJena.send();
+		SparqlQuery.getAsJSON(rs);
 		long now = System.currentTimeMillis();
 		long tmp = now;
 		for (int i = 0; i < howOften; i++) {
 
-		    	sqJena.send();
-			sqJena.getJson();
+			rs = sqJena.send();
+			SparqlQuery.getAsJSON(rs);
 			p("Jena as JSON needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();
@@ -120,19 +120,19 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsJSONandBack(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
-		sqJena.send();
-		sqJena.getJson();		
+		ResultSet rs = sqJena.send();
+		SparqlQuery.getAsJSON(rs);		
 		long now = System.currentTimeMillis();
 		long tmp = now;
 		for (int i = 0; i < howOften; i++) {
 
 		//	System.out.println(sqJena.getAsJSON());
-		    	sqJena.send();
-			String json = sqJena.getJson();
-			SparqlQuery.convertJSONtoResultSet(json);
+			rs = sqJena.send();
+			String json = SparqlQuery.getAsJSON(rs);
+			SparqlQuery.JSONtoResultSet(json);
 			p("Jena as JSON and back needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();
@@ -146,12 +146,12 @@ public class JenaQueryToResultSpeedTest {
 	
 
 	public static void compareResults(String queryString) {
-		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// SparqlQueryConventional sqConv=new SparqlQueryConventional(sse);
 
-		sqJena.send();
-		System.out.println(sqJena.getJson());
+		ResultSet rs = sqJena.send();
+		System.out.println(SparqlQuery.getAsXMLString(rs));
 		// System.out.println(sqConv.getAsXMLString(""));
 
 	}

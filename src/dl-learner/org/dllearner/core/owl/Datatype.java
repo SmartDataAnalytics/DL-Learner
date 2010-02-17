@@ -19,57 +19,52 @@
  */
 package org.dllearner.core.owl;
 
-import java.net.URI;
 import java.util.Map;
 
 /**
+ * Enumeration of possible types wrapped in a class such that
+ * it is a valid data range.
+ * 
  * @author Jens Lehmann
  *
  */
-public enum Datatype implements DataRange {
+public class Datatype extends DataRange {
+
+	public enum Type { DOUBLE, INT, BOOLEAN };
 	
-    DOUBLE ("http://www.w3.org/2001/XMLSchema#double"),
-    INT ("http://www.w3.org/2001/XMLSchema#int"),
-    BOOLEAN   ("http://www.w3.org/2001/XMLSchema#boolean"),
-    STRING ("http://www.w3.org/2001/XMLSchema#string"),
-    DATE ("http://www.w3.org/2001/XMLSchema#date");
-
-    private URI uri;
-
-    private Datatype(String uriString) {
-    	uri = URI.create(uriString);
-    }
-
-	public URI getURI() {
-		return uri;
+	private Type type;
+	
+	public Datatype(Type type) {
+		this.type = type;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#accept(org.dllearner.core.owl.KBElementVisitor)
+	 */
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
-	@Override
-	public String toString() {
-		return uri.toString();
-	}
-
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
+	 */
 	public int getLength() {
 		return 1;
 	}
 
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
-	}	
-	
-	public String toString(String baseURI, Map<String, String> prefixes) {
-		return uri.toString();
-	}
-	
-	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return uri.toString();
-	}
-	
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return uri.toString();
-	}	
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public Type getType() {
+		return type;
+	}
+
 }

@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3877477886974844568L;
 	private ObjectPropertyExpression role;
 	
 	public TransitiveObjectPropertyAxiom(ObjectPropertyExpression role) {
@@ -26,10 +22,6 @@ public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 		return "Transitive(" + role.toString(baseURI, prefixes) + ")";
 	}
 	
-	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		return "Transitive(" + role.toKBSyntaxString(baseURI, prefixes) + ")";
-	}
-	
 	@Override
 	public void accept(AxiomVisitor visitor) {
 		visitor.visit(this);
@@ -37,13 +29,5 @@ public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toManchesterSyntaxString(java.lang.String, java.util.Map)
-	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "Transitive(" + role.toString(baseURI, prefixes) + ")";
 	}	
 }

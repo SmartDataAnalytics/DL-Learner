@@ -30,19 +30,18 @@ include('Utilities.php');
 // load WSDL files (has to be done due to a Java web service bug)
 ini_set("soap.wsdl_cache_enabled","0");
 $wsdluri="http://localhost:8181/services?wsdl";
-// Utilities::loadWSDLfiles($wsdluri);
+Utilities::loadWSDLfiles($wsdluri);
 
 // specifiy ontology
 $ontology = 'file:'.realpath("../../examples/family/father.owl");
 
 // create DL-Learner client
 $client = new SoapClient("main.wsdl");
-// $client = new SoapClient($wsdluri);
 
 // load owl file in DIG reasoner (you need a running DIG reasoner)
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
-$rID = $client->setReasoner($id, "fastInstanceChecker");
+$rID = $client->setReasoner($id, "dig");
 
 // create a learning problem
 $posExamples = array('http://example.com/father#stefan',
@@ -51,27 +50,19 @@ $posExamples = array('http://example.com/father#stefan',
 $negExamples = array('http://example.com/father#heinz',
                      'http://example.com/father#anna',
                      'http://example.com/father#michelle');
-$client->setLearningProblem($id, "posNegLPStandard");
+$client->setLearningProblem($id, "posNegDefinition");
 $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
 // choose refinement operator approach
-$la_id = $client->setLearningAlgorithm($id, "refexamples");
-// you can add the following to apply a config option to a component, e.g. ignore a concept
-$client->applyConfigEntryStringArray($id, $la_id, "ignoredConcepts", array('http://example.com/father#female'));
+$client->setLearningAlgorithm($id, "refinement");
 
 $client->initAll($id);
 
 // learn concept
 echo 'start learning ... ';
-// get only concept
-// $concept = $client->learn($id, "manchester");
-// get concept and additional information in JSON syntax
-$concept = $client->learnDescriptionsEvaluatedLimit($id, 5);
+$concept = $client->learn($id);
 echo 'OK <br />';
-
-echo 'solution: <pre>';
-var_dump(json_decode($concept, true));
-echo '</pre>';
+echo 'solution: ' . $concept;
 
 ?>

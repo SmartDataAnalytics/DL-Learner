@@ -25,15 +25,15 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.CommonConfigMappings;
+import org.dllearner.core.config.CommonConfigOptions;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -78,20 +78,20 @@ public abstract class PosNegLP extends LearningProblem {
 		ONECHECK
 	};
 	
-	public PosNegLP(ReasonerComponent reasoningService) {
+	public PosNegLP(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples",null, true, false));
+				"positive examples"));
 		options.add(new StringSetConfigOption("negativeExamples",
-				"negative examples",null, true, false));
+				"negative examples"));
 		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
-				"Specifies whether to use retrieval or instance checks for testing a concept.", false));
+				"Specifies whether to use retrieval or instance checks for testing a concept."));
 		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
-		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum.","twoChecks");
+		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum.");
 		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
 		options.add(multiInstanceChecks);
 		return options;
@@ -143,14 +143,6 @@ public abstract class PosNegLP extends LearningProblem {
 
 	public SortedSet<Individual> getPositiveExamples() {
 		return positiveExamples;
-	}
-	
-	public void setNegativeExamples(SortedSet<Individual> set) {
-		this.negativeExamples=set;
-	}
-
-	public void setPositiveExamples(SortedSet<Individual> set) {
-		this.positiveExamples=set;
 	}
 	
 	public abstract int coveredNegativeExamplesOrTooWeak(Description concept);

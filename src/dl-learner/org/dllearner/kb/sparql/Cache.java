@@ -31,10 +31,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-import org.dllearner.utilities.Files;
-import org.dllearner.utilities.JamonMonitorLogger;
 
-import com.jamonapi.Monitor;
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -62,8 +60,6 @@ import com.jamonapi.Monitor;
 public class Cache implements Serializable {
 
 	private static Logger logger = Logger.getLogger(Cache.class);
-	
-
 
 	private static final long serialVersionUID = 843308736471742205L;
 
@@ -79,59 +75,17 @@ public class Cache implements Serializable {
 	private long freshnessSeconds = 15 * 24 * 60 * 60;
 
 	/**
-	 *  same ad Cache(String) default is "cache"
-	 */
-	/*public Cache() {
-		this("cache");
-	} */
-	
-	/**
-	 * A Persistant cache is stored in the folder cachePersistant.
-	 * It has longer freshness 365 days and is mainly usefull for developing
-	 * @return a Cache onject
-	 */
-	public static Cache getPersistentCache(){
-		Cache c = new Cache(getPersistantCacheDir()); 
-		c.setFreshnessInDays(365);
-		return c;
-	}
-	
-	/**
-	 * @return the default cache object
-	 */
-	public static Cache getDefaultCache(){
-		Cache c = new Cache( getDefaultCacheDir()); 
-		return c;
-	}
-	
-	/**
-	 * the default cachedir normally is "cache".
-	 * @return Default Cache Dir
-	 */
-	public static String getDefaultCacheDir(){
-		return "cache";
-	}
-	
-	/**
-	 * a more persistant cache used for example generation."cachePersistant"
-	 * @return persistant Cache Dir
-	 */
-	public static String getPersistantCacheDir(){
-		return "cachePersistant";
-	}
-	
-	/**
 	 * Constructor for the cache itself.
 	 * 
 	 * @param cacheDir
 	 *            Where the base path to the cache is .
 	 */
 	public Cache(String cacheDir) {
-		
 		this.cacheDir = cacheDir + File.separator;
 		if (!new File(cacheDir).exists()) {
-			Files.mkdir(cacheDir);
-			logger.info("Created directory: " + cacheDir + ".");
+			logger
+					.info("Created directory: " + cacheDir + " : " + new File(cacheDir).mkdir()
+							+ ".");
 		}
 	}
 
@@ -167,34 +121,28 @@ public class Cache implements Serializable {
 	 * 
 	 * @param sparqlQuery
 	 *            SPARQL query to check.
-	 * @return Query result as JSON or null if no result has been found or it is
+	 * @return Query result or null if no result has been found or it is
 	 *         outdated.
 	 */
 	@SuppressWarnings({"unchecked"})
 	private String getCacheEntry(String sparqlQuery) {
-		
 		String filename = getFilename(sparqlQuery);
 		File file = new File(filename);
 		
 		// return null (indicating no result) if file does not exist
-		if(!file.exists()) {
+		if(!file.exists())
 			return null;
-		}
-			
 		
 		LinkedList<Object> entry = null;
 		try {
 			FileInputStream fos = new FileInputStream(filename);
 			ObjectInputStream o = new ObjectInputStream(fos);
 			entry = (LinkedList<Object>) o.readObject();
-			o.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			if(Files.debug){System.exit(0);}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-			if(Files.debug){System.exit(0);}
-		}
+		}	
 		
 		// TODO: we need to check whether the query is correct
 		// (may not always be the case due to md5 hashing)
@@ -232,118 +180,51 @@ public class Cache implements Serializable {
 		list.add(result);
 
 		// create the file we want to use
-		//File file = new File(filename);
-		FileOutputStream fos = null;
-		ObjectOutputStream o = null;
+		File file = new File(filename);
+
 		try {
-			//file.createNewFile();
-			fos = new FileOutputStream(filename, false);
-			o = new ObjectOutputStream(fos);
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(filename, false);
+			ObjectOutputStream o = new ObjectOutputStream(fos);
 			o.writeObject(list);
 			fos.flush();
-			
+			fos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}finally{
-			try{
-				fos.close();
-				o.close();
-			}catch (Exception e2) {
-				 e2.printStackTrace();
-			}
 		}
 	}
 
 	// check whether the given timestamp is fresh
 	private boolean checkFreshness(long timestamp) {
-		return ((System.currentTimeMillis() - timestamp) <= (freshnessSeconds * 1000));
+		if ((System.currentTimeMillis() - timestamp) <= (freshnessSeconds * 1000))
+			return true;
+		else
+			return false;
 	}
 
 	/**
 	 * Takes a SPARQL query (which has not been evaluated yet) as argument and
-	 * returns a JSON result set. The result set is taken from this cache if the
+	 * returns a result set. The result set is taken from this cache if the
 	 * query is stored here. Otherwise the query is send and its result added to
 	 * the cache and returned. Convenience method.
 	 * 
 	 * @param query
 	 *            The SPARQL query.
-	 * @return Jena result set in JSON format
+	 * @return Jena result set.
 	 */
-	public String executeSparqlQuery(SparqlQuery query) {
-		Monitor totaltime =JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
-		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
-	
-		Monitor readTime = JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").start();
-		String result = getCacheEntry(query.getSparqlQueryString());
-		readTime.stop();
-		
+	public ResultSet executeSparqlQuery(SparqlQuery query) {
+		String result = getCacheEntry(query.getQueryString());
 		if (result != null) {
-//			query.setJson(result);
-//			
-//		    query.setRunning(false);
-//			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
-//			SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+query.getSparqlEndpoint().getHTTPRequest());
-//			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
-			
-			//SparqlQuery.writeToSparqlLog("JSON: "+result);
-			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
-			
+			return SparqlQuery.JSONtoResultSet(result);
 		} else {
-			
-			//ResultSet rs= query.send();
-		    	query.send();
-			String json = query.getJson();
-			if (json!=null){
-				addToCache(query.getSparqlQueryString(), json);
-//				SparqlQuery.writeToSparqlLog("result added to cache: "+json);
-				logger.debug("result added to SPARQL cache: "+json);
-				result=json;
-				//query.setJson(result);
-			} else {
-				json="";
-				result="";
-				logger.warn(Cache.class.getSimpleName()+"empty result: "+query.getSparqlQueryString());
-				
+			ResultSet rs = query.send();
+			if (rs!=null){
+				String json = SparqlQuery.getAsJSON(rs);
+				addToCache(query.getQueryString(), json);
+				return SparqlQuery.JSONtoResultSet(json);
 			}
-			
-			//return json;
+			else return rs;
 		}
-		totaltime.stop();
-		return result;
-	}
-	
-	public boolean executeSparqlAskQuery(SparqlQuery query) {
-		String str = getCacheEntry(query.getSparqlQueryString());
-		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
-		if(str != null) {
-			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
-			return Boolean.parseBoolean(str);
-		} else {
-			Boolean result = query.sendAsk();
-			addToCache(query.getSparqlQueryString(), result.toString());
-			return result;
-		}
-	}
-	
-	/**
-	 * deletes all Files in the cacheDir, does not delete the cacheDir itself, 
-	 * and can thus still be used without creating a new Cache Object
-	 */
-	public void clearCache() {
-		
-			File f = new File(cacheDir);
-		    String[] files = f.list();
-		    for (int i = 0; i < files.length; i++) {
-		    	Files.deleteFile(new File(cacheDir+"/"+files[i]));
-		    }     
-	}
-	
-	/**
-	 * Changes how long cached results will stay fresh (default 15 days).
-	 * @param days number of days
-	 */
-	public void setFreshnessInDays(int days){
-		freshnessSeconds = days * 24 * 60 * 60;
 	}
 
 }

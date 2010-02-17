@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * A tool to quickly start a learning example. It detects all conf files in the
@@ -39,25 +38,22 @@ import java.util.List;
  * @author Jens Lehmann
  */
 public class QuickStart {
- 
-//	static HashMap<String, ArrayList<String>> hm = null;
+
+	static HashMap<String, ArrayList<String>> hm = null;
 	static String pm = ".";// pathmodifier
-	static List<String> conffiles = new ArrayList<String>();
 
 	public static void main(String[] args) {
-		
-		
-		
+
 		String lastused = readit();
 		String tab = "	";
 		int the_Number = 0;
 		ArrayList<String> finalSelection = new ArrayList<String>();
 		finalSelection.add("na");
 
-		HashMap<String, ArrayList<String>> hm = new HashMap<String, ArrayList<String>>();
+		hm = new HashMap<String, ArrayList<String>>();
 		String path = pm + File.separator + "examples";
 		File f = new File(path);
-		getAllConfs(f, path, hm);
+		getAllConfs(f, path);
 
 		// System.out.println(hm.size());
 		Iterator<String> i = hm.keySet().iterator();
@@ -101,17 +97,8 @@ public class QuickStart {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			int target = 0;
 			String selected = "";
-			boolean query=false;
 			while (true) {
 				String cmd = br.readLine();
-				if(cmd.equalsIgnoreCase("q")|| cmd.equalsIgnoreCase("query"))  {
-					query = (query)?false:true ;
-					System.out.println("Query mode switched. Now: "+query);
-					continue;
-				}else if(cmd.equalsIgnoreCase("exit") || cmd.equalsIgnoreCase("quit")) {
-					System.out.println("Bye...");
-					System.exit(0);
-				}
 				try {
 					if (cmd.length() == 0) {
 						number = false;
@@ -121,29 +108,9 @@ public class QuickStart {
 					number = true;
 					break;
 				} catch (Exception e) {
-					
-					for(String one:conffiles){
-					
-						if(one.contains(cmd)){
-							System.out.println("Did you mean "+one+" ? (Press enter to confirm,\n" +
-									"any key+enter for another try)");
-							cmd = br.readLine();
-							if(cmd.length()==0){
-								writeit(one);
-								if(!query) {
-									Start.main(new String[] { one });
-								}else {
-									Start.main(new String[] {"-q",one});
-								}
-								return;
-							}else {break;}
-						}
-					}
-					
 					System.out.println("Not a number");
-					continue;
 				}
-				
+				;
 			}// end while
 			if (number) {
 				try {
@@ -159,11 +126,7 @@ public class QuickStart {
 			}
 
 			// DLLearner.main(new String[] { Selected });
-			if(!query) {
-				Start.main(new String[] { selected });
-			}else {
-				Start.main(new String[] {"-q",selected});
-			}
+			Start.main(new String[] { selected });
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -172,7 +135,7 @@ public class QuickStart {
 		// System.out.println(f.isDirectory()+f.getAbsolutePath());
 	}
 
-	public static void getAllConfs(File f, String path, HashMap<String, ArrayList<String>> confs) {
+	public static void getAllConfs(File f, String path) {
 		path = path + File.separator;
 		// System.out.println(path);
 		String[] act = f.list();
@@ -181,14 +144,13 @@ public class QuickStart {
 
 			if (new File(path + act[i]).isDirectory()) {
 
-				getAllConfs(new File(path + act[i]), path + act[i], confs);
+				getAllConfs(new File(path + act[i]), path + act[i]);
 				// al.add(new File(act[i]));
 			} else if (act[i].endsWith(".conf")) {
-				if (confs.get(path) == null) {
-					confs.put(path, new ArrayList<String>());
+				if (hm.get(path) == null) {
+					hm.put(path, new ArrayList<String>());
 				}
-				confs.get(path).add(act[i].substring(0, act[i].length() - 5));
-				conffiles.add(path+act[i]);
+				hm.get(path).add(act[i].substring(0, act[i].length() - 5));
 				// System.out.println(act[i].substring(0,act[i].length()-5));
 				// System.out.println(hm.get(path).size());
 				// hm.put(new
