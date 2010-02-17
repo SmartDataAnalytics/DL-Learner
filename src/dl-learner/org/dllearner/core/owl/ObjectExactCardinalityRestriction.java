@@ -27,11 +27,6 @@ import java.util.Map;
  */
 public class ObjectExactCardinalityRestriction extends ObjectCardinalityRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5472599301526939702L;
-
 	public ObjectExactCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
 		super(number,role,c);
 	}

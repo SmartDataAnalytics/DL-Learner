@@ -28,10 +28,6 @@ import java.util.Set;
  */
 public class DifferentIndividualsAxiom extends AssertionalAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2109917591559200265L;
 	private Set<Individual> individuals;
 	
 	public DifferentIndividualsAxiom(Set<Individual> individuals) {
@@ -76,7 +72,8 @@ public class DifferentIndividualsAxiom extends AssertionalAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "DIFFERENT_INDIVIDUALS_AXIOM NOT IMPLEMENTED";
+		// TODO Auto-generated method stub
+		return null;
 	}	
 
 }

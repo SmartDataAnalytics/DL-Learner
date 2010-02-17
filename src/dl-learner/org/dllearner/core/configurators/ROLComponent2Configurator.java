@@ -225,15 +225,6 @@ public boolean getUseHasValueConstructor() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useHasValueConstructor") ;
 }
 /**
-* useDataHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties.
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getUseDataHasValueConstructor() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useDataHasValueConstructor") ;
-}
-/**
 * valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
 * mandatory: false| reinit necessary: true
 * default value: 3
@@ -286,15 +277,6 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponen
 **/
 public boolean getUseDoubleDatatypes() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useDoubleDatatypes") ;
-}
-/**
-* useStringDatatypes specifies whether string datatypes are used in the learning algorothm.
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getUseStringDatatypes() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useStringDatatypes") ;
 }
 /**
 * maxExecutionTimeInSeconds algorithm will stop after specified seconds.
@@ -421,15 +403,6 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponen
 **/
 public double getExpansionPenaltyFactor() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "expansionPenaltyFactor") ;
-}
-/**
-* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getInstanceBasedDisjoints() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "instanceBasedDisjoints") ;
 }
 
 /**
@@ -595,15 +568,6 @@ ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useHasValueConst
 reinitNecessary = true;
 }
 /**
-* @param useDataHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties.
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
-ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useDataHasValueConstructor", useDataHasValueConstructor);
-reinitNecessary = true;
-}
-/**
 * @param valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
 * mandatory: false| reinit necessary: true
 * default value: 3
@@ -655,15 +619,6 @@ reinitNecessary = true;
 **/
 public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
 ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useDoubleDatatypes", useDoubleDatatypes);
-reinitNecessary = true;
-}
-/**
-* @param useStringDatatypes specifies whether string datatypes are used in the learning algorothm.
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setUseStringDatatypes(boolean useStringDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useStringDatatypes", useStringDatatypes);
 reinitNecessary = true;
 }
 /**
@@ -790,15 +745,6 @@ reinitNecessary = true;
 **/
 public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
 ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "expansionPenaltyFactor", expansionPenaltyFactor);
-reinitNecessary = true;
-}
-/**
-* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
-ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "instanceBasedDisjoints", instanceBasedDisjoints);
 reinitNecessary = true;
 }
 

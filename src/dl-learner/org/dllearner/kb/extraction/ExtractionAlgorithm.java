@@ -41,7 +41,6 @@ public class ExtractionAlgorithm {
 
 	private Configuration configuration;
 	private SortedSet<String> alreadyQueriedSuperClasses = new TreeSet<String>();
-	private boolean stop = false;
 
 	
 	private static Logger logger = Logger
@@ -51,25 +50,11 @@ public class ExtractionAlgorithm {
 		this.configuration = configuration;
 	}
 
-	
-	public void stop(){
-		stop=true;
-	}
-	
-	private boolean stopCondition(){
-		return stop;
-	}
-	
-	void reset(){
-		stop = false;
-	}
-	
-	private Node getFirstNode(String uri) {
+	public Node getFirstNode(String uri) {
 		return new InstanceNode(uri);
 	}
 
-	@SuppressWarnings("unused")
-	private List<Node> expandAll(String[] uris, TupleAquisitor tupelAquisitor) {
+	public List<Node> expandAll(String[] uris, TupleAquisitor tupelAquisitor) {
 		List<Node> nodeList = new ArrayList<Node>();
 		for (String oneURI : uris) {
 			nodeList.add(expandNode(oneURI, tupelAquisitor));
@@ -85,6 +70,7 @@ public class ExtractionAlgorithm {
 	 *
 	 */
 	public Node expandNode(String uri, TupleAquisitor tupleAquisitor) {
+
 		SimpleClock sc = new SimpleClock();
 		if(tupleAquisitor instanceof SparqlTupleAquisitorImproved){
 			((SparqlTupleAquisitorImproved)tupleAquisitor).removeFromCache(uri);
@@ -104,10 +90,9 @@ public class ExtractionAlgorithm {
 		for (int x = 1; x <= configuration.getRecursiondepth(); x++) {
 			
 			sc.reset();
-			while (!newNodes.isEmpty() && !stopCondition()) {
+			while (!newNodes.isEmpty()) {
 				Node nextNode = newNodes.remove(0);
 				logger.info("Expanding " + nextNode);
-				
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
 				tupleAquisitor.setNextTaskToNormal();
@@ -125,7 +110,7 @@ public class ExtractionAlgorithm {
 		}
 		basic.stop();
 		
-		if(configuration.isCloseAfterRecursion()&& !stopCondition()){
+		if(configuration.isCloseAfterRecursion()){
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").start();
 			List<InstanceNode> l = getInstanceNodes(newNodes);
 			logger.info("Getting classes for remaining instances: "+l.size() + " instances");
@@ -134,7 +119,7 @@ public class ExtractionAlgorithm {
 			m.stop();
 		}
 		// gets All Class Nodes and expands them further
-		if (configuration.isGetAllSuperClasses()&& !stopCondition()) {
+		if (configuration.isGetAllSuperClasses()) {
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").start();
 			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
 			tupleAquisitor.setNextTaskToClassInformation();
@@ -144,32 +129,22 @@ public class ExtractionAlgorithm {
 		}
 			
 		
-		if(configuration.isGetPropertyInformation()&& !stopCondition() ){
-			collectNodes.add(seedNode);
+		if(configuration.isGetPropertyInformation() ){
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
 			List<ObjectPropertyNode> objectProperties = getObjectPropertyNodes(collectNodes);
-			logger.info("Get info for "+objectProperties.size() + " objectProperties");
 			for (ObjectPropertyNode node : objectProperties) {
-				if(stopCondition()){
-					break;
-				}
-				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
 			}
 			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
-			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
 			for (DatatypePropertyNode node : datatypeProperties) {
-				if(stopCondition()){
-					break;
-				}
-				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
+				//System.out.println(node+""+collectNodes.size());
 			}
 			m.stop();
 		}
 		
 		Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBlankNode").start();
-		if( configuration.isDissolveBlankNodes() && !stopCondition()){
-			expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
-		}
+		expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
 		m.stop();
 		
 	
@@ -179,7 +154,7 @@ public class ExtractionAlgorithm {
 	
 	private List<Node> expandBlankNodes(List<BlankNode> blankNodes, TupleAquisitor tupelAquisitor) {
 		List<Node> newNodes = new ArrayList<Node>();
-		while (!blankNodes.isEmpty()&& !stopCondition()) {
+		while (!blankNodes.isEmpty()) {
 			Node next = blankNodes.remove(0);
 			List<Node> l = next.expand(tupelAquisitor, configuration.getManipulator());
 			for (Node node : l) {
@@ -195,7 +170,7 @@ public class ExtractionAlgorithm {
 		
 		List<Node> newNodes = new ArrayList<Node>();
 		tupelAquisitor.setNextTaskToClassesForInstances();
-		while (!instanceNodes.isEmpty() && !stopCondition()) {
+		while (!instanceNodes.isEmpty()) {
 			logger.trace("Getting classes for remaining instances: "
 					+ instanceNodes.size());
 			Node next = instanceNodes.remove(0);
@@ -222,7 +197,7 @@ public class ExtractionAlgorithm {
 		
 		int i = 0;
 		
-		while (!newClasses.isEmpty() && !stopCondition()) {
+		while (!newClasses.isEmpty() ) {
 			logger.trace("Remaining classes: " + newClasses.size());
 			Node next = newClasses.remove(0);
 			
@@ -253,7 +228,7 @@ public class ExtractionAlgorithm {
 
 	}
 	
-	private static List<ClassNode> getClassNodes(List<Node> l ){
+	public static List<ClassNode> getClassNodes(List<Node> l ){
 		List<ClassNode> retList = new ArrayList<ClassNode>();
 		for (Node node : l) {
 			if (node instanceof ClassNode) {
@@ -266,7 +241,7 @@ public class ExtractionAlgorithm {
 	}
 	
 
-	private static List<InstanceNode> getInstanceNodes(List<Node> l ){
+	public static List<InstanceNode> getInstanceNodes(List<Node> l ){
 		List<InstanceNode> retList = new ArrayList<InstanceNode>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
@@ -278,7 +253,7 @@ public class ExtractionAlgorithm {
 		return retList;
 	}
 	
-	private static List<BlankNode> getBlankNodes(List<Node> l ){
+	public static List<BlankNode> getBlankNodes(List<Node> l ){
 		List<BlankNode> retList = new ArrayList<BlankNode>();
 		for (Node node : l) {
 			if (node instanceof BlankNode) {
@@ -290,7 +265,7 @@ public class ExtractionAlgorithm {
 		return retList;
 	}
 	
-	private static List<ObjectPropertyNode> getObjectPropertyNodes(List<Node> l ){
+	public static List<ObjectPropertyNode> getObjectPropertyNodes(List<Node> l ){
 		List<ObjectPropertyNode> properties = new ArrayList<ObjectPropertyNode>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
@@ -302,11 +277,12 @@ public class ExtractionAlgorithm {
 		return properties;
 	}
 	
-	private static List<DatatypePropertyNode> getDatatypeProperties(List<Node> l ){
+	public static List<DatatypePropertyNode> getDatatypeProperties(List<Node> l ){
 		List<DatatypePropertyNode> properties = new ArrayList<DatatypePropertyNode>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getDatatypePropertyNode());
+				
 			}
 			
 		}

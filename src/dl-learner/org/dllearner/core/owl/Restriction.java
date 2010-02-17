@@ -27,10 +27,6 @@ package org.dllearner.core.owl;
  */
 public abstract class Restriction extends Description {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 932723843389518050L;
 	protected PropertyExpression restrictedPropertyExpression;
 	
 	public Restriction(PropertyExpression restrictedPropertyExpression) {

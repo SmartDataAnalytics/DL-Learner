@@ -28,11 +28,6 @@ import java.util.Map;
 public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4076807871628918900L;
-
 	public ObjectPropertyRangeAxiom(ObjectProperty property, Description range) {
 		super(property, range);
 	}	
@@ -81,7 +76,8 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "OBJECTPROPERTYRANGE NOT IMPLEMENTED";
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

@@ -49,7 +49,6 @@ import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
-import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
 import org.dllearner.core.owl.DoubleMinValue;
@@ -112,7 +111,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();	
 	private TreeSet<Individual> individuals;
 
 	// private ReasonerComponent rs;
@@ -134,8 +132,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	// e.g. hasValue(object,2) and hasValue(object,3)
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
-	private Map<DatatypeProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<String>>>();
-	
+
 	/**
 	 * Creates an instance of the fast instance checker.
 	 * @param sources The knowledge sources used as input.
@@ -203,7 +200,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 			booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
 			doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
 			intDatatypeProperties = rc.getIntDatatypeProperties();
-			stringDatatypeProperties = rc.getStringDatatypeProperties();
 			atomicRoles = rc.getObjectProperties();
 			individuals = (TreeSet<Individual>) rc.getIndividuals();
 
@@ -257,10 +253,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 				dd.put(dp, rc.getDoubleDatatypeMembers(dp));
 			}
 
-			for (DatatypeProperty dp : stringDatatypeProperties) {
-				sd.put(dp, rc.getStringDatatypeMembers(dp));
-			}			
-			
 			long dematDuration = System.currentTimeMillis() - dematStartTime;
 			logger.debug("TBox dematerialised in " + dematDuration + " ms");
 
@@ -466,11 +458,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 			Individual i = ((ObjectValueRestriction)description).getIndividual();
 			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
 			
-			Set<Individual> inds = opPos.get(op).get(individual);
-			return inds == null ? false : inds.contains(i);
+			return opPos.get(op).get(individual).contains(i);
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpression();
+					.getRestrictedPropertyExpresssion();
 			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 			if (value) {
@@ -498,12 +489,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 			} else if (dr instanceof DoubleMinValue) {
 				return (values.last() >= ((DoubleMinValue) dr).getValue());
 			}
-		} else if (description instanceof DatatypeValueRestriction) {
-			String i = ((DatatypeValueRestriction)description).getValue().getLiteral();
-			DatatypeProperty dp = ((DatatypeValueRestriction)description).getRestrictedPropertyExpression();
-			
-			Set<String> inds = sd.get(dp).get(individual);
-			return inds == null ? false : inds.contains(i);
 		}
 
 		throw new ReasoningMethodUnsupportedException("Instance check for description "
@@ -735,7 +720,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			return returnSet;
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpression();
+					.getRestrictedPropertyExpresssion();
 			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 			if (value) {
@@ -819,11 +804,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return intDatatypeProperties;
 	}
 
-	@Override
-	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
-		return stringDatatypeProperties;
-	}	
-	
 	@Override
 	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperClassesImpl(concept);
@@ -998,12 +978,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}	
 	
 	@Override
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) {
-		return rc.getDatatypeMembersImpl(datatypeProperty);
-	}		
-	
-	@Override
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedIndividuals(individual, objectProperty);
 	}
@@ -1059,9 +1033,4 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return rc.remainsSatisfiableImpl(axiom);
 	}
 
-	@Override
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc) {
-		return rc.getAssertedDefinitionsImpl(nc);
-	}
-	
 }

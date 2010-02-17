@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.PosOnlyLPConfigurator;
@@ -65,7 +66,6 @@ public class PosOnlyLP extends LearningProblem {
 	
 	public PosOnlyLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
-		configurator = new PosOnlyLPConfigurator(this);
 	}
 
 	/*
@@ -143,12 +143,9 @@ public class PosOnlyLP extends LearningProblem {
 		Set<Individual> retrieval = reasoner.getIndividuals(description);
 		
 		Set<Individual> instancesCovered = new TreeSet<Individual>();
-		Set<Individual> instancesNotCovered = new TreeSet<Individual>();
 		for(Individual ind : positiveExamples) {
 			if(retrieval.contains(ind)) {
 				instancesCovered.add(ind);
-			} else {
-				instancesNotCovered.add(ind);
 			}
 		}
 		
@@ -157,14 +154,14 @@ public class PosOnlyLP extends LearningProblem {
 		
 		// pass only additional instances to score object
 		retrieval.removeAll(instancesCovered);
-		return new ScorePosOnly(instancesCovered, instancesNotCovered, coverage, retrieval, protusion, getAccuracy(coverage, protusion));		
+		return new ScorePosOnly(instancesCovered, coverage, retrieval, protusion, getAccuracy(coverage, protusion));		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescriptionPosOnly evaluate(Description description) {
+	public EvaluatedDescription evaluate(Description description) {
 		ScorePosOnly score = computeScore(description);
 		return new EvaluatedDescriptionPosOnly(description, score);		
 	}

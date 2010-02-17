@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class InverseObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6402501966040365366L;
 	private ObjectProperty inverseRole;
 	private ObjectProperty role;
 	
@@ -50,6 +46,7 @@ public class InverseObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "INVERSEOBJECTPROPERTYAXIOM NOT IMPLEMENTED";
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

@@ -39,16 +39,10 @@ public abstract class RefinementOperatorConfigurator {
 	
 	// below are optional parameters (neutral return values choosen)
 	
-	public abstract boolean getInstanceBasedDisjoints();
-	
 	public boolean getUseHasValueConstructor() {
 		return false;
 	}
 
-	public boolean getUseDataHasValueConstructor() {
-		return false;
-	}
-	
 	public int getValueFrequencyThreshold() {
 		return 3;
 	}
@@ -60,8 +54,4 @@ public abstract class RefinementOperatorConfigurator {
 	public boolean getUseDoubleDatatypes() {
 		return false;
 	}
-	
-	public boolean getUseStringDatatypes() {
-		return false;
-	}	
 }

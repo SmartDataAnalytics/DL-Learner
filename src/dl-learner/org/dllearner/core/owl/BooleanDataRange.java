@@ -30,10 +30,6 @@ import java.util.Map;
  */
 public class BooleanDataRange implements DataRange {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5269818053715347143L;
 	private boolean isTrue;
 	
 	public BooleanDataRange(boolean isTrue) {

@@ -30,7 +30,6 @@ import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
-import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
@@ -102,7 +101,6 @@ public class ConfMapper {
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
 		learningAlgorithmMapping.put("refexamples", ROLComponent2.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
-		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);
 		
 		// you do not need to edit anything below

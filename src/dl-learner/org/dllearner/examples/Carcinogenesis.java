@@ -484,7 +484,7 @@ public class Carcinogenesis {
 		return ret;
 	}
 	
-	public static void appendPosExamples(File file, List<Individual> examples) {
+	private static void appendPosExamples(File file, List<Individual> examples) {
 		StringBuffer content = new StringBuffer();
 		for(Individual example : examples) {
 			if(learnCarcinogenic)
@@ -495,7 +495,7 @@ public class Carcinogenesis {
 		Files.appendFile(file, content.toString());
 	}
 	
-	public static void appendNegExamples(File file, List<Individual> examples) {
+	private static void appendNegExamples(File file, List<Individual> examples) {
 		StringBuffer content = new StringBuffer();
 		for(Individual example : examples) {
 			if(learnCarcinogenic)

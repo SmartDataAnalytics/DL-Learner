@@ -1,111 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="build" name="dl_learner">
-
+	
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
-	<property name="protege_dir" value="C:\Program Files\Protege_4.0.1\plugins" />
+	<property name="protege_dir" value="/home/jl/programme/Protege_4.0_beta/plugins" />
 	<property name="class_dir" value="classes" />
-	<property name="ontowiki_dir" value="${user.home}/workspace/ontowiki/ontowiki/src/extensions/components/dllearner/dllearner" />
-
+	
 	<property name="php_client_dir" value="src/php-client" />
 	<tstamp>
-		<format property="today" pattern="yyyy-MM-dd" locale="en" />
-	</tstamp>
+			<format property="today" pattern="yyyy-MM-dd" locale="en" />		
+  	</tstamp>	
 	<property name="version_dir" value="dllearner-${today}" />
 	<property name="release_tmp_dir" value="release/${version_dir}" />
-	<property name="release_php_client_tmp_dir" value="release/php-client-${today}" />
-	<property name="release_ore_dir" value="release/ore-${today}" />
-	<property name="version_ore_dir" value="ore-${today}" />
+	<property name="release_php_client_tmp_dir" value="release/php-client-${today}" />	
 	
-	<property environment="env"/>
-	<property name = "protege.home"      location="${env.PROTEGE_HOME}"/>
-	<property name = "protege.plugins"   location="${protege.home}/plugins"/>
-
 	<!-- other settings -->
 	<!-- maximum amount of allocated memory in startup scripts -->
 	<property name ="max_memory" value="1024" />
-
+	
 	<!-- set up classpath -->
 	<path id="classpath">
 		<pathelement location="."/>
-		<fileset dir="${lib_dir}">
-			<include name="**/*.jar"/>
-		</fileset>
+	    <fileset dir="${lib_dir}">
+	        <include name="**/*.jar"/>
+	   </fileset>
 	</path>
-
+	
 	<!-- build target -->
 	<target name="full_release" depends="manual,javadoc,build" description="full release, javadoc, scripts">
 	</target>
-
+	
 	<!-- build target -->
-	<target name="jar"  description="makes dllearner.jar">
-		<!-- compile project into temporary directory -->
-		<mkdir dir="classes_tmp"/>
-		<javac destdir="classes_tmp" target="1.6">
-			<src path="${source_dir}"/>
-			<classpath refid="classpath"/>
-		</javac>
-
-		<jar jarfile="dllearner.jar">
-			<fileset dir="classes_tmp"/>
-		</jar>
-		<delete dir="classes_tmp"/>
+	<target name="rdbtoonto"  description="makes jar">
+				<!-- compile project into temporary directory -->
+				<mkdir dir="classes_tmp"/>		
+		        <javac destdir="classes_tmp" target="1.6">
+		            <src path="${source_dir}"/>
+		            <classpath refid="classpath"/>
+		        </javac>	
+							
+		        <jar jarfile="lib/rdbtoonto/converter.jar">
+		            <fileset dir="classes_tmp"/>
+		        </jar> 
+				<delete dir="classes_tmp"/>
 	</target>
-
-
+	
+	
 	<!-- build target -->
-	<target name="local" depends="createScripts" description="fast build including scripts, 
+		<target name="local" depends="createScripts" description="fast build including scripts, 
 			no javadoc, no tar, just executables in local, can be used on a server">
-
-
-		<!-- compile project into temporary directory -->
-		<mkdir dir="classes_tmp"/>
-		<javac destdir="classes_tmp" target="1.5">
-			<src path="${source_dir}"/>
-			<classpath refid="classpath"/>
-		</javac>
-
-		<mkdir dir="${release_tmp_dir}"/>
-		<mkdir dir="${release_tmp_dir}/lib/"/>
-		<jar jarfile="${release_tmp_dir}/lib/dllearner.jar">
-			<fileset dir="classes_tmp"/>
-		</jar>
-		<delete dir="classes_tmp"/>
-
-		<!-- copy all other libraries -->
-		<copy toDir="${release_tmp_dir}/lib">
-			<fileset dir="${lib_dir}" />
-		</copy>
-
-		<!-- copy binary files and examples -->
-		<copy toDir="${release_tmp_dir}/examples">
-			<fileset dir="examples"/>
-		</copy>
-		<copy toDir="${release_tmp_dir}">
-			<fileset dir="bin"/>
-		</copy>
-
-		<!-- create file containing the build info -->
-		<echo file="${release_tmp_dir}/build.txt" append="false">DL-Learner Build ${today}</echo>
-
-		<!-- create empty log directory for release -->
-		<mkdir dir="${release_tmp_dir}/log" />
-		<mkdir dir="${release_tmp_dir}/cache" />
-
-		<mkdir dir="local" />
-		<move toDir="local">
-			<fileset dir="${release_tmp_dir}"/>
-		</move>
-		<delete dir="${release_tmp_dir}" />
-		<delete dir="release" />
-
-	</target>
-
-
+		
+			
+			<!-- compile project into temporary directory -->
+			<mkdir dir="classes_tmp"/>		
+	        <javac destdir="classes_tmp" target="1.5">
+	            <src path="${source_dir}"/>
+	            <classpath refid="classpath"/>
+	        </javac>
+			
+			<mkdir dir="${release_tmp_dir}"/>
+			<mkdir dir="${release_tmp_dir}/lib/"/>
+	        <jar jarfile="${release_tmp_dir}/lib/dllearner.jar">
+	            <fileset dir="classes_tmp"/>
+	        </jar> 
+			<delete dir="classes_tmp"/>
+			
+			<!-- copy all other libraries -->
+			<copy toDir="${release_tmp_dir}/lib">
+				<fileset dir="${lib_dir}" />
+			</copy>	
+			
+			<!-- copy binary files and examples -->
+			<copy toDir="${release_tmp_dir}/examples">
+				<fileset dir="examples"/>
+			</copy>
+			<copy toDir="${release_tmp_dir}">
+				<fileset dir="bin"/>
+			</copy>
+			
+			<!-- create file containing the build info -->
+			<echo file="${release_tmp_dir}/build.txt" append="false">DL-Learner Build ${today}</echo>
+			
+			<!-- create empty log directory for release -->
+			<mkdir dir="${release_tmp_dir}/log" />
+			<mkdir dir="${release_tmp_dir}/cache" />
+			
+			<mkdir dir="local" />
+			<move toDir="local">
+				<fileset dir="${release_tmp_dir}"/>
+			</move>
+			<delete dir="${release_tmp_dir}" />
+			<delete dir="release" />
+			
+		</target>
+	
+	
 	<!-- build target -->
-	<target name="build" depends="createScripts,manual" description="fast build including scripts, no javadoc">
-
+	<target name="build" depends="createScripts" description="fast build including scripts, no javadoc">
+		
 		<!-- write current build date into Info.java -->
 		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
 // File is updated automatically when a new version is created
@@ -114,31 +107,31 @@ package org.dllearner;
 public class Info {
 	public static final String build = "${today}";
 }
-		</echo>
-
+		</echo>		
+		
 		<!-- compile project into temporary directory -->
-		<mkdir dir="classes_tmp"/>
-		<javac destdir="classes_tmp" target="1.5">
-			<src path="${source_dir}"/>
-			<classpath refid="classpath"/>
-		</javac>
+		<mkdir dir="classes_tmp"/>		
+        <javac destdir="classes_tmp" target="1.5">
+            <src path="${source_dir}"/>
+            <classpath refid="classpath"/>
+        </javac>
 		<!-- we also need to copy some images, which should be
-		included in dllearner.jar -->
+		included in dllearner.jar --> 
 		<copy toDir="classes_tmp" >
-			<fileset dir="${source_dir}" includes="**/*.gif,**/*.png,**/*.html"/>
-		</copy>
+			<fileset dir="${source_dir}" includes="**/*.gif,**/*.html"/>
+		</copy>		
 		<mkdir dir="${release_tmp_dir}"/>
 		<mkdir dir="${release_tmp_dir}/lib/"/>
-		<jar jarfile="${release_tmp_dir}/lib/dllearner.jar">
-			<fileset dir="classes_tmp"/>
-		</jar>
+        <jar jarfile="${release_tmp_dir}/lib/dllearner.jar">
+            <fileset dir="classes_tmp"/>
+        </jar> 
 		<delete dir="classes_tmp"/>
-
+		
 		<!-- copy all other libraries -->
 		<copy toDir="${release_tmp_dir}/lib">
 			<fileset dir="${lib_dir}" />
-		</copy>
-
+		</copy>	
+		
 		<!-- copy binary files and examples -->
 		<copy toDir="${release_tmp_dir}/examples">
 			<fileset dir="examples"/>
@@ -146,13 +139,13 @@ public class Info {
 		<copy toDir="${release_tmp_dir}">
 			<fileset dir="bin"/>
 		</copy>
-
+		
 		<!-- create file containing the build info -->
 		<echo file="${release_tmp_dir}/build.txt" append="false">DL-Learner Build ${today}</echo>
-
+		
 		<!-- create empty log directory for release -->
 		<mkdir dir="${release_tmp_dir}/log" />
-
+		
 		<!-- copy documentation excluding developer documentation -->
 		<copy toDir="${release_tmp_dir}/doc">
 			<fileset dir="doc">
@@ -161,37 +154,37 @@ public class Info {
 				<exclude name="manual/" />
 			</fileset>
 		</copy>
-
+		
 		<!-- copy special files (INSTALL, README) -->
 		<copy file="INSTALL" toDir="${release_tmp_dir}" />
 		<copy file="README" toDir="${release_tmp_dir}" />
-
+		
 		<!-- create tar.gz files (allows storing whether a file is executable) -->
 		<tar longfile="gnu" destfile="dllearner-nosource-${today}.tar.gz" compression="gzip">
-			<!-- extra set for executable files -->
-			<tarfileset dir="release/" mode="755">
-				<include name="${version_dir}/dllearner" />
-				<include name="${version_dir}/quickstart" />
-				<include name="${version_dir}/ws" />
-				<include name="${version_dir}/gui" />
-			</tarfileset>
-			<tarfileset dir="release/">
-				<exclude name="${version_dir}/dllearner"/>
-				<exclude name="${version_dir}/quickstart" />
-				<exclude name="${version_dir}/ws" />
-				<exclude name="${version_dir}/gui" />
-			</tarfileset>
+		  <!-- extra set for executable files -->	
+		  <tarfileset dir="release/" mode="755">
+		    <include name="${version_dir}/dllearner" />
+		  	<include name="${version_dir}/quickstart" />
+		  	<include name="${version_dir}/ws" />
+		  	<include name="${version_dir}/gui" />
+		  </tarfileset>
+		  <tarfileset dir="release/">
+		    <exclude name="${version_dir}/dllearner"/>
+		  	<exclude name="${version_dir}/quickstart" />
+		  	<exclude name="${version_dir}/ws" />
+		  	<exclude name="${version_dir}/gui" />
+		  </tarfileset>
 		</tar>
-
+		
 		<!-- copy source code -->
 		<mkdir dir="${release_tmp_dir}/src/"/>
 		<copy toDir="${release_tmp_dir}/src/">
 			<fileset dir="${source_dir}" includes="**/*.java,**/*.html,**/*.gif,**/*.jjt,build.xml"/>
 		</copy>
-
+		
 		<!-- copy manual -->
 		<copy toFile="${release_tmp_dir}/doc/manual.pdf" file="doc/manual/manual.pdf" />
-
+		
 		<!-- create copy developer documentation -->
 		<!--
 		<copy todir="${release_tmp_dir}/doc/eclipse/">
@@ -200,30 +193,30 @@ public class Info {
 		<copy todir="${release_tmp_dir}/doc/javadoc/">
 		    <fileset dir="doc/javadoc/"/>
 		</copy>
-		-->
-
+		-->				
+		
 		<!-- create backup (= standard build + source code + developer documentation) -->
 		<tar longfile="gnu" destfile="dllearner-${today}.tar.gz" compression="gzip">
 			<tarfileset dir="release/" mode="755">
-				<include name="${version_dir}/dllearner" />
-				<include name="${version_dir}/quickstart" />
+			    <include name="${version_dir}/dllearner" />
+			  	<include name="${version_dir}/quickstart" />
 				<include name="${version_dir}/ws" />
 				<include name="${version_dir}/gui" />
 			</tarfileset>
 			<tarfileset dir="release/">
-				<exclude name="${version_dir}/dllearner"/>
-				<exclude name="${version_dir}/quickstart" />
+			    <exclude name="${version_dir}/dllearner"/>
+			  	<exclude name="${version_dir}/quickstart" />
 				<exclude name="${version_dir}/ws" />
 				<exclude name="${version_dir}/gui" />
-			</tarfileset>
-		</tar>
-		<delete dir="release"/>
+			</tarfileset>				
+		</tar>		
+		<delete dir="release"/>		
 	</target>
-
+	
 	<!-- build PHP client release -->
 	<target name="php_client">
 		<mkdir dir="${release_php_client_tmp_dir}" />
-
+		
 		<!-- copy PHP-client to a temporary directory exluding some files -->
 		<copy toDir="${release_php_client_tmp_dir}">
 			<fileset dir="${php_client_dir}">
@@ -232,20 +225,20 @@ public class Info {
 				<!-- <exclude name="save/" /> -->
 			</fileset>
 		</copy>
-
+		
 		<!-- copy over all owl ontologies in examples directory -->
 		<copy toDir="${release_php_client_tmp_dir}/ontologies/" flatten="true">
 			<fileset dir="examples" includes="**/*.owl" />
 		</copy>
-
+		
 		<!-- create release -->
 		<tar destfile="php-client-${today}.tar.gz" compression="gzip">
 			<tarfileset dir="release" />
 		</tar>
-
+		
 		<delete dir="release" />
 	</target>
-
+	
 	<!-- generate JAXWS classes -->
 	<target name="wsgen" >
 		<path id="wsgen">
@@ -254,25 +247,23 @@ public class Info {
 		</path>
 		<pathconvert refid="wsgen" property="wsgenpath"/>
 		<exec dir="${source_dir}" executable="wsgen">
-			<arg value="-keep"/>
-			<arg value="-verbose"/>
-			<arg value="-cp"/>
-			<arg value="${wsgenpath}"/>
-			<arg value="org.dllearner.server.DLLearnerWS"/>
-		</exec>
+	    <arg value="-keep"/>
+	    <arg value="-verbose"/>
+	  	<arg value="-cp"/>
+		<arg value="${wsgenpath}"/>
+		<arg value="org.dllearner.server.DLLearnerWS"/>  
+	  </exec>
 	</target>
-
+	
 	<!-- generate startup scripts -->
 	<target name="createScripts" >
 		<path id="addjar">
 			<path refid="classpath"/>
 			<pathelement location="${lib_dir}/dllearner.jar"/>
 		</path>
-		<path id="removeprefix">
-			<pathelement location="."/>
-		</path>
+		<path id="removeprefix"><pathelement location="."/>	</path>
 		<pathconvert refid="removeprefix" property="removeprefix" />
-
+		
 		<pathconvert refid="addjar" property="pathStringUnix" targetos="unix">
 			<map from="${removeprefix}" to="."/>
 		</pathconvert>
@@ -283,42 +274,42 @@ public class Info {
 		<echo file="bin/quickstart.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
 		<echo file="bin/dllearner.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
 		<echo file="bin/ws.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
-		<echo file="bin/gui.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>
+		<echo file="bin/gui.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>		
 		<echo file="bin/quickstart" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
 		<echo file="bin/dllearner" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
 		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
 		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
 	</target>
-
+	
 	<!-- generate manual -->
 	<taskdef name="latex" classname="de.dokutransdata.antlatex.LaTeX"  
-	    classpath="lib/ant_latex.jar"/>
-	<target name="manual">
-
+	    classpath="lib/ant_latex.jar"/> 	
+	<target name="manual">  
+		
 		<!-- automatically adds correct build number in manual -->
 		<replaceregexp file="doc/manual/manual.tex"
 		                         match="DL-Learner (.*) command line interface"
 		                         replace="DL-Learner ${today} command line interface"
 		                         byline="true"/>
-
-		<!-- run pdflatex and bibtex over doc/manual/ -->
-		<latex  
+		
+		<!-- run pdflatex and bibtex over doc/manual/ -->	
+	      <latex  
 	       latexfile="manual.tex"  
 	       verbose="off"  
 	       clean="on"  
 	       pdftex="on"
-	       workingDir="doc/manual">
-			<bibtex  
+	       workingDir="doc/manual">  
+	         <bibtex  
 	          run="on"  
 	          workingDir="doc/manual/"  
-	          />
-		</latex>
-	</target>
-
+	          />  
+	      </latex>  
+	 </target> 	
+	
 	<!-- generate Javadoc -->
-	<target name="javadoc">
-		<pathconvert refid="classpath" property="jdocclasspath"/>
-		<javadoc access="public"
+    <target name="javadoc">
+    	<pathconvert refid="classpath" property="jdocclasspath"/>
+        <javadoc access="public"
         	author="true" 
         	classpath="${jdocclasspath}"
         	destdir="doc/javadoc" 
@@ -339,75 +330,70 @@ public class Info {
         	bottom="&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2008 Jens Lehmann" 
         	Encoding="ISO-8859-1" 
         	windowtitle="DL-Learner Javadoc">
-			<link href="http://java.sun.com/javase/6/docs/api/"/>
-		</javadoc>
-	</target>
-
+        	<link href="http://java.sun.com/javase/6/docs/api/"/>
+    	</javadoc>
+    </target>	
+	
 	<!-- copy all necessary files in a folder to build the jar or a release bundle -->
 	<target name="buildProtegePlugin">
 		<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
 		<property name="temp" value="${source}/temp" />
 		<property name="release" value="${source}/release" />
-
-		<mkdir dir="${temp}" />
-		<mkdir dir="${release}" />
-		<mkdir dir="${temp}/META-INF" />
-		<mkdir dir="${temp}/lib" />
-		<mkdir dir="${temp}/lib/pellet" />
-		<mkdir dir="${temp}/lib/jena" />
-		<mkdir dir="${temp}/lib/ore-tool" />
-		<mkdir dir="${temp}/lib/owlapi" />
-		<copy toDir="${temp}/META-INF" >
-			<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />
-		</copy>
-		<copy toDir="${temp}/lib/owlapi" >
-					<fileset dir="${lib_dir}/owlapi" includes="owlapiV3-bin.jar" />
+			
+	    	<mkdir dir="${temp}" />
+			<mkdir dir="${release}" />
+	    	<mkdir dir="${temp}/META-INF" />
+			<mkdir dir="${temp}/lib" />
+			<mkdir dir="${temp}/lib/pellet" />
+			<mkdir dir="${temp}/lib/jena" />
+			<mkdir dir="${temp}/lib/ore-tools" />
+			<copy toDir="${temp}/META-INF" >
+			    		<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />	
+			</copy>
+			<copy toDir="${temp}/lib/ore-tool" >
+							    		<fileset dir="${lib_dir}/ore-tool" includes="swingx-0.9.2.jar" />
+							</copy>
+			<copy toDir="${temp}/lib" >
+					    		<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
+					</copy>
+			<copy toDir="${temp}/lib/pellet" >
+								    	<fileset dir="${lib_dir}/pellet" includes="**/*.jar" />	
+						</copy>
+			<copy toDir="${temp}/lib/jena" >
+								    	<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar" />	
+						</copy>
+				<copy toDir="${temp}" >
+						    	<fileset dir="${class_dir}"  />	
 				</copy>
-		<copy toDir="${temp}/lib/ore-tool" >
-			<fileset dir="${lib_dir}/ore-tool" includes="BrowserLauncher2-all-1_3.jar" />
-		</copy>
-		<copy toDir="${temp}/lib" >
-			<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
-		</copy>
-		<copy toDir="${temp}/lib/pellet" >
-			<fileset dir="${lib_dir}/pellet" includes="**/*.jar" />
-		</copy>
-		<copy toDir="${temp}/lib/jena" >
-			<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar" />
-		</copy>
-		<copy toDir="${temp}" >
-			<fileset dir="${class_dir}"  />
-		</copy>
-		<copy toDir="${temp}" >
-			<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
-		</copy>
-		<javac srcdir="${source}"
+			<copy toDir="${temp}" >
+				<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
+				</copy>
+	    	<javac srcdir="${source}"
 	         destdir="${temp}"
-	         debug="on"
-	    	 target="1.5">
-			<classpath refid="classpath"/>
-		</javac>
-		<jar destfile="${release}/DL-Learner-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
-			<fileset dir="${temp}" />
-		</jar>
-
+	         debug="on">
+				<classpath refid="classpath"/>
+	    	</javac>
+	    	<jar destfile="${release}/DL-Learner-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
+	    			<fileset dir="${temp}" />
+	    		</jar>
+		
 	</target>
-
+	
 	<!--Copy the DL-Learner-Protege-plugin jar file into the Protege plugin folder -->
 	<target name="copyProtegePluginToProtegeDir" depends="buildProtegePlugin">
 		<copy toDir="${protege_dir}" >
-			<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
-		</copy>
+						<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
+					</copy>
 		<delete dir="${temp}" />
 		<delete dir="${release}" />
-	</target>
-
+		</target>
+	
 	<!--Builds the Releasebundle -->
 	<target name="buildProtegePluginRelease" depends="buildProtegePlugin">
 		<copy file="LICENSE" toDir="${release}" />
-		<copy toDir="${release}" >
-			<fileset dir="${source}" includes="INSTALL,README" excludes="**/*.java,**/*.gif" />
-		</copy>
+				<copy toDir="${release}" >
+								<fileset dir="${source}" includes="INSTALL,README" excludes="**/*.java,**/*.gif" />
+				</copy>	
 		<property name="ProtRelease" value="releaseProtege/" />
 		<mkdir dir="${ProtRelease}" />
 		<zip destfile="${ProtRelease}/DL-Learner-plugin.zip"
@@ -416,189 +402,5 @@ public class Info {
 		<delete dir="${temp}" />
 		<delete dir="${release}" />
 	</target>
-
-	<!--Builds the Ontowiki DL-Learner Jar -->
-
-	<target name="buildOntowikiDLLearnerJar">
-		<mkdir dir="${temp}"/>
-		<mkdir dir="${release}"/>
-		<mkdir dir="${release}/lib"/>
-		<mkdir dir="${release}/lib/pellet"/>
-		<mkdir dir="${release}/lib/jena"/>
-		<mkdir dir="${release}/lib/owlapi"/>
-
-		<copy toDir="${release}/lib">
-			<fileset dir="${lib_dir}" includes="jamon-2.7.jar,log4j.jar,components.ini"/>
-		</copy>
-
-		<copy toDir="${release}/lib/owlapi">
-			<fileset dir="${lib_dir}/owlapi" includes="owlapi-bin.jar"/>
-		</copy>
-		<copy toDir="${release}/lib/pellet">
-			<fileset dir="${lib_dir}/pellet" includes="pellet-core.jar, pellet-owlapi.jar"/>
-		</copy>
-
-		<copy toDir="${release}/lib/jena">
-			<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar"/>
-		</copy>
-
-		<copy toDir="${temp}">
-			<fileset dir="${class_dir}"/>
-		</copy>
-
-		<jar destfile="${release}/dllearner.jar">
-			<fileset dir="${temp}"/>
-		</jar>
-		<copy toDir="${ontowiki_dir}">
-			<fileset dir="${release}"/>
-		</copy>
-
-		<delete dir="${temp}" />
-		<delete dir="${release}" />
-	</target>
-
-	<!-- build the ORE tool -->
-	<target name="buildORE"  description="build ore including scripts, no javadoc">
-
-		<!-- build scripts -->
-		<path id="addjar">
-			<path refid="classpath"/>
-			<pathelement location="${lib_dir}/dllearner.jar"/>
-		</path>
-		<path id="removeprefix">
-			<pathelement location="."/>
-		</path>
-		<pathconvert refid="removeprefix" property="removeprefix" />
-
-		<pathconvert refid="addjar" property="pathStringUnix" targetos="unix">
-			<map from="${removeprefix}" to="."/>
-		</pathconvert>
-		<pathconvert refid="addjar" property="pathStringWin" targetos="windows">
-			<map from="${removeprefix}" to="."/>
-		</pathconvert>
-
-		<echo file="bin/ore.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.tools.ore.OREApplication"/>
-		<echo file="bin/ore" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.tools.ore.OREApplication $@"/>
-
-		<!-- write current build date into Info.java -->
-		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
-	// File is updated automatically when a new version is created
-	package org.dllearner;
-
-	public class Info {
-		public static final String build = "${today}";
-	}
-			</echo>
-
-		<!-- compile project into temporary directory -->
-		<mkdir dir="classes_tmp"/>
-		<javac destdir="classes_tmp" target="1.5">
-			<src path="${source_dir}"/>
-			<classpath refid="classpath"/>
-		</javac>
-		<!-- we also need to copy some images, which should be
-			included in dllearner.jar -->
-		<copy toDir="classes_tmp" >
-			<fileset dir="${source_dir}" includes="**/*.gif,**/*.png,**/*.html,**/*.txt"/>
-		</copy>
-		<mkdir dir="${release_ore_dir}"/>
-		<mkdir dir="${release_ore_dir}/lib/"/>
-		<jar jarfile="${release_ore_dir}/lib/dllearner.jar">
-			<fileset dir="classes_tmp"/>
-		</jar>
-		<delete dir="classes_tmp"/>
-
-		<!-- copy all other libraries -->
-		<copy toDir="${release_ore_dir}/lib">
-			<fileset dir="${lib_dir}" />
-		</copy>
-
-		<!-- copy binary files and examples -->
-		<copy toDir="${release_ore_dir}/examples">
-			<fileset dir="examples/ore"/>
-		</copy>
-		<copy toDir="${release_ore_dir}">
-			<fileset dir="bin"/>
-		</copy>
-
-		<!-- create file containing the build info -->
-		<echo file="${release_ore_dir}/build.txt" append="false">ORE Build ${today}</echo>
-
-		<!-- create empty log directory for release -->
-		<mkdir dir="${release_ore_dir}/log" />
-
-		<!-- create tar.gz files (allows storing whether a file is executable) -->
-		<tar longfile="gnu" destfile="ore-nosource-${today}.tar.gz" compression="gzip">
-			<!-- extra set for executable files -->
-			<tarfileset dir="release/" mode="755">
-				<include name="${version_ore_dir}/ore" />
-			</tarfileset>
-			<tarfileset dir="release/">
-				<exclude name="${version_ore_dir}/ore"/>
-			</tarfileset>
-		</tar>
-
-		<!-- copy source code -->
-		<mkdir dir="${release_ore_dir}/src/"/>
-		<copy toDir="${release_ore_dir}/src/">
-			<fileset dir="${source_dir}" includes="**/*.java,**/*.html,**/*.gif,**/*.png,*/*.jjt,build.xml"/>
-		</copy>
-
-		<!-- create backup (= standard build + source code + developer documentation) -->
-		<tar longfile="gnu" destfile="ore-${today}.tar.gz" compression="gzip">
-			<tarfileset dir="release/" mode="755">
-				<include name="${version_ore_dir}/ore" />
-			</tarfileset>
-			<tarfileset dir="release/">
-				<exclude name="${version_ore_dir}/ore"/>
-			</tarfileset>
-		</tar>
-		<delete dir="release"/>
-	</target>
 	
-	<!-- build the DL-Learner evaluation plugin for Protege -->
-		<target name="buildEvaluationProtegePlugin">
-			<property name="source" value="src/dl-learner/org/dllearner/tools/evaluationplugin" />
-			<property name="temp" value="${source}/temp" />
-			<property name="build" value="${source}/build" />
-
-			<mkdir dir="${temp}" />
-			<mkdir dir="${build}" />
-			<mkdir dir="${temp}/META-INF" />
-			<mkdir dir="${temp}/lib" />
-			<copy toDir="${temp}/META-INF" >
-				<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />
-			</copy>
-			<copy toDir="${temp}/lib" >
-				<fileset dir="${lib_dir}/ore-tool" includes="swingx-1.0.jar" />
-			</copy>
-			<copy toDir="${temp}/lib" >
-				<fileset dir="${lib_dir}/jena" includes="json.jar" />
-			</copy>
-			<copy toDir="${temp}" >
-				<fileset dir="${class_dir}"  />
-			</copy>
-			<copy toDir="${temp}" >
-				<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
-			</copy>
-			<javac srcdir="${source}"
-		         destdir="${temp}"
-		         debug="on"
-		    	 target="1.5">
-				<classpath refid="classpath"/>
-			</javac>
-			<jar destfile="${build}/DL-Learner-evaluation-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
-				<fileset dir="${temp}" />
-			</jar>
-		</target>
-	
-	<!-- build and install the DL-Learner evaluation plugin for Protege to the given Protege directory -->
-		<target name="installEvaluationProtegePlugin" depends="buildEvaluationProtegePlugin">
-			<copy file="${build}/DL-Learner-evaluation-protege-plugin.jar" 
-			           todir = "${protege.plugins}"
-			           overwrite = "true"/>
-			<delete dir="${temp}" />
-			<delete dir="${build}" />
-		</target>
-
 </project>

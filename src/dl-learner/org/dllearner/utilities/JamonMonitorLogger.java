@@ -19,7 +19,6 @@
  */
 package org.dllearner.utilities;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,13 +42,7 @@ import com.jamonapi.MonitorFactory;
  */
 public class JamonMonitorLogger {
 
-
-	public static final String MS = "ms.";
-	public static final String SECONDS = "sec.";
-	public static final String COUNT = "count";
-	public static final String DOUBLE = "double";
-	public static final String PERCENTAGE = "%";
-	
+		
 	public static List<Monitor> getMonitors(){
 		//MonitorFactory mf=(MonitorFactory)MonitorFactory.getFactory();
 		LinkedList<Monitor> l=new LinkedList<Monitor>();
@@ -62,6 +55,12 @@ public class JamonMonitorLogger {
 			
 			l.add(monitor);
 		}
+		
+	
+		
+		/*for (String label : retMon) {
+			l.add(MonitorFactory.getTimeMonitor(label));
+		}*/
 		
 		return l;
 	}
@@ -95,12 +94,12 @@ public class JamonMonitorLogger {
 		retVal+=unit+"|\t";
 		long content = new Double(m.getTotal()).longValue();
 		content = content / (1000*1000);
-		String contentstr = (unit.equals(MS))? Helper.prettyPrintNanoSeconds(content ) : m.getHits()+"" ;
+		String contentstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(content ) : m.getHits()+"" ;
 		retVal+= "total:"+contentstr+"|\t";
 		
 		long avg = new Double(m.getAvg()).longValue();
 		avg = avg / (1000*1000);
-		String avgstr = (unit.equals(MS))? Helper.prettyPrintNanoSeconds(avg ) : avg+"" ;
+		String avgstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(avg ) : avg+"" ;
 		retVal+= "avg:"+avgstr+"|\t";
 		
 		return retVal;
@@ -141,18 +140,9 @@ public class JamonMonitorLogger {
 	
 	@SuppressWarnings("all")
 	public static  Monitor getTimeMonitor(Class clazz, String label) {
+		
 		String labeltmp = getMonitorPrefix(clazz)+label;
 		return MonitorFactory.getTimeMonitor(labeltmp);
-		
-	}
-	
-	@SuppressWarnings("all")
-	public static  Monitor getStatisticMonitor( String label) {
-		return MonitorFactory.getMonitor(label, "double");
-	}
-	@SuppressWarnings("all")
-	public static  Monitor getStatisticMonitor( String label, String unit) {
-		return MonitorFactory.getMonitor(label, unit);
 		
 	}
 	
@@ -163,12 +153,6 @@ public class JamonMonitorLogger {
 		// System.out.println(m);
 		 m.setHits(m.getHits()+1);
 		//System.out.println(m);
-	}
-	
-	public static void writeHTMLReport(String filename){
-		File jamonlog = new File(filename);
-		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 	
 	

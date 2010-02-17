@@ -19,13 +19,13 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -82,23 +82,14 @@ public class InstanceNode extends Node {
 		return newNodes;
 	}
 	
-	/**
-	 * estimates the type of the retrieved tuple
-	 * @param tuple
-	 * @return
-	 */
 	public Node processTuple( RDFNodeTuple tuple) {
-		
 		try {
-			
-			//Literal nodes 
 			if(tuple.b.isLiteral()) {
 				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
 				return null;
-			//Blank nodes 
 			}else if(tuple.b.isAnon()){
-//				@SuppressWarnings("unused")
-//				RDFBlankNode n = (RDFBlankNode) tuple.b;
+				@SuppressWarnings("unused")
+				RDFBlankNode n = (RDFBlankNode) tuple.b;
 				if(tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){
 					logger.warn("blanknodes for instances not implemented yet (rare frequency). e.g. (instance rdf:type (A and B)"+" " + this+ " in tuple "+tuple);
 				}
@@ -110,27 +101,11 @@ public class InstanceNode extends Node {
 			
 			// basically : if p is rdf:type then o is a class
 			// else it is an instance
-			// Class Node 
 			}else if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
-				try{
-					URI.create(tuple.b.toString());
-				}catch (Exception e) {
-					logger.warn("uri "+tuple.b.toString()+" is not a valid uri for a class, ignoring");
-					return null;
-				}
-				
 				ClassNode tmp = new ClassNode(tuple.b.toString());
 				classes.add(tmp);
 				return tmp;
-			// instance node
 			} else {
-				
-				try{
-					URI.create(tuple.b.toString());
-				}catch (Exception e) {
-					logger.warn("uri "+tuple.b.toString()+" for objectproperty: "+tuple.a.toString() +" is not valid, ignoring");
-					return null;
-				}
 				InstanceNode tmp = new InstanceNode(tuple.b.toString());
 				objectProperties.add(new ObjectPropertyNode(tuple.a.toString(), this, tmp));
 				return tmp;
@@ -144,14 +119,14 @@ public class InstanceNode extends Node {
 	
 	// gets the types for properties recursively
 	@Override
-	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
+	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 		List<BlankNode> ret =  new ArrayList<BlankNode>();
 		for (ObjectPropertyNode one : objectProperties) {
-			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
+			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
 		}
 		
 		for (DatatypePropertyNode one : datatypeProperties) {
-			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
+			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
 		}
 		return ret;
 

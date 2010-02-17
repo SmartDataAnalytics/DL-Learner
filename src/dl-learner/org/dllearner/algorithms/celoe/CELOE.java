@@ -21,7 +21,6 @@ package org.dllearner.algorithms.celoe;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +36,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
-import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -49,9 +48,7 @@ import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Helper;
@@ -99,12 +96,6 @@ public class CELOE extends LearningAlgorithm {
 	
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
 	
-	// if true, then each solution is evaluated exactly instead of approximately
-	// private boolean exactBestDescriptionEvaluation = false;
-	private boolean singleSuggestionMode;
-	private Description bestDescription;
-	private double bestAccuracy = Double.MIN_VALUE;
-	
 	private NamedClass classToDescribe;
 	// examples are either 1.) instances of the class to describe 2.) positive examples
 	// 3.) union of pos.+neg. examples depending on the learning problem at hand
@@ -120,7 +111,6 @@ public class CELOE extends LearningAlgorithm {
 	// important parameters
 	private double noise;
 	private double maxDepth;
-	private boolean filterFollowsFromKB;
 	
 	// utility variables
 	private String baseURI;
@@ -129,12 +119,12 @@ public class CELOE extends LearningAlgorithm {
 	private ConceptComparator descriptionComparator = new ConceptComparator();
 	
 	// statistical variables
-	private int expressionTests = 0;
+	private int descriptionTests = 0;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
 	
 	@Override
-	public CELOEConfigurator getConfigurator() {
+	public Configurator getConfigurator() {
 		return configurator;
 	}
 	
@@ -154,7 +144,6 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useHasValueConstructor());
-		options.add(CommonConfigOptions.useDataHasValueConstructor());
 		options.add(CommonConfigOptions.valueFreqencyThreshold());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.cardinalityLimit());
@@ -166,10 +155,6 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(CommonConfigOptions.getMaxDepth(7));
 		options.add(CommonConfigOptions.maxNrOfResults(10));
-		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		options.add(new BooleanConfigOption("filterDescriptionsFollowingFromKB", "If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.", false));
-		options.add(new BooleanConfigOption("reuseExistingDescription", "If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.", false));
 		return options;
 	}
 	
@@ -188,8 +173,6 @@ public class CELOE extends LearningAlgorithm {
 		
 		startClass = Thing.instance;
 		
-		singleSuggestionMode = configurator.getSingleSuggestionMode();
-		
 		// create refinement operator
 		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
@@ -197,16 +180,11 @@ public class CELOE extends LearningAlgorithm {
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
 		
-		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
-		
 		// we put important parameters in class variables
 		noise = configurator.getNoisePercentage()/100d;
-		maxDepth = configurator.getMaxDepth();
-		// (filterFollowsFromKB is automatically set to false if the problem
-		// is not a class learning problem
-		filterFollowsFromKB = configurator.getFilterDescriptionsFollowingFromKB()
-		  && isClassLearningProblem;
+		maxDepth = configurator.getMaxDepth();		
 		
+		isClassLearningProblem = (learningProblem instanceof ClassLearningProblem);
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
 			ClassLearningProblem problem = (ClassLearningProblem) learningProblem;
@@ -219,70 +197,12 @@ public class CELOE extends LearningAlgorithm {
 			// capture all instances), but owl:Thing for learning subclasses (since it is
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
-				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
-				if(configurator.getReuseExistingDescription() && (existingDefinitions.size() > 0)) {
-					// the existing definition is reused, which in the simplest case means to
-					// use it as a start class or, if it is already too specific, generalise it
-					
-					// pick the longest existing definition as candidate
-					Description existingDefinition = null;
-					int highestLength = 0;
-					for(Description exDef : existingDefinitions) {
-						if(exDef.getLength() > highestLength) {
-							existingDefinition = exDef;
-							highestLength = exDef.getLength();
-						}
-					}
-					
-					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
-					startClassCandidates.add(existingDefinition);
-					((RhoDRDown)operator).setDropDisjuncts(true);
-					RefinementOperator upwardOperator = new OperatorInverter(operator);
-					
-					// use upward refinement until we find an appropriate start class
-					boolean startClassFound = false;
-					Description candidate;
-					do {
-						candidate = startClassCandidates.pollFirst();
-						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
-							// add upward refinements to list
-							Set<Description> refinements = upwardOperator.refine(candidate, candidate.getLength());
-//							System.out.println("ref: " + refinements);
-							LinkedList<Description> refinementList = new LinkedList<Description>(refinements);
-//							Collections.reverse(refinementList);
-//							System.out.println("list: " + refinementList);
-							startClassCandidates.addAll(refinementList);
-//							System.out.println("candidates: " + startClassCandidates);
-						} else {
-							startClassFound = true;
-						}
-					} while(!startClassFound);
-					startClass = candidate;
-					
-					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing description " + startClass.toManchesterSyntaxString(baseURI, prefixes) + " as start class for learning algorithm.");
-					} else {
-						logger.info("Generalised existing description " + existingDefinition.toManchesterSyntaxString(baseURI, prefixes) + " to " + startClass.toManchesterSyntaxString(baseURI, prefixes) + ", which is used as start class for the learning algorithm.");
-					}
-					
-//					System.out.println("start class: " + startClass);
-//					System.out.println("existing def: " + existingDefinition);
-//					System.out.println(reasoner.getIndividuals(existingDefinition));
-					
-					((RhoDRDown)operator).setDropDisjuncts(false);
-					
+				Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+				if(superClasses.size() > 1) {
+					startClass = new Intersection(new LinkedList<Description>(superClasses));
 				} else {
-					Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
-					if(superClasses.size() > 1) {
-						startClass = new Intersection(new LinkedList<Description>(superClasses));
-					} else if(superClasses.size() == 1){
-						startClass = (Description) superClasses.toArray()[0];
-					} else {
-						startClass = Thing.instance;
-						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a description in this case.");
-					}					
-				}
+					startClass = (Description) superClasses.toArray()[0];
+				}	
 			}				
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
@@ -327,8 +247,8 @@ public class CELOE extends LearningAlgorithm {
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
 			
-			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
-				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+			if(bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
+				highestAccuracy = bestEvaluatedDescriptions.getBest().getAccuracy();
 				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
 			}
 
@@ -341,11 +261,6 @@ public class CELOE extends LearningAlgorithm {
 			TreeSet<Description> refinements = refineNode(nextNode);
 			mon.stop();
 				
-//			System.out.println("next node: " + nextNode);
-//			for(Description refinement : refinements) {
-//				System.out.println("refinement: " + refinement);
-//			}
-			
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
@@ -355,35 +270,24 @@ public class CELOE extends LearningAlgorithm {
 				// (this also avoids duplicate node children)
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
 					
-//					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
 					addNode(refinement, nextNode);
 					mon2.stop();
-					// adding nodes is potentially computationally expensive, so we have
-					// to check whether max time is exceeded	
-					if(terminationCriteriaSatisfied()) {
-						break;
-					}
-//					System.out.println("addNode finished" + " " + new Date());
+
 				}
 		
 			}
 			
 			updateMinMaxHorizExp(nextNode);
 			
-//			System.out.println(loop);
 			loop++;
 		}
-		
-		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
-		} else {
-			logger.info("Algorithm terminated successfully ("+expressionTests+" descriptions tested). "  + nodes.size() + " nodes in the search tree.\n");
-		}
 
-		if(singleSuggestionMode) {
-			bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
-		}		
+		if (stop) {
+			logger.info("Algorithm stopped ("+descriptionTests+" descriptions tested).\n");
+		} else {
+			logger.info("Algorithm terminated successfully ("+descriptionTests+" descriptions tested).\n");
+		}
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
@@ -429,8 +333,6 @@ public class CELOE extends LearningAlgorithm {
 	// returns true if node was added and false otherwise
 	private boolean addNode(Description description, OENode parentNode) {
 		
-//		System.out.println(description);
-		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
@@ -442,12 +344,9 @@ public class CELOE extends LearningAlgorithm {
 			return false;
 		}
 		
-//		System.out.println("Test " + new Date());
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
-//		System.out.println("Test2 " + new Date());
-		expressionTests++;
-//		System.out.println("acc: " + accuracy);
+		descriptionTests++;
 //		System.out.println(description + " " + accuracy);
 		if(accuracy == -1) {
 			return false;
@@ -463,18 +362,6 @@ public class CELOE extends LearningAlgorithm {
 		}
 	
 		nodes.add(node);
-//		System.out.println("Test3 " + new Date());
-		
-		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
-		// due to the high number of examples -- so we just stick to the approximate accuracy
-		if(singleSuggestionMode) {
-			if(accuracy > bestAccuracy) {
-				bestAccuracy = accuracy;
-				bestDescription = description;
-				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription)); 
-			}
-			return true;
-		} 
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -488,7 +375,6 @@ public class CELOE extends LearningAlgorithm {
 				(accuracy >= accThreshold && description.getLength() < worst.getDescriptionLength()));
 		}
 		
-//		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
 			Description niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
@@ -498,22 +384,18 @@ public class CELOE extends LearningAlgorithm {
 			// a subdescription of this one unless accuracy is different
 			boolean shorterDescriptionExists = false;
 			for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
-				if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+				if(ed.getAccuracy()==accuracy && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
 					shorterDescriptionExists = true;
 					break;
 				}
 			}
 			
 			if(!shorterDescriptionExists) {
-				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
-					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
-				}
+				bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 			}
 						
 		}
 		
-//		System.out.println("Test5 " + new Date());
-//		System.out.println("best evaluated descriptions size: " + bestEvaluatedDescriptions.size() + " worst: " + bestEvaluatedDescriptions.getWorst());
 		return true;
 	}	
 	
@@ -605,7 +487,7 @@ public class CELOE extends LearningAlgorithm {
 	// check whether the node is a potential solution candidate
 	private Description rewriteNode(OENode node) {
 		Description description = node.getDescription();
-		// minimize description (expensive!) - also performes some human friendly rewrites
+		// minimize description (expensive!)
 		Description niceDescription = minimizer.minimizeClone(description);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		ConceptTransformation.replaceRange(niceDescription, reasoner);
@@ -622,7 +504,7 @@ public class CELOE extends LearningAlgorithm {
 		nodes = new TreeSet<OENode>(heuristic);
 		descriptions = new TreeSet<Description>(new ConceptComparator());
 		bestEvaluatedDescriptions.getSet().clear();
-		expressionTests = 0;
+		descriptionTests = 0;
 	}
 	
 	@Override
@@ -654,21 +536,12 @@ public class CELOE extends LearningAlgorithm {
 		int current = 1;
 		String str = "";
 		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
-			// temporary code
-			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
-			} else {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
-			}
+			str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 			current++;
 		}
 		return str;
 	}
 
-//	private String getTemporaryString(Description description) {
-//		return descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")";
-//	}
-	
 	private void updateMinMaxHorizExp(OENode node) {
 		int newHorizExp = node.getHorizontalExpansion();
 		
@@ -697,8 +570,6 @@ public class CELOE extends LearningAlgorithm {
 			
 			// inc. minimum since we found no other node which also has min. horiz. exp.
 			minHorizExp++;
-			
-//			System.out.println("minimum horizontal expansion is now " + minHorizExp);
 		}
 	}
 	
@@ -710,10 +581,4 @@ public class CELOE extends LearningAlgorithm {
 		return minHorizExp;
 	}
 	
-	/**
-	 * @return the expressionTests
-	 */
-	public int getClassExpressionTests() {
-		return expressionTests;
-	}	
 }

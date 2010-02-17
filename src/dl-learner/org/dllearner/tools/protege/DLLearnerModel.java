@@ -20,8 +20,6 @@
 
 package org.dllearner.tools.protege;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -158,13 +156,14 @@ public class DLLearnerModel implements Runnable{
 	// suggested concept
 	private List<? extends EvaluatedDescription> evalDescriptions;
 	private boolean isReasonerSet;
-	private boolean knowledgeSourceIsUpdated;
 
 	/**
 	 * This is the constructor for DL-Learner model.
 	 * 
 	 * @param editorKit
 	 *            Editor Kit to get the currently loaded Ontology
+	 * @param id
+	 *            String if it learns a subclass or a superclass.
 	 * @param view
 	 *            current view of the DL-Learner tab
 	 */
@@ -173,7 +172,6 @@ public class DLLearnerModel implements Runnable{
 		isReasonerSet = false;
 		this.view = view;
 		ontologyConsistent = true;
-		knowledgeSourceIsUpdated = false;
 		owlDescription = new HashSet<OWLDescription>();
 		ComponentManager.setComponentClasses(componenten);
 		cm = ComponentManager.getInstance();
@@ -183,10 +181,6 @@ public class DLLearnerModel implements Runnable{
 		sources = new HashSet<KnowledgeSource>();
 	}
 	
-	/**
-	 * Sets the ID if an equivalent or a superclass must be suggested.
-	 * @param d ID if it is an equivalent or a superclass
-	 */
 	public void setID(String d) {
 		this.id = d;
 	}
@@ -232,11 +226,13 @@ public class DLLearnerModel implements Runnable{
 			reasoner.isSatisfiable();
 			view.setIsInconsistent(false);
 			isReasonerSet = true;
-		}catch (ComponentInitException e) {
-			view.setIsInconsistent(true);
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			System.out.println("fehler!!!!!!!!!");	
+			e.printStackTrace();
 		} catch (InconsistentOntologyException incon) {
 			view.setIsInconsistent(true);
-		} 
+		}
 	}
 	
 	/**
@@ -261,15 +257,7 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public void setLearningProblem() {
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		URL currentConceptURL = null;
-		try {
-			currentConceptURL = new URL(currentConcept.toString());
-		} catch (MalformedURLException e1) {
-			String error = "<html><font size=\"3\" color=\"red\">Cannot convert to URL.</font></html>";
-			view.setHintMessage(error);
-			e1.printStackTrace();
-		}
-		cm.applyConfigEntry(lp, "classToDescribe", currentConceptURL);
+		cm.applyConfigEntry(lp, "classToDescribe", currentConcept.toString());
 		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
@@ -295,27 +283,11 @@ public class DLLearnerModel implements Runnable{
 			this.la = cm.learningAlgorithm(CELOE.class, lp,
 					reasoner);
 		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//Config options set in the gui.
-		//config option if all is used for suggestions
-		cm.applyConfigEntry(la, "useAllConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getAllBox());
-		//config option if exists is used for suggestions
-		cm.applyConfigEntry(la, "useExistsConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getSomeBox());
-		//config option if hasValue is used for suggestions
-		cm.applyConfigEntry(la, "useHasValueConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getValueBox());
-		//config option if negation is used for suggestions
-		cm.applyConfigEntry(la, "useNegation", view.getPosAndNegSelectPanel().getOptionPanel().getNotBox());
-		//config option if cardinalitylimits is used for suggestions
-		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox());
-		if(view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox()) {
-			//config option to set the cardinalityrestrictions
-			cm.applyConfigEntry(la, "cardinalityLimit", view.getPosAndNegSelectPanel().getOptionPanel().getCountMoreBox());
-		}
-		//config option to set the noise
+		cm.applyConfigEntry(la, "useNegation", false);
 		cm.applyConfigEntry(la, "noisePercentage", view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy());
-		//config option to set the maximum execution time
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
 				.getPosAndNegSelectPanel().getOptionPanel()
 				.getMaxExecutionTime());
@@ -523,50 +495,12 @@ public class DLLearnerModel implements Runnable{
 		return individual;
 	}
 	
-	/**
-	 * This method returns if the ID is an equivalent or a superclass.
-	 * @return id if it is an equivalent or superclass
-	 */
 	public String getID() {
 		return id;
 	}
 	
-	/**
-	 * Returns boolean if reasoner is allready set.
-	 * @return isReasonerSet
-	 */
 	public boolean isReasonerSet() {
 		return isReasonerSet;
-	}
-	
-	/**
-	 * This method returns the currently selected class description as an evaluated description.
-	 * @param index which class descriptions is selected
-	 * @return selected class description
-	 */
-	public EvaluatedDescription getCurrentlySelectedClassDescription(int index) {
-		return evalDescriptions.get(index);
-	}
-	
-	/**
-	 * This methode sets if the knowledge source is updated or not.
-	 * @param isUpdated boolean if knowledge sourec is updated
-	 */
-	public void setKnowledgeSourceIsUpdated(boolean isUpdated) {
-		knowledgeSourceIsUpdated = isUpdated;
-	}
-	
-	/**
-	 * This methode returns a boolean if the knowledge
-	 * source is updated.
-	 * @return boolean if knowledge source is updated
-	 */
-	public boolean getIsKnowledgeSourceIsUpdated() {
-		return knowledgeSourceIsUpdated;
-	}
-	
-	public OWLEditorKit getOWLEditorKit() {
-		return editor;
 	}
 }
 

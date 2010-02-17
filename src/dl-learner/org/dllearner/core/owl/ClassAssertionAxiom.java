@@ -30,10 +30,6 @@ import java.util.Map;
  */
 public class ClassAssertionAxiom extends AssertionalAxiom {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -790952686329481774L;
 	private Description concept;
 	private Individual individual;
 	

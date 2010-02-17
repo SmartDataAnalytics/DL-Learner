@@ -19,8 +19,6 @@
  */
 package org.dllearner.scripts.matching;
 
-import java.net.URI;
-
 /**
  * A geo location.
  * 
@@ -28,18 +26,12 @@ import java.net.URI;
  *
  */
 public class Point {
-	
+
 	protected double geoLat;
 	
 	protected double geoLong;
 	
-	protected URI uri;
-	
-	protected POIClass poiClass;
-	
-	public Point(URI uri, POIClass poiClass, double geoLat, double geoLong) {
-		this.uri = uri;
-		this.poiClass = poiClass;
+	public Point(double geoLat, double geoLong) {
 		this.geoLat = geoLat;
 		this.geoLong = geoLong;
 	}
@@ -51,13 +43,5 @@ public class Point {
 	public double getGeoLong() {
 		return geoLong;
 	}
-	
-	public URI getUri() {
-		return uri;
-	}	
-	
-	public POIClass getPoiClass() {
-		return poiClass;
-	}	
 	
 }

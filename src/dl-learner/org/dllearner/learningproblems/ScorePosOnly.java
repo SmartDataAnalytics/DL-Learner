@@ -30,19 +30,15 @@ import org.dllearner.core.owl.Individual;
  */
 public class ScorePosOnly extends Score {
 
-	private static final long serialVersionUID = 2191608162129054464L;
-	
 	private Set<Individual> coveredInstances;
-	private Set<Individual> notCoveredPositives;
 	private Set<Individual> additionalInstances;
 	
 	private double coverage;
 	private double addition;
 	private double accuracy;	
 	
-	public ScorePosOnly(Set<Individual> coveredInstances, Set<Individual> notCoveredPositives, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
+	public ScorePosOnly(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
 		this.coveredInstances = coveredInstances;
-		this.notCoveredPositives = notCoveredPositives;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
 		this.addition = protusion;
@@ -82,13 +78,6 @@ public class ScorePosOnly extends Score {
 		return coveredInstances;
 	}
 
-	/**
-	 * @return the coveredInstances
-	 */
-	public Set<Individual> getNotCoveredPositives() {
-		return notCoveredPositives;
-	}
-	
 	/**
 	 * @return the additionalInstances
 	 */

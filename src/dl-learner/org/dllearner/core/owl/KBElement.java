@@ -1,6 +1,5 @@
 package org.dllearner.core.owl;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public interface KBElement extends Serializable{
+public interface KBElement {
 	
 	/**
 	 * Gets the length of this knowledge base element. For instance,

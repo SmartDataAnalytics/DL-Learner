@@ -287,15 +287,6 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLearner, 
 public String getLogLevel() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "logLevel") ;
 }
-/**
-* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getInstanceBasedDisjoints() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "instanceBasedDisjoints") ;
-}
 
 /**
 * @param writeSearchTree specifies whether to write a search tree.
@@ -520,15 +511,6 @@ reinitNecessary = true;
 **/
 public void setLogLevel(String logLevel) {
 ComponentManager.getInstance().applyConfigEntry(rOLearner, "logLevel", logLevel);
-reinitNecessary = true;
-}
-/**
-* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
-ComponentManager.getInstance().applyConfigEntry(rOLearner, "instanceBasedDisjoints", instanceBasedDisjoints);
 reinitNecessary = true;
 }
 

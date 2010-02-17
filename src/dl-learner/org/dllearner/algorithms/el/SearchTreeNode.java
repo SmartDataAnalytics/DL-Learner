@@ -37,8 +37,6 @@ public class SearchTreeNode {
 	private int coveredNegatives;
 	private boolean tooWeak = false;
 	
-	private double score;
-	
 	public SearchTreeNode(ELDescriptionTree descriptionTree) {
 		this.descriptionTree = descriptionTree;
 	}
@@ -98,7 +96,6 @@ public class SearchTreeNode {
 		else
 			ret += coveredNegatives;
 		ret += ", children:" + children.size() + "]";
-		ret += " score: " + score;
 		return ret;
 	}
 	
@@ -117,14 +114,6 @@ public class SearchTreeNode {
 			treeString.append(child.getTreeString(depth+1));
 		}
 		return treeString;
-	}
-
-	public double getScore() {
-		return score;
-	}
-
-	public void setScore(double score) {
-		this.score = score;
 	}	
 	
 }

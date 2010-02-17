@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.datastructures.StringTuple;
-import org.dllearner.utilities.owl.OWLVocabulary;
-
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
  * according to the filter settings object SparqlQueryType, which gives the
@@ -53,21 +50,14 @@ public class SparqlQueryMaker {
 	private Set<String> objectFilterList;
 
 	private Set<String> predicateFilterList;
-	
-	private Set<StringTuple> predicateobjectFilterList;
 
 	private boolean literals = false;
-
-	public void setLiterals(boolean literals) {
-		this.literals = literals;
-	}
 
 	public SparqlQueryMaker(Set<String> objectFilterList,
 			Set<String> predicateFilterList, boolean literals) {
 		super();
 		this.objectFilterList = objectFilterList;
 		this.predicateFilterList = predicateFilterList;
-		this.predicateobjectFilterList = new TreeSet<StringTuple>();
 		this.literals = literals;
 	}
 
@@ -168,18 +158,10 @@ public class SparqlQueryMaker {
 				: "?" + objectVariable;
 
 		List<String> terms = new ArrayList<String>();
-		String not = (isAllowMode()) ? "" : "!";
-		/*new filter type */
-		
-		for (StringTuple tuple : getPredicateObjectFilterList()) {
-			List<String> tmpterms = new ArrayList<String>();
-			tmpterms.add(not + "regex(str(" + predicateVariable + "), '" + tuple.a+ "')");
-			tmpterms.add(not + "regex(str(" + objectVariable + "), '" + tuple.b+ "')");
-			terms.add(assembleTerms(tmpterms, "&&"));
+		if (!isLiterals()) {
+			terms.add("!isLiteral(" + objectVariable + ")");
 		}
-		
-		
-		
+		String not = (isAllowMode()) ? "" : "!";
 		for (String pred : getPredicateFilterList()) {
 			terms.add(not + "regex(str(" + predicateVariable + "), '" + pred
 					+ "')");
@@ -189,39 +171,19 @@ public class SparqlQueryMaker {
 					.add(not + "regex(str(" + objectVariable + "), '" + obj
 							+ "')");
 		}
-		String assembled =  assembleTerms(terms, getOperator());
-		
-		terms = new ArrayList<String>();
-		// the next line could be removed as it is included in assemble terms
-		if(!assembled.isEmpty()){
-			terms.add(assembled);
-		}
-		if (!isLiterals()) {
-			terms.add("!isLiteral(" + objectVariable + ")");
-		}
-		return assembleTerms(terms, "&&");
-		
+
+		return assembleTerms(terms);
 
 	}
-	
-	private String getOperator(){
-		return (isAllowMode())?"||":"&&";
-		
-	}
 
-	
-	private String assembleTerms(List<String> terms, String operator) {
-		if((!operator.equals("||")) && (!operator.equals("&&"))){
-			System.out.println("in SparqlQuerymaker assembleTerms recieved wrong operator");
-			System.exit(0);
-		}
-		
+	private String assembleTerms(List<String> terms) {
 		if (terms.isEmpty())
 			return "";
 		else if (terms.size() == 1)
-			return (terms.get(0).isEmpty())?"": brackets(terms.get(0));
+			return brackets(terms.get(0));
 		else {
 			StringBuffer sbuf = new StringBuffer(1400);
+			String operator = (isAllowMode()) ? "||" : "&&";
 			String first = terms.remove(0);
 			sbuf.append(brackets(first));
 			for (String term : terms) {
@@ -252,9 +214,6 @@ public class SparqlQueryMaker {
 	public Set<String> getPredicateFilterList() {
 		return predicateFilterList;
 	}
-	public Set<StringTuple> getPredicateObjectFilterList() {
-		return predicateobjectFilterList;
-	}
 
 	public void addPredicateFilter(String newFilter) {
 		assembled = false;
@@ -264,10 +223,6 @@ public class SparqlQueryMaker {
 	public void addObjectFilter(String newFilter) {
 		assembled = false;
 		objectFilterList.add(newFilter);
-	}
-	public void addPredicateObjectFilter(String pred, String object) {
-		assembled = false;
-		predicateobjectFilterList.add(new StringTuple(pred, object));
 	}
 	
 	public void combineWith(SparqlQueryMaker sqm){
@@ -380,23 +335,12 @@ public class SparqlQueryMaker {
 	}
 
 	public static SparqlQueryMaker getDBpediaNavigatorFilter() {
-//		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), false);
-		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), true);
-//		sqm.addPredicateFilter("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-//		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#subClassOf");
-//		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
-//		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#long");
-//		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#label");
-		
-		String dbont = "http://dbpedia.org/ontology/";
-		sqm.addPredicateFilter(dbont);
-		sqm.addPredicateFilter(OWLVocabulary.RDFS_range);
-		sqm.addPredicateFilter(OWLVocabulary.RDFS_domain);
-		sqm.addPredicateObjectFilter(dbont, dbont);
-		sqm.addPredicateObjectFilter(OWLVocabulary.RDF_TYPE, dbont);
-		sqm.addPredicateObjectFilter(OWLVocabulary.RDFS_SUBCLASS_OF, dbont);
-		sqm.setLiterals(true);
-		
+		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.addPredicateFilter("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#subClassOf");
+		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#label");
 		// pred.add("http://dbpedia.org/property/wikipage");
 		// pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		// pred.add("http://dbpedia.org/property/relatedInstance");

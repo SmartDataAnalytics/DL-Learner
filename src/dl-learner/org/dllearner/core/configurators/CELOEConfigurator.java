@@ -85,15 +85,6 @@ public boolean getUseHasValueConstructor() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "useHasValueConstructor") ;
 }
 /**
-* useDataHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties.
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getUseDataHasValueConstructor() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "useDataHasValueConstructor") ;
-}
-/**
 * valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
 * mandatory: false| reinit necessary: true
 * default value: 3
@@ -183,42 +174,6 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "ma
 public int getMaxNrOfResults() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxNrOfResults") ;
 }
-/**
-* singleSuggestionMode Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples..
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getSingleSuggestionMode() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "singleSuggestionMode") ;
-}
-/**
-* instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getInstanceBasedDisjoints() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "instanceBasedDisjoints") ;
-}
-/**
-* filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base..
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getFilterDescriptionsFollowingFromKB() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "filterDescriptionsFollowingFromKB") ;
-}
-/**
-* reuseExistingDescription If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base..
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getReuseExistingDescription() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "reuseExistingDescription") ;
-}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -245,15 +200,6 @@ reinitNecessary = true;
 **/
 public void setUseHasValueConstructor(boolean useHasValueConstructor) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "useHasValueConstructor", useHasValueConstructor);
-reinitNecessary = true;
-}
-/**
-* @param useDataHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties.
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
-ComponentManager.getInstance().applyConfigEntry(cELOE, "useDataHasValueConstructor", useDataHasValueConstructor);
 reinitNecessary = true;
 }
 /**
@@ -344,42 +290,6 @@ reinitNecessary = true;
 **/
 public void setMaxNrOfResults(int maxNrOfResults) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "maxNrOfResults", maxNrOfResults);
-reinitNecessary = true;
-}
-/**
-* @param singleSuggestionMode Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples..
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setSingleSuggestionMode(boolean singleSuggestionMode) {
-ComponentManager.getInstance().applyConfigEntry(cELOE, "singleSuggestionMode", singleSuggestionMode);
-reinitNecessary = true;
-}
-/**
-* @param instanceBasedDisjoints Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator..
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
-ComponentManager.getInstance().applyConfigEntry(cELOE, "instanceBasedDisjoints", instanceBasedDisjoints);
-reinitNecessary = true;
-}
-/**
-* @param filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base..
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setFilterDescriptionsFollowingFromKB(boolean filterDescriptionsFollowingFromKB) {
-ComponentManager.getInstance().applyConfigEntry(cELOE, "filterDescriptionsFollowingFromKB", filterDescriptionsFollowingFromKB);
-reinitNecessary = true;
-}
-/**
-* @param reuseExistingDescription If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base..
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setReuseExistingDescription(boolean reuseExistingDescription) {
-ComponentManager.getInstance().applyConfigEntry(cELOE, "reuseExistingDescription", reuseExistingDescription);
 reinitNecessary = true;
 }
 

@@ -19,11 +19,9 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Set;
-
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 
 /**
  * @author Jens Lehmann
@@ -31,32 +29,8 @@ import org.dllearner.core.owl.Individual;
  */
 public class EvaluatedDescriptionPosOnly extends EvaluatedDescription {
 
-	private static final long serialVersionUID = 4014754537024635033L;
-	private ScorePosOnly score2;
-	
-	public EvaluatedDescriptionPosOnly(Description description, ScorePosOnly score) {
+	public EvaluatedDescriptionPosOnly(Description description, Score score) {
 		super(description, score);
-		score2 = score;
 	}
 
-	@Override
-	public String toString() {
-		return description.toString() + "(accuracy: " + getAccuracy() + ")";
-	}
-	
-	/**
-	 * @see org.dllearner.learningproblems.ScorePosNeg#getCoveredPositives()
-	 * @return Positive examples covered by the description.
-	 */
-	public Set<Individual> getCoveredPositives() {
-		return score2.getCoveredInstances();
-	}	
-	
-	public Set<Individual> getNotCoveredPositives() {
-		return score2.getNotCoveredPositives();
-	}		
-	
-	public Set<Individual> getAdditionalInstances() {
-		return score2.getAdditionalInstances();
-	}
 }

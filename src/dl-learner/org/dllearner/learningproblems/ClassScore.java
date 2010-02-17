@@ -19,7 +19,6 @@
  */
 package org.dllearner.learningproblems;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import org.dllearner.core.Score;
@@ -31,15 +30,9 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public class ClassScore extends Score implements Serializable{
+public class ClassScore extends Score {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2003326044901308157L;
 	private Set<Individual> coveredInstances;
-	private Set<Individual> notCoveredInstances;
-
 	private Set<Individual> additionalInstances;
 	
 	private double coverage;
@@ -49,17 +42,12 @@ public class ClassScore extends Score implements Serializable{
 	private boolean isConsistent;
 	private boolean followsFromKB;
 	
-	public ClassScore(Set<Individual> coveredInstances, Set<Individual> notCoveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
+	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
 		this.coveredInstances = coveredInstances;
-		this.notCoveredInstances = notCoveredInstances;
 		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
 		this.addition = protusion;
 		this.accuracy = accuracy;
-	}	
-	
-	public ClassScore(Set<Individual> coveredInstances, Set<Individual> notCoveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
-		this(coveredInstances, notCoveredInstances, coverage, additionalInstances, protusion, accuracy);
 		this.isConsistent = isConsistent;
 		this.followsFromKB = followsFromKB;
 	}
@@ -98,25 +86,10 @@ public class ClassScore extends Score implements Serializable{
 	}
 
 	/**
-	 * @return the notCoveredInstances
-	 */
-	public Set<Individual> getNotCoveredInstances() {
-		return notCoveredInstances;
-	}	
-	
-	/**
 	 * @return the additionalInstances
 	 */
 	public Set<Individual> getAdditionalInstances() {
 		return additionalInstances;
-	}
-
-	public void setConsistent(boolean isConsistent) {
-		this.isConsistent = isConsistent;
-	}
-
-	public void setFollowsFromKB(boolean followsFromKB) {
-		this.followsFromKB = followsFromKB;
 	}
 
 	/**

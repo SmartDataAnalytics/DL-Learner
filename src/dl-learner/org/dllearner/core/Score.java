@@ -19,8 +19,6 @@
  */
 package org.dllearner.core;
 
-import java.io.Serializable;
-
 /**
  * The score class is used to store how well a class description did
  * on a learning problem. Depending on the learning problem at hand,
@@ -32,12 +30,7 @@ import java.io.Serializable;
  * @author Jens Lehmann
  *
  */
-public abstract class Score implements Serializable{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6479328496461875019L;
+public abstract class Score {
 
 	/**
 	 * This method returns a value, which indicates how accurate a

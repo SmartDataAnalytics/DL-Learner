@@ -30,7 +30,6 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
-import org.dllearner.utilities.owl.OWLVocabulary;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -109,9 +108,6 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 	// main function for resolving blanknodes
 	@Override
 	protected void disambiguateBlankNodes(String uri, SortedSet<RDFNodeTuple> resultSet){
-		if(!isDissolveBlankNodes()){
-			return;
-		}
 		Monitor bnodeMonitor = JamonMonitorLogger.getTimeMonitor(SparqlTupleAquisitor.class, "blanknode time").start();
 		try{
 		for (RDFNodeTuple tuple : resultSet) {
@@ -137,26 +133,19 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 	
 	// extends a sparql query as long as there are undissolved blanknodes
 	private void dissolveBlankNodes(int currentId, String uri, RDFNodeTuple tuple){
-		try{
-			int currentDepth = 1;
-			int lastDepth = 1;
-			ResultSetRewindable rsw=null;
-			do{
-			String p = tuple.a.toString();
-			if(p.equals(OWLVocabulary.RDFS_COMMENT) || p.equals(OWLVocabulary.RDFS_LABEL)  ){
-				return ;
-			}
-			String q = BlankNodeCollector.makeQuery(uri, p, currentDepth);
-//			System.out.println(q);
-			rsw = sparqlTasks.queryAsResultSet(q);
-			rsw.reset();
-			lastDepth = currentDepth;
-			}while (!BlankNodeCollector.testResultSet(rsw, currentDepth++));
-			
-			assignIds( currentId,  rsw, lastDepth);
-		}catch (Exception e) {
-			logger.info("An error occurred while dissolving blanknodes");
-		}
+		int currentDepth = 1;
+		int lastDepth = 1;
+		ResultSetRewindable rsw=null;
+		do{
+		String q = BlankNodeCollector.makeQuery(uri, tuple.a.toString(), currentDepth);
+		//System.out.println(q);
+	
+		rsw = sparqlTasks.queryAsResultSet(q);
+		lastDepth = currentDepth;
+		}while (!BlankNodeCollector.testResultSet(rsw, currentDepth++));
+		
+		assignIds( currentId,  rsw, lastDepth);
+		
 	}
 	
 	//takes the resultset and assigns internal ids

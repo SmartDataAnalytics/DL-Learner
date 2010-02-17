@@ -19,18 +19,11 @@
  */
 package org.dllearner.learningproblems;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.semanticweb.owl.model.OWLDescription;
 
 /**
  * An evaluated description for learning classes in ontologies.
@@ -38,12 +31,8 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionClass extends EvaluatedDescription implements Serializable{
+public class EvaluatedDescriptionClass extends EvaluatedDescription {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5907640793141522431L;
 	private ClassScore classScore;
 	
 	/**
@@ -92,15 +81,6 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 
 	/**
 	 * 
-	 * @return The instances of the class not covered by the class description.
-	 * @see org.dllearner.learningproblems.ClassScore#getCoveredInstances()
-	 */
-	public Set<Individual> getNotCoveredInstances() {
-		return classScore.getNotCoveredInstances();
-	}	
-	
-	/**
-	 * 
 	 * @return True if adding the axiom to the knowledge base leads to an inconsistent knowledge base. False otherwise.
 	 */
 	public boolean isConsistent() {
@@ -115,37 +95,4 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 		return classScore.followsFromKB();
 	}	
 	
-	public void setConsistent(boolean isConsistent) {
-		classScore.setConsistent(isConsistent);
-	}
-
-	public void setFollowsFromKB(boolean followsFromKB) {
-		classScore.setFollowsFromKB(followsFromKB);
-	}
-
-	/**
-	 * This convenience method can be used to store and exchange evaluated
-	 * descriptions by transforming them to a JSON string.
-	 * @return A JSON representation of an evaluated description.
-	 */
-	@Override
-	public String asJSON() {
-		JSONObject object = new JSONObject();
-		try {
-			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
-			object.put("descriptionKBSyntax", description.toKBSyntaxString());
-			object.put("scoreValue", score.getAccuracy());	
-			object.put("additionalInstances", new JSONArray(getAdditionalInstances()));
-			object.put("coveredInstances", new JSONArray(getCoveredInstances()));
-			object.put("isConsistent", isConsistent());
-			object.put("coverage", getCoverage());
-			object.put("addition", getAddition());
-			return object.toString(3);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}		
 }

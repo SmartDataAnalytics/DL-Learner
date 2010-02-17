@@ -19,62 +19,56 @@
  */
 package org.dllearner.tools.ore;
 
-import java.net.MalformedURLException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
+import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
+import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
 
 /**
  * Test class for SPARQL mode.
- * 
  * @author Lorenz Buehmann
- * 
+ *
  */
-public class SPARQLTest {
-
-	public static void main(String[] args) throws MalformedURLException {
-		String exampleClass = "http://dbpedia.org/ontology/Place";
-
-		ComponentManager cm = ComponentManager.getInstance();
-
+public class SPARQLTest{
+	
+	@SuppressWarnings("unused")
+	public static void main(String[] args){
+	
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
-
+		
 		SPARQLTasks task = new SPARQLTasks(endPoint);
-
-		SortedSet<String> examples = new TreeSet<String>();
-		SortedSet<String> superClasses = task.getSuperClasses(exampleClass, 2);
-		for (String sup : superClasses) {
-			examples.addAll(task.retrieveInstancesForClassDescription("\""
-					+ sup + "\"", 20));
-
-		}
-
-		SortedSet<String> posExamples = SetManipulation.stableShrink(examples,
-				20);
-
-		SparqlKnowledgeSource ks = cm
-				.knowledgeSource(SparqlKnowledgeSource.class);
-		ks.getConfigurator().setUrl(endPoint.getURL());
-		ks.getConfigurator().setInstances(posExamples);
-		ks.getConfigurator().setDissolveBlankNodes(false);
-		ks.init();
-		// ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class,
-		// ks);
-		// reasoner.init();
-		// ClassLearningProblem lp =
-		// cm.learningProblem(ClassLearningProblem.class, reasoner);
-		// lp.getConfigurator().setClassToDescribe(new URL(exampleClass));
-		// lp.init();
-		// LearningAlgorithm la = cm.learningAlgorithm(CELOE.class, lp,
-		// reasoner);
-		// la.init();
-		//
-		// la.start();
-
+	
+		AutomaticPositiveExampleFinderSPARQL pos = new AutomaticPositiveExampleFinderSPARQL(task);
+		pos.makePositiveExamplesFromConcept("angela_merkel");
+		SortedSet<String> posExamples = pos.getPosExamples();
+		
+		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(posExamples, task, new TreeSet<String>());
+		SortedSet<String> negExamples = neg.getNegativeExamples(20);
+		
+		LearnSPARQLConfiguration conf = new LearnSPARQLConfiguration();
+		
+		// TODO Please update class to either use ComponentManager or 
+		// add a convenience constructor to org.dllearner.utilities.components.ComponentCombo 
+		
+//		LearnSparql learn = new LearnSparql(conf);
+		
+		LearningAlgorithm la = null;
+		
+//			try {
+		//la = learn.learn(posExamples, negExamples, OWLAPIReasoner.class);
+//			} catch (ComponentInitException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (LearningProblemUnsupportedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		
+		la.start();
 	}
 }

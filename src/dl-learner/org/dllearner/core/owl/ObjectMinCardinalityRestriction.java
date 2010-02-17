@@ -4,11 +4,6 @@ import java.util.Map;
 
 public class ObjectMinCardinalityRestriction extends ObjectCardinalityRestriction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7729018670336927250L;
-
 	public ObjectMinCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
 		super(number,role,c);
 	}

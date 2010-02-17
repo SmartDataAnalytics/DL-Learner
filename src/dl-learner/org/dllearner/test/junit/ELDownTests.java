@@ -41,7 +41,6 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -314,21 +313,6 @@ public class ELDownTests {
 		
 	}
 
-	@Test
-	public void test5() {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.TRAINS_OWL);
-		RefinementOperator operator = new ELDown2(rs);
-		Set<Description> refinements = operator.refine(Thing.instance);
-		for(Description refinement : refinements) {
-			System.out.println(refinement);
-		}
-		
-//		Set<Description> subClasses = rs.getSubClasses(Thing.instance);
-//		for(Description cl : subClasses) {
-//			System.out.println(cl);
-//		}
-	}
-	
 	//	 not part of the regular test suite, since Galen 2 is required
 //	@Test
 	public void asTest() throws ComponentInitException, MalformedURLException {

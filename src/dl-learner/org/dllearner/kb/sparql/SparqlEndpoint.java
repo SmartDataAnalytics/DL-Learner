@@ -85,8 +85,6 @@ public class SparqlEndpoint {
 			return getEndpointLOCALDBpedia();
 		} else if (name.equals("LOCALGEONAMES")) {
 			return getEndpointLOCALGeonames();
-		} else if (name.equals("LOCALGEODATA")) {
-			return getEndpointLOCALGeoData();
 		} else if (name.equals("LOCALJOSECKI") || name.equals("LOCALJOSEKI") ) {
 			return getEndpointlocalJoseki();
 		} else if (name.equals("LOCALJOSEKIBIBLE")||name.equals("LOCALJOSECKIBIBLE")) {

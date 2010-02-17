@@ -21,7 +21,6 @@
 package org.dllearner.utilities.statistics;
 
 import java.text.DecimalFormat;
-import java.util.Set;
 
 /**
  * Utility class for calculating the mean and standard deviation of a given set
@@ -40,42 +39,6 @@ public class Stat {
     //used to give a good percentage output
     private DecimalFormat df = new DecimalFormat( ".00%" ); 
 
-    public Stat() {
-    	
-    }
-    
-    /**
-     * Creates a new stat object by merging two stat objects. The result is the same as if
-     * the numbers, which have been added to stat1 and stat2 would have been added to this
-     * stat object.
-     * @param stat1 Statistical object 1.
-     * @param stat2 Statistical object 2.
-     */
-    public Stat(Stat stat1, Stat stat2) {
-    	count = stat1.count + stat2.count;
-    	sum = stat1.sum + stat2.sum;
-    	squareSum = stat1.squareSum + stat2.squareSum;
-    	min = Math.min(stat1.min, stat2.min);
-    	max = Math.max(stat1.max, stat2.max);
-    }
-    
-    /**
-     * Creates a new stat object by merging several stat objects. The result is the same as if
-     * the numbers, which have been added to each stat would have been added to this
-     * stat object.
-     * @param stat1 Statistical object 1.
-     * @param stat2 Statistical object 2.
-     */
-    public Stat(Set<Stat> stats) {
-    	for(Stat stat : stats){
-    		count += stat.count;
-    		sum += stat.sum;
-        	squareSum += stat.squareSum;
-        	min = Math.min(min, stat.min);
-        	max = Math.max(max, stat.max);
-    	}
-    }
-    
     /**
      * Add a number to this object.
      * 
@@ -164,22 +127,13 @@ public class Stat {
 		return max;
 	}
 
-	public String prettyPrint() {
-		return prettyPrint("");
-	}
-	
 	public String prettyPrint(String unit) {
-		if(count > 0) {
-			DecimalFormat df = new DecimalFormat();
-			String str = "av. " + df.format(getMean()) + unit;
-			str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
-			str += "min " + df.format(getMin()) + unit + "; ";
-			str += "max " + df.format(getMax()) + unit + "; ";
-			str += "count " + count + ")";
-			return str;
-		} else {
-			return "no data collected";
-		}
+		DecimalFormat df = new DecimalFormat();
+		String str = "av. " + df.format(getMean()) + unit;
+		str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
+		str += "min " + df.format(getMin()) + unit + "; ";
+		str += "max " + df.format(getMax()) + unit + ")";		
+		return str;
 	}	
 	
 	public String prettyPrint(String unit, DecimalFormat df) {

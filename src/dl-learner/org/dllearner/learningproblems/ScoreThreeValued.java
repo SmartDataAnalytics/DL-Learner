@@ -41,8 +41,6 @@ import org.dllearner.utilities.Helper;
  */
 public class ScoreThreeValued extends ScorePosNeg {
 	
-	private static final long serialVersionUID = -1780084688122949685L;
-
 	public enum ScoreMethod {POSITIVE, FULL};
 	
 	// configuration options

@@ -24,7 +24,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -33,21 +32,10 @@ import javax.swing.plaf.basic.BasicComboPopup;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
-import org.semanticweb.owl.model.OWLNegativeDataPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLNegativeObjectPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLSameIndividualsAxiom;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
- * It renders the Informations for the individual points and sets the
- * individuals for the popup component.
  * 
  * @author Christian Koetteritzsch
  * 
@@ -61,7 +49,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	private BasicComboPopup scrollPopup;
 	private final Vector<String> individualComboBox;
 	private JComboBox indiBox;
-	private OWLOntology ontology;
 
 	/**
 	 * This is the constructor for the handler.
@@ -78,26 +65,19 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		this.panel = p;
 		description = eval;
 		model = m;
-		ontology = model.getOWLEditorKit().getOWLModelManager()
-				.getActiveOntology();
 		individualComboBox = new Vector<String>();
 
 	}
 
 	@Override
-	/**
-	 * Nothing happens here.
-	 */
 	public void mouseDragged(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	/**
-	 * This methode renders the tool tip message when the mouse goes over
-	 * the plus symbole. It also renders the the informations for the individual point.
-	 */
 	public void mouseMoved(MouseEvent m) {
+		panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 		if (m.getX() >= panel.getX1() + panel.getShiftCovered()
 				&& m.getX() <= panel.getX2() + panel.getShiftCovered()
 				&& m.getY() >= panel.getY1() && m.getY() <= panel.getY2()
@@ -116,103 +96,24 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		}
 
 		Vector<IndividualPoint> v = panel.getIndividualVector();
-		FastInstanceChecker reasoner = model.getReasoner();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
 					&& v.get(i).getXAxis() <= m.getX() + 5
 					&& v.get(i).getYAxis() >= m.getY() - 5
 					&& v.get(i).getYAxis() <= m.getY() + 5) {
-				String individualInformation = "<html><body><b>"
-						+ v.get(i).getIndividualName().toString() + "</b>";
-				if (v.get(i).getDLLearnerIndividual() != null) {
-
-					Set<NamedClass> types = reasoner.getTypes(v.get(i)
-							.getDLLearnerIndividual());
-					individualInformation += "<br><br><b>Types:</b><br>";
-					for (NamedClass dlLearnerClass : types) {
-						individualInformation += dlLearnerClass
-								.toManchesterSyntaxString(
-										v.get(i).getBaseUri(), null)
-								+ "<br>";
-					}
-					Map<ObjectProperty, Set<Individual>> objectProperties = reasoner
-							.getObjectPropertyRelationships(v.get(i)
-									.getDLLearnerIndividual());
-					Set<ObjectProperty> key = objectProperties.keySet();
-					individualInformation += "<br><b>Objectproperties:</b><br>";
-					for (ObjectProperty objectProperty : key) {
-						Set<Individual> indiSet = objectProperties
-								.get(objectProperty);
-						individualInformation = individualInformation
-								+ objectProperty.toManchesterSyntaxString(v
-										.get(i).getBaseUri(), null) + " ";
-						for (Individual indi : indiSet) {
-							individualInformation += indi
-									.toManchesterSyntaxString(v.get(i)
-											.getBaseUri(), null);
-							if (indiSet.size() > 1) {
-								individualInformation += ", ";
-							}
-						}
-						individualInformation += "<br>";
-					}
-					if (v.get(i).getIndividualOWL() != null) {
-						Set<OWLDataPropertyAssertionAxiom> dataProperties = ontology
-								.getDataPropertyAssertionAxioms(v.get(i)
-										.getIndividualOWL());
-						individualInformation += "<br><b>Dataproperties</b><br>";
-						for (OWLDataPropertyAssertionAxiom dataProperty : dataProperties) {
-							individualInformation += dataProperty.toString()
-									+ "<br>";
-						}
-						
-						Set<OWLNegativeObjectPropertyAssertionAxiom> negObjects = ontology.getNegativeObjectPropertyAssertionAxioms(v.get(i).getIndividualOWL());
-						individualInformation += "<br><b>negative ObjectProperties</b><br>";
-						for (OWLNegativeObjectPropertyAssertionAxiom negObject : negObjects) {
-							individualInformation += negObject.toString()
-									+ "<br>";
-						}
-						
-						Set<OWLNegativeDataPropertyAssertionAxiom> negDatas = ontology.getNegativeDataPropertyAssertionAxioms(v.get(i).getIndividualOWL());
-						individualInformation += "<br><b>negative Dataproperties</b><br>";
-						for (OWLNegativeDataPropertyAssertionAxiom negData : negDatas) {
-							individualInformation += negData.toString()
-									+ "<br>";
-						}
-						Set<OWLSameIndividualsAxiom> sameIndies = ontology.getSameIndividualAxioms(v.get(i).getIndividualOWL());
-						individualInformation += "<br><b>Same Individuals</b><br>";
-						for (OWLSameIndividualsAxiom sameIndie : sameIndies) {
-							individualInformation += sameIndie.toString()
-									+ "<br>";
-						}
-						
-						Set<OWLDifferentIndividualsAxiom> differentIndies = ontology.getDifferentIndividualAxioms(v.get(i).getIndividualOWL());
-						individualInformation += "<br><b>Different Individuals</b><br>";
-						for (OWLDifferentIndividualsAxiom differentIndie : differentIndies) {
-							individualInformation += differentIndie.toString()
-									+ "<br>";
-						}
-					}
-				}
-				individualInformation += "</body></htlm>";
 				panel.getGraphicalCoveragePanel().setToolTipText(
-						individualInformation);
+						v.get(i).getIndividualName());
 			}
 		}
 	}
 
 	@Override
-	/**
-	 * Nothing happens here.
-	 */
 	public void propertyChange(PropertyChangeEvent arg0) {
+		panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+		panel.repaint();
 	}
 
 	@Override
-	/**
-	 * This methode renders the popup box and
-	 * computes which individuals must be shown.
-	 */
 	public void mouseClicked(MouseEvent arg0) {
 		if (panel.getEvaluateddescription() != null) {
 			if (arg0.getX() >= panel.getX1() + panel.getShiftCovered()
@@ -220,6 +121,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
 
+				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 
 				Set<Individual> covInd = ((EvaluatedDescriptionClass) description)
@@ -228,10 +130,9 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				if (i > 0) {
 					for (Individual ind : covInd) {
 						Set<String> uriString = model.getOntologyURIString();
-						for (String uri : uriString) {
-							if (ind.toString().contains(uri)) {
-								individualComboBox.add(ind
-										.toManchesterSyntaxString(uri, null));
+						for(String uri : uriString) {
+							if(ind.toString().contains(uri)) {
+								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
 							}
 						}
 					}
@@ -239,6 +140,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					scrollPopup = new BasicComboPopup(indiBox);
 					scrollPopup.setAutoscrolls(true);
 					scrollPopup.show(panel, arg0.getX(), arg0.getY());
+					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
 			}
 
@@ -256,6 +158,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() <= panel.getY2()
 							+ panel.getShiftNewConcept()) {
 
+				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 				Set<Individual> addInd = ((EvaluatedDescriptionClass) description)
 						.getAdditionalInstances();
@@ -263,10 +166,9 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				if (i > 0) {
 					for (Individual ind : addInd) {
 						Set<String> uriString = model.getOntologyURIString();
-						for (String uri : uriString) {
-							if (ind.toString().contains(uri)) {
-								individualComboBox.add(ind
-										.toManchesterSyntaxString(uri, null));
+						for(String uri : uriString) {
+							if(ind.toString().contains(uri)) {
+								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
 							}
 						}
 					}
@@ -274,6 +176,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					scrollPopup = new BasicComboPopup(indiBox);
 					scrollPopup.setAutoscrolls(true);
 					scrollPopup.show(panel, arg0.getX(), arg0.getY());
+					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
 			}
 
@@ -283,6 +186,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() >= panel.getY1()
 					&& arg0.getY() <= panel.getY2()) {
 
+				// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				individualComboBox.clear();
 				Set<Individual> notCovInd = model.getReasoner().getIndividuals(
 						model.getCurrentConcept());
@@ -292,10 +196,9 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				if (i > 0) {
 					for (Individual ind : notCovInd) {
 						Set<String> uriString = model.getOntologyURIString();
-						for (String uri : uriString) {
-							if (ind.toString().contains(uri)) {
-								individualComboBox.add(ind
-										.toManchesterSyntaxString(uri, null));
+						for(String uri : uriString) {
+							if(ind.toString().contains(uri)) {
+								individualComboBox.add(ind.toManchesterSyntaxString(uri, null));
 							}
 						}
 					}
@@ -303,40 +206,33 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					scrollPopup = new BasicComboPopup(indiBox);
 					scrollPopup.setAutoscrolls(true);
 					scrollPopup.show(panel, arg0.getX(), arg0.getY());
+					// panel.getMoreDetailForSuggestedConceptsPanel().repaint();
 				}
 			}
 		}
 	}
 
 	@Override
-	/**
-	 * Nothing happens here.
-	 */
 	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	/**
-	 * Nothing happens here.
-	 */
 	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	/**
-	 * Nothing happens here.
-	 */
 	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	/**
-	 * Nothing happens here.
-	 */
 	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 

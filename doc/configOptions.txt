@@ -215,18 +215,6 @@ default value: pellet
 conf file usage: owlAPIReasoner.reasonerType = pellet;
 
 
-component: unnamed component (org.dllearner.reasoning.PelletReasoner)
-=====================================================================
-
-conf file usage: reasoner = null;
-
-option name: defaultNegation
-description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
-allowed values: boolean
-default value: true
-conf file usage: null.defaultNegation = true;
-
-
 *********************
 * Learning Problems *
 *********************
@@ -247,12 +235,6 @@ description: whether to learn an equivalence class or super class axiom
 allowed values: String [equivalence, superClass] 
 default value: equivalence
 conf file usage: classLearning.type = equivalence;
-
-option name: useApproximations
-description: whether to use stochastic approximations for computing accuracy
-allowed values: boolean
-default value: true
-conf file usage: classLearning.useApproximations = true;
 
 
 component: pos neg learning problem (org.dllearner.learningproblems.PosNegLPStandard)
@@ -485,24 +467,6 @@ component: standard EL learning algorithm (org.dllearner.algorithms.el.ELLearnin
 ===========================================================================================
 
 conf file usage: algorithm = el;
-
-
-component: disjunctive EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive)
-=========================================================================================================
-
-conf file usage: algorithm = disjunctiveEL;
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-allowed values: double  min 0.0 max 100.0
-default value: 0.0
-conf file usage: disjunctiveEL.noisePercentage = 0.0;
-
-option name: startClass
-description: the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
-allowed values: String [] 
-default value: not set
-conf file usage: disjunctiveEL.startClass = ;
 
 
 component: genetic programming learning algorithm (org.dllearner.algorithms.gp.GP)
@@ -917,12 +881,6 @@ description: specifies whether boolean datatypes are used in the learning algoro
 allowed values: boolean
 default value: true
 conf file usage: refexamples.useDoubleDatatypes = true;
-
-option name: useStringDatatypes
-description: specifies whether string datatypes are used in the learning algorothm
-allowed values: boolean
-default value: false
-conf file usage: refexamples.useStringDatatypes = false;
 
 option name: maxExecutionTimeInSeconds
 description: algorithm will stop after specified seconds

@@ -72,42 +72,6 @@ return (URL) ComponentManager.getInstance().getConfigOptionValue(classLearningPr
 public String getType() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "type") ;
 }
-/**
-* useApproximations whether to use stochastic approximations for computing accuracy.
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getUseApproximations() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "useApproximations") ;
-}
-/**
-* approxAccuracy accuracy of the approximation (only for expert use).
-* mandatory: false| reinit necessary: true
-* default value: 0.05
-* @return double 
-**/
-public double getApproxAccuracy() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "approxAccuracy") ;
-}
-/**
-* accuracyMethod Specifies, which method/function to use for computing accuracy..
-* mandatory: false| reinit necessary: true
-* default value: standard
-* @return String 
-**/
-public String getAccuracyMethod() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "accuracyMethod") ;
-}
-/**
-* checkConsistency Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive..
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getCheckConsistency() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "checkConsistency") ;
-}
 
 /**
 * @param classToDescribe class of which a description should be learned.
@@ -124,42 +88,6 @@ ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "classToDe
 **/
 public void setType(String type) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "type", type);
-reinitNecessary = true;
-}
-/**
-* @param useApproximations whether to use stochastic approximations for computing accuracy.
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setUseApproximations(boolean useApproximations) {
-ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "useApproximations", useApproximations);
-reinitNecessary = true;
-}
-/**
-* @param approxAccuracy accuracy of the approximation (only for expert use).
-* mandatory: false| reinit necessary: true
-* default value: 0.05
-**/
-public void setApproxAccuracy(double approxAccuracy) {
-ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "approxAccuracy", approxAccuracy);
-reinitNecessary = true;
-}
-/**
-* @param accuracyMethod Specifies, which method/function to use for computing accuracy..
-* mandatory: false| reinit necessary: true
-* default value: standard
-**/
-public void setAccuracyMethod(String accuracyMethod) {
-ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "accuracyMethod", accuracyMethod);
-reinitNecessary = true;
-}
-/**
-* @param checkConsistency Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive..
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setCheckConsistency(boolean checkConsistency) {
-ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "checkConsistency", checkConsistency);
 reinitNecessary = true;
 }
 

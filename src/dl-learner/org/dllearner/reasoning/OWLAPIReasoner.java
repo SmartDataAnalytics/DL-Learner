@@ -53,7 +53,6 @@ import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
@@ -66,13 +65,11 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
 import org.mindswap.pellet.PelletOptions;
-import org.mindswap.pellet.PelletOptions.MonitorType;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
@@ -87,7 +84,6 @@ import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLNamedObject;
@@ -148,7 +144,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	// namespaces
@@ -196,7 +191,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 		doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 		intDatatypeProperties = new TreeSet<DatatypeProperty>();
-		stringDatatypeProperties = new TreeSet<DatatypeProperty>();
 		individuals = new TreeSet<Individual>();	
 				
 		// create OWL API ontology manager
@@ -304,7 +298,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			manager.addOntologyChangeListener((org.mindswap.pellet.owlapi.Reasoner)reasoner);
 			
 			//set classification output to "none", while default is "console"
-			PelletOptions.USE_CLASSIFICATION_MONITOR = MonitorType.NONE;
+			PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.valueOf("NONE");
 			// change log level to WARN for Pellet, because otherwise log
 			// output will be very large
 			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
@@ -382,18 +376,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					else if(uri.equals(Datatype.DOUBLE.getURI()))
 						doubleDatatypeProperties.add(dtp);
 					else if(uri.equals(Datatype.INT.getURI()))
-						intDatatypeProperties.add(dtp);		
-					else if(uri.equals(Datatype.STRING.getURI()))
-						stringDatatypeProperties.add(dtp);	
+						intDatatypeProperties.add(dtp);				
 				}
-			} else {
-				stringDatatypeProperties.add(dtp);
 			}
 			datatypeProperties.add(dtp);
 		}
 		for(OWLIndividual owlIndividual : owlIndividuals) {
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
 		}		
+		
+
 		
 	}
 
@@ -513,16 +505,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			throw new Error("Subsumption Error in OWL API.");
 		}
 	}
-	
-	@Override
-	public boolean isEquivalentClassImpl(Description class1, Description class2) {
-		try {
-			return reasoner.isEquivalentClass(OWLAPIDescriptionConvertVisitor.getOWLDescription(class1), OWLAPIDescriptionConvertVisitor.getOWLDescription(class2));			
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-			throw new Error("Equivalent Classes Reasoning Error in OWL API.");
-		}
-	}	
 	
 	@Override
 	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
@@ -983,14 +965,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
-	
-	/**
-	 * @return the intDatatypeProperties
-	 */
-	@Override
-	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
-		return stringDatatypeProperties;
-	}	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getBaseURI()
@@ -1107,20 +1081,5 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return consistent;
 	}
 	
-	/**
-	 * Returns asserted class definitions of given class
-	 * @param nc the class
-	 * @return the asserted class definitions
-	 */
-	@Override
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
-		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLDescription(nc).asOWLClass();
-		Set<OWLDescription> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
-		Set<Description> definitions = new HashSet<Description>();
-		for(OWLDescription owlAPIDescription : owlAPIDescriptions) {
-			definitions.add(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(owlAPIDescription));
-		}
-		return definitions;
-	}
 	
 }

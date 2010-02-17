@@ -27,12 +27,8 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class TypedConstant extends Constant {
+public class TypedConstant extends Constant implements Comparable<TypedConstant> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9135242138291085300L;
 	private Datatype datatype;
 	
 	public TypedConstant(String literal, Datatype datatype) {
@@ -56,7 +52,7 @@ public class TypedConstant extends Constant {
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "\"" + literal + "\"";
+		return literal;
 //		return literal + "^^" + datatype;
 	}
 	
@@ -100,14 +96,6 @@ public class TypedConstant extends Constant {
 		return literal + "^^" + datatype;
 	}
 
-	@Override
-	public int compareTo(Constant o) {
-		if(o instanceof UntypedConstant) {
-			return 1;
-		}
-		String str = literal + datatype;
-		String str2 = o.literal + ((TypedConstant)o).datatype;
-		return str.compareTo(str2);
-	}	
+
 
 }

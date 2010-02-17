@@ -20,10 +20,13 @@
 package org.dllearner.tools.protege;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.Set;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 
 
@@ -42,11 +45,24 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 // Model of the dllearner
 	 
 	private final DLLearnerModel model;
+	
+	 // Textarea to render the accuracy of the concept
+	 
+	private final  JTextArea accuracy;
+
+	 
+	private final  JTextArea accuracyText;
+	 // Evaluated description of the selected concept
+	private final  JPanel conceptPanel;
+
 	private EvaluatedDescription eval;
+	private final  JTextArea concept;
+	private Set<String> ontologiesStrings;
+	private final  JTextArea conceptText;
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 540;
-	private GraphicalCoveragePanel graphicalPanel;
-	private GraphicalCoverageTextField graphicalText;
+	private GraphicalCoveragePanel p;
+	private final MoreDetailForSuggestedConceptsPanelHandler handler;
 
 	/**
 	 * This is the constructor for the Panel.
@@ -54,9 +70,31 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 */
 	public MoreDetailForSuggestedConceptsPanel(DLLearnerModel model) {
 		super();
-		setLayout(new GridLayout(1, 2));
+		setLayout(null);
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.model = model;
+		handler = new MoreDetailForSuggestedConceptsPanelHandler(this);
+		concept = new JTextArea("Class Description:");
+		
+		concept.setEditable(false);
+		
+		
+		conceptPanel = new JPanel(new GridLayout(0, 2));
+		conceptPanel.setBounds(5, 0, 800, 50);
+
+		accuracy = new JTextArea("Accuracy:");
+		accuracy.setEditable(false);
+		conceptText = new JTextArea();
+		conceptText.setEditable(false);
+
+		accuracyText = new JTextArea();
+		//sets accuracy text area not editable
+		accuracyText.setEditable(false);
+		accuracy.setVisible(false);
+		accuracyText.setVisible(false);
+		concept.setVisible(false);
+		conceptText.setVisible(false);
+
 	}
 
 	/**
@@ -64,39 +102,84 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * @param desc selected description
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
+		accuracy.setVisible(false);
+		accuracyText.setVisible(false);
+		concept.setVisible(false);
+		conceptText.setVisible(false);
 		eval = desc;
 
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
-		graphicalPanel = new GraphicalCoveragePanel(eval, model);
-		graphicalText = new GraphicalCoverageTextField(eval, model);
-		graphicalPanel.setBounds(5, 0, 300, 350);
+		this.setInformation();
+		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), this);
+		p.setBounds(5, 0, 600, 700);
 		//adds all information to the example panel
 		unsetEverything();
-		this.add(graphicalPanel, "Center");
-		this.add(graphicalText.getTextScroll(), "East");
+		conceptPanel.removeAll();
+		conceptPanel.add(concept);
+		conceptPanel.add(accuracy);
+		conceptPanel.add(conceptText);
+		conceptPanel.add(accuracyText);
+		conceptPanel.setVisible(true);
+		//this.add(conceptPanel);
+		this.add(p);
+		this.addPropertyChangeListener(handler);
+		//conceptPanel.addPropertyChangeListener(handler);
+		this.repaint();
 	}
 
 	private void unsetEverything() {
 		removeAll();
 	}
-
-
 	/**
-	 * Returns the graphical coverage panel.
-	 * @return graphical coverage panel
+	 * This method sets the Informations of the selected description.
 	 */
+	public void setInformation() {
+		ontologiesStrings = model.getOntologyURIString();
+		if(eval!=null) {
+			//sets the accuracy of the selected concept
+			for(String ontoString : ontologiesStrings) {
+				if(eval.getDescription().toString().contains(ontoString)) {
+					conceptText.setText(eval.getDescription().toManchesterSyntaxString(ontoString, null));
+					break;
+				}
+			}
+			
+			//sets the accuracy of the concept
+			double acc = ((EvaluatedDescriptionClass) eval).getAccuracy()*100;
+			accuracyText.setText(String.valueOf(acc)+"%");
+			}
+		accuracy.setVisible(true);
+		accuracyText.setVisible(true);
+		concept.setVisible(true);
+		conceptText.setVisible(true);
+		}
+
+
 	public GraphicalCoveragePanel getGraphicalCoveragePanel() {
-		return graphicalPanel;
+		return p;
 	}
-	
-	/**
-	 * Unsets the panel after plugin is closed.
-	 */
+	public JPanel getConceptPanel() {
+		return conceptPanel;
+	}
 	public void unsetPanel() {
 		unsetEverything();
-		if(graphicalPanel != null) {
-			graphicalPanel.unsetPanel();
+		conceptPanel.removeAll();
+		accuracy.setVisible(false);
+		accuracyText.setVisible(false);
+		concept.setVisible(false);
+		conceptText.setVisible(false);
+		if(p != null) {
+			p.unsetPanel();
 		}
+		conceptPanel.add(concept);
+		conceptPanel.add(accuracy);
+		conceptPanel.add(conceptText);
+		conceptPanel.add(accuracyText);
+		conceptPanel.setVisible(false);
+		this.add(conceptPanel);
+
+		repaint();
 	}
+	
 }

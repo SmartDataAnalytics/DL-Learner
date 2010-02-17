@@ -64,7 +64,6 @@ import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.datastructures.Datastructures;
-import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 
 /**
@@ -357,37 +356,12 @@ public class DLLearnerWS {
 	 * of the learned description.
 	 * 
 	 * @param id The session ID.
-	 * @return A JSON string encoding learned descriptions.
-	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
-	 */
-	@WebMethod
-	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
-		ClientState state = getState(id);
-		state.getLearningAlgorithm().start();
-		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions();
-		String json = "{";
-		int count = 1;
-		for(EvaluatedDescription description : descriptions.descendingSet()) {
-			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
-			else json += "\"solution" + count + "\" : " + description.asJSON();
-			count++;
-		}
-		json+="}";
-		return json;
-	}	
-	
-	/**
-	 * Returns a list of JSON encoded description including extra information
-	 * (which partially depends on the learning problem) such as the accuracy
-	 * of the learned description.
-	 * 
-	 * @param id The session ID.
 	 * @param limit Maximum number of results desired.
 	 * @return A JSON string encoding learned descriptions.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 */
 	@WebMethod
-	public String learnDescriptionsEvaluatedLimit(int id, int limit) throws ClientNotKnownException {
+	public String learnDescriptionsEvaluated(int id, int limit) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
 		List<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);
@@ -624,26 +598,6 @@ public class DLLearnerWS {
 		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
 		applyConfigEntry(sessionID, componentID,optionName,stringSet);
 	}
-	
-	/**
-	 * 
-	 * @param sessionID The session ID.
-	 * @param componentID The componentID.
-	 * @param optionName The name of the configuration option.
-	 * @param value
-	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
-	 * @throws UnknownComponentException
-	 */
-	@WebMethod
-	public void applyConfigEntryStringTupleList(int sessionID, int componentID, String optionName, String[] keys, String[] values) throws ClientNotKnownException, UnknownComponentException {
-		List<StringTuple> tuples = new LinkedList<StringTuple>();
-		for(int i=0; i<keys.length; i++) {
-			StringTuple st = new StringTuple(keys[i],values[i]);
-			tuples.add(st);
-		}
-//		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
-		applyConfigEntry(sessionID, componentID, optionName, tuples);
-	}	
 	
 	/**
 	 * 
@@ -966,7 +920,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public String SparqlRetrieval(String conceptString,int limit) throws ParseException {
 		// call parser to parse concept
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString,limit, false, false);
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString,limit);
 	}
 	
 	@WebMethod

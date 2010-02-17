@@ -20,9 +20,12 @@
 package org.dllearner.tools.protege;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -30,11 +33,13 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -46,12 +51,12 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
  * @author Christian Koetteritzsch
  * 
  */
-public class ActionHandler implements ActionListener {
+public class ActionHandler implements ActionListener, ItemListener,
+		MouseListener, ListSelectionListener, ListDataListener {
 
 	// This is the DLLearnerModel.
 
 	private final DLLearnerModel model;
-	
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
@@ -63,33 +68,27 @@ public class ActionHandler implements ActionListener {
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
-	private HelpTextPanel helpPanel;
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
 	private final DLLearnerView view;
-	private static final String HELP_BUTTON_STRING = "help";
-	private static final String ADD_BUTTON_STRING = "<html>ADD</html>";
-	private static final String ADVANCED_BUTTON_STRING = "Advanced";
-	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
-	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expression</html>";
-	private static JOptionPane optionPane;
 
 	/**
 	 * This is the constructor for the action handler.
 	 * 
+	 * @param a
+	 *            ActionHandler
 	 * @param m
 	 *            DLLearnerModel
 	 * @param view
 	 *            DLlearner tab
+	 * @param i
+	 *            id if it is a subclass or an equivalent class
 	 * 
 	 */
 	public ActionHandler(DLLearnerModel m, DLLearnerView view) {
 		this.view = view;
 		this.model = m;
 		toggled = false;
-		helpPanel = new HelpTextPanel(view);
-		optionPane = new JOptionPane();
-		
 
 	}
 
@@ -101,29 +100,21 @@ public class ActionHandler implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
-				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
+		if (z.getActionCommand().equals("suggest equivalent class expression") || z.getActionCommand().equals("suggest super class expression")) {
 			model.setKnowledgeSource();
-			view.getSuggestClassPanel().getSuggestModel().clear();
-			view.getSuggestClassPanel().repaint();
+			//model.setReasoner();
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
 			view.getHintPanel().setForeground(Color.RED);
-			CELOE celoe = (CELOE) model.getLearningAlgorithm();
-
-			String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-					+ celoe.getMinimumHorizontalExpansion()
-					+ " and "
-					+ celoe.getMaximumHorizontalExpansion() + ".</font></html>";
-			view.setHelpButtonVisible(true);
-			view.setHintMessage(moreInformationsMessage);
+			view.setHintMessage("learning started");
 			retriever = new SuggestionRetriever();
-			retriever.addPropertyChangeListener(view.getStatusBar());
 			retriever.execute();
+			// model.setCurrentConcept(null);
+
 		}
 
-		if (z.getActionCommand().equals(ADD_BUTTON_STRING)) {
+		if (z.getActionCommand().equals("ADD")) {
 			if (evaluatedDescription != null) {
 				model
 						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
@@ -134,11 +125,10 @@ public class ActionHandler implements ActionListener {
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "<html><font size=\"3\">class expression added</font></html>";
-			view.setHintMessage(message);
-			view.setHelpButtonVisible(false);
+			String message = "class expression\nadded";
+			view.renderErrorMessage(message);
 		}
-		if (z.toString().contains(ADVANCED_BUTTON_STRING)) {
+		if (z.getActionCommand().equals("")) {
 			if (!toggled) {
 				toggled = true;
 				view.setIconToggled(toggled);
@@ -149,25 +139,111 @@ public class ActionHandler implements ActionListener {
 				view.setExamplePanelVisible(toggled);
 			}
 		}
-		if (z.toString().contains(HELP_BUTTON_STRING)) {
+	}
 
-			Set<String> uris = model.getOntologyURIString();
-			String currentClass = "";
-			for (String uri : uris) {
-				if (model.getCurrentConcept().toString().contains(uri)) {
-					currentClass = model.getCurrentConcept()
-							.toManchesterSyntaxString(uri, null);
+
+	/**
+	 * select/deselect the Check boxes.
+	 * 
+	 * @param i
+	 *            ItemEvent
+	 */
+	public void itemStateChanged(ItemEvent i) {
+
+	}
+
+	/**
+	 * Nothing happens here.
+	 * 
+	 * @param e
+	 *            ListSelectionEvent
+	 */
+	public void valueChanged(ListSelectionEvent e) {
+
+	}
+
+	/**
+	 * Nothing happens here.
+	 * 
+	 * @param m
+	 *            MouseEvent
+	 */
+	public void mouseReleased(MouseEvent m) {
+
+	}
+
+	/**
+	 * Nothing happens here.
+	 * 
+	 * @param m
+	 *            MouseEvent
+	 */
+	public void mouseEntered(MouseEvent m) {
+
+	}
+
+	/**
+	 * Choses the right EvaluatedDescription object after a concept is chosen in
+	 * the list.
+	 * 
+	 * @param m
+	 *            MouseEvent
+	 */
+	public void mouseClicked(MouseEvent m) {
+		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
+			SuggestListItem item = (SuggestListItem) view
+					.getSuggestClassPanel().getSuggestList().getSelectedValue();
+			String desc = item.getValue();
+			if (model.getEvaluatedDescriptionList() != null) {
+				List<? extends EvaluatedDescription> evalList = model
+						.getEvaluatedDescriptionList();
+				Set<String> onto = model.getOntologyURIString();
+				for (EvaluatedDescription eDescription : evalList) {
+					for (String ont : onto) {
+						if (desc.equals(eDescription.getDescription()
+								.toManchesterSyntaxString(ont, null))) {
+							evaluatedDescription = eDescription;
+							break;
+						}
+					}
 				}
 			}
-			
-			//helpPanel.renderHelpTextMessage(currentClass);
-			//view.getLearnerView().add();
-			//help = new JTextPane();
-			//help.setText(helpText);
-			optionPane.setPreferredSize(new Dimension(300, 200));
-			JOptionPane.showMessageDialog(view.getLearnerView(), helpPanel.renderHelpTextMessage(currentClass), "Help",
-					JOptionPane.INFORMATION_MESSAGE);
+			view.getMoreDetailForSuggestedConceptsPanel()
+					.renderDetailPanel(evaluatedDescription);
+			view.setGraphicalPanel();
+			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 		}
+	}
+
+	/**
+	 * Nothing happens here.
+	 * 
+	 * @param m
+	 *            MouseEvent
+	 */
+	public void mouseExited(MouseEvent m) {
+
+	}
+
+	/**
+	 * Sets the ADD button enable after a concept is chosen.
+	 * 
+	 * @param m
+	 *            MouseEvent
+	 */
+	public void mousePressed(MouseEvent m) {
+		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
+			if (!view.getAddButton().isEnabled()) {
+				view.getAddButton().setEnabled(true);
+			}
+		}
+	}
+
+	/**
+	 * Destroys the Thread after the Pluigin is closed.
+	 */
+	public void destroyDLLearnerThread() {
+		// dlLearner = null;
 	}
 
 	/**
@@ -177,15 +253,22 @@ public class ActionHandler implements ActionListener {
 		toggled = false;
 	}
 
-	/**
-	 * This Methode sets the evaluated class expression that is selected in the
-	 * panel.
-	 * 
-	 * @param desc
-	 *            evaluated descriptions
-	 */
-	public void setEvaluatedClassExpression(EvaluatedDescription desc) {
-		this.evaluatedDescription = desc;
+	@Override
+	public void contentsChanged(ListDataEvent listEvent) {
+		System.out.println(listEvent);
+
+	}
+
+	@Override
+	public void intervalAdded(ListDataEvent listEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void intervalRemoved(ListDataEvent listEvent) {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
@@ -200,47 +283,25 @@ public class ActionHandler implements ActionListener {
 
 		private Thread dlLearner;
 		private final DefaultListModel dm = new DefaultListModel();
-		private boolean isFinished; 
 
 		@SuppressWarnings("unchecked")
 		@Override
 		protected List<? extends EvaluatedDescription> doInBackground()
 				throws Exception {
-			setProgress(0);
 			la = model.getLearningAlgorithm();
-			view.setStatusBarVisible(true);
-			view.getStatusBar().setMaximumValue(
-					view.getPosAndNegSelectPanel().getOptionPanel()
-							.getMaxExecutionTime());
 			timer = new Timer();
-			isFinished = false;
 			timer.schedule(new TimerTask() {
-				int progress = 0;
 
 				@Override
 				public void run() {
-					progress += 1;
-					setProgress(progress);
-					if(progress == view.getPosAndNegSelectPanel().getOptionPanel()
-							.getMaxExecutionTime() - 1) {
-						isFinished = true;
-					}
 					if (la != null) {
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view
 								.getPosAndNegSelectPanel().getOptionPanel()
 								.getNrOfConcepts()));
-						CELOE celoe = (CELOE) model.getLearningAlgorithm();
-						view.getHintPanel().setForeground(Color.RED);
-						String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-								+ celoe.getMinimumHorizontalExpansion()
-								+ " and "
-								+ celoe.getMaximumHorizontalExpansion()
-								+ ".</font></html>";
-						view.setHintMessage(moreInformationsMessage);
 					}
 				}
 
-			}, 1000, 1000);
+			}, 0, 500);
 
 			dlLearner = new Thread(new Runnable() {
 
@@ -259,6 +320,7 @@ public class ActionHandler implements ActionListener {
 			try {
 				dlLearner.join();
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			List<? extends EvaluatedDescription> result = la
@@ -273,7 +335,6 @@ public class ActionHandler implements ActionListener {
 		public void done() {
 
 			timer.cancel();
-
 			List<? extends EvaluatedDescription> result = null;
 			try {
 				result = get();
@@ -282,11 +343,9 @@ public class ActionHandler implements ActionListener {
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
-			setProgress(0);
-			view.stopStatusBar();
-			updateList(result);
-			view.algorithmTerminated();
 
+			view.algorithmTerminated();
+			updateList(result);
 		}
 
 		@Override
@@ -312,8 +371,13 @@ public class ActionHandler implements ActionListener {
 						for (String ontology : ont) {
 							if (eval.getDescription().toString().contains(
 									ontology)) {
-								if (((EvaluatedDescriptionClass) eval)
-										.isConsistent()) {
+								// dm.add(i, new SuggestListItem(colorGreen,
+								// eval
+								// .getDescription().toManchesterSyntaxString
+								// (ontology, null),
+								// ((EvaluatedDescriptionClass)
+								// eval).getAccuracy()*100));
+								if (((EvaluatedDescriptionClass) eval).isConsistent()) {
 									dm.add(i, new SuggestListItem(colorGreen,
 											eval.getDescription()
 													.toManchesterSyntaxString(
@@ -329,16 +393,13 @@ public class ActionHandler implements ActionListener {
 															ontology, null),
 											((EvaluatedDescriptionClass) eval)
 													.getAccuracy() * 100));
-									if(isFinished) {
-										view.setIsInconsistent(true);
-									}
+									view.setIsInconsistent(true);
 									i++;
 									break;
 								}
 							}
 						}
 					}
-
 					view.getSuggestClassPanel().setSuggestList(dm);
 					view.getLearnerView().repaint();
 				}

@@ -27,11 +27,6 @@ import java.net.URI;
  */
 public class LabelAnnotation extends ConstantAnnotation {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2217233341939580997L;
-
 	public LabelAnnotation(URI annotationURI, Constant annotationValue) {
 		super(annotationURI, annotationValue);
 	}

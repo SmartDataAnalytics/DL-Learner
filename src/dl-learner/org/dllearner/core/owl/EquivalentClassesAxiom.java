@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class EquivalentClassesAxiom extends TerminologicalAxiom {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2893732406014114441L;
 	private Description concept1;
 	private Description concept2;
 	
@@ -50,6 +46,7 @@ public class EquivalentClassesAxiom extends TerminologicalAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "EQ_CLASSES_AXIOM NOT IMPLEMENTED";
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

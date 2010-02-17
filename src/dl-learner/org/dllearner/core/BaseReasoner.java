@@ -102,15 +102,6 @@ public interface BaseReasoner {
 	public SortedSet<DatatypeProperty> getIntDatatypeProperties();
 	
 	/**
-	 * Gets all data properties with range xsd:string.
-	 * TODO We could extend this to all types, which can be parsed into
-	 * strings and even include the properties without any specified datatype.
-	 * @see org.dllearner.core.owl.Datatype#String
-	 * @return String data properties in KB.
-	 */
-	public SortedSet<DatatypeProperty> getStringDatatypeProperties();	
-	
-	/**
 	 * Gets all individuals in the knowledge base, e.g. Eric, London, Car829. 
 	 * @return All individuals in KB.
 	 */	

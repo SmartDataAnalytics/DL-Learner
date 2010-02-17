@@ -134,7 +134,7 @@ public class CrossValidation {
 		
 		if(lp instanceof PosNegLP) {
 
-			// get examples and shuffle them too
+			// get examples and shuffle them to 
 			Set<Individual> posExamples = ((PosNegLP)lp).getPositiveExamples();
 			List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
 			Collections.shuffle(posExamplesList, new Random(1));			
@@ -164,7 +164,7 @@ public class CrossValidation {
 				// calculating where to split the sets, ; note that we split
 				// positive and negative examples separately such that the 
 				// distribution of positive and negative examples remains similar
-				// (note that there are better but more complex ways to implement this,
+				// (note that there better but more complex ways to implement this,
 				// which guarantee that the sum of the elements of a fold for pos
 				// and neg differs by at most 1 - it can differ by 2 in our implementation,
 				// e.g. with 3 folds, 4 pos. examples, 4 neg. examples)
@@ -293,7 +293,7 @@ public class CrossValidation {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
-	public static Set<Individual> getTestingSet(List<Individual> examples, int[] splits, int fold) {
+	private Set<Individual> getTestingSet(List<Individual> examples, int[] splits, int fold) {
 		int fromIndex;
 		// we either start from 0 or after the last fold ended
 		if(fold == 0)
@@ -311,14 +311,14 @@ public class CrossValidation {
 		return testingSet;
 	}
 	
-	public static Set<Individual> getTrainingSet(Set<Individual> examples, Set<Individual> testingSet) {
+	private Set<Individual> getTrainingSet(Set<Individual> examples, Set<Individual> testingSet) {
 		return Helper.difference(examples, testingSet);
 	}
 	
 	// takes nr. of examples and the nr. of folds for this examples;
 	// returns an array which says where each fold ends, i.e.
 	// splits[i] is the index of the last element of fold i in the examples
-	public static int[] calculateSplits(int nrOfExamples, int folds) {
+	private int[] calculateSplits(int nrOfExamples, int folds) {
 		int[] splits = new int[folds];
 		for(int i=1; i<=folds; i++) {
 			// we always round up to the next integer

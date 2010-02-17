@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3877477886974844568L;
 	private ObjectPropertyExpression role;
 	
 	public TransitiveObjectPropertyAxiom(ObjectPropertyExpression role) {
@@ -44,6 +40,7 @@ public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "Transitive(" + role.toString(baseURI, prefixes) + ")";
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

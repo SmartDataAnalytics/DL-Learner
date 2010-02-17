@@ -3,12 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: DL-Learner Plugin
 Bundle-SymbolicName: org.dllearner.tools.protege;singleton:=true
 Bundle-Category: protege
-Bundle-Description: Protege DL-Learner Plugin
-Bundle-Vendor: DL-Learner Project
-Bundle-DocURL: http://dl-learner.org/wiki/ProtegePlugin
-Bundle-ClassPath: .,lib/junit-4.4.jar,lib/jamon-2.7.jar,lib/pellet/pellet-core.jar,lib/pellet/pellet-datatypes.jar,lib/ore-tool/BrowserLauncher2-all-1_3.jar,lib/pellet/pellet-el.jar,lib/pellet/pellet-explanation.jar,lib/pellet/pellet-owlapi.jar,lib/pellet/pellet-rules.jar,lib/pellet/aterm-java-1.6.jar,lib/jena/json.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.1.jar,lib/ore-tool/swingx-0.9.2.jar,lib/owlapi/owlapiV3-bin.jar
+Bundle-Description: blablabla
+Bundle-Vendor: blablabla
+Bundle-DocURL: blablabla
+Bundle-ClassPath: .,lib/junit-4.4.jar,lib/jamon-2.7.jar,lib/pellet/pellet-core.jar,lib/pellet/pellet-datatypes.jar,lib/pellet/pellet-el.jar,lib/pellet/pellet-explanation.jar,lib/pellet/pellet-owlapi.jar,lib/pellet/pellet-rules.jar,lib/pellet/aterm-java-1.6.jar,lib/jena/json.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.1.jar,lib/ore-tool/swingx-0.9.2.jar
 Import-Package: org.osgi.framework,org.apache.log4j
 Export-Package: lib
-Bundle-Version: 0.5.2
+Bundle-Version: 1.0.0
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Require-Bundle: org.eclipse.equinox.registry,org.eclipse.equinox.common,org.protege.editor.core.application,org.protege.editor.owl,org.semanticweb.owl.owlapi

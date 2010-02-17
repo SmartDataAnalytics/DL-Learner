@@ -40,7 +40,6 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
@@ -61,7 +60,6 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.StringValueRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
@@ -147,7 +145,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<NamedClass,Set<ObjectProperty>> mgr = new TreeMap<NamedClass,Set<ObjectProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgbd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgdd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
-	private Map<NamedClass,Set<DatatypeProperty>> mgsd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -161,10 +158,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<ObjectProperty, Map<Individual, Integer>> valueFrequency = new HashMap<ObjectProperty, Map<Individual, Integer>>();
 	// data structure with identified frequent values
 	private Map<ObjectProperty, Set<Individual>> frequentValues = new HashMap<ObjectProperty, Set<Individual>>();	
-	// frequent data values
-	private Map<DatatypeProperty, Set<Constant>> frequentDataValues = new HashMap<DatatypeProperty, Set<Constant>>();	
-	private Map<DatatypeProperty, Map<Constant, Integer>> dataValueFrequency = new HashMap<DatatypeProperty, Map<Constant, Integer>>();		
-	private boolean useDataHasValueConstructor = false;
 	
 	// staistics
 	public long mComputationTimeNs = 0;
@@ -179,13 +172,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
 	private boolean useDoubleDatatypes = true;
-	@SuppressWarnings("unused")
-	private boolean useStringDatatypes = false;
 	private boolean disjointChecks = true;
 	private boolean instanceBasedDisjoints = true;
 	
-	private boolean dropDisjuncts = false;
-
 	// caches for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
 
@@ -207,14 +196,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		useAllConstructor = configurator.getUseAllConstructor();
 		useExistsConstructor = configurator.getUseExistsConstructor();
 		useHasValueConstructor = configurator.getUseHasValueConstructor();
-		useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
 		frequencyThreshold = configurator.getValueFrequencyThreshold();
 		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
 		cardinalityLimit = configurator.getCardinalityLimit();
 		useNegation = configurator.getUseNegation();
 		useBooleanDatatypes = configurator.getUseBooleanDatatypes();
 		useDoubleDatatypes = configurator.getUseDoubleDatatypes();
-		useStringDatatypes = configurator.getUseStringDatatypes();
 		init();
 	}
 	
@@ -234,12 +221,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.frequencyThreshold = valueFrequencyThreshold;
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 		cardinalityLimit = configurator.getCardinalityLimit();
-		this.useDataHasValueConstructor = configurator.getUseDataHasValueConstructor();
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
-		useStringDatatypes = configurator.getUseStringDatatypes();
-		instanceBasedDisjoints = configurator.getInstanceBasedDisjoints();
 		if(startClass != null) {
 			this.startClass = startClass;
 		}
@@ -274,12 +258,13 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					}
 				}
 				
-				// keep only frequent patterns
+				// keep only frequent patterns (TODO it would be slightly
+				// more efficient if we stop adding to valueFrequency
+				// after threshold is reached)
 				Set<Individual> frequentInds = new TreeSet<Individual>();
 				for(Individual i : opMap.keySet()) {
 					if(opMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
-//						break;
 					}
 				}
 				frequentValues.put(op, frequentInds);
@@ -288,44 +273,13 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			
 		}
 		
-		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
-			dpDomains.put(dp, rs.getDomain(dp));
-			
-			if(useDataHasValueConstructor) {
-				Map<Constant, Integer> dpMap = new TreeMap<Constant, Integer>();
-				dataValueFrequency.put(dp, dpMap);
-				
-				// sets ordered by corresponding individual (which we ignore)
-				Collection<SortedSet<Constant>> fillerSets = rs.getDatatypeMembers(dp).values();
-				for(SortedSet<Constant> fillerSet : fillerSets) {
-					for(Constant i : fillerSet) {
-//						System.out.println("op " + op + " i " + i);
-						Integer value = dpMap.get(i);
-						
-						if(value != null) {
-							dpMap.put(i, value+1);
-						} else {
-							dpMap.put(i, 1);
-						}
-					}
-				}
-				
-				// keep only frequent patterns
-				Set<Constant> frequentInds = new TreeSet<Constant>();
-				for(Constant i : dpMap.keySet()) {
-					if(dpMap.get(i) >= frequencyThreshold) {
-						logger.trace("adding value "+i+", because "+dpMap.get(i) +">="+frequencyThreshold);
-						frequentInds.add(i);
-					}
-				}
-				frequentDataValues.put(dp, frequentInds);				
-			}
-		}
-		
 		// we do not need the temporary set anymore and let the
 		// garbage collector take care of it
 		valueFrequency = null;
-		dataValueFrequency = null;
+		
+		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
+			dpDomains.put(dp, rs.getDomain(dp));
+		}
 		
 		// compute splits for double datatype properties
 		for(DatatypeProperty dp : rs.getDoubleDatatypeProperties()) {
@@ -515,23 +469,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				
 			}
 			
-			// if enabled, we can remove elements of the disjunction
-			if(dropDisjuncts) {
-				// A1 OR A2 => {A1,A2}
-				if(description.getChildren().size() == 2) {
-					refinements.add(description.getChild(0));
-					refinements.add(description.getChild(1));
-				} else {
-					// copy children list and remove a different element in each turn
-					for(int i=0; i<description.getChildren().size(); i++) {
-						List<Description> newChildren = new LinkedList<Description>(description.getChildren());
-						newChildren.remove(i);						
-						Union md = new Union(newChildren);
-						refinements.add(md);
-					}
-				}
-			}
-			
 		} else if (description instanceof ObjectSomeRestriction) {
 			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
 			Description range = opRanges.get(role);
@@ -664,13 +601,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					DatatypeSomeRestriction newDSR = new DatatypeSomeRestriction(dp,min);
 					refinements.add(newDSR);
 				}
-			}
-		} else if (description instanceof StringValueRestriction) {
-			StringValueRestriction svr = (StringValueRestriction) description;
-			DatatypeProperty dp = svr.getRestrictedPropertyExpression();
-			Set<DatatypeProperty> subDPs = rs.getSubProperties(dp);
-			for(DatatypeProperty subDP : subDPs) {
-				refinements.add(new StringValueRestriction(subDP, svr.getStringValue()));
 			}
 		}
 		
@@ -806,17 +736,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		}
 		return true;
 	}
-	
-	/**
-	 * By default, the operator does not specialize e.g. (A or B) to A, because
-	 * it only guarantees weak completeness. Under certain circumstances, e.g.
-	 * refinement of a fixed given concept, it can be useful to allow such
-	 * refinements, which can be done by passing the parameter true to this method. 
-	 * @param dropDisjuncts Whether to remove disjuncts in refinement process.
-	 */
-	public void setDropDisjuncts(boolean dropDisjuncts) {
-		this.dropDisjuncts = dropDisjuncts;
-	}	
 	
 	private void computeTopRefinements(int maxLength) {
 		computeTopRefinements(maxLength, null);
@@ -1006,17 +925,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			}
 		}		
 		
-		if(useDataHasValueConstructor) {
-			Set<DatatypeProperty> stringDPs = rs.getStringDatatypeProperties();
-			for(DatatypeProperty dp : stringDPs) {
-				// loop over frequent values
-				Set<Constant> freqValues = frequentDataValues.get(dp);
-				for(Constant c : freqValues) {
-					m3.add(new StringValueRestriction(dp, c.getLiteral()));
-				}
-			}			
-		}
-		
 		m.put(3,m3);
 		
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
@@ -1123,17 +1031,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			}
 		}			
 		
-		if(useDataHasValueConstructor) {
-			Set<DatatypeProperty> stringDPs = mgsd.get(nc);
-			for(DatatypeProperty dp : stringDPs) {
-				// loop over frequent values
-				Set<Constant> freqValues = frequentDataValues.get(dp);
-				for(Constant c : freqValues) {
-					m3.add(new StringValueRestriction(dp, c.getLiteral()));
-				}
-			}			
-		}		
-		
 		mA.get(nc).put(3,m3);
 		
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
@@ -1157,11 +1054,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		if(appOP.get(domain) == null)
 			computeApp(domain);	
 		
-		// initialise mgr, mgbd, mgdd, mgsd
+		// initialise mgr, mgbd, mgdd
 		mgr.put(domain, new TreeSet<ObjectProperty>());
 		mgbd.put(domain, new TreeSet<DatatypeProperty>());
 		mgdd.put(domain, new TreeSet<DatatypeProperty>());
-		mgsd.put(domain, new TreeSet<DatatypeProperty>());
 		
 		SortedSet<ObjectProperty> mostGeneral = rs.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
@@ -1170,10 +1066,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		// datatype properties have the same type (e.g. boolean, integer, double)
 		Set<DatatypeProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, rs.getBooleanDatatypeProperties());
 		Set<DatatypeProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, rs.getDoubleDatatypeProperties());
-		Set<DatatypeProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, rs.getStringDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));	
 		computeMgddRecursive(domain, mostGeneralDDP, mgdd.get(domain));
-		computeMgsdRecursive(domain, mostGeneralSDP, mgsd.get(domain));
 	}
 	
 	private void computeMgrRecursive(NamedClass domain, Set<ObjectProperty> currProperties, Set<ObjectProperty> mgrTmp) {
@@ -1203,15 +1097,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		}
 	}		
 	
-	private void computeMgsdRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgsdTmp) {
-		for(DatatypeProperty prop : currProperties) {
-			if(appDD.get(domain).contains(prop))
-				mgsdTmp.add(prop);
-			else
-				computeMgsdRecursive(domain, rs.getSubProperties(prop), mgsdTmp);
-		}
-	}	
-	
 	// computes the set of applicable properties for a given class
 	private void computeApp(NamedClass domain) {
 		// object properties
@@ -1230,8 +1115,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		Set<DatatypeProperty> mostGeneralBDPs = rs.getBooleanDatatypeProperties();
 		Set<DatatypeProperty> applicableBDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralBDPs) {
-//			Description d = (NamedClass) rs.getDomain(role);
-			Description d = rs.getDomain(role);
+			Description d = (NamedClass) rs.getDomain(role);
 			if(!isDisjoint(domain,d))
 				applicableBDPs.add(role);
 		}
@@ -1241,8 +1125,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		Set<DatatypeProperty> mostGeneralDDPs = rs.getDoubleDatatypeProperties();
 		Set<DatatypeProperty> applicableDDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralDDPs) {
-//			Description d = (NamedClass) rs.getDomain(role);
-			Description d = rs.getDomain(role);
+			Description d = (NamedClass) rs.getDomain(role);
 //			System.out.println("domain: " + d);
 			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);

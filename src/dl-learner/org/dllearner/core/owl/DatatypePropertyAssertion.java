@@ -27,10 +27,6 @@ package org.dllearner.core.owl;
  */
 public abstract class DatatypePropertyAssertion extends PropertyAssertion {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7202070934971240534L;
 	protected DatatypeProperty datatypeProperty;
 	protected Individual individual;
 	

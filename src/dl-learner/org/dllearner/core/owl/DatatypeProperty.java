@@ -19,8 +19,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.io.Serializable;
-import java.net.URI;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
@@ -29,12 +27,8 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class DatatypeProperty implements Comparable<DatatypeProperty>, Property, NamedKBElement, Serializable {
+public class DatatypeProperty implements Comparable<DatatypeProperty>, Property, NamedKBElement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8452865438915671952L;
 	protected String name;
 	
 	public DatatypeProperty(String name) {
@@ -52,10 +46,6 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 		return name;
 	}
 
-    public URI getURI() {
-    	return URI.create(name);
-    }	
-	
 	@Override
 	public String toString() {
 		return toString(null, null);
@@ -103,6 +93,7 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return Helper.getAbbreviatedString(name, baseURI, prefixes);
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

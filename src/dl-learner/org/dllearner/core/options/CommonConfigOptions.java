@@ -43,14 +43,12 @@ public final class CommonConfigOptions {
 	public static boolean useAllConstructorDefault = true;
 	public static boolean useExistsConstructorDefault = true;
 	public static boolean useHasValueConstructorDefault = false;
-	public static boolean useDataHasValueConstructorDefault = false;
 	public static int valueFrequencyThresholdDefault = 3;
 	public static boolean useCardinalityRestrictionsDefault = true;
 	public static int cardinalityLimitDefault = 5;
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
 	public static boolean useDoubleDatatypesDefault = true;
-	public static boolean useStringDatatypesDefault = false;
 	public static int maxExecutionTimeInSecondsDefault = 0;
 	public static int minExecutionTimeInSecondsDefault = 0;
 	public static int guaranteeXgoodDescriptionsDefault = 1;
@@ -58,7 +56,6 @@ public final class CommonConfigOptions {
 	public static String logLevelDefault = "DEBUG";
 	public static double noisePercentageDefault = 0.0;
 	public static boolean terminateOnNoiseReachedDefault = true;
-	public static boolean instanceBasedDisjointsDefault = true;
 	
 	public static StringConfigOption getVerbosityOption() {
 		StringConfigOption verbosityOption = new StringConfigOption("verbosity", "control verbosity of output for this component", "warning");
@@ -134,10 +131,6 @@ public final class CommonConfigOptions {
 		return new BooleanConfigOption("useHasValueConstructor", "specifies whether the hasValue constructor is used in the learning algorithm",useHasValueConstructorDefault);
 	}	
 	
-	public static BooleanConfigOption useDataHasValueConstructor() {
-		return new BooleanConfigOption("useDataHasValueConstructor", "specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties",useDataHasValueConstructorDefault);
-	}	
-	
 	public static IntegerConfigOption valueFreqencyThreshold() {
 		return new IntegerConfigOption("valueFrequencyThreshold", "specifies how often an object must occur as value in order to be considered for hasValue restrictions",valueFrequencyThresholdDefault);
 	}
@@ -164,10 +157,6 @@ public final class CommonConfigOptions {
 	
 	public static BooleanConfigOption useDoubleDatatypes() {
 		return new BooleanConfigOption("useDoubleDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useDoubleDatatypesDefault);
-	}	
-	
-	public static BooleanConfigOption useStringDatatypes() {
-		return new BooleanConfigOption("useStringDatatypes", "specifies whether string datatypes are used in the learning algorothm",useStringDatatypesDefault);
 	}	
 	
 	public static IntegerConfigOption maxExecutionTimeInSeconds() {
@@ -201,8 +190,4 @@ public final class CommonConfigOptions {
 	public static StringConfigOption getLogLevel() {
 		return new StringConfigOption("logLevel", "determines the logLevel for this component, can be {TRACE, DEBUG, INFO}",logLevelDefault);
 	}
-	
-	public static BooleanConfigOption getInstanceBasedDisjoints() {
-		return new BooleanConfigOption("instanceBasedDisjoints", "Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.", instanceBasedDisjointsDefault);
-	}	
 }

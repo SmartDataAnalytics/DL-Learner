@@ -133,7 +133,7 @@ public class Start {
 		if (args.length > 1 && args[0].equals("-q")) {
 			inQueryMode = true;
 		}
-		
+
 		// create loggers (a simple logger which outputs
 		// its messages to the console and a log file)
 		
@@ -205,9 +205,7 @@ public class Start {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
 		start.start(inQueryMode);
-		
 		// write JaMON report in HTML file
 		File jamonlog = new File("log/jamon.html");
 		Files.createFile(jamonlog, MonitorFactory.getReport());
@@ -845,8 +843,7 @@ public class Start {
 		} while (!(queryStr.equalsIgnoreCase("q") || queryStr.equalsIgnoreCase("quit")));
 
 	}
-	
-	
+
 	/**
 	 * error handling over the logger
 	 * 

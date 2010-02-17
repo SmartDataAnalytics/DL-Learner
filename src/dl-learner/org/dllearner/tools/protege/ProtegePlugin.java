@@ -48,19 +48,11 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 
 	@Override
 	public Set<OWLDescription> getDescriptions() {
-		if(view.getDLLearnerModel().getLearningAlgorithm() != null) {
-			if(view.getDLLearnerModel().getLearningAlgorithm().isRunning()) {
-				view.getDLLearnerModel().getLearningAlgorithm().stop();
-				view.unsetEverything();
-			}
-		}
 		return view.getSolutions();
 	}
 
 	@Override
 	public boolean isValidInput() {
-		view.getSuggestClassPanel().getSuggestModel().clear();
-		//view.getSuggestClassPanel().repaint();
 		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
 			view.makeView("equivalent class");
 		} else if(this.getAxiomType().toString().equals(SUPERCLASS_STRING)) {
@@ -95,4 +87,8 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
 	}
+
+
+
+
 }

@@ -19,7 +19,6 @@
  */
 package org.dllearner.core;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import org.dllearner.core.owl.Description;
@@ -37,12 +36,8 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescription implements Serializable{
+public class EvaluatedDescription {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1106431570510815033L;
 	protected Description description;
 	protected Score score;
 	
@@ -111,7 +106,7 @@ public class EvaluatedDescription implements Serializable{
 	 * @return A SPARQL query of the underlying description.
 	 */
 	public String getSparqlQuery(int limit) {
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit, false, false);
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit);
 	}	
 	
 	/**

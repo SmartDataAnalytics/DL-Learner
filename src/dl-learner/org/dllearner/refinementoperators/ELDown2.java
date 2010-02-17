@@ -103,10 +103,6 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
 	
 	public ELDown2(ReasonerComponent rs) {
-		this(rs, true);
-	}
-	
-	public ELDown2(ReasonerComponent rs, boolean instanceBasedDisjoints) {
 		this.rs = rs;
 		subsumptionHierarchy = rs.getClassHierarchy();
 		opHierarchy = rs.getObjectPropertyHierarchy();
@@ -118,7 +114,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			opRanges.put(op, rs.getRange(op));
 		}	
 		
-		utility = new Utility(rs, opDomains, instanceBasedDisjoints);
+		utility = new Utility(rs, opDomains);
 	}
 	
 	/* (non-Javadoc)
@@ -185,9 +181,6 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 		// call ncc (see paper)
 		Set<NamedClass> candidates = utility.getClassCandidates(index, v.getLabel());
-		
-//		System.out.println("index: " + index + " label: " + v.getLabel());
-//		System.out.println("candidates: " + candidates);
 		
 		for(NamedClass nc : candidates) {
 			// clone operation

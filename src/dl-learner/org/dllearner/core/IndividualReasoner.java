@@ -183,13 +183,4 @@ public interface IndividualReasoner {
 	 */
 	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty);
 
-	/**
-	 * Convenience method, which can be used which returns the property values as
-	 * strings (note that any literal can be represented as string, even numbers).
-	 * @see #getDatatypeMembers(DatatypeProperty)
-	 * @param datatypeProperty A data property.
-	 * @return The mapping between individuals and string values through the given property.
-	 */
-	public Map<Individual, SortedSet<String>> getStringDatatypeMembers(DatatypeProperty datatypeProperty);
-	
 }

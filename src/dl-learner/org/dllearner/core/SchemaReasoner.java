@@ -86,21 +86,6 @@ public interface SchemaReasoner {
 	public boolean isSuperClassOf(Description superClass, Description subClass);	
 	
 	/**
-	 * Checks whether <code>class1</code> is equivalent to <code>class2</code>.
-	 * @param class1 The first class.
-	 * @param class2 The second class2.
-	 * @return Whether <code>class1</code> is equivalent to <code>class2</code>.
-	 */
-	public boolean isEquivalentClass(Description class1, Description class2);	
-		
-	/**
-	 * Returns all asserted owl:equivalence class axioms for the given class.
-	 * @param namedClass A named class in the background knowledge.
-	 * @return A set of descriptions asserted to be equal to the named class.
-	 */
-	public Set<Description> getAssertedDefinitions(NamedClass namedClass);
-	
-	/**
 	 * Checks which of <code>superClasses</code> are super classes of <code>subClass</code>
 	 * @param superClasses A set of (supposed) super classes.
 	 * @param subClasses The (supposed) sub class.

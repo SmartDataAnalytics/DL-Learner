@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class SubClassAxiom extends TerminologicalAxiom {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5059709557246520213L;
 	private Description subConcept;
 	private Description superConcept;
 	
@@ -51,6 +47,6 @@ public class SubClassAxiom extends TerminologicalAxiom {
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		// TODO Auto-generated method stub
-		return "SUBCLASS NOT IMPLEMENTED";
+		return null;
 	}	
 }

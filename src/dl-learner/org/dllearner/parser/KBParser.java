@@ -494,22 +494,15 @@ public class KBParser implements KBParserConstants {
             jj_consume_token(48);
             jj_consume_token(23);
                                                              {if (true) return new BooleanValueRestriction(dp, true);}
-          } else if (jj_2_9(4)) {
-            jj_consume_token(22);
-            dp = DatatypeProperty();
-            jj_consume_token(47);
-            jj_consume_token(49);
-            jj_consume_token(23);
-                                                              {if (true) return new BooleanValueRestriction(dp, false);}
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case 22:
               jj_consume_token(22);
               dp = DatatypeProperty();
-              jj_consume_token(50);
-              s = String();
+              jj_consume_token(47);
+              jj_consume_token(49);
               jj_consume_token(23);
-                                                             {if (true) return new StringValueRestriction(dp, s);}
+                                                 {if (true) return new BooleanValueRestriction(dp, false);}
               break;
             default:
               jj_la1[11] = jj_gen;
@@ -723,13 +716,6 @@ public class KBParser implements KBParserConstants {
     finally { jj_save(7, xla); }
   }
 
-  private boolean jj_2_9(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_9(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(8, xla); }
-  }
-
   private boolean jj_3_7() {
     if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
@@ -807,7 +793,7 @@ public class KBParser implements KBParserConstants {
   }
 
   private boolean jj_3R_18() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_27()) return true;
     return false;
   }
 
@@ -851,8 +837,6 @@ public class KBParser implements KBParserConstants {
     jj_scanpos = xsp;
     if (jj_3_8()) {
     jj_scanpos = xsp;
-    if (jj_3_9()) {
-    jj_scanpos = xsp;
     if (jj_3R_16()) return true;
     }
     }
@@ -865,22 +849,21 @@ public class KBParser implements KBParserConstants {
     }
     }
     }
-    }
     return false;
   }
 
-  private boolean jj_3R_27() {
+  private boolean jj_3R_26() {
     if (jj_scan_token(ID)) return true;
     return false;
   }
 
   private boolean jj_3R_20() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_27()) return true;
     return false;
   }
 
   private boolean jj_3R_17() {
-    if (jj_3R_27()) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -915,12 +898,12 @@ public class KBParser implements KBParserConstants {
   }
 
   private boolean jj_3R_24() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_27()) return true;
     return false;
   }
 
   private boolean jj_3R_19() {
-    if (jj_3R_27()) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -935,12 +918,12 @@ public class KBParser implements KBParserConstants {
   }
 
   private boolean jj_3R_22() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_27()) return true;
     return false;
   }
 
   private boolean jj_3R_23() {
-    if (jj_3R_27()) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -955,7 +938,7 @@ public class KBParser implements KBParserConstants {
   }
 
   private boolean jj_3R_21() {
-    if (jj_3R_27()) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -969,21 +952,12 @@ public class KBParser implements KBParserConstants {
     return false;
   }
 
-  private boolean jj_3R_26() {
+  private boolean jj_3R_27() {
     if (jj_scan_token(STRING)) return true;
     return false;
   }
 
   private boolean jj_3R_16() {
-    if (jj_scan_token(22)) return true;
-    if (jj_3R_6()) return true;
-    if (jj_scan_token(50)) return true;
-    if (jj_3R_26()) return true;
-    if (jj_scan_token(23)) return true;
-    return false;
-  }
-
-  private boolean jj_3_9() {
     if (jj_scan_token(22)) return true;
     if (jj_3R_6()) return true;
     if (jj_scan_token(47)) return true;
@@ -1043,7 +1017,7 @@ public class KBParser implements KBParserConstants {
    private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0xffd,0xffd,0x0,0x2,0x1c,0x60,0x380,0xc00,0x7000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[9];
+  final private JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1208,7 +1182,7 @@ public class KBParser implements KBParserConstants {
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+      jj_entries_loop: for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext();) {
         int[] oldentry = (int[])(it.next());
         if (oldentry.length == jj_expentry.length) {
           for (int i = 0; i < jj_expentry.length; i++) {
@@ -1227,7 +1201,7 @@ public class KBParser implements KBParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[51];
+    boolean[] la1tokens = new boolean[50];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1244,7 +1218,7 @@ public class KBParser implements KBParserConstants {
         }
       }
     }
-    for (int i = 0; i < 51; i++) {
+    for (int i = 0; i < 50; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -1271,7 +1245,7 @@ public class KBParser implements KBParserConstants {
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 8; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1286,7 +1260,6 @@ public class KBParser implements KBParserConstants {
             case 5: jj_3_6(); break;
             case 6: jj_3_7(); break;
             case 7: jj_3_8(); break;
-            case 8: jj_3_9(); break;
           }
         }
         p = p.next;

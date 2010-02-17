@@ -27,10 +27,6 @@ import java.util.Map;
  */
 public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5879849456632960783L;
 	private double value;
 	
 	public DoubleDatatypePropertyAssertion(DatatypeProperty datatypeProperty, Individual individual, double value) {
@@ -70,6 +66,7 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "DOUBLEDATAPROPASSERTION NOT IMPLEMENTED";
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

@@ -42,8 +42,6 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
@@ -176,47 +174,6 @@ public class RefinementOperatorTests {
 		assertTrue(results.size()==desiredResultSize);
 	}
 			
-	@Test
-	public void rhoDRDownTest4() throws ParseException, LearningProblemUnsupportedException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
-		RefinementOperator operator = new RhoDRDown(rs);
-		Description concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
-//		Description concept = Thing.instance;
-		Set<Description> refinements = operator.refine(concept, 6);
-		for(Description refinement : refinements) {
-			System.out.println(refinement);
-		}		
-	}
-		
-	@Test
-	public void rhoDRDownTest5() throws ParseException, LearningProblemUnsupportedException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SWORE);
-		RefinementOperator operator = new RhoDRDown(rs);
-//		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
-		Description concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
-		System.out.println(concept);
-		Set<Description> refinements = operator.refine(concept, 7);
-		for(Description refinement : refinements) {
-			System.out.println(refinement);
-		}		
-	}	
-	
-	@Test
-	public void invertedOperatorTest() throws ParseException {
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.RHO1);
-		RhoDRDown rho = new RhoDRDown(rs);
-		rho.setDropDisjuncts(true);
-		RefinementOperator operator = new OperatorInverter(rho);
-		Description concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
-		Set<Description> refinements = operator.refine(concept, 6);
-		for(Description refinement : refinements) {
-			System.out.println(refinement);
-		}		
-		// we should get four upward refinements 
-		// (replacing limo => car, man => person, or drop one of the intersects)
-		assertTrue(refinements.size()==4);
-	}
-	
 	private String uri(String name) {
 		return "\""+baseURI+name+"\"";
 	}

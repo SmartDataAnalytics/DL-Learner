@@ -29,12 +29,7 @@ import java.util.Map;
  */
 public class ObjectSomeRestriction extends ObjectQuantorRestriction {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 858960420513908151L;
-
-	public ObjectSomeRestriction(ObjectPropertyExpression role, Description c) {
+    public ObjectSomeRestriction(ObjectPropertyExpression role, Description c) {
     	super(role,c);
     }
     

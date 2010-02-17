@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class SubObjectPropertyAxiom extends PropertyAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1085651734702155330L;
 	private ObjectProperty role;
 	private ObjectProperty subRole;
 	
@@ -50,6 +46,7 @@ public class SubObjectPropertyAxiom extends PropertyAxiom {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "Subrole(" + subRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

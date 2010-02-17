@@ -2,7 +2,6 @@
 package org.dllearner.parser;
 
 /** Token Manager. */
-@SuppressWarnings("all")
 public class PrologParserTokenManager implements PrologParserConstants
 {
 
@@ -97,7 +96,7 @@ private int jjMoveStringLiteralDfa1_0(long active0)
 private int jjMoveStringLiteralDfa2_0(long old0, long active0)
 {
    if (((active0 &= old0)) == 0L)
-      return jjStartNfa_0(0, old0);
+      return jjStartNfa_0(0, old0); 
    try { curChar = input_stream.readChar(); }
    catch(java.io.IOException e) {
       jjStopStringLiteralDfa_0(1, active0);
@@ -466,7 +465,7 @@ null, null, null, null, null, null, null, "\72\55", "\56", "\54", "\50", "\51",
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
-   "DEFAULT",
+   "DEFAULT", 
 };
 static final long[] jjtoToken = {
    0xff87b81L, 
@@ -566,13 +565,13 @@ public Token getNextToken()
 
   EOFLoop :
   for (;;)
-  {
-   try
-   {
+  {   
+   try   
+   {     
       curChar = input_stream.BeginToken();
-   }
+   }     
    catch(java.io.IOException e)
-   {
+   {        
       jjmatchedKind = 0;
       matchedToken = jjFillToken();
       matchedToken.specialToken = specialToken;

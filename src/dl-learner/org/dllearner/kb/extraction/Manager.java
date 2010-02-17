@@ -27,8 +27,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.swing.ProgressMonitor;
-
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.semanticweb.owl.model.OWLOntology;
@@ -47,9 +45,6 @@ public class Manager {
 	private ExtractionAlgorithm extractionAlgorithm;
 	private int nrOfExtractedTriples = 0;
 	private List<Node> seedNodes = new ArrayList<Node>();
-	private boolean stop = false;
-	
-	private ProgressMonitor mon;
 	
 	private static Logger logger = Logger
 		.getLogger(Manager.class);
@@ -60,31 +55,13 @@ public class Manager {
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 	}
 
-//	public Node extractOneURI(String uri) {
-//		
-//		//logger.info("Start extracting: "+uri);
-//		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
-//		//logger.info("Finished extracting: "+uri );
-//		seedNodes.add(n);
-//		return n;
-//	}
-	
-	/**
-	 * Stops the algorithm...
-	 * meaning only the remaining sparql queries will not be processed anymore
-	 */
-	public void stop(){
-		stop = true;
-		extractionAlgorithm.stop();
-	}
-	
-	private boolean stopCondition(){
-		return stop;
-	}
-	
-	private void reset(){
-		stop = false;
-		extractionAlgorithm.reset();
+	public Node extractOneURI(String uri) {
+		
+		//logger.info("Start extracting: "+uri);
+		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
+		//logger.info("Finished extracting: "+uri );
+		seedNodes.add(n);
+		return n;
 	}
 	
 	
@@ -92,21 +69,10 @@ public class Manager {
 	public List<Node> extract(Set<String> instances) {
 		List<Node> allExtractedNodes = new ArrayList<Node>();
 		logger.info("Start extracting "+instances.size() + " instances ");
-		if(mon != null){
-			mon.setNote("Start extracting "+instances.size() + " instances ");
-			mon.setMaximum(instances.size());
-		}
 		int progress=0;
 		for (String one : instances) {
 			progress++;
-			if(mon != null){
-				mon.setProgress(progress);
-			}
 			logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
-			if(stopCondition()){
-				break;
-			}
-			
 			try {
 				Node n = extractionAlgorithm.expandNode(one, configuration.getTupelAquisitor());
 				seedNodes.add(n);
@@ -119,7 +85,6 @@ public class Manager {
 		}
 		//((SparqlTupleAquisitor) configuration.getTupelAquisitor()).printHM();
 		//System.exit(0);
-		reset();
 		logger.info("Finished extraction");
 		return allExtractedNodes;
 		
@@ -179,7 +144,4 @@ public class Manager {
 		return nrOfExtractedTriples;
 	}
 
-	public void addProgressMonitor(ProgressMonitor mon){
-		this.mon = mon;
-	}
 }

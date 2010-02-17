@@ -21,24 +21,25 @@ package org.dllearner.tools.protege;
 
 import java.awt.Color;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * This class reads the ontologie in a separate thread.
- * 
  * @author Christian Koetteritzsch
- * 
+ *
  */
 public class ReadingOntologyThread extends Thread {
 
+	
 	private boolean hasIndividuals;
 	private FastInstanceChecker reasoner;
 	private NamedClass currentConcept;
@@ -49,71 +50,74 @@ public class ReadingOntologyThread extends Thread {
 	private boolean isInconsistent;
 	private OWLClass current;
 	private DLLearnerView view;
-
+	
 	/**
 	 * This is the constructor of the ReadingOntologyThread.
-	 * 
-	 * @param editorKit
-	 *            OWLEditorKit
-	 * @param v
-	 *            DL-Learner view
-	 * @param m
-	 *            DL-Learner model
+	 * @param editorKit OWLEditorKit
+	 * @param frame OWLFrame
+	 * @param v DL-Learner view
+	 * @param m DL-Learner model
 	 */
-	public ReadingOntologyThread(OWLEditorKit editorKit, DLLearnerView v,
-			DLLearnerModel m) {
+	public ReadingOntologyThread(OWLEditorKit editorKit, DLLearnerView v, DLLearnerModel m) {
 		this.editor = editorKit;
 		this.view = v;
 		this.model = m;
 	}
-
-	/**
-	 * This method sets the view of the DL-Learner plugin.
-	 * 
-	 * @param v
-	 *            DLLearnerView
-	 */
+	
 	public void setDLLearnerView(DLLearnerView v) {
 		this.view = v;
 	}
-
-	/**
-	 * This method sets the model of the DL-Learner plugin.
-	 * 
-	 * @param m
-	 *            DLLearnerModel
-	 */
+	
 	public void setDLLearnerModel(DLLearnerModel m) {
 		this.model = m;
 	}
-
 	/**
 	 * This method sets the individuals that belong to the concept which is
 	 * chosen in protege.
 	 */
 	private void setPositiveConcept() {
-		current = editor.getOWLWorkspace().getOWLSelectionModel()
-				.getLastSelectedClass();
-		if (current != null) {
+		current =  editor.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
+		if(current != null) {
+			SortedSet<Individual> individuals = null;
 			hasIndividuals = false;
 			// checks if selected concept is thing when yes then it selects all
 			// individuals
-			if (!current.isOWLThing()) {
-				Description desc = OWLAPIConverter.convertClass(current);
-				individual = reasoner.getIndividuals(desc);
-				model.setIndividuals(individual);
-				model.setHasIndividuals(hasIndividuals);
-				model.setCurrentConcept(new NamedClass(desc.toString()));
-				view.getRunButton().setEnabled(true);
-				if (reasoner.getIndividuals(desc)
-						.size() > 0) {
-					hasIndividuals = true;
+			if (!(current.toString().equals("Thing"))) {
+				List<NamedClass> classList = reasoner.getAtomicConceptsList();
+				for(NamedClass concept : classList) {
+					// if individuals is null
+					if (individuals == null) {
+						// checks if the concept is the selected concept in protege
+						for(String onto : ontologieURI) {
+							if (concept.toString().contains(onto)) {
+								if (concept.toString().equals(
+										onto + current.toString())) {
+									// if individuals is not null it gets all
+									// individuals of
+									// the concept
+									currentConcept = concept;
+
+									if (reasoner.getIndividuals(concept) != null) {
+										if (reasoner.getIndividuals(concept).size() > 0) {
+											hasIndividuals = true;
+										}
+										individual = reasoner.getIndividuals(concept);
+										model.setIndividuals(individual);
+										model.setHasIndividuals(hasIndividuals);
+										System.out.println("current: " + currentConcept);
+										model.setCurrentConcept(currentConcept);
+										view.getRunButton().setEnabled(true);
+										break;
+									}
+								}
+							}
+						}
+					}
 				}
-				
 			} else {
 				if (reasoner.getIndividuals().size() > 0) {
 					hasIndividuals = true;
-
+				
 				}
 				individual = reasoner.getIndividuals();
 				model.setIndividuals(individual);
@@ -121,7 +125,7 @@ public class ReadingOntologyThread extends Thread {
 			}
 		}
 	}
-
+	
 	/**
 	 * This Method checks if the selected class has any individuals.
 	 * 
@@ -130,89 +134,64 @@ public class ReadingOntologyThread extends Thread {
 	public boolean hasIndividuals() {
 		return hasIndividuals;
 	}
-
+	
 	/**
-	 * Puts every base uri in a HashSet.
+	 * Checks the URI if a "#" is in it.
 	 */
 	private void checkURI() {
 		ontologieURI = new HashSet<String>();
+		Set<OWLOntology> ont = editor.getModelManager().getActiveOntologies();
 		Set<Individual> indi = reasoner.getIndividuals();
-		for (Individual ind : indi) {
-			int ontURI = ind.toString().lastIndexOf("/");
-			int ontURI2 = ind.toString().lastIndexOf("#");
-			String uriNeu = "";
-			String uriAlt = "";
-			if (ontURI2 != -1) {
-				uriNeu = ind.toString().substring(0, ontURI2 + 1);
-				if (uriNeu != uriAlt) {
-					ontologieURI.add(uriNeu);
-					uriAlt = uriNeu;
-					uriNeu = "";
-					String uriTest = indi.toString().replace(uriAlt, "");
-					if(!uriTest.contains("/") && !uriTest.contains("#")) {
+		for(OWLOntology onto : ont) {
+			String ontURI = onto.getURI().toString();
+			for(Individual ind : indi) {
+				if(ind.toString().contains(ontURI)) {
+					if(ind.toString().contains("#")) {
+						ontologieURI.add(onto.getURI().toString()+"#");
+						break;
+					} else {
+						ontologieURI.add(onto.getURI().toString());
 						break;
 					}
 				}
-				} else { 
-					uriNeu = ind.toString().substring(0, ontURI + 1);
-					if (uriNeu != uriAlt) {
-						ontologieURI.add(uriNeu);
-						uriAlt = uriNeu;
-						uriNeu = "";
-						String uriTest = indi.toString().replace(uriAlt, "");
-						if(!uriTest.contains("/") && !uriTest.contains("#")) {
-							break;
-						}
-						
-					}
-				}
+			}
 		}
 		model.setOntologyURIString(ontologieURI);
 	}
-
+	
 	@Override
 	public void run() {
-		String loading = "<html><font size=\"3\">loading instances...</font></html>";
+		String loading ="loading instances...";
 		view.getHintPanel().setForeground(Color.RED);
 		view.setHintMessage(loading);
-		if (!model.isReasonerSet()
-				|| model.getIsKnowledgeSourceIsUpdated() == true) {
+		if(!model.isReasonerSet()) {
 			model.setKnowledgeSource();
 			model.setReasoner();
 		}
 		reasoner = model.getReasoner();
-		isInconsistent = view.getIsInconsistent();
-		if (!isInconsistent) {
+		isInconsistent = false;
+		if(!isInconsistent) {
 			this.checkURI();
 			this.setPositiveConcept();
 			if (this.hasIndividuals()) {
 				view.getRunButton().setEnabled(true);
 				view.getHintPanel().setForeground(Color.BLACK);
-				view
-						.setHintMessage("<html><font size=\"3\">To get suggestions for class descriptions, please click the button above.</font></html>");
-
+				view.setHintMessage("To get suggestions for class descriptions, please click the button above.");
+				
 			} else {
 				view.getRunButton().setEnabled(false);
 				view.getHintPanel().setVisible(true);
-				String message = "<html><font size=\"3\" color=\"red\">There are no Instances for "
-						+ current
-						+ " available. Please insert some Instances.</font></html>";
+				String message ="There are no Instances for " + current + " available. Please insert some Instances.";
 				view.getHintPanel().setForeground(Color.RED);
 				view.setHintMessage(message);
 			}
 		} else {
 			view.getHintPanel().setForeground(Color.RED);
 			view.getRunButton().setEnabled(false);
-			view
-					.setHintMessage("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
+			view.setHintMessage("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
 		}
 	}
-
-	/**
-	 * This method returns the NamedClass for the currently selected class.
-	 * 
-	 * @return NamedClass of the currently selected class
-	 */
+	
 	public NamedClass getCurrentConcept() {
 		return currentConcept;
 	}

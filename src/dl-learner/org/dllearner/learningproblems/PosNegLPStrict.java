@@ -84,6 +84,7 @@ public class PosNegLPStrict extends PosNegLP {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
+	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		super.applyConfigEntry(entry);
 		String name = entry.getOptionName();

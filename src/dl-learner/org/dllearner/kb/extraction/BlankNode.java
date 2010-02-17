@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -80,7 +79,7 @@ public class BlankNode extends Node {
 
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor TupelAquisitor,
-			Manipulator manipulator, boolean dissolveBlankNodes) {
+			Manipulator manipulator) {
 		return new ArrayList<BlankNode>();
 	}
 
@@ -149,26 +148,15 @@ public class BlankNode extends Node {
 					//System.out.println("nil found");
 					//do nothing
 				}else{
-					StringTuple firstOtherNodes = null;
-					try{
-						firstOtherNodes = next.otherNodes.first();
-						if(firstOtherNodes.a.equals(OWLVocabulary.RDF_FIRST)){
-							target.add(factory.getOWLClass(URI.create(firstOtherNodes.b)));
-							tmp.add(next.blankNodes.get(0));
-							//System.out.println("bnode added");
-						}else{
-							
-							tail("double nesting not supported yet");
-							
-						}
+					if(next.otherNodes.first().a.equals(OWLVocabulary.RDF_FIRST)){
+						target.add(factory.getOWLClass(URI.create(next.otherNodes.first().b)));
+						tmp.add(next.blankNodes.get(0));
+						//System.out.println("bnode added");
+					}else{
 						
+						tail("double nesting not supported yet");
 						
-					}catch (NoSuchElementException e) {
-						logger.warn("something strange happened here: "+firstOtherNodes);
-						logger.warn("and here: "+next.otherNodes);
-						e.printStackTrace();
 					}
-					
 				}
 			}//end while
 			

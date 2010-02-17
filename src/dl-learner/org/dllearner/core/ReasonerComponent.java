@@ -243,41 +243,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
-	public final boolean isEquivalentClass(Description class1, Description class2) {
-		reasoningStartTimeTmp = System.nanoTime();
-		boolean result = false;
-		try {
-			result = isEquivalentClassImpl(class1, class2);
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
-		}
-		nrOfSubsumptionChecks+=2;
-		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
-		subsumptionReasoningTimeNs += reasoningDurationTmp;
-		overallReasoningTimeNs += reasoningDurationTmp;
-		return result;
-	}
-
-	protected boolean isEquivalentClassImpl(Description class1, Description class2) throws ReasoningMethodUnsupportedException {
-		return isSuperClassOfImpl(class1,class2) && isSuperClassOfImpl(class2,class1);
-	}	
-	
-	@Override
-	public Set<Description> getAssertedDefinitions(NamedClass namedClass) {
-		try {
-			return getAssertedDefinitionsImpl(namedClass);
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
-			return null;
-		}
-	}
-	
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass namedClass)
-		throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}	
-	
-	@Override
 	public final Set<Description> isSuperClassOf(Set<Description> superConcepts,
 			Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
@@ -696,32 +661,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
-	public final Map<Individual, SortedSet<String>> getStringDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
-		try {
-			return getStringDatatypeMembersImpl(datatypeProperty);
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
-			return null;
-		}
-	}
-
-	protected Map<Individual, SortedSet<String>> getStringDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<String>> ret = new TreeMap<Individual, SortedSet<String>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
-			SortedSet<String> valuesString = new TreeSet<String>();
-			for (Constant c : values) {
-				valuesString.add(c.getLiteral());				
-			}
-			ret.put(e.getKey(), valuesString);
-		}
-		return ret;
-	}	
-	
-	@Override
 	public final SortedSet<DatatypeProperty> getDatatypeProperties() {
 		try {
 			return getDatatypePropertiesImpl();
@@ -785,21 +724,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	@Override
-	public final SortedSet<DatatypeProperty> getStringDatatypeProperties() {
-		try {
-			return getStringDatatypePropertiesImpl();
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
-			return null;
-		}
-	}
-
-	protected SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}	
-	
 	@Override
 	public final Description getDomain(ObjectProperty objectProperty) {
 		try {

@@ -27,11 +27,6 @@ import java.util.Map;
  */
 public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4545077497129132116L;
-
 	public DatatypePropertyDomainAxiom(DatatypeProperty property, Description domain) {
 		super(property, domain);
 	}

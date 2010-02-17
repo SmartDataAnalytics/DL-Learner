@@ -417,12 +417,6 @@ public class ROLearner2 {
 				String acc = new DecimalFormat( ".00%" ).format((candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
 				// no handling needed, it will just look ugly in the output
 				logger.info("more accurate ("+acc+") class expression found: " + candidatesStable.last().getConcept().toManchesterSyntaxString(baseURI, prefixes));
-				if(logger.isTraceEnabled()){
-					logger.trace(Helper.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
-					logger.trace(Helper.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
-				}
-				printBestSolutions(5, false);
-				printStatistics(false);
 				bestNodeStable = candidatesStable.last();
 			}
 
@@ -1219,13 +1213,11 @@ public class ROLearner2 {
 		}
 		return cbd;
 	}
-	
 
 	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions) {
 		// QUALITY: could be optimized
-		if (!logger.isTraceEnabled()) {
+		if (!logger.isTraceEnabled())
 			return;
-		}
 		// if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
 		if (nrOfSolutions == 0)
 			nrOfSolutions = candidatesStable.size();

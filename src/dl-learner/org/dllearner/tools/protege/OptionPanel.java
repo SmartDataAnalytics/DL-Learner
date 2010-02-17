@@ -20,15 +20,10 @@
 package org.dllearner.tools.protege;
 
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 /**
  * This Class is responsible for the Options of the DL-Learner.
@@ -39,55 +34,27 @@ public class OptionPanel extends JPanel {
 
 	
 	private static final long serialVersionUID = 2190682281812478244L;
-	
 	private final JLabel minAccuracyLabel;
 	private final JLabel maxExecutionTimeLabel;
 	private final JLabel nrOfConceptsLabel;
-	
 	private final JSlider minAccuracy;
 	private final JSlider maxExecutionTime;
 	private final JSlider nrOfConcepts;
-	
-	private JRadioButton owlRadioButton;
-	private JRadioButton elProfileButton;
-	
-	private JCheckBox allBox;
-	private JCheckBox someBox;
-	private JCheckBox notBox;
-	private JCheckBox valueBox;
-	private JCheckBox moreBox;
-	
-	private JComboBox countMoreBox;
-	
-	private JPanel profilePanel;
-	private JPanel radioBoxPanel;
-	private JPanel checkBoxPanel;
 	private JPanel labelPanel;
 	private JPanel sliderPanel;
-	
-	private OptionPanelHandler optionHandler;
 	private double accuracy;
-	
 	/**
 	 * Constructor for the Option Panel. 
 	 */
 	public OptionPanel() {
 		setLayout(new BorderLayout());
-		optionHandler = new OptionPanelHandler(this);
 		labelPanel = new JPanel();
-		labelPanel.setLayout(new GridLayout(0, 1));
+		labelPanel.setLayout(new GridLayout(0,1));
 		sliderPanel = new JPanel();
-		sliderPanel.setLayout(new GridLayout(0, 1));
-		profilePanel = new JPanel();
-		profilePanel.setLayout(new GridLayout(0, 1));
-		radioBoxPanel = new JPanel();
-		radioBoxPanel.setLayout(new GridLayout(1, 3));
-		checkBoxPanel = new JPanel();
-		checkBoxPanel.setLayout(new GridBagLayout());
-		
-		minAccuracyLabel = new JLabel("<html>noise in %:    </html>");
-		maxExecutionTimeLabel = new JLabel("<html>maximum execution time:    </html>");
-		nrOfConceptsLabel = new JLabel("<html>max. number of results:    </html>");
+		sliderPanel.setLayout(new GridLayout(0,1));
+		minAccuracyLabel = new JLabel("noise in %:    ");
+		maxExecutionTimeLabel = new JLabel("maximum execution time:    ");
+		nrOfConceptsLabel = new JLabel("max. number of results:    ");
 		
 		minAccuracy = new JSlider(0, 50, 5);
 		minAccuracy.setPaintTicks(true);
@@ -108,94 +75,7 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMajorTickSpacing(2);
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
-		
-		owlRadioButton = new JRadioButton("<html>OWL 2</html>", true);
-		elProfileButton = new JRadioButton("<html>EL Profile</html>", false);
-		owlRadioButton.setEnabled(true);
-		owlRadioButton.addItemListener(optionHandler);
-		elProfileButton.addItemListener(optionHandler);
-		
-		allBox = new JCheckBox("<html>all</html>", true);
-		allBox.addItemListener(optionHandler);
-		someBox = new JCheckBox("<html>some</html>", true);
-		someBox.addItemListener(optionHandler);
-		notBox = new JCheckBox("<html>not</html>", true);
-		notBox.addItemListener(optionHandler);
-		valueBox = new JCheckBox("<html>value</html>", true);
-		valueBox.addItemListener(optionHandler);
-		moreBox = new JCheckBox("<html> &#8249;=x, &#8250;=x with max.:</html>", true);
-		moreBox.addItemListener(optionHandler);
-		
-		countMoreBox = new JComboBox();
-		countMoreBox.addItem(1);
-		countMoreBox.addItem(2);
-		countMoreBox.addItem(3);
-		countMoreBox.addItem(4);
-		countMoreBox.addItem(5);
-		countMoreBox.addItem(6);
-		countMoreBox.addItem(7);
-		countMoreBox.addItem(8);
-		countMoreBox.addItem(9);
-		countMoreBox.addItem(10);
-		countMoreBox.setSelectedItem(5);
-		countMoreBox.setEditable(false);
-		GridBagConstraints c = new GridBagConstraints();
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		checkBoxPanel.add(allBox, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		checkBoxPanel.add(someBox, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		checkBoxPanel.add(notBox, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 6;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		checkBoxPanel.add(valueBox, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 8;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		checkBoxPanel.add(moreBox, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 9;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		checkBoxPanel.add(countMoreBox, c);
-		
-		
-		radioBoxPanel.add(owlRadioButton);
-		radioBoxPanel.add(elProfileButton);
-		
-		profilePanel.add(radioBoxPanel);
-		profilePanel.add(checkBoxPanel);
-		
+
 		labelPanel.add(minAccuracyLabel);
 		labelPanel.add(maxExecutionTimeLabel);
 		labelPanel.add(nrOfConceptsLabel);
@@ -203,8 +83,6 @@ public class OptionPanel extends JPanel {
 		sliderPanel.add(minAccuracy);
 		sliderPanel.add(maxExecutionTime);
 		sliderPanel.add(nrOfConcepts);
-		
-		add(BorderLayout.SOUTH, profilePanel);
 		add(BorderLayout.WEST, labelPanel);
 		add(BorderLayout.CENTER, sliderPanel);
 	}
@@ -233,113 +111,6 @@ public class OptionPanel extends JPanel {
 	 */
 	public int getNrOfConcepts() {
 		return nrOfConcepts.getValue();
-	}
-
-	/**
-	 * This methode returns the OWLRadioButton.
-	 * @return OWLRAdioButton
-	 */
-	public JRadioButton getOwlRadioButton() {
-		return owlRadioButton;
-	}
-
-	/**
-	 * This methode returns the ELProfileButton.
-	 * @return ELProfileButton
-	 */
-	public JRadioButton getElProfileButton() {
-		return elProfileButton;
-	}
-
-	/**
-	 * This methode returns if the allquantor box is selected.
-	 * @return boolean if allquantor box is selected
-	 */
-	public boolean getAllBox() {
-		return allBox.isSelected();
-	}
-
-	/**
-	 * This methode returns if the some box is selected.
-	 * @return boolean if some box is selected
-	 */
-	public boolean getSomeBox() {
-		return someBox.isSelected();
-	}
-
-	/**
-	 * This methode returns if the not box is selected.
-	 * @return boolean if not box is selected
-	 */
-	public boolean getNotBox() {
-		return notBox.isSelected();
-	}
-
-	/**
-	 * This methode returns if the value box is selected.
-	 * @return boolean if value box is selected
-	 */
-	public boolean getValueBox() {
-		return valueBox.isSelected();
-	}
-
-	/**
-	 * This methode returns the ProfilePanel.
-	 * @return Profile Panel
-	 */
-	public JPanel getProfilePanel() {
-		return profilePanel;
-	}
-
-	/**
-	 * This methode returns the int of the cardinality restriction. 
-	 * @return cardinality restriction int
-	 */
-	public int getCountMoreBox() {
-		return Integer.parseInt(countMoreBox.getSelectedItem().toString());
-	}
-
-	/**
-	 * This methode returns if the cardinality restiction box is selected.
-	 * @return boolean if cardinality restiction box is selected
-	 */
-	public boolean getMoreBox() {
-		return moreBox.isSelected();
-	}
-	
-	/**
-	 * This methode sets the the checkboxes enable that are needed for
-	 * the OWL 2 Profile.
-	 */
-	public void setToOWLProfile() {
-		allBox.setSelected(true);
-		someBox.setSelected(true);
-		notBox.setSelected(true);
-		valueBox.setSelected(true);
-		moreBox.setSelected(true);
-		this.setCountMoreBoxEnabled(true);
-	}
-	
-	/**
-	 * This methode sets the the checkboxes enable that are needed for
-	 * the EL Profile.
-	 */
-	public void setToELProfile() {
-		allBox.setSelected(false);
-		someBox.setSelected(true);
-		notBox.setSelected(false);
-		valueBox.setSelected(false);
-		moreBox.setSelected(false);
-		this.setCountMoreBoxEnabled(false);
-	}
-	
-	/**
-	 * This methode sets the combo box for the cardinality restriction
-	 * enabled/disabled. 
-	 * @param isEnabled
-	 */
-	public void setCountMoreBoxEnabled(boolean isEnabled) {
-		countMoreBox.setEnabled(isEnabled);
 	}
 	
 }
