@@ -1,0 +1,53 @@
+/** background knowledge **/
+male SUB person.
+female SUB person.
+
+// disjunct concepts
+(male AND female) SUB BOTTOM.
+
+Symmetric(married).
+Functional(married).
+
+// persons
+male(m1).
+male(m2).
+male(m3).
+male(m4).
+male(m5).
+male(m6).
+male(m7).
+female(f1).
+female(f2).
+female(f3).
+female(f4).
+female(f5).
+female(f6).
+female(f7).
+female(f8).
+
+// married-relations
+married(m1,f1).
+married(m2,f4).
+married(m5,f5).
+married(f6,m7).
+married(m6,f8).
+
+// hasChild-relations
+hasChild(m1,m2).
+hasChild(m1,f2).
+hasChild(m1,m5).
+hasChild(f1,m2).
+hasChild(f1,f2).
+hasChild(f1,m5).
+
+hasChild(m2,m3).
+hasChild(f4,m3).
+hasChild(f2,f3).
+hasChild(f2,m4).
+hasChild(m5,f6).
+hasChild(f5,f6).
+hasChild(f6,m6).
+hasChild(m7,m6).
+hasChild(f8,f7).
+hasChild(m6,f7).
+

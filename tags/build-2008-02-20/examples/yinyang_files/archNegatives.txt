@@ -1,0 +1,3 @@
+http://localhost/foo#c2
+http://localhost/foo#c3
+http://localhost/foo#c5

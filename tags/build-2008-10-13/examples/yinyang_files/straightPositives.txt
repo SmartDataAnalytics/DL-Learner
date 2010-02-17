@@ -1,0 +1,4 @@
+http://localhost/foo#hand1
+http://localhost/foo#hand22
+http://localhost/foo#hand40
+http://localhost/foo#hand44
