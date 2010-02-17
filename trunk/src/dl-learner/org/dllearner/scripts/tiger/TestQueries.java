@@ -118,7 +118,10 @@ public class TestQueries {
 				String label3 = "Hits "+d.getLength();
 				Monitor m1 = MonitorFactory.getTimeMonitor(label1).start();
 				Monitor m2 = MonitorFactory.getMonitor(label2, Jamon.COUNT);
-				Monitor m3 = MonitorFactory.getMonitor(label3, Jamon.COUNT).start();
+				
+				Monitor m3 = MonitorFactory.getMonitor(label3, Jamon.COUNT);
+				m2.add(1.0d);
+				m3.add(1.0d);
 				sparqlTasks.queryAsResultSet(q);
 				m1.stop();
 				mm1.put(label1, m1);
