@@ -86,9 +86,10 @@ public class TestIterativeLearning {
 
 	static MonKeyImp logLearningTime = new MonKeyImp("Learning Time", Jamon.MS);
 	static MonKeyImp logIterationTime = new MonKeyImp("Iteration Time", Jamon.MS);
+	static MonKeyImp nrOfRetrievedInstances = new MonKeyImp("Nr of retrieved Instances", Jamon.COUNT);
 
 	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[] { logPrecision,
-			logRecall, logFMeasure, logAccuracy, logLearningTime, logIterationTime }));
+			logRecall, logFMeasure, logAccuracy, logLearningTime, logIterationTime, nrOfRetrievedInstances}));
 
 	static int iterations = 7;
 	static int folds = 10;
@@ -262,7 +263,7 @@ public class TestIterativeLearning {
 		
 		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
 		IteratedConfig baseline = new IteratedConfig("baseline", iterations);
-		
+		baseline.noiseIterationFactor = 0;
 		
 		IteratedConfig increasedNegativeExamples = new IteratedConfig("increasedNegativeExamples", iterations);
 		increasedNegativeExamples.negativeSplitAdd = 10;
@@ -329,7 +330,9 @@ public class TestIterativeLearning {
 			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "queryTime")
 					.start();
 			retrieved = getSentences(ed, config.resultLimit);
+			config.add(nrOfRetrievedInstances, i, retrieved.size());
 			logger.debug("retrieved: "+retrieved.size());
+			
 			queryTime.stop();
 			// remove all that are not to be tested
 			newTestRetrieved = Helper.intersection(allExamples.getTestExamples(), retrieved);
@@ -569,7 +572,7 @@ public class TestIterativeLearning {
 
 			logger.error("sparql query returned no results ");
 			logger.error(sparqlQueryGood);
-			System.exit(0);
+//			System.exit(0);
 		}
 		return result;
 	}
