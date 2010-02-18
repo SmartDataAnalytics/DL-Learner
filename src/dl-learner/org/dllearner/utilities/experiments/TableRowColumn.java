@@ -17,6 +17,8 @@ public class TableRowColumn implements Serializable{
 	public enum Display {
 		AVG, HITS, TOTAL
 	}
+	
+	public static boolean useStdDevWithPercentageUnit = true;
 
 	public static String latexSep = "\t&\t";
 	public static String latexEnd = "\\\\";
@@ -111,7 +113,20 @@ public class TableRowColumn implements Serializable{
 	}
 
 	public String getLatexEntry(int i) {
-		return latexFormat(monitors[i], getValue(i)) + " "+ (useStdDev ? "(\\pm"+latexFormat(monitors[i], monitors[i].getStdDev()) + ") " : "");
+		return latexFormat(monitors[i], getValue(i)) + " "+getLatexStdDev(i) ;
+	}
+	private String getLatexStdDev(int i){
+		String tex = "(\\pm"+latexFormat(monitors[i], monitors[i].getStdDev()) + ") ";
+		if(useStdDev){
+			return tex;
+		}
+		
+		if(useStdDevWithPercentageUnit && monitors[i].getUnits().equals(JamonMonitorLogger.PERCENTAGE)){
+			return tex;
+		}
+	
+		return "";
+		
 	}
 
 	public String getGnuPlotEntry(int i) {

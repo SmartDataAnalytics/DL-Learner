@@ -178,6 +178,32 @@ public class DescriptionSubsumptionTree {
 			}
 			return ret.toString();
 		}
+		
+		public List<EvaluatedDescription> getOrderedBySubsumptionAndAccuracy(boolean distinct){
+			List<EvaluatedDescription> l = new ArrayList<EvaluatedDescription>();
+			for(Node subs:subClasses){
+				l.add(subs.getEvalDesc());
+			}
+			
+			for(Node subs:subClasses){
+				if(distinct){
+					for(EvaluatedDescription subsubs : subs.getOrderedBySubsumptionAndAccuracy(distinct)){
+						if(!l.contains(subsubs)){
+							l.add(subsubs);
+						}
+					}
+				}else{
+					l.addAll(subs.getOrderedBySubsumptionAndAccuracy(distinct));
+				}
+				
+			}
+			return l;
+			
+		}
+		
+		public double getAccuracy() {
+			return accuracy;
+		}
 
 		@Override
 		public int compareTo(Node node) {
@@ -228,8 +254,13 @@ public class DescriptionSubsumptionTree {
 	public Node getRootNode(){
 		return rootNode;
 	}
+	
+	public List<EvaluatedDescription> getMostGeneralDescriptions(boolean distinct){
+		return rootNode.getOrderedBySubsumptionAndAccuracy(distinct);
+		
+	}
 
-	public void insert(Collection<EvaluatedDescription> evaluatedDescriptions) {
+	public void insert(Collection<? extends EvaluatedDescription> evaluatedDescriptions) {
 		for (EvaluatedDescription evaluatedDescription : evaluatedDescriptions) {
 			logger.warn("Next to insert: " + evaluatedDescription.toString());
 			Node n = new Node(evaluatedDescription);
@@ -272,5 +303,10 @@ public class DescriptionSubsumptionTree {
 	public String toString() {
 		return rootNode._toString("");
 	}
+
+//	public void insert(List<? extends EvaluatedDescription> currentlyBestEvaluatedDescriptions) {
+//		insert(currentlyBestEvaluatedDescriptions);
+//		
+//	}
 
 }

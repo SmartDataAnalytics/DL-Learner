@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
 
 /**
@@ -283,6 +284,13 @@ public abstract class LearningAlgorithm extends Component {
 	 */
 	public synchronized  List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, accuracyThreshold, false);
+	}
+	
+	public synchronized  List<? extends EvaluatedDescription> getCurrentlyBestMostGeneralEvaluatedDescriptions() {
+		List<? extends EvaluatedDescription> l = getCurrentlyBestEvaluatedDescriptions(getCurrentlyBestEvaluatedDescriptions().last().getAccuracy());
+		DescriptionSubsumptionTree t = new DescriptionSubsumptionTree(reasoner);
+		t.insert(l);
+		return t.getMostGeneralDescriptions(true);
 	}
 		
 	/**

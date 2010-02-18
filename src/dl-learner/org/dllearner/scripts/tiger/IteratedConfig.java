@@ -15,13 +15,14 @@ public class IteratedConfig extends ExperimentConfiguration{
 	public int negativeSplitAdd = 0;
 	
 	public boolean useStartClass = true; 
-	public boolean searchTree = false; 
-	public int noise = 5;
-	public int noiseIterationFactor = 1;
+	public boolean searchTree = true; 
+	public int noise = 0;
+	public int noiseIterationFactor = 0;
 	//sets ValueFrequency treshold and maxExecution time
-	public boolean adaptMaxRuntime = true;
-		public int maxExecutionTime = 20;
-		public double factor = 2.0d ;//1.5d;
+	public boolean adaptMaxRuntime = false;
+		public int maxExecutionTime = 30;
+//		public int maxExecutionTimeMinimum = 20;
+		public double maxExecutionTimeFactor = 2.0d ;//1.5d;
 	
 	public boolean useDataHasValue = true;
 	

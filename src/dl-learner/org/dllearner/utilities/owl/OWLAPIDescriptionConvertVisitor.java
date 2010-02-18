@@ -338,8 +338,10 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 			return factory.getOWLDataType(Datatype.INT.getURI());
 		else if(datatype.equals(Datatype.DOUBLE))
 			return factory.getOWLDataType(Datatype.DOUBLE.getURI());		
+//		else if(datatype.equals(Datatype.STRING))
+//			return factory.getOWLDataType(Datatype.STRING.getURI());		
 		
-		throw new Error("OWLAPIDescriptionConverter: datatype not implemented");			
+		throw new Error("OWLAPIDescriptionConverter: datatype "+datatype+" not implemented");			
 	}
 	
 	private OWLConstant convertConstant(Constant constant) {
