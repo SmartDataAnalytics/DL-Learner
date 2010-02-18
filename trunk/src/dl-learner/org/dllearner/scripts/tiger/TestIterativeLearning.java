@@ -34,9 +34,9 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.examples.ExampleDataCollector;
@@ -46,10 +46,6 @@ import org.dllearner.utilities.experiments.ExMakerRandomizer;
 import org.dllearner.utilities.experiments.Examples;
 import org.dllearner.utilities.experiments.Table;
 
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
 
@@ -96,7 +92,7 @@ public class TestIterativeLearning {
 	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[] { logPrecision,
 			logRecall, logFMeasure, logAccuracy, logLearningTime, logIterationTime, nrOfRetrievedInstances}));
 
-	static int iterations = 5;
+	static int iterations = 4;
 	static int folds = 10;
 	static int printSentences = 3;
 	
@@ -121,12 +117,9 @@ public class TestIterativeLearning {
 		}
 		
 		
-		
-		 folds = 2;
-		 iterations = 1;
 		long n = System.currentTimeMillis();
 			passiveNoZU();
-//			passiveWithZu();
+			passiveWithZu();
 
 		 String a="\n";
 		 for(String s: concepts){
@@ -334,6 +327,7 @@ public class TestIterativeLearning {
 			/* RETRIEVING */
 			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "queryTime")
 					.start();
+			
 			retrieved = getSentences(ed, config.resultLimit);
 			config.add(nrOfRetrievedInstances, i, retrieved.size());
 			logger.debug("retrieved: "+retrieved.size());
@@ -573,8 +567,23 @@ public class TestIterativeLearning {
 
 		sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + sparqlQueryGood;
 		logger.debug(sparqlQueryGood);
-
-		result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
+		try{
+			result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("Virtuoso error trying this:");
+			SortedSet<String> s = new TreeSet<String> (Arrays.asList(new String[]{"http://nlp2rdf.org/ontology/nextToken", "http://nlp2rdf.org/ontology/previousToken"}));
+			visit.setTransitiveProperties(s);
+			try {
+				sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + visit.getSparqlQuery(ed.getDescription().toKBSyntaxString());
+				logger.warn(sparqlQueryGood);
+				result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
+			
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 		m.stop();
 		logger.debug("query avg: " + ((double) m.getAvg() / (double) 1000) + " seconds (last: "
 				+ ((double) m.getLastValue() / (double) 1000) + ")");

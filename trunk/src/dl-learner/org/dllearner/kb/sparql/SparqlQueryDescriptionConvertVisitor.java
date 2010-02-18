@@ -30,8 +30,6 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.owl.Constant;
-import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
@@ -54,7 +52,6 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.StringValueRestriction;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.Union;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -75,6 +72,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	private int limit = 5;
 	private boolean labels = false;
 	private boolean distinct = false;
+	private SortedSet<String> transitiveProperties =null;
+	public void setTransitiveProperties(SortedSet<String> transitiveProperties) {
+		this.transitiveProperties = transitiveProperties;
+	}
+
 	private Map<String,String> classToSubclassesVirtuoso = null;
 	
 	private Stack<String> stack = new Stack<String>();
@@ -318,7 +320,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 */
 	public void visit(ObjectSomeRestriction description) {
 		logger.trace("ObjectSomeRestriction");
-		query += "\n?" + stack.peek() + " <" + description.getRole() + "> ?object" + currentObject + ". ";
+		String option = "";
+		if(transitiveProperties!= null && transitiveProperties.contains(description.getRole().toString()) ){
+			option =" OPTION (TRANSITIVE , t_in(?" + stack.peek()+"), t_out(?object" + currentObject + "), T_MIN(0), T_MAX(6), T_DIRECTION 1 , T_NO_CYCLES) ";
+		}
+		query += "\n?" + stack.peek() + " <" + description.getRole() + "> ?object" + currentObject + option + ". ";
 		stack.push("object" + currentObject);
 		currentObject++;
 		description.getChild(0).accept(this);
