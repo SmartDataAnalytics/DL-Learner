@@ -257,10 +257,10 @@ public class TestIterativeLearning {
 		IteratedConfig useLemma = new IteratedConfig("noLemma", iterations);
 		useLemma.useDataHasValue = false;
 
-//		l.add(baseline);
+		l.add(baseline);
 		l.add(reducedExamples);
-//		l.add(adaptRuntime);
-//		l.add(useLemma);
+		l.add(adaptRuntime);
+		l.add(useLemma);
 
 		return l;
 	}
@@ -528,13 +528,14 @@ public class TestIterativeLearning {
 					"learningTime").start();
 			la.start();
 			learningTime.stop();
-
+			result = la.getCurrentlyBestEvaluatedDescription();
+			
 //			System.out.println(result = la.getCurrentlyBestEvaluatedDescription());
 //			for (EvaluatedDescription edd : la.getCurrentlyBestMostGeneralEvaluatedDescriptions()) {
 //				System.out.println(edd);
 //			}
 			
-			result = la.getCurrentlyBestEvaluatedDescription();
+			
 			
 			
 			ComponentManager.getInstance().freeAllComponents();
