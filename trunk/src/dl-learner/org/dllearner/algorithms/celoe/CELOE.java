@@ -313,6 +313,8 @@ public class CELOE extends LearningAlgorithm {
 	
 	@Override
 	public void start() {
+//		System.out.println(configurator.getMaxExecutionTimeInSeconds());
+		
 		stop = false;
 		isRunning = true;
 		reset();
@@ -367,6 +369,7 @@ public class CELOE extends LearningAlgorithm {
 //					System.out.println("addNode finished" + " " + new Date());
 				}
 		
+//				System.out.println("  refinement queue length: " + refinements.size());
 			}
 			
 			updateMinMaxHorizExp(nextNode);
@@ -391,6 +394,7 @@ public class CELOE extends LearningAlgorithm {
 //		System.out.println(startNode.toTreeString(baseURI));
 		
 		isRunning = false;
+//		System.out.println("isRunning: " + isRunning);
 	}
 
 	private OENode getNextNodeToExpand() {
@@ -429,7 +433,7 @@ public class CELOE extends LearningAlgorithm {
 	// returns true if node was added and false otherwise
 	private boolean addNode(Description description, OENode parentNode) {
 		
-		System.out.println(description);
+//		System.out.println(description);
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
@@ -446,7 +450,7 @@ public class CELOE extends LearningAlgorithm {
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
-		if(accuracy > 1 || (accuracy < 0 || accuracy != -1)) {
+		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
 			logger.warn("Invalid accuracy value " + accuracy + " for description " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 			System.exit(0);
 		}
@@ -667,7 +671,7 @@ public class CELOE extends LearningAlgorithm {
 				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
 			} else {
 				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
-				System.out.println(ed);
+//				System.out.println(ed);
 			}
 			current++;
 		}

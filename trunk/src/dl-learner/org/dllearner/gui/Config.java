@@ -151,6 +151,7 @@ public class Config {
 			reasoner = start.getReasonerComponent();
 //			rs = start.getReasonerComponent();
 			lp = start.getLearningProblem();
+//			System.out.println(lp);
 			la = start.getLearningAlgorithm();
 
 			// all components initialised and enabled

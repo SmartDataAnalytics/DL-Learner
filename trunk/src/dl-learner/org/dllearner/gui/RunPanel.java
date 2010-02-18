@@ -322,12 +322,12 @@ public class RunPanel extends JPanel implements ActionListener {
 	private String makeTime(Long nanoSeconds) {
 		if (nanoSeconds == null)
 			return null;
-		Long hours = 0L, minutes = 0L, seconds = 0L, millis = 0L, mikros = 0L, nanos = 0L;
+		Long hours = 0L, minutes = 0L, seconds = 0L, millis = 0L; //, mikros = 0L, nanos = 0L;
 		String timeStr = "";
 
-		nanos = nanoSeconds % 1000;
+//		nanos = nanoSeconds % 1000;
 		nanoSeconds /= 1000;
-		mikros = nanoSeconds % 1000;
+//		mikros = nanoSeconds % 1000;
 		nanoSeconds /= 1000;
 		millis = nanoSeconds % 1000;
 		nanoSeconds /= 1000;
@@ -345,10 +345,10 @@ public class RunPanel extends JPanel implements ActionListener {
 			timeStr += seconds + "s ";
 		if (millis > 0)
 			timeStr += millis + "ms ";
-		if (false)
-			timeStr += mikros + "�s ";
-		if (false)
-			timeStr += nanos + "ns ";
+//		if (false)
+//			timeStr += mikros + "�s ";
+//		if (false)
+//			timeStr += nanos + "ns ";
 		return timeStr;
 	}
 
