@@ -571,17 +571,17 @@ public class TestIterativeLearning {
 			result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.warn("Virtuoso error trying this:");
-			SortedSet<String> s = new TreeSet<String> (Arrays.asList(new String[]{"http://nlp2rdf.org/ontology/nextToken", "http://nlp2rdf.org/ontology/previousToken"}));
-			visit.setTransitiveProperties(s);
-			try {
-				sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + visit.getSparqlQuery(ed.getDescription().toKBSyntaxString());
-				logger.warn(sparqlQueryGood);
-				result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
-			
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-			}
+			logger.error("Virtuoso failed");
+//			SortedSet<String> s = new TreeSet<String> (Arrays.asList(new String[]{"http://nlp2rdf.org/ontology/nextToken", "http://nlp2rdf.org/ontology/previousToken"}));
+//			visit.setTransitiveProperties(s);
+//			try {
+//				sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + visit.getSparqlQuery(ed.getDescription().toKBSyntaxString());
+//				logger.warn(sparqlQueryGood);
+//				result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
+//			
+//			} catch (ParseException e1) {
+//				e1.printStackTrace();
+//			}
 		}
 		
 		m.stop();
