@@ -139,9 +139,13 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 			}
 			comboBox.addActionListener(this);
 			// selecting index 0 causes incorrect class to load !
-//			comboBox.setSelectedIndex(0);
-			NamedClass valueNc = new NamedClass(value.toString());
-			comboBox.setSelectedItem(valueNc.toManchesterSyntaxString(baseURI, prefixes));
+			if(value == null) {
+				comboBox.setSelectedIndex(0);
+			} else {
+				NamedClass valueNc = new NamedClass(value.toString());
+				comboBox.setSelectedItem(valueNc.toManchesterSyntaxString(baseURI, prefixes));
+				
+			}
 			add(comboBox);
 		} else {
 			// text field for strings
