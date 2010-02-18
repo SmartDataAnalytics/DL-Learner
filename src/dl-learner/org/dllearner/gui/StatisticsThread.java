@@ -52,8 +52,11 @@ public class StatisticsThread extends Thread {
 				sleep(2000);
 			}
 			// show final stats
+//			System.out.println("terminated");
+//			System.exit(0);
 			runPanel.showStats();
 			runPanel.algorithmTerminated();
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

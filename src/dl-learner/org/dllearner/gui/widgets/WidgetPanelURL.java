@@ -125,7 +125,8 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 
 		// get current value of this option for the given component
 		value = config.getConfigOptionValue(component, configOption);
-
+//		System.out.println(configOption + " " + value);
+		
 		// if the option value is an OWL class, we offer a dropdown box
 		if(((URLConfigOption) configOption).refersToOWLClass()) {
 			comboBox = new JComboBox();
@@ -137,7 +138,10 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 				comboBox.addItem(clazz.toManchesterSyntaxString(baseURI, prefixes));
 			}
 			comboBox.addActionListener(this);
-			comboBox.setSelectedIndex(0);
+			// selecting index 0 causes incorrect class to load !
+//			comboBox.setSelectedIndex(0);
+			NamedClass valueNc = new NamedClass(value.toString());
+			comboBox.setSelectedItem(valueNc.toManchesterSyntaxString(baseURI, prefixes));
 			add(comboBox);
 		} else {
 			// text field for strings

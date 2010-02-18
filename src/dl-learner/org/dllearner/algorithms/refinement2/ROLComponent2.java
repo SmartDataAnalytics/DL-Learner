@@ -188,8 +188,8 @@ public class ROLComponent2 extends LearningAlgorithm {
 		// allowed/ignored concepts/roles could also be a reasoner option (?)
 		options.add(CommonConfigOptions.allowedConcepts());
 		options.add(CommonConfigOptions.ignoredConcepts());
-		options.add(CommonConfigOptions.allowedRoles());
-		options.add(CommonConfigOptions.ignoredRoles());
+//		options.add(CommonConfigOptions.allowedRoles());
+//		options.add(CommonConfigOptions.ignoredRoles());
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useHasValueConstructor());
