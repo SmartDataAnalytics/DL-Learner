@@ -17,6 +17,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.algorithms.refinement2.ROLearner2;
 import org.dllearner.core.ComponentManager;
@@ -31,7 +32,6 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -44,7 +44,6 @@ import org.dllearner.utilities.experiments.ExMakerCrossFolds;
 import org.dllearner.utilities.experiments.ExMakerFixedSize;
 import org.dllearner.utilities.experiments.ExMakerRandomizer;
 import org.dllearner.utilities.experiments.Examples;
-import org.dllearner.utilities.experiments.IteratedConfig;
 import org.dllearner.utilities.experiments.Jamon;
 import org.dllearner.utilities.experiments.Table;
 
@@ -57,9 +56,14 @@ public class TestIterativeLearning {
 	static DecimalFormat df = new DecimalFormat("00.###%");
 	public static DecimalFormat dftime = new DecimalFormat("#####.#");
 
+	public static boolean newTiger = true;
+	
 	// static String backgroundXML = "files/tiger.noSchema.noImports.rdf";
-	static String backgroundXML = "files/tiger_trimmed_toPOS.rdf";
-	static String propertiesXML = "files/propertiesOnly.rdf";
+	static String backgroundXML = (newTiger)?"files/VirtuosoSyntaxSchema.rdf":"files/tiger_trimmed_toPOS.rdf";
+	static String sparqlEndpointURL ="http://db0.aksw.org:8893/sparql";
+	static String graph = (newTiger)?"http://nlp2rdf.org/tigerFull":"http://nlp2rdf.org/tiger";
+	static String rulegraph = (newTiger)?"http://nlp2rdf.org/schemaFull/rules1":"http://nlp2rdf.org/schema/rules1";
+//	static String propertiesXML = "files/propertiesOnly.rdf";
 	static String sentenceXMLFolder = "files/tiger/";
 	static String resultFolder = "tigerResults/";
 
@@ -75,9 +79,7 @@ public class TestIterativeLearning {
 	static SparqlEndpoint sparqlEndpoint;
 	static SPARQLTasks sparqlTasks;
 
-	static String sparqlEndpointURL = "http://db0.aksw.org:8893/sparql";
-	static String graph = "http://nlp2rdf.org/tiger";
-	static String rulegraph = "http://nlp2rdf.org/schema/rules1";
+	
 
 	static MonKeyImp logFMeasure = new MonKeyImp("F-Measure", Jamon.PERCENTAGE);
 	static MonKeyImp logPrecision = new MonKeyImp("Precision", Jamon.PERCENTAGE);
@@ -156,7 +158,7 @@ public class TestIterativeLearning {
 		negatives = null;
 		allExamples = null;
 		
-		List<IteratedConfig> configs = getConfigs();
+		List<IteratedConfig> configs = getConfigsNo();
 		Table masterTable = new Table();
 		for (IteratedConfig experimentConfig : configs) {
 			experimentConfig.init(mks);
@@ -234,22 +236,26 @@ public class TestIterativeLearning {
 
 	}
 
-	public static List<IteratedConfig> getConfigs() {
+	public static List<IteratedConfig> getConfigsNo() {
 
 		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
-		IteratedConfig baseline = new IteratedConfig("baseline_5_5", iterations);
+		IteratedConfig baseline = new IteratedConfig("baseline", iterations);
+		baseline.initialsplits = 10;
+		baseline.noise = 0;
+		baseline.searchTree = true;
+		baseline.factor = 10.0d;
 		
-		IteratedConfig reducedExamples = new IteratedConfig("reducedExamples_2_2", iterations);
+		IteratedConfig reducedExamples = new IteratedConfig("reducedExamples", iterations);
 		reducedExamples.initialsplits = 2;
 		reducedExamples.splits = 2;
 		reducedExamples.factor = 6.0d;
 		
 
-		IteratedConfig fixRuntime = new IteratedConfig("fixRuntime_20s", iterations);
+		IteratedConfig fixRuntime = new IteratedConfig("fixRuntime", iterations);
 		fixRuntime.adaptMaxRuntime = false;
-		fixRuntime.maxExecutionTime = 40;
+		fixRuntime.maxExecutionTime = 20;
 
-		IteratedConfig useLemma = new IteratedConfig("useLemma_false", iterations);
+		IteratedConfig useLemma = new IteratedConfig("noLemma", iterations);
 		useLemma.useDataHasValue = false;
 
 		l.add(baseline);
@@ -264,7 +270,8 @@ public class TestIterativeLearning {
 		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
 		IteratedConfig baseline = new IteratedConfig("baseline", iterations);
 		baseline.noiseIterationFactor = 0;
-		
+		baseline.noise = 0;
+		baseline.searchTree = true;
 		IteratedConfig increasedNegativeExamples = new IteratedConfig("increasedNegativeExamples", iterations);
 		increasedNegativeExamples.negativeSplitAdd = 10;
 		
@@ -276,7 +283,7 @@ public class TestIterativeLearning {
 		
 		
 		
-		IteratedConfig useLemma = new IteratedConfig("useLemma_false", iterations);
+		IteratedConfig useLemma = new IteratedConfig("noLemma", iterations);
 		useLemma.useDataHasValue = false;
 		
 		l.add(baseline);
@@ -326,6 +333,10 @@ public class TestIterativeLearning {
 			concepts.add(ed.getDescription().toKBSyntaxString(null,null));
 			logger.debug("USING CONCEPT: " + lastConcept);
 
+			if (true) {
+				System.exit(0);
+			}
+			
 			/* RETRIEVING */
 			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "queryTime")
 					.start();
@@ -453,32 +464,32 @@ public class TestIterativeLearning {
 		return tmp;
 	}
 
-	@SuppressWarnings("unused")
-	private static Set<KnowledgeSource> _getSPARQL(Examples ex) throws Exception {
-		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
-
-		Set<String> examples = new TreeSet<String>();
-		examples.addAll(ex.getPosTrain());
-		examples.addAll(ex.getNegTrain());
-		SparqlKnowledgeSource ks = ComponentFactory.getSparqlKnowledgeSource(new URL(sparqlEndpointURL),
-				examples);
-		ks.getConfigurator().setUrl(new URL(sparqlEndpointURL));
-		ks.getConfigurator().setDefaultGraphURIs(new HashSet<String>(Arrays.asList(new String[] { graph })));
-		ks.getConfigurator().setInstances(examples);
-		ks.getConfigurator().setDissolveBlankNodes(false);
-		ks.getConfigurator().setRecursionDepth(2);
-		ks.getConfigurator().setDissolveBlankNodes(false);
-		ks.getConfigurator().setCloseAfterRecursion(true);
-		ks.getConfigurator().setGetAllSuperClasses(true);
-		ks.getConfigurator().setGetPropertyInformation(false);
-		ks.getConfigurator().setUseLits(true);
-		// ks.getConfigurator().
-		OWLFile ks2 = ComponentFactory.getOWLFile(new File(propertiesXML).toURI().toURL());
-		tmp.add(ks);
-		tmp.add(ks2);
-
-		return tmp;
-	}
+//	@SuppressWarnings("unused")
+//	private static Set<KnowledgeSource> _getSPARQL(Examples ex) throws Exception {
+//		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+//
+//		Set<String> examples = new TreeSet<String>();
+//		examples.addAll(ex.getPosTrain());
+//		examples.addAll(ex.getNegTrain());
+//		SparqlKnowledgeSource ks = ComponentFactory.getSparqlKnowledgeSource(new URL(sparqlEndpointURL),
+//				examples);
+//		ks.getConfigurator().setUrl(new URL(sparqlEndpointURL));
+//		ks.getConfigurator().setDefaultGraphURIs(new HashSet<String>(Arrays.asList(new String[] { graph })));
+//		ks.getConfigurator().setInstances(examples);
+//		ks.getConfigurator().setDissolveBlankNodes(false);
+//		ks.getConfigurator().setRecursionDepth(2);
+//		ks.getConfigurator().setDissolveBlankNodes(false);
+//		ks.getConfigurator().setCloseAfterRecursion(true);
+//		ks.getConfigurator().setGetAllSuperClasses(true);
+//		ks.getConfigurator().setGetPropertyInformation(false);
+//		ks.getConfigurator().setUseLits(true);
+//		// ks.getConfigurator().
+//		OWLFile ks2 = ComponentFactory.getOWLFile(new File(propertiesXML).toURI().toURL());
+//		tmp.add(ks);
+//		tmp.add(ks2);
+//
+//		return tmp;
+//	}
 
 	// test if virtuoso is correct
 	// public static void validate(Description d, Examples newlyFound){
@@ -613,6 +624,7 @@ public class TestIterativeLearning {
 		}
 
 		ROLComponent2 la = ComponentFactory.getROLComponent2(lp, rc);
+//		CELOE la = ComponentFactory.getCELOE(lp, rc);
 		la.getConfigurator().setUseExistsConstructor(true);
 
 		la.getConfigurator().setUseAllConstructor(false);
@@ -621,7 +633,43 @@ public class TestIterativeLearning {
 		la.getConfigurator().setUseHasValueConstructor(false);
 		la.getConfigurator().setUseDataHasValueConstructor(config.useDataHasValue);
 		la.getConfigurator().setValueFrequencyThreshold(valueFrequencyThreshold);
+		
+//		if(config.ignorePOSFeatures){
+//			la.getConfigurator().setIgnoredConcepts(VocabFilter.posClasses);
+//			la.getConfigurator().setIgnoredRoles(VocabFilter.posProperties);
+//		}
 
+		SortedSet<String> inv = new TreeSet<String>();
+		for(String s : VocabFilter.syntaxProperies){
+			if(s.toLowerCase().endsWith("inv")){
+				inv.add(s);
+			}
+		}
+		inv.add("http://nlp2rdf.org/ontology/hasToken");
+		inv.add("http://nlp2rdf.org/ontology/firstToken");
+//		System.out.println(inv);
+//		if (true) {
+//			System.exit(0);
+//		}
+		SortedSet<String> all = new TreeSet<String>(Helper.difference(VocabFilter.syntaxProperies, inv));
+		all.addAll(VocabFilter.posProperties);
+		la.getConfigurator().setAllowedRoles(all);
+//		if(config.ignoreSyntaxFeatures){
+//			la.getConfigurator().setIgnoredConcepts(VocabFilter.syntaxClasses);
+//			la.getConfigurator().setIgnoredRoles(VocabFilter.syntaxProperies);
+//		}else{
+//			la.getConfigurator().setAllowedRoles(all);
+//		}
+		
+		
+		
+		
+		
+//		la.getConfigurator().setInstanceBasedDisjoints(false);
+		
+
+		
+		
 		la.getConfigurator().setIgnoredConcepts(
 				new HashSet<String>(Arrays.asList(new String[] {
 						"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag",

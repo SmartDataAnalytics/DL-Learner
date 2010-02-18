@@ -1,6 +1,7 @@
-package org.dllearner.utilities.experiments;
+package org.dllearner.scripts.tiger;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.experiments.ExperimentConfiguration;
 
 public class IteratedConfig extends ExperimentConfiguration{
 	
@@ -23,6 +24,9 @@ public class IteratedConfig extends ExperimentConfiguration{
 		public double factor = 2.0d ;//1.5d;
 	
 	public boolean useDataHasValue = true;
+	
+	public boolean ignorePOSFeatures = false;
+	public boolean ignoreSyntaxFeatures = false;
 	 
 //	private String highestPrecision = "";
 //	private String highestRecall = "";
