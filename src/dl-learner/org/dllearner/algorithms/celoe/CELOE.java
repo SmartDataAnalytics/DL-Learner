@@ -293,7 +293,8 @@ public class CELOE extends LearningAlgorithm {
 
 	@Override
 	public Description getCurrentlyBestDescription() {
-		return getCurrentlyBestEvaluatedDescription().getDescription();
+		EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
+		return ed == null ? null : ed.getDescription();
 	}
 
 	@Override
