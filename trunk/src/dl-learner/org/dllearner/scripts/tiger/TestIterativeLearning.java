@@ -17,7 +17,6 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.algorithms.refinement2.ROLearner2;
 import org.dllearner.core.ComponentManager;
@@ -37,6 +36,7 @@ import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.examples.ExampleDataCollector;
@@ -44,9 +44,12 @@ import org.dllearner.utilities.experiments.ExMakerCrossFolds;
 import org.dllearner.utilities.experiments.ExMakerFixedSize;
 import org.dllearner.utilities.experiments.ExMakerRandomizer;
 import org.dllearner.utilities.experiments.Examples;
-import org.dllearner.utilities.experiments.Jamon;
 import org.dllearner.utilities.experiments.Table;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
 
@@ -56,10 +59,10 @@ public class TestIterativeLearning {
 	static DecimalFormat df = new DecimalFormat("00.###%");
 	public static DecimalFormat dftime = new DecimalFormat("#####.#");
 
-	public static boolean newTiger = true;
+	public static boolean newTiger = false;
 	
 	// static String backgroundXML = "files/tiger.noSchema.noImports.rdf";
-	static String backgroundXML = (newTiger)?"files/VirtuosoSyntaxSchema.rdf":"files/tiger_trimmed_toPOS.rdf";
+	static String backgroundXML = "files/VirtuosoSyntaxSchema.rdf";
 	static String sparqlEndpointURL ="http://db0.aksw.org:8893/sparql";
 	static String graph = (newTiger)?"http://nlp2rdf.org/tigerFull":"http://nlp2rdf.org/tiger";
 	static String rulegraph = (newTiger)?"http://nlp2rdf.org/schemaFull/rules1":"http://nlp2rdf.org/schema/rules1";
@@ -81,19 +84,19 @@ public class TestIterativeLearning {
 
 	
 
-	static MonKeyImp logFMeasure = new MonKeyImp("F-Measure", Jamon.PERCENTAGE);
-	static MonKeyImp logPrecision = new MonKeyImp("Precision", Jamon.PERCENTAGE);
-	static MonKeyImp logRecall = new MonKeyImp("Recall", Jamon.PERCENTAGE);
-	static MonKeyImp logAccuracy = new MonKeyImp("Accuracy", Jamon.PERCENTAGE);
+	static MonKeyImp logFMeasure = new MonKeyImp("F-Measure", JamonMonitorLogger.PERCENTAGE);
+	static MonKeyImp logPrecision = new MonKeyImp("Precision", JamonMonitorLogger.PERCENTAGE);
+	static MonKeyImp logRecall = new MonKeyImp("Recall", JamonMonitorLogger.PERCENTAGE);
+	static MonKeyImp logAccuracy = new MonKeyImp("Accuracy", JamonMonitorLogger.PERCENTAGE);
 
-	static MonKeyImp logLearningTime = new MonKeyImp("Learning Time", Jamon.MS);
-	static MonKeyImp logIterationTime = new MonKeyImp("Iteration Time", Jamon.MS);
-	static MonKeyImp nrOfRetrievedInstances = new MonKeyImp("Nr of retrieved Instances", Jamon.COUNT);
+	static MonKeyImp logLearningTime = new MonKeyImp("Learning Time", JamonMonitorLogger.MS);
+	static MonKeyImp logIterationTime = new MonKeyImp("Iteration Time", JamonMonitorLogger.MS);
+	static MonKeyImp nrOfRetrievedInstances = new MonKeyImp("Nr of retrieved Instances", JamonMonitorLogger.COUNT);
 
 	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[] { logPrecision,
 			logRecall, logFMeasure, logAccuracy, logLearningTime, logIterationTime, nrOfRetrievedInstances}));
 
-	static int iterations = 7;
+	static int iterations = 5;
 	static int folds = 10;
 	static int printSentences = 3;
 	
@@ -118,11 +121,12 @@ public class TestIterativeLearning {
 		}
 		
 		
-		// folds = 2;
-		// iterations = 2;
+		
+		 folds = 2;
+		 iterations = 1;
 		long n = System.currentTimeMillis();
-//		passiveNoZU();
-		 passiveWithZu();
+			passiveNoZU();
+//			passiveWithZu();
 
 		 String a="\n";
 		 for(String s: concepts){
@@ -240,28 +244,23 @@ public class TestIterativeLearning {
 
 		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
 		IteratedConfig baseline = new IteratedConfig("baseline", iterations);
-		baseline.initialsplits = 10;
-		baseline.noise = 0;
-		baseline.searchTree = true;
-		baseline.factor = 10.0d;
-		
+
 		IteratedConfig reducedExamples = new IteratedConfig("reducedExamples", iterations);
 		reducedExamples.initialsplits = 2;
 		reducedExamples.splits = 2;
-		reducedExamples.factor = 6.0d;
 		
 
-		IteratedConfig fixRuntime = new IteratedConfig("fixRuntime", iterations);
-		fixRuntime.adaptMaxRuntime = false;
-		fixRuntime.maxExecutionTime = 20;
+		IteratedConfig adaptRuntime = new IteratedConfig("adaptRuntime3t", iterations);
+		adaptRuntime.adaptMaxRuntime = true;
+		adaptRuntime.maxExecutionTimeFactor = 3.0d;
 
 		IteratedConfig useLemma = new IteratedConfig("noLemma", iterations);
 		useLemma.useDataHasValue = false;
 
-		l.add(baseline);
+//		l.add(baseline);
 		l.add(reducedExamples);
-		l.add(fixRuntime);
-		l.add(useLemma);
+//		l.add(adaptRuntime);
+//		l.add(useLemma);
 
 		return l;
 	}
@@ -269,26 +268,24 @@ public class TestIterativeLearning {
 		
 		List<IteratedConfig> l = new ArrayList<IteratedConfig>();
 		IteratedConfig baseline = new IteratedConfig("baseline", iterations);
-		baseline.noiseIterationFactor = 0;
-		baseline.noise = 0;
-		baseline.searchTree = true;
+
+		
 		IteratedConfig increasedNegativeExamples = new IteratedConfig("increasedNegativeExamples", iterations);
 		increasedNegativeExamples.negativeSplitAdd = 10;
 		
 		
-		IteratedConfig noNoise = new IteratedConfig("noNoise", iterations);
-		noNoise.factor  = 4.0d;
-		noNoise.noise = 0;
-		noNoise.noiseIterationFactor = 0;
-		
-		
+		IteratedConfig increasedNegativeExamples3t = new IteratedConfig("increasedNegativeExamples3t", iterations);
+		increasedNegativeExamples3t.negativeSplitAdd = 10;
+		increasedNegativeExamples3t.adaptMaxRuntime = true;
+		increasedNegativeExamples3t.maxExecutionTimeFactor = 3.0d;
+
 		
 		IteratedConfig useLemma = new IteratedConfig("noLemma", iterations);
 		useLemma.useDataHasValue = false;
 		
 		l.add(baseline);
 		l.add(increasedNegativeExamples);
-		l.add(noNoise);
+		l.add(increasedNegativeExamples3t);
 		l.add(useLemma);
 		
 		return l;
@@ -332,11 +329,8 @@ public class TestIterativeLearning {
 			lastConcept = PrefixMap.toKBSyntaxString(ed.getDescription());
 			concepts.add(ed.getDescription().toKBSyntaxString(null,null));
 			logger.debug("USING CONCEPT: " + lastConcept);
+			logger.debug(PrefixMap.toManchesterSyntaxString(ed.getDescription()));
 
-			if (true) {
-				System.exit(0);
-			}
-			
 			/* RETRIEVING */
 			Monitor queryTime = JamonMonitorLogger.getTimeMonitor(TestIterativeLearning.class, "queryTime")
 					.start();
@@ -535,9 +529,13 @@ public class TestIterativeLearning {
 			la.start();
 			learningTime.stop();
 
+//			System.out.println(result = la.getCurrentlyBestEvaluatedDescription());
+//			for (EvaluatedDescription edd : la.getCurrentlyBestMostGeneralEvaluatedDescriptions()) {
+//				System.out.println(edd);
+//			}
+			
 			result = la.getCurrentlyBestEvaluatedDescription();
-			logger.trace(PrefixMap.toKBSyntaxString(result.getDescription()));
-			logger.trace(PrefixMap.toManchesterSyntaxString(result.getDescription()));
+			
 			
 			ComponentManager.getInstance().freeAllComponents();
 
@@ -573,7 +571,7 @@ public class TestIterativeLearning {
 		}
 
 		sparqlQueryGood = " \n define input:inference \"" + rulegraph + "\" \n" + "" + sparqlQueryGood;
-		logger.trace(sparqlQueryGood);
+		logger.debug(sparqlQueryGood);
 
 		result.addAll(sparqlTasks.queryAsSet(sparqlQueryGood, "subject"));
 		m.stop();
@@ -618,7 +616,7 @@ public class TestIterativeLearning {
 		int valueFrequencyThreshold = ex.getPosTrain().size();
 		int noise = config.noise + (config.noiseIterationFactor * iteration);
 		if (config.adaptMaxRuntime) {
-			maxExecutionTime = (int) Math.floor(config.factor * (double) ex.sizeOfTrainingSets());
+			maxExecutionTime = (int) Math.floor(config.maxExecutionTimeFactor * (double) ex.sizeOfTrainingSets());
 			// valueFrequencyThreshold = (int)
 			// Math.floor(0.8d*((double)ex.getPosTrain().size()));
 		}
@@ -633,49 +631,14 @@ public class TestIterativeLearning {
 		la.getConfigurator().setUseHasValueConstructor(false);
 		la.getConfigurator().setUseDataHasValueConstructor(config.useDataHasValue);
 		la.getConfigurator().setValueFrequencyThreshold(valueFrequencyThreshold);
+//		la.getConfigurator().setInstanceBasedDisjoints(true);
 		
-//		if(config.ignorePOSFeatures){
-//			la.getConfigurator().setIgnoredConcepts(VocabFilter.posClasses);
-//			la.getConfigurator().setIgnoredRoles(VocabFilter.posProperties);
-//		}
-
-		SortedSet<String> inv = new TreeSet<String>();
-		for(String s : VocabFilter.syntaxProperies){
-			if(s.toLowerCase().endsWith("inv")){
-				inv.add(s);
-			}
-		}
-		inv.add("http://nlp2rdf.org/ontology/hasToken");
-		inv.add("http://nlp2rdf.org/ontology/firstToken");
-//		System.out.println(inv);
-//		if (true) {
-//			System.exit(0);
-//		}
-		SortedSet<String> all = new TreeSet<String>(Helper.difference(VocabFilter.syntaxProperies, inv));
-		all.addAll(VocabFilter.posProperties);
-		la.getConfigurator().setAllowedRoles(all);
-//		if(config.ignoreSyntaxFeatures){
-//			la.getConfigurator().setIgnoredConcepts(VocabFilter.syntaxClasses);
-//			la.getConfigurator().setIgnoredRoles(VocabFilter.syntaxProperies);
-//		}else{
-//			la.getConfigurator().setAllowedRoles(all);
-//		}
-		
-		
-		
-		
-		
-//		la.getConfigurator().setInstanceBasedDisjoints(false);
-		
-
-		
-		
-		la.getConfigurator().setIgnoredConcepts(
-				new HashSet<String>(Arrays.asList(new String[] {
-						"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag",
-						"http://nlp2rdf.org/ontology/comma_tag",
-						"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation",
-						"http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag" })));
+//		la.getConfigurator().setIgnoredConcepts(
+//				new HashSet<String>(Arrays.asList(new String[] {
+//						"http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag",
+//						"http://nlp2rdf.org/ontology/comma_tag",
+//						"http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation",
+//						"http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag" })));
 
 		la.getConfigurator().setNoisePercentage(noise);
 		la.getConfigurator().setTerminateOnNoiseReached(true);
@@ -690,6 +653,36 @@ public class TestIterativeLearning {
 		la.getConfigurator().setReplaceSearchTree(true);
 		return la;
 	}
+	
+//	if(config.ignorePOSFeatures){
+//	la.getConfigurator().setIgnoredConcepts(VocabFilter.posClasses);
+//	la.getConfigurator().setIgnoredRoles(VocabFilter.posProperties);
+//}
+
+//SortedSet<String> inv = new TreeSet<String>();
+//for(String s : VocabFilter.syntaxProperies){
+//	if(s.toLowerCase().endsWith("inv")){
+//		inv.add(s);
+//	}
+//}
+//inv.add("http://nlp2rdf.org/ontology/hasToken");
+//inv.add("http://nlp2rdf.org/ontology/firstToken");
+//System.out.println(inv);
+//if (true) {
+//	System.exit(0);
+//}
+//SortedSet<String> all = new TreeSet<String>(Helper.difference(VocabFilter.syntaxProperies, inv));
+//all.addAll(VocabFilter.posProperties);
+//la.getConfigurator().setAllowedRoles(all);
+//if(config.ignoreSyntaxFeatures){
+//	la.getConfigurator().setIgnoredConcepts(VocabFilter.syntaxClasses);
+//	la.getConfigurator().setIgnoredRoles(VocabFilter.syntaxProperies);
+//}else{
+//	la.getConfigurator().setAllowedRoles(all);
+//}
+//la.getConfigurator().setInstanceBasedDisjoints(false);
+
+
 
 	public static SortedSet<String> read(String f) {
 		SortedSet<String> result = new TreeSet<String>();

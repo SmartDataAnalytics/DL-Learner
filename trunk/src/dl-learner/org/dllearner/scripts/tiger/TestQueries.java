@@ -27,7 +27,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.experiments.Jamon;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.experiments.Table;
 import org.dllearner.utilities.experiments.TableRowColumn;
 import org.dllearner.utilities.experiments.TableRowColumn.Display;
@@ -64,9 +64,9 @@ public class TestQueries {
 	static String graph = "http://nlp2rdf.org/tiger";
 	static String rulegraph = "http://nlp2rdf.org/schema/rules1";
 
-	static MonKeyImp queryTime = new MonKeyImp("Query Time", Jamon.MS);
-	static MonKeyImp length = new MonKeyImp("length", Jamon.COUNT);
-	static MonKeyImp hits = new MonKeyImp("hits", Jamon.COUNT);
+	static MonKeyImp queryTime = new MonKeyImp("Query Time", JamonMonitorLogger.MS);
+	static MonKeyImp length = new MonKeyImp("length", JamonMonitorLogger.COUNT);
+	static MonKeyImp hits = new MonKeyImp("hits", JamonMonitorLogger.COUNT);
 
 	static List<MonKeyImp> mks = new ArrayList<MonKeyImp>(Arrays.asList(new MonKeyImp[] { queryTime}));
 
@@ -116,7 +116,7 @@ public class TestQueries {
 				String label1 = "Time "+d.getLength();
 				String label2 = "Length "+d.getLength();
 				Monitor m1 = MonitorFactory.getTimeMonitor(label1).start();
-				Monitor m2 = MonitorFactory.getMonitor(label2, Jamon.COUNT);
+				Monitor m2 = MonitorFactory.getMonitor(label2, JamonMonitorLogger.COUNT);
 
 				m2.add(d.getLength());
 				sparqlTasks.queryAsResultSet(q);

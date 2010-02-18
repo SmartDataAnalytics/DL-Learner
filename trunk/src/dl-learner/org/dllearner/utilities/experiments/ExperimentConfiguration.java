@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
@@ -113,7 +114,7 @@ public class ExperimentConfiguration {
 		Monitor[] marr = new Monitor[sizeOfResultVector];
 		for (int i = 0; i < sizeOfResultVector; i++) {
 			MonKeyImp newMonKey = mon(oldMonkey, i);
-			if (newMonKey.getUnits().equals(Jamon.MS)) {
+			if (newMonKey.getUnits().equals(JamonMonitorLogger.MS)) {
 				marr[i] = MonitorFactory.getTimeMonitor(newMonKey);
 			} else {
 				marr[i] = MonitorFactory.getMonitor(newMonKey);
