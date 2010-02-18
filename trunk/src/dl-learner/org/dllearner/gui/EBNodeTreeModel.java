@@ -19,17 +19,20 @@
  */
 package org.dllearner.gui;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.algorithms.refinement2.ExampleBasedNode;
 import org.dllearner.algorithms.refinement2.NodeComparatorStable;
 
@@ -45,20 +48,26 @@ import org.dllearner.algorithms.refinement2.NodeComparatorStable;
 public class EBNodeTreeModel implements TreeModel {
 
 	// root of the search tree
-	private ExampleBasedNode rootNode;
+	private SearchTreeNode rootNode;
 
 	// a mapping from nodes to their children;
 	// the main problem is that example based nodes use sets instead
 	// of lists, so we need to convert these sets to lists and store
 	// them here
-	private Map<ExampleBasedNode, List<ExampleBasedNode>> childrenMap = new TreeMap<ExampleBasedNode, List<ExampleBasedNode>>(
-			new NodeComparatorStable());
+	private Map<SearchTreeNode, List<SearchTreeNode>> childrenMap;
+	// = new TreeMap<SearchTreeNode, List<SearchTreeNode>>(
+	//		new NodeComparatorStable());
 
+	private Comparator<SearchTreeNode> nodeComparator;
+	
 	// listeners for this model
 	private List<TreeModelListener> treeModelListeners = new LinkedList<TreeModelListener>();
 
-	public EBNodeTreeModel(ExampleBasedNode rootNode) {
+	public EBNodeTreeModel(SearchTreeNode rootNode, Comparator<SearchTreeNode> comparator) {
 		this.rootNode = rootNode;
+		this.nodeComparator = comparator;
+		childrenMap = new TreeMap<SearchTreeNode, List<SearchTreeNode>>(comparator);
+				// new NodeComparatorStable());
 	}
 
 	public void addTreeModelListener(TreeModelListener l) {
@@ -66,15 +75,15 @@ public class EBNodeTreeModel implements TreeModel {
 	}
 
 	public Object getChild(Object parent, int index) {
-		return getChildren((ExampleBasedNode) parent).get(index);
+		return getChildren((SearchTreeNode) parent).get(index);
 	}
 
 	public int getChildCount(Object parent) {
-		return ((ExampleBasedNode) parent).getChildren().size();
+		return ((SearchTreeNode) parent).getChildren().size();
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
-		return getChildren((ExampleBasedNode) parent).indexOf(child);
+		return getChildren((SearchTreeNode) parent).indexOf(child);
 	}
 
 	public Object getRoot() {
@@ -102,15 +111,16 @@ public class EBNodeTreeModel implements TreeModel {
 	}
 
 	// convert the set of children to a list and store it in this model
-	private List<ExampleBasedNode> getChildren(ExampleBasedNode node) {
+	private List<SearchTreeNode> getChildren(SearchTreeNode node) {
 		// System.out.println("asking for children of " + node);
 
-		List<ExampleBasedNode> children = childrenMap.get(node);
+		List<SearchTreeNode> children = childrenMap.get(node);
 		// if the children have not been cached or the list is outdated
 		// (node has more children now) we do an update
 		if (children == null || children.size() != node.getChildren().size()) {
-			SortedSet<ExampleBasedNode> childrenSet = node.getChildren();
-			children = new LinkedList<ExampleBasedNode>(childrenSet);
+			SortedSet<SearchTreeNode> childrenSet = new TreeSet<SearchTreeNode>(nodeComparator);
+			childrenSet.addAll(node.getChildren()); 
+			children = new LinkedList<SearchTreeNode>(childrenSet);
 
 			// we need to ensure that the children are sorted correctly
 			// children = new LinkedList<ExampleBasedNode>();

@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -40,7 +41,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
-public class OENode {
+public class OENode implements SearchTreeNode {
 
 	private Description description;
 	
@@ -84,6 +85,10 @@ public class OENode {
 		return description;
 	}
 
+	public Description getExpression() {
+		return getDescription();
+	}	
+	
 	/**
 	 * @return the accuracy
 	 */

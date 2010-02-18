@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -40,7 +41,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
-public class ExampleBasedNode {
+public class ExampleBasedNode implements SearchTreeNode {
 
 //	public static long exampleMemoryCounter = 0;
 	
@@ -266,6 +267,10 @@ public class ExampleBasedNode {
 
 	public Description getConcept() {
 		return concept;
+	}	
+	
+	public Description getExpression() {
+		return getConcept();
 	}	
 	
 	public QualityEvaluationMethod getQualityEvaluationMethod() {

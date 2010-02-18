@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2010, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,6 +19,7 @@
  */
 package org.dllearner.gui;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -28,14 +29,18 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 
-import org.dllearner.algorithms.refinement2.ExampleBasedNode;
+import org.dllearner.algorithms.SearchTreeNode;
+import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
+import org.dllearner.algorithms.refinement2.NodeComparatorStable;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.learningproblems.PosNegLPStandard;
 
 /**
- * TreeWindow
+ * Window, which displays the search tree.
  * 
  * @author Tilo Hielscher
+ * @author Jens Lehmann
  */
 public class TreeWindow extends JFrame implements TreeWillExpandListener {
 
@@ -43,16 +48,18 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 
 	@SuppressWarnings("unused")
 	private Config config;
+
 	private EBNodeTreeModel ebNodeModel;
-	private ExampleBasedNode rootNode;
+
+	private SearchTreeNode rootNode;
+
 	private JTree tree;
-	
-	@SuppressWarnings("unchecked")
+
 	public TreeWindow(Config config) {
 		this.config = config;
 		this.setTitle("DL-Learner Tree");
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-//		this.setLocationByPlatform(true);
+		// this.setLocationByPlatform(true);
 		this.setSize(800, 600);
 
 		// set icon
@@ -61,49 +68,59 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 					this.getClass().getResource("icon.gif")));
 
 		// tree model
+		Comparator<SearchTreeNode> cmp = null;
 		if (config.getLearningAlgorithm() instanceof ROLComponent2) {
-			ROLComponent2 ebrol = (ROLComponent2) config
-					.getLearningAlgorithm();
+			ROLComponent2 ebrol = (ROLComponent2) config.getLearningAlgorithm();
 			this.rootNode = ebrol.getStartNode();
+			cmp = new SearchTreeNodeCmpWrapper(new NodeComparatorStable());
+		} else {
+			CELOE celoe = (CELOE) config.getLearningAlgorithm();
+			this.rootNode = celoe.getSearchTreeRoot();
+			cmp = new SearchTreeNodeCmpWrapper(new OEHeuristicRuntime());
+		}
+		this.ebNodeModel = new EBNodeTreeModel(rootNode, cmp);
 
-//			System.out.println("childs1: " + rootNode.getChildren());
+		// childrens to treeModel
+		// Object first = ebNodeModel.getChild(rootNode, 0);
+		// System.out.println("getIndexOfChild: " +
+		// ebNodeModel.getIndexOfChild(rootNode, first));
 
-			this.ebNodeModel = new EBNodeTreeModel(rootNode);
+		// System.out.println("childs2: " +
+		// ebNodeModel.getChildren((ExampleBasedNode) first));
 
-			// childrens to treeModel
-//			Object first = ebNodeModel.getChild(rootNode, 0);
-//			System.out.println("getIndexOfChild: " + ebNodeModel.getIndexOfChild(rootNode, first));
-
-			// System.out.println("childs2: " +
-			// ebNodeModel.getChildren((ExampleBasedNode) first));
-			
+		String baseURI = config.getReasoner().getBaseURI();
+		if (config.getLearningAlgorithm() instanceof ROLComponent2) {
 			// collect some helper values for display and accuracy calculations
 			PosNegLPStandard lp = (PosNegLPStandard) config.getLearningProblem();
 			Set<String> posExamples = lp.getConfigurator().getPositiveExamples();
 			Set<String> negExamples = lp.getConfigurator().getNegativeExamples();
-			String baseURI = config.getReasoner().getBaseURI();
 			int nrOfPositiveExamples = posExamples.size();
 			int nrOfNegativeExamples = negExamples.size();
-			
-			tree = new SearchTree(ebNodeModel, nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
-			// we need to call this, otherwise the width of the elements below the root node 
-			// corresponds to that of the toString() method on ExampleBasedNode, although we
-			// use a different method to create a string representation of a node
-			tree.updateUI();
-//			ebNodeModel.nodeChanged(rootNode);
-//			tree.addTreeWillExpandListener(this);
-			this.add(new JScrollPane(tree));
-		}
 
-		// }
-//		this.repaint();
+			tree = new SearchTree(ebNodeModel, nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
+		} else {
+			tree = new SearchTree(ebNodeModel, baseURI);
+		}
+		
+		// we need to call this, otherwise the width of the elements below the
+		// root node
+		// corresponds to that of the toString() method on ExampleBasedNode,
+		// although we
+		// use a different method to create a string representation of a node
+		tree.updateUI();
+		// ebNodeModel.nodeChanged(rootNode);
+		// tree.addTreeWillExpandListener(this);
+		this.add(new JScrollPane(tree));
+
 		setVisible(true);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see javax.swing.event.TreeWillExpandListener#treeWillCollapse(javax.swing.event.TreeExpansionEvent)
+	 * @see
+	 * javax.swing.event.TreeWillExpandListener#treeWillCollapse(javax.swing
+	 * .event.TreeExpansionEvent)
 	 */
 	// @Override
 	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
@@ -112,7 +129,9 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see javax.swing.event.TreeWillExpandListener#treeWillExpand(javax.swing.event.TreeExpansionEvent)
+	 * @see
+	 * javax.swing.event.TreeWillExpandListener#treeWillExpand(javax.swing.event
+	 * .TreeExpansionEvent)
 	 */
 	// @Override
 	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {

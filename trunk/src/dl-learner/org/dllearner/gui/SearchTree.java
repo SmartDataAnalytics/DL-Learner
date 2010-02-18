@@ -21,6 +21,7 @@ package org.dllearner.gui;
 
 import javax.swing.JTree;
 
+import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.refinement2.ExampleBasedNode;
 
 /**
@@ -37,6 +38,13 @@ public class SearchTree extends JTree {
 	private int nrOfPositiveExamples;
 	private String baseURI;
 	
+	// CELOE constructor
+	public SearchTree(EBNodeTreeModel model, String baseURI) {
+		super(model);
+		this.baseURI = baseURI;
+	}
+	
+	// OCEL constructor
 	public SearchTree(EBNodeTreeModel model, int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
 		super(model);
 		this.nrOfPositiveExamples = nrOfPositiveExamples;
@@ -52,8 +60,11 @@ public class SearchTree extends JTree {
             boolean leaf,
             int row,
             boolean hasFocus) {
-		ExampleBasedNode node = (ExampleBasedNode) value;
-		return node.getShortDescriptionHTML(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
-//		return node.toString();
+		if(value instanceof OENode) {
+			return ((OENode)value).getShortDescription(baseURI);
+		} else {
+			ExampleBasedNode node = (ExampleBasedNode) value;
+			return node.getShortDescriptionHTML(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
+		}
 	}
 }
