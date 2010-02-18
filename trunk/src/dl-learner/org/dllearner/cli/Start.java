@@ -193,15 +193,15 @@ public class Start {
 		try {
 			start = new Start(file);
 		} catch (FileNotFoundException e) {
-			System.out.println("The specified file " + file + " does not exist. See stack trace below.");
+			System.out.println("The specified file " + file + " does not exist. See stack trace.");
 			e.printStackTrace();
 			System.exit(0);
 		} catch (ComponentInitException e) {
-			System.out.println("A component could not be initialised. See stack trace below.");
+			System.out.println("A component could not be initialised. See stack trace.");
 			e.printStackTrace();
 			System.exit(0);
 		} catch (ParseException e) {
-			System.out.println("The specified file " + file + " is not a valid conf file. See stack trace below.");
+			System.out.println("The specified file " + file + " is not a valid conf file. See stack trace.");
 			e.printStackTrace();
 			System.exit(0);
 		}

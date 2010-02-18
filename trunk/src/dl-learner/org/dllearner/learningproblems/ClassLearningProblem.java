@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
@@ -153,6 +154,11 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 		
 		classInstances = new LinkedList<Individual>(reasoner.getIndividuals(classToDescribe));
+		// sanity check
+		if(classInstances.size() == 0) {
+			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + ComponentManager.getInstance().getComponentName(reasoner.getClass()) + "\". Cannot perform class learning with 0 instances.");
+		}
+		
 		classInstancesSet = new TreeSet<Individual>(classInstances);
 		equivalence = (configurator.getType().equals("equivalence"));
 		
