@@ -123,6 +123,7 @@ public class TableRowColumn implements Serializable{
 	}
 	
 	private double getValue(int i){
+//		return monitors[i].getAvg();
 		switch(display){
 			case AVG: return monitors[i].getAvg();
 			case HITS: return monitors[i].getHits();
@@ -133,7 +134,7 @@ public class TableRowColumn implements Serializable{
 	
 	private String latexFormat(FinalizedMonitor monitors, double value){
 		if(monitors.getUnits().equals(JamonMonitorLogger.PERCENTAGE)){
-			return dfPercentage.format(value);
+			return dfPercentage.format(value).replace("%", "\\%").replace("_", "\\_");
 		}else{
 			return dfLatexDefault.format(value);
 		}

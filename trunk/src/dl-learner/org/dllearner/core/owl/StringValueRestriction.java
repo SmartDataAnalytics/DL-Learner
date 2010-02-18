@@ -39,6 +39,11 @@ public class StringValueRestriction extends DatatypeValueRestriction {
 	}
 
 	private static final long serialVersionUID = 5651982376457935975L;
+	
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " +"\"" +value.toManchesterSyntaxString(baseURI, prefixes)+"\"";
+	}
 
 	@Override
 	public int getLength() {
@@ -49,6 +54,7 @@ public class StringValueRestriction extends DatatypeValueRestriction {
 		return stringValue;
 	}
 	
+	@Override
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return "(" + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " STRINGVALUE " + value.toKBSyntaxString(baseURI, prefixes) + ")";
 	}	

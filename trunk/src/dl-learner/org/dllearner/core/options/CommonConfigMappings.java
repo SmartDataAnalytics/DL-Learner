@@ -39,22 +39,25 @@ public class CommonConfigMappings {
 	
 	public static SortedSet<Individual> getIndividualSet(Set<String> individuals) {
 		SortedSet<Individual> set = new TreeSet<Individual>();
-		for(String individual : individuals)
+		for(String individual : individuals){
 			set.add(new Individual(individual));
+		}
 		return set;
 	}
 	
 	public static SortedSet<NamedClass> getAtomicConceptSet(Set<String> atomicConcepts) {
 		SortedSet<NamedClass> set = new TreeSet<NamedClass>(cm);
-		for(String atomicConcept : atomicConcepts)
+		for(String atomicConcept : atomicConcepts) {
 			set.add(new NamedClass(atomicConcept));
+		}
 		return set;
 	}	
 	
 	public static SortedSet<ObjectProperty> getAtomicRoleSet(Set<String> atomicRoles) {
 		SortedSet<ObjectProperty> set = new TreeSet<ObjectProperty>();
-		for(String atomicRole : atomicRoles)
+		for(String atomicRole : atomicRoles){
 			set.add(new ObjectProperty(atomicRole));
+		}
 		return set;
 	}
 }
