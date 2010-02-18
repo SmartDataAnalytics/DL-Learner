@@ -15,7 +15,7 @@ public class IteratedConfig extends ExperimentConfiguration{
 	public int negativeSplitAdd = 0;
 	
 	public boolean useStartClass = true; 
-	public boolean searchTree = true; 
+	public boolean searchTree = false; 
 	public int noise = 0;
 	public int noiseIterationFactor = 0;
 	//sets ValueFrequency treshold and maxExecution time
