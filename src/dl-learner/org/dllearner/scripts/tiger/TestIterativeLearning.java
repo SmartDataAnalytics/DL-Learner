@@ -34,7 +34,6 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Helper;
@@ -118,7 +117,7 @@ public class TestIterativeLearning {
 		
 		
 		long n = System.currentTimeMillis();
-			passiveNoZU();
+//			passiveNoZU();
 			passiveWithZu();
 
 		 String a="\n";
