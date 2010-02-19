@@ -67,6 +67,11 @@ public class ExMakerRandomizer {
 		int sizeOfPosTestSet = examples.sizeTotalOfPositives()-sizeOfPosTrainingSet;
 		int sizeOfNegTestSet = examples.sizeTotalOfNegatives()-sizeOfNegTrainingSet;
 		
+//		System.out.println(sizeOfPosTrainingSet);
+//		System.out.println(sizeOfNegTrainingSet);
+//		System.out.println(sizeOfPosTestSet);
+//		System.out.println(sizeOfNegTestSet);
+		
 		List<String> posRemaining =  new ArrayList<String>(examples.getPositiveExamples());
 		List<String> negRemaining  = new ArrayList<String>(examples.getNegativeExamples());
 	
@@ -75,11 +80,11 @@ public class ExMakerRandomizer {
 		for (int i = 0; i < posRemaining.size(); i++) {
 			String one = posRemaining.get(i);
 			if(ret.getPosTrain().size()>sizeOfPosTrainingSet){
-				ret.addPosTrain(one);
+				ret.addPosTest(one);
 				continue;
 			}
 			if(ret.getPosTest().size()>sizeOfPosTestSet){
-				ret.addPosTest(one);
+				ret.addPosTrain(one);
 				continue;
 			}
 			
@@ -93,11 +98,11 @@ public class ExMakerRandomizer {
 		for (int i = 0; i < negRemaining.size(); i++) {
 			String one = negRemaining.get(i);
 			if(ret.getNegTrain().size()>sizeOfNegTrainingSet){
-				ret.addNegTrain(one);
+				ret.addNegTest(one);
 				continue;
 			}
 			if(ret.getNegTest().size()>sizeOfNegTestSet){
-				ret.addNegTest(one);
+				ret.addNegTrain(one);
 				continue;
 			}
 			
