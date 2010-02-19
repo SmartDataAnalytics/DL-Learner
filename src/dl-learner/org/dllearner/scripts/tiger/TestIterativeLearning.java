@@ -136,6 +136,8 @@ public class TestIterativeLearning {
 		SortedSet<String> positives = read(passiveNoZU);
 		SortedSet<String> negatives = read(active);
 
+		
+		
 		// removing overlap
 		positives.removeAll(negatives);
 		negatives.removeAll(positives);
@@ -180,10 +182,14 @@ public class TestIterativeLearning {
 	public static void passiveWithZu() {
 		SortedSet<String> positives = read(passiveWithZu);
 		SortedSet<String> negatives = read(active);
+		negatives.addAll(read(passiveNoZU));
 
+		SortedSet<String> positivesTMP = new TreeSet<String>();
+		positivesTMP.addAll(positives);
+		
 		// removing overlap
 		positives.removeAll(negatives);
-		negatives.removeAll(positives);
+		negatives.removeAll(positivesTMP);
 
 		Examples allExamples = new Examples();
 		allExamples.addPosTrain(positives);
@@ -205,6 +211,7 @@ public class TestIterativeLearning {
 //		
 		/*CLEANUP*/
 		positives = null;
+		positivesTMP = null;
 		negatives = null;
 		allExamples = null;
 
