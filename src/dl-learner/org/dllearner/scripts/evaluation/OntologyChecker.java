@@ -89,6 +89,7 @@ public class OntologyChecker {
 						long startTime = System.currentTimeMillis();
 						reasoner.classify();
 						sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
+						sb.append("#unsatisfiable classes: " + reasoner.getInconsistentClasses().size() + "\n");
 						int classCount = 0;
 						StringBuffer tmp = new StringBuffer();
 						if (reasoner.getIndividuals().size() > 0) {
