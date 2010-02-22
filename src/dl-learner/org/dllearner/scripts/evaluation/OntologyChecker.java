@@ -35,6 +35,7 @@ import org.dllearner.core.ComponentInitException;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -50,7 +51,8 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 public class OntologyChecker {
 
 	private static int minInstanceCount = 5;
-	private static boolean displayClasses = false;
+	private static boolean displayClasses = true;
+	private static boolean displayInstances = true;
 
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
@@ -94,9 +96,15 @@ public class OntologyChecker {
 						StringBuffer tmp = new StringBuffer();
 						if (reasoner.getIndividuals().size() > 0) {
 							for (OWLClass cl : reasoner.getClasses()) {
-								if (reasoner.getIndividuals(cl, false).size() >= minInstanceCount) {
+								Set<OWLIndividual> inds = reasoner.getIndividuals(cl, false);
+								if (inds.size() >= minInstanceCount) {
 									classCount++;
 									tmp.append("  " + cl.getURI() + "\n");
+									if(displayInstances) {
+										for(OWLIndividual ind : inds) {
+											tmp.append("    " + ind.toString() + "\n");
+										}	
+									}
 								}
 							}
 						}
