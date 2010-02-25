@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -203,8 +204,9 @@ public final class ComponentManager {
 		List<String> componentStrings = new LinkedList<String>();
 
 		try {
-			
-			DataInputStream in = new DataInputStream(ClassLoader.getSystemResourceAsStream(componentsFile));
+			 
+			InputStream is = ComponentManager.class.getClassLoader().getResourceAsStream(componentsFile);
+			DataInputStream in = new DataInputStream(is);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String line;
 
