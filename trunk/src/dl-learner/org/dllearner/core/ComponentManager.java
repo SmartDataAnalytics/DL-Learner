@@ -22,7 +22,6 @@ package org.dllearner.core;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
@@ -78,7 +77,7 @@ public final class ComponentManager {
 	private static Collection<Class<? extends LearningProblem>> learningProblems;
 	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
-	private static String componentsFile = "lib/components.ini";
+	private static String componentsFile = "org/dllearner/components.ini";
 	private static String[] componentClasses = new String[]{}; 
 	private static ComponentManager cm = null;	
 
@@ -204,9 +203,8 @@ public final class ComponentManager {
 		List<String> componentStrings = new LinkedList<String>();
 
 		try {
-			FileInputStream fstream = new FileInputStream(componentsFile);
-
-			DataInputStream in = new DataInputStream(fstream);
+			
+			DataInputStream in = new DataInputStream(ClassLoader.getSystemResourceAsStream(componentsFile));
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String line;
 
