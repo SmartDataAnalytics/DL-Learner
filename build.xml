@@ -4,7 +4,6 @@
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
-	<property name="protege_dir" value="C:\Program Files\Protege_4.0.1\plugins" />
 	<property name="class_dir" value="classes" />
 	<property name="ontowiki_dir" value="${user.home}/workspace/ontowiki/ontowiki/src/extensions/components/dllearner/dllearner" />
 
@@ -395,7 +394,7 @@ public class Info {
 
 	<!--Copy the DL-Learner-Protege-plugin jar file into the Protege plugin folder -->
 	<target name="copyProtegePluginToProtegeDir" depends="buildProtegePlugin">
-		<copy toDir="${protege_dir}" >
+		<copy toDir="${protege.plugins}" >
 			<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
 		</copy>
 		<delete dir="${temp}" />
