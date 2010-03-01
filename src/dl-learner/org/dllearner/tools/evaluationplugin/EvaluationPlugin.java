@@ -2,6 +2,7 @@ package org.dllearner.tools.evaluationplugin;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +24,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,12 +44,21 @@ import org.semanticweb.owl.model.OWLOntology;
 
 public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSelectionListener {
 
+	enum CompareMode{
+		CompareWithTF,
+		CompareWithFT,
+		CompareWithTT
+	}
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static boolean in_compare_mode = false;
+	private static CompareMode compareMode = CompareMode.CompareWithFT;
+	
 	private EvaluationTable evaluationTable;
+	private EvaluationTable compareEvaluationTable;
 	private GraphicalCoveragePanel coveragePanel;
 	private JLabel inconsistencyLabel;
 	private JButton nextSaveButton;
@@ -68,6 +77,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			+ "(Often, suggestions leading to an inconsistency should still be added. They help to detect problems in "
 			+ "the ontology elsewhere.<br>"
 			+ " See http://dl-learner.org/files/screencast/protege/screencast.htm .)</html>";
+	private static final String FOLLOWS_FROM_KB_WARNING = "<html>Selected class expressions follows already logically from ontology.</html>";
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;
@@ -83,6 +93,20 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
 	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapComp;
+
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapComp;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapComp;
+
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapComp;
+	
 	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap = new Hashtable<NamedClass, Map<EvaluatedDescriptionClass,Integer>>();
 
 	@Override
@@ -91,6 +115,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		createUI();
 		parseEvaluationFile();
 		showNextEvaluatedDescriptions();
+		
 	}
 
 	@Override
@@ -103,50 +128,98 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	 * Create the user interface.
 	 */
 	private void createUI() {
-		setLayout(new BorderLayout());
+		if(!in_compare_mode){
+			setLayout(new BorderLayout());
 
-		currentClassLabel = new JLabel();
-		add(currentClassLabel, BorderLayout.NORTH);
+			currentClassLabel = new JLabel();
+			add(currentClassLabel, BorderLayout.NORTH);
 
-		JPanel tableHolderPanel = new JPanel(new BorderLayout());
-		evaluationTable = new EvaluationTable(getOWLEditorKit());
-		evaluationTable.getSelectionModel().addListSelectionListener(this);
-		JScrollPane sp = new JScrollPane(evaluationTable);
-		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		tableHolderPanel.add(sp);
-		inconsistencyLabel = new JLabel(INCONSISTENCY_WARNING);
-		inconsistencyLabel.setForeground(getBackground());
-		tableHolderPanel.add(inconsistencyLabel, BorderLayout.SOUTH);
-		add(tableHolderPanel);
+			JPanel tableHolderPanel = new JPanel(new BorderLayout());
+			evaluationTable = new EvaluationTable(getOWLEditorKit());
+			evaluationTable.getSelectionModel().addListSelectionListener(this);
+			JScrollPane sp = new JScrollPane(evaluationTable);
+			sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			tableHolderPanel.add(sp);
+			inconsistencyLabel = new JLabel(INCONSISTENCY_WARNING);
+			inconsistencyLabel.setForeground(getBackground());
+			tableHolderPanel.add(inconsistencyLabel, BorderLayout.SOUTH);
+			add(tableHolderPanel);
 
-		JPanel coverageHolderPanel = new JPanel(new BorderLayout());
-		coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
-		coverageHolderPanel.add(coveragePanel);
+			JPanel coverageHolderPanel = new JPanel(new BorderLayout());
+			coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
+			coverageHolderPanel.add(coveragePanel);
 
-		nextSaveButton = new JButton();
-		nextSaveButton.setActionCommand("next");
-		nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
-		nextSaveButton.setAction(new AbstractAction("Next") {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 6982520538511324236L;
+			nextSaveButton = new JButton();
+			nextSaveButton.setActionCommand("next");
+			nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
+			nextSaveButton.setAction(new AbstractAction("Next") {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 6982520538511324236L;
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				traceInput(classes.get(currentClassIndex));
-				showNextEvaluatedDescriptions();
-			}
-		});
-		JPanel buttonHolderPanel = new JPanel();
-		progressBar = new JProgressBar();
-        progressBar.setValue(0);
-        progressBar.setStringPainted(true);
-        buttonHolderPanel.add(progressBar);
-		buttonHolderPanel.add(nextSaveButton);
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					traceInput(classes.get(currentClassIndex));
+					showNextEvaluatedDescriptions();
+				}
+			});
+			JPanel buttonHolderPanel = new JPanel();
+			progressBar = new JProgressBar();
+	        progressBar.setValue(0);
+	        progressBar.setStringPainted(true);
+	        buttonHolderPanel.add(progressBar);
+			buttonHolderPanel.add(nextSaveButton);
+			
+			coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
+			add(coverageHolderPanel, BorderLayout.SOUTH);
+		} else {
+			setLayout(new BorderLayout());
+
+			currentClassLabel = new JLabel();
+			add(currentClassLabel, BorderLayout.NORTH);
+
+			JPanel tableHolderPanel = new JPanel(new GridLayout(2, 1));
+			evaluationTable = new EvaluationTable(getOWLEditorKit());
+			compareEvaluationTable = new EvaluationTable(getOWLEditorKit());
+			evaluationTable.getSelectionModel().addListSelectionListener(this);
+			JScrollPane sp = new JScrollPane(evaluationTable);
+			sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			tableHolderPanel.add(sp);
+			tableHolderPanel.add(new JScrollPane(compareEvaluationTable));
+			inconsistencyLabel = new JLabel(INCONSISTENCY_WARNING);
+			
+			add(tableHolderPanel);
+
+			JPanel coverageHolderPanel = new JPanel(new BorderLayout());
+			coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
+
+			nextSaveButton = new JButton();
+			nextSaveButton.setActionCommand("next");
+			nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
+			nextSaveButton.setAction(new AbstractAction("Next") {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 6982520538511324236L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					traceInput(classes.get(currentClassIndex));
+					showNextEvaluatedDescriptions();
+				}
+			});
+			JPanel buttonHolderPanel = new JPanel();
+			progressBar = new JProgressBar();
+	        progressBar.setValue(0);
+	        progressBar.setStringPainted(true);
+	        buttonHolderPanel.add(progressBar);
+			buttonHolderPanel.add(nextSaveButton);
+			
+			coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
+			add(coverageHolderPanel, BorderLayout.SOUTH);
+		}
 		
-		coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
-		add(coverageHolderPanel, BorderLayout.SOUTH);
 
 	}
 
@@ -160,6 +233,10 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
+		if(in_compare_mode){
+			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass).asOWLClass().
+					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
+		}
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
 				OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass));
@@ -167,7 +244,9 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		System.out.println("Showing evaluated descriptions for class " + newClass.toString());
 
 		// refresh coverage panel to the current class
-		coveragePanel.setConcept(newClass);
+		if(!in_compare_mode){
+			coveragePanel.setConcept(newClass);
+		}
 		
 		//increment progress
 		progressBar.setValue(currentClassIndex);
@@ -180,9 +259,12 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass);
 		OWLEntity curEntity = desc.asOWLClass();
 		getOWLEditorKit().getWorkspace().getOWLSelectionModel().setSelectedEntity(curEntity);
-
+		
 		//add the new disjoint descriptions to the table
-		evaluationTable.setDescriptions(getMergedDescriptions(newClass));
+		evaluationTable.setDescriptions(getMergedDescriptions(newClass, false));
+		if(in_compare_mode){
+			compareEvaluationTable.setDescriptions(getMergedDescriptions(newClass, true));
+		}
 		
 		// if the currently shown class expressions are for the last class to
 		// evaluate, change
@@ -215,32 +297,66 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private void parseEvaluationFile() {
 		OWLOntology activeOnt = getOWLModelManager().getActiveOntology();
 		URI uri = getOWLModelManager().getOntologyPhysicalURI(activeOnt);
-		String resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.') + 1) + "res";
+		String resultFile = null;;
 		InputStream fis = null;
+		ObjectInputStream o = null;
 		try {
-			fis = new FileInputStream(new File(URI.create(resultFile)));
-			ObjectInputStream o = new ObjectInputStream(fis);
-			owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-
-//			for(int i = 1; i <= 5;i++){
-//				o.readObject();
-//			}
-		
 			
-			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			if(!in_compare_mode){
+				resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.') + 1) + "res";
+				fis = new FileInputStream(new File(URI.create(resultFile)));
+				o = new ObjectInputStream(fis);
+				
+				owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				
+				fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-//			for(int i = 1; i <= 5;i++){
-//				o.readObject();
-//			}
-			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			} else {
+				resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.')) + "_ff.res";
+				fis = new FileInputStream(new File(URI.create(resultFile)));
+				o = new ObjectInputStream(fis);
+				owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				
+				String ending = null;
+				switch(compareMode){
+					case CompareWithFT: ending = "_ft"; break;
+					case CompareWithTF: ending = "_tf"; break;
+					case CompareWithTT: ending = "_tt"; break;
+				}
+				resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.')) + ending + ".res";
+				fis = new FileInputStream(new File(URI.create(resultFile)));
+				o = new ObjectInputStream(fis);
+				owlEquivalenceStandardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalencePredaccMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceJaccardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceGenFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceStandardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalencePredaccMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceJaccardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceGenFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				defaultEquivalenceMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			}
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -298,8 +414,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	 * @return A List of disjoint evaluated descriptions - here disjointness
 	 *         only by the description not the accuracy.
 	 */
-	private List<EvaluatedDescriptionClass> getMergedDescriptions(NamedClass nc) {
-
+	private List<EvaluatedDescriptionClass> getMergedDescriptions(NamedClass nc, boolean compared) {
+		
 		Set<EvaluatedDescriptionClass> evaluatedDescriptions = new TreeSet<EvaluatedDescriptionClass>(
 				new Comparator<EvaluatedDescriptionClass>() {
 
@@ -308,19 +424,48 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 					};
 				});
-		evaluatedDescriptions.addAll(owlEquivalenceStandardMap.get(nc));
-		evaluatedDescriptions.addAll(owlEquivalenceJaccardMap.get(nc));
-		evaluatedDescriptions.addAll(owlEquivalenceGenFMeasureMap.get(nc));
-		evaluatedDescriptions.addAll(owlEquivalenceFMeasureMap.get(nc));
-		evaluatedDescriptions.addAll(owlEquivalencePredaccMap.get(nc));
-		evaluatedDescriptions.addAll(fastEquivalenceStandardMap.get(nc));
-		evaluatedDescriptions.addAll(fastEquivalenceJaccardMap.get(nc));
-		evaluatedDescriptions.addAll(fastEquivalenceGenFMeasureMap.get(nc));
-		evaluatedDescriptions.addAll(fastEquivalenceFMeasureMap.get(nc));
-		evaluatedDescriptions.addAll(fastEquivalencePredaccMap.get(nc));
-		evaluatedDescriptions.addAll(defaultEquivalenceMap.get(nc));
+		if(!compared){
+			evaluatedDescriptions.addAll(owlEquivalenceStandardMap.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalenceJaccardMap.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalenceGenFMeasureMap.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalenceFMeasureMap.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalencePredaccMap.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceStandardMap.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceJaccardMap.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceGenFMeasureMap.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceFMeasureMap.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalencePredaccMap.get(nc));
+			evaluatedDescriptions.addAll(defaultEquivalenceMap.get(nc));
+		} else {
+			evaluatedDescriptions.addAll(owlEquivalenceStandardMapComp.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalenceJaccardMapComp.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalenceGenFMeasureMapComp.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalenceFMeasureMapComp.get(nc));
+			evaluatedDescriptions.addAll(owlEquivalencePredaccMapComp.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceStandardMapComp.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceJaccardMapComp.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceGenFMeasureMapComp.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalenceFMeasureMapComp.get(nc));
+			evaluatedDescriptions.addAll(fastEquivalencePredaccMapComp.get(nc));
+			evaluatedDescriptions.addAll(defaultEquivalenceMapComp.get(nc));
+		}
+		
 		List<EvaluatedDescriptionClass> merged = new ArrayList<EvaluatedDescriptionClass>(evaluatedDescriptions);
-
+		
+//		OWLReasoner reasoner = getOWLModelManager().getReasoner();
+//		SubsumptionTree tree = new SubsumptionTree(reasoner);
+//		
+//		List<EvaluatedDescription> list = new ArrayList<EvaluatedDescription>();
+//		for(EvaluatedDescriptionClass ec : merged){
+//			list.add((EvaluatedDescription)ec);
+//		}
+//		tree.insert(list);
+//		System.out.println(tree.toString());
+//
+//		for(Node node : tree.getRoot().getSubClasses()){
+//			System.out.println(node.getSubClasses());
+//		}
+		
 		return merged;
 	}
 
