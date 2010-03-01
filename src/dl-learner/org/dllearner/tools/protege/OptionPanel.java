@@ -50,6 +50,7 @@ public class OptionPanel extends JPanel {
 	
 	private JRadioButton owlRadioButton;
 	private JRadioButton elProfileButton;
+	private JRadioButton defaultProfileButton;
 	
 	private JCheckBox allBox;
 	private JCheckBox someBox;
@@ -109,22 +110,24 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
 		
-		owlRadioButton = new JRadioButton("<html>OWL 2</html>", true);
+		owlRadioButton = new JRadioButton("<html>OWL 2</html>", false);
 		elProfileButton = new JRadioButton("<html>EL Profile</html>", false);
+		defaultProfileButton = new JRadioButton("<html>Default</html>", true);
 		owlRadioButton.setEnabled(true);
-		owlRadioButton.addItemListener(optionHandler);
-		elProfileButton.addItemListener(optionHandler);
+		owlRadioButton.addActionListener(optionHandler);
+		elProfileButton.addActionListener(optionHandler);
+		defaultProfileButton.addActionListener(optionHandler);
 		
 		allBox = new JCheckBox("<html>all</html>", true);
-		allBox.addItemListener(optionHandler);
+		//allBox.addItemListener(optionHandler);
 		someBox = new JCheckBox("<html>some</html>", true);
-		someBox.addItemListener(optionHandler);
-		notBox = new JCheckBox("<html>not</html>", true);
-		notBox.addItemListener(optionHandler);
-		valueBox = new JCheckBox("<html>value</html>", true);
-		valueBox.addItemListener(optionHandler);
+		//someBox.addItemListener(optionHandler);
+		notBox = new JCheckBox("<html>not</html>", false);
+		//notBox.addItemListener(optionHandler);
+		valueBox = new JCheckBox("<html>value</html>", false);
+		//valueBox.addItemListener(optionHandler);
 		moreBox = new JCheckBox("<html> &#8249;=x, &#8250;=x with max.:</html>", true);
-		moreBox.addItemListener(optionHandler);
+		//moreBox.addItemListener(optionHandler);
 		
 		countMoreBox = new JComboBox();
 		countMoreBox.addItem(1);
@@ -192,6 +195,7 @@ public class OptionPanel extends JPanel {
 		
 		radioBoxPanel.add(owlRadioButton);
 		radioBoxPanel.add(elProfileButton);
+		radioBoxPanel.add(defaultProfileButton);
 		
 		profilePanel.add(radioBoxPanel);
 		profilePanel.add(checkBoxPanel);
@@ -249,6 +253,10 @@ public class OptionPanel extends JPanel {
 	 */
 	public JRadioButton getElProfileButton() {
 		return elProfileButton;
+	}
+	
+	public JRadioButton getDefaultProfileButton() {
+		return defaultProfileButton;
 	}
 
 	/**
@@ -313,6 +321,9 @@ public class OptionPanel extends JPanel {
 	 */
 	public void setToOWLProfile() {
 		allBox.setSelected(true);
+		owlRadioButton.setSelected(true);
+		elProfileButton.setSelected(false);
+		defaultProfileButton.setSelected(false);
 		someBox.setSelected(true);
 		notBox.setSelected(true);
 		valueBox.setSelected(true);
@@ -330,7 +341,22 @@ public class OptionPanel extends JPanel {
 		notBox.setSelected(false);
 		valueBox.setSelected(false);
 		moreBox.setSelected(false);
+		owlRadioButton.setSelected(false);
+		elProfileButton.setSelected(true);
+		defaultProfileButton.setSelected(false);
 		this.setCountMoreBoxEnabled(false);
+	}
+	
+	public void setToDefaultProfile() {
+		allBox.setSelected(true);
+		someBox.setSelected(true);
+		notBox.setSelected(false);
+		valueBox.setSelected(false);
+		moreBox.setSelected(true);
+		owlRadioButton.setSelected(false);
+		elProfileButton.setSelected(false);
+		defaultProfileButton.setSelected(true);
+		this.setCountMoreBoxEnabled(true);
 	}
 	
 	/**

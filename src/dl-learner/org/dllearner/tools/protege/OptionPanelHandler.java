@@ -19,18 +19,19 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * This class handles the all actions in the option panel.
  * @author Christian Koetteritzsch
  *
  */
-public class OptionPanelHandler implements ItemListener {
+public class OptionPanelHandler implements ActionListener {
 
 	private static final String OWL_RADIO_STRING = "OWL 2";
 	private static final String EL_RADIO_STRING = "EL Profile";
+	private static final String DEFAULT_RADIO_STRING = "Default";
 	private static final String VALUE_STRING = "<=x, >=x with max.:";
 
 	private OptionPanel option;
@@ -43,28 +44,23 @@ public class OptionPanelHandler implements ItemListener {
 		this.option = o;
 
 	}
-
+	
 	@Override
 	/**
 	 * This method handles the actions to be taken if a 
 	 * radio button is selected/deselected.
 	 */
-	public void itemStateChanged(ItemEvent e) {
+	public void actionPerformed(ActionEvent e) {
 		if (e.toString().contains(OWL_RADIO_STRING)) {
-			if (option.getOwlRadioButton().isSelected()) {
 				this.setToOWLProfile();
-			} else {
+		} 
+		if (e.toString().contains(EL_RADIO_STRING)) {
 				this.setToELProfile();
-			}
-
-		} else if (e.toString().contains(EL_RADIO_STRING)) {
-			if (option.getElProfileButton().isSelected()) {
-				this.setToELProfile();
-			} else {
-				this.setToOWLProfile();
-			}
-
-		} else if(e.toString().contains(VALUE_STRING)) {
+		}
+		if (e.toString().contains(DEFAULT_RADIO_STRING)) {
+				this.setToDefaultProfile();
+		}
+		if(e.toString().contains(VALUE_STRING)) {
 			if(option.getMoreBox()) {
 				option.setCountMoreBoxEnabled(true);
 			} else {
@@ -74,17 +70,19 @@ public class OptionPanelHandler implements ItemListener {
 	}
 
 	private void setToOWLProfile() {
-		option.getOwlRadioButton().setSelected(true);
-		option.getElProfileButton().setSelected(false);
 		option.setToOWLProfile();
 
 	}
 
 	private void setToELProfile() {
-		option.getOwlRadioButton().setSelected(false);
-		option.getElProfileButton().setSelected(true);
 		option.setToELProfile();
 
 	}
+	
+	private void setToDefaultProfile() {
+		option.setToDefaultProfile();
+	}
+
+	
 
 }
