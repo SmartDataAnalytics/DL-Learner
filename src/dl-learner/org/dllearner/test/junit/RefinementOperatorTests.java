@@ -238,7 +238,9 @@ public class RefinementOperatorTests {
 		//		(male AND male AND male) 
 		//		(male AND (NOT female)) 
 		//		(male AND EXISTS hasChild.TOP) 
-		System.out.println(rs);
+//		System.out.println(rs);
+//		System.out.println("most general properties: " + rs.getMostGeneralProperties());
+//		System.out.println(rs.getObjectPropertyHierarchy());
 		assertTrue(refinements.size()==8);		
 	}
 	
