@@ -20,12 +20,17 @@
 package org.dllearner.tools.protege;
 
 import java.awt.BorderLayout;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.evaluationplugin.EvaluationTable;
 
 /**
  * This class is the panel for the suggest list. It shows the descriptions made
@@ -41,6 +46,8 @@ public class SuggestClassPanel extends JPanel {
 	// Description List
 
 	private final JList descriptions;
+	
+	private final SuggestionsTable suggestionTable;
 
 	// Panel for the description list
 
@@ -72,12 +79,15 @@ public class SuggestClassPanel extends JPanel {
 		descriptions = new JList(suggestModel);
 		descriptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		suggestPanel = new JPanel();
-		descriptions.setVisible(true);
-		descriptions.setVisibleRowCount(6);
-		descriptions.getPreferredScrollableViewportSize();
-		suggestPanel.add(descriptions);
-		suggestScroll.setViewportView(descriptions);
-		descriptions.setCellRenderer(new SuggestListCellRenderer());
+//		descriptions.setVisible(true);
+//		descriptions.setVisibleRowCount(6);
+//		descriptions.getPreferredScrollableViewportSize();
+//		suggestPanel.add(descriptions);
+//		suggestScroll.setViewportView(descriptions);
+//		descriptions.setCellRenderer(new SuggestListCellRenderer(m.getOWLEditorKit()));
+		suggestionTable = new SuggestionsTable(m.getOWLEditorKit());
+		suggestionTable.setVisibleRowCount(6);
+		suggestScroll.setViewportView(suggestionTable);
 		add(BorderLayout.CENTER, suggestScroll);
 	}
 
@@ -91,6 +101,10 @@ public class SuggestClassPanel extends JPanel {
 		add(suggestScroll);
 		return this;
 
+	}
+	
+	public void addSuggestions(List<? extends EvaluatedDescription> result){
+		suggestionTable.setSuggestions((List<EvaluatedDescriptionClass>)result);
 	}
 
 	/**
@@ -107,8 +121,7 @@ public class SuggestClassPanel extends JPanel {
 				}
 			} else {
 				for (int i = 0; i < suggestModel.size(); i++) {
-					if (!((SuggestListItem) suggestModel.get(i)).getValue()
-							.equals(((SuggestListItem) desc.get(i)).getValue())) {
+					if (!suggestModel.get(i).equals(desc.get(i))) {
 						descriptions.getSelectedIndex();
 						suggestModel.set(i, desc.get(i));
 						if (descriptions.getSelectedIndex() == i) {
@@ -136,6 +149,10 @@ public class SuggestClassPanel extends JPanel {
 	 */
 	public JList getSuggestList() {
 		return descriptions;
+	}
+	
+	public SuggestionsTable getSuggestionsTable() {
+		return suggestionTable;
 	}
 
 	/**

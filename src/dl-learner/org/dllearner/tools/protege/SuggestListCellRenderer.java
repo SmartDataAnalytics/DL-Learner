@@ -23,22 +23,32 @@ import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
+
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 /**
  * This is the class that is responsible for the rendering of the 
  * concepts that are shown in the SuggestPanel.
  * @author Christian Koetteritzsch
  *
  */
-public class SuggestListCellRenderer extends JLabel implements ListCellRenderer {
+public class SuggestListCellRenderer extends OWLCellRenderer {
 
 	private static final long serialVersionUID = 8040385703448641356L;
 	/**
 	 * Constructor for the Cell Renderer for the Suggest List.
 	 */
-	public SuggestListCellRenderer() {
+	public SuggestListCellRenderer(OWLEditorKit editorKit) {
+		super(editorKit);
+		setWrap(false);
+		setHighlightKeywords(true);
 		setOpaque(true);
 	}
 	
@@ -52,22 +62,29 @@ public class SuggestListCellRenderer extends JLabel implements ListCellRenderer 
 	 * @return Component Returns the currently rendered component of the suggest list
 	 */
 	public Component getListCellRendererComponent(JList list, Object value,
-			int arg2, boolean iss, boolean arg4) {
+			int index, boolean isSelected, boolean cellHasFocus) {
+		EvaluatedDescriptionClass desc = (EvaluatedDescriptionClass)value;
+		Component c = super.getListCellRendererComponent(list, OWLAPIDescriptionConvertVisitor.getOWLDescription(desc.getDescription()), index, isSelected, cellHasFocus);
+		JTextPane pane = (JTextPane)((JPanel)c).getComponent(1);
+		if(!desc.isConsistent()){
+			pane.setForeground(Color.RED);
+		}
+		
 		// Set the text and
 		// background color for rendering
-		setText(((SuggestListItem) value).getValue() + "  " + "Accuracy: " + Math.round(((SuggestListItem) value).getAccuracy())+"%");
-		setBackground(Color.WHITE);
-		setForeground(((SuggestListItem) value).getColor());
-		// Set a border if the list
-		// item is selected
-		if (iss) {
-			setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
-		} else {
-			setBorder(BorderFactory.createLineBorder(list.getBackground(), 2));
-		}
-		 setEnabled(list.isEnabled());
+//		setText(((SuggestListItem) value).getValue() + "  " + "Accuracy: " + Math.round(((SuggestListItem) value).getAccuracy())+"%");
+//		setBackground(Color.WHITE);
+//		setForeground(((SuggestListItem) value).getColor());
+//		// Set a border if the list
+//		// item is selected
+//		if (iss) {
+//			setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+//		} else {
+//			setBorder(BorderFactory.createLineBorder(list.getBackground(), 2));
+//		}
+//		 setEnabled(list.isEnabled());
 
-		return this;
+		return c;
 	}
 
 }

@@ -305,42 +305,45 @@ public class ActionHandler implements ActionListener {
 
 				public void run() {
 					model.setSuggestList(result);
-					dm.clear();
-					int i = 0;
-					for (EvaluatedDescription eval : result) {
-						Set<String> ont = model.getOntologyURIString();
-						for (String ontology : ont) {
-							if (eval.getDescription().toString().contains(
-									ontology)) {
-								if (((EvaluatedDescriptionClass) eval)
-										.isConsistent()) {
-									dm.add(i, new SuggestListItem(colorGreen,
-											eval.getDescription()
-													.toManchesterSyntaxString(
-															ontology, null),
-											((EvaluatedDescriptionClass) eval)
-													.getAccuracy() * 100));
-									i++;
-									break;
-								} else {
-									dm.add(i, new SuggestListItem(colorRed,
-											eval.getDescription()
-													.toManchesterSyntaxString(
-															ontology, null),
-											((EvaluatedDescriptionClass) eval)
-													.getAccuracy() * 100));
-									if(isFinished) {
-										view.setIsInconsistent(true);
-									}
-									i++;
-									break;
-								}
-							}
-						}
-					}
-
-					view.getSuggestClassPanel().setSuggestList(dm);
-					view.getLearnerView().repaint();
+//					dm.clear();
+//					int i = 0;
+//					for (EvaluatedDescription eval : result) {
+//						Set<String> ont = model.getOntologyURIString();
+//						for (String ontology : ont) {
+//							if (eval.getDescription().toString().contains(
+//									ontology)) {
+//								if (((EvaluatedDescriptionClass) eval)
+//										.isConsistent()) {
+//									dm.add(i, eval);
+////									dm.add(i, new SuggestListItem(colorGreen,
+////											eval.getDescription()
+////													.toManchesterSyntaxString(
+////															ontology, null),
+////											((EvaluatedDescriptionClass) eval)
+////													.getAccuracy() * 100));
+//									i++;
+//									break;
+//								} else {
+//									dm.add(i, eval);
+////									dm.add(i, new SuggestListItem(colorRed,
+////											eval.getDescription()
+////													.toManchesterSyntaxString(
+////															ontology, null),
+////											((EvaluatedDescriptionClass) eval)
+////													.getAccuracy() * 100));
+//									if(isFinished) {
+//										view.setIsInconsistent(true);
+//									}
+//									i++;
+//									break;
+//								}
+//							}
+//						}
+//					}
+//
+//					view.getSuggestClassPanel().setSuggestList(dm);
+//					view.getLearnerView().repaint();
+					view.getSuggestClassPanel().addSuggestions(result);
 				}
 			};
 			SwingUtilities.invokeLater(doUpdateList);

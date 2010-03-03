@@ -28,6 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 /**
  * This is the MouseListener for the Suggest Panel.
  * @author Christian Koetteritzsch
@@ -58,24 +59,25 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 	 */
 	public void mouseClicked(MouseEvent e) {
 		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
-			SuggestListItem item = (SuggestListItem) view
-					.getSuggestClassPanel().getSuggestList().getSelectedValue();
-			String desc = item.getValue();
-			if (model.getEvaluatedDescriptionList() != null) {
-				List<? extends EvaluatedDescription> evalList = model
-						.getEvaluatedDescriptionList();
-				Set<String> onto = model.getOntologyURIString();
-				for (EvaluatedDescription eDescription : evalList) {
-					for (String ont : onto) {
-						if (desc.equals(eDescription.getDescription()
-								.toManchesterSyntaxString(ont, null))) {
-							evaluatedDescription = eDescription;
-							action.setEvaluatedClassExpression(eDescription);
-							break;
-						}
-					}
-				}
-			}
+			EvaluatedDescription evaluatedDescription = (EvaluatedDescription)view.getSuggestClassPanel().getSuggestList().getSelectedValue();
+//			SuggestListItem item = (SuggestListItem) view
+//					.getSuggestClassPanel().getSuggestList().getSelectedValue();
+//			String desc = item.getValue();
+//			if (model.getEvaluatedDescriptionList() != null) {
+//				List<? extends EvaluatedDescription> evalList = model
+//						.getEvaluatedDescriptionList();
+//				Set<String> onto = model.getOntologyURIString();
+//				for (EvaluatedDescription eDescription : evalList) {
+//					for (String ont : onto) {
+//						if (desc.equals(eDescription.getDescription()
+//								.toManchesterSyntaxString(ont, null))) {
+//							evaluatedDescription = eDescription;
+//							action.setEvaluatedClassExpression(eDescription);
+//							break;
+//						}
+//					}
+//				}
+//			}
 			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(evaluatedDescription);
 			view.setGraphicalPanel();
 		}
@@ -124,7 +126,18 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 	 * Nothing happens here. 
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-
+		if(view.getSuggestClassPanel().getSuggestionsTable().getSelectedRow() >= 0){
+			EvaluatedDescriptionClass ec = view.getSuggestClassPanel().getSuggestionsTable().getSelectedSuggestion();
+			if(!e.getValueIsAdjusting() && ec != null){
+				view.getMoreDetailForSuggestedConceptsPanel().
+				renderDetailPanel(ec);
+				view.setGraphicalPanel();
+				action.setEvaluatedClassExpression(ec);
+				view.getAddButton().setEnabled(true);
+			}
+		}
+		
+		
 	}
 
 }

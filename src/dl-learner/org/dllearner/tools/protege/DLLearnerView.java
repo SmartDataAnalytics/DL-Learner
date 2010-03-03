@@ -187,6 +187,7 @@ public class DLLearnerView {
 		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
 		sugPanel.addSuggestPanelMouseListener(sugPanelHandler);
 		sugPanel.getSuggestList().addListSelectionListener(sugPanelHandler);
+		sugPanel.getSuggestionsTable().getSelectionModel().addListSelectionListener(sugPanelHandler);
 		this.addAcceptButtonListener(this.action);
 		this.addRunButtonListener(this.action);
 		this.addAdvancedButtonListener(this.action);	
@@ -437,6 +438,7 @@ public class DLLearnerView {
 	public void dispose() {
 		this.unsetEverything();
 		sugPanel.getSuggestList().removeAll();
+		sugPanel.getSuggestionsTable().clear();
 		learner.removeAll();
 		sugPanel = null;
 		model.getSuggestModel().clear();
