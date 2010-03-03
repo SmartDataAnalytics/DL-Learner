@@ -363,7 +363,7 @@ public class Info {
 					<fileset dir="${lib_dir}/owlapi" includes="owlapiV3-bin.jar" />
 				</copy>
 		<copy toDir="${temp}/lib/ore-tool" >
-			<fileset dir="${lib_dir}/ore-tool" includes="BrowserLauncher2-all-1_3.jar" />
+			<fileset dir="${lib_dir}/ore-tool" includes="BrowserLauncher2-all-1_3.jar, swingx-1.6.jar" />
 		</copy>
 		<copy toDir="${temp}/lib" >
 			<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
