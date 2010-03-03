@@ -40,15 +40,20 @@ public class ObjectPropertyHierarchy {
 	TreeSet<ObjectProperty> mostGeneralRoles = new TreeSet<ObjectProperty>(rc);
 	TreeSet<ObjectProperty> mostSpecialRoles = new TreeSet<ObjectProperty>(rc);
 	
+	ObjectProperty topRole = new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
+	ObjectProperty botRole = new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty");
+	
 	public ObjectPropertyHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		
 		// find most general and most special roles
 		for(ObjectProperty role : atomicRoles) {
-			if(getMoreGeneralRoles(role).size()==0)
+			SortedSet<ObjectProperty> moreGen = getMoreGeneralRoles(role);
+			SortedSet<ObjectProperty> moreSpec = getMoreSpecialRoles(role);
+			if(moreGen.size()==0 || (moreGen.size()==1 && moreGen.first().equals(topRole)))
 				mostGeneralRoles.add(role);
-			if(getMoreSpecialRoles(role).size()==0)
+			if(moreSpec.size()==0 || (moreSpec.size()==1 && moreSpec.first().equals(botRole)))
 				mostSpecialRoles.add(role);			
 		}
 	}
