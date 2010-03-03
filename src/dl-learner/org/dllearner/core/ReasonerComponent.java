@@ -19,6 +19,7 @@
  */
 package org.dllearner.core;
 
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLVocabulary;
@@ -234,6 +236,9 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		subsumptionReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
+		if(logger.isTraceEnabled()) {
+			logger.trace("reasoner query isSuperClassOf: " + superClass + " " + subClass + " " + result);
+		}
 		return result;
 	}
 
@@ -255,6 +260,9 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		subsumptionReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
+		if(logger.isTraceEnabled()) {
+			logger.trace("reasoner query isEquivalentClass: " + class1 + " " + class2 + " " + result);
+		}
 		return result;
 	}
 
@@ -340,6 +348,9 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		retrievalReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
+		if(logger.isTraceEnabled()) {
+			logger.trace("reasoner query getIndividuals: " + concept + " " + result);
+		}
 		return result;
 	}
 
@@ -1168,4 +1179,39 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return nrOfMultiInstanceChecks;
 	}
 
+	@Override
+	public String toString() {
+		String str = "";
+		if (nrOfRetrievals > 0) {
+			str += "number of retrievals: " + nrOfRetrievals + "\n";
+			str += "retrieval reasoning time: "
+							+ Helper.prettyPrintNanoSeconds(retrievalReasoningTimeNs)
+							+ " ( " + Helper.prettyPrintNanoSeconds(getTimePerRetrievalNs())
+							+ " per retrieval)" + "\n";
+		}
+		if (nrOfInstanceChecks > 0) {
+			str += "number of instance checks: " + nrOfInstanceChecks + " ("
+					+ nrOfMultiInstanceChecks + " multiple)\n";
+			str += "instance check reasoning time: "
+					+ Helper.prettyPrintNanoSeconds(instanceCheckReasoningTimeNs) + " ( "
+					+ Helper.prettyPrintNanoSeconds(getTimePerInstanceCheckNs())
+					+ " per instance check)\n";
+		}
+		if (nrOfSubsumptionHierarchyQueries > 0) {
+			str += "subsumption hierarchy queries: "
+					+ nrOfSubsumptionHierarchyQueries + "\n";
+		}
+		if (nrOfSubsumptionChecks > 0) {
+			str += "(complex) subsumption checks: " + nrOfSubsumptionChecks
+					+ " (" + nrOfMultiSubsumptionChecks + " multiple)\n";
+			str += "subsumption reasoning time: "
+					+ Helper.prettyPrintNanoSeconds(subsumptionReasoningTimeNs) + " ( "
+					+ Helper.prettyPrintNanoSeconds(getTimePerSubsumptionCheckNs())
+					+ " per subsumption check)\n";
+		}
+		str += "overall reasoning time: "
+				+ Helper.prettyPrintNanoSeconds(overallReasoningTimeNs) + "\n";	
+		return str;
+	}
+	
 }
