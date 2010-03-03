@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -219,6 +221,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDownTestPellet() {
+		Logger.getRootLogger().setLevel(Level.TRACE);
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FATHER);
 		RhoDRDown rho = new RhoDRDown(rs);
 		NamedClass nc = new NamedClass("http://example.com/father#male");
@@ -235,6 +238,7 @@ public class RefinementOperatorTests {
 		//		(male AND male AND male) 
 		//		(male AND (NOT female)) 
 		//		(male AND EXISTS hasChild.TOP) 
+		System.out.println(rs);
 		assertTrue(refinements.size()==8);		
 	}
 	
