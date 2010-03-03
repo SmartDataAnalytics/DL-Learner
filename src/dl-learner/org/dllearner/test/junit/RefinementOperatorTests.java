@@ -217,6 +217,27 @@ public class RefinementOperatorTests {
 		assertTrue(refinements.size()==4);
 	}
 	
+	@Test
+	public void rhoDownTestPellet() {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FATHER);
+		RhoDRDown rho = new RhoDRDown(rs);
+		NamedClass nc = new NamedClass("http://example.com/father#male");
+		Set<Description> refinements = rho.refine(nc, 5);
+		for(Description refinement : refinements) {
+			System.out.println(refinement);
+		}		
+		// refinements should be as follows:
+		//		(male AND (NOT male)) 
+		//		(male AND (female OR female)) 
+		//		(female AND male AND male)
+		//		(male AND ALL hasChild.TOP) 
+		//		(male AND (female OR male)) 
+		//		(male AND male AND male) 
+		//		(male AND (NOT female)) 
+		//		(male AND EXISTS hasChild.TOP) 
+		assertTrue(refinements.size()==8);		
+	}
+	
 	private String uri(String name) {
 		return "\""+baseURI+name+"\"";
 	}
