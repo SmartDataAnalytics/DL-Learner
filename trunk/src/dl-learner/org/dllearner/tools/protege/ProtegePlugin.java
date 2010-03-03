@@ -60,6 +60,7 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public boolean isValidInput() {
 		view.getSuggestClassPanel().getSuggestModel().clear();
+		view.getSuggestClassPanel().getSuggestionsTable().clear();
 		//view.getSuggestClassPanel().repaint();
 		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
 			view.makeView("equivalent class");
