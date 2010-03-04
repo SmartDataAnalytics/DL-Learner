@@ -32,8 +32,10 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
@@ -45,6 +47,7 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.junit.Test;
 
 /**
@@ -283,6 +286,16 @@ public class ReasonerTests {
 		description = new NamedClass(reasoner.getBaseURI() + "Person");
 		assertTrue(reasoner.getDomain(dProperty).equals(description));
 		
+	}
+	
+	@Test
+	public void pelletSlowConsistencyCheck() throws ParseException {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SWORE);
+		Description d = KBParser.parseConcept("<= 1 \"http://ns.softwiki.de/req/defines\".\"http://ns.softwiki.de/req/AbstractRequirement\"");
+		NamedClass nc = new NamedClass("http://ns.softwiki.de/req/AbstractComment");
+		Axiom axiom = new EquivalentClassesAxiom(nc, d);
+		boolean res = rs.remainsSatisfiable(axiom);
+		System.out.println(res);
 	}
 	
 	private List<Individual> getIndSet(String... inds) {
