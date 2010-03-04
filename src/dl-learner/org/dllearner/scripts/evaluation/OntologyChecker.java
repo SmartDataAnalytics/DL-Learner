@@ -53,6 +53,8 @@ public class OntologyChecker {
 	private static int minInstanceCount = 5;
 	private static boolean displayClasses = true;
 	private static boolean displayInstances = true;
+	// set to Integer.MAX_VALUE for displaying all instances
+	private static int maxInstances = 10;
 
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
@@ -101,8 +103,14 @@ public class OntologyChecker {
 									classCount++;
 									tmp.append("  " + cl.getURI() + "\n");
 									if(displayInstances) {
+										int indCount = 0;
 										for(OWLIndividual ind : inds) {
 											tmp.append("    " + ind.toString() + "\n");
+											indCount++;
+											if(indCount >= maxInstances) {
+												tmp.append("    ... " + inds.size() + " more\n");
+												break;
+											}
 										}	
 									}
 								}

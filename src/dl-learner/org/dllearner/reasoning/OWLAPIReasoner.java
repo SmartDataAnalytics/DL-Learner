@@ -395,6 +395,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
 		}		
 		
+		// remove top and bottom properties (for backwards compatibility)
+//		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
+//		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty"));
 	}
 
 	/* (non-Javadoc)
@@ -569,6 +572,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
 		}		
+		// removed for backwards compatibility
+//		properties.remove(factory.getOWLBottomObjectProperty(URI.create("bottomObjectProperty")));
 		return getFirstObjectProperties(properties);		
 	}
 	
@@ -898,6 +903,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			OWLObjectProperty property = innerSet.iterator().next();
 			roles.add(new ObjectProperty(property.getURI().toString()));
 		}
+		// TODO: after switching to OWL API 3, remove top/bottom directly in getSuper/SubProperties
+		roles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty"));
+		roles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 		return roles;		
 	}	
 	
@@ -907,6 +915,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			OWLDataProperty property = innerSet.iterator().next();
 			roles.add(new DatatypeProperty(property.getURI().toString()));
 		}
+		// TODO: after switching to OWL API 3, remove top/bottom directly in getSuper/SubProperties
+		roles.remove(new DatatypeProperty("http://www.w3.org/2002/07/owl#topDataProperty"));
+		roles.remove(new DatatypeProperty("http://www.w3.org/2002/07/owl#bottomDataProperty"));		
 		return roles;		
 	}		
 	
