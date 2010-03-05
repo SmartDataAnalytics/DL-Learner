@@ -117,7 +117,7 @@ public class Info {
 
 		<!-- compile project into temporary directory -->
 		<mkdir dir="classes_tmp"/>
-		<javac destdir="classes_tmp" target="1.5">
+		<javac destdir="classes_tmp" target="1.5" debug="on">
 			<src path="${source_dir}"/>
 			<classpath refid="classpath"/>
 		</javac>
