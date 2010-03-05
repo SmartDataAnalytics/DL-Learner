@@ -37,8 +37,6 @@ import javax.swing.SwingWorker;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 
 /**
  * This class processes input from the user.
@@ -104,7 +102,7 @@ public class ActionHandler implements ActionListener {
 		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
 				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
 			model.setKnowledgeSource();
-			view.getSuggestClassPanel().getSuggestModel().clear();
+			view.getSuggestClassPanel().getSuggestionsTable().clear();
 			view.getSuggestClassPanel().repaint();
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
@@ -124,16 +122,7 @@ public class ActionHandler implements ActionListener {
 		}
 
 		if (z.getActionCommand().equals(ADD_BUTTON_STRING)) {
-			if (evaluatedDescription != null) {
-				model
-						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
-								.getDescription());
-			} else {
-				model
-						.changeDLLearnerDescriptionsToOWLDescriptions((Description) view
-								.getSuggestClassPanel().getSuggestList()
-								.getSelectedValue());
-			}
+			model.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription.getDescription());
 			String message = "<html><font size=\"3\">class expression added</font></html>";
 			view.setHintMessage(message);
 			view.setHelpButtonVisible(false);

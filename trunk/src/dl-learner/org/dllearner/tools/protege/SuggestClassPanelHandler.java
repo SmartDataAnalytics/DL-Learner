@@ -19,22 +19,16 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.List;
-import java.util.Set;
-
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 /**
  * This is the MouseListener for the Suggest Panel.
  * @author Christian Koetteritzsch
  *
  */
-public class SuggestClassPanelHandler implements MouseListener, ListSelectionListener{
+public class SuggestClassPanelHandler implements  ListSelectionListener{
 	private DLLearnerView view;
 	private DLLearnerModel model;
 	private ActionHandler action;
@@ -51,88 +45,20 @@ public class SuggestClassPanelHandler implements MouseListener, ListSelectionLis
 		this.action = a;
 	}
 
-
-	@Override
-	/**
-	 * This methode sets the graphical coverage panel enable when a
-	 * suggested class expression is selected.
-	 */
-	public void mouseClicked(MouseEvent e) {
-		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
-			EvaluatedDescription evaluatedDescription = (EvaluatedDescription)view.getSuggestClassPanel().getSuggestList().getSelectedValue();
-//			SuggestListItem item = (SuggestListItem) view
-//					.getSuggestClassPanel().getSuggestList().getSelectedValue();
-//			String desc = item.getValue();
-//			if (model.getEvaluatedDescriptionList() != null) {
-//				List<? extends EvaluatedDescription> evalList = model
-//						.getEvaluatedDescriptionList();
-//				Set<String> onto = model.getOntologyURIString();
-//				for (EvaluatedDescription eDescription : evalList) {
-//					for (String ont : onto) {
-//						if (desc.equals(eDescription.getDescription()
-//								.toManchesterSyntaxString(ont, null))) {
-//							evaluatedDescription = eDescription;
-//							action.setEvaluatedClassExpression(eDescription);
-//							break;
-//						}
-//					}
-//				}
-//			}
-			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(evaluatedDescription);
-			view.setGraphicalPanel();
-		}
-	}
-
-	@Override
-	/**
-	 * Nothing happens here.
-	 */
-	public void mouseEntered(MouseEvent e) {
-	
-	}
-
-	@Override
-	/**
-	 * Nothing happens here.
-	 */
-	public void mouseExited(MouseEvent e) {
-		
-	}
-
-	@Override
-	/**
-	 * This methode sets the add button enable when 
-	 * a suggested class expression is selected. 
-	 */
-	public void mousePressed(MouseEvent e) {
-		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
-			if (!view.getAddButton().isEnabled()) {
-				view.getAddButton().setEnabled(true);
-			}
-		}
-	}
-
-	@Override
-	/**
-	 * Nothing happens here.
-	 */
-	public void mouseReleased(MouseEvent e) {
-		
-	}
-
-
 	@Override
 	/**
 	 * Nothing happens here. 
 	 */
 	public void valueChanged(ListSelectionEvent e) {
 		if(view.getSuggestClassPanel().getSuggestionsTable().getSelectedRow() >= 0){
-			EvaluatedDescriptionClass ec = view.getSuggestClassPanel().getSuggestionsTable().getSelectedSuggestion();
-			if(!e.getValueIsAdjusting() && ec != null){
+			EvaluatedDescription newDesc = view.getSuggestClassPanel().getSuggestionsTable().getSelectedSuggestion();
+//			evaluatedDescription = view.getSuggestClassPanel().getSuggestionsTable().getSelectedSuggestion();
+			if(!e.getValueIsAdjusting() && (evaluatedDescription == null || !evaluatedDescription.equals(newDesc))){
+				evaluatedDescription = newDesc;
 				view.getMoreDetailForSuggestedConceptsPanel().
-				renderDetailPanel(ec);
+				renderDetailPanel(evaluatedDescription);
 				view.setGraphicalPanel();
-				action.setEvaluatedClassExpression(ec);
+				action.setEvaluatedClassExpression(evaluatedDescription);
 				view.getAddButton().setEnabled(true);
 			}
 		}

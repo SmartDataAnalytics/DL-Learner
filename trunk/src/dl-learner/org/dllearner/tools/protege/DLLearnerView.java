@@ -185,8 +185,6 @@ public class DLLearnerView {
 		posPanel = new PosAndNegSelectPanel(model, action);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
 		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
-		sugPanel.addSuggestPanelMouseListener(sugPanelHandler);
-		sugPanel.getSuggestList().addListSelectionListener(sugPanelHandler);
 		sugPanel.getSuggestionsTable().getSelectionModel().addListSelectionListener(sugPanelHandler);
 		this.addAcceptButtonListener(this.action);
 		this.addRunButtonListener(this.action);
@@ -437,7 +435,6 @@ public class DLLearnerView {
 	 */
 	public void dispose() {
 		this.unsetEverything();
-		sugPanel.getSuggestList().removeAll();
 		sugPanel.getSuggestionsTable().clear();
 		learner.removeAll();
 		sugPanel = null;
@@ -471,7 +468,7 @@ public class DLLearnerView {
 	}
 
 	/**
-	 * This Method returns the run button.
+	 * This method returns the run button.
 	 * @return JButton
 	 */
 	public JButton getRunButton() {
@@ -487,7 +484,7 @@ public class DLLearnerView {
 	}
 	
 	/**
-	 * This methode returns if the ontology is inconsistent.
+	 * This method returns if the ontology is inconsistent.
 	 * @return boolean if ontology is inconsistent
 	 */
 	public boolean getIsInconsistent() {
@@ -545,7 +542,7 @@ public class DLLearnerView {
 	}
 	
 	/**
-	 * This methode sets the help button visible.
+	 * This method sets the help button visible.
 	 * @param isVisible boolean if help button is visible
 	 */
 	public void setHelpButtonVisible(boolean isVisible) {
@@ -569,21 +566,21 @@ public class DLLearnerView {
 	}
 	
 	/**
-	 * This Methode starts the status bar.
+	 * This method starts the status bar.
 	 */
 	public void startStatusBar() {
 		stat.showProgress(true);
 	}
 	
 	/**
-	 * This methode stops the status bar.
+	 * This method stops the status bar.
 	 */
 	public void stopStatusBar() {
 		stat.showProgress(false);
 	}
 	
 	/**
-	 * This methode returns the statusbar.
+	 * This method returns the statusbar.
 	 * @return statusbar
 	 */
 	public StatusBar2 getStatusBar() {

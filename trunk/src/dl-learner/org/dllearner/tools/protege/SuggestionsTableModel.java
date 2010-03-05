@@ -3,6 +3,8 @@ package org.dllearner.tools.protege;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -17,7 +19,9 @@ public class SuggestionsTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = -6920806148989403795L;
 	
 	private List<EvaluatedDescriptionClass> suggestionList;
-
+	private final Icon inconsistentIcon = new ImageIcon(this.getClass().getResource("warning-icon.png"));
+	private final Icon followsIcon = new ModelsIcon();
+	
 	public SuggestionsTableModel(){
 		super();
 		suggestionList = new ArrayList<EvaluatedDescriptionClass>();
@@ -29,7 +33,7 @@ public class SuggestionsTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -39,28 +43,44 @@ public class SuggestionsTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(columnIndex == 0){
-				return (int)(suggestionList.get(rowIndex).getAccuracy() * 100);
-		} else {
-				return OWLAPIDescriptionConvertVisitor.getOWLDescription(suggestionList.get(rowIndex).getDescription());
+		switch (columnIndex) {
+		case 0:
+			return (int) (suggestionList.get(rowIndex).getAccuracy() * 100);
+		case 1:
+			if (!suggestionList.get(rowIndex).isConsistent()) {
+				return inconsistentIcon;
+			} else if(suggestionList.get(rowIndex).followsFromKB()){
+				return followsIcon;
+			}break;
+		case 2:
+			return OWLAPIDescriptionConvertVisitor
+					.getOWLDescription(suggestionList.get(rowIndex)
+							.getDescription());
 		}
-		
+		return null;
+
 	}
 	
 	@Override
-	public Class<? extends Object> getColumnClass(int columnIndex){
-		if(columnIndex == 0) {
+	public Class<? extends Object> getColumnClass(int columnIndex) {
+		switch (columnIndex) {
+		case 0:
 			return String.class;
-		} else {
+		case 1:
+			return Icon.class;
+		case 2:
 			return OWLDescription.class;
 		}
+		return null;
 	}
 	@Override
 	public String getColumnName(int column){
 		if(column == 0){
 			return "Accuracy";
-		} else {
+		} else if (column == 2){
 			return "Class expression";
+		} else {
+			return "";
 		}
 	}
 	
@@ -79,5 +99,8 @@ public class SuggestionsTableModel extends AbstractTableModel {
 		return suggestionList.get(rowIndex);
 	}
 	
+	public int getSelectionIndex(EvaluatedDescriptionClass e){
+		return suggestionList.indexOf(e);
+	}
 
 }
