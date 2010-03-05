@@ -222,10 +222,13 @@ public class Start {
 	 * @throws ComponentInitException
 	 * @throws ParseException 
 	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public Start(File file) throws ComponentInitException, FileNotFoundException, ParseException {
-		String baseDir = file.getParentFile().getPath();
-
+	public Start(File file) throws ComponentInitException, ParseException, FileNotFoundException {
+		// see bug #2952015 on why the lower version is preferable
+		// String baseDir = file.getParentFile().getPath();
+		String baseDir = file.getAbsoluteFile().getParent();
+		
 		// create component manager instance
 		String message = "starting component manager ... ";
 		long cmStartTime = System.nanoTime();
