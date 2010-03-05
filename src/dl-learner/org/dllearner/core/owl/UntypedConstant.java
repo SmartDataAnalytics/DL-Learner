@@ -79,10 +79,10 @@ public class UntypedConstant extends Constant {
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		if(hasLang)
-			return literal + "@" + lang;
+			return "\"" + literal + "\"@" + lang;
 		else
-			return literal;		
-	}		
+			return "\"" + literal + "\"";		
+	}
 	
 	/**
 	 * @return the lang

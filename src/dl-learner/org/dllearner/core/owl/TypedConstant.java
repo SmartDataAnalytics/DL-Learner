@@ -65,7 +65,19 @@ public class TypedConstant extends Constant {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return literal;
+		// implemented according to http://www.w3.org/TR/owl2-manchester-syntax/
+		// (not completely clear because "typedLiteral" and "integerLiteral" definitions there overlap, but hopefully correct)
+		if(datatype.equals(Datatype.INT) || datatype.equals(Datatype.DOUBLE)) {
+			if(Double.valueOf(literal) >= 0) {
+				return "+" + literal;
+			} else {
+				return "-" + literal;
+			}
+		} else if(datatype.equals(Datatype.STRING)) {
+			return "\"" + literal + "\"";
+		} else {
+			return "\"" + literal + "\"^^" + datatype.toManchesterSyntaxString(baseURI, prefixes);
+		}
 	}
 
 	/**
