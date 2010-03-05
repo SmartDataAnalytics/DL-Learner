@@ -142,28 +142,11 @@ public class SuggestClassPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * This method returns the current Description list.
-	 * 
-	 * @return JList of Descriptions
-	 */
-	public JList getSuggestList() {
-		return descriptions;
-	}
 	
 	public SuggestionsTable getSuggestionsTable() {
 		return suggestionTable;
 	}
 
-	/**
-	 * This method adds the suggest list to the Mouse Listener.
-	 * 
-	 * @param action
-	 *            ActionHandler
-	 */
-	public void addSuggestPanelMouseListener(SuggestClassPanelHandler handle) {
-		descriptions.addMouseListener(handle);
-	}
 
 	/**
 	 * Thsi method returns the list model for the suggest list.
