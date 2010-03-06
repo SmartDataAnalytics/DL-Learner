@@ -6,14 +6,14 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
+import org.jdesktop.swingx.JXTitledPanel;
 
-public class RepairPlanPanel extends JPanel {
+public class RepairPlanPanel extends JXTitledPanel {
 
 	/**
 	 * 
@@ -24,12 +24,13 @@ public class RepairPlanPanel extends JPanel {
 	private JButton applyButton;
 
 	public RepairPlanPanel() {
+		super("Repair plan");
 		this.repMan = RepairManager.getInstance(OREManager.getInstance());
 		
-		setLayout(new BorderLayout());
-		add(new JLabel("Repair plan"), BorderLayout.NORTH);
+		getContentContainer().setLayout(new BorderLayout());
+//		add(new JLabel("Repair plan"), BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel(new FlowLayout(2));
-		add(buttonPanel, "South");
+		getContentContainer().add(buttonPanel, BorderLayout.SOUTH);
 		undoButton = new JButton(new AbstractAction("Undo") {
 			
 			/**
@@ -65,7 +66,7 @@ public class RepairPlanPanel extends JPanel {
 		JScrollPane repScr = new JScrollPane(new RepairTable());
 		repScr.setBackground(null);
 		repScr.getViewport().setOpaque(false);
-		add(repScr);
+		getContentContainer().add(repScr, BorderLayout.CENTER);
 	}
 
 	private void computeRepairPlan() {

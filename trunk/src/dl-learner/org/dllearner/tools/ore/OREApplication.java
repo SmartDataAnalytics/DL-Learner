@@ -43,6 +43,7 @@ import org.dllearner.tools.ore.ui.wizard.descriptors.KnowledgeSourcePanelDescrip
 import org.dllearner.tools.ore.ui.wizard.descriptors.ManualLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.RepairPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.SavePanelDescriptor;
+import org.dllearner.tools.ore.ui.wizard.descriptors.UnsatisfiableExplanationPanelDescriptor;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
@@ -112,6 +113,8 @@ public class OREApplication {
 
         WizardPanelDescriptor descriptor5 = new ClassChoosePanelDescriptor();
         wizard.registerWizardPanel(ClassChoosePanelDescriptor.IDENTIFIER, descriptor5);
+        
+        wizard.registerWizardPanel(UnsatisfiableExplanationPanelDescriptor.IDENTIFIER, new UnsatisfiableExplanationPanelDescriptor());
         
         WizardPanelDescriptor descriptor9 = new AutoLearnPanelDescriptor();
         wizard.registerWizardPanel(AutoLearnPanelDescriptor.IDENTIFIER, descriptor9);

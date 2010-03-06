@@ -62,6 +62,7 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
@@ -116,7 +117,7 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	private PelletReasonerConfigurator configurator;
 	
-
+	private Set<OWLOntology> loadedOntologies;
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
@@ -127,6 +128,7 @@ public class PelletReasoner extends ReasonerComponent {
 	SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();
 	TreeSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	
@@ -174,7 +176,7 @@ public class PelletReasoner extends ReasonerComponent {
 				namedObjectComparator);
 		Set<OWLIndividual> owlIndividuals = new TreeSet<OWLIndividual>(
 				namedObjectComparator);
-
+		loadedOntologies = new HashSet<OWLOntology>();
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		prefixes = new TreeMap<String, String>();
 
@@ -205,6 +207,7 @@ public class PelletReasoner extends ReasonerComponent {
 					Set<OWLOntology> imports = manager
 							.getImportsClosure(ontology);
 					allImports.addAll(imports);
+					loadedOntologies.addAll(imports);
 					// System.out.println(imports);
 					for (OWLOntology ont : imports) {
 						classes.addAll(ont.getReferencedClasses());
@@ -249,7 +252,9 @@ public class PelletReasoner extends ReasonerComponent {
 								else if(uri.equals(Datatype.DOUBLE.getURI()))
 									doubleDatatypeProperties.add(dtp);
 								else if(uri.equals(Datatype.INT.getURI()))
-									intDatatypeProperties.add(dtp);				
+									intDatatypeProperties.add(dtp);
+								else if(uri.equals(Datatype.STRING.getURI()))
+									stringDatatypeProperties.add(dtp);
 							}
 						}
 						datatypeProperties.add(dtp);
@@ -1466,6 +1471,13 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		return intDatatypeProperties;
 	}
 
+	/**
+	 * @return the intDatatypeProperties
+	 */
+	@Override
+	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
+		return stringDatatypeProperties;
+	}	
 
 	public OWLOntology getOWLAPIOntologies() {
 		return owlAPIOntologies.get(0);
@@ -1541,6 +1553,30 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	public IncrementalClassifier getClassifier(){
 		return classifier;
+	}
+	
+	public Set<OWLOntology> getLoadedOWLAPIOntologies(){
+		return loadedOntologies;
+	}
+	
+	public OWLDataFactory getOWLDataFactory(){
+		return factory;
+	}
+	
+	/**
+	 * Returns asserted class definitions of given class
+	 * @param nc the class
+	 * @return the asserted class definitions
+	 */
+	@Override
+	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
+		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLDescription(nc).asOWLClass();
+		Set<OWLDescription> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
+		Set<Description> definitions = new HashSet<Description>();
+		for(OWLDescription owlAPIDescription : owlAPIDescriptions) {
+			definitions.add(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(owlAPIDescription));
+		}
+		return definitions;
 	}
 	
 

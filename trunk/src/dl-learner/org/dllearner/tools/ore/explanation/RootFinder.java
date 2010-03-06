@@ -192,7 +192,6 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 	
 	private void pruneRoots() {
-System.out.println("Pruning root classes");
 		try {
 			Set<OWLClass> roots = new HashSet<OWLClass>(rootClasses);
 			List<OWLOntologyChange> appliedChanges = new ArrayList<OWLOntologyChange>();

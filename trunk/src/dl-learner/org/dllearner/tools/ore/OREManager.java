@@ -33,17 +33,29 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.PelletReasoner;
+import org.dllearner.tools.ore.cache.OWLEntityRenderingCache;
+import org.dllearner.tools.ore.cache.OWLObjectRenderingCache;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
+import org.dllearner.tools.ore.ui.editor.OWLEntityFinder;
+import org.dllearner.tools.ore.ui.rendering.OWLEntityRenderer;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.mindswap.pellet.utils.SetUtils;
+import org.semanticweb.owl.io.OWLObjectRenderer;
 import org.semanticweb.owl.io.OWLXMLOntologyFormat;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owl.util.SimpleShortFormProvider;
+
+import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class OREManager {
 
@@ -70,6 +82,12 @@ public class OREManager {
 	private double threshold;
 	private int minInstanceCount;
 	
+	private OWLObjectRenderingCache owlObjectRenderingCache;
+	private OWLEntityRenderingCache owlEntityRenderingCache;
+	private OWLObjectRenderer owlObjectRenderer;
+	private OWLEntityRenderer owlEntityRenderer;
+	private OWLEntityFinder owlEntityFinder;
+	
 
 	private List<OREManagerListener> listeners;
 
@@ -80,6 +98,12 @@ public class OREManager {
 	public OREManager(){
 		cm = ComponentManager.getInstance();
 		listeners = new ArrayList<OREManagerListener>();
+		owlObjectRenderingCache = new OWLObjectRenderingCache(this);
+		owlEntityRenderingCache = new OWLEntityRenderingCache();
+		owlEntityRenderingCache.setOREManager(this);
+		owlObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		owlObjectRenderer.setShortFormProvider(new SimpleShortFormProvider());
+		owlEntityRenderer = new OWLEntityRenderer();
 	}
 	
 	public static synchronized OREManager getInstance() {
@@ -173,6 +197,22 @@ public class OREManager {
 		reasoner.loadOntologies();	
 	}
 	
+	public boolean isSourceOWLAxiom(OWLAxiom ax){
+		for(OWLOntology ont : reasoner.getLoadedOWLAPIOntologies()){
+			if(ont.containsAxiom(ax)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Set<OWLOntology> getLoadedOntologies(){
+		return reasoner.getLoadedOWLAPIOntologies();
+	}
+	
+	public OWLDataFactory getOWLDataFactory(){
+		return reasoner.getOWLDataFactory();
+	}
 	/**
 	 * Save the ontology in OWL/XML format.
 	 * @param file The file to save as.
@@ -230,6 +270,30 @@ public class OREManager {
 
 	public Map<String, String> getPrefixes() {
 		return prefixes;
+	}
+	
+	public String getRendering(OWLObject object){
+		if(object instanceof OWLEntity){
+			String rendering = owlEntityRenderingCache.getRendering((OWLEntity) object);
+            if(rendering != null) {
+                return rendering;
+            }
+            else {
+                return owlEntityRenderer.render((OWLEntity) object);
+            }
+		}
+		return owlObjectRenderingCache.getRendering(object, owlObjectRenderer);
+	}
+	
+	public OWLEntityRenderer getOWLEntityRenderer(){
+		return owlEntityRenderer;
+	}
+	
+	public OWLEntityFinder getOWLEntityFinder(){
+		if (owlEntityFinder == null){
+			owlEntityFinder = new OWLEntityFinder(this, owlEntityRenderingCache);
+        }
+        return owlEntityFinder;
 	}
 
 	private URL getClass2LearnAsURL(){

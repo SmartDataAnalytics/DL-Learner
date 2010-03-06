@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
 
 import org.dllearner.core.owl.Individual;
@@ -152,13 +153,17 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 		JScrollPane descScroll = new JScrollPane();
 		descScroll.setViewportView(descPanel);
 		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		
 		statsPanel = new StatsPanel(ind);
 		statsPanel.init();
 		JScrollPane statsScroll = new JScrollPane();
 		statsScroll.setViewportView(statsPanel);
-		        
+		splitPane.add(statsScroll);        
+		
 		changesTable = new ChangesTable();
 		changesScroll = new JScrollPane(changesTable);
+		splitPane.add(changesScroll);
 		
 	    actionStatsPanel = new JPanel();
 		
@@ -169,35 +174,31 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 		gbl.columnWidths = new int[] {7};
 		actionStatsPanel.setLayout(gbl);
 		
-		
 		actionStatsPanel.add(descScroll, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-		actionStatsPanel.add(statsScroll, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
-		actionStatsPanel.add(changesScroll, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
-		
-		
-		JSeparator separator = new JSeparator();
-		Box buttonBox = new Box(BoxLayout.X_AXIS);
+		actionStatsPanel.add(splitPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
+//		actionStatsPanel.add(changesScroll, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
 		
 		okCancelPanel = new JPanel();
 		okCancelPanel.setLayout(new BorderLayout());
-		okCancelPanel.add(separator, BorderLayout.NORTH);
+		okCancelPanel.add(new JSeparator(), BorderLayout.NORTH);
 		okButton = new JButton("Ok");
 		okButton.addActionListener(this);
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
 		
-       
-        getContentPane().add(actionStatsPanel, java.awt.BorderLayout.CENTER);
-		
-		
+		Box buttonBox = new Box(BoxLayout.X_AXIS);
         buttonBox.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));       
         buttonBox.add(okButton);
         buttonBox.add(Box.createHorizontalStrut(10));
         buttonBox.add(cancelButton);
 		okCancelPanel.add(buttonBox, BorderLayout.EAST);
         
-		getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
+//		getContentPane().add(actionStatsPanel, java.awt.BorderLayout.CENTER);
+//		getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
 		
+		add(descScroll, BorderLayout.NORTH);
+		add(splitPane, BorderLayout.CENTER);
+		add(okCancelPanel, BorderLayout.SOUTH);
 		
 		this.setModal(true);
 		this.setVisible(true);

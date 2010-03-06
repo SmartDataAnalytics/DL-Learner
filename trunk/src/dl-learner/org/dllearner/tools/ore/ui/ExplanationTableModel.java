@@ -96,7 +96,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 				}
 			} else {
 //				impMan.addSelection(ax);
-				if(!ont.containsAxiom(ax)){
+				if(!OREManager.getInstance().isSourceOWLAxiom(ax)){
 //					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 //					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
 //						impMan.addSelection(source);

@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -58,6 +59,8 @@ public class OntologyChecker {
 
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
+		Set<String> inconsistentOntologies = new HashSet<String>();
+		Hashtable<String, Integer> incohaerentOntologies = new Hashtable<String, Integer>();
 		File file = new File(args[0]);
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -70,9 +73,10 @@ public class OntologyChecker {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			sb2.append("#axioms \t #classes \t #inds. \t #ob.prop. \t #da.prop. classif. time(ms) \t url \n");
+			int count = 1;
 			while ((url = in.readLine()) != null) {
 				try {
-					System.out.println(url);
+					System.out.println(count++ + ":" + url);
 					ontology = manager.loadOntology(URI.create(url));
 					ontologies.add(ontology);
 					ontologies.addAll(manager.getImportsClosure(ontology));
@@ -88,13 +92,19 @@ public class OntologyChecker {
 					sb2.append(ontology.getReferencedDataProperties().size() + "\t");
 					sb.append("#individuals: " + reasoner.getIndividuals().size() + "\n");
 					sb2.append(url + "\t");
-					reasoner.setOntology(ontology);
+					
 					if (reasoner.isConsistent()) {
 						long startTime = System.currentTimeMillis();
 						reasoner.classify();
 						sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
-						sb.append("#unsatisfiable classes: " + reasoner.getInconsistentClasses().size() + "\n");
+						int unsatCount = reasoner.getInconsistentClasses().size();
+						sb.append("#unsatisfiable classes: " + unsatCount + "\n");
+						if(unsatCount > 0){
+							incohaerentOntologies.put(url, Integer.valueOf(unsatCount));
+						}
+						
 						int classCount = 0;
+
 						StringBuffer tmp = new StringBuffer();
 						if (reasoner.getIndividuals().size() > 0) {
 							for (OWLClass cl : reasoner.getClasses()) {
@@ -116,20 +126,34 @@ public class OntologyChecker {
 								}
 							}
 						}
+
 						sb.append("#classes with min. " + minInstanceCount + " individuals: " + classCount + "\n");
 						if(displayClasses) {
 							sb.append(tmp);
 						}
 						ontologyRelClassCountMap.put(url, classCount);
 					} else {
+						inconsistentOntologies.add(url);
 						sb.append("Ontology is inconsistent. \n");
 					}
 					sb.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n");
 					sb2.append("\n");
-
+					
 					reasoner.unloadOntologies(ontologies);
 					manager.removeOntology(URI.create(url));
 					ontologies.clear();
+					System.out.println(inconsistentOntologies.size() + " inconsistent ontologies:");
+					int cnt = 1;
+					for(String uri : inconsistentOntologies){
+						System.out.println(uri);
+					}
+					System.out.println();
+					System.out.println(incohaerentOntologies.size() + " incohaerent ontologies(#unsatisfiable classes):");
+					cnt = 1;
+					for (Entry<String, Integer> ent : incohaerentOntologies.entrySet()) {
+						System.out.println(cnt++ + ": " + ent.getKey() + "(" + ent.getValue() + ")");
+					}
+					System.out.println();
 				} catch (OWLOntologyCreationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -141,9 +165,17 @@ public class OntologyChecker {
 		}
 
 		System.out.println(sb.toString());
-		// System.out.println(sb2.toString());
+		System.out.println(sb2.toString());
 		for (Entry<String, Integer> ent : ontologyRelClassCountMap.entrySet()) {
 			System.out.println(ent.getValue() + "\t - \t" + ent.getKey());
+		}
+		System.out.println("Inconsistent ontologies:");
+		for(String uri : inconsistentOntologies){
+			System.out.println(uri);
+		}
+		System.out.println("Incohaerent ontologies(#unsatisfiable classes):");
+		for (Entry<String, Integer> ent : incohaerentOntologies.entrySet()) {
+			System.out.println(ent.getKey() + "(" + ent.getValue() + ")");
 		}
 	}
 

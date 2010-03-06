@@ -569,7 +569,7 @@ public class Info {
 				<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />
 			</copy>
 			<copy toDir="${temp}/lib" >
-				<fileset dir="${lib_dir}/ore-tool" includes="swingx-1.0.jar" />
+				<fileset dir="${lib_dir}/ore-tool" includes="swingx-1.6.jar" />
 			</copy>
 			<copy toDir="${temp}/lib" >
 				<fileset dir="${lib_dir}/jena" includes="json.jar" />

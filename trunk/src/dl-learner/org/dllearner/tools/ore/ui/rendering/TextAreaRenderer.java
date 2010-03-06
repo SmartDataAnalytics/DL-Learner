@@ -27,7 +27,6 @@ public class TextAreaRenderer extends JEditorPane implements TableCellRenderer {
 		// set the colours, etc. using the standard for that platform
 		adaptee.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
 		if(obj instanceof OWLAxiom){
-			
 			setText(ManchesterSyntaxRenderer.render((OWLAxiom)obj, false, 0));
 		} else {
 			setText(adaptee.getText());
