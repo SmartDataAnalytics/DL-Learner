@@ -32,6 +32,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 
 import org.dllearner.core.owl.Individual;
@@ -91,9 +92,10 @@ public class StatsPanel extends JPanel{
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));		
 		
-		
+		UIManager.put("TaskPane.titleBackgroundGradientStart", Color.GRAY);
+		UIManager.put("TaskPane.titleBackgroundGradientEnd", Color.GRAY);
 		container = new JXTaskPaneContainer();
-		
+		container.setBackground(Color.WHITE);
 		
 				
 		indPane = new JXTaskPane();

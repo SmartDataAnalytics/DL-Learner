@@ -14,6 +14,7 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -29,11 +30,16 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.dllearner.tools.ore.ui.editor.OWLClassAxiomEditor;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.ColorHighlighter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.protege.editor.core.Disposable;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
+
+import uk.ac.manchester.cs.owl.dlsyntax.DLSyntaxObjectRenderer;
 
 public class ExplanationTable extends JXTable implements RepairManagerListener, Disposable{
 
@@ -43,6 +49,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	private static final long serialVersionUID = 5580730282611559609L;
 	
 	private RepairManager repMan;
+	DLSyntaxObjectRenderer renderer = new DLSyntaxObjectRenderer();
 	
 	protected String[] columnToolTips = {
 		    null, 
@@ -62,12 +69,15 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		setBackground(Color.WHITE);
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ExplanationTableModel(exp,	cl));
+		setRolloverEnabled(true);
+		addHighlighter(new ColorHighlighter(HighlightPredicate.ROLLOVER_ROW, 
+			      Color.YELLOW, Color.BLACK));  
 		TableColumn column6 = getColumn(5);
 		column6.setCellRenderer(new ButtonCellRenderer());
 		column6.setCellEditor(new ButtonCellEditor());
 		column6.setResizable(false);
 //		setRowHeight(getRowHeight() + 4);
-		setRowHeightEnabled(true);
+//		setRowHeightEnabled(true);
 		setRowHeight(20);
 	
 		getColumn(0).setCellRenderer(new TextAreaRenderer());
@@ -167,8 +177,9 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         if(rowIndex != -1){
-        	tip = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex).toString();
         	
+//        	tip = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex).toString();
+        	tip = renderer.render(((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex));
         } else {
         	tip = super.getToolTipText(e);
         }
@@ -245,6 +256,10 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			fireEditingStopped();
+			JDialog dialog = new JDialog();
+			dialog.add(new OWLClassAxiomEditor(OREManager.getInstance()).getEditorComponent());
+			dialog.pack();
+			dialog.setVisible(true);
 		}
 	}
 	

@@ -32,7 +32,7 @@ import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.ExplanationType;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
-import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel;
+import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel2;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
@@ -42,7 +42,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 	public static final String IDENTIFIER = "UNSATISFIABLE_PANEL";
     public static final String INFORMATION = "";
 
-    private UnsatisfiableExplanationPanel panel;
+    private UnsatisfiableExplanationPanel2 panel;
     private ExplanationManager expMan;
     private ImpactManager impMan;
     private RepairManager repMan;
@@ -50,7 +50,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
     
 	
 	public UnsatisfiableExplanationPanelDescriptor(){
-		setPanelDescriptorIdentifier(IDENTIFIER);	
+		setPanelDescriptorIdentifier(IDENTIFIER);
 	}
 	
 	public void init() {
@@ -61,7 +61,7 @@ public class UnsatisfiableExplanationPanelDescriptor extends
 		impMan.addListener(this);
 		repMan = RepairManager.getInstance(OREManager.getInstance());
 		repMan.addListener(this);
-		panel = new UnsatisfiableExplanationPanel();
+		panel = new UnsatisfiableExplanationPanel2();
 		panel.addActionListeners(this);
 		panel.addListSelectionListener(this);
 		panel.addChangeListener(this);

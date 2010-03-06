@@ -74,9 +74,8 @@ public class ResultTableModel extends AbstractTableModel {
 	public void addResults(List<EvaluatedDescriptionClass> resultList){
 		this.resultList.clear();
 		this.resultList.addAll(resultList);
-		
-		
-		fireTableRowsUpdated(0, this.resultList.size());
+		fireTableDataChanged();
+//		fireTableRowsUpdated(0, this.resultList.size() - 1);
 	}
 	
 	public EvaluatedDescriptionClass getSelectedValue(int rowIndex){

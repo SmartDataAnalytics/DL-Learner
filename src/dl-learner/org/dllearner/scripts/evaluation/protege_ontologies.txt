@@ -1,3 +1,6 @@
+http://www.biopax.org/release/biopax-level2.owl
+http://www.ifomis.org/bfo/owl
+http://www.acl.icnet.uk/~mw/MDM0.73.owl
 http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl
 http://transontology.org/bhakti_gaudiya/bhakti.owl
 http://protege.cim3.net/file/pub/ontologies/camera/camera.owl

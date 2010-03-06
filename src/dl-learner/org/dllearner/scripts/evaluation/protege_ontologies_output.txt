@@ -1,10 +1,40 @@
+http://www.biopax.org/release/biopax-level2.owl
+#logical axioms: 338
+#classes: 40
+#object properties: 35
+#data properties: 39
+#individuals: 0
+classification time in ms: 144
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.ifomis.org/bfo/owl
+#logical axioms: 95
+#classes: 39
+#object properties: 2
+#data properties: 2
+#individuals: 0
+classification time in ms: 198
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.acl.icnet.uk/~mw/MDM0.73.owl
+#logical axioms: 878
+#classes: 196
+#object properties: 24
+#data properties: 5
+#individuals: 113
+classification time in ms: 478
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 31
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl
 #logical axioms: 469
 #classes: 54
 #object properties: 16
 #data properties: 3
 #individuals: 1
-classification time in ms: 548
+classification time in ms: 527
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -14,7 +44,7 @@ http://transontology.org/bhakti_gaudiya/bhakti.owl
 #object properties: 4
 #data properties: 11
 #individuals: 0
-classification time in ms: 148
+classification time in ms: 272
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -24,7 +54,7 @@ http://protege.cim3.net/file/pub/ontologies/camera/camera.owl
 #object properties: 9
 #data properties: 10
 #individuals: 2
-classification time in ms: 24
+classification time in ms: 9
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -42,9 +72,19 @@ http://transontology.org/consciousness/consciousness1.owl
 #object properties: 14
 #data properties: 2
 #individuals: 14
-classification time in ms: 136
+classification time in ms: 76
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 1
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://on.cs.unibas.ch/owl/1.0/Context.owl
+#logical axioms: 54
+#classes: 9
+#object properties: 16
+#data properties: 12
+#individuals: 5
+classification time in ms: 12
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
 #logical axioms: 240
@@ -52,7 +92,7 @@ http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
 #object properties: 136
 #data properties: 41
 #individuals: 76
-classification time in ms: 786
+classification time in ms: 1580
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 15
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -62,7 +102,7 @@ http://www.csm.ornl.gov/%7E7lp/esg-owl/ESG1.1.owl
 #object properties: 30
 #data properties: 37
 #individuals: 44
-classification time in ms: 255
+classification time in ms: 199
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 4
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -72,7 +112,7 @@ http://www.fadyart.com/ontologies/data/Finance.owl
 #object properties: 249
 #data properties: 76
 #individuals: 2466
-classification time in ms: 412
+classification time in ms: 352
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 111
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -82,7 +122,7 @@ http://protege.cim3.net/file/pub/ontologies/generations/generations.owl
 #object properties: 6
 #data properties: 2
 #individuals: 7
-classification time in ms: 85
+classification time in ms: 53
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 1
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -92,7 +132,7 @@ http://i2geo.net/ontologies/current/GeoSkills.owl
 #object properties: 25
 #data properties: 23
 #individuals: 2572
-classification time in ms: 18096
+classification time in ms: 18544
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 167
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -102,7 +142,7 @@ http://protege.cim3.net/file/pub/ontologies/ka/ka.owl
 #object properties: 62
 #data properties: 34
 #individuals: 0
-classification time in ms: 155
+classification time in ms: 125
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -112,7 +152,7 @@ http://protege.cim3.net/file/pub/ontologies/koala/koala.owl
 #object properties: 6
 #data properties: 3
 #individuals: 6
-classification time in ms: 28
+classification time in ms: 31
 #unsatisfiable classes: 3
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -122,7 +162,7 @@ http://lifeeventontology.googlepages.com/leo.owl
 #object properties: 28
 #data properties: 16
 #individuals: 62
-classification time in ms: 34
+classification time in ms: 33
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 7
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -132,7 +172,7 @@ http://mged.sourceforge.net/ontologies/MGEDOntology.owl
 #object properties: 88
 #data properties: 50
 #individuals: 712
-classification time in ms: 114049
+classification time in ms: 142437
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 80
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -142,7 +182,7 @@ http://www.tssg.org/public/ontologies/omg/mof/2004/MOF.owl
 #object properties: 145
 #data properties: 8
 #individuals: 35
-classification time in ms: 92
+classification time in ms: 93
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -152,7 +192,7 @@ http://www.tssg.org/public/ontologies/omg/qvt/2005/QVT.owl
 #object properties: 230
 #data properties: 8
 #individuals: 45
-classification time in ms: 608
+classification time in ms: 361
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -162,7 +202,7 @@ http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl
 #object properties: 135
 #data properties: 29
 #individuals: 42
-classification time in ms: 255
+classification time in ms: 258
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 2
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -172,7 +212,7 @@ http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl
 #object properties: 16
 #data properties: 3
 #individuals: 21
-classification time in ms: 154
+classification time in ms: 143
 #unsatisfiable classes: 1
 #classes with min. 5 individuals: 4
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -182,7 +222,7 @@ http://swap.uib.es/ontologies/performance.owl
 #object properties: 242
 #data properties: 44
 #individuals: 193
-classification time in ms: 12378
+classification time in ms: 12456
 #unsatisfiable classes: 2
 #classes with min. 5 individuals: 57
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -192,7 +232,7 @@ http://philosurfical.open.ac.uk/ontology/philosurfical.owl
 #object properties: 315
 #data properties: 2
 #individuals: 0
-classification time in ms: 454
+classification time in ms: 252
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -202,7 +242,7 @@ http://protege.cim3.net/file/pub/ontologies/shuttle/shuttle-crew-ont.owl
 #object properties: 53
 #data properties: 32
 #individuals: 55
-classification time in ms: 75
+classification time in ms: 82
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 2
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -212,10 +252,10 @@ http://www.loria.fr/%7Ecoulet/ontology/snpontology/version1.3/snpontology_full.o
 #object properties: 64
 #data properties: 14
 #individuals: 4
-classification time in ms: 36047
+classification time in ms: 38372
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 http://www.uv.es/%7Eagentes/SVECore.owl
 #logical axioms: 134
 #classes: 20
@@ -232,7 +272,7 @@ http://protege.cim3.net/file/pub/ontologies/tambis/tambis-full.owl
 #object properties: 101
 #data properties: 3
 #individuals: 0
-classification time in ms: 1474
+classification time in ms: 1425
 #unsatisfiable classes: 144
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -250,7 +290,7 @@ http://protege.cim3.net/file/pub/ontologies/travel/travel.owl
 #object properties: 8
 #data properties: 6
 #individuals: 14
-classification time in ms: 133
+classification time in ms: 55
 #unsatisfiable classes: 1
 #classes with min. 5 individuals: 1
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -260,7 +300,7 @@ http://lsi.ugr.es/joseluisgs/videojuegos.owl
 #object properties: 14
 #data properties: 2
 #individuals: 0
-classification time in ms: 46826
+classification time in ms: 48140
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 0
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -270,7 +310,7 @@ http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
 #object properties: 18
 #data properties: 3
 #individuals: 206
-classification time in ms: 11631
+classification time in ms: 12675
 #unsatisfiable classes: 0
 #classes with min. 5 individuals: 41
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -280,16 +320,19 @@ classification time in ms: 11631
 0	 - 	http://www.tssg.org/public/ontologies/omg/mof/2004/MOF.owl
 2	 - 	http://protege.cim3.net/file/pub/ontologies/shuttle/shuttle-crew-ont.owl
 167	 - 	http://i2geo.net/ontologies/current/GeoSkills.owl
-2	 - 	http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl
 0	 - 	http://lsi.ugr.es/joseluisgs/videojuegos.owl
+2	 - 	http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl
+31	 - 	http://www.acl.icnet.uk/~mw/MDM0.73.owl
 7	 - 	http://lifeeventontology.googlepages.com/leo.owl
 111	 - 	http://www.fadyart.com/ontologies/data/Finance.owl
 0	 - 	http://philosurfical.open.ac.uk/ontology/philosurfical.owl
 0	 - 	http://www.tssg.org/public/ontologies/omg/qvt/2005/QVT.owl
-1	 - 	http://transontology.org/consciousness/consciousness1.owl
 1	 - 	http://protege.cim3.net/file/pub/ontologies/travel/travel.owl
+1	 - 	http://transontology.org/consciousness/consciousness1.owl
+0	 - 	http://on.cs.unibas.ch/owl/1.0/Context.owl
 15	 - 	http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
 0	 - 	http://www.loria.fr/%7Ecoulet/ontology/snpontology/version1.3/snpontology_full.owl
+0	 - 	http://www.biopax.org/release/biopax-level2.owl
 57	 - 	http://swap.uib.es/ontologies/performance.owl
 0	 - 	http://protege.cim3.net/file/pub/ontologies/tambis/tambis-full.owl
 0	 - 	http://protege.cim3.net/file/pub/ontologies/ka/ka.owl
@@ -297,7 +340,17 @@ classification time in ms: 11631
 41	 - 	http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
 0	 - 	http://protege.cim3.net/file/pub/ontologies/camera/camera.owl
 0	 - 	http://transontology.org/bhakti_gaudiya/bhakti.owl
+0	 - 	http://www.ifomis.org/bfo/owl
 0	 - 	http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl
 4	 - 	http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl
 80	 - 	http://mged.sourceforge.net/ontologies/MGEDOntology.owl
 0	 - 	http://protege.cim3.net/file/pub/ontologies/koala/koala.owl
+Inconsistent ontologies:
+http://www.bltk.ru/OWL/tourism.owl
+http://www.bltk.ru/OWL/camera2.owl
+Incohaerent ontologies(#unsatisfiable classes):
+http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl(1)
+http://protege.cim3.net/file/pub/ontologies/koala/koala.owl(3)
+http://protege.cim3.net/file/pub/ontologies/travel/travel.owl(1)
+http://swap.uib.es/ontologies/performance.owl(2)
+http://protege.cim3.net/file/pub/ontologies/tambis/tambis-full.owl(144)

@@ -44,7 +44,6 @@ import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.LearningOptionsPanel;
 import org.dllearner.tools.ore.ui.ResultTable;
-import org.jdesktop.swingx.JXTitledPanel;
 
 
 /**
@@ -52,18 +51,20 @@ import org.jdesktop.swingx.JXTitledPanel;
  * @author Lorenz Buehmann
  *
  */
-public class ManualLearnPanel extends JPanel{	
+public class ManualLearnPanel2 extends JPanel{	
 
 	private static final long serialVersionUID = -7411197973240429632L;
 
 	private ResultTable resultTable;
+	private JScrollPane tableScrollPane;
+	private JPanel resultPanel;
 	
 	private JLabel inconsistencyLabel;
 
 	private JButton stopButton;
 	private JButton startButton;
 	private JPanel buttonPanel;
-	private JXTitledPanel buttonSliderPanel;
+	private JPanel buttonSliderPanel;
 	
 	private GraphicalCoveragePanel graphicPanel;
 	private LearningOptionsPanel optionsPanel;
@@ -103,7 +104,7 @@ public class ManualLearnPanel extends JPanel{
 	private static final String COVERAGE_HELP_TEXT = "This panel shows an abstract coverage view " +
 			"of the instances in the ontology.";
 
-	public ManualLearnPanel() {
+	public ManualLearnPanel2() {
 		createUI();
 	}
 	
@@ -124,13 +125,15 @@ public class ManualLearnPanel extends JPanel{
 		c.fill = GridBagConstraints.BOTH;
 		
 		resultTable = new ResultTable();
+		tableScrollPane = new JScrollPane(resultTable);
+		resultPanel = new JPanel();
+		resultPanel.setLayout(new BorderLayout());
+		resultPanel.add(tableScrollPane);
+		resultPanel.setBorder(new TitledBorder("Learned class expressions"));
 		inconsistencyLabel = new JLabel(" ");
+		resultPanel.add(inconsistencyLabel, BorderLayout.SOUTH);
 
-		JXTitledPanel learnResultPanel = new JXTitledPanel("Learned class expressions");
-		learnResultPanel.getContentContainer().setLayout(new BorderLayout());
-		learnResultPanel.getContentContainer().add(new JScrollPane(resultTable), BorderLayout.CENTER);
-		learnResultPanel.getContentContainer().add(inconsistencyLabel, BorderLayout.SOUTH);
-		add(learnResultPanel, c);
+		add(resultPanel, c);
 	}
 	
 	private void createControlPanel(){
@@ -141,17 +144,17 @@ public class ManualLearnPanel extends JPanel{
 		c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		
-		buttonSliderPanel = new JXTitledPanel("Controls");
+		buttonSliderPanel = new JPanel();
 	
 		GridBagLayout buttonSliderPanelLayout = new GridBagLayout();
 		buttonSliderPanelLayout.rowWeights = new double[] { 0.0, 0.0 };
 		buttonSliderPanelLayout.rowHeights = new int[] { 126, 7 };
 		buttonSliderPanelLayout.columnWeights = new double[] { 0.1 };
 		buttonSliderPanelLayout.columnWidths = new int[] { 7 };
-		buttonSliderPanel.getContentContainer().setLayout(buttonSliderPanelLayout);
+		buttonSliderPanel.setLayout(buttonSliderPanelLayout);
 
 		buttonPanel = new JPanel();
-		buttonSliderPanel.getContentContainer().add(buttonPanel, new GridBagConstraints(0, 0, 1, 1,
+		buttonSliderPanel.add(buttonPanel, new GridBagConstraints(0, 0, 1, 1,
 				0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
 				new Insets(0, 0, 0, 0), 0, 0));
 
@@ -181,7 +184,7 @@ public class ManualLearnPanel extends JPanel{
 		HelpablePanel learnTypeHelpPanel = new HelpablePanel(learnTypePanel);
 		learnTypeHelpPanel.setBorder(new TitledBorder("Learning type"));
 		learnTypeHelpPanel.setHelpText(LEARNTYPE_HELP_TEXT);
-		buttonSliderPanel.getContentContainer().add(learnTypeHelpPanel, new GridBagConstraints(0, 1,
+		buttonSliderPanel.add(learnTypeHelpPanel, new GridBagConstraints(0, 1,
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		
@@ -189,7 +192,7 @@ public class ManualLearnPanel extends JPanel{
 		HelpablePanel optionsHelpPanel = new HelpablePanel(optionsPanel);
 		optionsHelpPanel.setBorder(new TitledBorder("Options"));
 		optionsHelpPanel.setHelpText(LEARNOPTIONS_HELP_TEXT);
-		buttonSliderPanel.getContentContainer().add(optionsHelpPanel, new GridBagConstraints(0, 2,
+		buttonSliderPanel.add(optionsHelpPanel, new GridBagConstraints(0, 2,
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		
@@ -207,11 +210,11 @@ public class ManualLearnPanel extends JPanel{
 		HelpablePanel coverageHelpPanel = new HelpablePanel(graphicPanel);
 		coverageHelpPanel.setHelpText(COVERAGE_HELP_TEXT);
 		
+		JPanel graphicHolderPanel = new JPanel(new BorderLayout());
+		graphicHolderPanel.add(coverageHelpPanel);
+		graphicHolderPanel.setBorder(new TitledBorder("Coverage"));
 
-		JXTitledPanel coveragePanel = new JXTitledPanel("Coverage");
-		coveragePanel.getContentContainer().setLayout(new BorderLayout());
-		coveragePanel.getContentContainer().add(coverageHelpPanel);
-		add(coveragePanel, c);
+		add(graphicHolderPanel, c);
 	}
 	
 	public void addStartButtonListener(ActionListener a){
@@ -267,7 +270,7 @@ public class ManualLearnPanel extends JPanel{
 	public static void main(String[] args){
 		OREManager.getInstance().setCurrentClass2Learn(new NamedClass("dummy"));
 		JFrame frame = new JFrame();
-		JPanel panel = new ManualLearnPanel();
+		JPanel panel = new ManualLearnPanel2();
 		frame.add(panel);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
