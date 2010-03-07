@@ -216,6 +216,16 @@ public class OREManager {
 	public OWLDataFactory getOWLDataFactory(){
 		return reasoner.getOWLDataFactory();
 	}
+	
+	public Set<OWLOntology> getOWLOntologiesForOWLAxiom(OWLAxiom ax){
+		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
+		for(OWLOntology ont : getLoadedOntologies()){
+			if(ont.containsAxiom(ax)){
+				ontologies.add(ont);
+			}
+		}
+		return ontologies;
+	}
 	/**
 	 * Save the ontology in OWL/XML format.
 	 * @param file The file to save as.

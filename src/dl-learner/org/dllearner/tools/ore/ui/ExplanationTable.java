@@ -10,6 +10,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractCellEditor;
@@ -31,6 +32,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
@@ -46,12 +48,15 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.protege.editor.core.Disposable;
+import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLClassAxiom;
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLObjectPropertyAxiom;
+import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.RemoveAxiom;
 
 import uk.ac.manchester.cs.owl.dlsyntax.DLSyntaxObjectRenderer;
 
@@ -306,7 +311,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		repMan.removeListener(this);
 	}
 	
-	private void showEditorDialog(final OWLAxiomEditor editor, OWLObject value) {
+	private void showEditorDialog(final OWLAxiomEditor editor, final OWLObject value) {
 		if (editor == null) {
 			return;
 		}
@@ -347,7 +352,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 				Object retVal = optionPane.getValue();
 				editorComponent.setPreferredSize(editorComponent.getSize());
 				if (retVal != null && retVal.equals(JOptionPane.OK_OPTION)) {
-					handleEditFinished(editor);
+					handleEditFinished(editor, value);
 				}
 //				setSelectedValue(frameObject, true);
 				if (editor instanceof VerifiedInputEditor) {
@@ -362,8 +367,15 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		dlg.setVisible(true);
 	}
 	
-        void handleEditFinished(OWLAxiomEditor editor){
-				System.out.println(editor.getEditedObject());
+        void handleEditFinished(OWLAxiomEditor editor, OWLObject value){
+        	ImpactManager.getInstance(OREManager.getInstance()).addSelection((OWLAxiom)value);
+        	List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+        	for(OWLOntology ont : OREManager.getInstance().getOWLOntologiesForOWLAxiom((OWLAxiom)value)){
+        		changes.add(new RemoveAxiom(ont, (OWLAxiom)value));
+        		changes.add(new AddAxiom(ont, (OWLAxiom)editor.getEditedObject()));
+        		
+        	}
+			repMan.addToRepairPlan(changes);	
         }
 	
 
