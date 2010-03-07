@@ -9,7 +9,9 @@ import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
@@ -44,7 +46,7 @@ import org.semanticweb.owl.model.OWLObject;
  * that the text is well formed and provides feedback if the
  * text is not well formed.
  */
-public class ExpressionEditor<O> extends JTextPane{
+public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEditor{
 
 
     private static Logger logger = Logger.getLogger(ExpressionEditor.class);
@@ -223,12 +225,13 @@ public class ExpressionEditor<O> extends JTextPane{
         timer.restart();
         clearError();
         performHighlighting();
+        notifyValidationChanged(false);
     }
 
 
     private void setError(OWLExpressionParserException e) {
         logger.debug("Set error " + e);
-
+        notifyValidationChanged(e == null);
         if (e != null) {
             ToolTipManager.sharedInstance().setInitialDelay(ERROR_TOOL_TIP_INITIAL_DELAY);
             ToolTipManager.sharedInstance().setDismissDelay(ERROR_TOOL_TIP_DISMISS_DELAY);
@@ -334,6 +337,30 @@ public class ExpressionEditor<O> extends JTextPane{
             StyleConstants.setBold(style, true);
         }
         StyleConstants.setForeground(getStyledDocument().addStyle(Color.BLACK.toString(), null), Color.BLACK);
+    }
+    
+///////////////////////// content verification
+
+
+    private Set<InputVerificationStatusChangedListener> listeners = new HashSet<InputVerificationStatusChangedListener>();
+
+    private boolean previousValue = true;
+
+    public void addStatusChangedListener(InputVerificationStatusChangedListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeStatusChangedListener(InputVerificationStatusChangedListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyValidationChanged(boolean valid){
+        if (valid != previousValue){ // only report changes
+            previousValue = valid;
+            for (InputVerificationStatusChangedListener l : listeners){
+                l.verifiedStatusChanged(valid);
+            }
+        }
     }
 
 

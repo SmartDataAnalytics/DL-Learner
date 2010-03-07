@@ -2,8 +2,11 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
@@ -14,9 +17,12 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -30,13 +36,19 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.Explanation;
+import org.dllearner.tools.ore.ui.editor.InputVerificationStatusChangedListener;
 import org.dllearner.tools.ore.ui.editor.OWLClassAxiomEditor;
+import org.dllearner.tools.ore.ui.editor.VerifiedInputEditor;
+import org.dllearner.tools.ore.ui.editor.VerifyingOptionPane;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.protege.editor.core.Disposable;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLClassAxiom;
+import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 import uk.ac.manchester.cs.owl.dlsyntax.DLSyntaxObjectRenderer;
@@ -256,10 +268,12 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			fireEditingStopped();
-			JDialog dialog = new JDialog();
-			dialog.add(new OWLClassAxiomEditor(OREManager.getInstance()).getEditorComponent());
-			dialog.pack();
-			dialog.setVisible(true);
+			OWLClassAxiomEditor editor = new OWLClassAxiomEditor(OREManager.getInstance());
+			OWLAxiom ax = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(2);
+			if(ax instanceof OWLClassAxiom){
+				editor.setEditedObject((OWLClassAxiom) ax);
+			}
+			showEditorDialog(editor, ax);
 		}
 	}
 	
@@ -296,9 +310,65 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		repMan.removeListener(this);
 	}
 	
+	private void showEditorDialog(final OWLClassAxiomEditor editor, OWLObject value) {
+		if (editor == null) {
+			return;
+		}
+		// Create the editing component dialog - we use an option pane
+		// so that the buttons and keyboard actions are what are expected
+		// by the user.
+		final JComponent editorComponent = editor.getEditorComponent();
+		final VerifyingOptionPane optionPane = new VerifyingOptionPane(
+				editorComponent) {
 
+			public void selectInitialValue() {
+				// This is overriden so that the option pane dialog default
+				// button
+				// doesn't get the focus.
+			}
+		};
+		final InputVerificationStatusChangedListener verificationListener = new InputVerificationStatusChangedListener() {
+			public void verifiedStatusChanged(boolean verified) {
+				optionPane.setOKEnabled(verified);
+			}
+		};
+		// if the editor is verifying, will need to prevent the OK button from
+		// being available
+		if (editor instanceof VerifiedInputEditor) {
+			((VerifiedInputEditor) editor)
+					.addStatusChangedListener(verificationListener);
+		}
+		final Component parent = SwingUtilities.getAncestorOfClass(Frame.class, getParent());
+		final JDialog dlg = optionPane.createDialog(parent, null);
+		// The editor shouldn't be modal (or should it?)
+		dlg.setModal(false);
+		dlg.setResizable(true);
+		dlg.pack();
+		dlg.setLocationRelativeTo(parent);
+		dlg.addComponentListener(new ComponentAdapter() {
+
+			public void componentHidden(ComponentEvent e) {
+				Object retVal = optionPane.getValue();
+				editorComponent.setPreferredSize(editorComponent.getSize());
+				if (retVal != null && retVal.equals(JOptionPane.OK_OPTION)) {
+					handleEditFinished(editor);
+				}
+//				setSelectedValue(frameObject, true);
+				if (editor instanceof VerifiedInputEditor) {
+					((VerifiedInputEditor) editor)
+							.removeStatusChangedListener(verificationListener);
+				}
+//					editor.dispose();
+			}
+		});
+			
+		dlg.setTitle(OREManager.getInstance().getRendering(value));
+		dlg.setVisible(true);
+	}
 	
-
+        void handleEditFinished(OWLClassAxiomEditor editor){
+				System.out.println(editor.getEditedObject());
+        }
 	
 
 }

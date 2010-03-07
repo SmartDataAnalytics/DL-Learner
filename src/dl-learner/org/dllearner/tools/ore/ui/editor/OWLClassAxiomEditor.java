@@ -10,7 +10,7 @@ import org.dllearner.tools.ore.OREManager;
 import org.semanticweb.owl.model.OWLClassAxiom;
 import org.semanticweb.owl.model.OWLException;
 
-public class OWLClassAxiomEditor {
+public class OWLClassAxiomEditor implements VerifiedInputEditor{
 	
 	private ExpressionEditor<OWLClassAxiom> editor;
 
@@ -92,13 +92,13 @@ public class OWLClassAxiomEditor {
         setEditedObject(null);
     }
 
-//
-//    public void addStatusChangedListener(InputVerificationStatusChangedListener listener) {
-//        editor.addStatusChangedListener(listener);
-//    }
-//
-//
-//    public void removeStatusChangedListener(InputVerificationStatusChangedListener listener) {
-//        editor.removeStatusChangedListener(listener);
-//    }
+
+    public void addStatusChangedListener(InputVerificationStatusChangedListener listener) {
+        editor.addStatusChangedListener(listener);
+    }
+
+
+    public void removeStatusChangedListener(InputVerificationStatusChangedListener listener) {
+        editor.removeStatusChangedListener(listener);
+    }
 }

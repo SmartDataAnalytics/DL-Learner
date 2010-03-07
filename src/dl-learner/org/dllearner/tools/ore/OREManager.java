@@ -37,6 +37,7 @@ import org.dllearner.tools.ore.cache.OWLEntityRenderingCache;
 import org.dllearner.tools.ore.cache.OWLObjectRenderingCache;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.dllearner.tools.ore.ui.editor.OWLEntityFinder;
+import org.dllearner.tools.ore.ui.rendering.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.dllearner.tools.ore.ui.rendering.OWLEntityRenderer;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
@@ -55,7 +56,6 @@ import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.SimpleShortFormProvider;
 
-import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class OREManager {
 
