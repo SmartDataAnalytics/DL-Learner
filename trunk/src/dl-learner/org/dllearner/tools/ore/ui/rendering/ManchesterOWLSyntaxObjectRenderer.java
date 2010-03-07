@@ -149,7 +149,7 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
     public static final int LINE_LENGTH = 70;
 
-    private boolean wrap = true;
+    private boolean wrap = false;
 
     private DescriptionComparator descriptionComparator;
 

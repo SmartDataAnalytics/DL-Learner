@@ -9,7 +9,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
@@ -37,7 +36,9 @@ import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.editor.InputVerificationStatusChangedListener;
+import org.dllearner.tools.ore.ui.editor.OWLAxiomEditor;
 import org.dllearner.tools.ore.ui.editor.OWLClassAxiomEditor;
+import org.dllearner.tools.ore.ui.editor.OWLObjectPropertyAxiomEditor;
 import org.dllearner.tools.ore.ui.editor.VerifiedInputEditor;
 import org.dllearner.tools.ore.ui.editor.VerifyingOptionPane;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
@@ -49,6 +50,7 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLClassAxiom;
 import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owl.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 import uk.ac.manchester.cs.owl.dlsyntax.DLSyntaxObjectRenderer;
@@ -65,9 +67,9 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	
 	protected String[] columnToolTips = {
 		    null, 
-		    "The number of already computed explanations where the axiom occurs.",
-		    "TODO",
-		    "TODO",
+		    "The number of already computed explanations wherein the axiom occurs.",
+		    "The sum of all axioms, in which the entities of the current axiom are contained.",
+		    "",
 		    "If checked, the axiom is selected to remove from the ontology.",
 		    "Edit the axiom."
 		};
@@ -93,6 +95,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		setRowHeight(20);
 	
 		getColumn(0).setCellRenderer(new TextAreaRenderer());
+//		getColumn(0).setCellRenderer(new OWLTableCellRenderer(OREManager.getInstance()));
 		getColumn(1).setMaxWidth(60);
 		getColumn(2).setMaxWidth(60);
 		getColumn(3).setMaxWidth(60);
@@ -147,20 +150,6 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 			}
 		});
 
-		addMouseListener(new MouseAdapter() {
-
-			final ExplanationTable table;
-			{
-				table = ExplanationTable.this;
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					System.out.println(getValueAt(table
-							.rowAtPoint(e.getPoint()), 0));
-				}
-			}
-		});
 	}
 	
 	@Override
@@ -241,6 +230,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		JTable table;
 		JButton editButton;
 		String text;
+		int row;
 		
 
 		public ButtonCellEditor() {
@@ -257,6 +247,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 				Object value, boolean isSelected, int row, int column) {
 			text = (value == null) ? "" : value.toString();
 			editButton.setText("");
+			this.row = row;
 			return editButton;
 		}
 
@@ -268,12 +259,17 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			fireEditingStopped();
-			OWLClassAxiomEditor editor = new OWLClassAxiomEditor(OREManager.getInstance());
-			OWLAxiom ax = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(2);
+			OWLAxiom ax = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(row);
 			if(ax instanceof OWLClassAxiom){
+				OWLClassAxiomEditor editor = new OWLClassAxiomEditor(OREManager.getInstance());
 				editor.setEditedObject((OWLClassAxiom) ax);
+				showEditorDialog(editor, ax);
+			} else if(ax instanceof OWLObjectPropertyAxiom){
+				OWLObjectPropertyAxiomEditor editor = new OWLObjectPropertyAxiomEditor(OREManager.getInstance());
+				editor.setEditedObject((OWLObjectPropertyAxiom) ax);
+				showEditorDialog(editor, ax);
 			}
-			showEditorDialog(editor, ax);
+			
 		}
 	}
 	
@@ -310,7 +306,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		repMan.removeListener(this);
 	}
 	
-	private void showEditorDialog(final OWLClassAxiomEditor editor, OWLObject value) {
+	private void showEditorDialog(final OWLAxiomEditor editor, OWLObject value) {
 		if (editor == null) {
 			return;
 		}
@@ -366,7 +362,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		dlg.setVisible(true);
 	}
 	
-        void handleEditFinished(OWLClassAxiomEditor editor){
+        void handleEditFinished(OWLAxiomEditor editor){
 				System.out.println(editor.getEditedObject());
         }
 	
