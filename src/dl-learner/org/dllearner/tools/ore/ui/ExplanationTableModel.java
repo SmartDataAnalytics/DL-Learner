@@ -59,7 +59,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 			if(strikeOutIrrelevantParts){			
 				return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root, laconicExplanation);				
 			} else {
-//				return new ManchesterRenderer(OREManager.getInstance().getReasoner().getOWLOntologyManager()).render(ax, null);
+//				return OREManager.getInstance().getRendering(ax);
 				return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
 			}        
 		} else if(columnIndex == 1){

@@ -1,5 +1,6 @@
 package org.dllearner.tools.ore;
 
+import java.awt.Color;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -37,6 +38,7 @@ import org.dllearner.tools.ore.cache.OWLEntityRenderingCache;
 import org.dllearner.tools.ore.cache.OWLObjectRenderingCache;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.dllearner.tools.ore.ui.editor.OWLEntityFinder;
+import org.dllearner.tools.ore.ui.rendering.KeywordColorMap;
 import org.dllearner.tools.ore.ui.rendering.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.dllearner.tools.ore.ui.rendering.OWLEntityRenderer;
 import org.dllearner.utilities.owl.OWLAPIConverter;
@@ -87,7 +89,7 @@ public class OREManager {
 	private OWLObjectRenderer owlObjectRenderer;
 	private OWLEntityRenderer owlEntityRenderer;
 	private OWLEntityFinder owlEntityFinder;
-	
+	private Map<String, Color> keywordColorMap;
 
 	private List<OREManagerListener> listeners;
 
@@ -104,6 +106,7 @@ public class OREManager {
 		owlObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 		owlObjectRenderer.setShortFormProvider(new SimpleShortFormProvider());
 		owlEntityRenderer = new OWLEntityRenderer();
+		keywordColorMap = new KeywordColorMap();
 	}
 	
 	public static synchronized OREManager getInstance() {
@@ -294,6 +297,10 @@ public class OREManager {
 			owlEntityFinder = new OWLEntityFinder(this, owlEntityRenderingCache);
         }
         return owlEntityFinder;
+	}
+	
+	public Map<String, Color> getKeywordColorMap(){
+		return keywordColorMap;
 	}
 
 	private URL getClass2LearnAsURL(){

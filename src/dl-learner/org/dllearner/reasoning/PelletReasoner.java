@@ -1563,6 +1563,10 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		return factory;
 	}
 	
+	public boolean isSatisfiable(OWLDescription d){
+		return reasoner.isSatisfiable(d);
+	}
+	
 	/**
 	 * Returns asserted class definitions of given class
 	 * @param nc the class

@@ -1,5 +1,6 @@
 package org.dllearner.tools.ore.ui.rendering;
 
+import java.awt.Color;
 import java.util.StringTokenizer;
 
 import org.dllearner.core.owl.Description;
@@ -51,6 +52,7 @@ public class ManchesterSyntaxRenderer {
 	}
 	
 	public static String render(OWLAxiom value, boolean removed, int depth){
+//		String renderedString = OREManager.getInstance().getRendering(value);
 		String renderedString = renderer.render(value, null);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
@@ -88,10 +90,16 @@ public class ManchesterSyntaxRenderer {
 			} 
 			
 			boolean isReserved = false;
+//			Color c = OREManager.getInstance().getKeywordColorMap().get(token);
+//			if(c != null){
+//				color = c.
+//				isReserved = true;
+//			}
 			for(Keyword key : Keyword.values()){
 				if(token.equals(key.getLabel())){
 					color = key.getColor();
-					isReserved = true;break;
+					isReserved = true;
+					break;
 				} 
 			}
 			if(isReserved || unsatClass){
