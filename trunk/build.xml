@@ -60,7 +60,7 @@
 
 		<!-- compile project into temporary directory -->
 		<mkdir dir="classes_tmp"/>
-		<javac destdir="classes_tmp" target="1.5">
+		<javac destdir="classes_tmp" target="1.5" debug="on">
 			<src path="${source_dir}"/>
 			<classpath refid="classpath"/>
 		</javac>
@@ -498,7 +498,7 @@ public class Info {
 		<!-- we also need to copy some images, which should be
 			included in dllearner.jar -->
 		<copy toDir="classes_tmp" >
-			<fileset dir="${source_dir}" includes="**/*.gif,**/*.png,**/*.html,**/*.txt"/>
+			<fileset dir="${source_dir}" includes="**/*.gif,**/*.png,**/*.html,**/*.txt,**/*.ini"/>
 		</copy>
 		<mkdir dir="${release_ore_dir}"/>
 		<mkdir dir="${release_ore_dir}/lib/"/>
