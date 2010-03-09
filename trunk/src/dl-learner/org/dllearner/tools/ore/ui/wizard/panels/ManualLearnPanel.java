@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -108,14 +109,20 @@ public class ManualLearnPanel extends JPanel{
 	}
 	
 	private void createUI(){
-		setLayout(new GridBagLayout());
+//		setLayout(new GridBagLayout());
 		c = new GridBagConstraints();
-		createResultPanel();
-		createControlPanel();
-		createCoveragePanel();
+//		createResultPanel();
+//		createControlPanel();
+//		createCoveragePanel();
+		setLayout(new BorderLayout());
+		add(createResultPanel(), BorderLayout.CENTER);
+		add(createCoveragePanel(), BorderLayout.SOUTH);
+		add(createControlPanel(), BorderLayout.EAST);
+		
+		
 	}
 	
-	private void createResultPanel(){
+	private JComponent createResultPanel(){
 		c.gridx = 0;
 		c.gridy = 0;		
 		c.weightx = 1.0;
@@ -130,10 +137,11 @@ public class ManualLearnPanel extends JPanel{
 		learnResultPanel.getContentContainer().setLayout(new BorderLayout());
 		learnResultPanel.getContentContainer().add(new JScrollPane(resultTable), BorderLayout.CENTER);
 		learnResultPanel.getContentContainer().add(inconsistencyLabel, BorderLayout.SOUTH);
-		add(learnResultPanel, c);
+//		add(learnResultPanel, c);
+		return learnResultPanel;
 	}
 	
-	private void createControlPanel(){
+	private JComponent createControlPanel(){
 		c.gridx = GridBagConstraints.RELATIVE;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.NORTH;
@@ -193,12 +201,14 @@ public class ManualLearnPanel extends JPanel{
 				1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		
-		add(buttonSliderPanel, c);
+//		add(buttonSliderPanel, c);
+		
+		return buttonSliderPanel;
 	}
 	
 	
 	
-	private void createCoveragePanel(){
+	private JComponent createCoveragePanel(){
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -211,7 +221,9 @@ public class ManualLearnPanel extends JPanel{
 		JXTitledPanel coveragePanel = new JXTitledPanel("Coverage");
 		coveragePanel.getContentContainer().setLayout(new BorderLayout());
 		coveragePanel.getContentContainer().add(coverageHelpPanel);
-		add(coveragePanel, c);
+//		add(coveragePanel, c);
+		
+		return coveragePanel;
 	}
 	
 	public void addStartButtonListener(ActionListener a){
