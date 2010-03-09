@@ -59,6 +59,7 @@ public class ExplanationTableModel extends AbstractTableModel {
 			if(strikeOutIrrelevantParts){			
 				return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root, laconicExplanation);				
 			} else {
+//				return ax;
 //				return OREManager.getInstance().getRendering(ax);
 				return ManchesterSyntaxRenderer.render(ax, impMan.isSelected(ax), depth2Root);
 			}        

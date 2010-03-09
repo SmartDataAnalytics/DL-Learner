@@ -43,16 +43,15 @@ public class RepairTableModel extends AbstractTableModel implements RepairManage
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		
-		if(columnIndex == 0){
+
+		if (columnIndex == 0) {
 			if (repairPlan.get(rowIndex) instanceof RemoveAxiom) {
 				return "–";
 			} else {
 				return "+";
 			}
 		} else if (columnIndex == 1) {
-			return ManchesterSyntaxRenderer.render(repairPlan.get(rowIndex)
-					.getAxiom(), false, 0);
+			return ManchesterSyntaxRenderer.render(repairPlan.get(rowIndex).getAxiom(), false, 0);
 		} else {
 			return null;
 		}

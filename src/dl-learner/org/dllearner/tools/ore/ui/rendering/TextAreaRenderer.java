@@ -24,7 +24,7 @@ public class TextAreaRenderer extends JEditorPane implements TableCellRenderer {
 
 	public Component getTableCellRendererComponent(//
 			JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
-		// set the colours, etc. using the standard for that platform
+		// set the colors, etc. using the standard for that platform
 		adaptee.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
 		if(obj instanceof OWLAxiom){
 			setText(ManchesterSyntaxRenderer.render((OWLAxiom)obj, false, 0));

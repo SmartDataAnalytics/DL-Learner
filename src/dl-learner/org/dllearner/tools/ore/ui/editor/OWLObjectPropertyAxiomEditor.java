@@ -34,7 +34,7 @@ public class OWLObjectPropertyAxiomEditor implements VerifiedInputEditor, OWLAxi
             editor.setText("");
         }
         else{
-            editor.setText(oreManager.getRendering(axiom));
+            editor.setText(oreManager.getManchesterSyntaxRendering(axiom));
         }
         return true;
     }

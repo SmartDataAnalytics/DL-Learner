@@ -133,7 +133,7 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
             setText("");
         }
         else if (desc instanceof OWLObject) {
-            String rendering = mngr.getRendering((OWLObject) desc);
+            String rendering = mngr.getManchesterSyntaxRendering((OWLObject) desc);
             setText(rendering);
         }
         else if (desc instanceof Collection){
@@ -143,7 +143,7 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
                     if (sb.length() > 0){
                         sb.append(", ");
                     }
-                    sb.append(mngr.getRendering((OWLObject)obj));
+                    sb.append(mngr.getManchesterSyntaxRendering((OWLObject)obj));
                 }
             }
             setText(sb.toString());

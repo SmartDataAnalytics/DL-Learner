@@ -52,8 +52,8 @@ public class ManchesterSyntaxRenderer {
 	}
 	
 	public static String render(OWLAxiom value, boolean removed, int depth){
-//		String renderedString = OREManager.getInstance().getRendering(value);
-		String renderedString = renderer.render(value, null);
+		String renderedString = OREManager.getInstance().getManchesterSyntaxRendering(value);
+//		String renderedString = renderer.render(value, null);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
 		
@@ -78,30 +78,25 @@ public class ManchesterSyntaxRenderer {
 					}
 				}
 			}
-//			for(OWLClass cl : ExplanationManager.getInstance(OREManager.getInstance()).getUnsatisfiableClasses()){
-//				if(cl.toString().equals(token)){
-//					unsatClass = true;
-//					break;
-//				}
-//			}
 			String color = "black";
 			if(unsatClass){
 				color = "red";
 			} 
 			
 			boolean isReserved = false;
-//			Color c = OREManager.getInstance().getKeywordColorMap().get(token);
-//			if(c != null){
-//				color = c.
-//				isReserved = true;
-//			}
-			for(Keyword key : Keyword.values()){
-				if(token.equals(key.getLabel())){
-					color = key.getColor();
-					isReserved = true;
-					break;
-				} 
+			Color c = OREManager.getInstance().getKeywordColorMap().get(token);
+			if(c != null){
+				color = "#" + Integer.toHexString(c.getRed()) + 
+				Integer.toHexString(c.getGreen()) + Integer.toHexString(c.getBlue());
+				isReserved = true;
 			}
+//			for(Keyword key : Keyword.values()){
+//				if(token.equals(key.getLabel())){
+//					color = key.getColor();
+//					isReserved = true;
+//					break;
+//				} 
+//			}
 			if(isReserved || unsatClass){
 				bf.append("<b><font color=" + color + ">" + token + " </font></b>");
 			} else {
