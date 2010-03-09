@@ -28,7 +28,6 @@ import java.util.Set;
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-import org.semanticweb.owlapi.util.CollectionFactory;
 
 
 /**
@@ -252,7 +251,7 @@ public class ParserException extends Exception {
                 individualNameExpected,
                 datatypeNameExpected,
                 annotationPropertyExpected,
-                CollectionFactory.createSet(keywords));
+                createSet(keywords));
     }
 
 
@@ -265,5 +264,13 @@ public class ParserException extends Exception {
 
     public ParserException(List<String> tokenSequence, int startPos, int lineNumber, int columnNumber, String ... keywords) {
         this(tokenSequence, startPos, lineNumber, columnNumber, false, false, false, false, false, false, keywords);
+    }
+    
+    private static Set<String> createSet(String ... keywords){
+    	Set<String> result = new HashSet<String>();
+        for(String k : keywords) {
+            result.add(k);
+        }
+        return result;
     }
 }
