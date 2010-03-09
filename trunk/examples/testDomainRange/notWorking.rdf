@@ -704,9 +704,7 @@
 
     <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Category -->
 
-    <owl:Class rdf:about="&system;Category">
-        <owl:disjointWith rdf:resource="&j.0;Sentence"/>
-    </owl:Class>
+    <owl:Class rdf:about="&system;Category"/>
     
 
 
@@ -1008,9 +1006,7 @@
 
     <!-- http://nlp2rdf.org/ontology/Sentence -->
 
-    <owl:Class rdf:about="&j.0;Sentence">
-        <owl:disjointWith rdf:resource="&j.0;Token"/>
-    </owl:Class>
+    <owl:Class rdf:about="&j.0;Sentence"/>
     
 
 
