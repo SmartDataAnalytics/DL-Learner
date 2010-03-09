@@ -26,9 +26,11 @@ public class ResultTable extends JXTable {
 //		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ResultTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		ProgressBarTableCellRenderer renderer = new ProgressBarTableCellRenderer();
 		renderer.setBackground(getBackground());
 		getColumn(0).setCellRenderer(renderer);
+		
 		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		setColumnSizes();
 		getColumn(0).setResizable(false);
@@ -41,9 +43,7 @@ public class ResultTable extends JXTable {
 
 	private void setColumnSizes(){
 		getColumn(0).setMaxWidth(100);
-		
 		getColumn(1).setPreferredWidth(430);
-				
 	}
 	
 	

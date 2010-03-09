@@ -23,15 +23,6 @@ import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeListener;
 
 
-/**
- * Author: Matthew Horridge<br>
- * The University Of Manchester<br>
- * Medical Informatics Group<br>
- * Date: 21-Sep-2006<br><br>
- * <p/>
- * matthew.horridge@cs.man.ac.uk<br>
- * www.cs.man.ac.uk/~horridgm<br><br>
- */
 public class OWLEntityRenderingCache{
 
     private static final Logger logger = Logger.getLogger(OWLEntityRenderingCache.class);
@@ -66,14 +57,9 @@ public class OWLEntityRenderingCache{
 	};
 
 
-    public OWLEntityRenderingCache() {
-    }
-
-
-    public void setOREManager(OREManager oreManager) {
-        this.oreManager = oreManager;
+    public OWLEntityRenderingCache(OREManager oreManager) {
+    	this.oreManager = oreManager;
         oreManager.addListener(oreManagerListener);
-//        owlModelManager.addOntologyChangeListener(listener);
     }
 
 
@@ -128,7 +114,7 @@ public class OWLEntityRenderingCache{
 
     public void dispose() {
         clear();
-//        owlModelManager.removeOntologyChangeListener(listener);
+        oreManager.removeListener(oreManagerListener);
     }
 
 
@@ -226,7 +212,7 @@ public class OWLEntityRenderingCache{
 
     private <T extends OWLEntity> void addRendering(T entity, Map<String, T> map) {
         if (!entityRenderingMap.containsKey(entity)) {
-            String rendering = oreManager.getRendering(entity);
+            String rendering = oreManager.getManchesterSyntaxRendering(entity);
             map.put(rendering, entity);
             entityRenderingMap.put(entity, rendering);
         }

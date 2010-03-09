@@ -465,7 +465,7 @@ public class OWLAutoCompleter {
 
     private String getInsertText(Object o) {
         if (o instanceof OWLObject) {
-            return oreManager.getRendering((OWLObject) o);
+            return oreManager.getManchesterSyntaxRendering((OWLObject) o);
         }
         else {
             return o.toString();

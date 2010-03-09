@@ -1,5 +1,6 @@
 package org.dllearner.tools.ore.ui.editor;
 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -7,21 +8,21 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.model.OWLClassAxiom;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLException;
 
-public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<OWLClassAxiom>{
+public class OWLAxiomsEditor implements VerifiedInputEditor, OWLAxiomEditor<OWLAxiom>{
 	
-	private ExpressionEditor<OWLClassAxiom> editor;
+	private ExpressionEditor<OWLAxiom> editor;
 
     private JComponent editingComponent;
     
     private OREManager oreManager;
 
 
-    public OWLClassAxiomEditor(OREManager oreManager) {
+    public OWLAxiomsEditor(OREManager oreManager) {
     	this.oreManager = oreManager;
-        editor = new ExpressionEditor<OWLClassAxiom>(oreManager, new OWLClassAxiomChecker(oreManager));
+        editor = new ExpressionEditor<OWLAxiom>(oreManager, new OWLAxiomChecker(oreManager));
 
         editingComponent = new JPanel(new BorderLayout());
         editingComponent.add(editor);
@@ -29,7 +30,7 @@ public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<
     }
 
 
-    public boolean setEditedObject(OWLClassAxiom axiom) {
+    public boolean setEditedObject(OWLAxiom axiom) {
         if (axiom == null){
             editor.setText("");
         }
@@ -47,12 +48,12 @@ public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<
 
 
     public String getEditorTypeName() {
-        return "Class Axiom";
+        return "OWL Axiom";
     }
 
 
     public boolean canEdit(Object object) {
-        return object instanceof OWLClassAxiom;
+        return object instanceof OWLAxiom;
     }
 
 
@@ -70,7 +71,7 @@ public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<
      * Gets the object that has been edited.
      * @return The edited object
      */
-    public OWLClassAxiom getEditedObject() {
+    public OWLAxiom getEditedObject() {
         try {
             if (editor.isWellFormed()) {
                 return editor.createObject();
@@ -102,3 +103,4 @@ public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<
         editor.removeStatusChangedListener(listener);
     }
 }
+

@@ -49,6 +49,9 @@ public class ManchesterOWLSyntaxOWLObjectRendererImpl implements OWLObjectRender
     public ManchesterOWLSyntaxOWLObjectRendererImpl() {
         writerDelegate = new WriterDelegate();
         ren = new ManchesterOWLSyntaxObjectRenderer(writerDelegate);
+        ren.setUseWrapping(false);
+        ren.setUseTabbing(false);
+        ren.setWrap(false);
     }
 
 

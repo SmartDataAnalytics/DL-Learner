@@ -149,7 +149,7 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
     public static final int LINE_LENGTH = 70;
 
-    private boolean wrap = false;
+    private boolean wrap = true;
 
     private DescriptionComparator descriptionComparator;
 
@@ -198,10 +198,10 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
                     writeNewLine();
                 }
                 if (lastWasNamed && desc instanceof OWLRestriction) {
-                    write("", THAT, " ");
+                    write(" ", THAT, " ");
                 }
                 else {
-                    write("", AND, " ");
+                    write(" ", AND, " ");
                 }
             }
 
@@ -257,12 +257,12 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
 
     public void visit(OWLObjectIntersectionOf desc) {
-        write(desc.getOperands(), true);
+        write(desc.getOperands(), false);
     }
 
 
     public void visit(OWLObjectUnionOf desc) {
-        write(desc.getOperands(), OR, true);
+        write(desc.getOperands(), OR, false);
     }
 
 

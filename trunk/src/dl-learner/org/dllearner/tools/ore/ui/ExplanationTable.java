@@ -39,8 +39,7 @@ import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.editor.InputVerificationStatusChangedListener;
 import org.dllearner.tools.ore.ui.editor.OWLAxiomEditor;
-import org.dllearner.tools.ore.ui.editor.OWLClassAxiomEditor;
-import org.dllearner.tools.ore.ui.editor.OWLObjectPropertyAxiomEditor;
+import org.dllearner.tools.ore.ui.editor.OWLAxiomsEditor;
 import org.dllearner.tools.ore.ui.editor.VerifiedInputEditor;
 import org.dllearner.tools.ore.ui.editor.VerifyingOptionPane;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
@@ -51,14 +50,10 @@ import org.protege.editor.core.Disposable;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLClassAxiom;
 import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.RemoveAxiom;
-
-import uk.ac.manchester.cs.owl.dlsyntax.DLSyntaxObjectRenderer;
 
 public class ExplanationTable extends JXTable implements RepairManagerListener, Disposable{
 
@@ -68,7 +63,8 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	private static final long serialVersionUID = 5580730282611559609L;
 	
 	private RepairManager repMan;
-	DLSyntaxObjectRenderer renderer = new DLSyntaxObjectRenderer();
+	private OREManager oreMan;
+	
 	
 	protected String[] columnToolTips = {
 		    null, 
@@ -81,16 +77,17 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 
 	
 	public ExplanationTable(Explanation exp, OWLClass cl) {
-		
+		oreMan = OREManager.getInstance();
 		repMan = RepairManager.getInstance(OREManager.getInstance());
-		
 		repMan.addListener(this);
+		
 		setBackground(Color.WHITE);
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new ExplanationTableModel(exp,	cl));
 		setRolloverEnabled(true);
 		addHighlighter(new ColorHighlighter(HighlightPredicate.ROLLOVER_ROW, 
 			      Color.YELLOW, Color.BLACK));  
+		
 		TableColumn column6 = getColumn(5);
 		column6.setCellRenderer(new ButtonCellRenderer());
 		column6.setCellEditor(new ButtonCellEditor());
@@ -183,9 +180,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         if(rowIndex != -1){
-        	
-//        	tip = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex).toString();
-        	tip = renderer.render(((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex));
+        	tip = oreMan.getDLSyntaxRendering(((ExplanationTableModel)getModel()).getOWLAxiomAtRow(rowIndex));
         } else {
         	tip = super.getToolTipText(e);
         }
@@ -265,15 +260,18 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		public void actionPerformed(ActionEvent e) {
 			fireEditingStopped();
 			OWLAxiom ax = ((ExplanationTableModel)getModel()).getOWLAxiomAtRow(row);
-			if(ax instanceof OWLClassAxiom){
-				OWLClassAxiomEditor editor = new OWLClassAxiomEditor(OREManager.getInstance());
-				editor.setEditedObject((OWLClassAxiom) ax);
-				showEditorDialog(editor, ax);
-			} else if(ax instanceof OWLObjectPropertyAxiom){
-				OWLObjectPropertyAxiomEditor editor = new OWLObjectPropertyAxiomEditor(OREManager.getInstance());
-				editor.setEditedObject((OWLObjectPropertyAxiom) ax);
-				showEditorDialog(editor, ax);
-			}
+			OWLAxiomsEditor editor = new OWLAxiomsEditor(oreMan);
+			editor.setEditedObject(ax);
+			showEditorDialog(editor, ax);
+//			if(ax instanceof OWLClassAxiom){
+//				OWLClassAxiomEditor editor = new OWLClassAxiomEditor(OREManager.getInstance());
+//				editor.setEditedObject((OWLClassAxiom) ax);
+//				showEditorDialog(editor, ax);
+//			} else if(ax instanceof OWLObjectPropertyAxiom){
+//				OWLObjectPropertyAxiomEditor editor = new OWLObjectPropertyAxiomEditor(OREManager.getInstance());
+//				editor.setEditedObject((OWLObjectPropertyAxiom) ax);
+//				showEditorDialog(editor, ax);
+//			}
 			
 		}
 	}
@@ -341,7 +339,6 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		}
 		final Component parent = SwingUtilities.getAncestorOfClass(Frame.class, getParent());
 		final JDialog dlg = optionPane.createDialog(parent, null);
-		// The editor shouldn't be modal (or should it?)
 		dlg.setModal(false);
 		dlg.setResizable(true);
 		dlg.pack();
@@ -363,7 +360,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 			}
 		});
 			
-		dlg.setTitle(OREManager.getInstance().getRendering(value));
+		dlg.setTitle(OREManager.getInstance().getManchesterSyntaxRendering(value));
 		dlg.setVisible(true);
 	}
 	
