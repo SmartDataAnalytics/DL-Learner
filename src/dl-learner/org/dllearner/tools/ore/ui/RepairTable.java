@@ -15,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
@@ -27,7 +28,7 @@ public class RepairTable extends JXTable {
 	 * 
 	 */
 	private static final long serialVersionUID = -621497634521668635L;
-	private final Icon deleteIcon = new ImageIcon(this.getClass().getResource("../Delete16.gif"));
+	private final Icon deleteIcon = new ImageIcon(OREApplication.class.getResource("Delete16.gif"));
 
 	public RepairTable() {
 		super(new RepairTableModel());

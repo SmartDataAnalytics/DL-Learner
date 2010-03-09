@@ -198,7 +198,7 @@ public class ClassChoosePanel extends JPanel{
     
     public void reset(){
     	classesTable.clear();
-    	minInstanceCountSpinner.setValue(Integer.valueOf(1));
+    	minInstanceCountSpinner.setValue(Integer.valueOf(3));
     	autoLearnButton.setSelected(true);
     	setAutoLearningPanel(true);
     }

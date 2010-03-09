@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 
@@ -19,7 +20,7 @@ public class MarkableClassesTable extends JXTable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4193878042914394758L;
-	private ImageIcon icon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/untoggled.gif");
+	private ImageIcon icon = new ImageIcon(OREApplication.class.getResource("untoggled.gif"));
 	
 	public MarkableClassesTable(){
 		super(new MarkableClassesTableModel());

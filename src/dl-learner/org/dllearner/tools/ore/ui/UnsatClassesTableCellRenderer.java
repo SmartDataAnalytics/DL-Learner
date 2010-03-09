@@ -2,10 +2,12 @@ package org.dllearner.tools.ore.ui;
 
 import java.util.Set;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.dllearner.tools.ore.ExplanationManager;
+import org.dllearner.tools.ore.OREApplication;
 import org.semanticweb.owl.model.OWLClass;
 
 public class UnsatClassesTableCellRenderer extends DefaultTableCellRenderer {
@@ -14,6 +16,8 @@ public class UnsatClassesTableCellRenderer extends DefaultTableCellRenderer {
 	 * 
 	 */
 	private static final long serialVersionUID = -6705062445027715783L;
+	
+	private final Icon icon = new ImageIcon(OREApplication.class.getResource("information.png"));
 	
 	private ExplanationManager manager;
 	private Set<OWLClass> rootClasses;
@@ -28,7 +32,7 @@ public class UnsatClassesTableCellRenderer extends DefaultTableCellRenderer {
 		if(value instanceof OWLClass){
 			if(rootClasses.contains((OWLClass)value)){
 //				setText(value.toString() );
-				setIcon(new ImageIcon(this.getClass().getResource("../information.png")));
+				setIcon(icon);
 //				setHorizontalTextPosition(LEADING);
 			}
 			else {
