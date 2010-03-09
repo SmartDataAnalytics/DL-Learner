@@ -125,6 +125,18 @@ public class KnowledgeSourcePanel extends JPanel{
 	}
 	
 	public void updateRecentList(ActionListener aL){
+		if(recentLinkBox == null){
+			recentLinkBox = new Box(BoxLayout.Y_AXIS);
+
+            recentLinkBox.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
+                    " Open recent ",
+                    0,
+                    0,
+                    getFont().deriveFont(Font.BOLD),
+                    Color.GRAY), BorderFactory.createEmptyBorder(20, 20, 20, 20)));
+            box.add(recentLinkBox);
+		}
 		recentLinkBox.removeAll();
 		openFromRecentLinks.clear();
 		LinkLabel link;
