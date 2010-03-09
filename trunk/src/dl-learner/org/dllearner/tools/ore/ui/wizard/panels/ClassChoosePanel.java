@@ -122,7 +122,7 @@ public class ClassChoosePanel extends JPanel{
 		minInstancesCountPanel.add(new JLabel("Min. instance count per class: "));
 		minInstanceCountSpinner = new JSpinner();
 		minInstanceCountSpinner.setEnabled(true);
-	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
+	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(3, 1, 500, 1);
 	    minInstanceCountSpinner.setModel(spinnerModel);
 	    minInstancesCountPanel.add(minInstanceCountSpinner);
 	    panel.add(minInstancesCountPanel, c);
@@ -142,7 +142,7 @@ public class ClassChoosePanel extends JPanel{
 		minInstancesCountPanel.add(new JLabel("Showing classes with at least "));
 		minInstanceCountSpinner = new JSpinner();
 		minInstanceCountSpinner.setEnabled(true);
-	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 500, 1);
+	    javax.swing.SpinnerModel spinnerModel = new SpinnerNumberModel(3, 1, 500, 1);
 	    minInstanceCountSpinner.setModel(spinnerModel);
 	    minInstancesCountPanel.add(minInstanceCountSpinner);
 	    minInstancesCountPanel.add(new JLabel(" instances"));

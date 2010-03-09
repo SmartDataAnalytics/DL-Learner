@@ -208,7 +208,7 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 				
 				@Override
 				public void run() {
-					fillClassesList(1);		
+					fillClassesList(3);		
 					TaskManager.getInstance().setTaskFinished();
 				}
 			});					
