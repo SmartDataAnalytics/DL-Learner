@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.rendering.ProgressBarTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
@@ -19,7 +20,7 @@ public class MarkableClassExpressionsTable extends JXTable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4193878042914394758L;
-	private Icon icon = new ImageIcon(OREManager.class.getResource("untoggled.gif"));
+	private Icon icon = new ImageIcon(OREApplication.class.getResource("untoggled.gif"));
 	
 	public MarkableClassExpressionsTable(){
 		super(new MarkableClassExpressionsTableModel());

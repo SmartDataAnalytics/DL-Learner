@@ -33,6 +33,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.dllearner.tools.ore.ImpactManager;
+import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
@@ -61,6 +62,9 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 	 * 
 	 */
 	private static final long serialVersionUID = 5580730282611559609L;
+	
+	private final Icon deleteCrossIcon = new ImageIcon(OREApplication.class.getResource("DeleteCross.gif"));
+	private final Icon editIcon = new ImageIcon(OREApplication.class.getResource("Edit16.gif"));
 	
 	private RepairManager repMan;
 	private OREManager oreMan;
@@ -112,7 +116,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 				return b;
 			}
 		});
-		getColumn(4).setHeaderValue(new ImageIcon(this.getClass().getResource("../DeleteCross.gif")));
+		getColumn(4).setHeaderValue(deleteCrossIcon);
 		getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 
@@ -213,7 +217,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 					setForeground(table.getForeground());
 					setBackground(UIManager.getColor("Button.background"));
 				}
-				setIcon(new ImageIcon(this.getClass().getResource("../Edit16.gif")));
+				setIcon(editIcon);
 				setText("");
 				return this;
 				}

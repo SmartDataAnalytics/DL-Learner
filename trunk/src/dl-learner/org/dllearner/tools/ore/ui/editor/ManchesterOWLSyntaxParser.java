@@ -147,11 +147,11 @@ public class ManchesterOWLSyntaxParser {
 
     private static final String CLASS = ManchesterOWLSyntax.CLASS.toString() + ":";
 
-    private static final String SUB_CLASS_OF = ManchesterOWLSyntax.SUBCLASS_OF.toString() + ":";
+    private static final String SUB_CLASS_OF = ManchesterOWLSyntax.SUBCLASS_OF.toString();// + ":";
 
-    private static final String EQUIVALENT_TO = ManchesterOWLSyntax.EQUIVALENT_TO.toString() + ":";
+    private static final String EQUIVALENT_TO = ManchesterOWLSyntax.EQUIVALENT_TO.toString();// + ":";
 
-    private static final String DISJOINT_WITH = ManchesterOWLSyntax.DISJOINT_WITH.toString() + ":";
+    private static final String DISJOINT_WITH = ManchesterOWLSyntax.DISJOINT_WITH.toString();// + ":";
 
     private static final String OBJECT_PROPERTY = ManchesterOWLSyntax.OBJECT_PROPERTY.toString() + ":";
 
@@ -159,9 +159,9 @@ public class ManchesterOWLSyntaxParser {
 
     private static final String SUB_PROPERTY_OF = ManchesterOWLSyntax.SUB_PROPERTY_OF.toString() + ":";
 
-    private static final String DOMAIN = ManchesterOWLSyntax.DOMAIN.toString() + ":";
+    private static final String DOMAIN = ManchesterOWLSyntax.DOMAIN.toString();// + ":";
 
-    private static final String RANGE = ManchesterOWLSyntax.RANGE.toString() + ":";
+    private static final String RANGE = ManchesterOWLSyntax.RANGE.toString();// + ":";
 
     private static final String CHARACTERISTICS = ManchesterOWLSyntax.CHARACTERISTICS.toString() + ":";
 

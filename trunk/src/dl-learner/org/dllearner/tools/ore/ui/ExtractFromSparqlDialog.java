@@ -58,6 +58,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -90,8 +91,8 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 	
 	private SparqlExtractOptionsPanel optionsPanel;
 	private JToggleButton optionsButton;
-	private ImageIcon toggledIcon = new ImageIcon(this.getClass().getResource("../toggled.gif"));
-	private ImageIcon untoggledIcon = new ImageIcon(this.getClass().getResource("../untoggled.gif"));
+	private ImageIcon toggledIcon = new ImageIcon(OREApplication.class.getResource("toggled.gif"));
+	private ImageIcon untoggledIcon = new ImageIcon(OREApplication.class.getResource("untoggled.gif"));
 	
 	private static final String URL_HELP_TEXT = "<html><table border=\"1\">" +
 			"<tr>" +
