@@ -63,7 +63,7 @@ public class OREApplication {
     public static void main(String[] args) {
     	
     	
-    	
+    	RecentManager.getInstance().load();
     	try {
     		UIManager.put("OptionPane.cancelButtonText","Cancel");
     		UIManager.put("ProgressMonitor.progressText","Progress");

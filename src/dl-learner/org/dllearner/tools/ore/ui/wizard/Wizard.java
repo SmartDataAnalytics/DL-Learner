@@ -45,7 +45,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.TaskManager;
-import org.dllearner.tools.ore.ui.StatusBar;
 import org.dllearner.tools.ore.ui.StatusBar2;
 import org.dllearner.tools.ore.ui.wizard.panels.LeftPanel;
 
@@ -364,6 +363,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * @param code The return code.
      */    
     public void close(int code) {
+    	RecentManager.getInstance().save();
         returnCode = code;
         System.out.println("Exited application");
         wizardDialog.dispose();
@@ -451,7 +451,6 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         TaskManager.getInstance().setDialog(wizardDialog);
         TaskManager.getInstance().setStatusBar(statusBar);
         
-        RecentManager.getInstance().deserialize();
     }
     
     

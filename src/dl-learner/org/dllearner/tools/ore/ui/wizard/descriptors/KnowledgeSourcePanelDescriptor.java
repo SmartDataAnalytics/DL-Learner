@@ -202,8 +202,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	        	oreMan.initPelletReasoner();
 //	        	ReasonerProgressUI ui = new ReasonerProgressUI(getWizard().getDialog());
 //	        	oreMan.getReasoner().getReasoner().getKB().getTaxonomyBuilder().setProgressMonitor(ui);
-	        	RecentManager.getInstance().addURI(currentURI);
-	        	RecentManager.getInstance().serialize();
+	        	RecentManager.getInstance().add(currentURI);
 	        	if(oreMan.consistentOntology()){
 					oreMan.getReasoner().classify();
 		        	oreMan.getReasoner().realise();
@@ -213,6 +212,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 				
 				cancel(true);
 				getWizard().getDialog().setCursor(null);
+				TaskManager.getInstance().setTaskFinished();
 				JOptionPane.showMessageDialog(getWizard().getDialog(),
 					    "Error loading ontology. Please check URI and try again.",
 					    "Ontology loading error",
@@ -227,6 +227,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 				
 				cancel(true);
 				getWizard().getDialog().setCursor(null);
+				TaskManager.getInstance().setTaskFinished();
 				if(e.getClass().equals(UnparsableOntologyException.class)){
 					JOptionPane.showMessageDialog(getWizard().getDialog(),
 						    "Error loading ontology. A syntax error in the ontology has been detected.",

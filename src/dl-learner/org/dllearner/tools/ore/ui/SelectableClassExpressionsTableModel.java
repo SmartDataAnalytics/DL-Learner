@@ -2,14 +2,12 @@ package org.dllearner.tools.ore.ui;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.protege.editor.owl.ui.view.SelectedEntityCardView;
 
 public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 
@@ -119,7 +117,7 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 			selectionList.add(i, Boolean.FALSE);
 		}
 	
-		fireTableRowsUpdated(0, this.resultList.size());
+		fireTableDataChanged();
 	}
 	
 	public EvaluatedDescriptionClass getSelectedValue(int rowIndex){

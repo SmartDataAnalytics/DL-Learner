@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -25,6 +26,7 @@ import org.dllearner.tools.ore.ui.ExplanationTable;
 import org.dllearner.tools.ore.ui.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.RepairPlanPanel;
+import org.jdesktop.swingx.JXTitledPanel;
 import org.semanticweb.owl.apibinding.OWLManager;
 
 public class InconsistencyExplanationPanel extends JPanel{
@@ -72,8 +74,12 @@ public class InconsistencyExplanationPanel extends JPanel{
 	}
 	
 	private JComponent createExplanationPanel(){
+		JXTitledPanel explanationPanel = new JXTitledPanel();
+		explanationPanel.setTitle("Explanations");
+		explanationPanel.getContentContainer().setLayout(new BorderLayout());
+		
 		explanationsPanel = new Box(1);
-
+		
 		JPanel pan = new JPanel(new BorderLayout());
 		pan.add(explanationsPanel, BorderLayout.NORTH);
 		explanationsScrollPane = new JScrollPane(pan);
@@ -83,14 +89,12 @@ public class InconsistencyExplanationPanel extends JPanel{
 		explanationsScrollPane.getViewport().setBackground(null);
 		explanationsScrollPane.setOpaque(false);
 	       
-		buttonExplanationsPanel = new JPanel();
-		buttonExplanationsPanel.setLayout(new BorderLayout());
-		buttonExplanationsPanel.add(explanationsScrollPane, BorderLayout.CENTER);
+		explanationPanel.getContentContainer().add(explanationsScrollPane, BorderLayout.CENTER);
 		JPanel holder = new JPanel(new BorderLayout());
 		holder.add(createExplanationHeaderPanel(), BorderLayout.WEST);
-		buttonExplanationsPanel.add(holder, BorderLayout.NORTH);
+		explanationPanel.getContentContainer().add(holder, BorderLayout.NORTH);
 		
-		return buttonExplanationsPanel;
+		return explanationPanel;
 
 	}
 	
