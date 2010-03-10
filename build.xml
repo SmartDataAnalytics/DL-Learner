@@ -458,7 +458,7 @@ public class Info {
 
 	<!-- build the ORE tool -->
 	<target name="buildORE"  description="build ore including scripts, no javadoc">
-
+		<property name="ore_source" value="src/dl-learner/org/dllearner/tools/ore" />
 		<!-- build scripts -->
 		<path id="addjar">
 			<path refid="classpath"/>
@@ -476,8 +476,7 @@ public class Info {
 			<map from="${removeprefix}" to="."/>
 		</pathconvert>
 
-		<echo file="bin/ore.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.tools.ore.OREApplication"/>
-		<echo file="bin/ore" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.tools.ore.OREApplication $@"/>
+		
 
 		<!-- write current build date into Info.java -->
 		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
@@ -502,11 +501,7 @@ public class Info {
 		</copy>
 		<mkdir dir="${release_ore_dir}"/>
 		<mkdir dir="${release_ore_dir}/lib/"/>
-		<mkdir dir="${temp}/lib/pellet" />
-		<mkdir dir="${temp}/lib/jena" />
-		<mkdir dir="${temp}/lib/ore-tool" />
-		<mkdir dir="${temp}/lib/owlapi" />
-		<mkdir dir="${temp}/lib/protege" />
+		
 
 		<jar jarfile="${release_ore_dir}/lib/dllearner.jar">
 			<fileset dir="classes_tmp"/>
@@ -538,15 +533,26 @@ public class Info {
 		<copy toDir="${release_ore_dir}/examples">
 			<fileset dir="examples/ore"/>
 		</copy>
-		<copy toDir="${release_ore_dir}">
-			<fileset dir="bin"/>
-		</copy>
+		<echo file="${release_ore_dir}/ore.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.tools.ore.OREApplication"/>
+		<echo file="${release_ore_dir}/ore" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.tools.ore.OREApplication $@"/>
+		
 
 		<!-- create file containing the build info -->
 		<echo file="${release_ore_dir}/build.txt" append="false">ORE Build ${today}</echo>
 
 		<!-- create empty log directory for release -->
 		<mkdir dir="${release_ore_dir}/log" />
+		
+		<!-- create cache directory for SPARQL extraction -->
+		<mkdir dir="${release_ore_dir}/cache" />
+		
+		<!-- copy README and INSTALL file -->
+		<copy toDir="${release_ore_dir}" >
+			<fileset dir="${ore_source}" includes="INSTALL,README"/>
+		</copy>
+		
+		<!-- copy LICENSE file -->
+		<copy file="LICENSE" toDir="${release_ore_dir}" />
 
 		<!-- create tar.gz files (allows storing whether a file is executable) -->
 		<tar longfile="gnu" destfile="ore-nosource-${today}.tar.gz" compression="gzip">
