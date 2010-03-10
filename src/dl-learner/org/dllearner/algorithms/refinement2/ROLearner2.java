@@ -452,7 +452,7 @@ public class ROLearner2 {
 				}
 				expandedNodes.clear();
 				treeString += startNode.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples,
-						baseURI);
+						baseURI, prefixes);
 				treeString += "\n";
 
 				if (replaceSearchTree)
@@ -899,10 +899,10 @@ public class ROLearner2 {
 			// accuracy: " + df.format(accuracy) + "%";
 			logger.debug("start node: "
 					+ startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
-							baseURI));
+							baseURI, prefixes));
 			String bestNodeString = "currently best node: "
 					+ bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
-							baseURI);
+							baseURI, prefixes);
 			String bestNodeStringKBSyntax = "currently best node KBSyntax: "
 					+ bestNode.getConcept().toKBSyntaxString();
 
@@ -914,7 +914,7 @@ public class ROLearner2 {
 				logger.trace("covered negs: " + bestNode.getCoveredNegatives());
 			String expandedNodeString = "next expanded node: "
 					+ candidates.last().getShortDescription(nrOfPositiveExamples,
-							nrOfNegativeExamples, baseURI);
+							nrOfNegativeExamples, baseURI, prefixes);
 			// searchTree += expandedNodeString + "\n";
 			logger.debug(expandedNodeString);
 			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
@@ -1043,7 +1043,7 @@ public class ROLearner2 {
 				+ currentCoveredNeg.size();
 		logger.debug("tree traversal start node "
 				+ startNode
-						.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+						.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes));
 		logger.debug("tree traversal start accuracy: " + currentAccuracy);
 		int i = 0;
 		// start from the most promising nodes
@@ -1170,7 +1170,7 @@ public class ROLearner2 {
 		logger.debug("searched " + i + " nodes and picked the following promising descriptions:");
 		for (ExampleBasedNode node : promisingNodes)
 			logger.debug(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
-					baseURI));
+					baseURI, prefixes));
 	}
 
 	/*
@@ -1234,7 +1234,7 @@ public class ROLearner2 {
 			if (n.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples) < 1)
 				break;
 			logger.trace("best: "
-					+ n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+					+ n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes));
 			if (i == nrOfSolutions)
 				break;
 			i++;

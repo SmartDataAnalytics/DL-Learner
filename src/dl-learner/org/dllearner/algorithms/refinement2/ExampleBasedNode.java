@@ -21,6 +21,7 @@
 package org.dllearner.algorithms.refinement2;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -145,29 +146,33 @@ public class ExampleBasedNode implements SearchTreeNode {
 	}	
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,null).toString();
+		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,null, null).toString();
 	}
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI).toString();
+		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, null).toString();
 	}	
 	
-	private StringBuilder getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, int depth, String baseURI) {
+	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String,String> prefixes) {
+		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, prefixes).toString();
+	}	
+	
+	private StringBuilder getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, int depth, String baseURI, Map<String,String> prefixes) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
 			// treeString.append("|-→ ");
 			treeString.append("|--> ");
-		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI)+"\n");
+		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)+"\n");
 		for(ExampleBasedNode child : children) {
-			treeString.append(child.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, depth+1,baseURI));
+			treeString.append(child.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, depth+1,baseURI, prefixes));
 		}
 		return treeString;
 	}
 	
-	public String getShortDescription(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		String ret = concept.toString(baseURI,null) + " [";
+	public String getShortDescription(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String, String> prefixes) {
+		String ret = concept.toString(baseURI, prefixes) + " [";
 		
 		if(isTooWeak)
 			ret += "q:tw";
