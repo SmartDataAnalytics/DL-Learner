@@ -23,6 +23,7 @@ package org.dllearner.tools.ore;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
@@ -133,7 +134,14 @@ public class OREApplication {
         } else{
         	wizard.setCurrentPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER);
         	wizard.setLeftPanel(1);	
-        	((KnowledgeSourcePanelDescriptor)wizard.getModel().getPanelHashMap().get(KnowledgeSourcePanelDescriptor.IDENTIFIER)).loadOntology(new File(args[0]).toURI());
+        	URI uri;
+        	if(args[0].startsWith("http:") || args[0].startsWith("file:") || args[0].startsWith("ftp:")){
+        		uri = URI.create(args[0]);
+        	} else {
+        		uri = new File(args[0]).toURI();
+        	}
+        	((KnowledgeSourcePanelDescriptor)wizard.getModel().getPanelHashMap().
+        			get(KnowledgeSourcePanelDescriptor.IDENTIFIER)).loadOntology(uri);
         	
         }
 			    
