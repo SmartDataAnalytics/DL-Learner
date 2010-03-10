@@ -87,7 +87,6 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  */
 public class RhoDRDown extends RefinementOperatorAdapter {
 
-	@SuppressWarnings({"unused"})
 	private static Logger logger = Logger
 	.getLogger(RhoDRDown.class);	
 	
@@ -137,8 +136,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<Integer, TreeSet<Description>> topRefinementsCumulative = new HashMap<Integer, TreeSet<Description>>();
 	private Map<NamedClass,Map<Integer, TreeSet<Description>>> topARefinementsCumulative = new TreeMap<NamedClass,Map<Integer, TreeSet<Description>>>();
 	
-	// app_A set of applicable properties for a given class (separte for
-	// object properties, boolean datatypes, and double data types)
+	// app_A set of applicable properties for a given class (separate for
+	// object properties, boolean datatypes, and double datatypes)
 	private Map<NamedClass, Set<ObjectProperty>> appOP = new TreeMap<NamedClass, Set<ObjectProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appBD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appDD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
@@ -1041,15 +1040,27 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private void computeM(NamedClass nc) {
 		long mComputationTimeStartNs = System.nanoTime();
 
+//		System.out.println(nc);
+		
 		mA.put(nc, new TreeMap<Integer,SortedSet<Description>>());
 		// initialise all possible lengths (1 to 3)
 		for(int i=1; i<=mMaxLength; i++) {
 			mA.get(nc).put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
-		SortedSet<Description> m1 = subHierarchy.getSubClasses(nc); 
+		// incomplete, prior implementation
+//		SortedSet<Description> m1 = subHierarchy.getSubClasses(nc); 
+//		mA.get(nc).put(1,m1);
+		
+		// most general classes, which are not disjoint with nc and provide real refinement
+		SortedSet<Description> m1 = getClassCandidates(nc);
 		mA.get(nc).put(1,m1);
 		
+		// most specific negated classes, which are not disjoint with nc
+		SortedSet<Description> m2 = getNegClassCandidates(nc);
+		mA.get(nc).put(2,m2);
+		
+		/*
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
 			// the definition in the paper is more complex, but acutally
@@ -1058,6 +1069,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			// recursive method because for A subClassOf A' we have not A'
 			// subClassOf A and thus: if A and B are disjoint then also A'
 			// and B; if not A AND B = B then also not A' AND B = B
+			// 2010/03: the latter is not correct => a recursive method is needed
 			SortedSet<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			
 			for(Description c : m2tmp) {
@@ -1072,6 +1084,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				}
 			}	
 		}
+		*/
 		
 		// compute applicable properties
 		computeMg(nc);		
@@ -1149,9 +1162,89 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		}
 		mA.get(nc).put(4,m4);
 		
+//		System.out.println(mA.get(nc));
+		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
+	
+	// get candidates for a refinement of \top restricted to a class B
+	public SortedSet<Description> getClassCandidates(NamedClass index) {
+		return getClassCandidatesRecursive(index, Thing.instance);
+	}
+	
+	private SortedSet<Description> getClassCandidatesRecursive(Description index, Description upperClass) {
+		SortedSet<Description> candidates = new TreeSet<Description>();
 		
+		// we descend the subsumption hierarchy to ensure that we get
+		// the most general concepts satisfying the criteria
+		for(Description candidate :  subHierarchy.getSubClasses(upperClass)) {
+//				System.out.print("testing " + candidate + " ... ");
+							
+//				NamedClass candidate = (NamedClass) d;
+				// check disjointness with index (if not no further traversal downwards is necessary)
+				if(!isDisjoint(candidate,index)) {
+//					System.out.println( " passed disjointness test ... ");
+					// check whether the class is meaningful, i.e. adds something to the index
+					// to do this, we need to make sure that the class is not a superclass of the
+					// index (otherwise we get nothing new) - for instance based disjoints, we 
+					// make sure that there is at least one individual, which is not already in the
+					// upper class
+					boolean meaningful;
+					if(instanceBasedDisjoints) {
+						SortedSet<Individual> tmp = rs.getIndividuals(upperClass);
+						tmp.removeAll(rs.getIndividuals(candidate));
+//						System.out.println("tmp: " + tmp);
+						meaningful = tmp.size() != 0;
+					} else {
+						meaningful = !isDisjoint(new Negation(candidate),index);
+					}
+					
+					if(meaningful) {
+						// candidate went successfully through all checks
+						candidates.add(candidate);
+//						System.out.println(" real refinement");
+					} else {
+						// descend subsumption hierarchy to find candidates
+//						System.out.println(" enter recursion");
+						candidates.addAll(getClassCandidatesRecursive(index, candidate));
+					}
+				} 
+//				else {
+//					System.out.println(" ruled out, because it is disjoint");
+//				}
+		}
+		return candidates;
+	}	
+	
+	// get candidates for a refinement of \top restricted to a class B
+	public SortedSet<Description> getNegClassCandidates(NamedClass index) {
+		return getNegClassCandidatesRecursive(index, Nothing.instance);
+	}
+	
+	private SortedSet<Description> getNegClassCandidatesRecursive(Description index, Description lowerClass) {
+		SortedSet<Description> candidates = new TreeSet<Description>();
+		
+		for(Description candidate :  subHierarchy.getSuperClasses(lowerClass)) {
+				if(!isDisjoint(new Negation(candidate),index)) {
+					boolean meaningful;
+					if(instanceBasedDisjoints) {
+						SortedSet<Individual> tmp = rs.getIndividuals(lowerClass);
+						tmp.removeAll(rs.getIndividuals(new Negation(candidate)));
+						meaningful = tmp.size() != 0;
+					} else {
+						meaningful = !isDisjoint(candidate,index);
+					}
+					
+					if(meaningful) {
+						candidates.add(new Negation(candidate));
+					} else {
+						candidates.addAll(getClassCandidatesRecursive(index, candidate));
+					}
+				} 
+		}
+		return candidates;
+	}	
+	
 	private void computeMg(NamedClass domain) {
 		// compute the applicable properties if this has not been done yet
 		if(appOP.get(domain) == null)
