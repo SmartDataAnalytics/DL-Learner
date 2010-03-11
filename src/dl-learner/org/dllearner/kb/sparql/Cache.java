@@ -63,7 +63,9 @@ public class Cache implements Serializable {
 
 	private static Logger logger = Logger.getLogger(Cache.class);
 	
-
+	// true = H2 embedded database is used; false = stored in files
+	private boolean useDatabase = false;
+	private ExtractionDBCache h2;
 
 	private static final long serialVersionUID = 843308736471742205L;
 
@@ -132,6 +134,10 @@ public class Cache implements Serializable {
 		if (!new File(cacheDir).exists()) {
 			Files.mkdir(cacheDir);
 			logger.info("Created directory: " + cacheDir + ".");
+		}
+		
+		if(useDatabase) {
+			h2 = new ExtractionDBCache();
 		}
 	}
 
@@ -273,6 +279,10 @@ public class Cache implements Serializable {
 	 * @return Jena result set in JSON format
 	 */
 	public String executeSparqlQuery(SparqlQuery query) {
+		if(useDatabase) {
+			return h2.executeSelectQuery(query.getSparqlEndpoint(), query.getSparqlQueryString());
+		}
+		
 		Monitor totaltime =JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
 		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
 	
