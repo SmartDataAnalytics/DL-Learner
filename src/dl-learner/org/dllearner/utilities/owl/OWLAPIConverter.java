@@ -50,7 +50,6 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLTypedConstant;
 import org.semanticweb.owl.model.OWLUntypedConstant;
-import org.semanticweb.owl.vocab.OWLDatatypeVocabulary;
 
 /**
  * A collection of methods for exchanging objects between OWL API and
@@ -176,6 +175,8 @@ public final class OWLAPIConverter {
 			return Datatype.DOUBLE;
 		else if(uri.equals(Datatype.INT.getURI()))
 			return Datatype.INT;			
+		else if(uri.equals(Datatype.INTEGER.getURI()))
+			return Datatype.INTEGER;			
 		else if(uri.equals(Datatype.STRING.getURI()))
 			return Datatype.STRING;			
 		else if(uri.equals(Datatype.DATE.getURI())){
