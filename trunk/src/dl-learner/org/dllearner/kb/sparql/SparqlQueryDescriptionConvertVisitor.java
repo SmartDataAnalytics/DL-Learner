@@ -20,9 +20,12 @@
 package org.dllearner.kb.sparql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -73,11 +76,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	private boolean labels = false;
 	private boolean distinct = false;
 	private SortedSet<String> transitiveProperties =null;
-	public void setTransitiveProperties(SortedSet<String> transitiveProperties) {
-		this.transitiveProperties = transitiveProperties;
-	}
-
-	private Map<String,String> classToSubclassesVirtuoso = null;
+	private Map<String,Set<String>> subclassMap = null;
 	
 	private Stack<String> stack = new Stack<String>();
 	private String query = "";
@@ -110,39 +109,48 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	}
 	
 	private void expandSubclasses(){
-		if(classToSubclassesVirtuoso == null){
+		if(subclassMap == null){
 			return;
 		}
 		int counter = 0;
 		int index = 0;
-		String filter = "";
 		String var = "";
 		String uri = "";
 		StringBuffer tmp ;
+		StringBuffer filter = new StringBuffer() ;
+		Set<String> subClasses;
 		for(String nc: foundNamedClasses){
 			index = query.indexOf("<"+nc+">");
-			filter = classToSubclassesVirtuoso.get(nc);
+			subClasses = subclassMap.get(nc);
 			if(index == -1){
-				logger.warn("named class found before, but not in query?? "+nc);
-			}else if(filter != null){
+				logger.error("named class was found before, but is not in query any more?? "+nc);
+			}else if(subClasses != null){
 				var = "?expanded"+counter;
 				uri = "<"+nc+">";
 				tmp = new StringBuffer();
 				tmp.append(query.substring(0, index));
 				tmp.append(var);
 				tmp.append(query.substring(index+(uri.length())));
-				tmp.append("\nFILTER ( " +var+ " in (" +filter+	") ). ");
 				query = tmp.toString();
-//				= query.substring(0, index)+var+query.substring(index+(uri.length()));
-				
-//				query += "\nFILTER (?expanded" +counter+
-//						" in (" +filter+
-//						") ). ";
+				filter.append(makeFilter(var, subClasses));
 			}else{
 				logger.debug("no mapping found ("+nc+")  "+this.getClass().getSimpleName());
 			}
+			
 			counter++;
 		}
+		query += filter.toString();
+	}
+	
+	private String makeFilter(String var, Set<String> classes){
+		StringBuffer buf = new StringBuffer("\nFILTER ( "+var+" IN ( ");
+		int i = 0;
+		for (String string : classes) {
+			buf.append((i==0)?"<"+string+">":",<"+string+">");
+			i++;
+		}
+		buf.append(" ) ). ");
+		return buf.toString();
 	}
 	
 	private String limit() {
@@ -171,8 +179,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		this.distinct = distinct;
 	}
 	
-	public void setClassToSubclassesVirtuoso(Map<String,String> classToSubclassesVirtuoso) {
-		this.classToSubclassesVirtuoso = classToSubclassesVirtuoso;
+	public void setTransitiveProperties(SortedSet<String> transitiveProperties) {
+		this.transitiveProperties = transitiveProperties;
+	}
+	
+
+	public void setSubclassMap(Map<String, Set<String>> subclassMap) {
+		this.subclassMap = subclassMap;
 	}
 
 	public static String getSparqlQuery(String descriptionKBSyntax, int limit, boolean labels, boolean distinct) throws ParseException {
@@ -256,8 +269,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 			System.out.println(outer.toKBSyntaxString(null,null));
 			System.out.println(test);
 
+			Map<String, Set<String>> testMap = new HashMap<String, Set<String>>();
+			testMap.put(prefix+"Sentence", new HashSet<String>(Arrays.asList(new String[]{"whatever","loser"})));
 //			s.add(outer.toKBSyntaxString(null,null));
 			SparqlQueryDescriptionConvertVisitor testVisitor = new SparqlQueryDescriptionConvertVisitor();
+			testVisitor.setSubclassMap(testMap);
 			String q = testVisitor.getSparqlQuery(outer.toKBSyntaxString());
 			System.out.println(q);
 			if (true) {

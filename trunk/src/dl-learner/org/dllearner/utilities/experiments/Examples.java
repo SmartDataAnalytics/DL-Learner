@@ -213,6 +213,12 @@ public class Examples {
 		return posTest.size()+negTest.size();
 	}
 	
+	public SortedSet<String> getAllExamples() {
+		SortedSet<String> total = new TreeSet<String>();
+		total.addAll(getPositiveExamples());
+		total.addAll(getNegativeExamples());
+		return total;
+	}
 	
 	public SortedSet<String> getPositiveExamples() {
 		SortedSet<String> total = new TreeSet<String>();
