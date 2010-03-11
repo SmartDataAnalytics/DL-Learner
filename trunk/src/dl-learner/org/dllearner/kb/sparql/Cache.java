@@ -137,6 +137,7 @@ public class Cache implements Serializable {
 
 	// compute md5-hash
 	private String getHash(String string) {
+		Monitor hashTime = JamonMonitorLogger.getTimeMonitor(Cache.class, "HashTime").start();
 		// calculate md5 hash of the string (code is somewhat
 		// difficult to read, but there doesn't seem to be a
 		// single function call in Java for md5 hashing)
@@ -154,7 +155,9 @@ public class Cache implements Serializable {
 		for (int i = 0; i < result.length; i++) {
 			hexString.append(Integer.toHexString(0xFF & result[i]));
 		}
-		return hexString.toString();
+		String str = hexString.toString();
+		hashTime.stop();
+		return str;
 	}
 
 	// return filename where the query result should be saved
