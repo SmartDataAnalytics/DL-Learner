@@ -2,6 +2,7 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +18,8 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
@@ -61,7 +64,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 		public RemainingAxiomsDialog(OWLAxiom laconicAxiom, OWLOntology ont){
 			super(TaskManager.getInstance().getDialog(), "Selected part of axiom in ontology", true);
 			setLayout(new BorderLayout());
-			add(new JLabel("You selected an axiom which is only part of some axioms in the ontology"), BorderLayout.NORTH);
+			add(new JLabel("The selected axiom is only part of some axioms in the ontology"), BorderLayout.NORTH);
 			createControls();
 			
 			this.ontology = ont;

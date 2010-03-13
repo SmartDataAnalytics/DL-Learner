@@ -58,8 +58,8 @@ import org.semanticweb.owl.model.SWRLRule;
 
 
 /*
- * This class computes the oplus closure provided in 'Laconic and Precise Justifications in OWL' from 
- * Matthew Horridge, Bijan Parsia and Ulrike Sattler. A set of axioms is into smaller and weaker axioms.
+ * This class computes the OPlus closure provided in 'Laconic and Precise Justifications in OWL' from 
+ * Matthew Horridge, Bijan Parsia and Ulrike Sattler. A set of axioms is transformed into smaller and weaker axioms.
  */
 public class OPlus
     implements OWLAxiomVisitorEx<Set<OWLAxiom>>

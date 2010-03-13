@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,6 +39,7 @@ import javax.swing.border.BevelBorder;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
+import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
@@ -66,7 +68,7 @@ public class StatsPanel extends JPanel{
 	
 	private JXTaskPaneContainer container;
 	
-	private ImageIcon newIcon;
+	private Icon newIcon = new ImageIcon(OREApplication.class.getResource("new.gif"));
 	
 	private String baseURI;
 	private Map<String, String> prefixes;
@@ -86,7 +88,7 @@ public class StatsPanel extends JPanel{
 		prefixes = OREManager.getInstance().getPrefixes();
 		baseURI = OREManager.getInstance().getBaseURI();
 		
-		newIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/new.gif");
+		
 		
 		setLayout(new GridLayout());
 		setBackground(Color.WHITE);

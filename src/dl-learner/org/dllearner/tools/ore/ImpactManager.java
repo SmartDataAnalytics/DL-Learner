@@ -113,8 +113,9 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	}
 	
 	public void removeSelection(OWLAxiom ax){
-		selectedAxioms.remove(ax);
-		fireImpactListChanged();
+		if(selectedAxioms.remove(ax)){
+			fireImpactListChanged();
+		}
 	}
 	
 	public boolean isSelected(OWLAxiom ax){
