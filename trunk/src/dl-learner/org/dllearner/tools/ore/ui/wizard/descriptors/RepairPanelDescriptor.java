@@ -96,6 +96,8 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     @Override
 	public void aboutToDisplayPanel() {
     	getWizard().getInformationField().setText(INFORMATION);
+    	OREManager oreMan = OREManager.getInstance();
+    	repairPanel.setClassToDescribe(oreMan.getManchesterSyntaxRendering(oreMan.getCurrentClass2Learn()));
     }
     
     /**

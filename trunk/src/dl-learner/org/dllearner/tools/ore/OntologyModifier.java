@@ -55,6 +55,7 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLSubClassAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.util.OWLEntityRemover;
 
@@ -115,11 +116,25 @@ public class OntologyModifier {
 		
 	}
 	
-	public void addNewClassDescription(NamedClass old, Description newDesc){
+	public void addEquivalentClassDescription(NamedClass old, Description newDesc){
 		OWLDescription oldOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(old);
 		OWLDescription newOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(newDesc);
 		OWLEquivalentClassesAxiom equivAxiom = factory.getOWLEquivalentClassesAxiom(oldOWLAPIDesc, newOWLAPIDesc);
 		AddAxiom add = new AddAxiom(ontology, equivAxiom);
+		try {
+			manager.applyChange(add);
+			globalChanges.add(add);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void addSuperClassDescription(NamedClass old, Description newDesc){
+		OWLDescription subClass = OWLAPIConverter.getOWLAPIDescription(old);
+		OWLDescription superClass = OWLAPIConverter.getOWLAPIDescription(newDesc);
+		OWLSubClassAxiom subAxiom = factory.getOWLSubClassAxiom(subClass, superClass);
+		AddAxiom add = new AddAxiom(ontology, subAxiom);
 		try {
 			manager.applyChange(add);
 			globalChanges.add(add);

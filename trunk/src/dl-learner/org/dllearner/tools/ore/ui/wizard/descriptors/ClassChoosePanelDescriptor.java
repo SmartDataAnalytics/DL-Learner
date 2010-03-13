@@ -71,6 +71,12 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		 + "Select one of them for which you want to learn equivalent class or superclass expressions," +
 		 	" then press <Next>";
     
+    public static final String SKIP_LEARN_INFORMATION = "Choose one of the learning modes above, or press "+
+		 	" <Next> to finish the wizard.";
+    
+    public static final String NO_LEARNING_SUPPORTED_INFORMATION = "LEarning is not supported because the currently loaded ontology contains no individuals. "+
+ 	"Please choose another ontology or press <Next> to finish the wizard.";
+    
     private ClassChoosePanel classChoosePanel;
     private Map<Integer, Set<NamedClass>> instanceCountToClasses;
     
@@ -93,10 +99,13 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
     
     @Override
 	public Object getNextPanelDescriptor() {
-    	if(isAutoLearningMode()){
+    	LearningMode mode = LearningManager.getInstance().getLearningMode();
+    	if(mode == LearningMode.AUTO){
     		return AutoLearnPanelDescriptor.IDENTIFIER;
-    	} else {
+    	} else if(mode == LearningMode.MANUAL){
     		return ManualLearnPanelDescriptor.IDENTIFIER;
+    	} else {
+    		return SavePanelDescriptor.IDENTIFIER;
     	}
         
     }
@@ -106,16 +115,27 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
         return KnowledgeSourcePanelDescriptor.IDENTIFIER;
     }
     
-    @Override
+	@Override
 	public void aboutToDisplayPanel() {
-    	if(isAutoLearningMode()){
-    		getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
-    	} else {
-    		getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
-    	}
-    	
-        setNextButtonAccordingToConceptSelected();
-    }
+		if (OREManager.getInstance().getReasoner().getIndividuals().size() == 0) {
+			LearningManager.getInstance().setLearningMode(LearningMode.OFF);
+			classChoosePanel.setLearningSupported(false);
+			classChoosePanel.refreshLearningPanel();
+			getWizard().getInformationField().setText(NO_LEARNING_SUPPORTED_INFORMATION);
+		} else {
+			classChoosePanel.setLearningSupported(true);
+
+			LearningMode mode = LearningManager.getInstance().getLearningMode();
+			if (mode == LearningMode.AUTO) {
+				getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
+			} else if (mode == LearningMode.MANUAL) {
+				getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
+			} else {
+				getWizard().getInformationField().setText(SKIP_LEARN_INFORMATION);
+			}
+		}
+		setNextButtonAccordingToConceptSelected();
+	}
     
     /**
      * Method is called when other element in list is selected, and sets next button enabled.
@@ -125,6 +145,8 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting() && classChoosePanel.getClassesTable().getSelectedRow() >= 0) {
 			 OREManager.getInstance().setCurrentClass2Learn((NamedClass) classChoosePanel.getClassesTable().getSelectedValue());
+			 LearningManager.getInstance().setCurrentClass2Describe(classChoosePanel.getClassesTable().getSelectedValue());
+			 
 		}
 	}
 	
@@ -135,8 +157,10 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	}
 	
 	private void setNextButtonAccordingToConceptSelected() {
-        
-    	if (classChoosePanel.getClassesTable().getSelectedRow() >= 0 || classChoosePanel.isAutoLearnMode()){
+        LearningManager man = LearningManager.getInstance();
+    	if (classChoosePanel.getClassesTable().getSelectedRow() >= 0 
+    			|| classChoosePanel.isAutoLearnMode() 
+    			|| man.getLearningMode() == LearningMode.OFF){
     		getWizard().setNextFinishButtonEnabled(true);
     	}else{
     		getWizard().setNextFinishButtonEnabled(false);
@@ -218,22 +242,30 @@ public class ClassChoosePanelDescriptor extends WizardPanelDescriptor implements
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("auto")){
-			classChoosePanel.setAutoLearningPanel(true);
-			getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
 			LearningManager.getInstance().setLearningMode(LearningMode.AUTO);
-		} else {
-			classChoosePanel.setAutoLearningPanel(false);
-			getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
+		} else if(e.getActionCommand().equals("manual")){
 			LearningManager.getInstance().setLearningMode(LearningMode.MANUAL);
 			retrieveClasses();
+		} else {
+			LearningManager.getInstance().setLearningMode(LearningMode.OFF);
 		}
+		updateWizardInformation();
+		classChoosePanel.refreshLearningPanel();
 		setNextButtonAccordingToConceptSelected(); 
 		
 	}
 	
-	public boolean isAutoLearningMode(){
-		return classChoosePanel.isAutoLearnMode();
+	private void updateWizardInformation(){
+		LearningMode mode = LearningManager.getInstance().getLearningMode();
+    	if(mode == LearningMode.AUTO){
+    		getWizard().getInformationField().setText(AUTO_LEARN_INFORMATION);
+    	} else if(mode == LearningMode.MANUAL){
+    		getWizard().getInformationField().setText(MANUAL_LEARN_INFORMATION);
+    	} else {
+    		getWizard().getInformationField().setText(SKIP_LEARN_INFORMATION);
+    	}
 	}
+	
 	
 	public void setAutoLearningOptions(){
 		classChoosePanel.setLearningOptions();

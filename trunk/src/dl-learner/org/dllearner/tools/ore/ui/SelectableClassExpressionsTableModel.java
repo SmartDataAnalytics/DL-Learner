@@ -55,17 +55,8 @@ public class SelectableClassExpressionsTableModel extends AbstractTableModel {
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		if(!selectionList.get(rowIndex).booleanValue()){
-			selectedClassExpression = resultList.get(rowIndex);
-			for(int i = 0; i < selectionList.size(); i++){
-				selectionList.set(i, Boolean.FALSE);
-			}
-			selectionList.set(rowIndex, (Boolean)value);
-				
-			super.fireTableCellUpdated(rowIndex, columnIndex);
-		}
-		
-		
+		selectionList.set(rowIndex, !selectionList.get(rowIndex));
+		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
 	@Override

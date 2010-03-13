@@ -154,6 +154,8 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 		descScroll.setViewportView(descPanel);
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		splitPane.setDividerLocation(0.7);
+		splitPane.setResizeWeight(0.7);
 		
 		statsPanel = new StatsPanel(ind);
 		statsPanel.init();
@@ -176,7 +178,6 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 		
 		actionStatsPanel.add(descScroll, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
 		actionStatsPanel.add(splitPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
-//		actionStatsPanel.add(changesScroll, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
 		
 		okCancelPanel = new JPanel();
 		okCancelPanel.setLayout(new BorderLayout());
@@ -193,9 +194,6 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
         buttonBox.add(cancelButton);
 		okCancelPanel.add(buttonBox, BorderLayout.EAST);
         
-//		getContentPane().add(actionStatsPanel, java.awt.BorderLayout.CENTER);
-//		getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
-		
 		add(descScroll, BorderLayout.NORTH);
 		add(splitPane, BorderLayout.CENTER);
 		add(okCancelPanel, BorderLayout.SOUTH);

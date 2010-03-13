@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.LearningManager.LearningMode;
 import org.dllearner.tools.ore.ui.OverrideFileChooser;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.SavePanel;
@@ -86,15 +87,17 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
     
     @Override
 	public Object getBackPanelDescriptor() {
-    	
-		if(LearningManager.getInstance().isManualLearningMode()){
+    	LearningMode mode = LearningManager.getInstance().getLearningMode();
+		if(mode == LearningMode.MANUAL){
 			if(OREManager.getInstance().getNewClassDescription().getAccuracy() == 1.0){
 				return ManualLearnPanelDescriptor.IDENTIFIER;
 			} else {
 				return RepairPanelDescriptor.IDENTIFIER;
 			}  
-		} else {
+		} else if(mode == LearningMode.AUTO){
 			return AutoLearnPanelDescriptor.IDENTIFIER;
+		} else {
+			return ClassChoosePanelDescriptor.IDENTIFIER;
 		}
     }
 

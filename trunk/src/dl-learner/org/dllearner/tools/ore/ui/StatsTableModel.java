@@ -44,6 +44,17 @@ public class StatsTableModel extends AbstractTableModel {
 		}
 	}
 	
+	@Override
+	public String getColumnName(int column) {
+		if(column == 0){
+			return "Action";
+		} else if(column == 1){
+			return "Axiom";
+		} else {
+			return "";
+		}
+	}
+	
 	public void setChanges(List<OWLOntologyChange> changes){
 		this.changes.clear();
 		this.changes.addAll(changes);
