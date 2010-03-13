@@ -78,7 +78,7 @@ public class MarkableClassExpressionsTableModel extends AbstractTableModel imple
 	public void setSelectedDescription(int rowIndex){
 		int oldRowIndex = selectedRowIndex;
 		selectedRowIndex = rowIndex;
-		fireTableRowsUpdated(oldRowIndex, selectedRowIndex);
+		fireTableDataChanged();
 	}
 
 	@Override

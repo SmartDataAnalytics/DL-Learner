@@ -3,44 +3,46 @@ package org.dllearner.tools.ore;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.mindswap.pellet.utils.progress.ProgressMonitor;
 
 public class LearningManager {
 	
 	private static LearningManager instance;
 	
-	public enum LearningMode {AUTO, MANUAL};
+	public enum LearningMode {AUTO, MANUAL, OFF};
     public enum LearningType { EQUIVALENT, SUPER };
 	
 	private List<LearningManagerListener> listeners;
 	
-	public static final int AUTO_LEARN_MODE = 0;
-    public static final int MANUAL_LEARN_MODE = 1;
-    
-    private ComponentManager cm;
-    
     private LearningMode learningMode = LearningMode.AUTO;
     private LearningType learningType = LearningType.EQUIVALENT;
     
+    private ComponentManager cm;
     private ClassLearningProblem lp;
 	private CELOE la;
+	private ReasonerComponent reasoner;
     
     private NamedClass currentClass2Describe;
     
     private int maxExecutionTimeInSeconds;
     private double noisePercentage;
+    private double threshold;
     private int maxNrOfResults;
-    
-    private ReasonerComponent reasoner;
     
     private List<EvaluatedDescriptionClass> newDescriptions;
     
@@ -48,6 +50,10 @@ public class LearningManager {
     private List<EvaluatedDescriptionClass> superDescriptions;
     
     private int currentDescriptionIndex = 0;
+    
+    private boolean learningInProgress = false;
+    
+    private ProgressMonitor progressMonitor;
 	
 	public static synchronized LearningManager getInstance(){
 		if(instance == null){
@@ -61,6 +67,7 @@ public class LearningManager {
 		reasoner = OREManager.getInstance().getReasoner();
 		listeners = new ArrayList<LearningManagerListener>();
 		newDescriptions = new ArrayList<EvaluatedDescriptionClass>();
+		progressMonitor = TaskManager.getInstance().getStatusBar();
 	}
 	
 	public void setLearningMode(LearningMode learningMode){
@@ -71,11 +78,16 @@ public class LearningManager {
 		this.learningType = learningType;
 	}
 	
+	public LearningType getLearningType(){
+		return learningType;
+	}
+	
 	public void initLearningProblem(){
+		reasoner = OREManager.getInstance().getReasoner();
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		try {
 			if(learningType.equals(LearningType.EQUIVALENT)){
-				cm.applyConfigEntry(lp, "type", "equivalent");
+				cm.applyConfigEntry(lp, "type", "equivalence");
 			} else {
 				cm.applyConfigEntry(lp, "type", "superClass");
 			}
@@ -110,6 +122,54 @@ public class LearningManager {
 		}
 	}
 	
+	public boolean learnAsynchronously() {
+		if (learningInProgress) {
+			return false;
+		}
+		initLearningProblem();
+		initLearningAlgorithm();
+		learningInProgress = true;
+		progressMonitor.setProgressLength(maxExecutionTimeInSeconds);
+		String learnType = "";
+		if(learningType == LearningType.EQUIVALENT){
+			learnType = "equivalent";
+		} else {
+			learnType = "superclass";
+		}
+		progressMonitor.setProgressMessage("Learning " + learnType + " expressions");
+
+		Thread currentLearningThread = new Thread(new LearningRunner(), "Learning Thread");
+		currentLearningThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			public void uncaughtException(Thread thread, Throwable throwable) {
+
+			}
+		});
+		currentLearningThread.start();
+		return true;
+	}
+	
+	public boolean stopLearning() {
+		if (!learningInProgress) {
+			return false;
+		}
+		la.stop();
+		learningInProgress = false;
+		progressMonitor.setProgressLength(0);
+		
+		return true;
+	}
+	
+	public synchronized List<EvaluatedDescriptionClass> getCurrentlyLearnedDescriptions(){
+		List<EvaluatedDescriptionClass> result;
+		if(la != null){
+			result = Collections.unmodifiableList((List<EvaluatedDescriptionClass>)la.getCurrentlyBestEvaluatedDescriptions
+					(maxNrOfResults, threshold, true));
+		} else {
+			result = Collections.emptyList();
+		}
+		return result;
+	}
+	
 	public boolean isManualLearningMode(){
 		return learningMode.equals(LearningMode.MANUAL);
 	}
@@ -140,6 +200,10 @@ public class LearningManager {
 
 	public void setMaxNrOfResults(int maxNrOfResults) {
 		this.maxNrOfResults = maxNrOfResults;
+	}
+
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 
 	public void setNewDescriptions(List<List<EvaluatedDescriptionClass>> descriptions) {
@@ -210,6 +274,25 @@ public class LearningManager {
 		for(LearningManagerListener listener : listeners){
 			listener.newDescriptionSelected(index);
 		}
+	}
+	
+	private class LearningRunner implements Runnable{
+
+		@Override
+		public void run() {
+			try{
+				la.start();
+			} finally{
+				learningInProgress = false;
+				fireLearningFinished();
+				progressMonitor.setProgressMessage("Done");
+			}
+		}
+	}
+	
+	
+	public void fireLearningFinished(){
+		
 	}
 
 }

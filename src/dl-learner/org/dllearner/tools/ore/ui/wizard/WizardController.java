@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.dllearner.tools.ore.ui.wizard.descriptors.AutoLearnPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.ClassChoosePanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.descriptors.InconsistencyExplanationPanelDescriptor;
@@ -177,11 +178,24 @@ public class WizardController implements ActionListener {
 			if(!SetUtils.union(descriptions.get(0), descriptions.get(1)).isEmpty()){
 				LearningManager.getInstance().setNewDescriptions(descriptions);
 			}
+			OREManager oreMan = OREManager.getInstance();
+			for(EvaluatedDescriptionClass e : descriptions.get(0)){
+				oreMan.getModifier().addEquivalentClassDescription(oreMan.getCurrentClass2Learn(), e.getDescription());
+			}
+			for(EvaluatedDescriptionClass e : descriptions.get(1)){
+				oreMan.getModifier().addSuperClassDescription(oreMan.getCurrentClass2Learn(), e.getDescription());
+			}
 			
 		} else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ManualLearnPanelDescriptor.IDENTIFIER)){
 			OREManager oreMan = OREManager.getInstance();
-			oreMan.getModifier().addNewClassDescription(oreMan.getCurrentClass2Learn(), 
-					oreMan.getNewClassDescription().getDescription());
+			if(LearningManager.getInstance().getLearningType() == LearningType.SUPER){
+				oreMan.getModifier().addSuperClassDescription(oreMan.getCurrentClass2Learn(), 
+						oreMan.getNewClassDescription().getDescription());
+			} else {
+				oreMan.getModifier().addEquivalentClassDescription(oreMan.getCurrentClass2Learn(), 
+						oreMan.getNewClassDescription().getDescription());
+			}
+			
 		}
 			
 		else if(nextPanelDescriptor.equals(RepairPanelDescriptor.IDENTIFIER)){

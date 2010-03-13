@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,7 +40,9 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.LearningManager.LearningMode;
 import org.dllearner.tools.ore.ui.ClassesTable;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.LearningOptionsPanel;
@@ -57,6 +60,7 @@ public class ClassChoosePanel extends JPanel{
 	private JSpinner minInstanceCountSpinner;
 	private JRadioButton autoLearnButton;
 	private JRadioButton manualLearnButton;
+	private JRadioButton noLearningButton;
 	
 	private JPanel currentPanel;
 	private JPanel manualLearnPanel;
@@ -77,7 +81,7 @@ public class ClassChoosePanel extends JPanel{
 	}
 	
 	private void createUI(){
-		setLayout(new GridBagLayout());
+		setLayout(new BorderLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
 		JPanel optionsPanel = new JPanel(new GridLayout(0, 1));
@@ -88,18 +92,24 @@ public class ClassChoosePanel extends JPanel{
 		manualLearnButton = new JRadioButton("Manual learning mode");
 		manualLearnButton.setActionCommand("manual");
 		
+		noLearningButton = new JRadioButton("Skip learning");
+		noLearningButton.setActionCommand("skip");
+		
+		
 		ButtonGroup learningType = new ButtonGroup();
 		learningType.add(manualLearnButton);
 		learningType.add(autoLearnButton);
+		learningType.add(noLearningButton);
 		autoLearnButton.setSelected(true);
 		optionsPanel.add(autoLearnButton);
 		optionsPanel.add(manualLearnButton);
+		optionsPanel.add(noLearningButton);
 		
 		HelpablePanel optionsHelpPanel = new HelpablePanel(optionsPanel);
 		optionsHelpPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		optionsHelpPanel.setHelpText(HELP_TEXT);
 		c.gridwidth = GridBagConstraints.REMAINDER;
-		add(optionsHelpPanel, c);
+		add(optionsHelpPanel, BorderLayout.NORTH);
 		
 		createAutoLearnPanel();
 		createManualLearnPanel();
@@ -109,7 +119,7 @@ public class ClassChoosePanel extends JPanel{
 		manualLearnPanel.setPreferredSize(size);
 		
 		currentPanel = autoLearnPanel;
-		add(currentPanel, c);
+		add(currentPanel, BorderLayout.CENTER);
 		
 	}
 	
@@ -174,15 +184,20 @@ public class ClassChoosePanel extends JPanel{
 	public void addActionsListeners(ActionListener aL){
 		autoLearnButton.addActionListener(aL);
 		manualLearnButton.addActionListener(aL);
+		noLearningButton.addActionListener(aL);
 	}
 	
-	public void setAutoLearningPanel(boolean value){
-		if(value){
+	public void refreshLearningPanel(){
+		LearningMode mode = LearningManager.getInstance().getLearningMode();
+		if(mode == LearningMode.AUTO){
 			remove(manualLearnPanel);
 			add(autoLearnPanel);
-		} else {
+		} else if(mode == LearningMode.MANUAL){
 			remove(autoLearnPanel);
 			add(manualLearnPanel);
+		} else {
+			remove(autoLearnPanel);
+			remove(manualLearnPanel);
 		}
 		validate();
 		repaint();
@@ -200,11 +215,23 @@ public class ClassChoosePanel extends JPanel{
     	classesTable.clear();
     	minInstanceCountSpinner.setValue(Integer.valueOf(3));
     	autoLearnButton.setSelected(true);
-    	setAutoLearningPanel(true);
+    	LearningManager.getInstance().setLearningMode(LearningMode.AUTO);
+    	refreshLearningPanel();
     }
     
     public boolean isAutoLearnMode(){
     	return autoLearnButton.isSelected();
+    }
+    
+    public void setLearningSupported(boolean value){
+    	if(!value){
+    		autoLearnButton.setEnabled(false);
+    		manualLearnButton.setEnabled(false);
+    		noLearningButton.setSelected(true);
+    	} else {
+    		autoLearnButton.setEnabled(true);
+    		manualLearnButton.setEnabled(true);
+    	}
     }
     
     public void setLearningOptions(){

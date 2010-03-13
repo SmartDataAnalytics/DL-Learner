@@ -20,12 +20,9 @@ public class StatsTable extends JXTable {
 		setModel(new StatsTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setEditable(false);
-		setTableHeader(null);
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
 		getColumn(0).setMaxWidth(100);
-		setShowGrid(false);
-//		getColumn(1).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		setRowSelectionAllowed(false);
 		setCellSelectionEnabled(false);
 		setColumnSelectionAllowed(false);

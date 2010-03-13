@@ -21,8 +21,7 @@
 package org.dllearner.tools.ore.ui.wizard.panels;
 
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -30,14 +29,16 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.border.MatteBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.ui.IndividualsTable;
 import org.dllearner.tools.ore.ui.MarkableClassExpressionsTable;
+import org.jdesktop.swingx.JXTitledPanel;
 
 /**
  * JPanel for repairing action.
@@ -59,99 +60,53 @@ public class RepairPanel extends JPanel{
 	private JButton negAddButton;
 	
 	private JButton nextButton;
+	private JLabel classToDescribeLabel;
 	
 	
 	private MarkableClassExpressionsTable descriptionsTable;
 	
 	public RepairPanel() {
-		setLayout(new GridBagLayout());
-//		createAutoUI();
 		createUI();
 	}
 	
 	private void createUI(){
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weighty = 0.3;
-		c.weightx = 1.0;
-		c.gridx = 0;
-		c.gridy = 0;
-//		c.gridwidth = GridBagConstraints.REMAINDER;
-		add(createDescriptionsPanel(), c);
+		setLayout(new BorderLayout());
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = 0;
+		
+		JPanel descriptionPanel = new JPanel(new BorderLayout());
+		descriptionPanel.add(createDescriptionsPanel(), BorderLayout.CENTER);
 		nextButton = new JButton("Next suggestion");
 		nextButton.setActionCommand("next");
-		add(nextButton, c);
+		JPanel buttonPanel = new JPanel(new BorderLayout());
+		buttonPanel.add(nextButton, BorderLayout.NORTH);
+		descriptionPanel.add(buttonPanel, BorderLayout.EAST);
 		
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = 1;
-		c.gridy = 1;
-		c.gridx = 0;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
-		add(createPosPanel(), c);
-		c.gridx = 1;
-		add(createNegPanel(), c);
+		
+		JSplitPane examplesSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		examplesSplitPane.setLeftComponent(createPosPanel());
+		examplesSplitPane.setRightComponent(createNegPanel());
+		examplesSplitPane.setDividerLocation(0.5);
+		examplesSplitPane.setResizeWeight(0.5);
+		examplesSplitPane.setOneTouchExpandable(true);
+		
+		mainSplitPane.setTopComponent(descriptionPanel);
+		mainSplitPane.setBottomComponent(examplesSplitPane);
+		mainSplitPane.setDividerLocation(0.3);
+		mainSplitPane.setOneTouchExpandable(true);
+		
+		add(mainSplitPane);
 	}
 	
-	private void createAutoUI(){
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weighty = 0.3;
-		c.weightx = 1.0;
-		c.gridx = 0;
-		c.gridy = 0;
-//		c.gridwidth = GridBagConstraints.REMAINDER;
-		add(createDescriptionsPanel(), c);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = 0;
-		nextButton = new JButton("Next suggestion");
-		nextButton.setActionCommand("next");
-		add(nextButton, c);
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = 1;
-		c.gridy = 1;
-		c.gridx = 0;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
-		add(createPosPanel(), c);
-		c.gridx = 1;
-		add(createNegPanel(), c);
-		
-		
-	}
-	
-	private void createManualUI(){
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		add(createDescriptionsPanel(), c);
-		
-		c.gridwidth = 1;
-		c.gridy = 1;
-		c.gridx = 0;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
-		add(createPosPanel(), c);
-		c.gridx = 1;
-		add(createNegPanel(), c);
-		
-		c.gridy = 2;
-		nextButton = new JButton("Next");
-		nextButton.setActionCommand("next");
-//		add(nextButton, c);
-	}
 	
 	private JComponent createDescriptionsPanel(){
 		JPanel panel = new JPanel(new BorderLayout());
+		JPanel classToDescribePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		classToDescribePanel.add(new JLabel("Class to describe:"));
+		classToDescribeLabel = new JLabel();
+		classToDescribePanel.add(classToDescribeLabel);
+		panel.add(classToDescribePanel, BorderLayout.NORTH);
+		
 		descriptionsTable = new MarkableClassExpressionsTable();
 		JScrollPane scroll = new JScrollPane(descriptionsTable);
 		scroll.setBorder(new MatteBorder(null));
@@ -160,12 +115,9 @@ public class RepairPanel extends JPanel{
 	}
 	
 	private JComponent createPosPanel(){
-		JPanel posPanel = new JPanel();
+		JXTitledPanel posPanel = new JXTitledPanel("Positive examples");
+		posPanel.getContentContainer().setLayout(new BorderLayout());
 		posPanel.setName("positive");
-		posPanel.setLayout(new GridBagLayout());
-		posPanel.setBorder(new TitledBorder("Positive examples"));
-		
-		GridBagConstraints gbc = new GridBagConstraints();
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setName("positive");
@@ -179,31 +131,20 @@ public class RepairPanel extends JPanel{
 		posRepairButton = new JButton("Repair");
 		posRepairButton.setActionCommand("posRepair");
 		buttonPanel.add(posRepairButton);
-		gbc.anchor = GridBagConstraints.NORTH;
-		posPanel.add(buttonPanel, gbc);
+		JPanel buttonPanelHolder = new JPanel(new BorderLayout());
+		buttonPanelHolder.add(buttonPanel, BorderLayout.NORTH);
+		posPanel.getContentContainer().add(buttonPanelHolder, BorderLayout.EAST);
 		
 		posTable = new IndividualsTable();
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		posPanel.add(new JScrollPane(posTable), gbc);
+		posPanel.getContentContainer().add(new JScrollPane(posTable), BorderLayout.CENTER);
 		
 		return posPanel;
 	}
 	
 	private JComponent createNegPanel(){
-		JPanel negPanel = new JPanel();
+		JXTitledPanel negPanel = new JXTitledPanel("Negative examples");
+		negPanel.getContentContainer().setLayout(new BorderLayout());
 		negPanel.setName("negative");
-		negPanel.setLayout(new GridBagLayout());
-		negPanel.setBorder(new TitledBorder("Negative examples"));
-		
-		GridBagConstraints gbc = new GridBagConstraints();
-			
-		negTable = new IndividualsTable();
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		negPanel.add(new JScrollPane(negTable), gbc);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setName("negative");
@@ -217,11 +158,12 @@ public class RepairPanel extends JPanel{
 		negRepairButton = new JButton("Repair");
 		negRepairButton.setActionCommand("negRepair");
 		buttonPanel.add(negRepairButton);
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.anchor = GridBagConstraints.NORTH;
-		negPanel.add(buttonPanel, gbc);
+		JPanel buttonPanelHolder = new JPanel(new BorderLayout());
+		buttonPanelHolder.add(buttonPanel, BorderLayout.NORTH);
+		negPanel.getContentContainer().add(buttonPanelHolder, BorderLayout.EAST);
+		
+		negTable = new IndividualsTable();
+		negPanel.getContentContainer().add(new JScrollPane(negTable), BorderLayout.CENTER);
 		
 		return negPanel;
 	}
@@ -247,12 +189,9 @@ public class RepairPanel extends JPanel{
 	}
 	
 	public void setManualStyle(boolean value){
-//		removeAll();	
 		if(value){
-//			createManualUI();
 			nextButton.setVisible(false);
 		} else {
-//			createAutoUI();
 			nextButton.setVisible(true);
 		}
 		repaint();
@@ -290,6 +229,10 @@ public class RepairPanel extends JPanel{
 	public void addMouseListeners(MouseListener mL){
 		posTable.addMouseListener(mL);
 		negTable.addMouseListener(mL);
+	}
+	
+	public void setClassToDescribe(String classToDescribeString){
+		classToDescribeLabel.setText(classToDescribeString);
 	}
 	
 	public static void main(String[] args){

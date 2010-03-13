@@ -20,7 +20,7 @@
 
 package org.dllearner.tools.ore.ui.wizard.panels;
 
-import java.awt.GridBagConstraints;
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 
@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.StatsTable;
+import org.jdesktop.swingx.JXTitledPanel;
 
 /**
  * JPanel where to buttons are added to save and go back to class choose panel.
@@ -50,22 +51,21 @@ public class SavePanel extends JPanel{
 	
 	public SavePanel(){
 		setLayout(new GridLayout(0,1));
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
+		
+		JXTitledPanel changesPanel = new JXTitledPanel("Ontology changes");
+		changesPanel.getContentContainer().setLayout(new BorderLayout());
 		changesTable = new StatsTable();
-		add(new JScrollPane(changesTable), c);
+		changesPanel.getContentContainer().add(new JScrollPane(changesTable), BorderLayout.CENTER);
+		add(changesPanel);
+		
 		JPanel buttonHolderPanel = new JPanel();
 		buttonHolderPanel.setLayout(new BoxLayout(buttonHolderPanel, BoxLayout.X_AXIS));
-	
 		saveExit = new JButton("Save and Exit");
 		buttonHolderPanel.add(saveExit);
-		
 		saveGoBack = new JButton("Save and go to class choose panel");
 		buttonHolderPanel.add(saveGoBack);
 		
-		add(buttonHolderPanel, c);
+		add(buttonHolderPanel);
 	}
 	
 	/**

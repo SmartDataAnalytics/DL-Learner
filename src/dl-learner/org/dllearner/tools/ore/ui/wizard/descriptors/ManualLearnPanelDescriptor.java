@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -35,9 +36,11 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.TaskManager;
+import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.ManualLearnPanel;
 
@@ -107,8 +110,7 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 //				range);
 //		Description de = new NamedClass("http://example.com/father#male");
 		
-		if (!e.getValueIsAdjusting() && learnPanel.getResultTable().getSelectedRow() >= 0 && 
-				(learningTask.isDone() || learningTask.isCancelled())){
+		if (!e.getValueIsAdjusting() && learnPanel.getResultTable().getSelectedRow() >= 0){
 			EvaluatedDescriptionClass selectedClassExpression = learnPanel.getResultTable().getSelectedValue();
 			learnPanel.showInconsistencyWarning(!selectedClassExpression.isConsistent());
 			OREManager.getInstance().setNewClassDescription(selectedClassExpression);
@@ -124,25 +126,50 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
+			learnPanel.getStartButton().setEnabled(false);
+	        learnPanel.getStopButton().setEnabled(true);
+	        
 			String learningType = "";
+			
+			LearningManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
+			LearningManager.getInstance().setMaxExecutionTimeInSeconds(learnPanel.getOptionsPanel().getMaxExecutionTime());
+			LearningManager.getInstance().setMaxNrOfResults(learnPanel.getOptionsPanel().getNrOfConcepts());
+			LearningManager.getInstance().setThreshold(learnPanel.getOptionsPanel().getThreshold());
+	        
 			if(learnPanel.isEquivalentClassesTypeSelected()){
 				OREManager.getInstance().setLearningType("equivalence");
+				LearningManager.getInstance().setLearningType(LearningType.EQUIVALENT);
+				
 				learningType = "equivalent";
 			} else {
 				learningType = "super";
 				OREManager.getInstance().setLearningType("superClass");
+				LearningManager.getInstance().setLearningType(LearningType.SUPER);
 			}
-//			TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...");
+			
 			TaskManager.getInstance().getStatusBar().setMessage("Learning " + learningType + " class expressions...");
 			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			learnPanel.getStartButton().setEnabled(false);
-	        learnPanel.getStopButton().setEnabled(true);
+			
 	        OREManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
 	        OREManager.getInstance().setMaxExecutionTimeInSeconds(learnPanel.getOptionsPanel().getMaxExecutionTime());
 	        OREManager.getInstance().setMaxNrOfResults(learnPanel.getOptionsPanel().getNrOfConcepts());
 	        OREManager.getInstance().setThreshold(learnPanel.getOptionsPanel().getThreshold());
 	        learnPanel.reset();
-	       
+	        
+//	        TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...");
+//	        Timer timer = new Timer();
+//	        timer.schedule(new TimerTask() {
+//	        	int progress = 0;
+//				
+//				@Override
+//				public void run() {
+//					progress++;
+//					fillTable(LearningManager.getInstance().getCurrentlyLearnedDescriptions());
+//					TaskManager.getInstance().getStatusBar().setProgress(progress);
+//					
+//				}
+//			}, 1000, 1000);
+//	        LearningManager.getInstance().learnAsynchronously();
 	       
 	        learningTask = new LearningTask();
 	        learningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
@@ -158,6 +185,21 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 	        
 		}
 		
+	}
+	
+	private void fillTable(final List<EvaluatedDescriptionClass> result){
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				learnPanel.getResultTable().addResults(result);
+			}
+		};
+		if(SwingUtilities.isEventDispatchThread()){
+			r.run();
+		} else {
+			SwingUtilities.invokeLater(r);
+		}
+			
 	}
 
 	private void setNextButtonAccordingToConceptSelected() {
