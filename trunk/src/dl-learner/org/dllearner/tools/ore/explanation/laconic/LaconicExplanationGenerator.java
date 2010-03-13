@@ -67,6 +67,30 @@ public class LaconicExplanationGenerator
 		lastRegularExplanations = new HashSet<Explanation>();
 	}
     
+    public LaconicExplanationGenerator(OWLOntologyManager manager) {
+
+		this.manager = manager;
+
+		oPlus = new OPlus(manager.getOWLDataFactory());
+		lastRegularExplanations = new HashSet<Explanation>();
+	}
+    
+    public void setOntology(Set<OWLOntology> ontologies){
+    	try {
+			ontology = manager.createOntology(URI.create(new StringBuilder().append(
+			"http://laconic").append(System.nanoTime()).toString()),
+			ontologies, true);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pelletExplanation = new PelletExplanationGenerator(manager, ontologies);
+		lastRegularExplanations = new HashSet<Explanation>();
+    }
+    
     /**
      * Computes a more fine grained representation for a set of axioms, which means to split them
      * e.g. for A \sqsubseteq B \sqcap C returning A \sqsubseteq B and A \sqsubseteq C

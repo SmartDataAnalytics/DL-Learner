@@ -15,6 +15,7 @@ import org.dllearner.tools.ore.explanation.ExplanationException;
 import org.dllearner.tools.ore.explanation.ExplanationType;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
+import org.dllearner.tools.ore.explanation.laconic.OPlus;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -303,6 +304,10 @@ public class ExplanationManager implements OREManagerListener{
 		return gen.getRemainingAxioms(source, part);
 	}
 
+	public Set<OWLAxiom> getLaconicAxioms(OWLAxiom ax){
+		OPlus oPlus = new OPlus(dataFactory);
+		return ax.accept(oPlus);
+	}
 	@Override
 	public void activeOntologyChanged() {
 		reasoner = OREManager.getInstance().getReasoner().getReasoner();

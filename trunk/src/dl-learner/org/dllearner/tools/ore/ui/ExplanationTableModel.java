@@ -107,12 +107,13 @@ public class ExplanationTableModel extends AbstractTableModel {
 //						}
 //						
 //					}
+					
 					RemainingAxiomsDialog dialog = new RemainingAxiomsDialog(ax, ont);
 					int ret = dialog.showDialog();
 					if(ret == RemainingAxiomsDialog.OK_RETURN_CODE){
 						impMan.addSelection(ax);
 						List<OWLOntologyChange> changes = dialog.getChanges();
-						for(OWLAxiom source : expMan.getLaconicSourceAxioms(ax)){
+						for(OWLAxiom source : expMan.getSourceAxioms(ax)){
 							if(repMan.isScheduled2Add(source)){
 								changes.add(new RemoveAxiom(ont, source));
 							}

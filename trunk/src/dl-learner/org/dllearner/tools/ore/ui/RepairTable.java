@@ -3,7 +3,6 @@ package org.dllearner.tools.ore.ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -15,12 +14,14 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 public class RepairTable extends JXTable {
@@ -92,13 +93,7 @@ public class RepairTable extends JXTable {
 				if (row >= 0 && row <= table.getRowCount() && column == 2) {
 					OWLOntologyChange change = ((RepairTableModel) getModel())
 							.getChangeAt(row);
-					if (ImpactManager.getInstance(OREManager.getInstance())
-							.isSelected(change.getAxiom())) {
-						ImpactManager.getInstance(OREManager.getInstance())
-								.removeSelection(change.getAxiom());
-					}
-					RepairManager.getInstance(OREManager.getInstance())
-							.removeFromRepairPlan(change);
+					handleRemoveChange(change);
 					setCursor(null);
 				}
 			}
@@ -128,17 +123,18 @@ public class RepairTable extends JXTable {
 		OWLOntologyChange change = ((RepairTableModel) getModel())
 				.getChangeAt(selRow);
 		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-			RepairManager.getInstance(OREManager.getInstance())
-					.removeFromRepairPlan(change);
-			if (ImpactManager.getInstance(OREManager.getInstance()).isSelected(
-					change.getAxiom())) {
-				ImpactManager.getInstance(OREManager.getInstance())
-						.removeSelection(change.getAxiom());
-			}
-
+			handleRemoveChange(change);
 		}
-
 		getSelectionModel().clearSelection();
+	}
+	
+	private void handleRemoveChange(OWLOntologyChange change) {
+		OREManager oreMan = OREManager.getInstance();
+		RepairManager.getInstance(oreMan).removeFromRepairPlan(change);
+		ImpactManager.getInstance(oreMan).removeSelection(change.getAxiom());
+		for (OWLAxiom ax : ExplanationManager.getInstance(oreMan).getLaconicAxioms(change.getAxiom())) {
+			ImpactManager.getInstance(oreMan).removeSelection(ax);
+		}
 	}
 
 	
