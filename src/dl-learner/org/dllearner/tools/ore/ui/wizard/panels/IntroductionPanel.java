@@ -60,7 +60,7 @@ public class IntroductionPanel extends JPanel {
     		"<p style=\"max-width:400px;\">ORE uses a wizard-style concept. On the left, you can see different steps in the wizard, where the current step is in bold. " +
     		"Each step contains an explanation of it in the main window. The wizard may omit steps if they are not necessary, e.g. " +
     		"if you load a consistent ontology, then the \"Debugging\" dialogue is skipped.</p>" +
-    		"<p>Please read the <a href=\"http://dl-learner.org/wiki/ORE\">the ORE wiki page</a> and view the <a href=\"...\">screencast</a> to get started.</p></html>"; 
+    		"<p>Please read the <a href=\"http://dl-learner.org/wiki/ORE\">the ORE wiki page</a> and view the <a href=\"http://dl-learner.org/files/screencast/ore/0.1/ore.htm\">screencast</a> to get started.</p></html>"; 
     
     public IntroductionPanel() {
     	createUI();
