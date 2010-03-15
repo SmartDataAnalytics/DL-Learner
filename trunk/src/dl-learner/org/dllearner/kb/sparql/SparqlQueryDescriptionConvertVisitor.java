@@ -73,8 +73,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
 	private int limit = 5;
+	private int offset = -1;
 	private boolean labels = false;
 	private boolean distinct = false;
+	private boolean count = false;
+	
 	private SortedSet<String> transitiveProperties =null;
 	private Map<String,Set<String>> subclassMap = null;
 	
@@ -103,7 +106,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public String getSparqlQuery( Description description) { 
 		description.accept(this);
 		expandSubclasses();
-		String ret =  "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n } " + limit();
+		String ret =  "";
+		if(count){
+			ret = "SELECT  count(distinct(?subject)) as ?count { "+ query + " \n } " ;
+		}else{
+			ret = "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n } " + limit();
+		}
 		reset();
 		return ret;
 	}
@@ -154,7 +162,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	}
 	
 	private String limit() {
-		return (limit > 0) ? " LIMIT " + limit + " " : "";
+		if (limit > 0 && offset > 0){
+			return " LIMIT " + limit + " OFFSET "+offset+" ";
+		}else if(limit > 0 ){
+			return " LIMIT " + limit + " ";
+		}else {
+			return "";
+		}
 	}
 	private String labels() {
 		return (labels)?"\n?subject rdfs:label ?label . ":"";
@@ -186,6 +200,14 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 
 	public void setSubclassMap(Map<String, Set<String>> subclassMap) {
 		this.subclassMap = subclassMap;
+	}
+	
+	public void setCount(boolean count) {
+		this.count = count;
+	}
+	
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 
 	public static String getSparqlQuery(String descriptionKBSyntax, int limit, boolean labels, boolean distinct) throws ParseException {

@@ -58,6 +58,17 @@ public class Examples {
 		this.addNegTest(negTest);
 	}
 	
+	public static Examples getInstance(Collection<String> pos, Collection<String> neg){
+		Examples ex = new Examples();
+		for (String p : pos) {
+			ex.addPosTrain(p);
+		}
+		for (String n : neg) {
+			ex.addNegTrain(n);
+		}
+		return ex;
+	}
+	
 	/**
 	 * calculates precision based on the test set
 	 * @param retrieved
