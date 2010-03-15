@@ -132,6 +132,7 @@ public class RepairTable extends JXTable {
 		OREManager oreMan = OREManager.getInstance();
 		RepairManager.getInstance(oreMan).removeFromRepairPlan(change);
 		ImpactManager.getInstance(oreMan).removeSelection(change.getAxiom());
+		System.out.println(change);
 		for (OWLAxiom ax : ExplanationManager.getInstance(oreMan).getLaconicAxioms(change.getAxiom())) {
 			ImpactManager.getInstance(oreMan).removeSelection(ax);
 		}
