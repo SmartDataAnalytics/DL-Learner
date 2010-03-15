@@ -13,6 +13,7 @@ import org.dllearner.tools.ore.explanation.CachedExplanationGenerator;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.explanation.ExplanationException;
 import org.dllearner.tools.ore.explanation.ExplanationType;
+import org.dllearner.tools.ore.explanation.RemainingAxiomPartsGenerator;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.dllearner.tools.ore.explanation.laconic.OPlus;
@@ -57,13 +58,14 @@ public class ExplanationManager implements OREManagerListener{
 	
 	private CachedExplanationGenerator gen;
 	
+	private RemainingAxiomPartsGenerator remainingAxGen;
+	
 	
 	private ExplanationManager(OREManager oreMan) {
 		OREManager.getInstance().addListener(this);
 		this.reasoner = oreMan.getReasoner().getReasoner();
 		this.manager = reasoner.getManager();
 		this.ontology = oreMan.getReasoner().getOWLAPIOntologies();
-		System.out.println(ontology);
 		
 		dataFactory = manager.getOWLDataFactory();
 		
@@ -77,6 +79,8 @@ public class ExplanationManager implements OREManagerListener{
 		listeners = new ArrayList<ExplanationManagerListener>();
 		
 		gen = new CachedExplanationGenerator(reasoner.getLoadedOntologies());
+		
+		remainingAxGen = new RemainingAxiomPartsGenerator(ontology, dataFactory);
 
 	}
 	
@@ -308,6 +312,11 @@ public class ExplanationManager implements OREManagerListener{
 		OPlus oPlus = new OPlus(dataFactory);
 		return ax.accept(oPlus);
 	}
+	
+	public Map<OWLAxiom, Set<OWLAxiom>> getRemainingAxiomParts(OWLAxiom laconicAxiom){
+		return remainingAxGen.getRemainingAxiomParts(laconicAxiom);
+	}
+	
 	@Override
 	public void activeOntologyChanged() {
 		reasoner = OREManager.getInstance().getReasoner().getReasoner();

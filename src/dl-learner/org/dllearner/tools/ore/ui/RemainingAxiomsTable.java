@@ -20,6 +20,7 @@ public class RemainingAxiomsTable extends JXTable{
 		setModel(new RemainingAxiomsTableModel(remainingAxioms));
 		getColumn(0).setCellRenderer(new TextAreaRenderer());
 		getColumn(1).setMaxWidth(30);
+		setTableHeader(null);
 	}
 	
 	public List<OWLAxiom> getSelectedAxioms(){

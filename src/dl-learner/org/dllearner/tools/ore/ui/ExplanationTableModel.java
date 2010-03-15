@@ -84,12 +84,12 @@ public class ExplanationTableModel extends AbstractTableModel {
 				impMan.removeSelection(ax);
 				if(!ont.containsAxiom(ax)){
 					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
+					for(OWLAxiom source : expMan.getRemainingAxiomParts(ax).keySet()){
 						impMan.removeSelection(source);
 						changes.add(new RemoveAxiom(ont, source));
-						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
-							changes.add(new AddAxiom(ont, remain));
-						}
+//						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
+//							changes.add(new AddAxiom(ont, remain));
+//						}
 					}
 					repMan.removeFromRepairPlan(changes);
 				} else {
@@ -98,27 +98,18 @@ public class ExplanationTableModel extends AbstractTableModel {
 			} else {
 //				impMan.addSelection(ax);
 				if(!OREManager.getInstance().isSourceOWLAxiom(ax)){
-//					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-//					for(OWLAxiom source : expMan.getSourceAxioms(ax)){
-//						impMan.addSelection(source);
-//						changes.add(new RemoveAxiom(ont, source));
-//						for(OWLAxiom remain : expMan.getRemainingAxioms(source, ax)){
-//							changes.add(new AddAxiom(ont, remain));
-//						}
-//						
-//					}
 					
 					RemainingAxiomsDialog dialog = new RemainingAxiomsDialog(ax, ont);
 					int ret = dialog.showDialog();
 					if(ret == RemainingAxiomsDialog.OK_RETURN_CODE){
 						impMan.addSelection(ax);
 						List<OWLOntologyChange> changes = dialog.getChanges();
-						for(OWLAxiom source : expMan.getSourceAxioms(ax)){
-							if(repMan.isScheduled2Add(source)){
-								changes.add(new RemoveAxiom(ont, source));
-							}
-							
-						}
+//						for(OWLAxiom source : expMan.getSourceAxioms(ax)){
+//							if(repMan.isScheduled2Add(source)){
+//								changes.add(new RemoveAxiom(ont, source));
+//							}
+//							
+//						}
 						repMan.addToRepairPlan(changes);
 					}
 					

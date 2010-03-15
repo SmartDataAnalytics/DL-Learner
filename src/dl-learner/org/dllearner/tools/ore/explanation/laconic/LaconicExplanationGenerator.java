@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,9 +12,12 @@ import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.explanation.ExplanationException;
 import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
+import org.dllearner.tools.ore.explanation.RemainingAxiomPartsGenerator;
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
+import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasonerFactory;
+import org.semanticweb.owl.model.AxiomType;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -203,7 +207,7 @@ public class LaconicExplanationGenerator
 
 		}
 		Set<Explanation> explanations = new HashSet<Explanation>();
-		for (Explanation explanation : allPreviouslyFoundExplanations) {System.out.println(explanation);
+		for (Explanation explanation : allPreviouslyFoundExplanations) {
 			if (!nonLaconicExplanations.contains(explanation)) {
 				if (laconicExplanations.contains(explanation)) {
 					explanations.add(explanation);
@@ -391,41 +395,96 @@ public class LaconicExplanationGenerator
     }
     
     public static void main(String[] args) throws OWLOntologyCreationException, ExplanationException, OWLOntologyChangeException{
-//    	String baseURI = "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl";
+    	String baseURI = "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl";
     	OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
     	OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI.create("file:examples/ore/koala.owl"));
     	OWLDataFactory factory = manager.getOWLDataFactory();
+    	Reasoner reasoner = new PelletReasonerFactory().createReasoner(manager);
+    	reasoner.loadOntology(ontology);
+    	reasoner.classify();
+    	RemainingAxiomPartsGenerator remAxGen = new RemainingAxiomPartsGenerator(ontology, factory);
     	LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(ontology));
+    	for(OWLClass unsat : reasoner.getInconsistentClasses()){
+    		System.out.println("#######################################");
+    		System.out.println("Unsatisfiable class: " + unsat);
+    		for(Explanation exp : expGen.getExplanations(factory.getOWLSubClassAxiom(unsat, factory.getOWLNothing()))){
+//    			System.out.println("Laconic explanation: " + exp);
+    			for(OWLAxiom ax : exp.getAxioms()){
+    				if(!ontology.containsAxiom(ax)){
+    					System.out.println("Laconic axiom: " + ax);
+    					System.out.println("Remaining axioms: " + remAxGen.getRemainingAxiomParts(ax));
+    				}
+    			}
+    		}
+    	}
 //    	OWLClass koalaWithPhD = factory.getOWLClass(URI.create(baseURI + "#KoalaWithPhD"));
 //    	OWLClass koala = factory.getOWLClass(URI.create(baseURI + "#Koala"));
+//    	OWLAxiom laconicAx = factory.getOWLSubClassAxiom(koalaWithPhD, koala);
+//    	OPlus oplusGen = new OPlus(factory);
+//    	Set<OWLAxiom> sourceAxioms = new HashSet<OWLAxiom>();
+//    	Map<OWLAxiom, Set<OWLAxiom>> source2AxiomsMap = new HashMap<OWLAxiom, Set<OWLAxiom>>();
+//    	Set<OWLAxiom> oplus;
+//    	Set<OWLAxiom> remainingAxioms = new HashSet<OWLAxiom>();
+//    	long startTime = System.currentTimeMillis();
+//    	for(OWLAxiom ax : ontology.getAxioms(AxiomType.EQUIVALENT_CLASSES)){
+//    		oplus = ax.accept(oplusGen);
+//    		if(oplus.contains(laconicAx)){
+//    			sourceAxioms.add(ax);
+//    			source2AxiomsMap.put(ax, oplus);
+//    		}
+//    	}
+//    	for(OWLAxiom sourceAx : sourceAxioms){
+//    		System.out.println("Source axiom: " + sourceAx);
+//    		Set<OWLAxiom> temp = source2AxiomsMap.get(sourceAx);
+//    		for(Iterator<OWLAxiom> i = temp.iterator();i.hasNext();){
+//    			OWLAxiom ax = i.next();
+//    			if(ax.accept(oplusGen).contains(laconicAx)){
+////    				System.out.println(ax);
+//    				i.remove();
+//    			}
+//    		}
+//    		remainingAxioms.addAll(temp);
+//    		for(OWLAxiom ax : temp){
+////    			System.out.println("Temp: " + ax);
+//    			for(OWLAxiom a : ax.accept(oplusGen)){
+////    				System.out.println(a);
+//    				if(temp.contains(a) && !a.equals(ax)){
+//    					remainingAxioms.remove(a);
+//    				}
+//    			}
+//    		}
+//        	System.out.println("Remaining axioms: " + remainingAxioms);
+//    	}
+//    	System.out.println("Overall computing time: " + (System.currentTimeMillis() - startTime));
+    	
     	
 //    	System.out.println(expGen.getExplanations(factory.getOWLSubClassAxiom(koalaWithPhD, factory.getOWLNothing()), 1));
-//    	OWLAxiom laconicAx = factory.getOWLSubClassAxiom(koalaWithPhD, koala);
+//    	
 //    	Set<OWLAxiom> sourceAxioms = expGen.getSourceAxioms(laconicAx);
 //    	System.out.println("Source axioms: " + sourceAxioms);
 //    	for(OWLAxiom sourceAx : sourceAxioms){
 //    		System.out.println("\nRebuildet: " + expGen.getRemainingAxioms(sourceAx, laconicAx));
 //    	}
     	
-    	OWLAxiom ax = factory.getOWLEquivalentClassesAxiom(factory.getOWLClass(URI.create("A")), 
-    											factory.getOWLObjectIntersectionOf(factory.getOWLClass(URI.create("C")), 
-    																				factory.getOWLObjectSomeRestriction(factory.getOWLObjectProperty(URI.create("R")), 
-    																													factory.getOWLClass(URI.create("F")))));
-    	OWLAxiom ax2 = factory.getOWLSubClassAxiom(factory.getOWLObjectSomeRestriction(factory.getOWLObjectProperty(URI.create("R")), factory.getOWLThing()),
-    												factory.getOWLObjectComplementOf(factory.getOWLClass(URI.create("C"))));
-    	Set<OWLAxiom> ont = new HashSet<OWLAxiom>();
-    	ont.add(ax);
-    	ont.add(ax2);
-    	OWLOntology o = manager.createOntology(ont);
-    	expGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(o));
-    	System.out.println(expGen.getExplanations(factory.getOWLSubClassAxiom(factory.getOWLClass(URI.create("A")), factory.getOWLNothing()), 1));
-    	
-    	OWLAxiom remove = factory.getOWLSubClassAxiom(factory.getOWLClass(URI.create("A")),factory.getOWLObjectSomeRestriction(factory.getOWLObjectProperty(URI.create("R")), factory.getOWLThing()));
-    	Set<OWLAxiom> sourceAxioms = expGen.getSourceAxioms(remove);
-    	System.out.println("Source axioms: " + sourceAxioms);
-    	for(OWLAxiom sourceAx : sourceAxioms){
-    		System.out.println("\nRebuildet: " + expGen.getRemainingAxioms(sourceAx, remove));
-    	}
+//    	OWLAxiom ax = factory.getOWLEquivalentClassesAxiom(factory.getOWLClass(URI.create("A")), 
+//    											factory.getOWLObjectIntersectionOf(factory.getOWLClass(URI.create("C")), 
+//    																				factory.getOWLObjectSomeRestriction(factory.getOWLObjectProperty(URI.create("R")), 
+//    																													factory.getOWLClass(URI.create("F")))));
+//    	OWLAxiom ax2 = factory.getOWLSubClassAxiom(factory.getOWLObjectSomeRestriction(factory.getOWLObjectProperty(URI.create("R")), factory.getOWLThing()),
+//    												factory.getOWLObjectComplementOf(factory.getOWLClass(URI.create("C"))));
+//    	Set<OWLAxiom> ont = new HashSet<OWLAxiom>();
+//    	ont.add(ax);
+//    	ont.add(ax2);
+//    	OWLOntology o = manager.createOntology(ont);
+//    	expGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(o));
+//    	System.out.println(expGen.getExplanations(factory.getOWLSubClassAxiom(factory.getOWLClass(URI.create("A")), factory.getOWLNothing()), 1));
+//    	
+//    	OWLAxiom remove = factory.getOWLSubClassAxiom(factory.getOWLClass(URI.create("A")),factory.getOWLObjectSomeRestriction(factory.getOWLObjectProperty(URI.create("R")), factory.getOWLThing()));
+//    	Set<OWLAxiom> sourceAxioms = expGen.getSourceAxioms(remove);
+//    	System.out.println("Source axioms: " + sourceAxioms);
+//    	for(OWLAxiom sourceAx : sourceAxioms){
+//    		System.out.println("\nRebuildet: " + expGen.getRemainingAxioms(sourceAx, remove));
+//    	}
     	
     }
 	

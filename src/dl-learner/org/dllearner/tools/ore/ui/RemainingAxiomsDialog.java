@@ -2,13 +2,15 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -18,6 +20,8 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
@@ -25,6 +29,7 @@ import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.TaskManager;
+import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
@@ -62,9 +67,15 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 		
 		
 		public RemainingAxiomsDialog(OWLAxiom laconicAxiom, OWLOntology ont){
-			super(TaskManager.getInstance().getDialog(), "Selected part of axiom in ontology", true);
+			super(TaskManager.getInstance().getDialog(), "Selected part of axioms in ontology", true);
 			setLayout(new BorderLayout());
-			add(new JLabel("The selected axiom is only part of some axioms in the ontology"), BorderLayout.NORTH);
+			JTextPane info = new JTextPane();
+			info.setBackground(getParent().getBackground());
+			info.setEditable(false);
+			info.setContentType("text/html");
+			info.setText("<html>You selected an axiom, which is only part of some axioms in the ontology." +
+					" To retain the remaining parts, you can select them below.</html>");
+			add(info, BorderLayout.NORTH);
 			createControls();
 			
 			this.ontology = ont;
@@ -78,21 +89,44 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 			changes = new ArrayList<OWLOntologyChange>();
 			sourceAxioms = new ArrayList<OWLAxiom>();
 			
-			sourceAxioms.addAll(expMan.getSourceAxioms(laconicAxiom));
+//			sourceAxioms.addAll(expMan.getSourceAxioms(laconicAxiom));
 			
-			for(OWLAxiom source : sourceAxioms){
+			Map<OWLAxiom, Set<OWLAxiom>> sourceAxiom2RemainingAxiomPartsMap = expMan.getRemainingAxiomParts(laconicAxiom);
+			
+			for(OWLAxiom source : sourceAxiom2RemainingAxiomPartsMap.keySet()){
 				
 				changes.add(new RemoveAxiom(ont, source));
-				List<OWLAxiom> remainingAxioms = new ArrayList<OWLAxiom>(expMan.getRemainingAxioms(source, laconicAxiom));
-				RemainingAxiomsTable table = new RemainingAxiomsTable(remainingAxioms);
-				tables.add(table);
-				explanationsPanel.add(table);
+				explanationsPanel.add(createRemainingAxiomsPanel(source, sourceAxiom2RemainingAxiomPartsMap.get(source)));
 				
 			}
 			
 			add(explanationsPanel, BorderLayout.CENTER);
 			
 	
+		}
+		
+		private JPanel createRemainingAxiomsPanel(OWLAxiom source, Set<OWLAxiom> remainingParts){
+			JPanel panel = new JPanel(new BorderLayout());
+			
+			JPanel p = new JPanel(new GridLayout(3, 1));
+			p.add(new JLabel("<html><b>Axiom:</b></html>"));
+			JTextPane sourceAxiomPane = new JTextPane();
+			sourceAxiomPane.setContentType("text/html");
+			sourceAxiomPane.setText(ManchesterSyntaxRenderer.render(source, false, 0));
+			sourceAxiomPane.setEditable(false);
+//			sourceAxiomPane.setBackground(getParent().getBackground());
+			p.add(sourceAxiomPane);
+			p.add(new JLabel("<html><b>Remaining parts:</b></html>"));
+			panel.add(p, BorderLayout.NORTH);
+			
+			RemainingAxiomsTable table = new RemainingAxiomsTable(new ArrayList<OWLAxiom>(remainingParts));
+			panel.add(new JScrollPane(table));
+			
+			panel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
+			
+			tables.add(table);
+			
+			return panel;
 		}
 		
 		private void createControls() {
