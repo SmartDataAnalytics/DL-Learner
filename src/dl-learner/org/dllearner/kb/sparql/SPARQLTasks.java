@@ -28,6 +28,7 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -486,6 +487,31 @@ public class SPARQLTasks {
 			String json = cache.executeSparqlQuery(sq);
 			return SparqlQuery.convertJSONtoResultSet(json);
 		}
+	}
+	
+	/**
+	 * variable mus be ?count
+	 * @param sparqlQueryString
+	 * @return -1 on failure count on success
+	 */
+	public int queryAsCount(String sparqlQueryString) {
+		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
+		ResultSetRewindable rsw = null;
+		if(cache == null) {
+			rsw = sq.send();
+		} else {
+			// get JSON from cache and convert to result set
+			String json = cache.executeSparqlQuery(sq);
+			rsw =  SparqlQuery.convertJSONtoResultSet(json);
+		}
+		int ret = -1;
+		while(rsw.hasNext()){
+			QuerySolution qs = rsw.nextSolution();
+			ret = qs.getLiteral("count").getInt();
+			
+		}
+		return ret;
+		
 	}
 	
 	/**
