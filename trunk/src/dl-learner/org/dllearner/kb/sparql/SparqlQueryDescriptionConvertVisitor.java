@@ -58,6 +58,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
+import org.dllearner.test.SparqlQueryConverter;
 
 /**
  * Converter from DL-Learner descriptions to a corresponding SPARQL query to get
@@ -251,6 +252,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		SparqlQueryConverter.test();
 		try {
 			SortedSet<String> s = new TreeSet<String>();
 			HashMap<String, String> result = new HashMap<String, String>();
@@ -301,7 +303,6 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 			if (true) {
 				System.exit(0);
 			}
-			
 //			<http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag>
 			String query = "";
 			SparqlQueryDescriptionConvertVisitor visit = new SparqlQueryDescriptionConvertVisitor();
@@ -362,11 +363,18 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		if(transitiveProperties!= null && transitiveProperties.contains(description.getRole().toString()) ){
 			option =" OPTION (TRANSITIVE , t_in(?" + stack.peek()+"), t_out(?object" + currentObject + "), T_MIN(0), T_MAX(6), T_DIRECTION 1 , T_NO_CYCLES) ";
 		}
-		query += "\n?" + stack.peek() + " <" + description.getRole() + "> ?object" + currentObject + option + ". ";
-		stack.push("object" + currentObject);
-		currentObject++;
-		description.getChild(0).accept(this);
-		stack.pop();
+		
+		if(description.getChild(0) instanceof Thing){
+			//I removed a point here at the end
+			query += "\n?" + stack.peek() + " <" + description.getRole() + ">  [] " + option + "  ";
+		}else{
+			query += "\n?" + stack.peek() + " <" + description.getRole() + "> ?object" + currentObject + option + " . ";
+			stack.push("object" + currentObject);
+			currentObject++;
+			description.getChild(0).accept(this);
+			stack.pop();
+		}
+		
 		logger.trace(description.getRole().toString());
 		logger.trace(description.getChild(0).toString());
 	}
@@ -402,10 +410,18 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * .Intersection)
 	 */
 	public void visit(Intersection description) {
-		logger.trace("Intersection");
-		description.getChild(0).accept(this);
-		query += ". ";
-		description.getChild(1).accept(this);
+		if(description.getChild(0) instanceof Thing ){
+			logger.trace("Intersection with TOP");
+			description.getChild(1).accept(this);
+		}else if(description.getChild(1) instanceof Thing ){
+			logger.trace("Intersection with TOP");
+			description.getChild(0).accept(this);
+		}else{
+			logger.trace("Intersection");
+			description.getChild(0).accept(this);
+			query += ". ";
+			description.getChild(1).accept(this);
+		}
 	}
 
 	/*
@@ -416,13 +432,23 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * .Union)
 	 */
 	public void visit(Union description) {
-		// HACK see replace hacks in other functions
-		logger.trace("Union");
-		query += "{";
-		description.getChild(0).accept(this);
-		query += "} UNION {";
-		description.getChild(1).accept(this);
-		query += "}";
+
+		if(description.getChild(0) instanceof Thing ){
+			logger.trace("Union with TOP");
+			description.getChild(1).accept(this);
+		}else if(description.getChild(1) instanceof Thing ){
+			logger.trace("Union with TOP");
+			description.getChild(0).accept(this);
+		}else{
+			logger.trace("Union");
+			query += "{";
+			description.getChild(0).accept(this);
+			query += "} UNION {";
+			description.getChild(1).accept(this);
+			query += "}";
+		}
+		
+		
 	}
 
 	/*
