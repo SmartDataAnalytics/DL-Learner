@@ -32,8 +32,8 @@ public class ScriptDoAll {
 		String yagoFile = "yagoclasses_links.nt";
 		String categoryFile = "skoscategories_en.nt";
 		
-//		doIt(dbpediaFile, "RDF/XML", subclassof, rdftype, dbns);
-//		doIt(yagoFile, "N-TRIPLES", subclassof, rdftype, yagons);
+//		doIt(dbpediaFile, "RDF/XML", subclassof, rdftype, dbns,false);
+//		doIt(yagoFile, "N-TRIPLES", subclassof, rdftype, yagons,false);
 		doIt(categoryFile, "N-TRIPLES", broader, subject, catns, true);
 		
 	}
