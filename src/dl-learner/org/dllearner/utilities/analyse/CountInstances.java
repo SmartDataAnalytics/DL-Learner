@@ -78,6 +78,7 @@ public class CountInstances {
 				
 				ret.add(new Count(res, lit.getInt()));
 			}
+			System.out.println("retrieved: "+ret.size());
 			return ret;
 		}
 	}

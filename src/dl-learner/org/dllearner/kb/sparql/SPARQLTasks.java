@@ -490,7 +490,7 @@ public class SPARQLTasks {
 	}
 	
 	/**
-	 * variable mus be ?count
+	 * variable must be ?count
 	 * @param sparqlQueryString
 	 * @return -1 on failure count on success
 	 */
