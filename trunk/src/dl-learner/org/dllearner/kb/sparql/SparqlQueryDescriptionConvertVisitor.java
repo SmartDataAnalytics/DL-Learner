@@ -87,7 +87,10 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	private int currentObject = 0;
 	private List<String> foundNamedClasses = new ArrayList<String>();
 	
-	public void reset(){
+	/**
+	 * resets internal variables
+	 */
+	private void reset(){
 		currentObject = 0;
 		stack = new Stack<String>();
 		stack.push("subject");
@@ -99,11 +102,21 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		stack.push("subject");
 	}
 
+	/**
+	 * @param descriptionKBSyntax description which is parsed and passed to getSparqlQuery( Description description)
+	 * @return
+	 * @throws ParseException
+	 */
 	public String getSparqlQuery( String descriptionKBSyntax) throws ParseException { 
 		Description description = KBParser.parseConcept(descriptionKBSyntax);
 		return getSparqlQuery( description);
 	}
 	
+	/**
+	 * takes a description and transforms it into SPARQL
+	 * @param description
+	 * @return
+	 */
 	public String getSparqlQuery( Description description) { 
 		description.accept(this);
 		expandSubclasses();
@@ -124,7 +137,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		int counter = 0;
 		int index = 0;
 		String var = "";
-		String uri = "";
+		String uriPattern = "";
 		StringBuffer tmp ;
 		StringBuffer filter = new StringBuffer() ;
 		Set<String> subClasses;
@@ -135,13 +148,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 				logger.error("named class was found before, but is not in query any more?? "+nc);
 			}else if(subClasses != null){
 				var = "?expanded"+counter;
-				uri = "<"+nc+">";
+				uriPattern = "<"+nc+">";
 				tmp = new StringBuffer();
 				tmp.append(query.substring(0, index));
 				tmp.append(var);
-				tmp.append(query.substring(index+(uri.length())));
+				tmp.append(query.substring(index+(uriPattern.length())));
 				query = tmp.toString();
-				filter.append(makeFilter(var, subClasses));
+				filter.append(makeFilter(var, subClasses, nc));
 			}else{
 				logger.debug("no mapping found ("+nc+")  "+this.getClass().getSimpleName());
 			}
@@ -151,14 +164,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		query += filter.toString();
 	}
 	
-	private String makeFilter(String var, Set<String> classes){
+	private String makeFilter(String var, Set<String> classes, String superClassUri){
 		StringBuffer buf = new StringBuffer("\nFILTER ( "+var+" IN ( ");
-		int i = 0;
 		for (String string : classes) {
-			buf.append((i==0)?"<"+string+">":",<"+string+">");
-			i++;
+			buf.append("<"+string+">, ");
 		}
-		buf.append(" ) ). ");
+		buf.append("<"+superClassUri+"> ) ). ");
 		return buf.toString();
 	}
 	
@@ -178,6 +189,9 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		return (distinct)?"DISTINCT ":"";
 	}
 
+	/**
+	 * @param limit <= 0 means no limit
+	 */
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
@@ -186,19 +200,36 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		this.limit = -1;
 	}
 
+	/**
+	 * also retrieve labels (untested)
+	 * 
+	 * @param labels
+	 */
 	public void setLabels(boolean labels) {
 		this.labels = labels;
 	}
 
+	/**
+	 * result is distinct
+	 * @param distinct
+	 */
 	public void setDistinct(boolean distinct) {
 		this.distinct = distinct;
 	}
 	
+	/**
+	 * virtuoso optimisation for transitive properties
+	 * @param transitiveProperties
+	 */
 	public void setTransitiveProperties(SortedSet<String> transitiveProperties) {
 		this.transitiveProperties = transitiveProperties;
 	}
 	
 
+	/**
+	 * needed for expanding subclasses, if store does no reasoning
+	 * @param subclassMap
+	 */
 	public void setSubclassMap(Map<String, Set<String>> subclassMap) {
 		this.subclassMap = subclassMap;
 	}
@@ -237,6 +268,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 * @param maxDepth
 	 * @throws ParseException
 	 */
+	
 	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int resultLimit,
 			SPARQLTasks st, int maxDepth) throws ParseException {
 		String rewritten = SparqlQueryDescriptionConvertRDFS
