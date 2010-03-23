@@ -218,12 +218,19 @@ public class SparqlQuery {
 	 *            the String to log
 	 */
 	private static void writeToSparqlLog(String s) {
+		File f = new File(sparqlLog);
+		if(!f.canWrite() ){
+			logger.info("could not write SPARQL log to : "+sparqlLog);
+			return ;
+		}	
+		
 		if (!logDeletedOnStart) {
-			Files.createFile(new File(sparqlLog), s + "\n");
-			logDeletedOnStart = true;
-		} else {
-			Files.appendFile(new File(sparqlLog), s + "\n");
-		}
+				Files.createFile(f, s + "\n");
+				logDeletedOnStart = true;
+			} else {
+				Files.appendFile(f, s + "\n");
+			}
+		
 	}
 
 	/**
