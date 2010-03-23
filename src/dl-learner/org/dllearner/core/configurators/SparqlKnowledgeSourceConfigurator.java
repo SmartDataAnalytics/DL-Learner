@@ -85,6 +85,15 @@ public boolean getUseCache() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useCache") ;
 }
 /**
+* useCacheDatabase If true, H2 database is used, otherwise one file per query is written..
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getUseCacheDatabase() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useCacheDatabase") ;
+}
+/**
 * instances relevant instances e.g. positive and negative examples in a learning problem.
 * mandatory: true| reinit necessary: true
 * default value: null
@@ -297,6 +306,15 @@ reinitNecessary = true;
 **/
 public void setUseCache(boolean useCache) {
 ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useCache", useCache);
+reinitNecessary = true;
+}
+/**
+* @param useCacheDatabase If true, H2 database is used, otherwise one file per query is written..
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setUseCacheDatabase(boolean useCacheDatabase) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useCacheDatabase", useCacheDatabase);
 reinitNecessary = true;
 }
 /**

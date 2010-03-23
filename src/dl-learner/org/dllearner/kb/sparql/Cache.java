@@ -129,7 +129,10 @@ public class Cache implements Serializable {
 	 *            Where the base path to the cache is .
 	 */
 	public Cache(String cacheDir) {
-		
+		this(cacheDir, false);
+	}
+
+	public Cache(String cacheDir, boolean useDatabase) {
 		this.cacheDir = cacheDir + File.separator;
 		if (!new File(cacheDir).exists()) {
 			Files.mkdir(cacheDir);
@@ -138,9 +141,9 @@ public class Cache implements Serializable {
 		
 		if(useDatabase) {
 			h2 = new ExtractionDBCache();
-		}
+		}		
 	}
-
+	
 	// compute md5-hash
 	private String getHash(String string) {
 		Monitor hashTime = JamonMonitorLogger.getTimeMonitor(Cache.class, "HashTime").start();

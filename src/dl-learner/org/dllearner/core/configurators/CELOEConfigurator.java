@@ -202,7 +202,7 @@ public boolean getInstanceBasedDisjoints() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "instanceBasedDisjoints") ;
 }
 /**
-* filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base..
+* filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions..
 * mandatory: false| reinit necessary: true
 * default value: false
 * @return boolean 
@@ -365,7 +365,7 @@ ComponentManager.getInstance().applyConfigEntry(cELOE, "instanceBasedDisjoints",
 reinitNecessary = true;
 }
 /**
-* @param filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base..
+* @param filterDescriptionsFollowingFromKB If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions..
 * mandatory: false| reinit necessary: true
 * default value: false
 **/
