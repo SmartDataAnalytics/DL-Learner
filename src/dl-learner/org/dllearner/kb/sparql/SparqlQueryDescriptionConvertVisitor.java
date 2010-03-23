@@ -123,15 +123,23 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		description.accept(this);
 		expandSubclasses();
 		String ret =  "";
-		String customFilterTmp = (customFilter==null)?"":customFilter.trim();
-		
+		String customFilterTmp = pointalize(customFilter);
+		query = pointalize(query);
 		if(count){
-			ret = "SELECT  count(distinct(?subject)) as ?count { "+ query + " \n "+customFilterTmp+"\n } " ;
+			ret = "SELECT  count(distinct(?subject)) as ?count { "+ query + " \n"+customFilterTmp+" \n } " ;
 		}else{
-			ret = "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n "+customFilterTmp+"\n } " + limit();
+			ret = "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n"+customFilterTmp+"\n } " + limit();
 		}
 		reset();
 		return ret;
+	}
+	
+	
+	private static String pointalize(String toBePointed){
+		if(toBePointed==null){
+			return "";
+		}
+		return (toBePointed.trim().endsWith("."))?toBePointed:toBePointed+" . ";
 	}
 	
 	private void expandSubclasses(){
