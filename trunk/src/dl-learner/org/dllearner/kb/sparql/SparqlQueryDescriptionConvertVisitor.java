@@ -78,6 +78,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	private boolean labels = false;
 	private boolean distinct = false;
 	private boolean count = false;
+	private String customFilter = null;
+	
 	
 	private SortedSet<String> transitiveProperties =null;
 	private Map<String,Set<String>> subclassMap = null;
@@ -121,10 +123,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		description.accept(this);
 		expandSubclasses();
 		String ret =  "";
+		String customFilterTmp = (customFilter==null)?"":customFilter.trim();
+		
 		if(count){
-			ret = "SELECT  count(distinct(?subject)) as ?count { "+ query + " \n } " ;
+			ret = "SELECT  count(distinct(?subject)) as ?count { "+ query + " \n "+customFilterTmp+"\n } " ;
 		}else{
-			ret = "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n } " + limit();
+			ret = "SELECT "+distinct()+"?subject "+((labels)?"?label":"")+" { "+labels()+ query + " \n "+customFilterTmp+"\n } " + limit();
 		}
 		reset();
 		return ret;
@@ -240,6 +244,10 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	
 	public void setOffset(int offset) {
 		this.offset = offset;
+	}
+
+	public void setCustomFilter(String customFilter) {
+		this.customFilter = customFilter;
 	}
 
 	public static String getSparqlQuery(String descriptionKBSyntax, int limit, boolean labels, boolean distinct) throws ParseException {
