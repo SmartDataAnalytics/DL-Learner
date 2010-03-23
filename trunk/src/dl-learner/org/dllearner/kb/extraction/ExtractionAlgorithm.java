@@ -243,7 +243,7 @@ public class ExtractionAlgorithm {
 				i++;
 			}//endouterif
 			else {
-				logger.trace("" + next+"  in cache skipping");
+				logger.trace("" + next+"  in mem cache skipping");
 			}
 
 		}//endwhile
