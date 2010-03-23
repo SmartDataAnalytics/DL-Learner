@@ -134,12 +134,13 @@ public class Cache implements Serializable {
 
 	public Cache(String cacheDir, boolean useDatabase) {
 		this.cacheDir = cacheDir + File.separator;
+		this.useDatabase = useDatabase;
 		if (!new File(cacheDir).exists()) {
 			Files.mkdir(cacheDir);
 			logger.info("Created directory: " + cacheDir + ".");
 		}
 		
-		if(useDatabase) {
+		if(this.useDatabase) {
 			h2 = new ExtractionDBCache(cacheDir);
 		}		
 	}
