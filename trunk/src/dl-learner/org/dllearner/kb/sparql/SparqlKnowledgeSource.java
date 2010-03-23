@@ -142,6 +142,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				false, true));
 		options.add(new BooleanConfigOption("useCache",
 				"If true a Cache is used", true, false, true));
+		options.add(new BooleanConfigOption("useCacheDatabase", "If true, H2 database is used, otherwise one file per query is written.", false));
 		options
 				.add(new StringSetConfigOption(
 						"instances",
@@ -414,7 +415,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// get Options for endpoints
 		
 		if (configurator.getUseCache()){
-			return new SPARQLTasks(new Cache(configurator.getCacheDir()),
+			return new SPARQLTasks(new Cache(configurator.getCacheDir(), configurator.getUseCacheDatabase()),
 					getSparqlEndpoint());
 		}else {
 			return new SPARQLTasks(getSparqlEndpoint());
