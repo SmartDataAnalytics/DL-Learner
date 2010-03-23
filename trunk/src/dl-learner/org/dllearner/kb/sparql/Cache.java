@@ -140,7 +140,7 @@ public class Cache implements Serializable {
 		}
 		
 		if(useDatabase) {
-			h2 = new ExtractionDBCache();
+			h2 = new ExtractionDBCache(cacheDir);
 		}		
 	}
 	

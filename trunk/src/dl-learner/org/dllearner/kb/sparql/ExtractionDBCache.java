@@ -62,7 +62,8 @@ public class ExtractionDBCache {
 	
 	MessageDigest md5;
 	
-	public ExtractionDBCache() {
+	public ExtractionDBCache(String cacheDir) {
+		databaseDirectory = cacheDir;
 		try {
 		md5 = MessageDigest.getInstance("MD5");
 		
@@ -209,7 +210,7 @@ public class ExtractionDBCache {
 		String query = "CONSTRUCT { <"+resource+"> ?p ?o } WHERE { <"+resource+"> ?p ?o }"; 
 		System.out.println("query: " + query);
 		
-		ExtractionDBCache h2 = new ExtractionDBCache(); 
+		ExtractionDBCache h2 = new ExtractionDBCache("cache"); 
 		long startTime = System.nanoTime();
 		Model m = h2.executeConstructQuery(endpoint, query);
 		for(int i=0; i<1000; i++) {
