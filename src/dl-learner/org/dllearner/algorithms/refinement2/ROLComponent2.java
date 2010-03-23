@@ -93,7 +93,8 @@ public class ROLComponent2 extends LearningAlgorithm {
 	private static Logger logger = Logger
 		.getLogger(ROLComponent2.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
-		
+	RhoDRDown operator;	
+
 	// configuration options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
@@ -377,7 +378,8 @@ public class ROLComponent2 extends LearningAlgorithm {
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
-		RhoDRDown operator = new RhoDRDown(
+//		RhoDRDown 
+		operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
 				configurator,
@@ -494,4 +496,7 @@ public class ROLComponent2 extends LearningAlgorithm {
 		return algorithm.isRunning();
 	}
 	
+	public RhoDRDown getRefinementOperator() {
+		return operator;
+	}
 }
