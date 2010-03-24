@@ -36,8 +36,8 @@ public class OWLAPITests {
 	@Test
 	public void testManchesterSyntaxParser() throws ParserException {
 //		String s = "BIGPROP SOME smallclass";
-//		String s = "http://test.de/prop some http://test.de/Class";
-		String s = "http://test.de/Class";
+//		String s = "<http://test.de/prop> some <http://test.de/Class>";
+		String s = "<http://test.de/Class>";
 		Description d = ManchesterOWLSyntaxParser.getDescription(s);
 		System.out.println(d);
 	}
