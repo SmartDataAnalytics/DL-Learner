@@ -88,6 +88,14 @@ public final class OWLAPIConverter {
 		return staticFactory.getOWLIndividual(URI.create(individual.getName()));
 	}	
 	
+	public static Set<OWLIndividual> getOWLAPIIndividuals(Set<Individual> individuals) {
+		Set<OWLIndividual> inds = new TreeSet<OWLIndividual>();
+		for(Individual individual : individuals) {
+			inds.add(getOWLAPIIndividual(individual));
+		}
+		return inds;
+	}	
+	
 	public static OWLObjectProperty getOWLAPIObjectProperty(ObjectProperty role) {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
 	}
