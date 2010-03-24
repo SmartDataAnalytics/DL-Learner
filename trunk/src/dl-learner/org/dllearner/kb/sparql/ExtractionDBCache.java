@@ -54,6 +54,7 @@ public class ExtractionDBCache {
 
 	private String databaseDirectory = "cache";
 	private String databaseName = "extraction";
+	private boolean autoServerMode = true;
 	
 	// specifies after how many seconds a cached result becomes invalid
 	private long freshnessSeconds = 15 * 24 * 60 * 60; // 15 days	
@@ -70,8 +71,13 @@ public class ExtractionDBCache {
 		// load driver
 		Class.forName("org.h2.Driver");
 		
+		String jdbcString = "";
+		if(autoServerMode) {
+			jdbcString = ";AUTO_SERVER=TRUE";
+		}
+		
 		// connect to database (created automatically if not existing)
-        conn = DriverManager.getConnection("jdbc:h2:"+databaseDirectory+"/"+databaseName, "sa", "");
+        conn = DriverManager.getConnection("jdbc:h2:"+databaseDirectory+"/"+databaseName+jdbcString, "sa", "");
 
         // create cache table if it does not exist
         Statement stmt = conn.createStatement();
