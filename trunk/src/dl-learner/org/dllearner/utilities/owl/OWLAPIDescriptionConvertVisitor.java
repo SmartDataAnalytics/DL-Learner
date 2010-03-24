@@ -44,6 +44,7 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectOneOf;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
@@ -359,5 +360,11 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 			}
 		}
 		return owlConstant;
+	}
+
+	@Override
+	public void visit(ObjectOneOf description) {
+		stack.push(factory.getOWLObjectOneOf(OWLAPIConverter.getOWLAPIIndividuals(description.getIndividuals())));
+		
 	}
 }

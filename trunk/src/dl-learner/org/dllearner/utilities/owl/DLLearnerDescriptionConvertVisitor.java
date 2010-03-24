@@ -19,6 +19,7 @@ import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectOneOf;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectSomeRestriction;
@@ -163,8 +164,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLDescriptionVisitor
 
 	@Override
 	public void visit(OWLObjectOneOf description) {
-		// TODO Auto-generated method stub
-		
+		stack.push(new ObjectOneOf(OWLAPIConverter.convertIndividuals(description.getIndividuals())));
 	}
 
 	@Override

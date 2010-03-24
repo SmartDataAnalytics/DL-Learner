@@ -50,6 +50,7 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectOneOf;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
@@ -623,6 +624,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	 */
 	public void visit(DatatypeSomeRestriction description) {
 		logger.trace("DatatypeSomeRestriction");
+	}
+
+	@Override
+	public void visit(ObjectOneOf description) {
+		logger.trace("ObjectOneOf");
+		
 	}
 
 	

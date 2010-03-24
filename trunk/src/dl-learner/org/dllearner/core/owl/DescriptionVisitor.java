@@ -51,6 +51,8 @@ public interface DescriptionVisitor {
 	
 	public void visit(Union description);	
 	
+	public void visit(ObjectOneOf description);	
+	
 	public void visit(ObjectMinCardinalityRestriction description);
 	
 	public void visit(ObjectExactCardinalityRestriction description);
