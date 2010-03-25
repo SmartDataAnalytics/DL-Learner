@@ -253,7 +253,9 @@ Description Concept() :
 	NamedClass ac;
 	ObjectProperty ar;
 	DatatypeProperty dp;
+	ObjectProperty op;
 	String s;
+	Individual ind;
 	int i;
 }
 {
@@ -288,6 +290,7 @@ Description Concept() :
   	{return new ObjectMaxCardinalityRestriction(i,ar,c);}
   | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "TRUE" ")" { return new BooleanValueRestriction(dp, true); }
   | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "FALSE" ")" { return new BooleanValueRestriction(dp, false); }
+  | LOOKAHEAD(4) "(" op=ObjectProperty() "HASVALUE" ind=Individual() ")" { return new ObjectValueRestriction(op, ind); }
   | "(" dp=DatatypeProperty() "STRINGVALUE" s=String() ")" { return new StringValueRestriction(dp, s); }    	
 }
 

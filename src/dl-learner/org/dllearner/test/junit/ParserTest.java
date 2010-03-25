@@ -35,7 +35,8 @@ public class ParserTest {
 
 	@Test
 	public void KBParserTest() throws ParseException {
-		String test = "(\"Sentence\" AND (EXISTS \"syntaxTreeHasPart\".\"VVPP\" AND EXISTS \"syntaxTreeHasPart\".(\"stts:AuxilliaryVerb\" AND (\"hasLemma\" STRINGVALUE \"werden\"))))";
+//		String test = "(\"Sentence\" AND (EXISTS \"syntaxTreeHasPart\".\"VVPP\" AND EXISTS \"syntaxTreeHasPart\".(\"stts:AuxilliaryVerb\" AND (\"hasLemma\" STRINGVALUE \"werden\"))))";
+		String test = "(someproperty HASVALUE someindividual)";
 		Description d = KBParser.parseConcept(test);
 		System.out.println(d.toKBSyntaxString("http://localhost/foo#", null));
 		Description d2 = KBParser.parseConcept(d.toKBSyntaxString());
