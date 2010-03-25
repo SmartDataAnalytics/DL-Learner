@@ -73,7 +73,7 @@ public class ObjectValueRestriction extends ValueRestriction {
 	}	
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " hasValue " + value.toKBSyntaxString(baseURI, prefixes);
+		return "(" + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " HASVALUE " + value.toKBSyntaxString(baseURI, prefixes) + ")";
 	}	
 	
 	public Individual getIndividual() {

@@ -101,6 +101,7 @@ public interface KBParserConstants {
     "\"IS\"",
     "\"TRUE\"",
     "\"FALSE\"",
+    "\"HASVALUE\"",
     "\"STRINGVALUE\"",
   };
 
