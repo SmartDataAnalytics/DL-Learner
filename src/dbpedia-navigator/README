@@ -37,6 +37,10 @@ according to your system, i.e. set the database connection.
   "dbpedia-ontology-schema.nt", "dbpedia-ontology-types.nt"
 - execute org.dllearner.scripts.CalculatePageRank
 
+4. Install PHP PEAR classes
+- install PHP PEAR
+- install package SOAP
+
 Now you can use DBpedia Navigator by starting the DL-Learner web service and the calling the
 DBpedia Navigator in your browser.
 
