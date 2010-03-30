@@ -71,13 +71,13 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		$this->client->setReasoner($this->id, "fastInstanceChecker");
 		if(empty($negExamples))
-			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
+			$this->client->setLearningProblem($this->id, "posOnlyLP");
 		else
-			$this->client->setLearningProblem($this->id, "posNegDefinition");
+			$this->client->setLearningProblem($this->id, "posNegLPStandard");
 		$this->client->setPositiveExamples($this->id, $posExamples);
 		if(!empty($negExamples))
 			$this->client->setNegativeExamples($this->id, $negExamples);
-		$algorithmID=$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
+		$algorithmID=$this->client->setLearningAlgorithm($this->id, "refexamples");
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "forceRefinementLengthIncrease", true);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useHasValueConstructor", true);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useCardinalityRestrictions", false);
