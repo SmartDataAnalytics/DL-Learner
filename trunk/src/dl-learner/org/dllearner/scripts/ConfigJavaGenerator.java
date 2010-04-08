@@ -39,6 +39,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
+import org.dllearner.core.configurators.ISLEConfigurator;
 import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
@@ -68,6 +69,7 @@ public final class ConfigJavaGenerator {
 				ROLearnerConfigurator.class.getSimpleName(),
 				ROLComponent2Configurator.class.getSimpleName(),
 				CELOEConfigurator.class.getSimpleName(),
+				ISLEConfigurator.class.getSimpleName()
 				}));
 	
 	@SuppressWarnings("unchecked")

@@ -28,6 +28,7 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.isle.ISLE;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.KnowledgeSource;
@@ -223,6 +224,16 @@ return ELLearningAlgorithmDisjunctiveConfigurator.getELLearningAlgorithmDisjunct
 **/
 public static GP getGP(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return GPConfigurator.getGP(learningProblem, reasoningService);
+}
+
+/**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization ISLE
+**/
+public static ISLE getISLE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return ISLEConfigurator.getISLE(learningProblem, reasoningService);
 }
 
 /**
