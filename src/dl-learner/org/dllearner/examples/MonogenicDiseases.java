@@ -74,6 +74,7 @@ public class MonogenicDiseases {
 		Preferences prefs = new IniFile(new File(iniFile));
 		String dbServer = prefs.node("database").get("server", null);
 		String dbName = prefs.node("database").get("db", null);
+		String dbPort = prefs.node("database").get("port", null);
 		String dbUser = prefs.node("database").get("user", null);
 		String dbPass = prefs.node("database").get("pass", null);
 		String table = prefs.node("database").get("table", null);
@@ -83,10 +84,10 @@ public class MonogenicDiseases {
 		if(pgSQL) {
 			Class.forName("org.postgresql.Driver");
 			// adapt the port if necessary
-			url += "postgresql://"+dbServer+":5433/"+dbName;
+			url += "postgresql://"+dbServer+":"+dbPort+"/"+dbName;
 		} else {
 			Class.forName("com.mysql.jdbc.Driver");
-			url += "mysql://"+dbServer+":3306/"+dbName;
+			url += "mysql://"+dbServer+":"+dbPort+"/"+dbName;
 		}
 		Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
 		System.out.println("Successfully connected to database.");
