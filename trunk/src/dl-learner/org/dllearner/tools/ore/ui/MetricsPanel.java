@@ -16,15 +16,15 @@ import javax.swing.border.TitledBorder;
 import org.dllearner.tools.ore.OREManager;
 import org.protege.editor.core.PropertyUtil;
 import org.protege.editor.core.ProtegeProperties;
-import org.semanticweb.owl.metrics.DLExpressivity;
-import org.semanticweb.owl.metrics.OWLMetric;
-import org.semanticweb.owl.metrics.OWLMetricManager;
-import org.semanticweb.owl.metrics.ReferencedClassCount;
-import org.semanticweb.owl.metrics.ReferencedDataPropertyCount;
-import org.semanticweb.owl.metrics.ReferencedIndividualCount;
-import org.semanticweb.owl.metrics.ReferencedObjectPropertyCount;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.metrics.DLExpressivity;
+import org.semanticweb.owlapi.metrics.OWLMetric;
+import org.semanticweb.owlapi.metrics.OWLMetricManager;
+import org.semanticweb.owlapi.metrics.ReferencedClassCount;
+import org.semanticweb.owlapi.metrics.ReferencedDataPropertyCount;
+import org.semanticweb.owlapi.metrics.ReferencedIndividualCount;
+import org.semanticweb.owlapi.metrics.ReferencedObjectPropertyCount;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Author: Matthew Horridge<br>
@@ -110,7 +110,7 @@ public class MetricsPanel extends JPanel {
 		}
 		createUI();
 
-		TitledBorder border = new TitledBorder(activeOntology.getURI().toString() + " successfully loaded");
+		TitledBorder border = new TitledBorder(activeOntology.getOntologyID().toString() + " successfully loaded");
 		border.setTitleFont(getFont().deriveFont(Font.BOLD, 12.0f));
 		border.setTitleColor(PropertyUtil.getColor(ProtegeProperties.getInstance().getProperty(
 				ProtegeProperties.PROPERTY_COLOR_KEY), Color.GRAY));

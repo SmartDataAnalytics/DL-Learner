@@ -41,7 +41,7 @@ import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.RepairDialog;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.RepairPanel;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 
 
@@ -97,7 +97,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void aboutToDisplayPanel() {
     	getWizard().getInformationField().setText(INFORMATION);
     	OREManager oreMan = OREManager.getInstance();
-    	repairPanel.setClassToDescribe(oreMan.getManchesterSyntaxRendering(oreMan.getCurrentClass2Learn()));
+    	repairPanel.setClassToDescribe(oreMan.getManchesterSyntaxRendering(LearningManager.getInstance().getCurrentClass2Describe()));
     }
     
     /**
@@ -133,7 +133,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 							repairPanel.getNegFailureTable().removeIndividual(ind);
 						}
 					} else if(event.getActionCommand().equals("negAdd")){
-						ontologyChanges.addAll(modi.addClassAssertion(ind, OREManager.getInstance().getCurrentClass2Learn()));
+						ontologyChanges.addAll(modi.addClassAssertion(ind, LearningManager.getInstance().getCurrentClass2Describe()));
 						repairPanel.getNegFailureTable().removeIndividual(ind);
 						
 					} else if(event.getActionCommand().equals("negDelete")){
@@ -153,7 +153,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 						repairPanel.getPosFailureTable().removeIndividual(ind);
 					}
 				} else if(event.getActionCommand().equals("posRemove")){
-					ontologyChanges.addAll(modi.addClassAssertion(ind, OREManager.getInstance().getCurrentClass2Learn()));
+					ontologyChanges.addAll(modi.addClassAssertion(ind, LearningManager.getInstance().getCurrentClass2Describe()));
 					repairPanel.getPosFailureTable().removeIndividual(ind);
 					
 				} else if(event.getActionCommand().equals("posDelete")){

@@ -61,7 +61,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;

@@ -16,11 +16,11 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 public class ImpactTableModel extends AbstractTableModel implements ImpactManagerListener, RepairManagerListener
 {

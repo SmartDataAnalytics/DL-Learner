@@ -19,7 +19,7 @@ public class ParserUtil {
                                                 ex.getExpectedKeywords());
     }
     
-    public static OWLExpressionParserException convertException(org.semanticweb.owl.expression.ParserException ex) {
+    public static OWLExpressionParserException convertException(org.semanticweb.owlapi.expression.ParserException ex) {
         int endPos = ex.getStartPos() + ex.getCurrentToken().length();
         if (ex.getCurrentToken().equals("<EOF>")){
             endPos = ex.getStartPos(); // because start + length of <EOF> would push us past the end of the document

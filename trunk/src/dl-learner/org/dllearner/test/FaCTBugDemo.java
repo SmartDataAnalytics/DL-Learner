@@ -1,50 +1,55 @@
 package org.dllearner.test;
 
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
 
-import java.net.URI;
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
-import java.io.File;
+
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+
+import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 
 public class FaCTBugDemo {
 
     public static void main(String[] args) {
 
         try {
-        	URI uri = new File("examples/father.owl").toURI();
+        	IRI uri = IRI.create(new File("examples/father.owl").toURI());
         	
             // Create our ontology manager in the usual way.
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
             // Load a copy of the pizza ontology.  We'll load the ontology from the web.
-            OWLOntology ont = manager.loadOntologyFromPhysicalURI(uri);
+            OWLOntology ont = manager.loadOntologyFromOntologyDocument(uri);
 
-            OWLReasoner reasoner = new uk.ac.manchester.cs.factplusplus.owlapi.Reasoner(manager);
-            // OWLReasoner reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
+            OWLReasoner reasoner = new FaCTPlusPlusReasonerFactory().createReasoner(ont);
+            // OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ont);:
 
-            // seems to be needed for some reason although no ontology is imported
-            Set<OWLOntology> importsClosure = manager.getImportsClosure(ont);
-            reasoner.loadOntologies(importsClosure);
-
-            reasoner.classify();
-            reasoner.realise();
+           reasoner.prepareReasoner();
             
             OWLDataFactory factory = manager.getOWLDataFactory();
             
-            OWLClass male = factory.getOWLClass(URI.create("http://example.com/father#male"));
-            OWLObjectProperty hasChild = factory.getOWLObjectProperty(URI.create("http://example.com/father#hasChild"));
-            OWLObjectSomeRestriction hasSomeChild = factory.getOWLObjectSomeRestriction(hasChild, factory.getOWLThing());
-            Set<OWLDescription> set = new HashSet<OWLDescription>();
+            OWLClass male = factory.getOWLClass(IRI.create("http://example.com/father#male"));
+            OWLObjectProperty hasChild = factory.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild"));
+            OWLObjectSomeValuesFrom hasSomeChild = factory.getOWLObjectSomeValuesFrom(hasChild, factory.getOWLThing());
+            Set<OWLClassExpression> set = new HashSet<OWLClassExpression>();
             set.add(male);
             set.add(hasSomeChild);
-            OWLDescription father = factory.getOWLObjectIntersectionOf(set);
-            OWLIndividual martin = factory.getOWLIndividual(URI.create("http://example.com/father#martin"));
+            OWLClassExpression father = factory.getOWLObjectIntersectionOf(set);
+            OWLNamedIndividual martin = factory.getOWLNamedIndividual(IRI.create("http://example.com/father#martin"));
             
-            if(reasoner.hasType(martin, father, false))
+            if(reasoner.isEntailed(factory.getOWLClassAssertionAxiom(father, martin))) 
             	System.out.println("positive result"); // Pellet 1.5.1 (correct) 
             else
             	System.out.println("negative result"); // FaCT++ 1.10
@@ -52,9 +57,6 @@ public class FaCTBugDemo {
         }
         catch(UnsupportedOperationException exception) {
             System.out.println("Unsupported reasoner operation.");
-        }
-        catch(OWLReasonerException ex) {
-            System.out.println("Reasoner error: " + ex.getMessage());
         }
         catch (OWLOntologyCreationException e) {
             System.out.println("Could not load the pizza ontology: " + e.getMessage());

@@ -28,8 +28,9 @@ import javax.swing.text.StyleConstants;
 import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.rendering.KeywordColorMap;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLObject;
 
 
 /**
@@ -160,7 +161,7 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
     }
 
 
-    public O createObject() throws OWLException {
+    public O createObject() throws ParserException{
         return expressionChecker.createObject(getText());
     }
 
@@ -191,10 +192,9 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
         try {
             expressionChecker.check(getText());
             return true;
-        }
-        catch (OWLException e) {
-            return false;
-        }
+        } catch (ParserException e) {
+        	 return false;
+		}
     }
 
 
@@ -206,7 +206,7 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
             expressionChecker.check(getText());
             setError(null);
         }
-        catch (OWLExpressionParserException e) {
+        catch (ParserException e) {
             setError(e);
         }
         catch (Throwable e) {
@@ -229,7 +229,7 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
     }
 
 
-    private void setError(OWLExpressionParserException e) {
+    private void setError(ParserException e) {
         logger.debug("Set error " + e);
         notifyValidationChanged(e == null);
         if (e != null) {
@@ -237,7 +237,7 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
             ToolTipManager.sharedInstance().setDismissDelay(ERROR_TOOL_TIP_DISMISS_DELAY);
             setToolTipText(getHTMLErrorMessage(e.getMessage()));
             setStateBorder(errorBorder);
-            setErrorRange(e.getStartIndex(), e.getEndIndex());
+            setErrorRange(e.getStartPos(), e.getStartPos() + e.getCurrentToken().length());
         }
         else {
             clearError();

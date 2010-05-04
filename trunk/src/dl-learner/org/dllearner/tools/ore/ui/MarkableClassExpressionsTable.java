@@ -11,7 +11,6 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.dllearner.tools.ore.OREApplication;
-import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.rendering.ProgressBarTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 

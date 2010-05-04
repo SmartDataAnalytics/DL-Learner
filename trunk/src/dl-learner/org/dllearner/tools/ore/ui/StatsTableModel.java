@@ -6,8 +6,8 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 public class StatsTableModel extends AbstractTableModel {
 	

@@ -8,11 +8,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.tools.ore.explanation.LostEntailmentsChecker;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 
 public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	
@@ -22,7 +23,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	private List<ImpactManagerListener> listeners;
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
-	private Reasoner reasoner;
+	private PelletReasoner reasoner;
 	private OREManager oreMan;
 	
 	private Set<OWLAxiom> lostEntailments;
@@ -35,7 +36,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	private ImpactManager(OREManager oreMan) {
 		this.oreMan = oreMan;
 		this.reasoner = oreMan.getReasoner().getReasoner();
-		this.ontology = reasoner.getLoadedOntologies().iterator().next();
+		this.ontology = reasoner.getRootOntology();
 		this.manager = reasoner.getManager();
 		
 		lostEntailments = new HashSet<OWLAxiom>();
@@ -147,7 +148,7 @@ public class ImpactManager implements RepairManagerListener, OREManagerListener{
 	@Override
 	public void activeOntologyChanged() {
 		this.reasoner = oreMan.getReasoner().getReasoner();
-		this.ontology = reasoner.getLoadedOntologies().iterator().next();
+		this.ontology = reasoner.getRootOntology();
 		this.manager = reasoner.getManager();
 		lostEntailmentsChecker = new LostEntailmentsChecker(ontology, oreMan.getReasoner().getClassifier(), manager);
 		selectedAxioms.clear();

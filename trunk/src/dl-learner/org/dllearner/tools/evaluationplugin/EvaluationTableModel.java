@@ -52,7 +52,7 @@ public class EvaluationTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0){
-			return OWLAPIDescriptionConvertVisitor.getOWLDescription(descriptions.get(rowIndex).getDescription());
+			return OWLAPIDescriptionConvertVisitor.getOWLClassExpression(descriptions.get(rowIndex).getDescription());
 		} else {
 			return Boolean.valueOf(selected.get(rowIndex) == columnIndex);
 		}

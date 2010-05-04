@@ -10,39 +10,39 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
 
-import com.clarkparsia.explanation.io.manchester.Keyword;
+import com.clarkparsia.owlapi.explanation.io.manchester.Keyword;
 
 public class ManchesterSyntaxRenderer {
 	
-	static private ManchesterRenderer renderer = new ManchesterRenderer(OREManager.getInstance().getReasoner().getOWLOntologyManager());
+	static private ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 
 	
 	public static String render(Description value){
-		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
+		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression((Description)value);
 		return render(desc);
 	}
 	
 	public static String renderSimple(OWLAxiom ax){	
-		String renderedString = renderer.render(ax, null);
+		String renderedString = renderer.render(ax);
 		return renderedString;
 	}
 	
 	public static String renderSimple(Description value){
-		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
-		String renderedString = renderer.render(desc, null);
+		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression((Description)value);
+		String renderedString = renderer.render(desc);
 		return renderedString;
 	}
 	
 	public static String renderSimple(Individual value){	
 		OWLIndividual ind = OWLAPIConverter.getOWLAPIIndividual(value);
-		String renderedString = renderer.render(ind, null);
+		String renderedString = renderer.render(ind);
 		return renderedString;
 	}
 	
@@ -114,7 +114,7 @@ public class ManchesterSyntaxRenderer {
 	
 	public static String render(OWLAxiom value, boolean removed, int depth, Explanation explanation){
 		
-		String renderedString = renderer.render(value, null);
+		String renderedString = renderer.render(value);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		StringBuffer bf = new StringBuffer();
 		
@@ -187,7 +187,7 @@ public class ManchesterSyntaxRenderer {
 	}
 	
 	private static String render(OWLObject obj){
-		String renderedString = renderer.render(obj, null);
+		String renderedString = renderer.render(obj);
 		StringTokenizer st = new StringTokenizer(renderedString);
 		
 		StringBuffer bf = new StringBuffer();

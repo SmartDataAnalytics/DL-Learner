@@ -22,7 +22,7 @@ package org.dllearner.tools.protege;
 import java.awt.geom.Ellipse2D;
 
 import org.dllearner.core.owl.Individual;
-import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * This class is a datastructure for one individual shown in

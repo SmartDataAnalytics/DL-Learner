@@ -18,12 +18,12 @@
 package org.dllearner.scripts;
 
 import java.io.File;
-import java.net.URI;
 
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.io.RDFXMLOntologyFormat;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 public class NT2RDF {
 
@@ -46,20 +46,20 @@ public class NT2RDF {
 	public static void convertNT2RDF(String ontopath) {
 
 		try {
-			URI inputURI = new File(ontopath).toURI();
-			System.out.println(inputURI);
+			IRI inputIRI = IRI.create(new File(ontopath));
+			System.out.println(inputIRI);
 			// outputURI
 			String ending = ontopath.substring(ontopath.lastIndexOf(".") + 1);
 			System.out.println(ending);
 			ontopath = ontopath.replace("." + ending, ".rdf");
-			URI outputURI = new File(ontopath).toURI();
+			IRI outputIRI = IRI.create(new File(ontopath));
 
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(inputURI);
-			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), outputURI);
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(inputIRI);
+			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), outputIRI);
 			// manager.saveOntology(ontology, new NTriple(), outputURI);
 			// Remove the ontology from the manager
-			manager.removeOntology(ontology.getURI());
+			manager.removeOntology(ontology);
 		} catch (Exception e) {
 			System.out.println("The ontology could not be created: " + e.getMessage());
 			e.printStackTrace();

@@ -9,7 +9,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public class SuggestionsTableModel extends AbstractTableModel {
 	
@@ -54,7 +54,7 @@ public class SuggestionsTableModel extends AbstractTableModel {
 			}break;
 		case 2:
 			return OWLAPIDescriptionConvertVisitor
-					.getOWLDescription(suggestionList.get(rowIndex)
+					.getOWLClassExpression(suggestionList.get(rowIndex)
 							.getDescription());
 		}
 		return null;
@@ -69,7 +69,7 @@ public class SuggestionsTableModel extends AbstractTableModel {
 		case 1:
 			return Icon.class;
 		case 2:
-			return OWLDescription.class;
+			return OWLClassExpression.class;
 		}
 		return null;
 	}

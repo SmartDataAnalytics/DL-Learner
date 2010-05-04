@@ -1,25 +1,25 @@
 package org.dllearner.test;
 
 import java.io.File;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLOntologyStorageException;
-import org.semanticweb.owl.model.RemoveAxiom;
-import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class PelletBug {
 
@@ -28,27 +28,23 @@ public class PelletBug {
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		File f = new File("examples/family/father_oe.owl");
-		URI physicalURI = f.toURI();
-		OWLOntology ontology = manager.loadOntologyFromPhysicalURI(physicalURI);
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(f);
 		OWLDataFactory factory = manager.getOWLDataFactory();
 
 		// create a view class expressions and an axiom
 		String ontologyURI = "http://example.com/father#";
-		OWLClass male = factory.getOWLClass(URI.create(ontologyURI + "male"));
-		OWLClass female = factory.getOWLClass(URI.create(ontologyURI + "female"));
-		OWLClass father = factory.getOWLClass(URI.create(ontologyURI + "father"));
-		OWLDescription insat = factory.getOWLObjectIntersectionOf(male, female);
-		OWLDescription test = factory.getOWLObjectComplementOf(male);
+		OWLClass male = factory.getOWLClass(IRI.create(ontologyURI + "male"));
+		OWLClass female = factory.getOWLClass(IRI.create(ontologyURI + "female"));
+		OWLClass father = factory.getOWLClass(IRI.create(ontologyURI + "father"));
+		OWLClassExpression insat = factory.getOWLObjectIntersectionOf(male, female);
+		OWLClassExpression test = factory.getOWLObjectComplementOf(male);
 		OWLAxiom axiom = factory.getOWLEquivalentClassesAxiom(father, test);
 
 		// load ontology
-		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
-		ontologies.add(ontology);
-		OWLReasoner reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
-		reasoner.loadOntologies(ontologies);
+		OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology);
 
 		// first subsumption check => everything runs smoothly
-		boolean result = reasoner.isSubClassOf(female, insat);
+		boolean result = reasoner.isEntailed(factory.getOWLSubClassOfAxiom(female, insat));
 		System.out.println("subsumption before: " + result);
 
 		// add axiom causing the ontology to be inconsistent
@@ -59,11 +55,7 @@ public class PelletBug {
 		}
 
 		// Pellet correctly detects the inconsistency
-		try {
-			System.out.println("consistent: " + reasoner.isConsistent(ontology));
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}
+		System.out.println("consistent: " + reasoner.isConsistent());
 
 		// remove axiom
 		try {
@@ -73,12 +65,12 @@ public class PelletBug {
 		}
 
 		// save file to verify that it remained unchanged (it is unchanged)
-		manager.saveOntology(ontology, new File("test.owl").toURI());
+		manager.saveOntology(ontology, IRI.create(new File("test.owl")));
 
 		// perform subsumption check => Pellet now fails due to an
 		// inconsistency, although the ontology is unchanged from the 
 		// point of view of the OWL API
-		result = reasoner.isSubClassOf(female, insat);
+		result = reasoner.isEntailed(factory.getOWLSubClassOfAxiom(female, insat));
 		System.out.println("subsumption after: " + result);
 
 	}

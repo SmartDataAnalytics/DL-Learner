@@ -2,7 +2,6 @@ package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -22,9 +21,9 @@ import javax.swing.Timer;
 
 import org.dllearner.tools.ore.OREManager;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
-import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
+import com.clarkparsia.owlapi.explanation.util.ExplanationProgressMonitor;
 
 public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationProgressMonitor, PropertyChangeListener {
 	/**

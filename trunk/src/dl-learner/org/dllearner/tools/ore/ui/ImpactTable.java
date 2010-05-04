@@ -24,10 +24,10 @@ import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 public class ImpactTable extends JXTable {
 	
@@ -44,7 +44,6 @@ public class ImpactTable extends JXTable {
 	    setShowHorizontalLines(true);
 	    setGridColor(Color.LIGHT_GRAY);
 	    setTableHeader(null);
-	    setRowHeightEnabled(true);
 	    getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
 	    getColumn(0).setMaxWidth(60);
 	    getColumn(2).setMaxWidth(60);

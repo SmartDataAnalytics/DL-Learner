@@ -7,7 +7,7 @@ import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 public class SimpleExplanationTableModel extends AbstractTableModel {
 

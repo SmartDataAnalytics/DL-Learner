@@ -3,7 +3,7 @@ package org.dllearner.tools.ore.explanation;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 public class Explanation implements Comparable<Explanation> {
 

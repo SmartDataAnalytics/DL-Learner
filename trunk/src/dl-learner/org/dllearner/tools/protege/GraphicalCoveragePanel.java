@@ -33,7 +33,8 @@ import javax.swing.JPanel;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 
 /**
  * This class draws the graphical coverage of a learned concept.
@@ -410,7 +411,7 @@ public class GraphicalCoveragePanel extends JPanel {
 							for(String uri : uriString) {
 								if(ind.toString().contains(uri)) {
 									posCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
 								}
 							}
 							i++;
@@ -458,7 +459,7 @@ public class GraphicalCoveragePanel extends JPanel {
 								for(String uri : uriString) {
 									if(ind.toString().contains(uri)) {
 										posNotCovIndVector.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
 									}
 								}
 							} else {
@@ -466,7 +467,7 @@ public class GraphicalCoveragePanel extends JPanel {
 								for(String uri : uriString) {
 									if(ind.toString().contains(uri)) {
 										additionalIndividuals.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
+												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
 									}
 								}
 							}
@@ -507,7 +508,7 @@ public class GraphicalCoveragePanel extends JPanel {
 							for(String uri : uriString) {
 								if(ind.toString().contains(uri)) {
 									posNotCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLIndividual(ind.getURI()), ind, uri));
+											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
 								}
 							}
 							k++;

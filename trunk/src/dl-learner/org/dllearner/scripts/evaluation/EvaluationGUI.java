@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,11 +75,11 @@ import org.dllearner.tools.ore.ui.ResultTable;
 import org.dllearner.tools.ore.ui.SelectableClassExpressionsTable;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.mindswap.pellet.utils.SetUtils;
-import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
-import com.clarkparsia.explanation.io.manchester.Keyword;
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
-import com.clarkparsia.explanation.io.manchester.TextBlockWriter;
+import com.clarkparsia.owlapi.explanation.io.manchester.Keyword;
+import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
+import com.clarkparsia.owlapi.explanation.io.manchester.TextBlockWriter;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 public class EvaluationGUI extends JFrame implements ActionListener, ListSelectionListener, MouseMotionListener {
@@ -170,8 +169,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 	private String baseURI;
 	private Map<String, String> prefixes;
 
-	private Map<NamedClass, Set<OWLDescription>> assertedEquivalentClasses = new HashMap<NamedClass, Set<OWLDescription>>();
-	private Map<NamedClass, Set<OWLDescription>> assertedSuperClasses = new HashMap<NamedClass, Set<OWLDescription>>();
+	private Map<NamedClass, Set<OWLClassExpression>> assertedEquivalentClasses = new HashMap<NamedClass, Set<OWLClassExpression>>();
+	private Map<NamedClass, Set<OWLClassExpression>> assertedSuperClasses = new HashMap<NamedClass, Set<OWLClassExpression>>();
 
 	
 	private Map<NamedClass, String> selectedEquivalenceMap = new HashMap<NamedClass, String>();
@@ -488,8 +487,8 @@ public class EvaluationGUI extends JFrame implements ActionListener, ListSelecti
 			baseURI = (String) o.readObject();
 			prefixes = (Map<String, String>) o.readObject();
 
-			assertedEquivalentClasses = (Map<NamedClass, Set<OWLDescription>>) o.readObject();
-			assertedSuperClasses = (Map<NamedClass, Set<OWLDescription>>) o.readObject();
+			assertedEquivalentClasses = (Map<NamedClass, Set<OWLClassExpression>>) o.readObject();
+			assertedSuperClasses = (Map<NamedClass, Set<OWLClassExpression>>) o.readObject();
 
 		}
 
@@ -1018,7 +1017,7 @@ private static final long serialVersionUID = -5375479462711405013L;
         	setText(text);
           
             if(value instanceof Description){
-            	OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription((Description)value);
+            	OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression((Description)value);
 				desc.accept(renderer);
 				
 				writer.flush();

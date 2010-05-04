@@ -9,8 +9,8 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 public class RepairTableModel extends AbstractTableModel implements RepairManagerListener{
 
@@ -46,7 +46,7 @@ public class RepairTableModel extends AbstractTableModel implements RepairManage
 
 		if (columnIndex == 0) {
 			if (repairPlan.get(rowIndex) instanceof RemoveAxiom) {
-				return "–";
+				return "-";
 			} else {
 				return "+";
 			}

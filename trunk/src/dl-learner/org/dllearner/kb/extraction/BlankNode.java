@@ -1,6 +1,5 @@
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,9 +15,10 @@ import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 public class BlankNode extends Node {
 	private static Logger logger = Logger
@@ -107,8 +107,8 @@ public class BlankNode extends Node {
 	}
 	
 	@Override
-	public URI getURI(){
-		return URI.create("http://www.empty.org/empty#empty");
+	public IRI getIRI(){
+		return IRI.create("http://www.empty.org/empty#empty");
 	}
 	
 	@Override
@@ -121,9 +121,9 @@ public class BlankNode extends Node {
 		return inboundEdge;
 	}
 		
-	public OWLDescription getAnonymousClass(OWLAPIOntologyCollector owlAPIOntologyCollector){
+	public OWLClassExpression getAnonymousClass(OWLAPIOntologyCollector owlAPIOntologyCollector){
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
-		OWLDescription ret = factory.getOWLClass(URI.create("http://dummy.org/dummy"));
+		OWLClassExpression ret = factory.getOWLClass(IRI.create("http://dummy.org/dummy"));
 		
 		//System.out.println(inboundEdge);
 		
@@ -132,7 +132,7 @@ public class BlankNode extends Node {
 			(inboundEdge.equals(OWLVocabulary.OWL_complementOf))||
 			(inboundEdge.equals(OWLVocabulary.OWL_unionOf))
 		 ){
-			Set<OWLDescription> target = new HashSet<OWLDescription>();
+			Set<OWLClassExpression> target = new HashSet<OWLClassExpression>();
 			List<BlankNode> tmp = new ArrayList<BlankNode>();
 			tmp.add(this);
 			while(!tmp.isEmpty()){
@@ -142,7 +142,7 @@ public class BlankNode extends Node {
 				if(next.otherNodes.contains(new StringTuple(OWLVocabulary.RDF_REST, OWLVocabulary.RDF_NIL))){
 					for(StringTuple t : next.otherNodes){
 						if(t.a.equals(OWLVocabulary.RDF_FIRST)){
-							target.add(factory.getOWLClass(URI.create(t.b)));
+							target.add(factory.getOWLClass(IRI.create(t.b)));
 							//System.out.println("added "+t.b);
 						}
 					}
@@ -153,7 +153,7 @@ public class BlankNode extends Node {
 					try{
 						firstOtherNodes = next.otherNodes.first();
 						if(firstOtherNodes.a.equals(OWLVocabulary.RDF_FIRST)){
-							target.add(factory.getOWLClass(URI.create(firstOtherNodes.b)));
+							target.add(factory.getOWLClass(IRI.create(firstOtherNodes.b)));
 							tmp.add(next.blankNodes.get(0));
 							//System.out.println("bnode added");
 						}else{
@@ -181,7 +181,7 @@ public class BlankNode extends Node {
 					tail("more than one complement"+target);
 					
 				}else{
-					return factory.getOWLObjectComplementOf(new ArrayList<OWLDescription>(target).remove(0));
+					return factory.getOWLObjectComplementOf(new ArrayList<OWLClassExpression>(target).remove(0));
 				}
 			}else{
 				printAll();
@@ -226,11 +226,11 @@ public class BlankNode extends Node {
 		
 	}
 	
-	private OWLDescription getRestriction(OWLAPIOntologyCollector owlAPIOntologyCollector){
+	private OWLClassExpression getRestriction(OWLAPIOntologyCollector owlAPIOntologyCollector){
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
 		OWLObjectProperty property = null;
-		OWLDescription concept = null;
-		OWLDescription dummy = factory.getOWLClass(URI.create("http://dummy.org/dummy"));
+		OWLClassExpression concept = null;
+		OWLClassExpression dummy = factory.getOWLClass(IRI.create("http://dummy.org/dummy"));
 		
 		int total = otherNodes.size()+blankNodes.size()+datatypeProperties.size();
 		if(total >=4 ){
@@ -240,7 +240,7 @@ public class BlankNode extends Node {
 		// get Objectproperty
 		for(StringTuple n : otherNodes) {
 			if(n.a.equals(OWLVocabulary.OWL_ON_PROPERTY)){
-				property = factory.getOWLObjectProperty(URI.create(n.b)); 
+				property = factory.getOWLObjectProperty(IRI.create(n.b)); 
 			}
 		}
 		
@@ -249,11 +249,11 @@ public class BlankNode extends Node {
 			DatatypePropertyNode d = datatypeProperties.get(0);
 			String p = d.getURIString();
 			if( p.equals(OWLVocabulary.OWL_cardinality)){
-				return factory.getOWLObjectExactCardinalityRestriction(property, d.getBPart().getLiteral().getInt());
+				return factory.getOWLObjectExactCardinality(d.getBPart().getLiteral().getInt(), property);
 			}else if(p.equals(OWLVocabulary.OWL_maxCardinality)){
-				return factory.getOWLObjectMaxCardinalityRestriction(property, d.getBPart().getLiteral().getInt());
+				return factory.getOWLObjectMaxCardinality(d.getBPart().getLiteral().getInt(), property);
 			}else if(p.equals(OWLVocabulary.OWL_minCardinality)){
-				return factory.getOWLObjectMinCardinalityRestriction(property, d.getBPart().getLiteral().getInt());
+				return factory.getOWLObjectMinCardinality(d.getBPart().getLiteral().getInt(), property);
 			}else {
 				tail(p+d+" in "+this);
 			}
@@ -270,7 +270,7 @@ public class BlankNode extends Node {
 					(p.equals(OWLVocabulary.OWL_SOME_VALUES_FROM)) ||
 					(p.equals(OWLVocabulary.OWL_HAS_VALUE))
 				  ){
-					concept = factory.getOWLClass(URI.create(o));
+					concept = factory.getOWLClass(IRI.create(o));
 				}
 			}
 		}
@@ -278,9 +278,9 @@ public class BlankNode extends Node {
 		for(StringTuple n : otherNodes) {
 			String p = n.a;
 			if(p.equals(OWLVocabulary.OWL_ALL_VALUES_FROM)){
-				return factory.getOWLObjectAllRestriction(property, concept);
+				return factory.getOWLObjectAllValuesFrom(property, concept);
 			}else if(p.equals(OWLVocabulary.OWL_SOME_VALUES_FROM)){
-				return factory.getOWLObjectSomeRestriction(property, concept);
+				return factory.getOWLObjectSomeValuesFrom(property, concept);
 			}else if(p.equals(OWLVocabulary.OWL_HAS_VALUE)){
 				logger.warn("OWL_hasValue not implemented yet");
 				return dummy;

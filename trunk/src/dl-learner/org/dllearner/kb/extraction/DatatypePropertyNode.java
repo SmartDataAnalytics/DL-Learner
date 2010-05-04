@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -30,12 +29,13 @@ import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataRange;
-import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
 
 /**
  * Property node, has connection to a and b part
@@ -122,28 +122,28 @@ public class DatatypePropertyNode extends PropertyNode {
 		
 
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
-		OWLDataProperty me =factory.getOWLDataProperty(getURI());
+		OWLDataProperty me =factory.getOWLDataProperty(getIRI());
 	
 		for (RDFNodeTuple one : propertyInformation) {
 			
 			
 			if(one.aPartContains(OWLVocabulary.RDFS_range)){
 				//System.out.println(me + one.b.toString());
-				OWLDataRange o = factory.getOWLDataType(URI.create(one.b.toString()));
+				OWLDataRange o = factory.getOWLDatatype(IRI.create(one.b.toString()));
 				OWLAxiom ax = factory.getOWLDataPropertyRangeAxiom(me, o);
 				owlAPIOntologyCollector.addAxiom(ax);
 				//XXX implement
 				//OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
 				//owlAPIOntologyCollector.addAxiom(factory.getOWLDataPropertyRangeAxiom(propery, owlDataRange)(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_domain)){
-				OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
+				OWLClass c = factory.getOWLClass(IRI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLDataPropertyDomainAxiom(me, c));
 			}
 		}
 		
 		
 		for (BlankNode bn : blankNodes) {
-			OWLDescription target = bn.getAnonymousClass(owlAPIOntologyCollector);
+			OWLClassExpression target = bn.getAnonymousClass(owlAPIOntologyCollector);
 			if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_range)){
 			
 				//XXX implement

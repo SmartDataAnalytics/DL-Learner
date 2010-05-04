@@ -180,19 +180,19 @@ public class WizardController implements ActionListener {
 			}
 			OREManager oreMan = OREManager.getInstance();
 			for(EvaluatedDescriptionClass e : descriptions.get(0)){
-				oreMan.getModifier().addEquivalentClassDescription(oreMan.getCurrentClass2Learn(), e.getDescription());
+				oreMan.getModifier().addEquivalentClassDescription(LearningManager.getInstance().getCurrentClass2Describe(), e.getDescription());
 			}
 			for(EvaluatedDescriptionClass e : descriptions.get(1)){
-				oreMan.getModifier().addSuperClassDescription(oreMan.getCurrentClass2Learn(), e.getDescription());
+				oreMan.getModifier().addSuperClassDescription(LearningManager.getInstance().getCurrentClass2Describe(), e.getDescription());
 			}
 			
 		} else if(currentPanelDescriptor.getPanelDescriptorIdentifier().equals(ManualLearnPanelDescriptor.IDENTIFIER)){
 			OREManager oreMan = OREManager.getInstance();
 			if(LearningManager.getInstance().getLearningType() == LearningType.SUPER){
-				oreMan.getModifier().addSuperClassDescription(oreMan.getCurrentClass2Learn(), 
+				oreMan.getModifier().addSuperClassDescription(LearningManager.getInstance().getCurrentClass2Describe(), 
 						oreMan.getNewClassDescription().getDescription());
 			} else {
-				oreMan.getModifier().addEquivalentClassDescription(oreMan.getCurrentClass2Learn(), 
+				oreMan.getModifier().addEquivalentClassDescription(LearningManager.getInstance().getCurrentClass2Describe(), 
 						oreMan.getNewClassDescription().getDescription());
 			}
 			

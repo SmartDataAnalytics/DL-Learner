@@ -4,14 +4,15 @@ import java.util.Map;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.ui.rendering.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owl.io.OWLObjectRenderer;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 public class ManchesterSyntaxRenderingCache {
 
@@ -19,6 +20,7 @@ public class ManchesterSyntaxRenderingCache {
 
 	Map<OWLObject, String> owlObjectCache = new LRUMap<OWLObject, String>(50, 1, 50);
 	Map<Description, String> descriptionCache = new LRUMap<Description, String>(50, 1, 50);
+	Map<ObjectProperty, String> objectPropertyCache = new LRUMap<ObjectProperty, String>(50, 1, 50);
 	Map<Individual, String> individualCache = new LRUMap<Individual, String>(50, 1, 50);
 
 	private OREManager mngr;
@@ -41,7 +43,6 @@ public class ManchesterSyntaxRenderingCache {
 		this.mngr = oreManager;
 		oreManager.addListener(l);
 		renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		renderer.setShortFormProvider(new SimpleShortFormProvider());
 	}
 
 	public void clear() {
@@ -63,8 +64,18 @@ public class ManchesterSyntaxRenderingCache {
 		String s = null;
 		s = descriptionCache.get(description);
 		if (s == null) {
-			s = renderer.render(OWLAPIDescriptionConvertVisitor.getOWLDescription(description));
+			s = renderer.render(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description));
 			descriptionCache.put(description, s);
+		}
+		return s;
+	}
+	
+	public String getRendering(ObjectProperty property) {
+		String s = null;
+		s = objectPropertyCache.get(property);
+		if (s == null) {
+			s = renderer.render(OWLAPIConverter.getOWLAPIObjectProperty(property));
+			objectPropertyCache.put(property, s);
 		}
 		return s;
 	}

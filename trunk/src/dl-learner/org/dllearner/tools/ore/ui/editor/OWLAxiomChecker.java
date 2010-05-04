@@ -1,31 +1,26 @@
 package org.dllearner.tools.ore.ui.editor;
 
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
-public class OWLAxiomChecker  implements OWLExpressionChecker<OWLAxiom>{
-	
+public class OWLAxiomChecker implements OWLExpressionChecker<OWLAxiom> {
+
 	private OREManager mngr;
 
+	public OWLAxiomChecker(OREManager mngr) {
+		this.mngr = mngr;
+	}
 
-    public OWLAxiomChecker(OREManager mngr) {
-        this.mngr = mngr;
-    }
+	public void check(String text) throws ParserException {
+		createObject(text);
+	}
 
+	public OWLAxiom createObject(String text) throws ParserException {
+		ManchesterOWLSyntaxParser parser = new ManchesterOWLSyntaxParser(mngr.getOWLDataFactory(), text);
+		parser.setOWLEntityChecker(new OREOWLEntityChecker(mngr.getOWLEntityFinder()));
 
-    public void check(String text) throws OWLExpressionParserException {
-        createObject(text);
-    }
+		return parser.parseAxiom();
 
-
-    public OWLAxiom createObject(String text) throws OWLExpressionParserException {
-        ManchesterOWLSyntaxParser parser = new ManchesterOWLSyntaxParser(mngr.getOWLDataFactory(), text);
-        parser.setOWLEntityChecker(new OREOWLEntityChecker(mngr.getOWLEntityFinder()));
-        try {
-            return parser.parseAxiom();
-        }
-        catch (ParserException e) {
-            throw ParserUtil.convertException(e);
-        }
-    }
+	}
 }

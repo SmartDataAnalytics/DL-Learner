@@ -31,7 +31,7 @@ import javax.swing.ProgressMonitor;
 
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.jamonapi.Monitor;
 
@@ -142,7 +142,7 @@ public class Manager {
 	}
 	
 	public URL getPhysicalOntologyURL()throws MalformedURLException{
-		return configuration.getOwlAPIOntologyCollector().getPhysicalURI().toURL();
+		return configuration.getOwlAPIOntologyCollector().getPhysicalIRI().toURI().toURL();
 		
 	}
 	

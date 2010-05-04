@@ -1,9 +1,8 @@
 package org.dllearner.tools.ore.ui.editor;
 
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.expression.ParserException;
-import org.semanticweb.owl.model.OWLObjectPropertyAxiom;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 
 public class OWLObjectPropertyAxiomChecker implements OWLExpressionChecker<OWLObjectPropertyAxiom>{
 	private OREManager mngr;
@@ -14,20 +13,15 @@ public class OWLObjectPropertyAxiomChecker implements OWLExpressionChecker<OWLOb
     }
 
 
-    public void check(String text) throws OWLExpressionParserException {
+    public void check(String text) throws ParserException{
         createObject(text);
     }
 
 
-    public OWLObjectPropertyAxiom createObject(String text) throws OWLExpressionParserException {
-        ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(mngr.getOWLDataFactory(), text);
+    public OWLObjectPropertyAxiom createObject(String text) throws ParserException{
+        ManchesterOWLSyntaxParser parser = new ManchesterOWLSyntaxParser(mngr.getOWLDataFactory(), text);
         parser.setOWLEntityChecker(new OREOWLEntityChecker(mngr.getOWLEntityFinder()));
-        try {System.out.println(parser.parseObjectPropertyAxiom());
-            return parser.parseObjectPropertyAxiom();
-        }
-        catch (ParserException e) {
-        	
-            throw ParserUtil.convertException(e);
-        }
+        
+        return parser.parseObjectPropertyAxiom();
     }
 }

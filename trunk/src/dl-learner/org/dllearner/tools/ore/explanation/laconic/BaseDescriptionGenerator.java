@@ -4,36 +4,37 @@ package org.dllearner.tools.ore.explanation.laconic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataAllRestriction;
-import org.semanticweb.owl.model.OWLDataExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDataMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataPropertyExpression;
-import org.semanticweb.owl.model.OWLDataRange;
-import org.semanticweb.owl.model.OWLDataSomeRestriction;
-import org.semanticweb.owl.model.OWLDataValueRestriction;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLDescriptionVisitorEx;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObjectAllRestriction;
-import org.semanticweb.owl.model.OWLObjectExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectIntersectionOf;
-import org.semanticweb.owl.model.OWLObjectOneOf;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
-import org.semanticweb.owl.model.OWLObjectSelfRestriction;
-import org.semanticweb.owl.model.OWLObjectSomeRestriction;
-import org.semanticweb.owl.model.OWLObjectUnionOf;
-import org.semanticweb.owl.model.OWLObjectValueRestriction;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 
 
 public abstract class BaseDescriptionGenerator
-    implements OWLDescriptionVisitorEx<Set<OWLDescription>>
+    implements OWLClassExpressionVisitorEx<Set<OWLClassExpression>>
 {
 	private OWLDataFactory factory;
     private static TopTester topChecker = new TopTester();
@@ -46,12 +47,12 @@ public abstract class BaseDescriptionGenerator
         this.factory = factory;
     }
 
-    public boolean isThing(OWLDescription description)
+    public boolean isThing(OWLClassExpression description)
     {
         return ((Boolean)description.accept(topChecker)).booleanValue(); 
     }
 
-    public boolean isNothing(OWLDescription description)
+    public boolean isNothing(OWLClassExpression description)
     {
         return ((Boolean)description.accept(bottomChecker)).booleanValue();
     }
@@ -61,30 +62,30 @@ public abstract class BaseDescriptionGenerator
         return factory;
     }
 
-    public Set<OWLDescription> computeTau(OWLDescription desc)
+    public Set<OWLClassExpression> computeTau(OWLClassExpression desc)
     {
         Tau gen = new Tau(factory);
         return desc.accept(gen);
     }
 
-    public Set<OWLDescription> computeBeta(OWLDescription desc)
+    public Set<OWLClassExpression> computeBeta(OWLClassExpression desc)
     {
         Beta gen = new Beta(factory);
-        return (Set<OWLDescription>)desc.accept(gen);
+        return (Set<OWLClassExpression>)desc.accept(gen);
     }
 
-    private Set<Set<OWLDescription>> computeReplacements(Set<OWLDescription> operands)
+    private Set<Set<OWLClassExpression>> computeReplacements(Set<OWLClassExpression> operands)
     {
-        Set<List<OWLDescription>> ps = new HashSet<List<OWLDescription>>();
-        ps.add(new ArrayList<OWLDescription>());
+        Set<List<OWLClassExpression>> ps = new HashSet<List<OWLClassExpression>>();
+        ps.add(new ArrayList<OWLClassExpression>());
 
-        for(OWLDescription op : operands)
+        for(OWLClassExpression op : operands)
         {
-            Set<List<OWLDescription>> pscopy = new HashSet<List<OWLDescription>>(ps);
+            Set<List<OWLClassExpression>> pscopy = new HashSet<List<OWLClassExpression>>(ps);
             
-            for(OWLDescription d : (Set<OWLDescription>)op.accept(this)) {
-                for(List<OWLDescription> pselement : pscopy) {
-                    ArrayList<OWLDescription> union = new ArrayList<OWLDescription>();
+            for(OWLClassExpression d : (Set<OWLClassExpression>)op.accept(this)) {
+                for(List<OWLClassExpression> pselement : pscopy) {
+                    ArrayList<OWLClassExpression> union = new ArrayList<OWLClassExpression>();
                     union.addAll(pselement);
                     union.add(d);
                     ps.remove(pselement);
@@ -93,23 +94,24 @@ public abstract class BaseDescriptionGenerator
             }
         }
 
-        Set<Set<OWLDescription>> result = new HashSet<Set<OWLDescription>>();
+        Set<Set<OWLClassExpression>> result = new HashSet<Set<OWLClassExpression>>();
         
-        for(List<OWLDescription> desc : ps ){
-        	result.add(new HashSet<OWLDescription>(desc));
+        for(List<OWLClassExpression> desc : ps ){
+        	result.add(new HashSet<OWLClassExpression>(desc));
         }
         return result;
     }
 
-    public Set<OWLDescription> visit(OWLObjectIntersectionOf desc)
+    public Set<OWLClassExpression> visit(OWLObjectIntersectionOf desc)
     {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
-        Set<Set<OWLDescription>> conjunctions = computeReplacements(desc.getOperands());
-        for(Set<OWLDescription> conjuncts : conjunctions){
+        Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
+        Set<Set<OWLClassExpression>> conjunctions = computeReplacements(desc.getOperands());
+        for(Set<OWLClassExpression> conjuncts : conjunctions){
         
-        	for(OWLDescription conjunct : conjuncts){
+        	for(Iterator<OWLClassExpression> i = conjuncts.iterator(); i.hasNext();){
+        		OWLClassExpression conjunct = i.next();
         		if(isThing(conjunct)){
-                    conjuncts.remove(conjunct);
+                    i.remove();
         		}
         	}
                
@@ -126,15 +128,21 @@ public abstract class BaseDescriptionGenerator
         return descs;
     }
 
-    public Set<OWLDescription> visit(OWLObjectUnionOf desc)
+    public Set<OWLClassExpression> visit(OWLObjectUnionOf desc)
     {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
-        Set<Set<OWLDescription>> disjunctions = computeReplacements(desc.getOperands());
-        for(Set<OWLDescription> disjuncts : disjunctions){
+        Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
+        Set<Set<OWLClassExpression>> disjunctions = computeReplacements(desc.getOperands());
+        for(Set<OWLClassExpression> disjuncts : disjunctions){
         
-            for(OWLDescription disjunct : disjuncts){
+//            for(OWLClassExpression disjunct : disjuncts){
+//                if(isNothing(disjunct)){
+//                    disjuncts.remove(disjunct);
+//                }
+//            } 
+        	for(Iterator<OWLClassExpression> i = disjuncts.iterator(); i.hasNext();){
+            	OWLClassExpression disjunct = i.next();
                 if(isNothing(disjunct)){
-                    disjuncts.remove(disjunct);
+                    i.remove();
                 }
             } 
             if(disjuncts.size() != 1){
@@ -149,39 +157,39 @@ public abstract class BaseDescriptionGenerator
         return descs;
     }
 
-    public Set<OWLDescription> visit(OWLObjectSomeRestriction desc)
+    public Set<OWLClassExpression> visit(OWLObjectSomeValuesFrom desc)
     {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
+        Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
         descs.add(desc);
-        for(OWLDescription filler : desc.getFiller().accept(this)){
+        for(OWLClassExpression filler : desc.getFiller().accept(this)){
             if(!isNothing(filler))
-                descs.add(factory.getOWLObjectSomeRestriction((OWLObjectPropertyExpression)desc.getProperty(), filler));
+                descs.add(factory.getOWLObjectSomeValuesFrom((OWLObjectPropertyExpression)desc.getProperty(), filler));
         }
         descs.add(getLimit());
         return descs;
     }
 
-    public Set<OWLDescription> visit(OWLObjectAllRestriction desc)
+    public Set<OWLClassExpression> visit(OWLObjectAllValuesFrom desc)
     {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
+        Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
        
-        for(OWLDescription filler : desc.getFiller().accept(this)){
+        for(OWLClassExpression filler : desc.getFiller().accept(this)){
         	if(!isThing(filler))
-                descs.add(factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)desc.getProperty(), filler));
+                descs.add(factory.getOWLObjectAllValuesFrom((OWLObjectPropertyExpression)desc.getProperty(), filler));
         }
         descs.add(getLimit());
         return descs;
     }
 
-    public Set<OWLDescription> visit(OWLObjectValueRestriction desc)
+    public Set<OWLClassExpression> visit(OWLObjectHasValue desc)
     {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
+        Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
         descs.add(desc);
         
-//        for(OWLDescription filler : factory.getOWLObjectOneOf(new OWLIndividual[] {(OWLIndividual)desc.getValue()}).accept(this)){ 
+//        for(OWLClassExpression filler : factory.getOWLObjectOneOf(new OWLIndividual[] {(OWLIndividual)desc.getValue()}).accept(this)){ 
 //        	descs.add(factory.getOWLObjectSomeRestriction((OWLObjectPropertyExpression)desc.getProperty(), filler));
 //        }
-        OWLDescription d = factory.getOWLObjectSomeRestriction((OWLObjectPropertyExpression)desc.getProperty(), getLimit());
+        OWLClassExpression d = factory.getOWLObjectSomeValuesFrom((OWLObjectPropertyExpression)desc.getProperty(), getLimit());
         if(!isNothing(d)){
         	descs.add(d);
         }
@@ -190,28 +198,28 @@ public abstract class BaseDescriptionGenerator
         return descs;
     }
 
-    public Set<OWLDescription> visit(OWLObjectExactCardinalityRestriction desc)
+    public Set<OWLClassExpression> visit(OWLObjectExactCardinality desc)
     {
-        Set<OWLDescription> result = new HashSet<OWLDescription>();
-        OWLDescription min = getDataFactory().getOWLObjectMinCardinalityRestriction((OWLObjectPropertyExpression)desc.getProperty(), desc.getCardinality(), (OWLDescription)desc.getFiller());
+        Set<OWLClassExpression> result = new HashSet<OWLClassExpression>();
+        OWLClassExpression min = getDataFactory().getOWLObjectMinCardinality(desc.getCardinality(), (OWLObjectPropertyExpression)desc.getProperty(), (OWLClassExpression)desc.getFiller());
         result.addAll(min.accept(this));
-        OWLDescription max = getDataFactory().getOWLObjectMaxCardinalityRestriction((OWLObjectPropertyExpression)desc.getProperty(), desc.getCardinality(), (OWLDescription)desc.getFiller());
+        OWLClassExpression max = getDataFactory().getOWLObjectMaxCardinality(desc.getCardinality(), (OWLObjectPropertyExpression)desc.getProperty(), (OWLClassExpression)desc.getFiller());
         result.addAll(max.accept(this));
         result.add(getLimit());
         return result;
     }
 
-    public Set<OWLDescription> visit(OWLObjectSelfRestriction desc)
+    public Set<OWLClassExpression> visit(OWLObjectHasSelf desc)
     {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
+        Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
         descs.add(desc);
         descs.add(getLimit());
         return descs;
     }
 
-    public Set<OWLDescription> visit(OWLObjectOneOf desc)
+    public Set<OWLClassExpression> visit(OWLObjectOneOf desc)
     {
-        Set<OWLDescription> ops = new HashSet<OWLDescription>();
+        Set<OWLClassExpression> ops = new HashSet<OWLClassExpression>();
         if(desc.getIndividuals().size() == 1)
         {
             ops.add(desc);
@@ -223,7 +231,7 @@ public abstract class BaseDescriptionGenerator
         	ops.add(factory.getOWLObjectOneOf(new OWLIndividual[] {ind}));
         }
 
-        OWLDescription rewrite = factory.getOWLObjectUnionOf(ops);
+        OWLClassExpression rewrite = factory.getOWLObjectUnionOf(ops);
         return rewrite.accept(this);
     }
 
@@ -231,37 +239,37 @@ public abstract class BaseDescriptionGenerator
 
     protected abstract OWLDataRange getDataLimit();
 
-    public Set<OWLDescription> visit(OWLDataSomeRestriction desc)
+    public Set<OWLClassExpression> visit(OWLDataSomeValuesFrom desc)
     {
-        return Collections.singleton((OWLDescription)desc);
+        return Collections.singleton((OWLClassExpression)desc);
     }
 
-    public Set<OWLDescription> visit(OWLDataAllRestriction desc)
+    public Set<OWLClassExpression> visit(OWLDataAllValuesFrom desc)
     {
-        return Collections.singleton((OWLDescription)desc);
+        return Collections.singleton((OWLClassExpression)desc);
     }
 
-    public Set<OWLDescription> visit(OWLDataValueRestriction desc)
+    public Set<OWLClassExpression> visit(OWLDataHasValue desc)
     {
-        Set<OWLDescription> result = new HashSet<OWLDescription>(2);
+        Set<OWLClassExpression> result = new HashSet<OWLClassExpression>(2);
         result.add(desc);
-        result.add(getDataFactory().getOWLDataSomeRestriction((OWLDataPropertyExpression)desc.getProperty(), getDataLimit()));
+        result.add(getDataFactory().getOWLDataSomeValuesFrom((OWLDataPropertyExpression)desc.getProperty(), getDataLimit()));
         return result;
     }
 
-    public Set<OWLDescription> visit(OWLDataMinCardinalityRestriction desc)
+    public Set<OWLClassExpression> visit(OWLDataMinCardinality desc)
     {
-        return Collections.singleton((OWLDescription)desc);
+        return Collections.singleton((OWLClassExpression)desc);
     }
 
-    public Set<OWLDescription> visit(OWLDataExactCardinalityRestriction desc)
+    public Set<OWLClassExpression> visit(OWLDataExactCardinality desc)
     {
-        return Collections.singleton((OWLDescription)desc);
+        return Collections.singleton((OWLClassExpression)desc);
     }
 
-    public Set<OWLDescription> visit(OWLDataMaxCardinalityRestriction desc)
+    public Set<OWLClassExpression> visit(OWLDataMaxCardinality desc)
     {
-        return Collections.singleton((OWLDescription)desc);
+        return Collections.singleton((OWLClassExpression)desc);
     }
 
   

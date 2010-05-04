@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.tools.ore.OREManager;
 
 public class ClassesTableModel extends AbstractTableModel{
 
@@ -33,7 +34,7 @@ public class ClassesTableModel extends AbstractTableModel{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-			return classes.get(rowIndex);
+			return OREManager.getInstance().getManchesterSyntaxRendering(classes.get(rowIndex));
 	}
 	
 	public void clear(){

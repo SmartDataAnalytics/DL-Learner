@@ -29,7 +29,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 /**
  * This class reads the ontologie in a separate thread.

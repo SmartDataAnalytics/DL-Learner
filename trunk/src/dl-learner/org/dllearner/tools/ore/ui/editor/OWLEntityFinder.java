@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.ui.editor;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,13 +9,16 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.cache.OWLEntityRenderingCache;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataType;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 
 /**
@@ -74,8 +76,8 @@ public class OWLEntityFinder {
     }
 
 
-    public OWLIndividual getOWLIndividual(String rendering) {
-        OWLIndividual individual = renderingCache.getOWLIndividual(rendering);
+    public OWLNamedIndividual getOWLIndividual(String rendering) {
+        OWLNamedIndividual individual = renderingCache.getOWLIndividual(rendering);
         if (individual == null && !rendering.startsWith(ESCAPE_CHAR) && !rendering.endsWith(ESCAPE_CHAR)){
             individual = renderingCache.getOWLIndividual(ESCAPE_CHAR + rendering + ESCAPE_CHAR);
         }
@@ -83,12 +85,21 @@ public class OWLEntityFinder {
     }
 
 
-    public OWLDataType getOWLDatatype(String rendering) {
-        OWLDataType dataType = renderingCache.getOWLDatatype(rendering);
+    public OWLDatatype getOWLDatatype(String rendering) {
+        OWLDatatype dataType = renderingCache.getOWLDatatype(rendering);
         if (dataType == null && !rendering.startsWith(ESCAPE_CHAR) && !rendering.endsWith(ESCAPE_CHAR)){
             dataType = renderingCache.getOWLDatatype(ESCAPE_CHAR + rendering + ESCAPE_CHAR);
         }
         return dataType;
+    }
+    
+    
+    public OWLAnnotationProperty getOWLAnnotationProperty(String rendering) {
+        OWLAnnotationProperty prop = renderingCache.getOWLAnnotationProperty(rendering);
+        if (prop == null && !rendering.startsWith(ESCAPE_CHAR) && !rendering.endsWith(ESCAPE_CHAR)){
+        	prop = renderingCache.getOWLAnnotationProperty(ESCAPE_CHAR + rendering + ESCAPE_CHAR);
+        }
+        return prop;
     }
 
 
@@ -121,13 +132,13 @@ public class OWLEntityFinder {
     }
 
 
-    public Set<OWLIndividual> getMatchingOWLIndividuals(String match, boolean fullRegExp) {
-        return getEntities(match, OWLIndividual.class, fullRegExp);
+    public Set<OWLNamedIndividual> getMatchingOWLIndividuals(String match, boolean fullRegExp) {
+        return getEntities(match, OWLNamedIndividual.class, fullRegExp);
     }
 
 
-    public Set<OWLDataType> getMatchingOWLDatatypes(String match, boolean fullRegExp) {
-        return getEntities(match, OWLDataType.class, fullRegExp);
+    public Set<OWLDatatype> getMatchingOWLDatatypes(String match, boolean fullRegExp) {
+        return getEntities(match, OWLDatatype.class, fullRegExp);
     }
 
 
@@ -136,25 +147,25 @@ public class OWLEntityFinder {
     }
 
 
-    public Set<OWLEntity> getEntities(URI uri) {
+    public Set<OWLEntity> getEntities(IRI iri) {
 
         Set<OWLEntity> entities = new HashSet<OWLEntity>();
 
         for (OWLOntology ont : mngr.getLoadedOntologies()){
-            if (ont.containsClassReference(uri)){
-                entities.add(mngr.getOWLDataFactory().getOWLClass(uri));
+            if (ont.containsClassInSignature(iri)){
+                entities.add(mngr.getOWLDataFactory().getOWLClass(iri));
             }
-            if (ont.containsObjectPropertyReference(uri)){
-                entities.add(mngr.getOWLDataFactory().getOWLObjectProperty(uri));
+            if (ont.containsObjectPropertyInSignature(iri)){
+                entities.add(mngr.getOWLDataFactory().getOWLObjectProperty(iri));
             }
-            if (ont.containsDataPropertyReference(uri)){
-                entities.add(mngr.getOWLDataFactory().getOWLDataProperty(uri));
+            if (ont.containsDataPropertyInSignature(iri)){
+                entities.add(mngr.getOWLDataFactory().getOWLDataProperty(iri));
             }
-            if (ont.containsIndividualReference(uri)){
-                entities.add(mngr.getOWLDataFactory().getOWLIndividual(uri));
+            if (ont.containsIndividualInSignature(iri)){
+                entities.add(mngr.getOWLDataFactory().getOWLNamedIndividual(iri));
             }
-            if (ont.containsDataTypeReference(uri)){
-                entities.add(mngr.getOWLDataFactory().getOWLDataType(uri));
+            if (ont.containsDatatypeInSignature(iri)){
+                entities.add(mngr.getOWLDataFactory().getOWLDatatype(iri));
             }
         }
         return entities;
@@ -285,9 +296,9 @@ public class OWLEntityFinder {
                 else if (type.equals(OWLIndividual.class)){
                     entities.addAll((Set<T>)ont.getIndividualsInSignature());
                 }
-//                else if (type.equals(OWLDataType.class)){entities.add(Boo)
-//                    entities.addAll((Set<T>)ont.getgetDataypesInSignature());
-//                }
+                else if (type.equals(OWLDatatype.class)){
+                    entities.addAll((Set<T>)ont.getDatatypesInSignature());
+                }
             }
             return entities;
 //        }
@@ -307,7 +318,7 @@ public class OWLEntityFinder {
         else if (OWLIndividual.class.isAssignableFrom(type)){
             return type.cast(renderingCache.getOWLIndividual(rendering));
         }
-        else if (OWLDataType.class.isAssignableFrom(type)){
+        else if (OWLDatatype.class.isAssignableFrom(type)){
             return type.cast(renderingCache.getOWLDatatype(rendering));
         }
         else{
@@ -329,7 +340,7 @@ public class OWLEntityFinder {
         else if (OWLIndividual.class.isAssignableFrom(type)){
             return renderingCache.getOWLIndividualRenderings();
         }
-        else if (OWLDataType.class.isAssignableFrom(type)){
+        else if (OWLDatatype.class.isAssignableFrom(type)){
             return renderingCache.getOWLDatatypeRenderings();
         }
         else{

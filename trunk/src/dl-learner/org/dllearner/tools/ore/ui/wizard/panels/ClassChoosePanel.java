@@ -235,11 +235,11 @@ public class ClassChoosePanel extends JPanel{
     }
     
     public void setLearningOptions(){
-    	OREManager.getInstance().setMaxExecutionTimeInSeconds(learningOptionsPanel.getMaxExecutionTime());
-    	OREManager.getInstance().setMaxNrOfResults(learningOptionsPanel.getNrOfConcepts());
-    	OREManager.getInstance().setNoisePercentage(learningOptionsPanel.getMinAccuracy());
-    	OREManager.getInstance().setThreshold(learningOptionsPanel.getThreshold());
-    	OREManager.getInstance().setMinInstanceCount(((Integer)(minInstanceCountSpinner.getValue())).intValue());
+    	LearningManager.getInstance().setMaxExecutionTimeInSeconds(learningOptionsPanel.getMaxExecutionTime());
+    	LearningManager.getInstance().setMaxNrOfResults(learningOptionsPanel.getNrOfConcepts());
+    	LearningManager.getInstance().setNoisePercentage(learningOptionsPanel.getMinAccuracy());
+    	LearningManager.getInstance().setThreshold(learningOptionsPanel.getThreshold());
+    	LearningManager.getInstance().setMinInstanceCount(((Integer)(minInstanceCountSpinner.getValue())).intValue());
     	
     }
     

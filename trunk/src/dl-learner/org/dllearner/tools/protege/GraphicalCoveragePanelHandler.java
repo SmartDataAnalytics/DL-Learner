@@ -37,12 +37,12 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
-import org.semanticweb.owl.model.OWLNegativeDataPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLNegativeObjectPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLSameIndividualsAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
@@ -179,9 +179,9 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							individualInformation += negData.toString()
 									+ "<br>";
 						}
-						Set<OWLSameIndividualsAxiom> sameIndies = ontology.getSameIndividualAxioms(v.get(i).getIndividualOWL());
+						Set<OWLIndividual> sameIndies = v.get(i).getIndividualOWL().getSameIndividuals(ontology);
 						individualInformation += "<br><b>Same Individuals</b><br>";
-						for (OWLSameIndividualsAxiom sameIndie : sameIndies) {
+						for (OWLIndividual sameIndie : sameIndies) {
 							individualInformation += sameIndie.toString()
 									+ "<br>";
 						}

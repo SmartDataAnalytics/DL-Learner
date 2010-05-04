@@ -5,7 +5,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,20 +17,18 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.tools.ore.cache.DLSyntaxRenderingCache;
@@ -43,18 +40,19 @@ import org.dllearner.tools.ore.ui.rendering.KeywordColorMap;
 import org.dllearner.tools.ore.ui.rendering.OWLEntityRenderer;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
-import org.mindswap.pellet.utils.SetUtils;
-import org.semanticweb.owl.io.OWLXMLOntologyFormat;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyStorageException;
-import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 
 
 public class OREManager {
@@ -64,23 +62,13 @@ public class OREManager {
 	private ComponentManager cm;
 
 	private PelletReasoner reasoner;
-	private ClassLearningProblem lp;
-	private CELOE la;
 	private KnowledgeSource ks;
 
 	private String baseURI;
 	private Map<String, String> prefixes;
 
-	private NamedClass currentClass2Learn;
 	private EvaluatedDescriptionClass learnedClassDescription;
 	
-	private String learningType;
-
-	private double noisePercentage;
-	private int maxExecutionTimeInSeconds;
-	private int maxNrOfResults;
-	private double threshold;
-	private int minInstanceCount;
 	
 	private ManchesterSyntaxRenderingCache manchesterSyntaxRenderingCache;
 	private DLSyntaxRenderingCache dlSyntaxRenderingCache;
@@ -136,45 +124,6 @@ public class OREManager {
 		return ks;
 	}
 	
-	public void setLearningProblem(){
-		
-		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		cm.applyConfigEntry(lp, "type", learningType);
-		try {
-			lp.getConfigurator().setClassToDescribe(getClass2LearnAsURL());
-			
-			lp.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void setLearningAlgorithm(){
-		
-		try {
-			la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-			la.getConfigurator().setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-			la.getConfigurator().setUseNegation(false);
-			la.getConfigurator().setNoisePercentage(noisePercentage);
-			la.getConfigurator().setMaxNrOfResults(maxNrOfResults);
-					
-		} catch (LearningProblemUnsupportedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-		try {
-			la.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	
-	
 	public void initPelletReasoner() throws URISyntaxException, OWLOntologyCreationException{
 		reasoner = cm.reasoner(PelletReasoner.class, ks);
 		try {
@@ -183,7 +132,7 @@ public class OREManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		reasoner.loadOntologies();
+//		reasoner.loadOntologies();
 		reasoner.addProgressMonitor(TaskManager.getInstance().getStatusBar());
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
@@ -192,12 +141,8 @@ public class OREManager {
 		consistentOntology = reasoner.isConsistent();
 	}
 	
-	public void loadOntology() throws OWLOntologyCreationException, URISyntaxException{
-		reasoner.loadOntologies();	
-	}
-	
 	public boolean isSourceOWLAxiom(OWLAxiom ax){
-		for(OWLOntology ont : reasoner.getLoadedOWLAPIOntologies()){
+		for(OWLOntology ont : reasoner.getLoadedOWLAPIOntologies()){System.out.println(ont.getLogicalAxiomCount());
 			if(ont.containsAxiom(ax)){
 				return true;
 			}
@@ -231,7 +176,7 @@ public class OREManager {
 	public void saveOntology(File file) throws OWLOntologyStorageException{
 		
 		try {
-			reasoner.getOWLOntologyManager().saveOntology(reasoner.getOWLAPIOntologies(), new OWLXMLOntologyFormat(), file.toURI());
+			reasoner.getOWLOntologyManager().saveOntology(reasoner.getOWLAPIOntologies(), new RDFXMLOntologyFormat(), IRI.create(file));
 		} catch (UnknownOWLOntologyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -298,6 +243,10 @@ public class OREManager {
 		return manchesterSyntaxRenderingCache.getRendering(description);
 	}
 	
+	public String getManchesterSyntaxRendering(ObjectProperty property){
+		return manchesterSyntaxRenderingCache.getRendering(property);
+	}
+	
 	public String getManchesterSyntaxRendering(Individual individual){
 		return manchesterSyntaxRenderingCache.getRendering(individual);
 	}
@@ -321,20 +270,9 @@ public class OREManager {
 		return keywordColorMap;
 	}
 
-	private URL getClass2LearnAsURL(){
-		URL classURL = null;
-		try {
-			classURL = new URL(currentClass2Learn.toString());
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return classURL;
-		
-	}
 	
 	public SortedSet<Individual> getPositiveFailureExamples(){
-		SortedSet<Individual> posNotCovered = reasoner.getIndividuals(currentClass2Learn);
+		SortedSet<Individual> posNotCovered = reasoner.getIndividuals(LearningManager.getInstance().getCurrentClass2Describe());
 		posNotCovered.removeAll(learnedClassDescription.getCoveredInstances());
 		return posNotCovered;
 	}
@@ -343,90 +281,12 @@ public class OREManager {
 		return new TreeSet<Individual>(learnedClassDescription.getAdditionalInstances());
 	}
 	
-	public void setNoisePercentage(double noisePercentage) {
-		this.noisePercentage = noisePercentage;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-	}
 	
-	public int getMaxExecutionTimeInSeconds(){
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setMaxNrOfResults(int maxNrOfResults) {
-		this.maxNrOfResults = maxNrOfResults;
-	}
-	
-	public int getMaxNrOfResults(){
-		return maxNrOfResults;
-	}
-	
-	public void setThreshold(double threshold){
-		this.threshold = threshold;
-	}
-	
-	public double getThreshold(){
-		return threshold;
-	}
-	
-	public void setLearningType(String learningType){
-		this.learningType = learningType;
-	}
-		
-	/**
-	 * Sets the class that has to be learned.
-	 * @param oldClass class that is chosen to be (re)learned
-	 */
-	public void setCurrentClass2Learn(NamedClass class2Learn){
-		this.currentClass2Learn = class2Learn;
-	}
-	
-	public NamedClass getCurrentClass2Learn(){
-		return currentClass2Learn;
-	}
-	
-	public void setMinInstanceCount(int instanceCount){
-		this.minInstanceCount = instanceCount;
-	}
-	
-	public int getMinInstanceCount(){
-		return minInstanceCount;
-	}
-	
-	public void init(){
-		
-		this.setLearningProblem();
-		this.setLearningAlgorithm();
-			
-	}
-	
-	/**
-	 * Starts the learning algorithm, setting noise value and ignored concepts.
-	 * 
-	 */
-	public void start(){
-
-		try {
-			la.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		la.start();
-		
-	}
 		
 	public void setNewClassDescription(EvaluatedDescriptionClass newClassDescription) {
 		learnedClassDescription = newClassDescription;
 	}
 
-	
-	public CELOE getLa() {
-		return la;
-	}
 
 	/**
 	 * Retrieves description parts that might cause inconsistency - for negative examples only.
@@ -611,10 +471,11 @@ public class OREManager {
 	
 	public boolean isAssertable(ObjectPropertyExpression role, Individual ind){
 		OWLDataFactory factory = reasoner.getOWLOntologyManager().getOWLDataFactory();
-		OWLObjectProperty property = factory.getOWLObjectProperty(URI.create(role.getName()));
+		OWLObjectProperty property = factory.getOWLObjectProperty(IRI.create(role.getName()));
 		
 		//get the objectproperty domains
-		Set<OWLDescription> domains = SetUtils.union(getReasoner().getReasoner().getDomains(property));
+		Set<OWLClass> domains = getReasoner().getReasoner().
+		getObjectPropertyDomains(property, false).getFlattened();
 		
 		//get the classes where the individual belongs to
 		Set<NamedClass> classes = reasoner.getTypes(ind);
@@ -625,7 +486,7 @@ public class OREManager {
 			complements.addAll(reasoner.getComplementClasses(nc));
 		}
 		
-		for(OWLDescription domain : domains){
+		for(OWLClassExpression domain : domains){
 			if(complements.contains(OWLAPIConverter.convertClass(domain.asOWLClass()))){
 				System.out.println(domain);
 				return false;
@@ -646,7 +507,7 @@ public class OREManager {
 				moveClasses.add(nc);
 			}
 		}
-		moveClasses.remove(currentClass2Learn);
+		moveClasses.remove(LearningManager.getInstance().getCurrentClass2Describe());
 			
 		return moveClasses;
 	}
@@ -663,7 +524,7 @@ public class OREManager {
 				moveClasses.add(nc);
 			}
 		}
-		moveClasses.remove(currentClass2Learn);
+		moveClasses.remove(LearningManager.getInstance().getCurrentClass2Describe());
 			
 		return moveClasses;
 	}

@@ -1,31 +1,30 @@
 package org.dllearner.tools.ore.explanation;
 
 import java.io.PrintWriter;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
 
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.Timer;
 import org.mindswap.pellet.utils.Timers;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.inference.OWLReasonerFactory;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import com.clarkparsia.explanation.PelletExplanation;
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
+import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class LaconicTest {
 	
@@ -53,16 +52,15 @@ public class LaconicTest {
 				OWLDataFactory dataFactory = manager.getOWLDataFactory();
 				PelletReasonerFactory resonerFact = new PelletReasonerFactory();
 				
-				OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
+				OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI
 						.create(file));
 				
-				Reasoner reasoner = resonerFact.createReasoner(manager);
-				reasoner.loadOntologies(Collections.singleton(ontology));
-				System.out.println(reasoner.getInconsistentClasses());
-				PelletExplanation exp = new PelletExplanation(manager, Collections.singleton(ontology));
+				PelletReasoner reasoner = resonerFact.createReasoner(ontology);
+				System.out.println(reasoner.getUnsatisfiableClasses());
+				PelletExplanation exp = new PelletExplanation(ontology);
 				
 				System.out.println(exp.getUnsatisfiableExplanations(dataFactory.getOWLClass(
-						URI.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#KoalaWithPhD"))));
+						IRI.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#KoalaWithPhD"))));
 				renderer.endRendering();
 			} catch (OWLOntologyCreationException e) {
 				// TODO Auto-generated catch block
@@ -77,30 +75,28 @@ public class LaconicTest {
 			
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			
-			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI
 					.create(file));
 			
 			PelletReasonerFactory reasonerFact = new PelletReasonerFactory();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		
-			Reasoner reasoner = reasonerFact.createReasoner(manager);
-			reasoner.loadOntology(ontology);
-			
-			reasoner.classify();
+			PelletReasoner reasoner = reasonerFact.createReasoner(ontology);
+			reasoner.prepareReasoner();
 			
 			
 			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(
-					manager, reasonerFact, Collections.singleton(ontology));
+					manager, reasonerFact, ontology);
 			
 //			org.semanticweb.owl.explanation.api.ExplanationGenerator<OWLAxiom> copy = org.semanticweb.owl.explanation.api.
 //			ExplanationManager.createLaconicExplanationGeneratorFactory(reasonerFact).createExplanationGenerator(ontology.getAxioms());
 			
 			
-			Set<OWLClass> unsatClasses = reasoner.getInconsistentClasses();
-			OWLSubClassAxiom unsatAxiom;
+			Set<OWLClass> unsatClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
+			OWLSubClassOfAxiom unsatAxiom;
 			Timers timers = new Timers();
 			for (OWLClass unsat : unsatClasses) {
-				unsatAxiom = dataFactory.getOWLSubClassAxiom(unsat, dataFactory
+				unsatAxiom = dataFactory.getOWLSubClassOfAxiom(unsat, dataFactory
 						.getOWLNothing());
 				Timer t1 = timers.createTimer("t1");
 				Timer t2 =timers.createTimer("t2");
@@ -140,19 +136,19 @@ public class LaconicTest {
 			ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
 			PrintWriter pw = new PrintWriter(System.out);
 			renderer.startRendering(pw);
-			OWLClass c = factory.getOWLClass(URI.create("c"));
-			OWLClass d = factory.getOWLClass(URI.create("d"));
-			OWLClass e = factory.getOWLClass(URI.create("e"));
-			OWLAxiom axiom = factory.getOWLSubClassAxiom(c, 
+			OWLClass c = factory.getOWLClass(IRI.create("c"));
+			OWLClass d = factory.getOWLClass(IRI.create("d"));
+			OWLClass e = factory.getOWLClass(IRI.create("e"));
+			OWLAxiom axiom = factory.getOWLSubClassOfAxiom(c, 
 					factory.getOWLObjectIntersectionOf(d, factory.getOWLObjectComplementOf(d), e));
 			OWLOntology ontology = manager.createOntology(Collections.singleton(axiom));
 			OWLReasonerFactory resonerFact = new PelletReasonerFactory();
-			OWLReasoner reasoner = resonerFact.createReasoner(manager);
-			reasoner.loadOntologies(Collections.singleton(ontology));
+			OWLReasoner reasoner = resonerFact.createReasoner(ontology);
 			
-			OWLSubClassAxiom unsatAxiom = factory.getOWLSubClassAxiom(c, factory.getOWLNothing());
+			OWLSubClassOfAxiom unsatAxiom = factory.getOWLSubClassOfAxiom(c, factory.getOWLNothing());
 			
-			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(manager, resonerFact, Collections.singleton(ontology));
+			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(manager, 
+					resonerFact, ontology);
 			Set<Explanation> preciseJusts = expGen.getExplanations(unsatAxiom);
 //			renderer.render(unsatAxiom, preciseJusts);
 			renderer.endRendering();
@@ -162,9 +158,6 @@ public class LaconicTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLReasonerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ExplanationException e) {
@@ -187,25 +180,24 @@ public class LaconicTest {
 			PrintWriter pw = new PrintWriter(System.out);
 			renderer.startRendering(pw);
 
-			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI
 					.create(file));
 			
 			OWLReasonerFactory resonerFact = new PelletReasonerFactory();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
 
-			OWLReasoner reasoner = resonerFact.createReasoner(manager);
-			reasoner.loadOntologies(Collections.singleton(ontology));
+			OWLReasoner reasoner = resonerFact.createReasoner(ontology);
 			
-			OWLSubClassAxiom axiom = dataFactory
-					.getOWLSubClassAxiom(
+			OWLSubClassOfAxiom axiom = dataFactory
+					.getOWLSubClassOfAxiom(
 							dataFactory
-									.getOWLClass(URI
+									.getOWLClass(IRI
 											.create("http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Employee")),
 							dataFactory
-									.getOWLClass(URI
+									.getOWLClass(IRI
 											.create("http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person")));
 			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(
-					manager, resonerFact, Collections.singleton(ontology));
+					manager, resonerFact, ontology);
 			
 
 			 

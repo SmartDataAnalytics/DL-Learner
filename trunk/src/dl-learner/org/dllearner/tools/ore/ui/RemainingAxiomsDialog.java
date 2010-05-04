@@ -7,7 +7,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,21 +19,18 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import org.dllearner.tools.ore.ExplanationManager;
-import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 	
@@ -58,10 +54,8 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 		private JButton cancelButton = null;
 		
 		private List<OWLOntologyChange> changes;
-		private List<OWLAxiom> sourceAxioms;
 		
 		private ExplanationManager expMan;
-		private ImpactManager impMan;
 		
 		private OWLOntology ontology;
 		
@@ -84,23 +78,19 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 			explanationsPanel = new Box(1);
 			
 			expMan = ExplanationManager.getInstance(OREManager.getInstance());
-			impMan = ImpactManager.getInstance(OREManager.getInstance());
 			
 			changes = new ArrayList<OWLOntologyChange>();
-			sourceAxioms = new ArrayList<OWLAxiom>();
-			
-//			sourceAxioms.addAll(expMan.getSourceAxioms(laconicAxiom));
 			
 			Map<OWLAxiom, Set<OWLAxiom>> sourceAxiom2RemainingAxiomPartsMap = expMan.getRemainingAxiomParts(laconicAxiom);
-			
 			for(OWLAxiom source : sourceAxiom2RemainingAxiomPartsMap.keySet()){
 				
 				changes.add(new RemoveAxiom(ont, source));
 				explanationsPanel.add(createRemainingAxiomsPanel(source, sourceAxiom2RemainingAxiomPartsMap.get(source)));
-				
+				explanationsPanel.add(Box.createVerticalStrut(5));
 			}
-			
-			add(explanationsPanel, BorderLayout.CENTER);
+			JPanel p = new JPanel(new BorderLayout());
+			p.add(explanationsPanel, BorderLayout.NORTH);
+			add(p, BorderLayout.CENTER);
 			
 	
 		}
@@ -120,7 +110,7 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 			panel.add(p, BorderLayout.NORTH);
 			
 			RemainingAxiomsTable table = new RemainingAxiomsTable(new ArrayList<OWLAxiom>(remainingParts));
-			panel.add(new JScrollPane(table));
+			panel.add(table);
 			
 			panel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
 			
@@ -195,7 +185,6 @@ public class RemainingAxiomsDialog extends JDialog implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Ok")) {
 			returnCode = OK_RETURN_CODE;
-			impMan.addSelection(sourceAxioms);
 			closeDialog();
 		} else {
 			returnCode = CANCEL_RETURN_CODE;

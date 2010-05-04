@@ -30,11 +30,11 @@ import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLCommentAnnotation;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLLabelAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 
 /**
  * Is a node in the graph, that is a class.
@@ -149,11 +149,11 @@ public class ClassNode extends Node {
 		try{
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
 		
-		OWLClass me =factory.getOWLClass(getURI());
+		OWLClass me =factory.getOWLClass(getIRI());
 		for (ObjectPropertyNode one : classProperties) {
-			OWLClass c = factory.getOWLClass(one.getBPart().getURI());
+			OWLClass c = factory.getOWLClass(one.getBPart().getIRI());
 			if(OWLVocabulary.isStringSubClassVocab(one.getURIString())){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassAxiom(me, c));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassOfAxiom(me, c));
 			}else if(one.getURIString().equals(OWLVocabulary.OWL_DISJOINT_WITH)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLDisjointClassesAxiom(me, c));
 			}else if(one.getURIString().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){
@@ -171,12 +171,14 @@ public class ClassNode extends Node {
 			//FIXME add languages
 			// watch for tail
 			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){
-				OWLCommentAnnotation comment = factory.getCommentAnnotation(one.getBPart().getLiteral().getString());
-				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, comment));
+				OWLAnnotation annoComment = factory.getOWLAnnotation(factory.getRDFSComment(), factory.getOWLStringLiteral(one.getBPart().getLiteral().getString()));
+				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoComment);
+				owlAPIOntologyCollector.addAxiom(ax);
 				
 			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)) {
-				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.getBPart().getLiteral().getString());
-				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLStringLiteral(one.getBPart().getLiteral().getString()));
+				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
+				owlAPIOntologyCollector.addAxiom(ax);
 			}else {
 				tail(true, "in ontology conversion: no other datatypes, but annotation is allowed for classes."+" data property is: "+one.getURIString()+" connected with: "+one.getBPart().getNTripleForm());
 				
@@ -184,10 +186,10 @@ public class ClassNode extends Node {
 		
 		}
 		for (BlankNode bn : blankNodes) {
-			OWLDescription target = bn.getAnonymousClass(owlAPIOntologyCollector);
+			OWLClassExpression target = bn.getAnonymousClass(owlAPIOntologyCollector);
 			
 			if(OWLVocabulary.isStringSubClassVocab(bn.getInBoundEdge())){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassAxiom(me, target));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassOfAxiom(me, target));
 			}else if(bn.getInBoundEdge().equals(OWLVocabulary.OWL_DISJOINT_WITH)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLDisjointClassesAxiom(me, target));
 			}else if(bn.getInBoundEdge().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){

@@ -7,8 +7,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.model.OWLClassAxiom;
-import org.semanticweb.owl.model.OWLException;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLClassAxiom;
 
 public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<OWLClassAxiom>{
 	
@@ -78,10 +78,9 @@ public class OWLClassAxiomEditor implements VerifiedInputEditor, OWLAxiomEditor<
             else {
                 return null;
             }
-        }
-        catch (OWLException e) {
-            return null;
-        }
+        } catch (ParserException e) {
+        	 return null;
+		}
     }
 
 

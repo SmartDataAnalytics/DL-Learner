@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +31,7 @@ import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.owl.OntologyCloser;
+import org.semanticweb.owlapi.model.IRI;
 
 /*
  * Structure
@@ -75,7 +75,7 @@ public class KRK {
 	static String owlfilename = "complete_nodraw.owl";
 	
 
-	static URI ontologyURI = URI.create("http://dl-learner.org/krk");
+	static IRI ontologyIRI = IRI.create("http://dl-learner.org/krk");
 	// static SortedSet<String> fileSet = new TreeSet<String>();
 	static SortedSet<String> allInstances = new TreeSet<String>();
 	static SortedSet<String> classSet = new TreeSet<String>();
@@ -682,7 +682,7 @@ public class KRK {
 		File owlfile = new File(workingDir+"/" + filename);
 		// System.out.println(kb.toString("http://www.test.de/test", new
 		// HashMap<String, String>()));
-		OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyURI);
+		OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyIRI);
 
 	}
 	
@@ -691,7 +691,7 @@ public class KRK {
 		System.out.println("Writing kb");
 		try{
 		FileWriter fw = new FileWriter(workingDir+"/" + filename,false); 
-		fw.write(kb.toKBSyntaxString(ontologyURI.toString(), null));
+		fw.write(kb.toKBSyntaxString(ontologyIRI.toString(), null));
 		fw.flush();
 		}catch (Exception e) {e.printStackTrace();}
 		System.out.println("done writing kb");
@@ -700,25 +700,25 @@ public class KRK {
 	}
 
 	protected static Individual getIndividual(String name) {
-		return new Individual(ontologyURI + "#" + name);
+		return new Individual(ontologyIRI + "#" + name);
 	}
 
 	protected static ObjectProperty getRole(String name) {
-		return new ObjectProperty(ontologyURI + "#" + name);
+		return new ObjectProperty(ontologyIRI + "#" + name);
 	}
 
 	@SuppressWarnings("unused")
 	protected static DatatypeProperty getDatatypeProperty(String name) {
-		return new DatatypeProperty(ontologyURI + "#" + name);
+		return new DatatypeProperty(ontologyIRI + "#" + name);
 	}
 
 	protected static NamedClass getAtomicConcept(String name) {
-		return new NamedClass(ontologyURI + "#" + name);
+		return new NamedClass(ontologyIRI + "#" + name);
 	}
 
 	@SuppressWarnings("unused")
 	protected static String getURI(String name) {
-		return ontologyURI + "#" + name;
+		return ontologyIRI + "#" + name;
 	}
 
 	@SuppressWarnings("unused")

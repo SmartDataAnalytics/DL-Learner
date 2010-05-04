@@ -48,13 +48,13 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.protege.editor.core.Disposable;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 public class ExplanationTable extends JXTable implements RepairManagerListener, Disposable{
 
@@ -343,7 +343,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		}
 		final Component parent = SwingUtilities.getAncestorOfClass(Frame.class, getParent());
 		final JDialog dlg = optionPane.createDialog(parent, null);
-		dlg.setModal(false);
+		dlg.setModal(true);
 		dlg.setResizable(true);
 		dlg.pack();
 		dlg.setLocationRelativeTo(parent);

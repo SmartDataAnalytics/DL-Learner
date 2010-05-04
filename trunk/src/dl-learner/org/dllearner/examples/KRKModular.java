@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -36,6 +35,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.statistics.SimpleClock;
+import org.semanticweb.owlapi.model.IRI;
 
 /*
  * Structure
@@ -74,7 +74,7 @@ public class KRKModular {
 	static String allData = workingDir+"krkopt_no_draw.data";
 	//static String allData = workingDir+"krkopt_original_dataset.data";
 	
-	static URI ontologyURI = KRKOntologyTBox.ontologyURI;
+	static IRI ontologyURI = IRI.create(KRKOntologyTBox.ontologyURI);
 	
 	// static SortedSet<String> fileSet = new TreeSet<String>();
 	//static SortedSet<String> allInstances = new TreeSet<String>();

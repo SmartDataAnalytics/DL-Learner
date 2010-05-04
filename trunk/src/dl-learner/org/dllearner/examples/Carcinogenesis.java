@@ -22,7 +22,6 @@ package org.dllearner.examples;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,18 +32,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.DifferentIndividualsAxiom;
-import org.dllearner.core.owl.DisjointClassesAxiom;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyAssertion;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DifferentIndividualsAxiom;
+import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.SubClassAxiom;
@@ -57,6 +56,7 @@ import org.dllearner.prolog.Program;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.IRI;
 
 /**
  * This class maps the carcinogenesis Prolog files to an OWL file. In a first
@@ -79,7 +79,7 @@ import org.dllearner.utilities.Helper;
  */
 public class Carcinogenesis {
 
-	private static URI ontologyURI = URI.create("http://dl-learner.org/carcinogenesis");
+	private static IRI ontologyIRI = IRI.create("http://dl-learner.org/carcinogenesis");
 
 	// directory of Prolog files
 	private static final String prologDirectory = "examples/carcinogenesis/prolog/";	
@@ -252,7 +252,7 @@ public class Carcinogenesis {
 		// writing generated knowledge base
 		System.out.print("Writing OWL file ... ");
 		startTime = System.nanoTime();
-		OWLAPIReasoner.exportKBToOWL(owlFile, kb, ontologyURI);
+		OWLAPIReasoner.exportKBToOWL(owlFile, kb, ontologyIRI);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
@@ -554,23 +554,23 @@ public class Carcinogenesis {
 	}	
 	
 	private static Individual getIndividual(String name) {
-		return new Individual(ontologyURI + "#" + name);
+		return new Individual(ontologyIRI + "#" + name);
 	}
 
 	private static ObjectProperty getRole(String name) {
-		return new ObjectProperty(ontologyURI + "#" + name);
+		return new ObjectProperty(ontologyIRI + "#" + name);
 	}
 
 	private static DatatypeProperty getDatatypeProperty(String name) {
-		return new DatatypeProperty(ontologyURI + "#" + name);
+		return new DatatypeProperty(ontologyIRI + "#" + name);
 	}
 
 	private static NamedClass getAtomicConcept(String name) {
-		return new NamedClass(ontologyURI + "#" + name);
+		return new NamedClass(ontologyIRI + "#" + name);
 	}
 
 	private static String getURI(String name) {
-		return ontologyURI + "#" + name;
+		return ontologyIRI + "#" + name;
 	}
 	
 	// returns URI including quotationsmark (need for KBparser)

@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -33,13 +32,17 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.core.ComponentInitException;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * Takes a file with a list of ontologies as input (one URL per line),
@@ -64,7 +67,7 @@ public class OntologyChecker {
 		File file = new File(args[0]);
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		Reasoner reasoner = new Reasoner(manager);
+		PelletReasoner reasoner;
 		OWLOntology ontology;
 		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
 		StringBuffer sb = new StringBuffer();
@@ -77,27 +80,27 @@ public class OntologyChecker {
 			while ((url = in.readLine()) != null) {
 				try {
 					System.out.println(count++ + ":" + url);
-					ontology = manager.loadOntology(URI.create(url));
+					ontology = manager.loadOntology(IRI.create(url));
 					ontologies.add(ontology);
 					ontologies.addAll(manager.getImportsClosure(ontology));
-					reasoner.loadOntologies(ontologies);
+					reasoner = new PelletReasonerFactory().createReasoner(ontology);
 					sb.append(url + "\n");
 					sb.append("#logical axioms: " + ontology.getLogicalAxiomCount() + "\n");
 					sb2.append(ontology.getLogicalAxiomCount() + "\t");
-					sb.append("#classes: " + reasoner.getClasses().size() + "\n");
-					sb2.append(ontology.getReferencedClasses().size() + "\t");
-					sb.append("#object properties: " + reasoner.getObjectProperties().size() + "\n");
-					sb2.append(ontology.getReferencedObjectProperties().size() + "\t");
-					sb.append("#data properties: " + reasoner.getDataProperties().size() + "\n");
-					sb2.append(ontology.getReferencedDataProperties().size() + "\t");
-					sb.append("#individuals: " + reasoner.getIndividuals().size() + "\n");
+					sb.append("#classes: " + ontology.getClassesInSignature(true).size() + "\n");
+					sb2.append(ontology.getClassesInSignature(true).size() + "\t");
+					sb.append("#object properties: " + ontology.getObjectPropertiesInSignature(true).size() + "\n");
+					sb2.append(ontology.getObjectPropertiesInSignature(true).size() + "\t");
+					sb.append("#data properties: " + ontology.getDataPropertiesInSignature(true).size() + "\n");
+					sb2.append(ontology.getDataPropertiesInSignature(true).size() + "\t");
+					sb.append("#individuals: " + ontology.getIndividualsInSignature(true).size() + "\n");
 					sb2.append(url + "\t");
 					
 					if (reasoner.isConsistent()) {
 						long startTime = System.currentTimeMillis();
-						reasoner.classify();
+						reasoner.prepareReasoner();
 						sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
-						int unsatCount = reasoner.getInconsistentClasses().size();
+						int unsatCount = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size();
 						sb.append("#unsatisfiable classes: " + unsatCount + "\n");
 						if(unsatCount > 0){
 							incohaerentOntologies.put(url, Integer.valueOf(unsatCount));
@@ -106,12 +109,12 @@ public class OntologyChecker {
 						int classCount = 0;
 
 						StringBuffer tmp = new StringBuffer();
-						if (reasoner.getIndividuals().size() > 0) {
-							for (OWLClass cl : reasoner.getClasses()) {
-								Set<OWLIndividual> inds = reasoner.getIndividuals(cl, false);
+						if (ontology.getIndividualsInSignature(true).size() > 0) {
+							for (OWLClass cl : ontology.getClassesInSignature(true)) {
+								Set<OWLNamedIndividual> inds = reasoner.getInstances(cl, false).getFlattened();
 								if (inds.size() >= minInstanceCount) {
 									classCount++;
-									tmp.append("  " + cl.getURI() + "\n");
+									tmp.append("  " + cl.getIRI() + "\n");
 									if(displayInstances) {
 										int indCount = 0;
 										for(OWLIndividual ind : inds) {
@@ -139,8 +142,8 @@ public class OntologyChecker {
 					sb.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n");
 					sb2.append("\n");
 					
-					reasoner.unloadOntologies(ontologies);
-					manager.removeOntology(URI.create(url));
+					reasoner.dispose();
+					manager.removeOntology(ontology);
 					ontologies.clear();
 					System.out.println(inconsistentOntologies.size() + " inconsistent ontologies:");
 					int cnt = 1;

@@ -2,7 +2,7 @@ package org.dllearner.tools.ore.explanation;
 
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 public interface ExplanationGenerator {
 	public abstract Explanation getExplanation(OWLAxiom enatilment);

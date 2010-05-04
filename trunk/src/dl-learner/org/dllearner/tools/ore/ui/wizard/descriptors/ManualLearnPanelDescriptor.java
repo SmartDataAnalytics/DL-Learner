@@ -20,7 +20,6 @@
 
 package org.dllearner.tools.ore.ui.wizard.descriptors;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -137,23 +136,15 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 			LearningManager.getInstance().setThreshold(learnPanel.getOptionsPanel().getThreshold());
 	        
 			if(learnPanel.isEquivalentClassesTypeSelected()){
-				OREManager.getInstance().setLearningType("equivalence");
 				LearningManager.getInstance().setLearningType(LearningType.EQUIVALENT);
-				
 				learningType = "equivalent";
 			} else {
-				learningType = "super";
-				OREManager.getInstance().setLearningType("superClass");
 				LearningManager.getInstance().setLearningType(LearningType.SUPER);
+				learningType = "super";
 			}
 			
-			TaskManager.getInstance().getStatusBar().setMessage("Learning " + learningType + " class expressions...");
-			getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...", false);
 			
-	        OREManager.getInstance().setNoisePercentage(learnPanel.getOptionsPanel().getMinAccuracy());
-	        OREManager.getInstance().setMaxExecutionTimeInSeconds(learnPanel.getOptionsPanel().getMaxExecutionTime());
-	        OREManager.getInstance().setMaxNrOfResults(learnPanel.getOptionsPanel().getNrOfConcepts());
-	        OREManager.getInstance().setThreshold(learnPanel.getOptionsPanel().getThreshold());
 	        learnPanel.reset();
 	        
 //	        TaskManager.getInstance().setTaskStarted("Learning " + learningType + " class expressions...");
@@ -177,7 +168,7 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 		} else{
 			
 			learnPanel.getStopButton().setEnabled(false);
-			la.stop();
+			LearningManager.getInstance().stopLearning();
 	        timer.cancel();
 			learnPanel.getStartButton().setEnabled(true);
 			getWizard().getStatusBar().showProgress(false);
@@ -255,30 +246,23 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 		@SuppressWarnings("unchecked")
 		@Override
 		public Void doInBackground() {
-			
-			OREManager.getInstance().setLearningProblem();
-		    OREManager.getInstance().setLearningAlgorithm();
-
-			la = OREManager.getInstance().getLa();
-			
-			setProgress(0);
-			TaskManager.getInstance().getStatusBar().setMaximumValue(OREManager.getInstance().getMaxExecutionTimeInSeconds());
+			TaskManager.getInstance().getStatusBar().setMaximumValue(LearningManager.getInstance().getMaxExecutionTimeInSeconds());
 			timer = new Timer();
-			
 			timer.schedule(new TimerTask(){
 				int progress = 0;
+				List<? extends EvaluatedDescription> result;
 				@Override
-				public void run() {progress += 1;setProgress(progress);
-					if(!isCancelled() && la.isRunning()){
-						List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
-								OREManager.getInstance().getThreshold(), true);
+				public void run() {
+					progress += 1;
+					setProgress(progress);
+					if(!isCancelled() && LearningManager.getInstance().isLearning()){
+						result = LearningManager.getInstance().getCurrentlyLearnedDescriptions();
 						publish(result);
 					}
 				}
 				
 			}, 1000, 1000);
-			la.start();
-	
+			LearningManager.getInstance().startLearning();
 			
 			
 			return null;
@@ -289,8 +273,7 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 			
 			timer.cancel();
 			
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(OREManager.getInstance().getMaxNrOfResults(), 
-								OREManager.getInstance().getThreshold(), true);
+			List<? extends EvaluatedDescription> result = LearningManager.getInstance().getCurrentlyLearnedDescriptions();
 			updateList(result);
 			TaskManager.getInstance().setTaskFinished();
 			setProgress(0);

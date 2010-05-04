@@ -2,17 +2,15 @@ package org.dllearner.test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 
 
@@ -46,10 +44,10 @@ public static OWLOntology getWholeOWLAPIOntology(URL url){
 //				FileWriter fw = new FileWriter(f);
 //				fw.write(content);
 //				fw.close();
-				URI physicalURI = url.toURI();
+				IRI physicalIRI = IRI.create(url);
 //				URI physicalURI = f.toURI();
 				OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-				onto =  manager.loadOntologyFromPhysicalURI(physicalURI);
+				onto =  manager.loadOntologyFromOntologyDocument(physicalIRI);
 				System.out.println(onto.getAxiomCount());
 			}catch (Exception e) {
 				e.printStackTrace();

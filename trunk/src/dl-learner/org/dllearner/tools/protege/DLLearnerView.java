@@ -41,7 +41,7 @@ import javax.swing.JToggleButton;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
  * This class is responsible for the view of the dllearner. It renders the
  * output for the user and is the graphical component of the plugin.
@@ -218,21 +218,21 @@ public class DLLearnerView {
 		hint.setForeground(Color.BLACK);
 		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
 		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
-		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
-			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
+		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
+			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
 				model.setKnowledgeSourceIsUpdated(true);
 			} else {
 				model.setKnowledgeSourceIsUpdated(false);
 			}
 			readThread = new ReadingOntologyThread(editorKit, this, model);
 		}
-		if(!readThread.isAlive() && !labels.equals(currentConcept)|| individualSize != editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size()) {
+		if(!readThread.isAlive() && !labels.equals(currentConcept)|| individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
 			readThread.start();
 		}
 		if(readThread.hasIndividuals()) {
 			run.setEnabled(true);
 		}
-		individualSize = editorKit.getModelManager().getActiveOntology().getIndividualAxioms().size();
+		individualSize = editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size();
 		labels = currentConcept;
 		run.setText("<html>suggest " + label + " expression</html>");
 		GridBagConstraints c = new GridBagConstraints();
@@ -423,9 +423,9 @@ public class DLLearnerView {
 
 	/**
 	 * Returns all added descriptions.
-	 * @return Set(OWLDescription) 
+	 * @return Set(OWLClassExpression) 
 	 */
-	public Set<OWLDescription> getSolutions() {
+	public Set<OWLClassExpression> getSolutions() {
 
 		return model.getNewOWLDescription();
 	}
@@ -444,9 +444,9 @@ public class DLLearnerView {
 
 	/**
 	 * Returns the last added description.
-	 * @return OWLDescription
+	 * @return OWLClassExpression
 	 */
-	public OWLDescription getSolution() {
+	public OWLClassExpression getSolution() {
 		return model.getSolution();
 	}
 

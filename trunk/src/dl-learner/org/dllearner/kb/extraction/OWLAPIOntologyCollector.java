@@ -1,18 +1,18 @@
 package org.dllearner.kb.extraction;
 
 import java.io.File;
-import java.net.URI;
 
 import org.apache.log4j.Logger;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.SimpleURIMapper;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 public class OWLAPIOntologyCollector {
 	
@@ -21,8 +21,8 @@ public class OWLAPIOntologyCollector {
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	private OWLDataFactory factory;
 	private OWLOntology currentOntology;
-	private URI ontologyURI;
-	private URI physicalURI;
+	private IRI ontologyIRI;
+	private IRI physicalIRI;
 	 
 	
 
@@ -30,15 +30,15 @@ public class OWLAPIOntologyCollector {
 		 this("http://www.fragment.org/fragment", "cache/"+System.currentTimeMillis()+".owl");
 	 }
 	 
-	 public OWLAPIOntologyCollector(String ontologyURI, String physicalURI){
-		 this.ontologyURI = URI.create(ontologyURI);
-		 this.physicalURI = new File(physicalURI).toURI();
-		 SimpleURIMapper mapper = new SimpleURIMapper(this.ontologyURI, this.physicalURI);
-		 this.manager.addURIMapper(mapper);
+	 public OWLAPIOntologyCollector(String ontologyIRI, String physicalIRI){
+		 this.ontologyIRI = IRI.create(ontologyIRI);
+		 this.physicalIRI = IRI.create(new File(physicalIRI));
+		 SimpleIRIMapper mapper = new SimpleIRIMapper(this.ontologyIRI, this.physicalIRI);
+		 this.manager.addIRIMapper(mapper);
 		 try{
-		 this.currentOntology = manager.createOntology(this.ontologyURI);
+		 this.currentOntology = manager.createOntology(this.ontologyIRI);
 		 }catch(OWLOntologyCreationException e){
-			 logger.error("FATAL failed to create Ontology " + this.ontologyURI);
+			 logger.error("FATAL failed to create Ontology " + this.ontologyIRI);
 			 e.printStackTrace();
 		 }
 		 this.factory = manager.getOWLDataFactory();
@@ -50,7 +50,6 @@ public class OWLAPIOntologyCollector {
 		 try{
 		 manager.applyChange(addAxiom);
 		 }catch (OWLOntologyChangeException e) {
-			//TODO
 			 e.printStackTrace();
 		}
 	 }
@@ -73,8 +72,8 @@ public class OWLAPIOntologyCollector {
 		return currentOntology;
 	}
 
-	public URI getPhysicalURI() {
-		return physicalURI;
+	public IRI getPhysicalIRI() {
+		return physicalIRI;
 	}
 	
 	public int getNrOfExtractedAxioms(){

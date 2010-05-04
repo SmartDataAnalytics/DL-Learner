@@ -28,7 +28,7 @@ import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * An evaluated description is a description and its score (with some
@@ -123,8 +123,8 @@ public class EvaluatedDescription implements Serializable{
 		JSONObject object = new JSONObject();
 		try {
 			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
+			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
 			object.put("scoreValue", score.getAccuracy());		
 			return object.toString(3);

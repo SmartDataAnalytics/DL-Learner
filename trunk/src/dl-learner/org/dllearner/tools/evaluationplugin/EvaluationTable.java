@@ -15,7 +15,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.LinkedObjectComponent;
 import org.protege.editor.owl.ui.renderer.LinkedObjectComponentMediator;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObject;
 
 public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	/**
@@ -149,5 +149,6 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	public Map<EvaluatedDescriptionClass, Integer> getUserInputMap(){
 		return ((EvaluationTableModel)getModel()).getUserInputMap();
 	}
+
 	
 }

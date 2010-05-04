@@ -1,36 +1,51 @@
 package org.dllearner.tools.ore.ui.rendering;
 
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.AND;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.ANTI_SYMMETRIC;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.DIFFERENT_FROM;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_UNION_OF;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_WITH;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.DOMAIN;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_TO;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.EXACTLY;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.FACET_RESTRICTION_SEPARATOR;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.FUNCTIONAL;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE_FUNCTIONAL;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.IRREFLEXIVE;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.MAX;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.MIN;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.NOT;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.ONE_OF_DELIMETER;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.ONLY;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.OR;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.RANGE;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.REFLEXIVE;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.SAME_AS;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.SELF;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.SOME;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.SUBCLASS_OF;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.SUB_PROPERTY_OF;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.SYMMETRIC;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.THAT;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.TRANSITIVE;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.TYPES;
-import static org.coode.manchesterowlsyntax.ManchesterOWLSyntax.VALUE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.AND;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ANNOTATION_PROPERTY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ASYMMETRIC;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.CHARACTERISTICS;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.CLASS;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.COMMA;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DATA_PROPERTY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DIFFERENT_FROM;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DIFFERENT_INDIVIDUALS;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_CLASSES;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_PROPERTIES;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_UNION_OF;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_WITH;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DOMAIN;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_CLASSES;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_PROPERTIES;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_TO;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EXACTLY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.FACET_RESTRICTION_SEPARATOR;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.FUNCTIONAL;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.HAS_KEY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INDIVIDUAL;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE_FUNCTIONAL;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE_OF;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.IRREFLEXIVE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.MAX;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.MIN;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.NOT;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.OBJECT_PROPERTY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ONE_OF_DELIMETER;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ONLY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ONTOLOGY;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.OR;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.RANGE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.REFLEXIVE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SAME_AS;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SAME_INDIVIDUAL;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SELF;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SOME;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SUBCLASS_OF;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SUB_PROPERTY_OF;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SYMMETRIC;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.TRANSITIVE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.TYPE;
+import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.VALUE;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -39,104 +54,109 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntax;
-import org.semanticweb.owl.model.OWLAnonymousDescription;
-import org.semanticweb.owl.model.OWLAntiSymmetricObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
-import org.semanticweb.owl.model.OWLCardinalityRestriction;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLClassAssertionAxiom;
-import org.semanticweb.owl.model.OWLConstantAnnotation;
-import org.semanticweb.owl.model.OWLDataAllRestriction;
-import org.semanticweb.owl.model.OWLDataComplementOf;
-import org.semanticweb.owl.model.OWLDataExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataOneOf;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLDataPropertyDomainAxiom;
-import org.semanticweb.owl.model.OWLDataPropertyRangeAxiom;
-import org.semanticweb.owl.model.OWLDataRangeFacetRestriction;
-import org.semanticweb.owl.model.OWLDataRangeRestriction;
-import org.semanticweb.owl.model.OWLDataSomeRestriction;
-import org.semanticweb.owl.model.OWLDataSubPropertyAxiom;
-import org.semanticweb.owl.model.OWLDataType;
-import org.semanticweb.owl.model.OWLDataValueRestriction;
-import org.semanticweb.owl.model.OWLDeclarationAxiom;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
-import org.semanticweb.owl.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owl.model.OWLDisjointDataPropertiesAxiom;
-import org.semanticweb.owl.model.OWLDisjointObjectPropertiesAxiom;
-import org.semanticweb.owl.model.OWLDisjointUnionAxiom;
-import org.semanticweb.owl.model.OWLEntityAnnotationAxiom;
-import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owl.model.OWLEquivalentDataPropertiesAxiom;
-import org.semanticweb.owl.model.OWLEquivalentObjectPropertiesAxiom;
-import org.semanticweb.owl.model.OWLFunctionalDataPropertyAxiom;
-import org.semanticweb.owl.model.OWLFunctionalObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLImportsDeclaration;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLInverseFunctionalObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLInverseObjectPropertiesAxiom;
-import org.semanticweb.owl.model.OWLIrreflexiveObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLNegativeDataPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLNegativeObjectPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLObjectAllRestriction;
-import org.semanticweb.owl.model.OWLObjectAnnotation;
-import org.semanticweb.owl.model.OWLObjectComplementOf;
-import org.semanticweb.owl.model.OWLObjectExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectIntersectionOf;
-import org.semanticweb.owl.model.OWLObjectMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectOneOf;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLObjectPropertyChainSubPropertyAxiom;
-import org.semanticweb.owl.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
-import org.semanticweb.owl.model.OWLObjectPropertyInverse;
-import org.semanticweb.owl.model.OWLObjectPropertyRangeAxiom;
-import org.semanticweb.owl.model.OWLObjectSelfRestriction;
-import org.semanticweb.owl.model.OWLObjectSomeRestriction;
-import org.semanticweb.owl.model.OWLObjectSubPropertyAxiom;
-import org.semanticweb.owl.model.OWLObjectUnionOf;
-import org.semanticweb.owl.model.OWLObjectValueRestriction;
-import org.semanticweb.owl.model.OWLObjectVisitor;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyAnnotationAxiom;
-import org.semanticweb.owl.model.OWLPropertyExpression;
-import org.semanticweb.owl.model.OWLQuantifiedRestriction;
-import org.semanticweb.owl.model.OWLReflexiveObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLRestriction;
-import org.semanticweb.owl.model.OWLSameIndividualsAxiom;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
-import org.semanticweb.owl.model.OWLSymmetricObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLTransitiveObjectPropertyAxiom;
-import org.semanticweb.owl.model.OWLTypedConstant;
-import org.semanticweb.owl.model.OWLUntypedConstant;
-import org.semanticweb.owl.model.OWLValueRestriction;
-import org.semanticweb.owl.model.SWRLAtom;
-import org.semanticweb.owl.model.SWRLAtomConstantObject;
-import org.semanticweb.owl.model.SWRLAtomDObject;
-import org.semanticweb.owl.model.SWRLAtomDVariable;
-import org.semanticweb.owl.model.SWRLAtomIVariable;
-import org.semanticweb.owl.model.SWRLAtomIndividualObject;
-import org.semanticweb.owl.model.SWRLBuiltInAtom;
-import org.semanticweb.owl.model.SWRLClassAtom;
-import org.semanticweb.owl.model.SWRLDataRangeAtom;
-import org.semanticweb.owl.model.SWRLDataValuedPropertyAtom;
-import org.semanticweb.owl.model.SWRLDifferentFromAtom;
-import org.semanticweb.owl.model.SWRLObjectPropertyAtom;
-import org.semanticweb.owl.model.SWRLRule;
-import org.semanticweb.owl.model.SWRLSameAsAtom;
-import org.semanticweb.owl.vocab.XSDVocabulary;
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLAnonymousClassExpression;
+import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
+import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLCardinalityRestriction;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataComplementOf;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataOneOf;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataUnionOf;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
+import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
+import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
+import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLDisjointUnionAxiom;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLEquivalentDataPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLFacetRestriction;
+import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLHasKeyAxiom;
+import org.semanticweb.owlapi.model.OWLHasValueRestriction;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectInverseOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLObjectVisitor;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
+import org.semanticweb.owlapi.model.OWLStringLiteral;
+import org.semanticweb.owlapi.model.OWLSubAnnotationPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubDataPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
+import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLTypedLiteral;
+import org.semanticweb.owlapi.model.SWRLAtom;
+import org.semanticweb.owlapi.model.SWRLBuiltInAtom;
+import org.semanticweb.owlapi.model.SWRLClassAtom;
+import org.semanticweb.owlapi.model.SWRLDArgument;
+import org.semanticweb.owlapi.model.SWRLDataPropertyAtom;
+import org.semanticweb.owlapi.model.SWRLDataRangeAtom;
+import org.semanticweb.owlapi.model.SWRLDifferentIndividualsAtom;
+import org.semanticweb.owlapi.model.SWRLIndividualArgument;
+import org.semanticweb.owlapi.model.SWRLLiteralArgument;
+import org.semanticweb.owlapi.model.SWRLObjectPropertyAtom;
+import org.semanticweb.owlapi.model.SWRLRule;
+import org.semanticweb.owlapi.model.SWRLSameIndividualAtom;
+import org.semanticweb.owlapi.model.SWRLVariable;
+import org.semanticweb.owlapi.util.ShortFormProvider;
 
-import uk.ac.manchester.cs.owl.mansyntaxrenderer.AbstractRenderer;
-
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.AbstractRenderer;
 
 
 /**
@@ -149,25 +169,15 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
     public static final int LINE_LENGTH = 70;
 
-    private boolean wrap = true;
 
-    private DescriptionComparator descriptionComparator;
-
-
-    public ManchesterOWLSyntaxObjectRenderer(Writer writer) {
-        super(writer);
-        descriptionComparator = new DescriptionComparator();
-    }
-
-
-    public void setWrap(boolean wrap) {
-        this.wrap = wrap;
+    public ManchesterOWLSyntaxObjectRenderer(Writer writer, ShortFormProvider entityShortFormProvider) {
+        super(writer, entityShortFormProvider);
     }
 
     protected List<? extends OWLObject> sort(Collection<? extends OWLObject> objects) {
-        List<? extends OWLObject> sortedDescriptions = new ArrayList<OWLObject>(objects);
-        Collections.sort(sortedDescriptions, descriptionComparator);
-        return sortedDescriptions;
+        List<? extends OWLObject> sortedObjects = new ArrayList<OWLObject>(objects);
+        Collections.sort(sortedObjects);
+        return sortedObjects;
     }
 
 
@@ -177,7 +187,7 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
         for (Iterator<? extends OWLObject> it = sort(objects).iterator(); it.hasNext();) {
             it.next().accept(this);
             if (it.hasNext()) {
-                if (newline && wrap) {
+                if (newline && isUseWrapping()) {
                     writeNewLine();
                 }
                 write(delimeter);
@@ -186,27 +196,36 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
         popTab();
     }
 
+    protected void writeCommaSeparatedList(Set<? extends OWLObject> objects) {
+        for (Iterator<OWLObject> it = new TreeSet<OWLObject>(objects).iterator(); it.hasNext();) {
+            it.next().accept(this);
+            if (it.hasNext()) {
+                write(", ");
+            }
+        }
+    }
 
-    protected void write(Set<? extends OWLDescription> objects, boolean newline) {
+    protected void write(Set<? extends OWLClassExpression> objects, boolean newline) {
         boolean lastWasNamed = false;
         boolean first = true;
 
         for (Iterator<? extends OWLObject> it = sort(objects).iterator(); it.hasNext();) {
             OWLObject desc = it.next();
             if (!first) {
-                if (newline) {
+                if (newline && isUseWrapping()) {
                     writeNewLine();
                 }
-                if (lastWasNamed && desc instanceof OWLRestriction) {
-                    write(" ", THAT, " ");
-                }
-                else {
-                    write(" ", AND, " ");
-                }
+                write(" ", AND, " ");
             }
 
             first = false;
+            if (desc instanceof OWLAnonymousClassExpression) {
+                write("(");
+            }
             desc.accept(this);
+            if (desc instanceof OWLAnonymousClassExpression) {
+                write(")");
+            }
 
             lastWasNamed = desc instanceof OWLClass;
         }
@@ -216,17 +235,26 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     private void writeRestriction(OWLQuantifiedRestriction restriction, ManchesterOWLSyntax keyword) {
         restriction.getProperty().accept(this);
         write(keyword);
-        if (restriction.getFiller() instanceof OWLAnonymousDescription) {
+        boolean conjunctionOrDisjunction = false;
+        if (restriction.getFiller() instanceof OWLAnonymousClassExpression) {
+            if (restriction.getFiller() instanceof OWLObjectIntersectionOf || restriction.getFiller() instanceof OWLObjectUnionOf) {
+                conjunctionOrDisjunction = true;
+                incrementTab(4);
+                writeNewLine();
+            }
             write("(");
         }
         restriction.getFiller().accept(this);
-        if (restriction.getFiller() instanceof OWLAnonymousDescription) {
+        if (restriction.getFiller() instanceof OWLAnonymousClassExpression) {
             write(")");
+            if (conjunctionOrDisjunction) {
+                popTab();
+            }
         }
     }
 
 
-    private void writeRestriction(OWLValueRestriction restriction) {
+    private void writeRestriction(OWLHasValueRestriction restriction) {
         restriction.getProperty().accept(this);
         write(VALUE);
         restriction.getValue().accept(this);
@@ -239,30 +267,55 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
         write(Integer.toString(restriction.getCardinality()));
 //        if(restriction.isQualified()) {
         writeSpace();
+        if (restriction.getFiller() instanceof OWLAnonymousClassExpression) {
+            write("(");
+        }
         restriction.getFiller().accept(this);
+        if (restriction.getFiller() instanceof OWLAnonymousClassExpression) {
+            write(")");
+        }
 //        }
 
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Class descriptions
+    // Class expressions
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
     public void visit(OWLClass desc) {
-        write(getShortFormProvider().getShortForm(desc));
+        write((getShortFormProvider().getShortForm(desc)));
     }
 
 
     public void visit(OWLObjectIntersectionOf desc) {
-        write(desc.getOperands(), false);
+        write(desc.getOperands(), true);
     }
 
 
     public void visit(OWLObjectUnionOf desc) {
-        write(desc.getOperands(), OR, false);
+        boolean first = true;
+        for (Iterator<? extends OWLClassExpression> it = desc.getOperands().iterator(); it.hasNext();) {
+            OWLClassExpression op = it.next();
+            if (!first) {
+                if (isUseWrapping()) {
+                    writeNewLine();
+                }
+                write(" ", OR, " ");
+            }
+
+            first = false;
+            if (op.isAnonymous()) {
+                write("(");
+            }
+            op.accept(this);
+            if (op.isAnonymous()) {
+                write(")");
+            }
+
+        }
     }
 
 
@@ -278,37 +331,37 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    public void visit(OWLObjectSomeRestriction desc) {
+    public void visit(OWLObjectSomeValuesFrom desc) {
         writeRestriction(desc, SOME);
     }
 
 
-    public void visit(OWLObjectAllRestriction desc) {
+    public void visit(OWLObjectAllValuesFrom desc) {
         writeRestriction(desc, ONLY);
     }
 
 
-    public void visit(OWLObjectValueRestriction desc) {
+    public void visit(OWLObjectHasValue desc) {
         writeRestriction(desc);
     }
 
 
-    public void visit(OWLObjectMinCardinalityRestriction desc) {
+    public void visit(OWLObjectMinCardinality desc) {
         writeRestriction(desc, MIN);
     }
 
 
-    public void visit(OWLObjectExactCardinalityRestriction desc) {
+    public void visit(OWLObjectExactCardinality desc) {
         writeRestriction(desc, EXACTLY);
     }
 
 
-    public void visit(OWLObjectMaxCardinalityRestriction desc) {
+    public void visit(OWLObjectMaxCardinality desc) {
         writeRestriction(desc, MAX);
     }
 
 
-    public void visit(OWLObjectSelfRestriction desc) {
+    public void visit(OWLObjectHasSelf desc) {
         desc.getProperty().accept(this);
         write(SOME);
         write(SELF);
@@ -322,32 +375,32 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    public void visit(OWLDataSomeRestriction desc) {
+    public void visit(OWLDataSomeValuesFrom desc) {
         writeRestriction(desc, SOME);
     }
 
 
-    public void visit(OWLDataAllRestriction desc) {
+    public void visit(OWLDataAllValuesFrom desc) {
         writeRestriction(desc, ONLY);
     }
 
 
-    public void visit(OWLDataValueRestriction desc) {
+    public void visit(OWLDataHasValue desc) {
         writeRestriction(desc);
     }
 
 
-    public void visit(OWLDataMinCardinalityRestriction desc) {
+    public void visit(OWLDataMinCardinality desc) {
         writeRestriction(desc, MIN);
     }
 
 
-    public void visit(OWLDataExactCardinalityRestriction desc) {
+    public void visit(OWLDataExactCardinality desc) {
         writeRestriction(desc, EXACTLY);
     }
 
 
-    public void visit(OWLDataMaxCardinalityRestriction desc) {
+    public void visit(OWLDataMaxCardinality desc) {
         writeRestriction(desc, MAX);
     }
 
@@ -359,23 +412,57 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
 
     public void visit(OWLObjectProperty property) {
-        write(getShortFormProvider().getShortForm(property));
+        write((getShortFormProvider().getShortForm(property)));
     }
 
 
     public void visit(OWLDataProperty property) {
-        write(getShortFormProvider().getShortForm(property));
+        write((getShortFormProvider().getShortForm(property)));
     }
 
 
-    public void visit(OWLIndividual individual) {
-        write(getShortFormProvider().getShortForm(individual));
+    public void visit(OWLNamedIndividual individual) {
+        write((getShortFormProvider().getShortForm(individual)));
     }
 
-
-    public void visit(OWLDataType dataType) {
-        write(dataType.getURI().getFragment());
+    public void visit(OWLAnnotationProperty property) {
+        write((getShortFormProvider().getShortForm(property)));
     }
+
+    public void visit(OWLDatatype datatype) {
+        write((getShortFormProvider().getShortForm(datatype)));
+    }
+
+    public void visit(OWLAnonymousIndividual individual) {
+        write(individual.toString());
+    }
+
+    public void visit(IRI iri) {
+        write(iri.toQuotedString());
+    }
+
+    public void visit(OWLAnnotation node) {
+        node.getProperty().accept(this);
+        writeSpace();
+        node.getValue().accept(this);
+    }
+
+//    private String escape(String s) {
+//        for(int i = 0; i < s.length(); i++) {
+//            char ch = s.charAt(i);
+//            if(i == 0 && ch == '\'') {
+//                return s;
+//            }
+//            if(" [](){},^<>?@".indexOf(ch) != -1) {
+//                StringBuilder sb = new StringBuilder();
+//                sb.append("'");
+//                sb.append(s);
+//                sb.append("'");
+//                return sb.toString();
+//            }
+//        }
+//        return s;
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -386,7 +473,15 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
     public void visit(OWLDataComplementOf node) {
         write(NOT);
-        node.getDataRange().accept(this);
+        if(node.getDataRange().isDatatype()) {
+            node.getDataRange().accept(this);
+        }
+        else {
+            write("(");
+            node.getDataRange().accept(this);
+            write(")");
+        }
+
     }
 
 
@@ -397,58 +492,89 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    public void visit(OWLDataRangeRestriction node) {
-        node.getDataRange().accept(this);
+    public void visit(OWLDataIntersectionOf node) {
+        write("(");
+        write(node.getOperands(), AND, false);
+        write(")");
+    }
+
+    public void visit(OWLDataUnionOf node) {
+        write("(");
+        write(node.getOperands(), OR, false);
+        write(")");
+    }
+
+    public void visit(OWLDatatypeRestriction node) {
+        node.getDatatype().accept(this);
         write("[");
         write(node.getFacetRestrictions(), FACET_RESTRICTION_SEPARATOR, false);
         write("]");
     }
 
 
-    public void visit(OWLTypedConstant node) {
-        if (node.getDataType().getURI().equals(XSDVocabulary.DOUBLE.getURI())) {
+    public void visit(OWLTypedLiteral node) {
+        if (node.getDatatype().isDouble()) {
             write(node.getLiteral());
         }
-        else if (node.getDataType().getURI().equals(XSDVocabulary.STRING.getURI())) {
-            write("\"");
-            write(node.getLiteral());
-            write("\"");
-        }
-        else if (node.getDataType().getURI().equals(XSDVocabulary.FLOAT.getURI())) {
+        else if (node.getDatatype().isFloat()) {
             write(node.getLiteral());
             write("f");
         }
-        else if (node.getDataType().getURI().equals(XSDVocabulary.INT.getURI())) {
+        else if (node.getDatatype().isInteger()) {
             write(node.getLiteral());
         }
-        else if (node.getDataType().getURI().equals(XSDVocabulary.INTEGER.getURI())) {
+        else if (node.getDatatype().isString()) {
+            writeLiteral(node.getLiteral());
+        }
+        else if (node.getDatatype().isBoolean()) {
             write(node.getLiteral());
         }
         else {
-            write("\"");
             pushTab(getIndent());
-            write(node.getLiteral(), wrap ? LINE_LENGTH : Integer.MAX_VALUE);
+            writeLiteral(node.getLiteral());
             popTab();
-            write("\"^^");
-            write(node.getDataType().getURI());
+            write("^^");
+            node.getDatatype().accept(this);
         }
     }
 
 
-    public void visit(OWLUntypedConstant node) {
-        write("\"");
+    public void visit(OWLStringLiteral node) {
         pushTab(getIndent());
-        write(node.getLiteral(), wrap ? LINE_LENGTH : Integer.MAX_VALUE);
-        popTab();
-        write("\"");
-        if (node.hasLang()) {
+        writeLiteral(node.getLiteral());
             write("@");
+        if (node.getLang() != null) {
             write(node.getLang());
         }
+        popTab();
+    }
+
+    private void writeLiteral(String literal) {
+        write("\"");
+        if (literal.indexOf("\"") == -1 && literal.indexOf("\\") != -1) {
+            write(literal);
+        }
+        else {
+
+            literal = literal.replace("\\", "\\\\");
+            literal = literal.replace("\"", "\\\"");
+            write(literal);
+        }
+        write("\"");
+//        if(literal.indexOf('\"') != -1) {
+//            write("\"\"\"");
+//            write(literal);
+//            write("\"\"\"");
+//        }
+//        else {
+//            write("\"");
+//            write(literal);
+//            write("\"");
+//        }
     }
 
 
-    public void visit(OWLDataRangeFacetRestriction node) {
+    public void visit(OWLFacetRestriction node) {
         write(node.getFacet().getSymbolicForm());
         writeSpace();
         node.getFacetValue().accept(this);
@@ -461,7 +587,7 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    public void visit(OWLObjectPropertyInverse property) {
+    public void visit(OWLObjectInverseOf property) {
         write(INVERSE);
         write("(");
         property.getInverse().accept(this);
@@ -474,35 +600,41 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    public void visit(OWLObjectAnnotation annotation) {
-        write(annotation.getAnnotationURI());
-        writeSpace();
-        annotation.getAnnotationValue().accept(this);
-    }
-
-
-    public void visit(OWLConstantAnnotation annotation) {
-        write(annotation.getAnnotationURI());
-        writeSpace();
-        annotation.getAnnotationValue().accept(this);
-    }
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Stand alone axiom representation
     //
+    // We render each axiom as a one line frame
+    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    private boolean wrapSave;
 
-    public void visit(OWLSubClassAxiom axiom) {
+    private boolean tabSave;
+
+    private void setAxiomWriting() {
+        wrapSave = isUseWrapping();
+        tabSave = isUseTabbing();
+        setUseWrapping(false);
+        setUseTabbing(false);
+    }
+
+    private void restore() {
+        setUseTabbing(tabSave);
+        setUseWrapping(wrapSave);
+    }
+
+    public void visit(OWLSubClassOfAxiom axiom) {
+        setAxiomWriting();
         axiom.getSubClass().accept(this);
         write(SUBCLASS_OF);
         axiom.getSuperClass().accept(this);
+        restore();
     }
 
 
     public void visit(OWLNegativeObjectPropertyAssertionAxiom axiom) {
+        setAxiomWriting();
         write(NOT);
         write("(");
         axiom.getSubject().accept(this);
@@ -511,60 +643,79 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
         write(" ");
         axiom.getObject().accept(this);
         write(")");
+        restore();
     }
 
 
-    private void writePropertyCharacteristic(ManchesterOWLSyntax characteristic, OWLPropertyExpression prop) {
+    private void writePropertyCharacteristic(ManchesterOWLSyntax characteristic) {
+        setAxiomWriting();
+        writeSectionKeyword(CHARACTERISTICS);
         write(characteristic);
-        write("(");
-        prop.accept(this);
-        write(")");
+        restore();
     }
 
 
-    public void visit(OWLAntiSymmetricObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(ANTI_SYMMETRIC, axiom.getProperty());
+    public void visit(OWLAsymmetricObjectPropertyAxiom axiom) {
+        setAxiomWriting();
+        writeSectionKeyword(ASYMMETRIC);
+        axiom.getProperty().accept(this);
+        restore();
     }
 
 
     public void visit(OWLReflexiveObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(REFLEXIVE, axiom.getProperty());
+        setAxiomWriting();
+        writeSectionKeyword(REFLEXIVE);
+        axiom.getProperty().accept(this);
+        restore();
     }
 
+    private void writeBinaryOrNaryList(ManchesterOWLSyntax binaryKeyword, Set<? extends OWLObject> objects, ManchesterOWLSyntax naryKeyword) {
+        if(objects.size() == 2) {
+            Iterator<? extends OWLObject> it = objects.iterator();
+            it.next().accept(this);
+            write(binaryKeyword);
+            it.next().accept(this);
+        }
+        else {
+            writeSectionKeyword(naryKeyword);
+            writeCommaSeparatedList(objects);
+        }
+    }
 
     public void visit(OWLDisjointClassesAxiom axiom) {
-        write(axiom.getDescriptions(), DISJOINT_WITH, wrap);
+        setAxiomWriting();
+        writeBinaryOrNaryList(DISJOINT_WITH, axiom.getClassExpressions(), DISJOINT_CLASSES);
+        restore();
     }
 
 
     public void visit(OWLDataPropertyDomainAxiom axiom) {
+        setAxiomWriting();
         axiom.getProperty().accept(this);
         write(DOMAIN);
         axiom.getDomain().accept(this);
+        restore();
     }
-
-
-    public void visit(OWLImportsDeclaration axiom) {
-    }
-
-
-    public void visit(OWLAxiomAnnotationAxiom axiom) {
-    }
-
 
     public void visit(OWLObjectPropertyDomainAxiom axiom) {
+        setAxiomWriting();
         axiom.getProperty().accept(this);
         write(DOMAIN);
         axiom.getDomain().accept(this);
+        restore();
     }
 
 
     public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
-        write(axiom.getProperties(), EQUIVALENT_TO, wrap);
+        setAxiomWriting();
+        writeBinaryOrNaryList(EQUIVALENT_TO, axiom.getProperties(), EQUIVALENT_PROPERTIES);
+        restore();
     }
 
 
     public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
+        setAxiomWriting();
         write(NOT);
         write("(");
         axiom.getSubject().accept(this);
@@ -573,148 +724,245 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
         write(" ");
         axiom.getObject().accept(this);
         write(")");
+        restore();
     }
 
 
     public void visit(OWLDifferentIndividualsAxiom axiom) {
-        write(axiom.getIndividuals(), DIFFERENT_FROM, wrap);
+        setAxiomWriting();
+        writeBinaryOrNaryList(DIFFERENT_FROM, axiom.getIndividuals(), DIFFERENT_INDIVIDUALS);
+        restore();
     }
 
 
     public void visit(OWLDisjointDataPropertiesAxiom axiom) {
-        write(axiom.getProperties(), DISJOINT_WITH, wrap);
+        setAxiomWriting();
+        writeBinaryOrNaryList(DISJOINT_WITH, axiom.getProperties(), DISJOINT_PROPERTIES);
+        restore();
     }
 
 
     public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
-        write(axiom.getProperties(), DISJOINT_WITH, wrap);
+        setAxiomWriting();
+        writeBinaryOrNaryList(DISJOINT_WITH, axiom.getProperties(), DISJOINT_PROPERTIES);
+        restore();
     }
 
 
     public void visit(OWLObjectPropertyRangeAxiom axiom) {
+        setAxiomWriting();
         axiom.getProperty().accept(this);
         write(RANGE);
         axiom.getRange().accept(this);
+        restore();
     }
 
 
     public void visit(OWLObjectPropertyAssertionAxiom axiom) {
+        setAxiomWriting();
         axiom.getSubject().accept(this);
         write(" ");
         axiom.getProperty().accept(this);
         write(" ");
         axiom.getObject().accept(this);
+        restore();
     }
 
 
     public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(FUNCTIONAL, axiom.getProperty());
+        setAxiomWriting();
+        writeSectionKeyword(FUNCTIONAL);
+        axiom.getProperty().accept(this);
+        restore();
     }
 
 
-    public void visit(OWLObjectSubPropertyAxiom axiom) {
+    public void visit(OWLSubObjectPropertyOfAxiom axiom) {
+        setAxiomWriting();
         axiom.getSubProperty().accept(this);
         write(SUB_PROPERTY_OF);
         axiom.getSuperProperty().accept(this);
+        restore();
     }
 
 
     public void visit(OWLDisjointUnionAxiom axiom) {
+        setAxiomWriting();
         axiom.getOWLClass().accept(this);
         write(DISJOINT_UNION_OF);
-        for(Iterator<OWLDescription> it = axiom.getDescriptions().iterator(); it.hasNext(); ) {
-            it.next().accept(this);
-            if(it.hasNext()) {
-                write(", ");
+        writeCommaSeparatedList(axiom.getClassExpressions());
+        restore();
+    }
+
+    private void writeFrameType(OWLObject object) {
+        setAxiomWriting();
+        if (object instanceof OWLOntology) {
+            writeFrameKeyword(ONTOLOGY);
+            OWLOntology ont = (OWLOntology) object;
+            if (!ont.isAnonymous()) {
+                write("<");
+                write(ont.getOntologyID().getOntologyIRI().toString());
+                write(">");
             }
         }
+        else {
+            if (object instanceof OWLClassExpression) {
+                writeFrameKeyword(CLASS);
+            }
+            else if (object instanceof OWLObjectPropertyExpression) {
+                writeFrameKeyword(OBJECT_PROPERTY);
+            }
+            else if (object instanceof OWLDataPropertyExpression) {
+                writeFrameKeyword(DATA_PROPERTY);
+            }
+            else if (object instanceof OWLIndividual) {
+                writeFrameKeyword(INDIVIDUAL);
+            }
+            else if (object instanceof OWLAnnotationProperty) {
+                writeFrameKeyword(ANNOTATION_PROPERTY);
+            }
+        }
+        object.accept(this);
     }
-
 
     public void visit(OWLDeclarationAxiom axiom) {
-        
+        setAxiomWriting();
+        writeFrameType(axiom.getEntity());
+        restore();
     }
 
 
-    public void visit(OWLEntityAnnotationAxiom axiom) {
+    public void visit(OWLAnnotationAssertionAxiom axiom) {
+        setAxiomWriting();
+        axiom.getSubject().accept(this);
+        write(" ");
+        axiom.getAnnotation().accept(this);
+        restore();
     }
 
-
-    public void visit(OWLOntologyAnnotationAxiom axiom) {
+    public void visit(OWLAnnotationPropertyDomainAxiom axiom) {
+        setAxiomWriting();
+        axiom.getProperty().accept(this);
+        write(DOMAIN);
+        axiom.getDomain().accept(this);
     }
 
-
-    public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(SYMMETRIC, axiom.getProperty());
-    }
-
-
-    public void visit(OWLDataPropertyRangeAxiom axiom) {
+    public void visit(OWLAnnotationPropertyRangeAxiom axiom) {
+        setAxiomWriting();
         axiom.getProperty().accept(this);
         write(RANGE);
         axiom.getRange().accept(this);
     }
 
-
-    public void visit(OWLFunctionalDataPropertyAxiom axiom) {
-        writePropertyCharacteristic(FUNCTIONAL, axiom.getProperty());
-    }
-
-
-    public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
-        write(axiom.getProperties(), EQUIVALENT_TO, wrap);
-    }
-
-
-    public void visit(OWLClassAssertionAxiom axiom) {
-        axiom.getIndividual().accept(this);
-        write(TYPES);
-        axiom.getDescription().accept(this);
-    }
-
-
-    public void visit(OWLEquivalentClassesAxiom axiom) {
-        write(axiom.getDescriptions(), EQUIVALENT_TO, wrap);
-    }
-
-
-    public void visit(OWLDataPropertyAssertionAxiom axiom) {
-        axiom.getSubject().accept(this);
-        write(" ");
-        axiom.getProperty().accept(this);
-        write(" ");
-        axiom.getObject().accept(this);
-    }
-
-
-    public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(TRANSITIVE, axiom.getProperty());
-    }
-
-
-    public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(IRREFLEXIVE, axiom.getProperty());
-    }
-
-
-    public void visit(OWLDataSubPropertyAxiom axiom) {
+    public void visit(OWLSubAnnotationPropertyOfAxiom axiom) {
+        setAxiomWriting();
         axiom.getSubProperty().accept(this);
         write(SUB_PROPERTY_OF);
         axiom.getSuperProperty().accept(this);
     }
 
+    public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
+        setAxiomWriting();
+        writeSectionKeyword(SYMMETRIC);
+        axiom.getProperty().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLDataPropertyRangeAxiom axiom) {
+        setAxiomWriting();
+        axiom.getProperty().accept(this);
+        writeSectionKeyword(RANGE);
+        axiom.getRange().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLFunctionalDataPropertyAxiom axiom) {
+        setAxiomWriting();
+        writeSectionKeyword(FUNCTIONAL);
+        axiom.getProperty().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
+        setAxiomWriting();
+        writeFrameKeyword(EQUIVALENT_PROPERTIES);
+        writeCommaSeparatedList(axiom.getProperties());
+        restore();
+    }
+
+
+    public void visit(OWLClassAssertionAxiom axiom) {
+        setAxiomWriting();
+        axiom.getIndividual().accept(this);
+        write(TYPE);
+        axiom.getClassExpression().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLEquivalentClassesAxiom axiom) {
+        setAxiomWriting();
+        writeBinaryOrNaryList(EQUIVALENT_TO, axiom.getClassExpressions(), EQUIVALENT_CLASSES);
+        restore();
+    }
+
+
+    public void visit(OWLDataPropertyAssertionAxiom axiom) {
+        setAxiomWriting();
+        axiom.getSubject().accept(this);
+        write(" ");
+        axiom.getProperty().accept(this);
+        write(" ");
+        axiom.getObject().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
+        setAxiomWriting();
+        writeSectionKeyword(TRANSITIVE);
+        axiom.getProperty().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
+        setAxiomWriting();
+        writeSectionKeyword(IRREFLEXIVE);
+        axiom.getProperty().accept(this);
+        restore();
+    }
+
+
+    public void visit(OWLSubDataPropertyOfAxiom axiom) {
+        setAxiomWriting();
+        axiom.getSubProperty().accept(this);
+        writeSectionKeyword(SUB_PROPERTY_OF);
+        axiom.getSuperProperty().accept(this);
+        restore();
+    }
+
 
     public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
-        writePropertyCharacteristic(INVERSE_FUNCTIONAL, axiom.getProperty());
+        setAxiomWriting();
+        writeSectionKeyword(INVERSE_FUNCTIONAL);
+        axiom.getProperty().accept(this);
+        restore();
     }
 
 
-    public void visit(OWLSameIndividualsAxiom axiom) {
-        write(axiom.getIndividuals(), SAME_AS, wrap);
+    public void visit(OWLSameIndividualAxiom axiom) {
+        setAxiomWriting();
+        writeBinaryOrNaryList(SAME_AS, axiom.getIndividuals(), SAME_INDIVIDUAL);
+        restore();
     }
 
 
-    public void visit(OWLObjectPropertyChainSubPropertyAxiom axiom) {
+    public void visit(OWLSubPropertyChainOfAxiom axiom) {
+        setAxiomWriting();
         for (Iterator<OWLObjectPropertyExpression> it = axiom.getPropertyChain().iterator(); it.hasNext();) {
             it.next().accept(this);
             if (it.hasNext()) {
@@ -723,17 +971,21 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
         }
         write(SUB_PROPERTY_OF);
         axiom.getSuperProperty().accept(this);
+        restore();
     }
 
 
     public void visit(OWLInverseObjectPropertiesAxiom axiom) {
+        setAxiomWriting();
         axiom.getFirstProperty().accept(this);
-        write(INVERSE);
+        write(INVERSE_OF);
         axiom.getSecondProperty().accept(this);
+        restore();
     }
 
 
     public void visit(SWRLRule rule) {
+        setAxiomWriting();
         for (Iterator<SWRLAtom> it = rule.getBody().iterator(); it.hasNext();) {
             it.next().accept(this);
             if (it.hasNext()) {
@@ -747,6 +999,15 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
                 write(", ");
             }
         }
+        restore();
+    }
+
+    public void visit(OWLHasKeyAxiom axiom) {
+        setAxiomWriting();
+        axiom.getClassExpression().accept(this);
+        write(HAS_KEY);
+        write(axiom.getObjectPropertyExpressions(), COMMA, false);
+        write(axiom.getDataPropertyExpressions(), COMMA, false);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -782,7 +1043,7 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    public void visit(SWRLDataValuedPropertyAtom node) {
+    public void visit(SWRLDataPropertyAtom node) {
         node.getPredicate().accept(this);
         write("(");
         node.getFirstArgument().accept(this);
@@ -793,11 +1054,11 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
 
 
     public void visit(SWRLBuiltInAtom node) {
-        write(node.getPredicate().getShortName());
+        write(node.getPredicate().toQuotedString());
         write("(");
-        for(Iterator<SWRLAtomDObject> it = node.getArguments().iterator(); it.hasNext(); ) {
+        for (Iterator<SWRLDArgument> it = node.getArguments().iterator(); it.hasNext();) {
             it.next().accept(this);
-            if(it.hasNext()) {
+            if (it.hasNext()) {
                 write(", ");
             }
         }
@@ -805,29 +1066,23 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    public void visit(SWRLAtomDVariable node) {
+    public void visit(SWRLVariable node) {
         write("?");
-        write(node.getURI().getFragment());
+        write(node.getIRI().toQuotedString());
     }
 
-
-    public void visit(SWRLAtomIVariable node) {
-        write("?");
-        write(node.getURI().getFragment());
-    }
-
-
-    public void visit(SWRLAtomIndividualObject node) {
+    
+    public void visit(SWRLIndividualArgument node) {
         node.getIndividual().accept(this);
     }
 
 
-    public void visit(SWRLAtomConstantObject node) {
-        node.getConstant().accept(this);
+    public void visit(SWRLLiteralArgument node) {
+        node.getLiteral().accept(this);
     }
 
 
-    public void visit(SWRLSameAsAtom node) {
+    public void visit(SWRLSameIndividualAtom node) {
         write(SAME_AS);
         write("(");
         node.getFirstArgument().accept(this);
@@ -837,13 +1092,18 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    public void visit(SWRLDifferentFromAtom node) {
+    public void visit(SWRLDifferentIndividualsAtom node) {
         write(DIFFERENT_FROM);
         write("(");
         node.getFirstArgument().accept(this);
         write(", ");
         node.getSecondArgument().accept(this);
         write(")");
+    }
+
+
+    public void visit(OWLDatatypeDefinitionAxiom axiom) {
+        
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -33,8 +33,8 @@ import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.ExplanationType;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.UnsatisfiableExplanationPanel2;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 public class UnsatisfiableExplanationPanelDescriptor extends
 		WizardPanelDescriptor implements ActionListener, ImpactManagerListener, ListSelectionListener, ChangeListener, ExplanationManagerListener, RepairManagerListener{

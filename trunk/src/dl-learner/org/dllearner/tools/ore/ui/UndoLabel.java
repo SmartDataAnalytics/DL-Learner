@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 /**
  * A JLabel, making it possible to undo ontology changes.

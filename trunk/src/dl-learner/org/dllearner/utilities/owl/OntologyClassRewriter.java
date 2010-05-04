@@ -21,19 +21,19 @@
 package org.dllearner.utilities.owl;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Utility class to replace a definition in an OWL file by a learned
@@ -71,13 +71,13 @@ public class OntologyClassRewriter {
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
 			// Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
 			// OWLDescription newConceptOWLAPI = OWLAPIReasoner.getOWLAPIDescription(newConceptInternal);
-			OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newConceptInternal);
+			OWLClassExpression newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newConceptInternal);
 			
 			// Umwandlung Klassenname in atomate KAON2-Klasse
 			// OWLClass classKAON2 = KAON2Manager.factory().owlClass(className);
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLDataFactory factory = manager.getOWLDataFactory();
-			OWLClass classOWLAPI = factory.getOWLClass(URI.create(className));
+			OWLClass classOWLAPI = factory.getOWLClass(IRI.create(className));
 			
 			// Test, ob es eine richtige URL ist (ansonsten wird Exception geworfen)
 			new URL(urlString);
@@ -88,7 +88,7 @@ public class OntologyClassRewriter {
 			// connection.setOntologyResolver(resolver);
 			// Ontology ontology = connection.openOntology(urlString, new HashMap<String,Object>());			
 			
-			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI.create(urlString));
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(urlString));
 			
 			// TODO
 			

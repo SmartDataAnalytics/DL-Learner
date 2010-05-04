@@ -38,10 +38,10 @@ import org.dllearner.tools.ore.ui.ExtractFromSparqlDialog;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.KnowledgeSourcePanel;
-import org.protege.editor.core.ui.OpenFromURIPanel;
+import org.protege.editor.core.ui.OpenFromURLPanel;
 import org.protege.editor.core.ui.error.ErrorLogPanel;
-import org.semanticweb.owl.io.UnparsableOntologyException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.io.UnparsableOntologyException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 /**
  * Wizard panel descriptor where knowledge source is selected.
@@ -112,7 +112,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     private void handleOpenFromURI() {
         try {
-            URI uri = OpenFromURIPanel.showDialog();
+            URI uri = OpenFromURLPanel.showDialog();
             if(uri != null){
             	loadOntology(uri);
             }
@@ -224,6 +224,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 				 return null;
 
 			} catch(OWLOntologyCreationException e){
+				e.printStackTrace();
 				
 				cancel(true);
 				getWizard().getDialog().setCursor(null);

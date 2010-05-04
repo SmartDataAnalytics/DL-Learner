@@ -9,7 +9,7 @@ import java.util.List;
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
 import org.jdesktop.swingx.JXTable;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 public class UnsatisfiableClassesTable extends JXTable {
 
@@ -106,7 +106,7 @@ public class UnsatisfiableClassesTable extends JXTable {
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
         if(rowIndex != -1){
-        	tip = ((OWLClass)getValueAt(rowIndex, 0)).getURI().toString();
+        	tip = ((OWLClass)getValueAt(rowIndex, 0)).getIRI().toString();
         	
         } else {
         	tip = super.getToolTipText(e);

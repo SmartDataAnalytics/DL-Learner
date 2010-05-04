@@ -11,11 +11,12 @@ import org.dllearner.core.configurators.OWLAPIOntologyConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.KB;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 public class OWLAPIOntology extends KnowledgeSource {
 
@@ -30,7 +31,7 @@ public class OWLAPIOntology extends KnowledgeSource {
 	private Set<OWLClass> classes;
 	private Set<OWLObjectProperty> prop;
 	private Set<OWLDataProperty> dataProp;
-	private Set<OWLIndividual> individuals;
+	private Set<OWLNamedIndividual> individuals;
 	
 	public OWLAPIOntology() {
 		this(null);
@@ -39,10 +40,10 @@ public class OWLAPIOntology extends KnowledgeSource {
 	public OWLAPIOntology(OWLOntology onto)
 	{
 		this.ontology = onto;
-		classes = ontology.getReferencedClasses();
-		prop = ontology.getReferencedObjectProperties();
-		dataProp = ontology.getReferencedDataProperties();
-		individuals = ontology.getReferencedIndividuals();
+		classes = ontology.getClassesInSignature();
+		prop = ontology.getObjectPropertiesInSignature();
+		dataProp = ontology.getDataPropertiesInSignature();
+		individuals = ontology.getIndividualsInSignature();
 		this.configurator = new OWLAPIOntologyConfigurator(this);
 	}
 	
@@ -91,17 +92,17 @@ public class OWLAPIOntology extends KnowledgeSource {
 		Iterator<OWLOntology> it = ontologies.iterator();
 		while(it.hasNext()) {
 			OWLOntology ont = it.next();
-			if(ont.getReferencedClasses() != null) {
-				classes.addAll(ont.getReferencedClasses());
+			if(ont.getClassesInSignature() != null) {
+				classes.addAll(ont.getClassesInSignature());
 			}
-			if(ont.getReferencedObjectProperties() != null) {
-				prop.addAll(ont.getReferencedObjectProperties());
+			if(ont.getObjectPropertiesInSignature() != null) {
+				prop.addAll(ont.getObjectPropertiesInSignature());
 			}
-			if(ont.getReferencedDataProperties() != null) {
-				dataProp.addAll(ont.getReferencedDataProperties());
+			if(ont.getDataPropertiesInSignature() != null) {
+				dataProp.addAll(ont.getDataPropertiesInSignature());
 			}
-			if(ont.getReferencedIndividuals() != null) {
-				individuals.addAll(ont.getReferencedIndividuals());
+			if(ont.getIndividualsInSignature() != null) {
+				individuals.addAll(ont.getIndividualsInSignature());
 			}
 		}
 	}
@@ -122,7 +123,7 @@ public class OWLAPIOntology extends KnowledgeSource {
 		return dataProp;
 	}
 	
-	public Set<OWLIndividual> getOWLIndividuals() {
+	public Set<OWLNamedIndividual> getOWLIndividuals() {
 		return individuals;
 	}
 }

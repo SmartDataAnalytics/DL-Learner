@@ -19,12 +19,12 @@
  */
 package org.dllearner.utilities.owl;
 
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.owl.Description;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.expression.ParserException;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Parser for Manchester Syntax strings (interface to OWL API parser).
@@ -34,15 +34,15 @@ import org.semanticweb.owl.model.OWLOntologyManager;
  */
 public class ManchesterOWLSyntaxParser {
 	
-	public static OWLDescription getOWLAPIDescription(String manchesterSyntaxDescription) throws ParserException {
+	public static OWLClassExpression getOWLAPIDescription(String manchesterSyntaxDescription) throws ParserException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		ManchesterOWLSyntaxEditorParser parser = new
 		ManchesterOWLSyntaxEditorParser(manager.getOWLDataFactory(), manchesterSyntaxDescription);
-		return parser.parseDescription();
+		return parser.parseClassExpression();
 	}
 	
 	public static Description getDescription(String manchesterSyntaxDescription) throws ParserException {
-		OWLDescription d = getOWLAPIDescription(manchesterSyntaxDescription);
+		OWLClassExpression d = getOWLAPIDescription(manchesterSyntaxDescription);
 		return DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(d);
 	}
 

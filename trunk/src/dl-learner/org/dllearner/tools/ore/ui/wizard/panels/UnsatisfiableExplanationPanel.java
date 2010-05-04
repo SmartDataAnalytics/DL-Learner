@@ -39,7 +39,7 @@ import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.ImpactTable;
 import org.dllearner.tools.ore.ui.RepairPlanPanel;
 import org.dllearner.tools.ore.ui.UnsatisfiableClassesTable;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 public class UnsatisfiableExplanationPanel extends JPanel{
 

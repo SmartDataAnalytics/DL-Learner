@@ -38,9 +38,9 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSelectionListener {
 
@@ -231,15 +231,15 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		showInconsistencyWarning(false);
 		NamedClass newClass = classes.get(currentClassIndex++);
 
-		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass).asOWLClass().
+		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
 		if(in_compare_mode){
-			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass).asOWLClass().
+			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
 		}
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
-				OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass));
+				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass));
 		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + "<b>" + renderedClass + "</b></html>");
 		System.out.println("Showing evaluated descriptions for class " + newClass.toString());
 
@@ -256,7 +256,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		lastSelectedRowIndex = -1;
 
 		// necessary to set the current class to evaluate as activated entity
-		OWLDescription desc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass);
+		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass);
 		OWLEntity curEntity = desc.asOWLClass();
 		getOWLEditorKit().getWorkspace().getOWLSelectionModel().setSelectedEntity(curEntity);
 		

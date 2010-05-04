@@ -4,7 +4,7 @@ import javax.swing.JMenuItem;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectPropertyExpression;
-import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
+import org.dllearner.tools.ore.OREManager;
 
 public class RemoveAllPropertyAssertionsToMenuItem extends JMenuItem {
 
@@ -16,10 +16,10 @@ public class RemoveAllPropertyAssertionsToMenuItem extends JMenuItem {
 	private ObjectPropertyExpression property;
 	private Description destination;
 	
-	public RemoveAllPropertyAssertionsToMenuItem(ObjectPropertyExpression property, Description destiniation){
+	public RemoveAllPropertyAssertionsToMenuItem(ObjectPropertyExpression property, Description destination){
 		this.property = property;
-		this.destination = destiniation;
-		setText("remove all property assertions to " + ManchesterSyntaxRenderer.renderSimple(destiniation));
+		this.destination = destination;
+		setText("Remove all property assertions to " + OREManager.getInstance().getManchesterSyntaxRendering(destination));
 		
 	}
 	

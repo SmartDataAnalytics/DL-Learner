@@ -4,21 +4,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.dllearner.examples.corpus.Sentence;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.SimpleURIMapper;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 public class Corpus {
 
@@ -85,11 +85,11 @@ public class Corpus {
 	public static void init(){
 		try{
 		br = new BufferedReader(new FileReader(file));
-		URI	ontologyURI = URI.create(namespace);
+		IRI	ontologyURI = IRI.create(namespace);
 	//URI physicalURI = new File("cache/"+System.currentTimeMillis()+".owl").toURI();
-		URI physicalURI = new File("cache/tiger.owl").toURI();
-		 SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
-		 manager.addURIMapper(mapper);
+		IRI physicalURI = IRI.create(new File("cache/tiger.owl").toURI());
+		 SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyURI, physicalURI);
+		 manager.addIRIMapper(mapper);
 		 try{
 		 currentOntology = manager.createOntology(ontologyURI);
 		 }catch(OWLOntologyCreationException e){
@@ -109,7 +109,6 @@ public class Corpus {
 		 try{
 		 manager.applyChange(addAxiom);
 		 }catch (OWLOntologyChangeException e) {
-			//TODO
 			 e.printStackTrace();
 		}
 	 }
