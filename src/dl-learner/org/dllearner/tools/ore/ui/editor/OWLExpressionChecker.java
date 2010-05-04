@@ -1,5 +1,7 @@
 package org.dllearner.tools.ore.ui.editor;
 
+import org.semanticweb.owlapi.expression.ParserException;
+
 
 /**
  * Author: Matthew Horridge<br>
@@ -12,7 +14,7 @@ package org.dllearner.tools.ore.ui.editor;
  */
 public interface OWLExpressionChecker<O> {
 
-    public void check(String text) throws OWLExpressionParserException;
+    public void check(String text) throws ParserException;
 
-    O createObject(String text) throws OWLExpressionParserException;
+    O createObject(String text) throws ParserException;
 }

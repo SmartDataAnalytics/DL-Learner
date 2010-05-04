@@ -19,9 +19,8 @@
  */
 package org.dllearner.utilities.owl;
 
-import static org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor.getOWLDescription;
+import static org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor.getOWLClassExpression;
 
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,21 +48,21 @@ import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataType;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLTypedConstant;
-import org.semanticweb.owl.vocab.XSDVocabulary;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLTypedLiteral;
 
 /**
  * A converter from DL-Learner axioms to OWL API axioms based on the visitor
@@ -89,9 +88,9 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public OWLAPIAxiomConvertVisitor() {
 		manager = OWLManager.createOWLOntologyManager();
-		URI ontologyURI = URI.create("http://example.com");
+		IRI ontologyIRI = IRI.create("http://example.com");
 		try {
-			ontology = manager.createOntology(ontologyURI);
+			ontology = manager.createOntology(ontologyIRI);
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}		
@@ -137,13 +136,13 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.dl.AxiomVisitor#visit(org.dllearner.core.dl.ObjectPropertyAssertion)
 	 */
 	public void visit(ObjectPropertyAssertion axiom) {
-		OWLObjectProperty role = factory.getOWLObjectProperty(URI
+		OWLObjectProperty role = factory.getOWLObjectProperty(IRI
 				.create(((ObjectPropertyAssertion) axiom).getRole().getName()));
-		OWLIndividual i1 = factory.getOWLIndividual(URI.create(((ObjectPropertyAssertion) axiom)
+		OWLIndividual i1 = factory.getOWLNamedIndividual(IRI.create(((ObjectPropertyAssertion) axiom)
 				.getIndividual1().getName()));
-		OWLIndividual i2 = factory.getOWLIndividual(URI.create(((ObjectPropertyAssertion) axiom)
+		OWLIndividual i2 = factory.getOWLNamedIndividual(IRI.create(((ObjectPropertyAssertion) axiom)
 				.getIndividual2().getName()));
-		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyAssertionAxiom(i1, role, i2);
+		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyAssertionAxiom(role, i1, i2);
 		addAxiom(axiomOWLAPI);
 	}
 
@@ -153,10 +152,10 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.AssertionalAxiomVisitor#visit(org.dllearner.core.owl.ClassAssertionAxiom)
 	 */
 	public void visit(ClassAssertionAxiom axiom) {
-		OWLDescription d = getOWLDescription(axiom.getConcept());
-		OWLIndividual i = factory.getOWLIndividual(URI.create(((ClassAssertionAxiom) axiom)
+		OWLClassExpression d = getOWLClassExpression(axiom.getConcept());
+		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(((ClassAssertionAxiom) axiom)
 				.getIndividual().getName()));
-		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(i, d);
+		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(d, i);
 		addAxiom(axiomOWLAPI);
 	}
 
@@ -166,12 +165,12 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.AssertionalAxiomVisitor#visit(org.dllearner.core.owl.DoubleDatatypePropertyAssertion)
 	 */
 	public void visit(DoubleDatatypePropertyAssertion axiom) {
-		OWLIndividual i = factory.getOWLIndividual(URI.create(axiom.getIndividual().getName()));
-		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(axiom.getDatatypeProperty().getName()));
+		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(axiom.getIndividual().getName()));
+		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getDatatypeProperty().getName()));
 		Double value = axiom.getValue();
-		OWLDataType doubleType = factory.getOWLDataType(XSDVocabulary.DOUBLE.getURI());
-		OWLTypedConstant valueConstant = factory.getOWLTypedConstant(value.toString(), doubleType);
-		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(i, dp, valueConstant);
+		OWLDatatype doubleType = factory.getDoubleOWLDatatype();
+		OWLTypedLiteral valueConstant = factory.getOWLTypedLiteral(value.toString(), doubleType);
+		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);
 	}
 
@@ -179,12 +178,12 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.AssertionalAxiomVisitor#visit(org.dllearner.core.owl.BooleanDatatypePropertyAssertion)
 	 */
 	public void visit(BooleanDatatypePropertyAssertion axiom) {
-		OWLIndividual i = factory.getOWLIndividual(URI.create(axiom.getIndividual().getName()));
-		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(axiom.getDatatypeProperty().getName()));
+		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(axiom.getIndividual().getName()));
+		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getDatatypeProperty().getName()));
 		Boolean value = axiom.getValue();
-		OWLDataType booleanType = factory.getOWLDataType(XSDVocabulary.BOOLEAN.getURI());
-		OWLTypedConstant valueConstant = factory.getOWLTypedConstant(value.toString(), booleanType);
-		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(i, dp, valueConstant);
+		OWLDatatype booleanType = factory.getBooleanOWLDatatype();
+		OWLTypedLiteral valueConstant = factory.getOWLTypedLiteral(value.toString(), booleanType);
+		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);		
 	}	
 	
@@ -195,7 +194,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public void visit(FunctionalObjectPropertyAxiom axiom) {
 		OWLObjectProperty role = factory.getOWLObjectProperty(
-				URI.create(((FunctionalObjectPropertyAxiom) axiom).getRole().getName()));
+				IRI.create(((FunctionalObjectPropertyAxiom) axiom).getRole().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLFunctionalObjectPropertyAxiom(role);
 		addAxiom(axiomOWLAPI);
 	}
@@ -207,9 +206,9 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public void visit(InverseObjectPropertyAxiom axiom) {
 		OWLObjectProperty role = factory.getOWLObjectProperty(
-				URI.create(((InverseObjectPropertyAxiom) axiom).getRole().getName()));
+				IRI.create(((InverseObjectPropertyAxiom) axiom).getRole().getName()));
 		OWLObjectProperty inverseRole = factory.getOWLObjectProperty(
-				URI.create(((InverseObjectPropertyAxiom) axiom).getInverseRole().getName()));
+				IRI.create(((InverseObjectPropertyAxiom) axiom).getInverseRole().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLInverseObjectPropertiesAxiom(role, inverseRole);
 		addAxiom(axiomOWLAPI);
 	}
@@ -221,7 +220,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public void visit(SymmetricObjectPropertyAxiom axiom) {
 		OWLObjectProperty role = factory.getOWLObjectProperty(
-				URI.create(((SymmetricObjectPropertyAxiom) axiom).getRole().getName()));
+				IRI.create(((SymmetricObjectPropertyAxiom) axiom).getRole().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLSymmetricObjectPropertyAxiom(role);
 		addAxiom(axiomOWLAPI);
 	}
@@ -233,7 +232,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public void visit(TransitiveObjectPropertyAxiom axiom) {
 		OWLObjectProperty role = factory.getOWLObjectProperty(
-				URI.create(axiom.getRole().getName()));
+				IRI.create(axiom.getRole().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLTransitiveObjectPropertyAxiom(role);
 		addAxiom(axiomOWLAPI);
 	}
@@ -243,10 +242,10 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public void visit(SubObjectPropertyAxiom axiom) {
 		OWLObjectProperty role = factory.getOWLObjectProperty(
-				URI.create(((SubObjectPropertyAxiom) axiom).getRole().getName()));
+				IRI.create(((SubObjectPropertyAxiom) axiom).getRole().getName()));
 		OWLObjectProperty subRole = factory.getOWLObjectProperty(
-				URI.create(((SubObjectPropertyAxiom) axiom).getSubRole().getName()));
-		OWLAxiom axiomOWLAPI = factory.getOWLSubObjectPropertyAxiom(subRole, role);
+				IRI.create(((SubObjectPropertyAxiom) axiom).getSubRole().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLSubObjectPropertyOfAxiom(subRole, role);
 		addAxiom(axiomOWLAPI);	
 	}	
 	
@@ -256,9 +255,9 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.TerminologicalAxiomVisitor#visit(org.dllearner.core.owl.EquivalentClassesAxiom)
 	 */
 	public void visit(EquivalentClassesAxiom axiom) {
-		OWLDescription d1 = getOWLDescription(axiom.getConcept1());
-		OWLDescription d2 = getOWLDescription(axiom.getConcept2());
-		Set<OWLDescription> ds = new HashSet<OWLDescription>();
+		OWLClassExpression d1 = getOWLClassExpression(axiom.getConcept1());
+		OWLClassExpression d2 = getOWLClassExpression(axiom.getConcept2());
+		Set<OWLClassExpression> ds = new HashSet<OWLClassExpression>();
 		ds.add(d1);
 		ds.add(d2);
 		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
@@ -271,12 +270,12 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.TerminologicalAxiomVisitor#visit(org.dllearner.core.owl.SubClassAxiom)
 	 */
 	public void visit(SubClassAxiom axiom) {
-		OWLDescription d1 = getOWLDescription(axiom.getSubConcept());
-		OWLDescription d2 = getOWLDescription(axiom.getSuperConcept());
-		Set<OWLDescription> ds = new HashSet<OWLDescription>();
+		OWLClassExpression d1 = getOWLClassExpression(axiom.getSubConcept());
+		OWLClassExpression d2 = getOWLClassExpression(axiom.getSuperConcept());
+		Set<OWLClassExpression> ds = new HashSet<OWLClassExpression>();
 		ds.add(d1);
 		ds.add(d2);
-		OWLAxiom axiomOWLAPI = factory.getOWLSubClassAxiom(d1,d2);
+		OWLAxiom axiomOWLAPI = factory.getOWLSubClassOfAxiom(d1,d2);
 		addAxiom(axiomOWLAPI);
 	}
 
@@ -284,8 +283,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.DatatypePropertyDomainAxiom)
 	 */
 	public void visit(DatatypePropertyDomainAxiom datatypePropertyDomainAxiom) {
-		OWLDescription d = getOWLDescription(datatypePropertyDomainAxiom.getDomain());
-		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(datatypePropertyDomainAxiom.getProperty().getName()));
+		OWLClassExpression d = getOWLClassExpression(datatypePropertyDomainAxiom.getDomain());
+		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(datatypePropertyDomainAxiom.getProperty().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyDomainAxiom(dp, d);
 		addAxiom(axiomOWLAPI);
 	}
@@ -294,8 +293,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.ObjectPropertyDomainAxiom)
 	 */
 	public void visit(ObjectPropertyDomainAxiom objectPropertyDomainAxiom) {
-		OWLDescription d = getOWLDescription(objectPropertyDomainAxiom.getDomain());
-		OWLObjectProperty op = factory.getOWLObjectProperty(URI.create(objectPropertyDomainAxiom.getProperty().getName()));
+		OWLClassExpression d = getOWLClassExpression(objectPropertyDomainAxiom.getDomain());
+		OWLObjectProperty op = factory.getOWLObjectProperty(IRI.create(objectPropertyDomainAxiom.getProperty().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyDomainAxiom(op, d);
 		addAxiom(axiomOWLAPI);		
 	}
@@ -306,8 +305,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	public void visit(DatatypePropertyRangeAxiom axiom) {
 		DataRange dr = axiom.getRange();
 		Datatype dt = (Datatype) dr;
-		OWLDataType odt = factory.getOWLDataType(dt.getURI());
-		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(axiom.getProperty().getName()));
+		OWLDatatype odt = factory.getOWLDatatype(IRI.create(dt.getURI()));
+		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getProperty().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyRangeAxiom(dp, odt);
 		addAxiom(axiomOWLAPI);		
 	}
@@ -316,8 +315,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.ObjectPropertyRangeAxiom)
 	 */
 	public void visit(ObjectPropertyRangeAxiom axiom) {
-		OWLDescription d = getOWLDescription(axiom.getRange());
-		OWLObjectProperty op = factory.getOWLObjectProperty(URI.create(axiom.getProperty().getName()));
+		OWLClassExpression d = getOWLClassExpression(axiom.getRange());
+		OWLObjectProperty op = factory.getOWLObjectProperty(IRI.create(axiom.getProperty().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyRangeAxiom(op, d);
 		addAxiom(axiomOWLAPI);		
 	}
@@ -329,7 +328,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		Set<Individual> individuals = axiom.getIndividuals();
 		Set<OWLIndividual> owlAPIIndividuals = new HashSet<OWLIndividual>();
 		for(Individual individual : individuals)
-			owlAPIIndividuals.add(factory.getOWLIndividual(URI.create(individual.getName())));
+			owlAPIIndividuals.add(factory.getOWLNamedIndividual(IRI.create(individual.getName())));
 		OWLAxiom axiomOWLAPI = factory.getOWLDifferentIndividualsAxiom(owlAPIIndividuals);
 		addAxiom(axiomOWLAPI);
 	}
@@ -339,9 +338,9 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	public void visit(DisjointClassesAxiom axiom) {
 		Set<Description> descriptions = axiom.getDescriptions();
-		Set<OWLDescription> owlAPIDescriptions = new HashSet<OWLDescription>();
+		Set<OWLClassExpression> owlAPIDescriptions = new HashSet<OWLClassExpression>();
 		for(Description description : descriptions)
-			owlAPIDescriptions.add(getOWLDescription(description));
+			owlAPIDescriptions.add(getOWLClassExpression(description));
 		OWLAxiom axiomOWLAPI = factory.getOWLDisjointClassesAxiom(owlAPIDescriptions);
 		addAxiom(axiomOWLAPI);		
 	}

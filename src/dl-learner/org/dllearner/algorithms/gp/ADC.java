@@ -5,9 +5,9 @@ import java.util.Map;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
 import org.dllearner.core.owl.KBElementVisitor;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDescriptionVisitor;
-import org.semanticweb.owl.model.OWLObjectVisitor;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLObjectVisitor;
 
 /**
  * ADC stand for "automatically defined concept". It is used for
@@ -73,7 +73,7 @@ public class ADC extends Description {
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owl.model.OWLDescription#accept(org.semanticweb.owl.model.OWLDescriptionVisitor)
 	 */
-	public void accept(OWLDescriptionVisitor arg0) {
+	public void accept(OWLClassExpressionVisitor arg0) {
 		// TODO Auto-generated method stub
 		
 	}

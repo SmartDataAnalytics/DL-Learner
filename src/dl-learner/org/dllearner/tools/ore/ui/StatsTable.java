@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.ListSelectionModel;
 
 import org.jdesktop.swingx.JXTable;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 public class StatsTable extends JXTable {
 	

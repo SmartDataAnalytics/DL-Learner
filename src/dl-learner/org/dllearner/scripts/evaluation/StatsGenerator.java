@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -28,12 +27,12 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.utilities.statistics.FleissKappa;
 import org.dllearner.utilities.statistics.Stat;
-import org.mindswap.pellet.utils.SetUtils;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.DLExpressivityChecker;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.DLExpressivityChecker;
 
 public class StatsGenerator {
 
@@ -112,7 +111,7 @@ public class StatsGenerator {
 		String ontologyPath = file.toURI().toString().substring(0, file.toURI().toString().lastIndexOf('.')) + ".owl";
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		try {
-			ont = man.loadOntologyFromPhysicalURI(URI.create(ontologyPath));
+			ont = man.loadOntologyFromOntologyDocument(IRI.create(ontologyPath));
 			logicalAxiomCount = ont.getLogicalAxiomCount();
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
@@ -265,7 +264,7 @@ public class StatsGenerator {
 		rejectedGlobalStat.addNumber(noSensibleDescriptionCountSC + noSensibleDescriptionCount);
 		failedGlobalStat.addNumber(missesCountSC + missesCount);
 
-		System.out.println("Ontology URL: " + ont.getURI());
+		System.out.println("Ontology URL: " + ont.getOntologyID());
 		System.out.println("statistics for equivalence axioms:");
 		System.out.println("classes above 85% threshold: " + candidatesAboveThresholdCount);
 		System.out.println("axioms learned succesfully: " + foundDescriptionCount);
@@ -384,10 +383,10 @@ public class StatsGenerator {
 	
 	private void addOntologyMetricsTableRow(){
 		int logicalAxiomsCount = ont.getLogicalAxiomCount();
-		int classesCount = ont.getReferencedClasses().size();
-		int objectPropertiesCount = ont.getReferencedObjectProperties().size();
-		int dataPropertiesCount = ont.getReferencedDataProperties().size();
-		int individualsCount = ont.getReferencedIndividuals().size();
+		int classesCount = ont.getClassesInSignature(true).size();
+		int objectPropertiesCount = ont.getObjectPropertiesInSignature(true).size();
+		int dataPropertiesCount = ont.getDataPropertiesInSignature(true).size();
+		int individualsCount = ont.getIndividualsInSignature(true).size();
 		String expressivity = new DLExpressivityChecker(Collections.singleton(ont)).getDescriptionLogicName();
 		latexMetrics.append(logicalAxiomsCount + " & " 
 				+ classesCount + " & " 

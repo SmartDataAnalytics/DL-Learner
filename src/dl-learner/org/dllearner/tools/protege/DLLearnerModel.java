@@ -45,14 +45,14 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * This Class provides the necessary methods to learn Concepts from the
@@ -109,11 +109,11 @@ public class DLLearnerModel implements Runnable{
 
 	// A Set of Descriptions in OWL Syntax which the DL-Learner suggested
 
-	private final Set<OWLDescription> owlDescription;
+	private final Set<OWLClassExpression> owlDescription;
 
 	// The most fitting Description in OWL Syntax which the DL-Learner suggested
 
-	private OWLDescription desc;
+	private OWLClassExpression desc;
 
 	// String to distinguish between Equivalent classes and sub classes
 
@@ -121,15 +121,15 @@ public class DLLearnerModel implements Runnable{
 
 	// The new Concept which is learned by the DL-Learner
 
-	private OWLDescription newConceptOWLAPI;
+	private OWLClassExpression newConceptOWLAPI;
 
 	// The old concept that is chosen in Protege
 
-	private OWLDescription oldConceptOWLAPI;
+	private OWLClassExpression oldConceptOWLAPI;
 
 	// A Set of Descriptions in OWL Syntax which the DL-Learner suggested
 
-	private final Set<OWLDescription> ds;
+	private final Set<OWLClassExpression> ds;
 
 	// The model for the suggested Descriptions
 
@@ -174,10 +174,10 @@ public class DLLearnerModel implements Runnable{
 		this.view = view;
 		ontologyConsistent = true;
 		knowledgeSourceIsUpdated = false;
-		owlDescription = new HashSet<OWLDescription>();
+		owlDescription = new HashSet<OWLClassExpression>();
 		ComponentManager.setComponentClasses(componenten);
 		cm = ComponentManager.getInstance();
-		ds = new HashSet<OWLDescription>();
+		ds = new HashSet<OWLClassExpression>();
 		suggestModel = new DefaultListModel();
 		ontologieURI = new HashSet<String>();
 		sources = new HashSet<KnowledgeSource>();
@@ -380,39 +380,39 @@ public class DLLearnerModel implements Runnable{
 
 	/**
 	 * This method returns a set of concepts that are learned by the DL-Learner.
-	 * They are already converted into the OWLDescription format.
+	 * They are already converted into the OWLClassExpression format.
 	 * 
-	 * @return Set of learned concepts in OWLDescription format
+	 * @return Set of learned concepts in OWLClassExpression format
 	 */
-	public Set<OWLDescription> getNewOWLDescription() {
+	public Set<OWLClassExpression> getNewOWLDescription() {
 		return owlDescription;
 	}
 
 	/**
 	 * This method returns the old concept which is chosen in protege in
-	 * OWLDescription format.
+	 * OWLClassExpression format.
 	 * 
-	 * @return Old Concept in OWLDescription format.
+	 * @return Old Concept in OWLClassExpression format.
 	 */
-	public OWLDescription getOldConceptOWLAPI() {
+	public OWLClassExpression getOldConceptOWLAPI() {
 		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
-		.getOWLDescription(currentConcept);
+		.getOWLClassExpression(currentConcept);
 		return oldConceptOWLAPI;
 	}
 	
 	/**
-	 * This method returns the currently learned description in OWLDescription
+	 * This method returns the currently learned description in OWLClassExpression
 	 * format.
 	 * 
-	 * @return currently used description in OWLDescription format
+	 * @return currently used description in OWLClassExpression format
 	 */
-	public OWLDescription getSolution() {
+	public OWLClassExpression getSolution() {
 		return desc;
 	}
 
 	/**
 	 * This method gets a description learned by the DL-Learner an converts it
-	 * to the OWLDescription format.
+	 * to the OWLClassExpression format.
 	 * 
 	 * @param desc
 	 *            Description learned by the DL-Learner
@@ -420,7 +420,7 @@ public class DLLearnerModel implements Runnable{
 	private void setNewConceptOWLAPI(Description des) {
 		// converts DL-Learner description into an OWL API Description
 		newConceptOWLAPI = OWLAPIDescriptionConvertVisitor
-				.getOWLDescription(des);
+				.getOWLClassExpression(des);
 		ds.add(newConceptOWLAPI);
 		owlDescription.add(newConceptOWLAPI);
 		this.desc = newConceptOWLAPI;
@@ -448,7 +448,7 @@ public class DLLearnerModel implements Runnable{
 		owlDescription.clear();
 		setNewConceptOWLAPI(descript);
 		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
-				.getOWLDescription(currentConcept);
+				.getOWLClassExpression(currentConcept);
 		ds.add(oldConceptOWLAPI);
 		System.out.println("Test: " + ds);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -457,7 +457,7 @@ public class DLLearnerModel implements Runnable{
 		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 		} else {
-			axiomOWLAPI = factory.getOWLSubClassAxiom(oldConceptOWLAPI,
+			axiomOWLAPI = factory.getOWLSubClassOfAxiom(oldConceptOWLAPI,
 					newConceptOWLAPI);
 		}
 		OWLOntology onto = editor.getModelManager().getActiveOntology();

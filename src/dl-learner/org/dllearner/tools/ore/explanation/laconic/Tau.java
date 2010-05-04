@@ -1,84 +1,74 @@
-
 package org.dllearner.tools.ore.explanation.laconic;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDataRange;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLObjectComplementOf;
-import org.semanticweb.owl.model.OWLObjectMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 
+public class Tau extends BaseDescriptionGenerator {
 
-public class Tau extends BaseDescriptionGenerator
-{
+	public Tau(OWLDataFactory factory) {
+		super(factory);
+	}
 
-    public Tau(OWLDataFactory factory)
-    {
-        super(factory);
-    }
+	public Set<OWLClassExpression> visit(OWLClass desc) {
+		Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
+		descs.add(desc);
+		descs.add(getDataFactory().getOWLThing());
+		return descs;
+	}
 
-    public Set<OWLDescription> visit(OWLClass desc)
-    {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
-        descs.add(desc);
-        descs.add(getDataFactory().getOWLThing());
-        return descs;
-    }
+	public Set<OWLClassExpression> visit(OWLObjectComplementOf desc) {
+		Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
 
-    public Set<OWLDescription> visit(OWLObjectComplementOf desc)
-    {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
-        
-        for(OWLDescription d : computeBeta(desc.getOperand())){
-        	descs.add(getDataFactory().getOWLObjectComplementOf(d));
-        }
-        return descs;
-    }
+		for (OWLClassExpression d : computeBeta(desc.getOperand())) {
+			descs.add(getDataFactory().getOWLObjectComplementOf(d));
+		}
+		return descs;
+	}
 
-    public Set<OWLDescription> visit(OWLObjectMaxCardinalityRestriction desc)
-    {
-        Set<OWLDescription> descs = new HashSet<OWLDescription>();
-        
-        for(OWLDescription filler : computeBeta(desc.getFiller())){
-        	descs.add(getDataFactory().getOWLObjectMaxCardinalityRestriction((OWLObjectPropertyExpression)desc.getProperty(), desc.getCardinality(), filler));
-        }
-        descs.add(getLimit());
-        return descs;
-    }
+	public Set<OWLClassExpression> visit(OWLObjectMaxCardinality desc) {
+		Set<OWLClassExpression> descs = new HashSet<OWLClassExpression>();
 
-    public Set<OWLDescription> visit(OWLObjectMinCardinalityRestriction desc)
-    {
-        Set<OWLDescription> weakenedFillers = computeTau((OWLDescription)desc.getFiller());
-        Set<OWLDescription> result = new HashSet<OWLDescription>();
-        for(int n = desc.getCardinality(); n > 0; n--)
-        {
-           
-            for(OWLDescription filler : weakenedFillers ){
-            	result.add(getDataFactory().getOWLObjectMinCardinalityRestriction((OWLObjectPropertyExpression)desc.getProperty(), n, filler));
-            }
+		for (OWLClassExpression filler : computeBeta(desc.getFiller())) {
+			descs.add(getDataFactory().getOWLObjectMaxCardinality(desc.getCardinality(),
+					(OWLObjectPropertyExpression) desc.getProperty(), filler));
+		}
+		descs.add(getLimit());
+		return descs;
+	}
 
-        }
+	public Set<OWLClassExpression> visit(OWLObjectMinCardinality desc) {
+		Set<OWLClassExpression> weakenedFillers = computeTau((OWLClassExpression) desc.getFiller());
+		Set<OWLClassExpression> result = new HashSet<OWLClassExpression>();
+		for (int n = desc.getCardinality(); n > 0; n--) {
 
-        result.add(getLimit());
-        return result;
-    }
+			for (OWLClassExpression filler : weakenedFillers) {
+				result.add(getDataFactory().getOWLObjectMinCardinality(n,
+						(OWLObjectPropertyExpression) desc.getProperty(), filler));
+			}
 
-    @Override
-    protected OWLClass getLimit()
-    {
-        return getDataFactory().getOWLThing();
-    }
+		}
 
-    @Override
-    protected OWLDataRange getDataLimit()
-    {
-        return getDataFactory().getTopDataType();
-    }
+		result.add(getLimit());
+		return result;
+	}
 
-   
+	@Override
+	protected OWLClass getLimit() {
+		return getDataFactory().getOWLThing();
+	}
+
+	@Override
+	protected OWLDataRange getDataLimit() {
+		return getDataFactory().getTopDatatype();
+	}
+
 }

@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObject;
 
-import uk.ac.manchester.cs.owl.dlsyntax.DLSyntaxObjectRenderer;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 public class DLSyntaxRenderingCache {
 	

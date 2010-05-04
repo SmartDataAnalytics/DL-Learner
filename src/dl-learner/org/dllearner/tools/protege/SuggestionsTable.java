@@ -2,10 +2,8 @@ package org.dllearner.tools.protege;
 
 import java.util.List;
 
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.tools.ore.ui.ResultTableModel;
 import org.jdesktop.swingx.JXTable;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;

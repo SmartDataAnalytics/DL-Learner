@@ -1,9 +1,8 @@
 package org.dllearner.tools.ore.ui.editor;
 
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.expression.ParserException;
-import org.semanticweb.owl.model.OWLClassAxiom;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLClassAxiom;
 
 
 /**
@@ -26,20 +25,16 @@ class OWLClassAxiomChecker implements OWLExpressionChecker<OWLClassAxiom> {
     }
 
 
-    public void check(String text) throws OWLExpressionParserException {
+    public void check(String text) throws ParserException {
         createObject(text);
     }
 
 
-    public OWLClassAxiom createObject(String text) throws OWLExpressionParserException {
-        ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(mngr.getOWLDataFactory(), text);
+    public OWLClassAxiom createObject(String text) throws ParserException{
+        ManchesterOWLSyntaxParser parser = new ManchesterOWLSyntaxParser(mngr.getOWLDataFactory(), text);
         parser.setOWLEntityChecker(new OREOWLEntityChecker(mngr.getOWLEntityFinder()));
-        try {
-            return parser.parseClassAxiom();
-        }
-        catch (ParserException e) {
-        	
-            throw ParserUtil.convertException(e);
-        }
+            
+        return parser.parseClassAxiom();
+        
     }
 }

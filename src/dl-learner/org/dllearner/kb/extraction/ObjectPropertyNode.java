@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,11 +31,13 @@ import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLLabelAnnotation;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 
 
@@ -127,32 +128,33 @@ public class ObjectPropertyNode extends PropertyNode {
 		//FIXME Property information
 
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
-		OWLObjectProperty me =factory.getOWLObjectProperty(getURI());
+		OWLObjectProperty me =factory.getOWLObjectProperty(getIRI());
 	
 		for (RDFNodeTuple one : propertyInformation) {
 			
 			
 			if(one.aPartContains(OWLVocabulary.RDFS_range)){
-				OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
+				OWLClass c = factory.getOWLClass(IRI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_domain)){
-				OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
+				OWLClass c = factory.getOWLClass(IRI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyDomainAxiom(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_SUB_PROPERTY_OF)){
-				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
-				owlAPIOntologyCollector.addAxiom(factory.getOWLSubObjectPropertyAxiom(me, p));
+				OWLObjectProperty p = factory.getOWLObjectProperty(IRI.create(one.b.toString()));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSubObjectPropertyOfAxiom(me, p));
 			}else if(one.aPartContains(OWLVocabulary.OWL_inverseOf)){
-				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
+				OWLObjectProperty p = factory.getOWLObjectProperty(IRI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseObjectPropertiesAxiom(me, p));				
 			}else if(one.aPartContains(OWLVocabulary.OWL_equivalentProperty)){
-				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
+				OWLObjectProperty p = factory.getOWLObjectProperty(IRI.create(one.b.toString()));
 				Set<OWLObjectProperty> tmp = new HashSet<OWLObjectProperty>();
 				tmp.add(me);tmp.add(p);
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentObjectPropertiesAxiom(tmp));
 				
 			}else if(one.a.toString().equals(OWLVocabulary.RDFS_LABEL)){
-				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.b.toString());
-				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLStringLiteral(one.b.toString()));
+				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
+				owlAPIOntologyCollector.addAxiom(ax);
 			}else if(one.b.isLiteral()){
 				// XXX comments
 			}
@@ -177,7 +179,7 @@ public class ObjectPropertyNode extends PropertyNode {
 			}
 		}
 		for (BlankNode bn : blankNodes) {
-			OWLDescription target = bn.getAnonymousClass(owlAPIOntologyCollector);
+			OWLClassExpression target = bn.getAnonymousClass(owlAPIOntologyCollector);
 			if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_range)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, target));
 			}else if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_domain)){

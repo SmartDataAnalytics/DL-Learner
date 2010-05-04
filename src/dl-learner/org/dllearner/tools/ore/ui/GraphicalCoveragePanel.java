@@ -38,7 +38,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.tools.ore.OREManager;
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.dllearner.tools.protege.IndividualPoint;
 
@@ -158,8 +158,8 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
-			if(concept == null && OREManager.getInstance().getCurrentClass2Learn() != null){
-				g2D.drawString(ManchesterSyntaxRenderer.renderSimple(OREManager.getInstance().getCurrentClass2Learn())
+			if(concept == null && LearningManager.getInstance().getCurrentClass2Describe() != null){
+				g2D.drawString(ManchesterSyntaxRenderer.renderSimple(LearningManager.getInstance().getCurrentClass2Describe())
 					, 320, 10);
 			} else if(concept!= null){
 				g2D.drawString(concept.toManchesterSyntaxString(baseURI, prefixes), 320, 10);

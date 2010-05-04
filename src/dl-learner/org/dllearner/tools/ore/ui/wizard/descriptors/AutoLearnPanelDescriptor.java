@@ -17,11 +17,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.TaskManager;
+import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.AutoLearnPanel;
 import org.mindswap.pellet.utils.SetUtils;
@@ -41,8 +42,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
     
     private List<NamedClass> classes;
     
-    private EquivalentLearningTask equivalentLearningTask;
-    private SuperClassLearningTask superLearningTask;
+    private LearningTask learningTask;
     
     private int currentClassIndex = 0;
     
@@ -87,28 +87,23 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		autoLearnPanel.setNextButtonEnabled(true);
 	}
 	
-	public void learnEquivalentClassExpressions(){
-		TaskManager.getInstance().getStatusBar().setMessage("Learning equivalent class expressions...");
+	public void learnNextClassExpressions(){
+		if(LearningManager.getInstance().getLearningType() == LearningType.EQUIVALENT){
+			TaskManager.getInstance().getStatusBar().setMessage("Learning equivalent class expressions...");
+		} else {
+			TaskManager.getInstance().getStatusBar().setMessage("Learning super class expressions...");
+		}
 		getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		equivalentLearningTask = new EquivalentLearningTask();
-		equivalentLearningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
-		equivalentLearningTask.execute();
-	}
-	
-	public void learnSuperClassExpressions(){
-		TaskManager.getInstance().getStatusBar().setMessage("Learning superclass expressions...");
-		TaskManager.getInstance().getStatusBar().setProgress(0);
-		getWizard().getDialog().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		superLearningTask = new SuperClassLearningTask();
-		superLearningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
-		superLearningTask.execute();
+		learningTask = new LearningTask();
+		learningTask.addPropertyChangeListener(TaskManager.getInstance().getStatusBar());
+		learningTask.execute();
 	}
 	
 	public void learnNextClass(){
 		autoLearnPanel.resetPanel();
 		autoLearnPanel.setSelectedClass(currentClassIndex);
-		OREManager.getInstance().setCurrentClass2Learn(classes.get(currentClassIndex));
-		learnEquivalentClassExpressions();
+		LearningManager.getInstance().setCurrentClass2Describe(classes.get(currentClassIndex));
+		learnNextClassExpressions();
 		currentClassIndex++;
 		if(currentClassIndex >= classes.size()){
 			autoLearnPanel.setNextButtonEnabled(false);
@@ -149,7 +144,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 			while(iter.hasNext()){
 				NamedClass nc = iter.next();
 				int instanceCount = OREManager.getInstance().getReasoner().getIndividuals(nc).size();
-				if(instanceCount < OREManager.getInstance().getMinInstanceCount()){
+				if(instanceCount < LearningManager.getInstance().getMinInstanceCount()){
 					iter.remove();
 				}
 			}			
@@ -175,7 +170,7 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 					classes.clear();
 					classes.addAll(result);
 					autoLearnPanel.fillClassesTable(result);
-					OREManager.getInstance().setCurrentClass2Learn(classes.get(0));
+					LearningManager.getInstance().setCurrentClass2Describe(classes.get(0));
 					TaskManager.getInstance().setTaskFinished();
 					learnNextClass();
 				}
@@ -183,23 +178,15 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		}
 	}
     
-    class EquivalentLearningTask extends SwingWorker<Void, List<? extends EvaluatedDescription>> {
+    class LearningTask extends SwingWorker<Void, List<? extends EvaluatedDescription>> {
     	
     	private Timer timer;
-    	private LearningAlgorithm la;
-    	private final int maxNrOfResults = OREManager.getInstance().getMaxNrOfResults();
-	    private final double threshold = OREManager.getInstance().getThreshold();
 
 		@Override
 		public Void doInBackground() {
-			OREManager.getInstance().setLearningType("equivalence");
-			OREManager.getInstance().setLearningProblem();
-		    OREManager.getInstance().setLearningAlgorithm();
-		    la = OREManager.getInstance().getLa();
-		  		    
 		    timer = new Timer();
 		    setProgress(0);
-			TaskManager.getInstance().getStatusBar().setMaximumValue(OREManager.getInstance().getMaxExecutionTimeInSeconds());
+		    TaskManager.getInstance().getStatusBar().setMaximumValue(LearningManager.getInstance().getMaxExecutionTimeInSeconds());
 			timer.schedule(new TimerTask(){
 
 				int progress = 0;
@@ -207,30 +194,33 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 				@SuppressWarnings("unchecked")
 				@Override
 				public void run() {
-					if(la.isRunning()){
+					if(LearningManager.getInstance().isLearning()){
 						progress += 1;
 						setProgress(progress);
-						result = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true);
+						result = LearningManager.getInstance().getCurrentlyLearnedDescriptions();
 						publish(result);
 					}
 				}
 				
 			}, 1000, 1000);
-			la.start();
+			LearningManager.getInstance().startLearning();	    
+			
 			return null;
 		}
 
 		@Override
 		public void done() {
 			timer.cancel();
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true);
+			List<? extends EvaluatedDescription> result = LearningManager.getInstance().getCurrentlyLearnedDescriptions();
 			updateResultTable(result);
-			if(result.isEmpty()){
-				EvaluatedDescriptionClass best = (EvaluatedDescriptionClass)la.getCurrentlyBestEvaluatedDescription();
-			} 
+			TaskManager.getInstance().setTaskFinished();
+			if(LearningManager.getInstance().getLearningType() == LearningType.EQUIVALENT){
+				LearningManager.getInstance().setLearningType(LearningType.SUPER);
+				learnNextClassExpressions();
+			} else {
+				LearningManager.getInstance().setLearningType(LearningType.EQUIVALENT);
+			}
 			
-			learnSuperClassExpressions();
-		
 		}
 		
 		@Override
@@ -241,67 +231,14 @@ public class AutoLearnPanelDescriptor extends WizardPanelDescriptor implements A
 		}
 		
 		@SuppressWarnings("unchecked")
-		private void updateResultTable(final List<? extends EvaluatedDescription> result) {		
-			autoLearnPanel.fillEquivalentClassExpressionsTable((List<EvaluatedDescriptionClass>) result);
+		private void updateResultTable(final List<? extends EvaluatedDescription> result) {
+			if(LearningManager.getInstance().getLearningType() == LearningType.EQUIVALENT){
+				autoLearnPanel.fillEquivalentClassExpressionsTable((List<EvaluatedDescriptionClass>) result);
+			} else {
+				autoLearnPanel.fillSuperClassExpressionsTable((List<EvaluatedDescriptionClass>) result);
+			}
+			
 		}
 	}
     
-    class SuperClassLearningTask extends SwingWorker<Void, List<? extends EvaluatedDescription>> {
-    	
-    	private Timer timer;
-    	private LearningAlgorithm la;
-    	private final int maxNrOfResults = OREManager.getInstance().getMaxNrOfResults();
-	    private final double threshold = OREManager.getInstance().getThreshold();
-
-		@Override
-		public Void doInBackground() {
-			OREManager.getInstance().setLearningType("superClass");
-			OREManager.getInstance().setLearningProblem();
-		    OREManager.getInstance().setLearningAlgorithm();
-		    la = OREManager.getInstance().getLa();
-  		    
-		    timer = new Timer();
-		    setProgress(0);
-			TaskManager.getInstance().getStatusBar().setMaximumValue(OREManager.getInstance().getMaxExecutionTimeInSeconds());
-			timer.schedule(new TimerTask(){
-
-				int progress = 0;
-				List<? extends EvaluatedDescription> result;
-				@SuppressWarnings("unchecked")
-				@Override
-				public void run() {
-					if(la.isRunning()){
-						progress += 1;
-						setProgress(progress);
-						result = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true);
-						publish(result);
-					}
-				}
-				
-			}, 1000, 1000);
-			la.start();
-			return null;
-		}
-
-		@Override
-		public void done() {
-			timer.cancel();
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true);
-			updateResultTable(result);
-			TaskManager.getInstance().setTaskFinished();
-			setProgress(0);
-		}
-		
-		@Override
-		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {				
-			for (List<? extends EvaluatedDescription> list : resultLists) {
-				updateResultTable(list);
-			}
-		}
-		
-		@SuppressWarnings("unchecked")
-		private void updateResultTable(final List<? extends EvaluatedDescription> result) {
-			autoLearnPanel.fillSuperClassExpressionsTable((List<EvaluatedDescriptionClass>) result);
-		}
-	}
 }

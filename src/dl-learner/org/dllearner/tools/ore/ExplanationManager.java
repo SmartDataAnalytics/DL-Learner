@@ -17,22 +17,23 @@ import org.dllearner.tools.ore.explanation.RemainingAxiomPartsGenerator;
 import org.dllearner.tools.ore.explanation.RootFinder;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
 import org.dllearner.tools.ore.explanation.laconic.OPlus;
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 import uk.ac.manchester.cs.bhig.util.Tree;
 import uk.ac.manchester.cs.owl.explanation.ordering.DefaultExplanationOrderer;
 import uk.ac.manchester.cs.owl.explanation.ordering.ExplanationTree;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class ExplanationManager implements OREManagerListener{
 
@@ -41,7 +42,7 @@ public class ExplanationManager implements OREManagerListener{
 	private OWLOntologyManager manager;
 	private OWLDataFactory dataFactory;
 	private OWLOntology ontology;
-	private Reasoner reasoner;
+	private PelletReasoner reasoner;
 
 	private RootFinder rootFinder;
 
@@ -78,7 +79,7 @@ public class ExplanationManager implements OREManagerListener{
 
 		listeners = new ArrayList<ExplanationManagerListener>();
 		
-		gen = new CachedExplanationGenerator(reasoner.getLoadedOntologies());
+		gen = new CachedExplanationGenerator(Collections.singleton(reasoner.getRootOntology()));
 		
 		remainingAxGen = new RemainingAxiomPartsGenerator(ontology, dataFactory);
 
@@ -113,7 +114,7 @@ public class ExplanationManager implements OREManagerListener{
 	
 	public Set<Explanation> getUnsatisfiableExplanations(OWLClass unsat) {
 
-		OWLSubClassAxiom entailment = dataFactory.getOWLSubClassAxiom(unsat,
+		OWLSubClassOfAxiom entailment = dataFactory.getOWLSubClassOfAxiom(unsat,
 				dataFactory.getOWLNothing());
 
 		Set<Explanation> explanations;
@@ -127,7 +128,7 @@ public class ExplanationManager implements OREManagerListener{
 	}
 	
 	public Set<Explanation> getInconsistencyExplanations(){
-		OWLSubClassAxiom entailment = dataFactory.getOWLSubClassAxiom(dataFactory.getOWLThing(),
+		OWLSubClassOfAxiom entailment = dataFactory.getOWLSubClassOfAxiom(dataFactory.getOWLThing(),
 				dataFactory.getOWLNothing());
 
 		Set<Explanation> explanations;
@@ -178,7 +179,7 @@ public class ExplanationManager implements OREManagerListener{
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			PelletReasonerFactory reasonerFactory = new PelletReasonerFactory();
 			OWLOntology ontology = manager.createOntology(explanation.getAxioms());
-			LaconicExplanationGenerator gen = new LaconicExplanationGenerator(manager, reasonerFactory, Collections.singleton(ontology));
+			LaconicExplanationGenerator gen = new LaconicExplanationGenerator(manager, reasonerFactory, ontology);
 			exp = gen.getExplanations(explanation.getEntailment(), 1).iterator().next();
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
@@ -209,7 +210,7 @@ public class ExplanationManager implements OREManagerListener{
 	public int getArity(OWLClass cl, OWLAxiom ax) {
 		int arity = 0;
 		
-		Set<Explanation> explanations = gen.getExplanations(dataFactory.getOWLSubClassAxiom(cl, dataFactory.getOWLNothing()));
+		Set<Explanation> explanations = gen.getExplanations(dataFactory.getOWLSubClassOfAxiom(cl, dataFactory.getOWLNothing()));
 		
 		if(explanations != null){
 			
@@ -321,7 +322,7 @@ public class ExplanationManager implements OREManagerListener{
 	public void activeOntologyChanged() {
 		reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		ontology = OREManager.getInstance().getReasoner().getOWLAPIOntologies();
-		gen = new CachedExplanationGenerator(reasoner.getLoadedOntologies());
+		gen = new CachedExplanationGenerator(Collections.singleton(reasoner.getRootOntology()));
 		orderingMap.clear();
 		usageChecker = new AxiomUsageChecker(ontology);
 	}

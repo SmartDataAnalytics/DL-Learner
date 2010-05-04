@@ -2,21 +2,22 @@ package org.dllearner.tools.ore;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.util.Set;
 
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.clarkparsia.explanation.PelletExplanation;
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
+import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 
 public class ExplanationTest {
@@ -43,31 +44,28 @@ public class ExplanationTest {
 				// Create an OWLAPI manager that allows to load an ontology file and
 				// create OWLEntities
 				OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-				OWLOntology ontology = manager.loadOntology( URI.create( file ) );
+				OWLOntology ontology = manager.loadOntology( IRI.create( file ) );
 				OWLDataFactory factory = manager.getOWLDataFactory();
 				
 				// Create the reasoner and load the ontology
-				Reasoner reasoner = new Reasoner( manager );
-				reasoner.loadOntology( ontology );
+				PelletReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology);
 				
 				// Create an explanation generator
 				PelletExplanation expGen = new PelletExplanation( reasoner );
 				
 				// Create some concepts
-				OWLClass madCow = factory.getOWLClass( URI.create( NS + "mad+cow" ) );
-				OWLClass animalLover = factory.getOWLClass( URI.create( NS + "animal+lover" ) );
-				OWLClass petOwner = factory.getOWLClass( URI.create( NS + "pet+owner" ) );
+				OWLClass madCow = factory.getOWLClass( IRI.create( NS + "mad+cow" ) );
+				OWLClass animalLover = factory.getOWLClass( IRI.create( NS + "animal+lover" ) );
+				OWLClass petOwner = factory.getOWLClass( IRI.create( NS + "pet+owner" ) );
 				
 				//Explain why ontology is inconsistent
 				out.println( "Why is ontology inconsistent?" );	
 				renderer.render(expGen.getInconsistencyExplanations());
 				
 				out.println( "unsatisfiable classes:" );		
-				for(OWLClass cl : reasoner.getClasses()){
-					if(!reasoner.isSatisfiable(cl)){
+				for(OWLClass cl : reasoner.getUnsatisfiableClasses().getEntities()){
 						out.println(cl);
 						renderer.render(expGen.getUnsatisfiableExplanations(cl));
-					}
 				}
 				
 				

@@ -26,7 +26,7 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.statistics.SimpleClock;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 public class OntologyCloser {
 	KB kb;

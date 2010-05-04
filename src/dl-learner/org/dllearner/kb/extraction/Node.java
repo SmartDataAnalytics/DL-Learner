@@ -19,13 +19,13 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.List;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
+import org.semanticweb.owlapi.model.IRI;
 
 
 
@@ -96,8 +96,8 @@ public abstract class Node  {
 	}
 	
 	
-	public URI getURI() {
-		return URI.create(uri);
+	public IRI getIRI() {
+		return IRI.create(uri);
 	}
 	
 	public String getNTripleForm(){

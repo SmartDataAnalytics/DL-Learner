@@ -25,8 +25,9 @@ import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.explanation.ExplanationType;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.InconsistencyExplanationPanel;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 
 public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescriptor implements ActionListener,ChangeListener, ExplanationManagerListener,  RepairManagerListener{
 	public static final String IDENTIFIER = "INCONSISTENCY_PANEL";
@@ -35,7 +36,7 @@ public class InconsistencyExplanationPanelDescriptor extends WizardPanelDescript
     private InconsistencyExplanationPanel panel;
     private ExplanationManager expMan;
     private RepairManager repMan;
-    private Reasoner reasoner;
+    private PelletReasoner reasoner;
        
     public InconsistencyExplanationPanelDescriptor() {
 		setPanelDescriptorIdentifier(IDENTIFIER);

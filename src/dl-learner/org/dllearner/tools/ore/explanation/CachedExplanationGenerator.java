@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.explanation;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,17 +13,17 @@ import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
 import org.dllearner.tools.ore.TaskManager;
 import org.dllearner.tools.ore.explanation.laconic.LaconicExplanationGenerator;
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import uk.ac.manchester.cs.owl.modularity.ModuleType;
+import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 
 import com.clarkparsia.modularity.ModularityUtils;
-import com.clarkparsia.owlapi.OntologyUtils;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 
 public class CachedExplanationGenerator implements ExplanationGenerator, RepairManagerListener{
@@ -200,10 +199,17 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		if(explanations == null || lastRequestedSize.intValue() != -1 && lastRequestedSize.intValue() < limit){
 			OWLOntology module = axiom2Module.get(entailment);
 			if(module == null){
-				module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontologies, entailment.getSignature(), ModuleType.TOP_OF_BOT));
+				try {
+					module = manager.createOntology(ModularityUtils.extractModule(ontologies,
+							entailment.getSignature(), ModuleType.TOP_OF_BOT));
+				} catch (OWLOntologyCreationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				axiom2Module.put(entailment, module);
 			}
-			axiom2Module.put(entailment, module);
-			laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), Collections.singleton(module));
+			
+			laconicExpGen = new LaconicExplanationGenerator(manager, new PelletReasonerFactory(), module);
 //			laconicExpGen.setOntology(Collections.singleton(module));
 			laconicExpGen.setProgressMonitor(TaskManager.getInstance().getStatusBar());
 			if(limit == -1){
@@ -241,10 +247,17 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		if(explanations == null || lastRequestedSize.intValue() != -1 && lastRequestedSize.intValue() < limit){
 			OWLOntology module = axiom2Module.get(entailment);
 			if(module == null){
-				module = OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule(ontologies, entailment.getSignature(), ModuleType.TOP_OF_BOT));
+				try {
+					module = manager.createOntology(ModularityUtils.extractModule(ontologies,
+							entailment.getSignature(), ModuleType.TOP_OF_BOT));
+				} catch (OWLOntologyCreationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				axiom2Module.put(entailment, module);
 			}
-			axiom2Module.put(entailment, module);
-			regularExpGen = new PelletExplanationGenerator(manager, Collections.singleton(module));
+			
+			regularExpGen = new PelletExplanationGenerator(module);
 			regularExpGen.setProgressMonitor(TaskManager.getInstance().getStatusBar());
 			if(limit == -1){
 				explanations = regularExpGen.getExplanations(entailment);
@@ -287,6 +300,11 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 //			regularExplanationCache.get(copyEntry.getKey()).removeAll(copyEntry.getValue());
 //			
 //		}
+		clear();
+		
+	}
+	
+	private void clear(){
 		regularExplanationCache.clear();
 		laconicExplanationCache.clear();
 		preciseExplanationCache.clear();
@@ -294,7 +312,6 @@ public class CachedExplanationGenerator implements ExplanationGenerator, RepairM
 		axiom2Module.clear();
 		lastRequestedRegularSize.clear();
 		lastRequestedLaconicSize.clear();
-		
 	}
 	
 	public Set<OWLAxiom> getSourceAxioms(OWLAxiom ax){

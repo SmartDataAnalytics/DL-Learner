@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mindswap.pellet.utils.SetUtils;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 public class AxiomSelector {
 

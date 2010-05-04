@@ -26,7 +26,6 @@ import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JLabel;
@@ -41,6 +40,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.tools.ore.OREManager;
@@ -66,13 +66,10 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 
 	private final Description desc;
 	private Individual ind;
-	private OREManager ore;
+	private OREManager oreMan;
 	private JPopupMenu menu;
 	private String mode;
 	private String descriptionLabel;
-
-	private String baseURI;
-	private Map<String, String> prefixes;
 
 	/**
 	 * constructor.
@@ -93,25 +90,23 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	 * initialize description label with solution.
 	 */
 	public void init(){
-		baseURI = ore.getBaseURI();
-		prefixes = ore.getPrefixes();
 		
-		setText(((Description) desc).toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
+		setText(oreMan.getManchesterSyntaxRendering(desc));
 		menu = new JPopupMenu();
 		ToolTipManager.sharedInstance().setDismissDelay(7000);
 		//negative example solutions
 		if(mode.equals("neg")){
 			if(!(desc instanceof Negation)){
 				if(desc instanceof NamedClass){																//1. description is a named class
-					descriptionLabel = desc.toManchesterSyntaxString(baseURI, prefixes);
+					descriptionLabel = oreMan.getManchesterSyntaxRendering(desc);
              
 					menu.add(new RemoveFromClassMenuItem(desc));											 //1.a remove class assertion
 					JMenu dme = new JMenu("move class assertion from " + descriptionLabel + " to ...");			//1.b move individual
-					for(NamedClass nc : ore.getpossibleClassesMoveTo(ind)){
+					for(NamedClass nc : oreMan.getpossibleClassesMoveTo(ind)){
 						MoveFromClassToMenuItem move = new MoveFromClassToMenuItem(desc, nc);
 						dme.add(move);
-						Set<NamedClass> complements = ore.getComplements(nc, ind);							//check for complement error
-						if(!(complements.isEmpty() || (complements.size() == 1 && complements.toArray()[0].toString().equals(desc.toString())))){
+						Set<NamedClass> complements = oreMan.getComplements(nc, ind);							//check for complement error
+						if(!(complements.isEmpty() || (complements.size() == 1 && complements.iterator().next().equals(desc)))){
 							move.setEnabled(false);
 							StringBuffer strBuf = new StringBuffer();
 							strBuf.append("<html>class assertion not possible because individual<br> " 
@@ -133,10 +128,10 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 						menu.add(new RemoveAllPropertyAssertionsToMenuItem(((ObjectSomeRestriction) desc).getRole(), ((ObjectSomeRestriction) desc).getChild(0)));				//2.b remove property assertions with objects in range
 					}
 				} else if(desc instanceof ObjectAllRestriction){														//3. description is a object all restriction
-					if (!(desc.getChild(0) instanceof Thing)) {System.out.println(ore.isAssertable(((ObjectAllRestriction)desc).getRole(), ind));
-						JMenu dme = new JMenu("add property assertion " + ((ObjectAllRestriction) desc).getRole().toKBSyntaxString(baseURI, prefixes)	//3.a add property assertion with object not in range
+					if (!(desc.getChild(0) instanceof Thing)) {
+						JMenu dme = new JMenu("add property assertion " + oreMan.getManchesterSyntaxRendering((ObjectProperty)((ObjectAllRestriction)desc).getRole())	//3.a add property assertion with object not in range
 								+ " with object ...");
-						for (Individual i : ore.getIndividualsNotInPropertyRange(desc.getChild(0), ind)){
+						for (Individual i : oreMan.getIndividualsNotInPropertyRange(desc.getChild(0), ind)){
 							dme.add(new AddPropertyAssertionMenuItem(((ObjectAllRestriction)desc).getRole(), i));
 						}
 						menu.add(dme);
@@ -147,7 +142,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 				if(desc.getChild(0) instanceof NamedClass){															//4. description is a negated named class
 					AddToClassMenuItem addItem = new AddToClassMenuItem(desc.getChild(0));
 					menu.add(addItem);																				//4.a add class assertion
-					Set<NamedClass> complements = ore.getComplements(desc.getChild(0), ind);						//check for complement errors
+					Set<NamedClass> complements = oreMan.getComplements(desc.getChild(0), ind);						//check for complement errors
 					if(!complements.isEmpty()){
 						addItem.setEnabled(false);
 						StringBuffer strBuf = new StringBuffer();
@@ -168,7 +163,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 			if(!(desc instanceof Negation)){
 				if(desc instanceof NamedClass){
 					AddToClassMenuItem add = new AddToClassMenuItem(desc);
-					Set<NamedClass> complements = ore.getComplements(desc, ind);
+					Set<NamedClass> complements = oreMan.getComplements(desc, ind);
 					if(!(complements.isEmpty())){
 						add.setEnabled(false);
 						StringBuffer strBuf = new StringBuffer();
@@ -185,9 +180,9 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					}
 					menu.add(add);
 					
-					Set<NamedClass> moveClasses = ore.getpossibleClassesMoveFrom(ind);
+					Set<NamedClass> moveClasses = oreMan.getpossibleClassesMoveFrom(ind);
 					if(moveClasses.size() > 0){
-						JMenu move = new JMenu("move to " + desc.toManchesterSyntaxString(baseURI, prefixes) + " from ...");
+						JMenu move = new JMenu("move to " + oreMan.getManchesterSyntaxRendering(desc) + " from ...");
 						for (NamedClass source : moveClasses){
 							MoveToClassFromMenuItem item = new MoveToClassFromMenuItem(desc, source);
 							move.add(item);
@@ -214,7 +209,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					
 				} else if(desc instanceof ObjectSomeRestriction){
 					JMenu dme = new JMenu("add property assertion with object ...");
-					for (Individual i : ore.getIndividualsInPropertyRange(desc.getChild(0), ind)){
+					for (Individual i : oreMan.getIndividualsInPropertyRange(desc.getChild(0), ind)){
 						dme.add(new AddPropertyAssertionMenuItem(((ObjectSomeRestriction) desc).getRole(), i));
 					}
 						menu.add(dme);
@@ -231,7 +226,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 			
 		} else if(desc instanceof Negation){
 			if(desc.getChild(0) instanceof NamedClass){
-				descriptionLabel = desc.toManchesterSyntaxString(baseURI, prefixes);
+				descriptionLabel = oreMan.getManchesterSyntaxRendering(desc);
 				menu.add(new RemoveFromClassMenuItem(desc.getChild(0)));  
 			}
 		}
@@ -269,7 +264,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	}
 
 	public void setIndOre(Individual ind) {
-		this.ore = OREManager.getInstance();
+		this.oreMan = OREManager.getInstance();
 		this.ind = ind;
 	}
 
@@ -283,8 +278,8 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	 */
 	public void mouseEntered(MouseEvent e) {
 		setText("<html><u>"
-				+ ((Description) desc).toManchesterSyntaxString(ore
-						.getBaseURI(), ore.getPrefixes()) + "</u></html>");
+				+ ((Description) desc).toManchesterSyntaxString(oreMan
+						.getBaseURI(), oreMan.getPrefixes()) + "</u></html>");
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		if(desc instanceof ObjectCardinalityRestriction){
 			setToolTipText("ObjectCardinality repair not available at present");
@@ -296,8 +291,8 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	 * Removing underlining when mosue relased.
 	 */
 	public void mouseExited(MouseEvent e) {
-		setText(((Description) desc).toManchesterSyntaxString(ore.getBaseURI(),
-				ore.getPrefixes()));
+		setText(((Description) desc).toManchesterSyntaxString(oreMan.getBaseURI(),
+				oreMan.getPrefixes()));
 		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 

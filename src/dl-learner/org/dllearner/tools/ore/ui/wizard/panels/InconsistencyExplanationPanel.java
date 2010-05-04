@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -27,7 +26,7 @@ import org.dllearner.tools.ore.ui.ExplanationTablePanel;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.RepairPlanPanel;
 import org.jdesktop.swingx.JXTitledPanel;
-import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 
 public class InconsistencyExplanationPanel extends JPanel{
 

@@ -20,18 +20,18 @@
 package org.dllearner.test;
 
 import java.io.File;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * @author Jens Lehmann
@@ -45,19 +45,11 @@ public class PelletPerformanceProblem {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
         File f = new File("examples/epc/conf/sap_modell_komplett_2.owl");
-        URI physicalURI = f.toURI();
-        OWLOntology ontology = manager.loadOntologyFromPhysicalURI(physicalURI);
-        
-        Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
-        ontologies.add(ontology);
-        OWLReasoner reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
-        reasoner.loadOntologies(ontologies);
+        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(f);
+        OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology, new SimpleConfiguration());
         System.out.println("ontology loaded");
         
-        reasoner.classify();
-        System.out.println("ontology classified");
-        reasoner.realise();
-        System.out.println("ontology realised");
+        reasoner.prepareReasoner();
 	}
 	
 }

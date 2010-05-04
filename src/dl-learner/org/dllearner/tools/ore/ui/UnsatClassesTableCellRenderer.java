@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREApplication;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 public class UnsatClassesTableCellRenderer extends DefaultTableCellRenderer {
 

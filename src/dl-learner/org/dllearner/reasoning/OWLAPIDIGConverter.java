@@ -15,13 +15,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.dllearner.core.OntologyFormat;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.w3c.dom.Document;
 
-import uk.ac.manchester.cs.owl.inference.dig11.DIGReasonerException;
-import uk.ac.manchester.cs.owl.inference.dig11.DIGTranslatorImpl;
+import com.hp.hpl.jena.reasoner.dig.DIGReasonerException;
 
 public class OWLAPIDIGConverter {
 
@@ -33,12 +33,12 @@ public class OWLAPIDIGConverter {
 			// Load an ontology from a physical URI
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			// the next function could return an ontology
-			manager.loadOntologyFromPhysicalURI(file.toURI());
-
-			DIGTranslatorImpl dig = new DIGTranslatorImpl(manager);
-			Document doc = dig.createTellsDocument(kbURI.toString());
-			dig.translateToDIG(manager.getOntologies(), doc, doc.getDocumentElement());
-			ret = xml2string(doc);
+			manager.loadOntologyFromOntologyDocument(IRI.create(file));
+//TODO: OWLAPI3 conversion
+//			DIGTranslatorImpl dig = new DIGTranslatorImpl(manager);
+//			Document doc = dig.createTellsDocument(kbURI.toString());
+//			dig.translateToDIG(manager.getOntologies(), doc, doc.getDocumentElement());
+//			ret = xml2string(doc);
 
 		} catch (DIGReasonerException e) {
 			e.printStackTrace();

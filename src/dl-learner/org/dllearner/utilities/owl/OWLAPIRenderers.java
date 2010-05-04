@@ -20,19 +20,21 @@
 package org.dllearner.utilities.owl;
 
 import java.io.StringWriter;
-import java.net.URI;
 
 import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
 import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
 import org.coode.xml.XMLWriterNamespaceManager;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
-import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
 
 /**
  * A collection of various render methods provided by 
@@ -51,7 +53,8 @@ public class OWLAPIRenderers {
 	 */
 	public static String toManchesterOWLSyntax(OWLAxiom description) {
 		StringWriter sw = new StringWriter();
-		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw);
+		ShortFormProvider sfp = new SimpleShortFormProvider();
+		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, sfp);
 		description.accept(renderer);
 		return sw.toString();
 	}	
@@ -62,9 +65,10 @@ public class OWLAPIRenderers {
 	 * @param description Input OWLDescription.
 	 * @return Manchester OWL syntax string.
 	 */
-	public static String toManchesterOWLSyntax(OWLDescription description) {
+	public static String toManchesterOWLSyntax(OWLClassExpression description) {
 		StringWriter sw = new StringWriter();
-		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw);
+		ShortFormProvider sfp = new SimpleShortFormProvider();
+		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, sfp);
 		description.accept(renderer);
 		return sw.toString();
 	}
@@ -75,25 +79,26 @@ public class OWLAPIRenderers {
 	 * @param description Input OWLDescription.
 	 * @return OWL/XML syntax string.
 	 */
-	public static String toOWLXMLSyntax(OWLDescription description) {
+	public static String toOWLXMLSyntax(OWLClassExpression description) {
 		StringWriter sw = new StringWriter();
 		// set up default namespace and prefixes
 		XMLWriterNamespaceManager ns = new XMLWriterNamespaceManager("http://example.com");
 		ns.setPrefix("owl2", "http://www.w3.org/2006/12/owl2-xml#");
-		OWLXMLWriter oxw = new OWLXMLWriter(sw, ns);
-		OWLXMLObjectRenderer renderer = new OWLXMLObjectRenderer(oxw);
-		description.accept(renderer);
+		//TODO:OWLAPI3 conversion		
+//		OWLXMLWriter oxw = new OWLXMLWriter(sw, description.getontology);
+//		OWLXMLObjectRenderer renderer = new OWLXMLObjectRenderer(oxw);
+//		description.accept(renderer);
 		return sw.toString();
 	}	
 	
 	public static void main(String args[]) {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLDescription a1 = factory.getOWLClass(URI.create("http://example.com/test#a1"));
-		OWLDescription a2 = factory.getOWLClass(URI.create("http://example.com/test#a2"));
-		OWLObjectProperty r = factory.getOWLObjectProperty(URI.create("http://example.com/test#r"));
-		OWLDescription d3 = factory.getOWLObjectSomeRestriction(r, a2);
-		OWLDescription d = factory.getOWLObjectIntersectionOf(a1,d3);
+		OWLClassExpression a1 = factory.getOWLClass(IRI.create("http://example.com/test#a1"));
+		OWLClassExpression a2 = factory.getOWLClass(IRI.create("http://example.com/test#a2"));
+		OWLObjectProperty r = factory.getOWLObjectProperty(IRI.create("http://example.com/test#r"));
+		OWLClassExpression d3 = factory.getOWLObjectSomeValuesFrom(r, a2);
+		OWLClassExpression d = factory.getOWLObjectIntersectionOf(a1,d3);
 		String s = toOWLXMLSyntax(d);
 		System.out.println(s);
 	}

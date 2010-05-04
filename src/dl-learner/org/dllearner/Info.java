@@ -3,6 +3,6 @@
 	package org.dllearner;
 
 	public class Info {
-		public static final String build = "2010-03-13";
+		public static final String build = "2010-03-15";
 	}
 			

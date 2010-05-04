@@ -23,7 +23,7 @@ public class ClassesTable extends JXTable {
 		setHighlighters(HighlighterFactory.createAlternateStriping());
 		setModel(new ClassesTableModel());
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		getColumn(0).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
+//		getColumn(0).setCellRenderer(new ManchesterSyntaxTableCellRenderer());
 		getColumn(0).setResizable(false);
 		setEditable(false);
 		setTableHeader(null);

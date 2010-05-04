@@ -36,7 +36,7 @@ import org.dllearner.tools.ore.ui.ImpactTable;
 import org.dllearner.tools.ore.ui.RepairPlanPanel;
 import org.dllearner.tools.ore.ui.UnsatisfiableClassesTable;
 import org.jdesktop.swingx.JXTitledPanel;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 public class UnsatisfiableExplanationPanel2 extends JPanel{
 
@@ -150,6 +150,10 @@ public class UnsatisfiableExplanationPanel2 extends JPanel{
 		explanationPanel.setTitle("Explanations");
 		explanationPanel.getContentContainer().setLayout(new BorderLayout());
 		
+		JPanel holder = new JPanel(new BorderLayout());
+		holder.add(createExplanationHeaderPanel(), BorderLayout.WEST);
+		explanationPanel.getContentContainer().add(holder, BorderLayout.NORTH);
+		
 		explanationsPanel = new Box(1);
 		
 		explanationPanels = new HashSet<ExplanationTablePanel>();
@@ -165,9 +169,7 @@ public class UnsatisfiableExplanationPanel2 extends JPanel{
 		explanationsScrollPane.setOpaque(false);
 	       
 		explanationPanel.getContentContainer().add(explanationsScrollPane, BorderLayout.CENTER);
-		JPanel holder = new JPanel(new BorderLayout());
-		holder.add(createExplanationHeaderPanel(), BorderLayout.WEST);
-		explanationPanel.getContentContainer().add(holder, BorderLayout.NORTH);
+		
 		
 		return explanationPanel;
 
@@ -270,7 +272,7 @@ public class UnsatisfiableExplanationPanel2 extends JPanel{
 		explanationTables.clear();
 		Box explanationHolderPanel = new Box(1);
 		
-		explanationHolderPanel.setBorder(new TitledBorder(unsat + " is unsatisfiable"));
+		explanationHolderPanel.setBorder(new TitledBorder(OREManager.getInstance().getManchesterSyntaxRendering(unsat) + " is unsatisfiable"));
 		int counter = 1;
 		for(Explanation exp : explanations){
 			ExplanationTable expTable = new ExplanationTable(exp, unsat);

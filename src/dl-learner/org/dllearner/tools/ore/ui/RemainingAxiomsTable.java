@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.dllearner.tools.ore.ui.rendering.TextAreaRenderer;
 import org.jdesktop.swingx.JXTable;
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 public class RemainingAxiomsTable extends JXTable{
 

@@ -42,6 +42,12 @@ public class TaskManager {
 		statusBar.showProgress(true);
 	}
 	
+	public void setTaskStarted(String message, boolean indeterminate){
+		dialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		statusBar.setMessage(message);
+		statusBar.showProgress(indeterminate);
+	}
+	
 	public void setTaskFinished(){
 		dialog.setCursor(null);
 		statusBar.setMessage("Done");

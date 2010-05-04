@@ -1,16 +1,17 @@
 package org.dllearner.examples.corpus;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.dllearner.examples.Corpus;
 import org.dllearner.utilities.URLencodeUTF8;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 public class Sentence {
 	int id ;
@@ -34,22 +35,22 @@ public class Sentence {
 		super();
 		this.id = id;
 		this.sentence = sentence;
-		this.sentenceURI = Corpus.factory.getOWLIndividual(URI.create(Corpus.namespace+"#"+"satz"+id));
+		this.sentenceURI = Corpus.factory.getOWLNamedIndividual(IRI.create(Corpus.namespace+"#"+"satz"+id));
 	
 		this.urisInOrder = new ArrayList<String>();
 		this.wordsInOrder = new ArrayList<String>();
 		
-		element = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#Element"));
-		structElement = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#StructureElement"));
-		wordElement = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#WordElement"));
-		sentenceClass = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#Sentence"));
-		tagClass = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#Tag"));
-		morphClass = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#Morph"));
-		edgeClass = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#Edge"));
+		element = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#Element"));
+		structElement = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#StructureElement"));
+		wordElement = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#WordElement"));
+		sentenceClass = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#Sentence"));
+		tagClass = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#Tag"));
+		morphClass = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#Morph"));
+		edgeClass = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#Edge"));
 	
-		hasElement = Corpus.factory.getOWLObjectProperty(URI.create(Corpus.namespace+"#hasElement"));
+		hasElement = Corpus.factory.getOWLObjectProperty(IRI.create(Corpus.namespace+"#hasElement"));
 		
-		Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(this.sentenceURI,sentenceClass ));
+		Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(sentenceClass, this.sentenceURI));
 	}
 	
 	public void processSentence(){
@@ -65,7 +66,7 @@ public class Sentence {
 	
 	public void processLine(String line, int pos){
 		String elementURL = Corpus.namespace+"#";
-		OWLIndividual lineElement;
+		OWLNamedIndividual lineElement;
 		StringTokenizer st = new StringTokenizer(line);
 		
 		//%String %% word			lemma			tag	morph		edge	parent	secedge comment
@@ -78,20 +79,22 @@ public class Sentence {
 		//word
 		if(word.startsWith("#")){
 			elementURL+="s_"+id+"_"+word.substring(1);
-			lineElement = Corpus.factory.getOWLIndividual(URI.create(elementURL));
-			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(lineElement, structElement));
+			lineElement = Corpus.factory.getOWLNamedIndividual(IRI.create(elementURL));
+			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(structElement, lineElement));
 			
 		}else{
 			elementURL+="s_"+id+"_"+pos+"_"+URLencodeUTF8.encode(word);
 			wordsInOrder.add(word);
 			urisInOrder.add(elementURL);
-			lineElement = Corpus.factory.getOWLIndividual(URI.create(elementURL));
-			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(lineElement, wordElement));
-			Corpus.addAxiom(Corpus.factory.getOWLEntityAnnotationAxiom(lineElement, Corpus.factory.getCommentAnnotation(line)));
-			Corpus.addAxiom(Corpus.factory.getOWLEntityAnnotationAxiom(lineElement, Corpus.factory.getOWLLabelAnnotation(word)));
+			lineElement = Corpus.factory.getOWLNamedIndividual(IRI.create(elementURL));
+			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(wordElement, lineElement));
+			Corpus.addAxiom(Corpus.factory.getOWLAnnotationAssertionAxiom(Corpus.factory.getRDFSComment(),
+					lineElement.getIRI(), Corpus.factory.getOWLStringLiteral(line)));
+			Corpus.addAxiom(Corpus.factory.getOWLAnnotationAssertionAxiom(Corpus.factory.getRDFSLabel(),
+					lineElement.getIRI(), Corpus.factory.getOWLStringLiteral(word)));
 		}
 		
-		Corpus.addAxiom(Corpus.factory.getOWLObjectPropertyAssertionAxiom(sentenceURI, hasElement, lineElement));
+		Corpus.addAxiom(Corpus.factory.getOWLObjectPropertyAssertionAxiom(hasElement, sentenceURI, lineElement));
 		
 		//tag
 		tag = (tag.equals("$("))?"SentenceBoundary":tag;
@@ -103,20 +106,20 @@ public class Sentence {
 	
 	void makeClasses(OWLIndividual lineElement, String tag, String morph, String edge){
 		if(!tag.equals("--")){
-			OWLDescription d = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#"+tag));
-			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(lineElement,d ));
-			Corpus.addAxiom(Corpus.factory.getOWLSubClassAxiom(d, tagClass));
+			OWLClassExpression d = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#"+tag));
+			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(d, lineElement));
+			Corpus.addAxiom(Corpus.factory.getOWLSubClassOfAxiom(d, tagClass));
 		}
 		if(!morph.equals("m_--")){
 			
-			OWLDescription d = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#"+morph));
-			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(lineElement,d ));
-			Corpus.addAxiom(Corpus.factory.getOWLSubClassAxiom(d, morphClass));
+			OWLClassExpression d = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#"+morph));
+			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(d, lineElement));
+			Corpus.addAxiom(Corpus.factory.getOWLSubClassOfAxiom(d, morphClass));
 		}
 		if(!edge.equals("--")){
-			OWLDescription d = Corpus.factory.getOWLClass(URI.create(Corpus.namespace+"#"+edge));
-			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(lineElement,d ));
-			Corpus.addAxiom(Corpus.factory.getOWLSubClassAxiom(d, edgeClass));
+			OWLClassExpression d = Corpus.factory.getOWLClass(IRI.create(Corpus.namespace+"#"+edge));
+			Corpus.addAxiom(Corpus.factory.getOWLClassAssertionAxiom(d, lineElement));
+			Corpus.addAxiom(Corpus.factory.getOWLSubClassOfAxiom(d, edgeClass));
 		}
 	}
 }

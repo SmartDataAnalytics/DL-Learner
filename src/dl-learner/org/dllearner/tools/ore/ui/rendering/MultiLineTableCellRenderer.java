@@ -19,12 +19,12 @@ import javax.swing.text.View;
 import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.ImpactManager;
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 
-import com.clarkparsia.explanation.io.manchester.Keyword;
-import com.clarkparsia.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
-import com.clarkparsia.explanation.io.manchester.TextBlockWriter;
+import com.clarkparsia.owlapi.explanation.io.manchester.Keyword;
+import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxObjectRenderer;
+import com.clarkparsia.owlapi.explanation.io.manchester.TextBlockWriter;
 
 public class MultiLineTableCellRenderer extends JTextPane implements TableCellRenderer{
 

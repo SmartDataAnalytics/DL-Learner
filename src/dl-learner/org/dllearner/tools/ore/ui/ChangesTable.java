@@ -15,7 +15,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.jdesktop.swingx.JXTable;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 public class ChangesTable extends JXTable {
 

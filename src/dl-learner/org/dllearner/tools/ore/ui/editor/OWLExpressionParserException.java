@@ -1,8 +1,8 @@
 package org.dllearner.tools.ore.ui.editor;
 
-import org.semanticweb.owl.model.OWLException;
-
 import java.util.Set;
+
+import org.semanticweb.owlapi.model.OWLException;
 
 
 /**

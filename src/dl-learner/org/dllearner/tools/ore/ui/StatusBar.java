@@ -28,9 +28,9 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
-import com.clarkparsia.explanation.util.ExplanationProgressMonitor;
+import com.clarkparsia.owlapi.explanation.util.ExplanationProgressMonitor;
 
 public class StatusBar extends JPanel implements ProgressMonitor, ExplanationProgressMonitor, PropertyChangeListener{
 	/**

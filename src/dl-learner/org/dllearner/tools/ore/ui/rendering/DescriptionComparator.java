@@ -1,8 +1,28 @@
 package org.dllearner.tools.ore.ui.rendering;
 
-import org.semanticweb.owl.model.*;
-
 import java.util.Comparator;
+
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 /**
  * Author: Simon Jupp<br>
@@ -10,19 +30,19 @@ import java.util.Comparator;
  * The University of Manchester<br>
  * Bio-Health Informatics Group<br>
  */
-public class DescriptionComparator implements OWLDescriptionVisitor, Comparator<OWLObject> {
+public class DescriptionComparator implements OWLClassExpressionVisitor, Comparator<OWLObject> {
 
     private int last = 0;
 
     public int compare(OWLObject o, OWLObject o1) {
 
         int first = 0;
-        if(o instanceof OWLDescription) {
-            ((OWLDescription) o).accept(this);
+        if(o instanceof OWLClassExpression) {
+            ((OWLClassExpression) o).accept(this);
         }
         first = last;
-        if (o1 instanceof OWLDescription) {
-            ((OWLDescription) o1).accept(this);
+        if (o1 instanceof OWLClassExpression) {
+            ((OWLClassExpression) o1).accept(this);
         }
 
 
@@ -39,51 +59,51 @@ public class DescriptionComparator implements OWLDescriptionVisitor, Comparator<
         last = 1;
     }
 
-    public void visit(OWLObjectSomeRestriction desc) {
+    public void visit(OWLObjectSomeValuesFrom desc) {
         last = 2;
     }
 
-    public void visit(OWLObjectAllRestriction desc) {
+    public void visit(OWLObjectAllValuesFrom desc) {
         last = 3;
     }
 
-    public void visit(OWLDataSomeRestriction desc) {
+    public void visit(OWLDataSomeValuesFrom desc) {
         last = 4;
     }
 
-    public void visit(OWLDataAllRestriction desc) {
+    public void visit(OWLDataAllValuesFrom desc) {
         last = 5;
     }
 
-    public void visit(OWLObjectValueRestriction desc) {
+    public void visit(OWLObjectHasValue desc) {
         last = 6;
     }
 
-    public void visit(OWLDataValueRestriction desc) {
+    public void visit(OWLDataHasValue desc) {
         last = 7;
     }
 
-    public void visit(OWLObjectMinCardinalityRestriction desc) {
+    public void visit(OWLObjectMinCardinality desc) {
         last = 8;
     }
 
-    public void visit(OWLDataMinCardinalityRestriction desc) {
+    public void visit(OWLDataMinCardinality desc) {
         last = 9;
     }
 
-    public void visit(OWLObjectMaxCardinalityRestriction desc) {
+    public void visit(OWLObjectMaxCardinality desc) {
         last = 10;
     }
 
-    public void visit(OWLDataMaxCardinalityRestriction desc) {
+    public void visit(OWLDataMaxCardinality desc) {
         last = 11;
     }
 
-    public void visit(OWLObjectExactCardinalityRestriction desc) {
+    public void visit(OWLObjectExactCardinality desc) {
         last = 12;
     }
 
-    public void visit(OWLDataExactCardinalityRestriction desc) {
+    public void visit(OWLDataExactCardinality desc) {
         last = 13;
     }
 
@@ -99,7 +119,7 @@ public class DescriptionComparator implements OWLDescriptionVisitor, Comparator<
         last = 16;
     }
 
-    public void visit(OWLObjectSelfRestriction desc) {
+    public void visit(OWLObjectHasSelf desc) {
         last = 17;
     }
 

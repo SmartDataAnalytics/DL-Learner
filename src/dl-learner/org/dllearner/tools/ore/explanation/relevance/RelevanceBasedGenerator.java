@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.explanation.relevance;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,24 +10,24 @@ import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.SetUtils;
 import org.mindswap.pellet.utils.Timer;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.clarkparsia.explanation.GlassBoxExplanation;
-import com.clarkparsia.explanation.PelletExplanation;
-import com.clarkparsia.explanation.TransactionAwareSingleExpGen;
-import com.clarkparsia.explanation.util.OntologyUtils;
+import com.clarkparsia.owlapi.explanation.GlassBoxExplanation;
+import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.owlapi.explanation.TransactionAwareSingleExpGen;
+import com.clarkparsia.owlapiv3.OntologyUtils;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class RelevanceBasedGenerator {
 	static{
@@ -42,10 +41,10 @@ public class RelevanceBasedGenerator {
 	public static final Logger log = Logger.getLogger(RelevanceBasedGenerator.class);
 	
 	
-	private Reasoner globalReasoner;
+	private PelletReasoner globalReasoner;
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
-	private Reasoner localReasoner;
+	private PelletReasoner localReasoner;
 	
 	private TransactionAwareSingleExpGen singleExpGen;
 	private PelletReasonerFactory reasonerFactory;
@@ -61,7 +60,7 @@ public class RelevanceBasedGenerator {
 	Map<OWLAxiom, Integer> axiomMap;
 
 	public RelevanceBasedGenerator(OWLOntologyManager manager,
-			OWLOntology ontology, Reasoner reasoner) {
+			OWLOntology ontology, PelletReasoner reasoner) {
 		log.setLevel(Level.DEBUG);
 
 		this.globalReasoner = reasoner;
@@ -80,31 +79,31 @@ public class RelevanceBasedGenerator {
 	private OWLOntology getExampleOntology(){
 		try {
 			OWLDataFactory factory = manager.getOWLDataFactory();
-			OWLClass u = factory.getOWLClass(URI.create("U"));
-			OWLClass a = factory.getOWLClass(URI.create("A"));
-			OWLClass b = factory.getOWLClass(URI.create("B"));
-			OWLClass c = factory.getOWLClass(URI.create("C"));
-			OWLClass d = factory.getOWLClass(URI.create("D"));
-			OWLClass e = factory.getOWLClass(URI.create("E"));
-			OWLClass f = factory.getOWLClass(URI.create("F"));
-			OWLClass g = factory.getOWLClass(URI.create("G"));
-			OWLClass h = factory.getOWLClass(URI.create("H"));
-			OWLClass k = factory.getOWLClass(URI.create("K"));
+			OWLClass u = factory.getOWLClass(IRI.create("U"));
+			OWLClass a = factory.getOWLClass(IRI.create("A"));
+			OWLClass b = factory.getOWLClass(IRI.create("B"));
+			OWLClass c = factory.getOWLClass(IRI.create("C"));
+			OWLClass d = factory.getOWLClass(IRI.create("D"));
+			OWLClass e = factory.getOWLClass(IRI.create("E"));
+			OWLClass f = factory.getOWLClass(IRI.create("F"));
+			OWLClass g = factory.getOWLClass(IRI.create("G"));
+			OWLClass h = factory.getOWLClass(IRI.create("H"));
+			OWLClass k = factory.getOWLClass(IRI.create("K"));
 			List<OWLAxiom> examples = new ArrayList<OWLAxiom>();
-			examples.add( factory.getOWLSubClassAxiom(u, a));
-			examples.add(  factory.getOWLSubClassAxiom(u, factory.getOWLObjectComplementOf(a)));
-			examples.add(  factory.getOWLSubClassAxiom(u, c));
-			examples.add(  factory.getOWLSubClassAxiom(c, factory.getOWLObjectComplementOf(b)));
-			examples.add(  factory.getOWLSubClassAxiom(a, b));
-			examples.add(  factory.getOWLSubClassAxiom(u, g));
-			examples.add(  factory.getOWLSubClassAxiom(g, e));
-			examples.add(  factory.getOWLSubClassAxiom(u, f));
-			examples.add( factory.getOWLSubClassAxiom(f, factory.getOWLObjectComplementOf(e)));
-			examples.add( factory.getOWLSubClassAxiom(u, d));
-			examples.add(  factory.getOWLSubClassAxiom(d, e));
-			examples.add(  factory.getOWLSubClassAxiom(c, k));
-			examples.add( factory.getOWLSubClassAxiom(k, factory.getOWLObjectComplementOf(h)));
-			examples.add( factory.getOWLSubClassAxiom(b, h));
+			examples.add( factory.getOWLSubClassOfAxiom(u, a));
+			examples.add(  factory.getOWLSubClassOfAxiom(u, factory.getOWLObjectComplementOf(a)));
+			examples.add(  factory.getOWLSubClassOfAxiom(u, c));
+			examples.add(  factory.getOWLSubClassOfAxiom(c, factory.getOWLObjectComplementOf(b)));
+			examples.add(  factory.getOWLSubClassOfAxiom(a, b));
+			examples.add(  factory.getOWLSubClassOfAxiom(u, g));
+			examples.add(  factory.getOWLSubClassOfAxiom(g, e));
+			examples.add(  factory.getOWLSubClassOfAxiom(u, f));
+			examples.add( factory.getOWLSubClassOfAxiom(f, factory.getOWLObjectComplementOf(e)));
+			examples.add( factory.getOWLSubClassOfAxiom(u, d));
+			examples.add(  factory.getOWLSubClassOfAxiom(d, e));
+			examples.add(  factory.getOWLSubClassOfAxiom(c, k));
+			examples.add( factory.getOWLSubClassOfAxiom(k, factory.getOWLObjectComplementOf(h)));
+			examples.add( factory.getOWLSubClassOfAxiom(b, h));
 			OWLOntology example = manager.createOntology(new HashSet<OWLAxiom>(examples));
 			axiomMap = new HashMap<OWLAxiom, Integer >();
 			for(int i = 1; i<=examples.size(); i++){		
@@ -146,13 +145,9 @@ public class RelevanceBasedGenerator {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLOntology temp = man.createOntology(Collections.<OWLAxiom>emptySet());
 			
-			localReasoner = new PelletReasonerFactory().createReasoner(man);
-			localReasoner.loadOntology(temp);
+			localReasoner = new PelletReasonerFactory().createReasoner(temp);
 					
-			singleExpGen = new GlassBoxExplanation(man);
-			singleExpGen.setOntology(temp);
-			singleExpGen.setReasoner(localReasoner);
-			singleExpGen.setReasonerFactory(reasonerFactory);
+			singleExpGen = new GlassBoxExplanation(localReasoner);
 			setup();
 			
 			Set<OWLAxiom> selectedAxioms = selector.getRelatedAxioms(unsat);
@@ -207,9 +202,6 @@ public class RelevanceBasedGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLReasonerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
@@ -335,7 +327,8 @@ public class RelevanceBasedGenerator {
 	private void removeAxioms(Set<OWLAxiom> axioms){
 		try {
 			for(OWLAxiom ax : axioms){
-				OntologyUtils.removeAxiom(ax, singleExpGen.getReasoner().getLoadedOntologies(), singleExpGen.getOntologyManager());
+				OntologyUtils.removeAxiom(ax, singleExpGen.getReasoner().getRootOntology().getImportsClosure(),
+						singleExpGen.getOntologyManager());
 			}
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
@@ -358,7 +351,7 @@ public class RelevanceBasedGenerator {
 	private void addAxioms(Set<OWLAxiom> axioms){
 		try {
 			for(OWLAxiom ax : axioms){
-				OntologyUtils.addAxiom(ax, singleExpGen.getReasoner().getLoadedOntologies(), singleExpGen.getOntologyManager());
+				OntologyUtils.addAxiom(ax, singleExpGen.getReasoner().getRootOntology().getImportsClosure(), singleExpGen.getOntologyManager());
 			}
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
@@ -367,22 +360,21 @@ public class RelevanceBasedGenerator {
 	}
 	
 	public static void main(String[] args) throws OWLOntologyCreationException {
-//		URI file = URI.create("file:examples/ore/koala.owl");
+//		IRI file = IRI.create("file:examples/ore/koala.owl");
 //		String base = "http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#";
-//		URI classURI = URI.create(base + "KoalaWithPhD");
+//		IRI classIRI = IRI.create(base + "KoalaWithPhD");
 		
-		URI file = URI.create("file:examples/ore/tambis.owl");
+		IRI file = IRI.create("file:examples/ore/tambis.owl");
 		String base = "http://krono.act.uji.es/Links/ontologies/tambis.owl#";
-		URI classURI = URI.create(base + "metal");
+		IRI classIRI = IRI.create(base + "metal");
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLClass cl = factory.getOWLClass(classURI);
+		OWLClass cl = factory.getOWLClass(classIRI);
 		OWLOntology ontology = manager.loadOntology(file);
-		Reasoner reasoner = new PelletReasonerFactory().createReasoner(manager);
-		reasoner.loadOntology(ontology);
+		PelletReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology);
 	
-		PelletExplanation pellet = new PelletExplanation(manager, Collections.singleton(ontology));
+		PelletExplanation pellet = new PelletExplanation(ontology);
 		Timer t1 = new Timer("pellet");
 		t1.start();
 		System.out.println(pellet.getUnsatisfiableExplanations(cl).size());

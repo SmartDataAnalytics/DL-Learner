@@ -20,7 +20,6 @@
 package org.dllearner.examples;
 
 import java.io.File;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -45,6 +44,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.ini4j.IniFile;
+import org.semanticweb.owlapi.model.IRI;
 
 /**
  * Converts SM2PH database to an OWL ontology. To run the script, please 
@@ -55,7 +55,7 @@ import org.ini4j.IniFile;
  */
 public class MonogenicDiseases {
 	
-	private static URI ontologyURI = URI.create("http://dl-learner.org/mutation");
+	private static IRI ontologyURI = IRI.create("http://dl-learner.org/mutation");
 	private static File owlFile = new File("examples/mutation/mutation.owl");
 	private static File confFile = new File("examples/mutation/mutation.conf");
 	

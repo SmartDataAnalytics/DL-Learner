@@ -7,32 +7,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mindswap.pellet.owlapi.Reasoner;
 import org.mindswap.pellet.utils.SetUtils;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDataPropertyDomainAxiom;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owl.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owl.model.OWLObjectPropertyRangeAxiom;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 import com.clarkparsia.modularity.IncrementalClassifier;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 
 public class LostEntailmentsChecker {
 	
 	
 	private OWLOntology ontology;
-	private Reasoner reasoner;
+	private PelletReasoner reasoner;
 	private OWLOntologyManager manager;
 	private OWLDataFactory factory;
 	private IncrementalClassifier classifier;
@@ -56,12 +55,12 @@ public class LostEntailmentsChecker {
 		Set<OWLAxiom> addedEntailents = new HashSet<OWLAxiom>();
 		
 		try{
-			Set<OWLClass> inc = classifier.getInconsistentClasses();
-			for(OWLDescription cl : ontology.getClassesInSignature()){
+			Set<OWLClass> inc = classifier.getUnsatisfiableClasses().getEntitiesMinusBottom();
+			for(OWLClass cl : ontology.getClassesInSignature()){
 				if(!inc.contains(cl) && !cl.isOWLThing()){
-					for(OWLClass sub : SetUtils.union(classifier.getDescendantClasses(cl))){
+					for(OWLClass sub : classifier.getSubClasses(cl, false).getFlattened()){
 						if(!sub.isOWLNothing() && !inc.contains(sub)){
-							entailmentsBefore.add(factory.getOWLSubClassAxiom(sub, cl));
+							entailmentsBefore.add(factory.getOWLSubClassOfAxiom(sub, cl));
 						}
 					}
 					for(OWLClass equ : classifier.getEquivalentClasses(cl)){
@@ -76,13 +75,13 @@ public class LostEntailmentsChecker {
 			manager.applyChanges(changes);
 			
 			classifier.classify();
-			inc = classifier.getInconsistentClasses();
+			inc = classifier.getUnsatisfiableClasses().getEntitiesMinusBottom();
 			
-			for(OWLDescription cl : ontology.getClassesInSignature()){
+			for(OWLClass cl : ontology.getClassesInSignature()){
 				if(!inc.contains(cl) && !cl.isOWLThing()){
-					for(OWLClass sub : SetUtils.union(classifier.getDescendantClasses(cl))){
+					for(OWLClass sub : classifier.getSubClasses(cl, false).getFlattened()){
 						if(!sub.isOWLNothing() && !inc.contains(sub)){
-							entailmentsAfter.add(factory.getOWLSubClassAxiom(sub, cl));
+							entailmentsAfter.add(factory.getOWLSubClassOfAxiom(sub, cl));
 						}
 					}
 				}
@@ -103,10 +102,6 @@ public class LostEntailmentsChecker {
 			impact.add(0, lostEntailments);
 			impact.add(1, addedEntailents);
 			manager.applyChanges(getInverseChanges(changes));
-			
-		} catch (OWLReasonerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,26 +124,26 @@ public class LostEntailmentsChecker {
 		for(OWLOntologyChange change : changes){
 			if(change instanceof RemoveAxiom){
 				axiom = change.getAxiom();
-				if (axiom instanceof OWLSubClassAxiom) {
-					OWLSubClassAxiom subAx = (OWLSubClassAxiom) axiom;
+				if (axiom instanceof OWLSubClassOfAxiom) {
+					OWLSubClassOfAxiom subAx = (OWLSubClassOfAxiom) axiom;
 					if (subAx.getSubClass() instanceof OWLClass && subAx.getSuperClass() instanceof OWLClass) {
 						OWLClass sub = (OWLClass) subAx.getSubClass();
 						OWLClass sup = (OWLClass) subAx.getSuperClass();
 						Set<OWLClass> descendants = subsumptionHierarchyDown.get(sub);
 						if(descendants == null){
-							descendants = SetUtils.union(reasoner.getDescendantClasses(sub));
+							descendants = reasoner.getSubClasses(sub, false).getFlattened();
 							subsumptionHierarchyDown.put(sub, descendants);
 						}
 						for (OWLClass desc : descendants) {
 							Set<OWLClass> ancestors = subsumptionHierarchyUp.get(sub);
 							if(ancestors == null){
-								ancestors = SetUtils.union(reasoner.getAncestorClasses(sup));
+								ancestors = reasoner.getSuperClasses(sup, false).getFlattened();
 								subsumptionHierarchyUp.put(sup, ancestors);
 							}
 							for (OWLClass anc : ancestors) {	
 								
 								if (!anc.equals(factory.getOWLThing()) && !desc.equals(factory.getOWLNothing())) {
-									OWLSubClassAxiom ax = factory.getOWLSubClassAxiom(desc, anc);
+									OWLSubClassOfAxiom ax = factory.getOWLSubClassOfAxiom(desc, anc);
 									possibleLosts.add(ax);
 								}
 							}
@@ -156,9 +151,9 @@ public class LostEntailmentsChecker {
 					}						
 				}else if (axiom instanceof OWLDisjointClassesAxiom) {
 					
-					Set<OWLDescription> disjointClasses = ((OWLDisjointClassesAxiom) axiom).getDescriptions();
+					Set<OWLClassExpression> disjointClasses = ((OWLDisjointClassesAxiom) axiom).getClassExpressions();
 					boolean complex = false;
-					for (OWLDescription dis : disjointClasses) {
+					for (OWLClassExpression dis : disjointClasses) {
 						if (dis.isAnonymous()) {
 							complex = true;
 							break;
@@ -166,28 +161,28 @@ public class LostEntailmentsChecker {
 					}
 					if (!complex) {
 						
-						List<OWLDescription> disjoints = new ArrayList<OWLDescription>(disjointClasses);
+						List<OWLClassExpression> disjoints = new ArrayList<OWLClassExpression>(disjointClasses);
 						
 							
 							
-						for (OWLDescription dis : new ArrayList<OWLDescription>(disjoints)) {
+						for (OWLClassExpression dis : new ArrayList<OWLClassExpression>(disjoints)) {
 							if (!dis.equals(factory.getOWLNothing())) {
 								disjoints.remove(dis);
 								
-								Set<? extends OWLDescription> descendants = SetUtils.union(reasoner.getDescendantClasses(dis.asOWLClass()));
+								Set<? extends OWLClassExpression> descendants = reasoner.getSubClasses(dis.asOWLClass(),false).getFlattened();
 						
-								descendants.removeAll(reasoner.getEquivalentClasses(factory.getOWLNothing()));
+								descendants.removeAll(reasoner.getEquivalentClasses(factory.getOWLNothing()).getEntities());
 //								if (enableImpactUnsat) {
 //									descendants.addAll(((OWLClass) dis).getSubClasses(ontology));
 //								}
-								for (OWLDescription desc1 : descendants) {
+								for (OWLClassExpression desc1 : descendants) {
 									
 									if (!desc1.equals(factory.getOWLNothing())) {
 										if (enableImpactUnsat || !reasoner.getEquivalentClasses((desc1)).contains(factory.getOWLNothing())) {
-											for (OWLDescription desc2 : disjoints) {								
+											for (OWLClassExpression desc2 : disjoints) {								
 												
 												if (!desc2.equals(desc1)) {
-													Set<OWLDescription> newDis = new HashSet<OWLDescription>();
+													Set<OWLClassExpression> newDis = new HashSet<OWLClassExpression>();
 													newDis.add(desc1);
 													newDis.add(desc2);
 													OWLDisjointClassesAxiom ax = factory.getOWLDisjointClassesAxiom(newDis);
@@ -211,7 +206,7 @@ public class LostEntailmentsChecker {
 					
 					if (pd.getDomain() instanceof OWLClass) {
 						OWLClass dom = (OWLClass) pd.getDomain();
-						Set<OWLClass> superClasses = SetUtils.union(reasoner.getSuperClasses(dom));
+						Set<OWLClass> superClasses = reasoner.getSuperClasses(dom, false).getFlattened();
 						for (OWLClass sup : superClasses) {
 							
 							OWLObjectPropertyDomainAxiom ax = factory.getOWLObjectPropertyDomainAxiom( pd.getProperty(), sup);
@@ -224,7 +219,7 @@ public class LostEntailmentsChecker {
 					
 					if (pd.getDomain() instanceof OWLClass) {
 						OWLClass dom = (OWLClass) pd.getDomain();
-						Set<OWLClass> superClasses = SetUtils.union(reasoner.getSuperClasses(dom));
+						Set<OWLClass> superClasses = reasoner.getSuperClasses(dom, false).getFlattened();
 						for (OWLClass sup : superClasses) {
 							
 							OWLDataPropertyDomainAxiom ax = factory.getOWLDataPropertyDomainAxiom( pd.getProperty(), sup);
@@ -237,7 +232,7 @@ public class LostEntailmentsChecker {
 					
 					if (pd.getRange() instanceof OWLClass) {
 						OWLClass ran = (OWLClass) pd.getRange();
-						Set<OWLClass> superClasses = SetUtils.union(reasoner.getSuperClasses(ran));
+						Set<OWLClass> superClasses = reasoner.getSuperClasses(ran, false).getFlattened();
 						for (OWLClass sup : superClasses) {
 							
 							OWLObjectPropertyRangeAxiom ax = factory.getOWLObjectPropertyRangeAxiom(pd.getProperty(), sup);
@@ -252,7 +247,7 @@ public class LostEntailmentsChecker {
 		for(OWLAxiom ax : possibleLosts){
 			try {
 				manager.applyChanges(changes);
-				if(!reasoner.isEntailed(ax)){
+				if(!classifier.getReasoner().isEntailed(ax)){
 					realLosts.add(ax);
 				}
 				manager.applyChanges(getInverseChanges(changes));

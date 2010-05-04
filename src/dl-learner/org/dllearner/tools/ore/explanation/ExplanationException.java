@@ -2,7 +2,7 @@
 
 package org.dllearner.tools.ore.explanation;
 
-import org.semanticweb.owl.model.OWLException;
+import org.semanticweb.owlapi.model.OWLException;
 
 public class ExplanationException extends OWLException
 {

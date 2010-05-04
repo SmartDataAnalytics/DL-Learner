@@ -20,7 +20,6 @@
 
 package org.dllearner.tools.ore;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,25 +38,27 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLClassAssertionAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLInverseObjectPropertiesAxiom;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
-import org.semanticweb.owl.model.RemoveAxiom;
-import org.semanticweb.owl.util.OWLEntityRemover;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.util.OWLEntityRemover;
 
 /**
  * This class provides several methods to modify the ontology by using OWL-API.
@@ -93,10 +94,10 @@ public class OntologyModifier {
 	public OWLOntologyChange addAxiomToOWL(Description newDesc, Description oldDesc){
 		
 		
-		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
-		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldDesc);
+		OWLClassExpression newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newDesc);
+		OWLClassExpression oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(oldDesc);
 		
-		Set<OWLDescription> ds = new HashSet<OWLDescription>();
+		Set<OWLClassExpression> ds = new HashSet<OWLClassExpression>();
 		ds.add(newConceptOWLAPI);
 		ds.add(oldConceptOWLAPI);
 		
@@ -117,8 +118,8 @@ public class OntologyModifier {
 	}
 	
 	public void addEquivalentClassDescription(NamedClass old, Description newDesc){
-		OWLDescription oldOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(old);
-		OWLDescription newOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(newDesc);
+		OWLClassExpression oldOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(old);
+		OWLClassExpression newOWLAPIDesc = OWLAPIConverter.getOWLAPIDescription(newDesc);
 		OWLEquivalentClassesAxiom equivAxiom = factory.getOWLEquivalentClassesAxiom(oldOWLAPIDesc, newOWLAPIDesc);
 		AddAxiom add = new AddAxiom(ontology, equivAxiom);
 		try {
@@ -131,9 +132,9 @@ public class OntologyModifier {
 	}
 	
 	public void addSuperClassDescription(NamedClass old, Description newDesc){
-		OWLDescription subClass = OWLAPIConverter.getOWLAPIDescription(old);
-		OWLDescription superClass = OWLAPIConverter.getOWLAPIDescription(newDesc);
-		OWLSubClassAxiom subAxiom = factory.getOWLSubClassAxiom(subClass, superClass);
+		OWLClassExpression subClass = OWLAPIConverter.getOWLAPIDescription(old);
+		OWLClassExpression superClass = OWLAPIConverter.getOWLAPIDescription(newDesc);
+		OWLSubClassOfAxiom subAxiom = factory.getOWLSubClassOfAxiom(subClass, superClass);
 		AddAxiom add = new AddAxiom(ontology, subAxiom);
 		try {
 			manager.applyChange(add);
@@ -150,10 +151,10 @@ public class OntologyModifier {
 	 * @param oldClass
 	 */
 	public List<OWLOntologyChange> rewriteClassDescription(NamedClass newDesc, Description oldClass){
-		OWLDescription newClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
-//		OWLDescription oldClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
+		OWLClassExpression newClassDesc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newDesc);
+//		OWLClassExpression oldClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
 		
-		OWLClass oldClassOWL = factory.getOWLClass(URI.create(oldClass.toString()));
+		OWLClass oldClassOWL = factory.getOWLClass(IRI.create(oldClass.toString()));
 		
 		Set<OWLEquivalentClassesAxiom> equivalenceAxioms = ontology.getEquivalentClassesAxioms(oldClassOWL);
 		
@@ -167,7 +168,7 @@ public class OntologyModifier {
 		
 		//create and add new equivalence axiom to changes
 		
-		Set<OWLDescription> newEquivalenceDesc = new HashSet<OWLDescription>();
+		Set<OWLClassExpression> newEquivalenceDesc = new HashSet<OWLClassExpression>();
 		newEquivalenceDesc.add(newClassDesc);
 		newEquivalenceDesc.add(oldClassOWL);
 		OWLAxiom equivalenceAxiom = factory.getOWLEquivalentClassesAxiom(newEquivalenceDesc);
@@ -196,7 +197,7 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
+		OWLNamedIndividual individualOWLAPI = factory.getOWLNamedIndividual(IRI.create(ind.getName()));
 		
 		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
 		
@@ -224,10 +225,10 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
-		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		OWLIndividual individualOWLAPI = factory.getOWLNamedIndividual(IRI.create(ind.getName()));
+		OWLClassExpression owlDesc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc);
 		
-		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
+		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(owlDesc, individualOWLAPI);
 				
 		RemoveAxiom rm = new RemoveAxiom(ontology, owlCl);
 		changes.add(rm);
@@ -253,10 +254,10 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
-		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		OWLIndividual individualOWLAPI = factory.getOWLNamedIndividual(IRI.create(ind.getName()));
+		OWLClassExpression owlDesc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc);
 		
-		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
+		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(owlDesc, individualOWLAPI);
 				
 		AddAxiom am = new AddAxiom(ontology, owlCl);
 		changes.add(am);
@@ -286,18 +287,18 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
+		OWLIndividual individualOWLAPI = factory.getOWLNamedIndividual(IRI.create(ind.getName()));
 		
 		//Loeschen
-		OWLDescription oldDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
-		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, oldDesc);
+		OWLClassExpression oldDesc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(oldClass);
+		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(oldDesc, individualOWLAPI);
 		RemoveAxiom rem = new RemoveAxiom(ontology, owlCl);
 		changes.add(rem);
 		
 		//Hinzufuegen
 		
-		OWLDescription newDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass);
-		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(individualOWLAPI, newDesc);
+		OWLClassExpression newDesc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass);
+		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(newDesc, individualOWLAPI);
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
 		changes.add(axiom);
 		
@@ -328,7 +329,7 @@ public class OntologyModifier {
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
 		OWLIndividual individualOWLAPI = OWLAPIConverter.getOWLAPIIndividual(ind);
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(IRI.create(property.getName()));
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(individualOWLAPI);
 		Set<OWLInverseObjectPropertiesAxiom> invProperties = ontology.getInverseObjectPropertyAxioms(propertyOWLAPI);
@@ -388,9 +389,9 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subject.getName()));
-		OWLIndividual objectOWLAPI = factory.getOWLIndividual(URI.create(object.getName()));
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
+		OWLIndividual subjectOWLAPI = factory.getOWLNamedIndividual(IRI.create(subject.getName()));
+		OWLIndividual objectOWLAPI = factory.getOWLNamedIndividual(IRI.create(object.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(IRI.create(property.getName()));
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(subjectOWLAPI);
 	
@@ -424,8 +425,8 @@ public class OntologyModifier {
 	public List<OWLOntologyChange> removeAllObjectPropertyAssertions(Individual subject, ObjectPropertyExpression property,Set<Individual> objects){
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subject.getName()));
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
+		OWLIndividual subjectOWLAPI = factory.getOWLNamedIndividual(IRI.create(subject.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(IRI.create(property.getName()));
 		Set<OWLIndividual> objectsOWLAPI = new HashSet<OWLIndividual>();
 		for(Individual ind : objects){
 			objectsOWLAPI.add(OWLAPIConverter.getOWLAPIIndividual(ind));
@@ -463,11 +464,11 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subInd.getName()));
-		OWLIndividual objectOWLAPI = factory.getOWLIndividual(URI.create(objInd.getName()));
-		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(property.getName()));
+		OWLIndividual subjectOWLAPI = factory.getOWLNamedIndividual(IRI.create(subInd.getName()));
+		OWLIndividual objectOWLAPI = factory.getOWLNamedIndividual(IRI.create(objInd.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(IRI.create(property.getName()));
 		
-		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(subjectOWLAPI, propertyOWLAPI, objectOWLAPI);
+		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(propertyOWLAPI, subjectOWLAPI, objectOWLAPI);
 		AddAxiom axiom = new AddAxiom(ontology, objAssertion);
 		changes.add(axiom);
 		try {
@@ -532,33 +533,33 @@ public class OntologyModifier {
 	 */
 	public boolean isComplement(Description desc1, Description desc2){
 
-		OWLClass owlClass1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1).asOWLClass();
-		OWLClass owlClass2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc2).asOWLClass();
+		OWLClass owlClass1 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc1).asOWLClass();
+		OWLClass owlClass2 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc2).asOWLClass();
 		
 		//superclasses and class1
-//		Set<OWLDescription> superClasses1 = owlClass1.getSuperClasses(ontology);
-		Set<OWLDescription> superClasses1 = new HashSet<OWLDescription>();
+//		Set<OWLClassExpression> superClasses1 = owlClass1.getSuperClasses(ontology);
+		Set<OWLClassExpression> superClasses1 = new HashSet<OWLClassExpression>();
 		for(Description d1 : reasoner.getSuperClasses(desc1)){
-			superClasses1.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d1));
+			superClasses1.add(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d1));
 		}
 		superClasses1.add(owlClass1);
 //		System.out.println(desc1 + "::" + superClasses1);
 		
 		//superclasses and class2
-//		Set<OWLDescription> superClasses2 = owlClass2.getSuperClasses(ontology);
-		Set<OWLDescription> superClasses2 = new HashSet<OWLDescription>();
+//		Set<OWLClassExpression> superClasses2 = owlClass2.getSuperClasses(ontology);
+		Set<OWLClassExpression> superClasses2 = new HashSet<OWLClassExpression>();
 		for(Description d2 : reasoner.getSuperClasses(desc2)){
-			superClasses2.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d2));
+			superClasses2.add(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d2));
 		}
 		superClasses2.add(owlClass2);
 		
 //		System.out.println("superklassen von " + desc2 + " sind: "  + superClasses2);
-		for(OWLDescription o1 : superClasses1){
+		for(OWLClassExpression o1 : superClasses1){
 			
-			OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
-			for(OWLDescription o2 : superClasses2){
+			OWLClassExpression negO1 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(new Negation(new NamedClass(o1.toString())));
+			for(OWLClassExpression o2 : superClasses2){
 
-				OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
+				OWLClassExpression negO2 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(new Negation(new NamedClass(o2.toString())));
 				
 				if(ontology.containsAxiom(factory.getOWLDisjointClassesAxiom(o1, o2))){
 					return true;
@@ -575,12 +576,12 @@ public class OntologyModifier {
 		
 //		for(OWLAxiom ax : ontology.getAxioms()){
 //			
-//			for(OWLDescription o1 : superClasses1){
+//			for(OWLClassExpression o1 : superClasses1){
 //				
-//				OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
-//				for(OWLDescription o2 : superClasses2){
+//				OWLClassExpression negO1 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(new Negation(new NamedClass(o1.toString())));
+//				for(OWLClassExpression o2 : superClasses2){
 //
-//					OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
+//					OWLClassExpression negO2 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(new Negation(new NamedClass(o2.toString())));
 //					
 //					if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o1, o2).toString())){
 //						return true;
@@ -608,12 +609,12 @@ public class OntologyModifier {
 	 */
 	public Set<ObjectPropertyAssertion> getObjectProperties(Individual ind){
 		Set<ObjectPropertyAssertion> objectProperties = new HashSet<ObjectPropertyAssertion>();
-		Set<OWLObjectPropertyAssertionAxiom> owlObjectProperties = ontology.getObjectPropertyAssertionAxioms(factory.getOWLIndividual(URI.create(ind.getName())));
+		Set<OWLObjectPropertyAssertionAxiom> owlObjectProperties = ontology.getObjectPropertyAssertionAxioms(factory.getOWLNamedIndividual(IRI.create(ind.getName())));
 		
 		
 		for(OWLObjectPropertyAssertionAxiom o : owlObjectProperties){
-			ObjectProperty ob = new ObjectProperty(o.getProperty().asOWLObjectProperty().getURI().toString());
-			Individual obj = new Individual(o.getObject().getURI().toString());
+			ObjectProperty ob = new ObjectProperty(o.getProperty().asOWLObjectProperty().getIRI().toString());
+			Individual obj = new Individual(o.getObject().asOWLNamedIndividual().getIRI().toString());
 			objectProperties.add(new ObjectPropertyAssertion(ob, ind, obj));
 		
 		}

@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 
 public class RepairManager implements OREManagerListener{
 
@@ -21,7 +22,7 @@ public class RepairManager implements OREManagerListener{
 	private List<RepairManagerListener> listeners;
 	
 	private OWLOntologyManager manager;
-	private Reasoner reasoner;
+	private PelletReasoner reasoner;
 	
 	private Set<OWLOntologyChange> repairPlan;
 	
@@ -124,6 +125,54 @@ public class RepairManager implements OREManagerListener{
 		}
 //		repairPlan.removeAll(changes);
 		fireRepairPlanChanged();
+	}
+	
+	public void schedule2Remove(OWLAxiom axiom, boolean remove){
+		if(remove){
+			if(scheduled2Remove.add(axiom)){
+				fireRepairPlanChanged();
+			}
+		} else {
+			if(scheduled2Remove.remove(axiom)){
+				fireRepairPlanChanged();
+			}
+		}
+	}
+	
+	public void schedule2Remove(Set<OWLAxiom> axioms, boolean remove){
+		if(remove){
+			if(scheduled2Remove.addAll(axioms)){
+				fireRepairPlanChanged();
+			}
+		} else {
+			if(scheduled2Remove.removeAll(axioms)){
+				fireRepairPlanChanged();
+			}
+		}
+	}
+	
+	public void schedule2Add(OWLAxiom axiom, boolean add){
+		if(add){
+			if(scheduled2Add.add(axiom)){
+				fireRepairPlanChanged();
+			}
+		} else {
+			if(scheduled2Add.remove(axiom)){
+				fireRepairPlanChanged();
+			}
+		}
+	}
+	
+	public void schedule2Add(Set<OWLAxiom> axioms, boolean add){
+		if(add){
+			if(scheduled2Add.addAll(axioms)){
+				fireRepairPlanChanged();
+			}
+		} else {
+			if(scheduled2Add.removeAll(axioms)){
+				fireRepairPlanChanged();
+			}
+		}
 	}
 	
 	

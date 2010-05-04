@@ -11,12 +11,11 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.explanation.Explanation;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.RemoveAxiom;
 
 public class ExplanationTableModel extends AbstractTableModel {
 
@@ -80,9 +79,10 @@ public class ExplanationTableModel extends AbstractTableModel {
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		if(columnIndex == 4){
 			OWLAxiom ax = getOWLAxiomAtRow(rowIndex);
+//			repMan.schedule2Add(ax, ((Boolean)value).booleanValue());
 			if(impMan.isSelected(ax)){
 				impMan.removeSelection(ax);
-				if(!ont.containsAxiom(ax)){
+				if(!OREManager.getInstance().isSourceOWLAxiom(ax)){
 					List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 					for(OWLAxiom source : expMan.getRemainingAxiomParts(ax).keySet()){
 						impMan.removeSelection(source);
@@ -96,7 +96,6 @@ public class ExplanationTableModel extends AbstractTableModel {
 					repMan.removeFromRepairPlan(new RemoveAxiom(ont, ax));
 				}
 			} else {
-//				impMan.addSelection(ax);
 				if(!OREManager.getInstance().isSourceOWLAxiom(ax)){
 					
 					RemainingAxiomsDialog dialog = new RemainingAxiomsDialog(ax, ont);
@@ -104,12 +103,6 @@ public class ExplanationTableModel extends AbstractTableModel {
 					if(ret == RemainingAxiomsDialog.OK_RETURN_CODE){
 						impMan.addSelection(ax);
 						List<OWLOntologyChange> changes = dialog.getChanges();
-//						for(OWLAxiom source : expMan.getSourceAxioms(ax)){
-//							if(repMan.isScheduled2Add(source)){
-//								changes.add(new RemoveAxiom(ont, source));
-//							}
-//							
-//						}
 						repMan.addToRepairPlan(changes);
 					}
 					

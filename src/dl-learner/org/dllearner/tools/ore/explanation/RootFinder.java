@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.explanation;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,57 +12,56 @@ import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.RepairManager;
 import org.dllearner.tools.ore.RepairManagerListener;
-import org.mindswap.pellet.owlapi.PelletReasonerFactory;
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.inference.OWLReasonerFactory;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.AxiomType;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataAllRestriction;
-import org.semanticweb.owl.model.OWLDataExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataSomeRestriction;
-import org.semanticweb.owl.model.OWLDataValueRestriction;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLDescriptionVisitor;
-import org.semanticweb.owl.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLObjectAllRestriction;
-import org.semanticweb.owl.model.OWLObjectComplementOf;
-import org.semanticweb.owl.model.OWLObjectExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectIntersectionOf;
-import org.semanticweb.owl.model.OWLObjectMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectOneOf;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
-import org.semanticweb.owl.model.OWLObjectSelfRestriction;
-import org.semanticweb.owl.model.OWLObjectSomeRestriction;
-import org.semanticweb.owl.model.OWLObjectUnionOf;
-import org.semanticweb.owl.model.OWLObjectValueRestriction;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyChangeListener;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLQuantifiedRestriction;
-import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import uk.ac.manchester.cs.owl.modularity.ModuleType;
+import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 
 import com.clarkparsia.modularity.ModularityUtils;
-import com.clarkparsia.owlapi.OntologyUtils;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
-public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OWLOntologyChangeListener, RepairManagerListener{
+public class RootFinder implements OWLClassExpressionVisitor, OREManagerListener, OWLOntologyChangeListener, RepairManagerListener{
 
 	private OWLOntologyManager manager;
-	private Reasoner reasoner;
+	private PelletReasoner reasoner;
 	private OWLReasonerFactory reasonerFactory;
 	
 	private Set<OWLClass> depend2Classes;
@@ -78,7 +76,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	
 	
 	private int depth;
-	private Map<Integer, Set<OWLObjectAllRestriction>> depth2UniversalRestrictionPropertyMap;
+	private Map<Integer, Set<OWLObjectAllValuesFrom>> depth2UniversalRestrictionPropertyMap;
     private Map<Integer, Set<OWLObjectPropertyExpression>> depth2ExistsRestrictionPropertyMap;
     
     private Map<OWLClass, Set<OWLClass>> child2Parents;
@@ -92,7 +90,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		this.reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		this.reasonerFactory = new PelletReasonerFactory();
 		try {
-			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());
+			this.ontology = manager.createOntology(IRI.create("http://all"), reasoner.getRootOntology().getImportsClosure());
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
@@ -103,7 +101,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		unsatClasses = new HashSet<OWLClass>();
 		
 		depend2Classes = new HashSet<OWLClass>();
-		depth2UniversalRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectAllRestriction>>();
+		depth2UniversalRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectAllValuesFrom>>();
 		depth2ExistsRestrictionPropertyMap = new HashMap<Integer, Set<OWLObjectPropertyExpression>>();
 		
 		child2Parents = new HashMap<OWLClass, Set<OWLClass>>();
@@ -163,20 +161,20 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 	
 	private void computePossibleRoots(){
-		unsatClasses.addAll(reasoner.getInconsistentClasses());
+		unsatClasses.addAll(reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom());
 		
 			for(OWLClass cls : unsatClasses){
 				reset();
-				for(OWLDescription equi : cls.getEquivalentClasses(ontology)){
+				for(OWLClassExpression equi : cls.getEquivalentClasses(ontology)){
 					equi.accept(this);
 				}
-				for(OWLDescription sup : cls.getSuperClasses(ontology)){
+				for(OWLClassExpression sup : cls.getSuperClasses(ontology)){
 					sup.accept(this);
 				}
 				for(Integer depth : depth2UniversalRestrictionPropertyMap.keySet()){
 					Set<OWLObjectPropertyExpression> successors = depth2ExistsRestrictionPropertyMap.get(depth);
 					if(successors != null){
-						for(OWLObjectAllRestriction all : depth2UniversalRestrictionPropertyMap.get(depth)){
+						for(OWLObjectAllValuesFrom all : depth2UniversalRestrictionPropertyMap.get(depth)){
 							if(successors.contains(all.getProperty())){
 								depend2Classes.add(all.getFiller().asOWLClass());
 							}
@@ -217,12 +215,11 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 				manager.applyChange(add);
 				appliedChanges.add(add);
 			}
-			OWLReasoner checker = reasonerFactory.createReasoner(manager);
-//			checker.loadOntologies(Collections.singleton(ontology));
+			OWLReasoner checker = null;
 			for (OWLClass root : new ArrayList<OWLClass>(roots)) {
-				checker.clearOntologies();
-				checker.loadOntologies(Collections.singleton(OntologyUtils.getOntologyFromAxioms(ModularityUtils.extractModule
-						(ontology, root.getSignature(), ModuleType.TOP_OF_BOT))));
+				
+				checker = reasonerFactory.createNonBufferingReasoner(manager.createOntology(ModularityUtils.extractModule
+						(ontology, root.getSignature(), ModuleType.TOP_OF_BOT)));
 				if (!potentialRoots.contains(root) && checker.isSatisfiable(root)) {
 					rootClasses.remove(root);
 				}
@@ -236,7 +233,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 			}
 		} catch (OWLOntologyChangeException e) {
 			e.printStackTrace();
-		} catch (OWLReasonerException e) {
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -248,8 +246,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		depth2UniversalRestrictionPropertyMap.clear();
 	}
 	
-	private void checkObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression,OWLDescription> restr){
-		OWLDescription filler = restr.getFiller();
+	private void checkObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression,OWLClassExpression> restr){
+		OWLClassExpression filler = restr.getFiller();
 		
 			if(filler.isAnonymous()){
 				depth++;
@@ -258,8 +256,8 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 			} else {
 				if(unsatClasses.contains(filler.asOWLClass())){
 					depend2Classes.add(filler.asOWLClass());
-					if(restr instanceof OWLObjectAllRestriction){
-						addAllRestrictionProperty((OWLObjectAllRestriction) restr);
+					if(restr instanceof OWLObjectAllValuesFrom){
+						addAllRestrictionProperty((OWLObjectAllValuesFrom) restr);
 						return;
 					}
 				}
@@ -278,10 +276,10 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		properties.add(expr);
 	}
 	
-	private void addAllRestrictionProperty(OWLObjectAllRestriction all){
-		Set<OWLObjectAllRestriction> properties = depth2UniversalRestrictionPropertyMap.get(Integer.valueOf(depth));
+	private void addAllRestrictionProperty(OWLObjectAllValuesFrom all){
+		Set<OWLObjectAllValuesFrom> properties = depth2UniversalRestrictionPropertyMap.get(Integer.valueOf(depth));
 		if(properties == null){
-			properties = new HashSet<OWLObjectAllRestriction>();
+			properties = new HashSet<OWLObjectAllValuesFrom>();
 			depth2UniversalRestrictionPropertyMap.put(Integer.valueOf(depth), properties);
 		}
 		properties.add(all);
@@ -299,7 +297,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	public void visit(OWLObjectIntersectionOf and) {
 		
 		
-			for(OWLDescription op : and.getOperands()) {
+			for(OWLClassExpression op : and.getOperands()) {
 				if(op.isAnonymous()){
 					op.accept(this);
 				} else if(unsatClasses.contains(op.asOWLClass())) {
@@ -313,13 +311,13 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	public void visit(OWLObjectUnionOf or) {
 
 		// check whether one of the union operands is satisfiable
-		for (OWLDescription op : or.getOperands()) {
+		for (OWLClassExpression op : or.getOperands()) {
 			if (!unsatClasses.contains(op)) {
 				return;
 			}
 		}
 		// all operands are unsatisfiable
-		for (OWLDescription op : or.getOperands()) {
+		for (OWLClassExpression op : or.getOperands()) {
 			if (op.isAnonymous()) {
 				op.accept(this);
 			} else {
@@ -330,27 +328,32 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 	
 	@Override
-	public void visit(OWLObjectAllRestriction all) {
+	public void visit(OWLObjectAllValuesFrom all) {
 		checkObjectRestriction(all);		
 	}
 	
 	@Override
-	public void visit(OWLObjectMinCardinalityRestriction min) {
+	public void visit(OWLObjectMinCardinality min) {
 		checkObjectRestriction(min);	
 	}
 	
 	@Override
-	public void visit(OWLObjectExactCardinalityRestriction exact) {
+	public void visit(OWLObjectExactCardinality exact) {
 		checkObjectRestriction(exact);		
 	}
 	
 	@Override
-	public void visit(OWLObjectSelfRestriction self) {
+	public void visit(OWLObjectMaxCardinality ce) {
+		
+	}
+	
+	@Override
+	public void visit(OWLObjectHasSelf self) {
 		addExistsRestrictionProperty(self.getProperty());	
 	}
 	
 	@Override
-	public void visit(OWLObjectSomeRestriction some) {
+	public void visit(OWLObjectSomeValuesFrom some) {
 		checkObjectRestriction(some);		
 	}
 
@@ -359,11 +362,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 
 	@Override
-	public void visit(OWLObjectValueRestriction arg0) {
-	}
-
-	@Override
-	public void visit(OWLObjectMaxCardinalityRestriction arg0) {		
+	public void visit(OWLObjectHasValue arg0) {
 	}
 
 	@Override
@@ -371,27 +370,27 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 	}
 
 	@Override
-	public void visit(OWLDataSomeRestriction arg0) {
+	public void visit(OWLDataSomeValuesFrom arg0) {
 	}
 
 	@Override
-	public void visit(OWLDataAllRestriction arg0) {
+	public void visit(OWLDataAllValuesFrom arg0) {
 	}
 
 	@Override
-	public void visit(OWLDataValueRestriction arg0) {
+	public void visit(OWLDataHasValue arg0) {
 	}
 
 	@Override
-	public void visit(OWLDataMinCardinalityRestriction arg0) {
+	public void visit(OWLDataMinCardinality arg0) {
 	}
 
 	@Override
-	public void visit(OWLDataExactCardinalityRestriction arg0) {
+	public void visit(OWLDataExactCardinality arg0) {
 	}
 
 	@Override
-	public void visit(OWLDataMaxCardinalityRestriction arg0) {	
+	public void visit(OWLDataMaxCardinality arg0) {	
 	}
 
 	@Override
@@ -400,7 +399,7 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		this.reasoner = OREManager.getInstance().getReasoner().getReasoner();
 		this.reasonerFactory = new PelletReasonerFactory();
 		try {
-			this.ontology = manager.createOntology(URI.create("all"), reasoner.getLoadedOntologies());
+			this.ontology = manager.createOntology(IRI.create("all"), reasoner.getRootOntology().getImportsClosure());
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
@@ -429,4 +428,5 @@ public class RootFinder implements OWLDescriptionVisitor, OREManagerListener, OW
 		ontologyChanged = true;
 		
 	}
+
 }

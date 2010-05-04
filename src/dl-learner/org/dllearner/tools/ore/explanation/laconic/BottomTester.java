@@ -1,39 +1,37 @@
-
 package org.dllearner.tools.ore.explanation.laconic;
 
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataAllRestriction;
-import org.semanticweb.owl.model.OWLDataExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLDataSomeRestriction;
-import org.semanticweb.owl.model.OWLDataValueRestriction;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLDescriptionVisitorEx;
-import org.semanticweb.owl.model.OWLObjectAllRestriction;
-import org.semanticweb.owl.model.OWLObjectComplementOf;
-import org.semanticweb.owl.model.OWLObjectExactCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectIntersectionOf;
-import org.semanticweb.owl.model.OWLObjectMaxCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectMinCardinalityRestriction;
-import org.semanticweb.owl.model.OWLObjectOneOf;
-import org.semanticweb.owl.model.OWLObjectSelfRestriction;
-import org.semanticweb.owl.model.OWLObjectSomeRestriction;
-import org.semanticweb.owl.model.OWLObjectUnionOf;
-import org.semanticweb.owl.model.OWLObjectValueRestriction;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
-public class BottomTester implements OWLDescriptionVisitorEx<Boolean>
-{
+public class BottomTester implements OWLClassExpressionVisitorEx<Boolean> {
 
 	@Override
 	public Boolean visit(OWLClass owlClass) {
-		
+
 		return Boolean.valueOf(owlClass.isOWLNothing());
 	}
 
 	@Override
 	public Boolean visit(OWLObjectIntersectionOf intersect) {
-		for(OWLDescription desc : intersect.getOperands()){
+		for (OWLClassExpression desc : intersect.getOperands()) {
 			if (((Boolean) desc.accept(this)).booleanValue()) {
 				return Boolean.valueOf(true);
 			}
@@ -43,7 +41,7 @@ public class BottomTester implements OWLDescriptionVisitorEx<Boolean>
 
 	@Override
 	public Boolean visit(OWLObjectUnionOf union) {
-		for(OWLDescription desc : union.getOperands()){
+		for (OWLClassExpression desc : union.getOperands()) {
 			if (((Boolean) desc.accept(this)).booleanValue()) {
 				return Boolean.valueOf(true);
 			}
@@ -57,37 +55,37 @@ public class BottomTester implements OWLDescriptionVisitorEx<Boolean>
 	}
 
 	@Override
-	public Boolean visit(OWLObjectSomeRestriction desc) {
-		return (Boolean) ((OWLDescription) desc.getFiller()).accept(this);
+	public Boolean visit(OWLObjectSomeValuesFrom desc) {
+		return (Boolean) ((OWLClassExpression) desc.getFiller()).accept(this);
 	}
 
 	@Override
-	public Boolean visit(OWLObjectAllRestriction arg0) {
+	public Boolean visit(OWLObjectAllValuesFrom arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLObjectValueRestriction arg0) {
+	public Boolean visit(OWLObjectHasValue arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLObjectMinCardinalityRestriction desc) {
-		return (Boolean) ((OWLDescription) desc.getFiller()).accept(this);
+	public Boolean visit(OWLObjectMinCardinality desc) {
+		return (Boolean) ((OWLClassExpression) desc.getFiller()).accept(this);
 	}
 
 	@Override
-	public Boolean visit(OWLObjectExactCardinalityRestriction desc) {
-		return (Boolean) ((OWLDescription) desc.getFiller()).accept(this);
+	public Boolean visit(OWLObjectExactCardinality desc) {
+		return (Boolean) ((OWLClassExpression) desc.getFiller()).accept(this);
 	}
 
 	@Override
-	public Boolean visit(OWLObjectMaxCardinalityRestriction arg0) {
+	public Boolean visit(OWLObjectMaxCardinality arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLObjectSelfRestriction arg0) {
+	public Boolean visit(OWLObjectHasSelf arg0) {
 		return Boolean.valueOf(false);
 	}
 
@@ -97,33 +95,33 @@ public class BottomTester implements OWLDescriptionVisitorEx<Boolean>
 	}
 
 	@Override
-	public Boolean visit(OWLDataSomeRestriction arg0) {
+	public Boolean visit(OWLDataSomeValuesFrom arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLDataAllRestriction arg0) {
+	public Boolean visit(OWLDataAllValuesFrom arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLDataValueRestriction arg0) {
+	public Boolean visit(OWLDataHasValue arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLDataMinCardinalityRestriction arg0) {
+	public Boolean visit(OWLDataMinCardinality arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLDataExactCardinalityRestriction arg0) {
+	public Boolean visit(OWLDataExactCardinality arg0) {
 		return Boolean.valueOf(false);
 	}
 
 	@Override
-	public Boolean visit(OWLDataMaxCardinalityRestriction arg0) {
+	public Boolean visit(OWLDataMaxCardinality arg0) {
 		return Boolean.valueOf(false);
 	}
-   
+
 }

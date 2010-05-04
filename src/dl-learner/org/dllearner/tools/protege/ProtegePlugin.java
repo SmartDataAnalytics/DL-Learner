@@ -24,8 +24,8 @@ import java.util.Set;
 import javax.swing.JComponent;
 
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
-import org.protege.editor.owl.ui.editor.AbstractOWLDescriptionEditor;
-import org.semanticweb.owl.model.OWLDescription;
+import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * This is the class that must be implemented to get the plugin integrated in
@@ -34,7 +34,7 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Christian Koetteritzsch
  * 
  */
-public class ProtegePlugin extends AbstractOWLDescriptionEditor {
+public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	private static final long serialVersionUID = 728362819273927L;
 	private DLLearnerView view;
 	private static final String EQUIVALENT_CLASS_STRING = "Equivalent classes axiom";
@@ -47,7 +47,7 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	}
 
 	@Override
-	public Set<OWLDescription> getDescriptions() {
+	public Set<OWLClassExpression> getClassExpressions() {
 		if(view.getDLLearnerModel().getLearningAlgorithm() != null) {
 			if(view.getDLLearnerModel().getLearningAlgorithm().isRunning()) {
 				view.getDLLearnerModel().getLearningAlgorithm().stop();
@@ -72,7 +72,7 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	}
 
 	@Override
-	public boolean setDescription(OWLDescription arg0) {
+	public boolean setDescription(OWLClassExpression arg0) {
 		return true;
 	}
 

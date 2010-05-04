@@ -45,6 +45,7 @@ import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
 
 import org.dllearner.core.owl.Individual;
+import org.dllearner.tools.ore.ExplanationManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
 import org.dllearner.tools.ore.ui.item.AddPropertyAssertionMenuItem;
@@ -55,9 +56,12 @@ import org.dllearner.tools.ore.ui.item.RemoveAllPropertyAssertionsMenuItem;
 import org.dllearner.tools.ore.ui.item.RemoveAllPropertyAssertionsNotToMenuItem;
 import org.dllearner.tools.ore.ui.item.RemoveAllPropertyAssertionsToMenuItem;
 import org.dllearner.tools.ore.ui.item.RemoveFromClassMenuItem;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLOntologyChangeListener;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 
 /**
  * The repair dialog where the learned class description (including error parts), 
@@ -211,6 +215,10 @@ public class RepairDialog extends JDialog implements ActionListener, OWLOntology
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() instanceof RemoveFromClassMenuItem){
 			RemoveFromClassMenuItem item = (RemoveFromClassMenuItem)e.getSource();
+			OWLAxiom ax = OREManager.getInstance().getOWLDataFactory().
+			getOWLClassAssertionAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(item.getDescription()), OWLAPIConverter.getOWLAPIIndividual(ind));
+			
+			System.out.println(ExplanationManager.getInstance(OREManager.getInstance()).getEntailmentExplanations(ax));
 			List<OWLOntologyChange> changes  = modifier.removeClassAssertion(ind, item.getDescription());
 			changesTable.addChanges(changes);
 		} else if(e.getSource() instanceof MoveFromClassToMenuItem){

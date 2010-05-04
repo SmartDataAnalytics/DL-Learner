@@ -5,7 +5,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.semanticweb.owl.model.OWLClass;
+import org.dllearner.tools.ore.OREManager;
+import org.semanticweb.owlapi.model.OWLClass;
 
 public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 
@@ -43,7 +44,7 @@ public class UnsatisfiableClassesTableModel extends AbstractTableModel {
 		if(columnIndex == 0){
 			return unsatClasses.get(rowIndex);
 		} else {
-			return "<html><b><font color=\"red\">" + unsatClasses.get(rowIndex).toString() + " </font></b></html>";
+			return "<html><b><font color=\"red\">" + OREManager.getInstance().getManchesterSyntaxRendering(unsatClasses.get(rowIndex)) + " </font></b></html>";
 		}
 	}
 		

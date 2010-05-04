@@ -8,7 +8,6 @@ import javax.swing.ListSelectionModel;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxTableCellRenderer;
 import org.dllearner.tools.ore.ui.rendering.ProgressBarTableCellRenderer;
-import org.dllearner.tools.protege.SuggestionsTableModel;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 

@@ -14,32 +14,34 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.statistics.SimpleClock;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.io.RDFXMLOntologyFormat;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLPropertyAxiom;
-
-import uk.ac.manchester.cs.owl.OWLObjectExactCardinalityRestrictionImpl;
-import uk.ac.manchester.cs.owl.OWLObjectIntersectionOfImpl;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
 public class OntologyCloserOWLAPI {
 
 	OWLOntology onto;
 	OWLAPIReasoner rs;
 //	ReasonerComponent rs;
-	HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>> indToRestr;
+	HashMap<Individual, Set<OWLObjectExactCardinality>> indToRestr;
 	OWLDataFactory factory;
 	OWLOntologyManager manager;
 	public int numberOfStatementsChanged = 0;
 
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
 		this.rs = reasoner;
-		this.indToRestr = new HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>>();
+		this.indToRestr = new HashMap<Individual, Set<OWLObjectExactCardinality>>();
 //		this.rs = new ReasonerComponent(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
@@ -64,14 +66,12 @@ public class OntologyCloserOWLAPI {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				// only where roles exist
 				if (fillers.size() > 0) {
-					OWLObjectExactCardinalityRestrictionImpl oecr = new OWLObjectExactCardinalityRestrictionImpl(
-							factory, factory.getOWLObjectProperty(URI
-									.create(oneRole.getName())),
-							fillers.size(), factory.getOWLThing());
+					OWLObjectExactCardinality oecr = factory
+							.getOWLObjectExactCardinality(fillers.size(), factory.getOWLObjectProperty(IRI
+									.create(oneRole.getName())), factory.getOWLThing());
 
-					OWLAxiom axiom = factory.getOWLClassAssertionAxiom(factory
-							.getOWLIndividual(URI.create(oneInd.getName())),
-							oecr);
+					OWLAxiom axiom = factory.getOWLClassAssertionAxiom(oecr, factory
+							.getOWLNamedIndividual(IRI.create(oneInd.getName())));
 					AddAxiom addAxiom = new AddAxiom(this.onto, axiom);
 					try {
 						// add change
@@ -104,32 +104,29 @@ public class OntologyCloserOWLAPI {
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
-					OWLObjectExactCardinalityRestrictionImpl oecr = new OWLObjectExactCardinalityRestrictionImpl(
-							factory, factory.getOWLObjectProperty(URI
+					OWLObjectExactCardinality oecr = factory.getOWLObjectExactCardinality(fillers.size(), factory.getOWLObjectProperty(IRI
 									.create(oneRole.getName())),
-							fillers.size(), factory.getOWLThing());
+							factory.getOWLThing());
 					collectExObjRestrForInd(oneInd, oecr);
 				}
 			}
 		}// end for
 
-		Set<OWLDescription> target = new HashSet<OWLDescription>();
-		Set<OWLObjectExactCardinalityRestrictionImpl> s = null;
+		Set<OWLClassExpression> target = new HashSet<OWLClassExpression>();
+		Set<OWLObjectExactCardinality> s = null;
 
 		for (Individual oneInd : indToRestr.keySet()) {
 			s = indToRestr.get(oneInd);
-			for (OWLObjectExactCardinalityRestrictionImpl oecr : s) {
+			for (OWLObjectExactCardinality oecr : s) {
 				target.add(oecr);
 			}
 			// collect everything in an intersection
-			OWLObjectIntersectionOfImpl intersection = new OWLObjectIntersectionOfImpl(
-					this.factory, target);
+			OWLObjectIntersectionOf intersection = factory.getOWLObjectIntersectionOf(target);
 			s = null;
-			target = new HashSet<OWLDescription>();
+			target = new HashSet<OWLClassExpression>();
 
-			OWLAxiom axiom = factory.getOWLClassAssertionAxiom(factory
-					.getOWLIndividual(URI.create(oneInd.getName())),
-					intersection);
+			OWLAxiom axiom = factory.getOWLClassAssertionAxiom(intersection, factory
+					.getOWLNamedIndividual(IRI.create(oneInd.getName())));
 			AddAxiom addAxiom = new AddAxiom(this.onto, axiom);
 			try {
 				manager.applyChange(addAxiom);
@@ -148,19 +145,12 @@ public class OntologyCloserOWLAPI {
 	 */
 	public boolean testForTransitiveProperties(boolean printflag) {
 
-		boolean retval = false;
-
-		Set<OWLPropertyAxiom> ax = onto.getObjectPropertyAxioms();
+		Set<OWLTransitiveObjectPropertyAxiom> ax = onto.getAxioms(AxiomType.TRANSITIVE_OBJECT_PROPERTY);
+		boolean retval = !ax.isEmpty();
 		for (OWLPropertyAxiom propertyAxiom : ax) {
-			if (propertyAxiom.getClass().getSimpleName().equals(
-					"OWLTransitiveObjectPropertyAxiomImpl")) {
-				retval = true;
-				if (printflag) {
-					System.out
-							.println("WARNING transitive object property can't be used in cardinality restriction\n"
-									+ propertyAxiom.toString()
-									+ "but I'm ignoring it");
-				}
+			if (printflag) {
+				System.out.println("WARNING transitive object property can't be used in cardinality restriction\n"
+						+ propertyAxiom.toString() + "but I'm ignoring it");
 			}
 		}
 		if (printflag) {
@@ -210,20 +200,20 @@ public class OntologyCloserOWLAPI {
 	public void writeOWLFile(URI filename) {
 		try {
 			manager.saveOntology(this.onto, new RDFXMLOntologyFormat(),
-					filename);
+					IRI.create(filename));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private boolean collectExObjRestrForInd(Individual ind,
-			OWLObjectExactCardinalityRestrictionImpl oecr) {
-		Set<OWLObjectExactCardinalityRestrictionImpl> s = indToRestr.get(ind);
+			OWLObjectExactCardinality oecr) {
+		Set<OWLObjectExactCardinality> s = indToRestr.get(ind);
 
 		if (s == null) {
 
 			indToRestr.put(ind,
-					new HashSet<OWLObjectExactCardinalityRestrictionImpl>());
+					new HashSet<OWLObjectExactCardinality>());
 			s = indToRestr.get(ind);
 		}
 		return s.add(oecr);

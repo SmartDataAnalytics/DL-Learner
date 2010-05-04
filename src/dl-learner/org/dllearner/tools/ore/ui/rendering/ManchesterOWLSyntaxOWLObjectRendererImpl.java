@@ -1,8 +1,9 @@
 package org.dllearner.tools.ore.ui.rendering;
 
-import org.semanticweb.owl.io.OWLObjectRenderer;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.util.ShortFormProvider;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -38,7 +39,7 @@ import java.io.Writer;
  * Date: 25-Nov-2007<br><br>
  *
  * An implementation of the OWLObjectRenderer interface.  (Renders
- * standalone class descriptions and axioms in the manchester syntax).
+ * standalone class class expressions and axioms in the manchester syntax).
  */
 public class ManchesterOWLSyntaxOWLObjectRendererImpl implements OWLObjectRenderer {
 
@@ -46,12 +47,10 @@ public class ManchesterOWLSyntaxOWLObjectRendererImpl implements OWLObjectRender
 
     private WriterDelegate writerDelegate;
 
+
     public ManchesterOWLSyntaxOWLObjectRendererImpl() {
         writerDelegate = new WriterDelegate();
-        ren = new ManchesterOWLSyntaxObjectRenderer(writerDelegate);
-        ren.setUseWrapping(false);
-        ren.setUseTabbing(false);
-        ren.setWrap(false);
+        ren = new ManchesterOWLSyntaxObjectRenderer(writerDelegate, new OWLEntityShortFormProvider());
     }
 
 
@@ -63,7 +62,7 @@ public class ManchesterOWLSyntaxOWLObjectRendererImpl implements OWLObjectRender
 
 
     public void setShortFormProvider(ShortFormProvider shortFormProvider) {
-        ren.setShortFormProvider(shortFormProvider);
+        ren = new ManchesterOWLSyntaxObjectRenderer(writerDelegate, shortFormProvider);
     }
 
     private class WriterDelegate extends Writer {

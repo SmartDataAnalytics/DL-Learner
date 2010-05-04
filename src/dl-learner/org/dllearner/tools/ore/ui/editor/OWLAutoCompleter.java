@@ -32,9 +32,10 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.expression.ParserException;
 
 
 /**
@@ -254,16 +255,16 @@ public class OWLAutoCompleter {
             try {
                 checker.check(expression);
             }
-            catch (OWLExpressionParserException e) {
+            catch (ParserException e) {
                 String word = getWordToComplete();
                 Set<OWLObject> matches = matcher.getMatches(word,
-                                                            e.isOWLClassExpected(),
-                                                            e.isOWLObjectPropertyExpected(),
-                                                            e.isOWLDataPropertyExpected(),
-                                                            e.isOWLIndividualExpected(),
-                                                            e.isDatatypeExpected());
+                                                            e.isClassNameExpected(),
+                                                            e.isObjectPropertyNameExpected(),
+                                                            e.isDataPropertyNameExpected(),
+                                                            e.isIndividualNameExpected(),
+                                                            e.isDatatypeNameExpected());
                 List kwMatches = new ArrayList(matches.size() + 10);
-                for (String s : e.getExpectedKeyWords()) {
+                for (String s : e.getExpectedKeywords()) {
                     if (s.toLowerCase().startsWith(word.toLowerCase())) {
                         kwMatches.add(s);
                     }
@@ -272,9 +273,9 @@ public class OWLAutoCompleter {
 
                 return kwMatches;
             }
-            catch (OWLException owlEx) {
-                owlEx.printStackTrace();
-            }
+//            catch (OWLException owlEx) {
+//                owlEx.printStackTrace();
+//            }
         }
         catch (BadLocationException e) {
             Logger.getLogger(getClass()).warn(e);

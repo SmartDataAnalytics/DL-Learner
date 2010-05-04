@@ -30,7 +30,6 @@ import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -39,8 +38,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.GraphicalCoveragePanel;
 import org.dllearner.tools.ore.ui.HelpablePanel;
 import org.dllearner.tools.ore.ui.LearningOptionsPanel;
@@ -276,14 +273,5 @@ public class ManualLearnPanel extends JPanel{
 		showInconsistencyWarning(false);
 	}
 	
-	public static void main(String[] args){
-		OREManager.getInstance().setCurrentClass2Learn(new NamedClass("dummy"));
-		JFrame frame = new JFrame();
-		JPanel panel = new ManualLearnPanel();
-		frame.add(panel);
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-	}	
 }  
  

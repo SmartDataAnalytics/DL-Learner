@@ -1,18 +1,18 @@
 package org.dllearner.tools.ore.ui.rendering;
 
-import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 public class OWLEntityRenderer {
 	public String render(OWLEntity entity) {
 		try {
-			String rendering = entity.getURI().getFragment();
+			String rendering = entity.getIRI().getFragment();
 			if (rendering == null) {
 				// Get last bit of path
-				String path = entity.getURI().getPath();
+				String path = entity.getIRI().toURI().getPath();
 				if (path == null) {
-					return entity.getURI().toString();
+					return entity.getIRI().toString();
 				}
-				return entity.getURI().getPath().substring(
+				return entity.getIRI().toURI().getPath().substring(
 						path.lastIndexOf("/") + 1);
 			}
 			if (rendering.indexOf(' ') != -1 || rendering.indexOf('(') != -1

@@ -21,6 +21,5 @@ public class SimpleExplanationTable extends JXTable {
 		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setModel(new SimpleExplanationTableModel(exp));
 		getColumn(0).setCellRenderer(new TextAreaRenderer());
-		setRowHeightEnabled(true);
 	}
 }

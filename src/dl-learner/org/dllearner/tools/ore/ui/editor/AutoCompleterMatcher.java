@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObject;
 
 
 /**

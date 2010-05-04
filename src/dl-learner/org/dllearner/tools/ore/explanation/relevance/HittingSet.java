@@ -3,7 +3,7 @@ package org.dllearner.tools.ore.explanation.relevance;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 public class HittingSet extends HashSet<OWLAxiom> {
 
