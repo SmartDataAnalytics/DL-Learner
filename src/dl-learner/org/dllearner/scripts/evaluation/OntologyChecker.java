@@ -148,7 +148,7 @@ public class OntologyChecker {
 					System.out.println(inconsistentOntologies.size() + " inconsistent ontologies:");
 					int cnt = 1;
 					for(String uri : inconsistentOntologies){
-						System.out.println(uri);
+						System.out.println(cnt++ + ": " + uri);
 					}
 					System.out.println();
 					System.out.println(incohaerentOntologies.size() + " incohaerent ontologies(#unsatisfiable classes):");

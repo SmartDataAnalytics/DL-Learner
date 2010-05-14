@@ -243,6 +243,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 						ontology = ((OWLAPIOntology)source).getOWLOntolgy();
 					} else if (source instanceof SparqlKnowledgeSource) { 
 						ontology = ((SparqlKnowledgeSource)source).getOWLAPIOntology();
+						manager = ontology.getOWLOntologyManager();
 					} else {
 						ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url.toURI()));
 					}
@@ -629,6 +630,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		if (set.isEmpty())
 			return new Thing();
 		OWLClass oc = set.iterator().next().getRepresentativeElement();
+		if(oc.isOWLThing()){
+			return Thing.instance;
+		}
 		return new NamedClass(oc.toStringID());
 
 	}

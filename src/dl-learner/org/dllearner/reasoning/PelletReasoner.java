@@ -109,7 +109,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLStringLiteralImpl;
 import com.clarkparsia.modularity.IncrementalClassifier;
 import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import com.clarkparsia.pellet.owlapiv3.Reasoner;
 
 public class PelletReasoner extends ReasonerComponent {
 	
@@ -477,8 +476,8 @@ public class PelletReasoner extends ReasonerComponent {
 					if (source instanceof OWLAPIOntology) {
 						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
 					} else if (source instanceof SparqlKnowledgeSource) {
-						ontology = ((SparqlKnowledgeSource) source)
-								.getOWLAPIOntology();
+						ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
+						manager = ontology.getOWLOntologyManager();
 					} else {
 						try {
 							ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url
@@ -1256,12 +1255,12 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	@Override
 	public Description getDomainImpl(ObjectProperty objectProperty) {
 		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
-		
-			// Pellet returns a set of sets of named class, which are more
-			// general than the actual domain/range
-			NodeSet<OWLClass> set = reasoner.getObjectPropertyDomains(prop, false);
-			return getDescriptionFromReturnedDomain(set);
-		
+
+		// Pellet returns a set of sets of named class, which are more
+		// general than the actual domain/range
+		NodeSet<OWLClass> set = reasoner.getObjectPropertyDomains(prop, false);
+		return getDescriptionFromReturnedDomain(set);
+
 	}
 	
 	@Override
@@ -1283,7 +1282,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		if (set.isEmpty())
 			return new Thing();
 		OWLClass oc = set.iterator().next().getRepresentativeElement();
-		return new NamedClass(oc.toStringID());
+		return getDescriptionFromReturnedDomain(set);
 
 	}
 	
@@ -1670,5 +1669,8 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		return definitions;
 	}
 	
+	public static String getName() {
+		return "Pellet reasoner";
+	}	
 
 }

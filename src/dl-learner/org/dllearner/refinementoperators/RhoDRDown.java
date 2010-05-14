@@ -1222,7 +1222,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	}
 	
 	private SortedSet<Description> getNegClassCandidatesRecursive(Description index, Description lowerClass) {
-		SortedSet<Description> candidates = new TreeSet<Description>();
+		SortedSet<Description> candidates = new TreeSet<Description>(conceptComparator);
 		
 		for(Description candidate :  subHierarchy.getSuperClasses(lowerClass)) {
 				if(!isDisjoint(new Negation(candidate),index)) {
