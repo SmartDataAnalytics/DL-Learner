@@ -243,7 +243,7 @@ public class ReasonerTests {
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		reasoner.init();
 		ObjectProperty property = new ObjectProperty(KBParser.getInternalURI("hasChild"));
-		Description description = KBParser.parseConcept("woman");
+		Description description = KBParser.parseConcept("man");
 		assertTrue(reasoner.getDomain(property).equals(description));
 		
 //		reasoner.releaseKB();
