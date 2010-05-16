@@ -144,11 +144,11 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
 			if(concept != null){
-				String rendering = editorKit.getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept).asOWLClass());
+				String rendering = editorKit.getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept));
 				g2D.drawString(rendering, 320, 10);
 			}
 			if(eval != null){
-				String rendering = editorKit.getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(eval.getDescription()).asOWLClass());
+				String rendering = editorKit.getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(eval.getDescription()));
 				g2D.drawString(rendering, 320, 30);
 			}
 			

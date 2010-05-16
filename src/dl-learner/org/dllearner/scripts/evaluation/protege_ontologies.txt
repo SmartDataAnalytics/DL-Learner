@@ -25,7 +25,7 @@ http://ise.icu.ac.kr/Ontologies/office-env2.owl
 http://www.tssg.org/public/ontologies/omg/mof/2004/MOF.owl
 http://www.tssg.org/public/ontologies/omg/qvt/2005/QVT.owl
 http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl
-http://www.tssg.org/public/ontologies/omg/uml/2004/UML2-Super-MDL-041007.owl
+#http://www.tssg.org/public/ontologies/omg/uml/2004/UML2-Super-MDL-041007.owl
 http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl
 http://swap.uib.es/ontologies/performance.owl
 http://philosurfical.open.ac.uk/ontology/philosurfical.owl
@@ -41,4 +41,5 @@ http://www.bltk.ru/OWL/tourism.owl
 http://protege.cim3.net/file/pub/ontologies/travel/travel.owl
 http://lsi.ugr.es/joseluisgs/videojuegos.owl
 http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
+http://abulaish.com/Wood_Ontology/woodontology.xml
 http://drtc.isibang.ac.in/%7Ebisu/ontology/instOntology.owl

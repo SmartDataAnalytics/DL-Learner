@@ -20,13 +20,21 @@
 package org.dllearner.scripts.evaluation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -40,8 +48,15 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
+import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
+import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
+import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.reasoner.TimeOutException;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
@@ -59,6 +74,8 @@ public class OntologyChecker {
 	private static boolean displayInstances = true;
 	// set to Integer.MAX_VALUE for displaying all instances
 	private static int maxInstances = 10;
+	
+	private static long reasonerTaskTimeoutInMinutes = 10;
 
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
@@ -67,9 +84,12 @@ public class OntologyChecker {
 		File file = new File(args[0]);
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		PelletReasoner reasoner;
+		OWLReasoner reasoner;
+		ReasonerProgressMonitor progressMonitor = new ConsoleProgressMonitor();
+		FreshEntityPolicy freshEntityPolicy = FreshEntityPolicy.ALLOW;
+		IndividualNodeSetPolicy individualNodeSetPolicy = IndividualNodeSetPolicy.BY_SAME_AS;
+		OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, reasonerTaskTimeoutInMinutes * 60000, individualNodeSetPolicy);
 		OWLOntology ontology;
-		Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
 		StringBuffer sb = new StringBuffer();
 		StringBuffer sb2 = new StringBuffer();
 		String url = null;
@@ -79,11 +99,15 @@ public class OntologyChecker {
 			int count = 1;
 			while ((url = in.readLine()) != null) {
 				try {
+					if(url.startsWith("#")){
+						continue;
+					}
+					url = url.replace("%26", "&");
+					url = url.replace("%3D", "=");
 					System.out.println(count++ + ":" + url);
+					manager = null;
+					manager = OWLManager.createOWLOntologyManager();
 					ontology = manager.loadOntology(IRI.create(url));
-					ontologies.add(ontology);
-					ontologies.addAll(manager.getImportsClosure(ontology));
-					reasoner = new PelletReasonerFactory().createReasoner(ontology);
 					sb.append(url + "\n");
 					sb.append("#logical axioms: " + ontology.getLogicalAxiomCount() + "\n");
 					sb2.append(ontology.getLogicalAxiomCount() + "\t");
@@ -96,55 +120,63 @@ public class OntologyChecker {
 					sb.append("#individuals: " + ontology.getIndividualsInSignature(true).size() + "\n");
 					sb2.append(url + "\t");
 					
-					if (reasoner.isConsistent()) {
-						long startTime = System.currentTimeMillis();
-						reasoner.prepareReasoner();
-						sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
-						int unsatCount = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size();
-						sb.append("#unsatisfiable classes: " + unsatCount + "\n");
-						if(unsatCount > 0){
-							incohaerentOntologies.put(url, Integer.valueOf(unsatCount));
-						}
-						
-						int classCount = 0;
-
-						StringBuffer tmp = new StringBuffer();
-						if (ontology.getIndividualsInSignature(true).size() > 0) {
-							for (OWLClass cl : ontology.getClassesInSignature(true)) {
-								Set<OWLNamedIndividual> inds = reasoner.getInstances(cl, false).getFlattened();
-								if (inds.size() >= minInstanceCount) {
-									classCount++;
-									tmp.append("  " + cl.getIRI() + "\n");
-									if(displayInstances) {
-										int indCount = 0;
-										for(OWLIndividual ind : inds) {
-											tmp.append("    " + ind.toString() + "\n");
-											indCount++;
-											if(indCount >= maxInstances) {
-												tmp.append("    ... " + inds.size() + " more\n");
-												break;
+					if(ontology.getIndividualsInSignature(true).size() > 0){
+						//Pellet
+						reasoner = PelletReasonerFactory.getInstance().createReasoner(ontology, conf);
+						//HermiT
+//						reasoner = new Reasoner(ontology);
+						if (reasoner.isConsistent()) {
+							long startTime = System.currentTimeMillis();
+							reasoner.prepareReasoner();
+							sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
+							int unsatCount = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size();
+							sb.append("#unsatisfiable classes: " + unsatCount + "\n");
+							if(unsatCount > 0){
+								incohaerentOntologies.put(url, Integer.valueOf(unsatCount));
+							}
+							
+							int classCount = 0;
+	
+							StringBuffer tmp = new StringBuffer();
+							if (ontology.getIndividualsInSignature(true).size() > 0) {
+								for (OWLClass cl : ontology.getClassesInSignature(true)) {
+									if(!cl.isOWLThing()){
+										Set<OWLNamedIndividual> inds = reasoner.getInstances(cl, false).getFlattened();
+										if (inds.size() >= minInstanceCount) {
+											classCount++;
+											tmp.append("  " + cl.getIRI() + "\n");
+											if(displayInstances) {
+												int indCount = 0;
+												for(OWLIndividual ind : inds) {
+													tmp.append("    " + ind.toString() + "\n");
+													indCount++;
+													if(indCount >= maxInstances) {
+														tmp.append("    ... " + (inds.size()-maxInstances+1) + " more\n");
+														break;
+													}
+												}	
 											}
-										}	
+										}
 									}
 								}
 							}
+	
+							sb.append("#classes with min. " + minInstanceCount + " individuals: " + classCount + "\n");
+							if(displayClasses) {
+								sb.append(tmp);
+							}
+							ontologyRelClassCountMap.put(url, classCount);
+						} else {
+							inconsistentOntologies.add(url);
+							sb.append("Ontology is inconsistent. \n");
 						}
-
-						sb.append("#classes with min. " + minInstanceCount + " individuals: " + classCount + "\n");
-						if(displayClasses) {
-							sb.append(tmp);
-						}
-						ontologyRelClassCountMap.put(url, classCount);
-					} else {
-						inconsistentOntologies.add(url);
-						sb.append("Ontology is inconsistent. \n");
+						reasoner.dispose();
 					}
 					sb.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n");
 					sb2.append("\n");
 					
-					reasoner.dispose();
+					
 					manager.removeOntology(ontology);
-					ontologies.clear();
 					System.out.println(inconsistentOntologies.size() + " inconsistent ontologies:");
 					int cnt = 1;
 					for(String uri : inconsistentOntologies){
@@ -158,7 +190,12 @@ public class OntologyChecker {
 					}
 					System.out.println();
 				} catch (OWLOntologyCreationException e) {
-					// TODO Auto-generated catch block
+					sb.append(url + "\n");
+					sb.append("ERROR: Could not load ontology.");
+					e.printStackTrace();
+				} catch (TimeOutException e){
+					sb.append(url + "\n");
+					sb.append("TIMEOUT: Some reasoning tasks are too complex.");
 					e.printStackTrace();
 				}
 
@@ -166,20 +203,59 @@ public class OntologyChecker {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		System.out.println(sb.toString());
-		System.out.println(sb2.toString());
-		for (Entry<String, Integer> ent : ontologyRelClassCountMap.entrySet()) {
-			System.out.println(ent.getValue() + "\t - \t" + ent.getKey());
+//
+//		System.out.println(sb.toString());
+//		System.out.println(sb2.toString());
+//		for (Entry<String, Integer> ent : ontologyRelClassCountMap.entrySet()) {
+//			System.out.println(ent.getValue() + "\t - \t" + ent.getKey());
+//		}
+//		System.out.println("Inconsistent ontologies:");
+//		for(String uri : inconsistentOntologies){
+//			System.out.println(uri);
+//		}
+//		System.out.println("Incohaerent ontologies(#unsatisfiable classes):");
+//		for (Entry<String, Integer> ent : incohaerentOntologies.entrySet()) {
+//			System.out.println(ent.getKey() + "(" + ent.getValue() + ")");
+//		}
+		BufferedWriter out;
+		try {
+			out = new BufferedWriter(new FileWriter("protege_output.txt"));
+			out.write(sb.toString());
+			out.write(sb2.toString());
+			out.write("\n");
+			ontologyRelClassCountMap = sortByValue(ontologyRelClassCountMap);
+			for (Entry<String, Integer> ent : ontologyRelClassCountMap.entrySet()) {
+				out.write(ent.getValue() + "\t - \t" + ent.getKey() + "\n");
+			}
+			out.write("Inconsistent ontologies:\n");
+			for(String uri : inconsistentOntologies){
+				out.write(uri + "\n");
+			}
+			out.write("Incohaerent ontologies(#unsatisfiable classes):\n");
+			for (Entry<String, Integer> ent : incohaerentOntologies.entrySet()) {
+				out.write(ent.getKey() + "(" + ent.getValue() + ")\n");
+			}
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		System.out.println("Inconsistent ontologies:");
-		for(String uri : inconsistentOntologies){
-			System.out.println(uri);
-		}
-		System.out.println("Incohaerent ontologies(#unsatisfiable classes):");
-		for (Entry<String, Integer> ent : incohaerentOntologies.entrySet()) {
-			System.out.println(ent.getKey() + "(" + ent.getValue() + ")");
-		}
+		
 	}
+	
+	static Map sortByValue(Map map) {
+		List list = new LinkedList(map.entrySet());
+		Collections.sort(list, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+			}
+		});
+		Map result = new LinkedHashMap();
+		for (Iterator it = list.iterator(); it.hasNext();) {
+			Map.Entry entry = (Map.Entry) it.next();
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
+	}
+
 
 }
