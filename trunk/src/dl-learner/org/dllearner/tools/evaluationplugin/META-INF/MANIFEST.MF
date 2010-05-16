@@ -6,7 +6,7 @@ Bundle-Category: protege
 Bundle-Description: A plugin for evaluating DL-Learner class descriptions 
 Bundle-Vendor: Lorenz Buehmann
 Bundle-DocURL: http://www.co-ode.org
-Bundle-ClassPath: .,lib/dllearner.jar,lib/json.jar,lib/swingx-1.0.jar
+Bundle-ClassPath: .,lib/dllearner.jar,lib/json.jar,lib/swingx-1.6.jar
 Import-Package: org.osgi.framework,
  org.apache.log4j,
  javax.swing,
