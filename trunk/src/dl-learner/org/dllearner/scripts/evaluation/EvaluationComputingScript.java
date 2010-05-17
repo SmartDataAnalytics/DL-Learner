@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -119,17 +118,17 @@ public class EvaluationComputingScript {
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
-	public EvaluationComputingScript(URL fileURL) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
-		new EvaluationComputingScript(fileURL, false, false);
+	public EvaluationComputingScript(URI ontologyURI) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
+		new EvaluationComputingScript(ontologyURI, false, false);
 	}
 	
-	public EvaluationComputingScript(URL fileURL, boolean reuseExistingDescription, boolean filterDescriptionsFollowingFromKB) 
+	public EvaluationComputingScript(URI ontologyURI, boolean reuseExistingDescription, boolean filterDescriptionsFollowingFromKB) 
 	throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
 		EvaluationComputingScript.filterDescriptionsFollowingFromKB = filterDescriptionsFollowingFromKB;
 		EvaluationComputingScript.reuseExistingDescription = reuseExistingDescription;
 		System.out.println("Reusing existing descriptions: " + EvaluationComputingScript.reuseExistingDescription);
 		System.out.println("Filtering descriptions following from KB: " + EvaluationComputingScript.filterDescriptionsFollowingFromKB);
-		loadOntology(fileURL);
+		loadOntology(ontologyURI);
 		computeWithApproximation();
 		computeSuggestions();
 		computeGenFMeasureWithoutDefaultNegation();
@@ -196,15 +195,15 @@ public class EvaluationComputingScript {
 	}
 	
 	
-	private void loadOntology(URL fileURL) throws ComponentInitException, URISyntaxException{
-		ontologyURI = fileURL.toURI();
+	private void loadOntology(URI ontologyURI) throws ComponentInitException, URISyntaxException, MalformedURLException{
+		this.ontologyURI = ontologyURI;
 		ComponentManager cm = ComponentManager.getInstance();
 		// initialize KnowledgeSource
 		ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(fileURL);
+		ks.getConfigurator().setUrl(ontologyURI.toURL());
 		ks.init();
 			
-		System.out.println("Loaded ontology " + fileURL + ".");
+		System.out.println("Loaded ontology " + ontologyURI + ".");
 	}
 
 	private void saveResults() {
@@ -559,11 +558,17 @@ public class EvaluationComputingScript {
 			System.out.println("You need to give an OWL file as argument.");
 			System.exit(0);
 		}
-		URL fileURL = new URL(args[0]);
+		URI ontologyUri;
+		if(args[0].startsWith("http://")){
+			ontologyUri = URI.create(args[0]);
+		} else {
+			ontologyUri = new File(args[0]).toURI();
+		}
+		System.out.println(URI.create(args[0]));
 		long startTime = System.currentTimeMillis();
 		
 		if(args.length == 1){
-			new EvaluationComputingScript(fileURL);
+			new EvaluationComputingScript(ontologyUri);
 		} else if(args.length == 2){
 			boolean reuseExistingDescription = false;
 			boolean filterDescriptionsFollowingFromKB = false;
@@ -575,7 +580,7 @@ public class EvaluationComputingScript {
 				System.out.println("Wrong arguments. Type for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
 				System.exit(0);
 			}
-			new EvaluationComputingScript(fileURL, reuseExistingDescription, filterDescriptionsFollowingFromKB);
+			new EvaluationComputingScript(ontologyUri, reuseExistingDescription, filterDescriptionsFollowingFromKB);
 		} else if(args.length == 3){
 			boolean reuseExistingDescription = false;
 			boolean filterDescriptionsFollowingFromKB = false;
@@ -595,7 +600,7 @@ public class EvaluationComputingScript {
 				System.out.println("Wrong arguments. Type for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
 				System.exit(0);
 			}
-			new EvaluationComputingScript(fileURL, reuseExistingDescription, filterDescriptionsFollowingFromKB);
+			new EvaluationComputingScript(ontologyUri, reuseExistingDescription, filterDescriptionsFollowingFromKB);
 			
 		} else {
 			System.out.println("Wrong number of arguments. Type the URL (mandatory) and optional for reusing existing descriptions '-r' and for filtering existing description following from KB '-f'.");
