@@ -1,0 +1,11 @@
+./eval_compute http://owl.cs.manchester.ac.uk/repository/download?ontology=http://reliant.teknowledge.com/DAML/Economy.owl&format=RDF/XML
+./eval_compute http://owl.cs.manchester.ac.uk/repository/download?ontology=http://reliant.teknowledge.com/DAML/Transportation.owl&format=RDF/XML
+./eval_compute http://owl.cs.manchester.ac.uk/repository/download?ontology=http://www.mindswap.org/ontologies/SC.owl&format=RDF/XML
+./eval_compute http://owl.cs.manchester.ac.uk/repository/download?ontology=http://sweet.jpl.nasa.gov/1.1/earthrealm.owl&format=RDF/XML
+./eval_compute http://www.acl.icnet.uk/~mw/MDM0.73.owl
+./eval_compute http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
+./eval_compute http://mged.sourceforge.net/ontologies/MGEDOntology.owl
+./eval_compute http://protege.cim3.net/file/pub/ontologies/family.swrl.owl/family.swrl.owl
+./eval_compute http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
+./eval_compute http://lifeeventontology.googlepages.com/leo.owl
+./eval_compute http://abulaish.com/Wood_Ontology/woodontology.xml 
