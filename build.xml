@@ -64,6 +64,9 @@
 			<src path="${source_dir}"/>
 			<classpath refid="classpath"/>
 		</javac>
+		<copy toDir="classes_tmp" >
+			<fileset dir="${source_dir}" includes="**/*.gif,**/*.png,**/*.html,**/*.ini"/>
+		</copy>
 
 		<mkdir dir="${release_tmp_dir}"/>
 		<mkdir dir="${release_tmp_dir}/lib/"/>
