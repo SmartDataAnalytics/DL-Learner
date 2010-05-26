@@ -660,7 +660,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
 		NodeSet<OWLClass> classes = null;
 		
-		classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), false);
+		classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
 		
 		return getFirstClasses(classes);
 	}
@@ -669,7 +669,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<Description> getSubClassesImpl(Description concept) {
 		NodeSet<OWLClass> classes = null;
 		
-		classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), false);
+		classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
 		
 		return getFirstClasses(classes);
 	}
@@ -678,7 +678,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
 		NodeSet<OWLObjectProperty> properties = null;
 		
-		properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), false);
+		properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
 		 	
 		return getFirstObjectProperties(properties);
 	}
@@ -687,7 +687,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
 		NodeSet<OWLObjectProperty> properties = null;
 		
-		properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), false);
+		properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
 			
 		return getFirstObjectProperties(properties);		
 	}
@@ -696,7 +696,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
-		properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), false);
+		properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
 		 
 		return getFirstDatatypeProperties(properties);
 	}
@@ -705,7 +705,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
-		properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), false);
+		properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
 			
 		return getFirstDatatypeProperties(properties);		
 	}	
