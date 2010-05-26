@@ -31,7 +31,7 @@ import org.junit.Test;
  * @author Jens Lehmann.
  *
  */
-public class ParserTest {
+public class ParserTests {
 
 	@Test
 	public void KBParserTest() throws ParseException {

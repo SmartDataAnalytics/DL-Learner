@@ -46,12 +46,15 @@ public class AllTestsRunner {
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);
 		
+		// runs everything except example test
 		JUnitCore.main("org.dllearner.test.junit.ComponentTests",
+				"org.dllearner.test.junit.ELDescriptionTreeTests",
+				"org.dllearner.test.junit.ELDescriptionTreeTests",
+				"org.dllearner.test.junit.MinimizeTests",
+				"org.dllearner.test.junit.OWLAPITests",
+				"org.dllearner.test.junit.ParserTests",
 				"org.dllearner.test.junit.ReasonerTests",
 				"org.dllearner.test.junit.RefinementOperatorTests",
-				"org.dllearner.test.junit.ELDescriptionTreeTests",
-				"org.dllearner.test.junit.ELDownTests",
-				"org.dllearner.test.junit.MinimizeTests",
 				"org.dllearner.test.junit.SimulationTests",
 				"org.dllearner.test.junit.UtilitiesTests");
 	}
