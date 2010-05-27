@@ -552,7 +552,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 										.getY2())) {
 							
 									posCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toString()));
+											(int) x, (int) y, ind.toString(), ind, ""));
 						
 							i++;
 							flag = false;
@@ -597,7 +597,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 							
 								
 										posNotCovIndVector.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toString()));
+												(int) x, (int) y, ind.toString(), ind, ""));
 								
 							
 							j++;
@@ -635,7 +635,7 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 										.getY2())) {
 							
 									posNotCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toString()));
+											(int) x, (int) y, ind.toString(), ind, ""));
 							
 							k++;
 							flag = false;

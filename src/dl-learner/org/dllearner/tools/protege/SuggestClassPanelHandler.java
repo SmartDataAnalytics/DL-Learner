@@ -30,7 +30,7 @@ import org.dllearner.core.EvaluatedDescription;
  */
 public class SuggestClassPanelHandler implements  ListSelectionListener{
 	private DLLearnerView view;
-	private DLLearnerModel model;
+//	private DLLearnerModel model;
 	private ActionHandler action;
 	private EvaluatedDescription evaluatedDescription;
 	
@@ -41,7 +41,7 @@ public class SuggestClassPanelHandler implements  ListSelectionListener{
 	 */
 	public SuggestClassPanelHandler(DLLearnerView v, DLLearnerModel m, ActionHandler a) {
 		this.view = v;
-		this.model = m;
+//		this.model = m;
 		this.action = a;
 	}
 

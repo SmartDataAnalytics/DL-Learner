@@ -34,6 +34,7 @@ import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
+@SuppressWarnings("unused")
 public class SyntacticRelevanceBasedExplanationGenerator {
 
 	private PelletReasoner reasoner;
@@ -88,6 +89,7 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 		return rel_all_just(factory.getOWLSubClassOfAxiom(unsat, factory.getOWLNothing()));
 	}
 
+	@SuppressWarnings("unchecked")
 	private Set<Set<OWLAxiom>> computeRelevantJustifications(OWLClass unsat) {
 
 		OWLOntology ont = null;
@@ -335,9 +337,6 @@ public class SyntacticRelevanceBasedExplanationGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -189,9 +189,10 @@ public final class OWLAPIConverter {
 			return Datatype.INTEGER;			
 		else if(uri.equals(Datatype.STRING.getURI()))
 			return Datatype.STRING;			
-		else if(uri.equals(Datatype.DATE.getURI())){
+		else if(uri.equals(Datatype.DATE.getURI()))
 			return Datatype.DATE;
-		}
+		else if(uri.equals(Datatype.DATETIME.getURI()))
+			return Datatype.DATETIME;
 		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
 	}
 

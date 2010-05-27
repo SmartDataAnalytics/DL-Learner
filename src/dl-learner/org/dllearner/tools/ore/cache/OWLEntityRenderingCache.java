@@ -2,16 +2,13 @@ package org.dllearner.tools.ore.cache;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OREManagerListener;
 import org.dllearner.tools.ore.ui.rendering.OWLEntityRenderer;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAxiomChange;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDatatype;
@@ -20,13 +17,9 @@ import org.semanticweb.owlapi.model.OWLEntityVisitor;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 
 
 public class OWLEntityRenderingCache{
-
-    private static final Logger logger = Logger.getLogger(OWLEntityRenderingCache.class);
 
     private Map<String, OWLClass> owlClassMap = new HashMap<String, OWLClass>();
 
@@ -44,11 +37,22 @@ public class OWLEntityRenderingCache{
 
     private OREManager oreManager;
 
-    private OWLOntologyChangeListener listener = new OWLOntologyChangeListener() {
-        public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
-            processChanges(changes);
-        }
-    };
+//    private OWLOntologyChangeListener listener = new OWLOntologyChangeListener() {
+//        public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
+//            processChanges(changes);
+//        }
+//    };
+    
+//    private void processChanges(List<? extends OWLOntologyChange> changes) {
+//        for (OWLOntologyChange change : changes) {
+//            if (change instanceof OWLAxiomChange) {
+//                OWLAxiomChange chg = (OWLAxiomChange) change;
+//                for (OWLEntity ent : chg.getEntities()) {
+//                    updateRendering(ent);
+//                }
+//            }
+//        }
+//    }
     
     private OREManagerListener oreManagerListener = new OREManagerListener() {
 		
@@ -66,16 +70,7 @@ public class OWLEntityRenderingCache{
     }
 
 
-    private void processChanges(List<? extends OWLOntologyChange> changes) {
-        for (OWLOntologyChange change : changes) {
-            if (change instanceof OWLAxiomChange) {
-                OWLAxiomChange chg = (OWLAxiomChange) change;
-                for (OWLEntity ent : chg.getEntities()) {
-                    updateRendering(ent);
-                }
-            }
-        }
-    }
+    
 
 
     public void rebuild() {

@@ -77,7 +77,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			+ "(Often, suggestions leading to an inconsistency should still be added. They help to detect problems in "
 			+ "the ontology elsewhere.<br>"
 			+ " See http://dl-learner.org/files/screencast/protege/screencast.htm .)</html>";
-	private static final String FOLLOWS_FROM_KB_WARNING = "<html>Selected class expressions follows already logically from ontology.</html>";
+	//TODO Add label
+//	private static final String FOLLOWS_FROM_KB_WARNING = "<html>Selected class expressions follows already logically from ontology.</html>";
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;

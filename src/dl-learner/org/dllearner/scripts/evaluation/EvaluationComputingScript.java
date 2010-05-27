@@ -26,6 +26,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.owl.Axiom;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
@@ -38,10 +39,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
 
 
 public class EvaluationComputingScript {
-	
-	private static enum ThreeValuedLogic{
-		True, False, Both
-	}
 	
 	private ReasonerComponent reasoner;
 	private OWLFile ks;
@@ -65,6 +62,7 @@ public class EvaluationComputingScript {
 	
 	private static boolean reuseExistingDescription = false;
 	private static boolean filterDescriptionsFollowingFromKB = false;
+	private static boolean checkExistingDefinitions = true;
 	
 	private final ConceptComparator comparator = new ConceptComparator();
 	private URI ontologyURI;
@@ -82,41 +80,6 @@ public class EvaluationComputingScript {
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithReuse = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapWithReuseAndFilter = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
 	
 	public EvaluationComputingScript(URI ontologyURI) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
 		new EvaluationComputingScript(ontologyURI, false, false);
@@ -256,6 +219,7 @@ public class EvaluationComputingScript {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void computeSuggestions() throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
@@ -383,6 +347,7 @@ public class EvaluationComputingScript {
 	 * @throws MalformedURLException
 	 * @throws LearningProblemUnsupportedException
 	 */
+	@SuppressWarnings("unchecked")
 	private void computeGenFMeasureWithoutDefaultNegation() throws ComponentInitException, MalformedURLException,
 			LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
@@ -462,6 +427,7 @@ public class EvaluationComputingScript {
 		cm.freeComponent(celoe);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void computeWithApproximation() throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
 		TreeSet<EvaluatedDescriptionClass> suggestions;
@@ -518,11 +484,22 @@ public class EvaluationComputingScript {
 				celoe.init();
 
 				celoe.start();
+				
+				//check if perfect definition already exists in knowledgebase
+				boolean perfectDefinitionExists = false;
+				if(checkExistingDefinitions){
+					for(Description def : reasoner.getAssertedDefinitions(nc)){
+						if(lp.computeScore(def).getAccuracy() == 1.0){
+							perfectDefinitionExists = true;
+							break;
+						}
+					}
+				}
 
 				// test whether a solution above the threshold was found
 				EvaluatedDescription best = celoe.getCurrentlyBestEvaluatedDescription();
 				double bestAcc = best.getAccuracy();
-
+				
 				if (bestAcc < minAccuracy || (best.getDescription() instanceof Thing)) {
 					System.out
 							.println("The algorithm did not find a suggestion with an accuracy above the threshold of "
@@ -530,6 +507,12 @@ public class EvaluationComputingScript {
 									+ "% or the best description is not appropriate. (The best one was \""
 									+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
 									+ "\" with an accuracy of " + df.format(bestAcc) + ".) - skipping");
+				} else if(perfectDefinitionExists){
+					System.out.println("It does already exists a perfect definition.\n "
+									+"(The best computed was \""
+									+ best.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+									+ "\" with an accuracy of " + df.format(bestAcc) + ") - skipping ");
+														
 				} else {
 
 					suggestions = (TreeSet<EvaluatedDescriptionClass>) celoe
