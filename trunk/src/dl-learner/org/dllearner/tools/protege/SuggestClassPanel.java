@@ -30,7 +30,6 @@ import javax.swing.ListSelectionModel;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.tools.evaluationplugin.EvaluationTable;
 
 /**
  * This class is the panel for the suggest list. It shows the descriptions made
@@ -48,12 +47,6 @@ public class SuggestClassPanel extends JPanel {
 	private final JList descriptions;
 	
 	private final SuggestionsTable suggestionTable;
-
-	// Panel for the description list
-
-	private final JPanel suggestPanel;
-
-	// Scroll panel if the suggestions are longer than the Panel itself
 
 	private final JScrollPane suggestScroll;
 	private DefaultListModel suggestModel;
@@ -78,7 +71,6 @@ public class SuggestClassPanel extends JPanel {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		descriptions = new JList(suggestModel);
 		descriptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		suggestPanel = new JPanel();
 //		descriptions.setVisible(true);
 //		descriptions.setVisibleRowCount(6);
 //		descriptions.getPreferredScrollableViewportSize();
@@ -103,6 +95,7 @@ public class SuggestClassPanel extends JPanel {
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addSuggestions(List<? extends EvaluatedDescription> result){
 		suggestionTable.setSuggestions((List<EvaluatedDescriptionClass>)result);
 	}

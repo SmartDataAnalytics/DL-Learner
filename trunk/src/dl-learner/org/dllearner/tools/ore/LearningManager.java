@@ -194,6 +194,7 @@ public class LearningManager {
 		return la.isRunning();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<EvaluatedDescriptionClass> getCurrentlyLearnedDescriptions() {
 		List<EvaluatedDescriptionClass> result;
 		if (la != null) {
@@ -334,8 +335,8 @@ public class LearningManager {
 	}
 
 	public void fireLearningFinished() {
-		for(LearningManagerListener l : listeners){
-		}
+//		for(LearningManagerListener l : listeners){
+//		}
 	}
 
 }

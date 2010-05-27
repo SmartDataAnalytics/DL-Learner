@@ -10,10 +10,7 @@ import java.util.Stack;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
-
-import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 
 public class RepairManager implements OREManagerListener{
 
@@ -21,22 +18,16 @@ public class RepairManager implements OREManagerListener{
 	
 	private List<RepairManagerListener> listeners;
 	
-	private OWLOntologyManager manager;
-	private PelletReasoner reasoner;
 	
 	private Set<OWLOntologyChange> repairPlan;
 	
 	private Stack<List<OWLOntologyChange>> undoStack;
 	private Stack<List<OWLOntologyChange>> redoStack;
 	
-	private Set<OWLAxiom> selectedAxioms;
-	
 	private Set<OWLAxiom> scheduled2Remove;
 	private Set<OWLAxiom> scheduled2Add;
 
 	private RepairManager(OREManager oreMan){
-		this.reasoner = oreMan.getReasoner().getReasoner();
-		this.manager = reasoner.getManager();
 
 		listeners = new ArrayList<RepairManagerListener>();
 	
@@ -44,8 +35,6 @@ public class RepairManager implements OREManagerListener{
 		redoStack = new Stack<List<OWLOntologyChange>>();
 		
 		repairPlan = new LinkedHashSet<OWLOntologyChange>();
-		
-		selectedAxioms = new HashSet<OWLAxiom>();
 		
 		scheduled2Remove = new HashSet<OWLAxiom>();
 		scheduled2Add = new HashSet<OWLAxiom>();

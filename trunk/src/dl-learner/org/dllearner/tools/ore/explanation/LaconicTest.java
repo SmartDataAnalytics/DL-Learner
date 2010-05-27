@@ -18,7 +18,6 @@ import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
@@ -104,7 +103,7 @@ public class LaconicTest {
 				Set<Explanation> explanations = expGen
 						.getExplanations(unsatAxiom);
 				t1.stop();
-//				System.out.println(explanations);
+				System.out.println(explanations);
 				t2.start();
 //				Set<org.semanticweb.owl.explanation.api.Explanation<OWLAxiom>> expl = copy.getExplanations(unsatAxiom);
 				t2.stop();
@@ -143,28 +142,22 @@ public class LaconicTest {
 					factory.getOWLObjectIntersectionOf(d, factory.getOWLObjectComplementOf(d), e));
 			OWLOntology ontology = manager.createOntology(Collections.singleton(axiom));
 			OWLReasonerFactory resonerFact = new PelletReasonerFactory();
-			OWLReasoner reasoner = resonerFact.createReasoner(ontology);
 			
 			OWLSubClassOfAxiom unsatAxiom = factory.getOWLSubClassOfAxiom(c, factory.getOWLNothing());
 			
 			LaconicExplanationGenerator expGen = new LaconicExplanationGenerator(manager, 
 					resonerFact, ontology);
 			Set<Explanation> preciseJusts = expGen.getExplanations(unsatAxiom);
+			System.out.println(preciseJusts);
 //			renderer.render(unsatAxiom, preciseJusts);
 			renderer.endRendering();
 		
 			
 		} catch (OWLOntologyCreationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ExplanationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -186,7 +179,6 @@ public class LaconicTest {
 			OWLReasonerFactory resonerFact = new PelletReasonerFactory();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
 
-			OWLReasoner reasoner = resonerFact.createReasoner(ontology);
 			
 			OWLSubClassOfAxiom axiom = dataFactory
 					.getOWLSubClassOfAxiom(
@@ -203,10 +195,12 @@ public class LaconicTest {
 			 
 			 Set<Explanation> regularJusts = expGen.getRegularExplanations(axiom);
 			 System.out.println("Regular explanations:");
+			 System.out.println(regularJusts);
 //			 renderer.render(axiom, regularJusts);
 			 
 			Set<Explanation> preciseJusts = expGen.getExplanations(axiom);
 			System.out.println("Precise explanations:");
+			System.out.println(preciseJusts);
 //			renderer.render(axiom, preciseJusts);
 			
 

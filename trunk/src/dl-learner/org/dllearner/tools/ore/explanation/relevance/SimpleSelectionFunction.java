@@ -50,6 +50,7 @@ public class SimpleSelectionFunction {
 		return relatedAxioms;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<OWLAxiom> getAllRelatedAxioms(OWLEntity concept) {
 		Vector<OWLAxiom> allRelated = new Vector<OWLAxiom>();
 		Set<OWLAxiom> relatedAxioms = new HashSet<OWLAxiom>();
@@ -85,6 +86,7 @@ public class SimpleSelectionFunction {
 		return relatedAxioms;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<OWLAxiom> getAllRelatedAxioms(Set<OWLAxiom> originalAxioms_in) {
 		Vector<OWLAxiom> allRelated = new Vector<OWLAxiom>();
 		Set<OWLAxiom> relatedAxioms = new HashSet<OWLAxiom>();

@@ -29,6 +29,7 @@ import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
+@SuppressWarnings("unused")
 public class RelevanceBasedGenerator {
 	static{
 		setup();

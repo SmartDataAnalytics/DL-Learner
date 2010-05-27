@@ -16,7 +16,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
@@ -82,7 +81,7 @@ public class RootFinder implements OWLClassExpressionVisitor, OREManagerListener
     private Map<OWLClass, Set<OWLClass>> child2Parents;
     private Map<OWLClass, Set<OWLClass>> parent2Children;
     
-    private Map<OWLClass, Map<OWLAxiom, Set<OWLClass>>> class2Dependency;
+//    private Map<OWLClass, Map<OWLAxiom, Set<OWLClass>>> class2Dependency;
 	
 	public RootFinder(){
 		
@@ -107,7 +106,7 @@ public class RootFinder implements OWLClassExpressionVisitor, OREManagerListener
 		child2Parents = new HashMap<OWLClass, Set<OWLClass>>();
 		parent2Children = new HashMap<OWLClass, Set<OWLClass>>();
 		
-		class2Dependency = new HashMap<OWLClass, Map<OWLAxiom, Set<OWLClass>>>();
+//		class2Dependency = new HashMap<OWLClass, Map<OWLAxiom, Set<OWLClass>>>();
 		
 		OREManager.getInstance().addListener(this);
 		RepairManager.getInstance(OREManager.getInstance()).addListener(this);

@@ -313,7 +313,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		repMan.removeListener(this);
 	}
 	
-	private void showEditorDialog(final OWLAxiomEditor editor, final OWLObject value) {
+	private void showEditorDialog(final OWLAxiomEditor<OWLAxiom> editor, final OWLObject value) {
 		if (editor == null) {
 			return;
 		}
@@ -323,6 +323,11 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		final JComponent editorComponent = editor.getEditorComponent();
 		final VerifyingOptionPane optionPane = new VerifyingOptionPane(
 				editorComponent) {
+
+			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1277678457457723435L;
 
 			public void selectInitialValue() {
 				// This is overriden so that the option pane dialog default
@@ -368,7 +373,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		dlg.setVisible(true);
 	}
 	
-        void handleEditFinished(OWLAxiomEditor editor, OWLObject value){
+        void handleEditFinished(OWLAxiomEditor<OWLAxiom> editor, OWLObject value){
         	ImpactManager.getInstance(OREManager.getInstance()).addSelection((OWLAxiom)value);
         	List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
         	for(OWLOntology ont : OREManager.getInstance().getOWLOntologiesForOWLAxiom((OWLAxiom)value)){

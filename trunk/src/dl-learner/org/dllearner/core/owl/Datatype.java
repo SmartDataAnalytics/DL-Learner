@@ -33,8 +33,9 @@ public enum Datatype implements DataRange {
     INTEGER ("http://www.w3.org/2001/XMLSchema#integer"),
     BOOLEAN   ("http://www.w3.org/2001/XMLSchema#boolean"),
     STRING ("http://www.w3.org/2001/XMLSchema#string"),
-    DATE ("http://www.w3.org/2001/XMLSchema#date");
-
+    DATE ("http://www.w3.org/2001/XMLSchema#date"),
+    DATETIME ("http://www.w3.org/2001/XMLSchema#dateTime");
+    
     private URI uri;
 
     private Datatype(String uriString) {
