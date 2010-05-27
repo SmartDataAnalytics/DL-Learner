@@ -1,5 +1,6 @@
 # downloads all ontologies locally into /ontologies folder
 cd ontologies
+wget http://db0.aksw.org/downloads/Finance.owl
 wget -O Economy.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://reliant.teknowledge.com/DAML/Economy.owl&format=RDF/XML
 wget -O Transportation.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://reliant.teknowledge.com/DAML/Transportation.owl&format=RDF/XML
 wget -O SC.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://www.mindswap.org/ontologies/SC.owl&format=RDF/XML
