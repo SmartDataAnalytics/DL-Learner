@@ -47,14 +47,12 @@ public class AutomaticPositiveExampleFinderSPARQL {
 		logger.debug("pos Example size: "+posExamples.size());
 	}
 	
-	@SuppressWarnings("unused")
 	public void makePositiveExamplesFromDomain(String role, int resultLimit){
 		logger.debug("making Positive Examples from Domain of : "+role);
 		this.posExamples.addAll(sparqltasks.getDomainInstances(role, resultLimit));
 		logger.debug("pos Example size: "+posExamples.size());
 	}
 	
-	@SuppressWarnings("unused")
 	public void makePositiveExamplesFromRange(String role, int resultLimit){
 		logger.debug("making Positive Examples from Range of : "+role);
 		this.posExamples.addAll(sparqltasks.getRangeInstances(role, resultLimit));

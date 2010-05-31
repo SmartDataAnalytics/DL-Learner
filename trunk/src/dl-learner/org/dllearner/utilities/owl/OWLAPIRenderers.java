@@ -21,8 +21,6 @@ package org.dllearner.utilities.owl;
 
 import java.io.StringWriter;
 
-import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
-import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
 import org.coode.xml.XMLWriterNamespaceManager;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;

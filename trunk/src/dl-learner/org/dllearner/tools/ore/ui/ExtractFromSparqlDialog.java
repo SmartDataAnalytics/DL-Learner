@@ -277,6 +277,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		getContentPane().add(panel, BorderLayout.CENTER);
 	}
 	
+	@SuppressWarnings("unused")
 	private void addPredefinedEndpoints(){
 		endpointToDefaultGraph = new HashMap<URI, List<String>>();
 		for(SparqlEndpoint endpoint : SparqlEndpoint.listEndpoints()){
@@ -395,6 +396,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private boolean URLExists(){
 		try {
 			HttpURLConnection.setFollowRedirects(false);

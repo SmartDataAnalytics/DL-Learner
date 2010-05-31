@@ -178,6 +178,7 @@ public class ManualLearnPanelDescriptor extends WizardPanelDescriptor implements
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private void fillTable(final List<EvaluatedDescriptionClass> result){
 		Runnable r = new Runnable() {
 			@Override

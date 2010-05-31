@@ -17,7 +17,10 @@ import javax.swing.JButton;
 
 	public class AddRoundButton extends JButton {
 		
-		private Color c;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4728674196569042965L;
 		
 		public AddRoundButton(String label) {
 			super(label);

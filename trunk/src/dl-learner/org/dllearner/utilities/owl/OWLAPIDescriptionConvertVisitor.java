@@ -19,7 +19,6 @@
  */
 package org.dllearner.utilities.owl;
 
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
