@@ -39,6 +39,11 @@ import org.dllearner.gui.Config;
 public abstract class AbstractWidgetPanel<T> extends JPanel {
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3631056807739752782L;
+
+	/**
 	 * The configuration option configured by this widget.
 	 */
 	protected ConfigOption<T> configOption;

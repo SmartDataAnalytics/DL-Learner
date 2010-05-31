@@ -16,7 +16,12 @@ import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
  */
 public class KeywordColorMap extends HashMap<String, Color> {
 
-    public KeywordColorMap() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8840286687096195602L;
+
+	public KeywordColorMap() {
         Color restrictionColor = new Color(178, 0, 178);
         Color logicalOpColor = new Color(0, 178, 178);
         Color axiomColor = new Color(10, 94, 168);

@@ -43,7 +43,6 @@ import com.hp.hpl.jena.sparql.resultset.ResultSetRewindable;
  */
 public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(SparqlTupleAquisitorImproved.class);
 	private Map<String,SortedSet<RDFNodeTuple>> resources = new HashMap<String, SortedSet<RDFNodeTuple>>();
 	int recursionDepth;

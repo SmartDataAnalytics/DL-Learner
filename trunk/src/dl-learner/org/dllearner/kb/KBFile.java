@@ -49,7 +49,6 @@ import org.dllearner.reasoning.DIGConverter;
  */
 public class KBFile extends KnowledgeSource {
 
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(KBFile.class);
 	
 	private KB kb;

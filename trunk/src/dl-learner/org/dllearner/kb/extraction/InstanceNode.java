@@ -49,7 +49,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
  */
 public class InstanceNode extends Node {
 	
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 		.getLogger(InstanceNode.class);
 

@@ -215,7 +215,6 @@ public class KRKOntologyTBox {
 		return new ObjectProperty(ontologyURI + "#" + name);
 	}
 
-	@SuppressWarnings("unused")
 	protected static DatatypeProperty getDatatypeProperty(String name) {
 		return new DatatypeProperty(ontologyURI + "#" + name);
 	}
@@ -224,12 +223,10 @@ public class KRKOntologyTBox {
 		return new NamedClass(ontologyURI + "#" + name);
 	}
 
-	@SuppressWarnings("unused")
 	protected static String getURI(String name) {
 		return ontologyURI + "#" + name;
 	}
 
-	@SuppressWarnings("unused")
 	protected static ClassAssertionAxiom getConceptAssertion(String concept,
 			String instance) {
 		Individual ind = getIndividual(instance);
@@ -237,7 +234,6 @@ public class KRKOntologyTBox {
 		return new ClassAssertionAxiom(c, ind);
 	}
 
-	@SuppressWarnings("unused")
 	protected static ObjectPropertyAssertion getRoleAssertion(String role,
 			String i1, String i2) {
 		Individual ind1 = getIndividual(i1);

@@ -707,7 +707,6 @@ public class KRK {
 		return new ObjectProperty(ontologyIRI + "#" + name);
 	}
 
-	@SuppressWarnings("unused")
 	protected static DatatypeProperty getDatatypeProperty(String name) {
 		return new DatatypeProperty(ontologyIRI + "#" + name);
 	}
@@ -716,12 +715,10 @@ public class KRK {
 		return new NamedClass(ontologyIRI + "#" + name);
 	}
 
-	@SuppressWarnings("unused")
 	protected static String getURI(String name) {
 		return ontologyIRI + "#" + name;
 	}
 
-	@SuppressWarnings("unused")
 	protected static ClassAssertionAxiom getConceptAssertion(String concept,
 			String i) {
 		Individual ind = getIndividual(i);
@@ -729,7 +726,6 @@ public class KRK {
 		return new ClassAssertionAxiom(c, ind);
 	}
 
-	@SuppressWarnings("unused")
 	protected static ObjectPropertyAssertion getRoleAssertion(String role,
 			String i1, String i2) {
 		Individual ind1 = getIndividual(i1);

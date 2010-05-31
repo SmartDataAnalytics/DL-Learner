@@ -34,7 +34,6 @@ import javax.swing.tree.TreePath;
 
 import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.algorithms.refinement2.ExampleBasedNode;
-import org.dllearner.algorithms.refinement2.NodeComparatorStable;
 
 /**
  * A tree model used for displaying example based nodes. A search tree can

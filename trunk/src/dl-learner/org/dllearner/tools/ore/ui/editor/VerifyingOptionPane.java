@@ -41,7 +41,8 @@ public class VerifyingOptionPane extends JOptionPane {
         }
     }
 
-    private <T extends JComponent> T getButtonComponent(JComponent parent, Class<T> type, String name) {
+    @SuppressWarnings("unchecked")
+	private <T extends JComponent> T getButtonComponent(JComponent parent, Class<T> type, String name) {
         if (type.isAssignableFrom(parent.getClass())){
             if (parent instanceof JButton){
                 if (name.equals(((JButton)parent).getText())){

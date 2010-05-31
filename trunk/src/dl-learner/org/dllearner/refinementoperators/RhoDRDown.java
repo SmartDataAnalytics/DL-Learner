@@ -1433,6 +1433,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	}*/
 	
 	// we need to test whether NOT A AND B is equivalent to BOTTOM
+	@SuppressWarnings("unused")
 	private boolean isNotADisjoint(NamedClass a, NamedClass b) {
 //		Map<NamedClass,Boolean> tmp = notABDisjoint.get(a);
 //		Boolean tmp2 = null;
@@ -1452,6 +1453,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	// we need to test whether NOT A AND B = B
 	// (if not then NOT A is not meaningful in the sense that it does
 	// not semantically add anything to B) 	
+	@SuppressWarnings("unused")
 	private boolean isNotAMeaningful(NamedClass a, NamedClass b) {
 		Description notA = new Negation(a);
 		Description d = new Intersection(notA, b);

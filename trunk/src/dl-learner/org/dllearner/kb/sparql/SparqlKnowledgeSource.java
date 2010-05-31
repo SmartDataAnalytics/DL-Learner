@@ -215,7 +215,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
-	@SuppressWarnings({ "unchecked" })
 	public <T> void applyConfigEntry(ConfigEntry<T> entry)
 			throws InvalidConfigOptionValueException {
 		//TODO remove this function

@@ -52,7 +52,6 @@ public class ConceptSelector {
 		return getConceptsNotContainingString(concepts, "OR");
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<EvaluatedDescriptionPosNeg> getConceptsNotContainingString(
 			List<EvaluatedDescriptionPosNeg> concepts, String filterString,
 			int limitSize) {

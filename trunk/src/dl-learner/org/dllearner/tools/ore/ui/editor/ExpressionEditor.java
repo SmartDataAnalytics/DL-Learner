@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.rendering.KeywordColorMap;
 import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLObject;
 
 
@@ -50,7 +49,12 @@ import org.semanticweb.owlapi.model.OWLObject;
 public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEditor{
 
 
-    private static Logger logger = Logger.getLogger(ExpressionEditor.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1493513273790890918L;
+
+	private static Logger logger = Logger.getLogger(ExpressionEditor.class);
 
     private Border outerBorder;
 
@@ -137,9 +141,9 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
             String rendering = mngr.getManchesterSyntaxRendering((OWLObject) desc);
             setText(rendering);
         }
-        else if (desc instanceof Collection){
+        else if (desc instanceof Collection<?>){
             StringBuffer sb = new StringBuffer();
-            for (Object obj : (Collection)desc){
+            for (Object obj : (Collection<?>)desc){
                 if (obj instanceof OWLObject){
                     if (sb.length() > 0){
                         sb.append(", ");

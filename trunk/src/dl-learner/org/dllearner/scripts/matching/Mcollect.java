@@ -43,7 +43,6 @@ public class Mcollect {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public String toString(){
 		//SortedSet<Pcollect> s = new TreeSet<Pcollect>();

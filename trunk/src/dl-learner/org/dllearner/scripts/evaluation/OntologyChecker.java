@@ -77,6 +77,7 @@ public class OntologyChecker {
 	
 	private static long reasonerTaskTimeoutInMinutes = 10;
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
 		Set<String> inconsistentOntologies = new HashSet<String>();
@@ -242,6 +243,7 @@ public class OntologyChecker {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	static Map sortByValue(Map map) {
 		List list = new LinkedList(map.entrySet());
 		Collections.sort(list, new Comparator() {

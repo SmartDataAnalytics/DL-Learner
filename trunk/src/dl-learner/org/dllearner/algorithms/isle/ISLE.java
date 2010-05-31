@@ -31,15 +31,12 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.CELOEConfigurator;
-import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ISLEConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
