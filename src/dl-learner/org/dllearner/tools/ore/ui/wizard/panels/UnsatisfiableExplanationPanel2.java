@@ -70,6 +70,7 @@ public class UnsatisfiableExplanationPanel2 extends JPanel{
 	private JSpinner maxExplanationsSelector;
 	private JCheckBox strikeOutBox;
 	
+	@SuppressWarnings("unused")
 	private Set<ExplanationTablePanel> explanationPanels;
 	private Set<ExplanationTable> explanationTables;
 

@@ -184,11 +184,6 @@ public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationPr
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				progressBar.setValue((int) progress);
-				double percentDone = (progress * 100.0) / progressBar.getMaximum();
-				// if(percentDone / 100.0 == 0) {
-				// label.setText("Classifying ontology " + ((int) percentDone) +
-				// " %");
-				// }
 			}
 		});
 

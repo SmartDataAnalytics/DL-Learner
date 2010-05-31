@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore.ui;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +16,10 @@ public class ResultTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = -6920806148989403795L;
 	
 	private List<EvaluatedDescriptionClass> resultList;
-	private DecimalFormat df;
 
 	public ResultTableModel(){
 		super();
 		resultList = new ArrayList<EvaluatedDescriptionClass>();
-		df = new DecimalFormat("00%");
 	}
 	
 	public ResultTableModel(List<EvaluatedDescriptionClass> resultList){
@@ -42,7 +39,7 @@ public class ResultTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0){
-				return (int)(resultList.get(rowIndex).getAccuracy() *100);//df.format(resultList.get(rowIndex).getAccuracy());			
+				return (int)(resultList.get(rowIndex).getAccuracy() *100);
 		} else {
 				return resultList.get(rowIndex).getDescription();
 		}

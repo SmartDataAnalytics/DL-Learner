@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 public class ExMakerCrossFolds {
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ExMakerCrossFolds.class);
 
 	private final Examples examples;

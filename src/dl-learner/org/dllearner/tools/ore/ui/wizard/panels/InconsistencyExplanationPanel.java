@@ -38,6 +38,7 @@ public class InconsistencyExplanationPanel extends JPanel{
 	private JScrollPane explanationsScrollPane;
 	private JComponent explanationsPanel;
 	
+	@SuppressWarnings("unused")
 	private JPanel buttonExplanationsPanel;
 		
 	private ButtonGroup explanationType;

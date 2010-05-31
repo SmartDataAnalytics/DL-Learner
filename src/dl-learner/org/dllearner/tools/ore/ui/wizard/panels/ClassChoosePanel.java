@@ -41,7 +41,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.tools.ore.LearningManager;
-import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.LearningManager.LearningMode;
 import org.dllearner.tools.ore.ui.ClassesTable;
 import org.dllearner.tools.ore.ui.HelpablePanel;
