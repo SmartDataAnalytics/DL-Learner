@@ -206,7 +206,7 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
     protected void write(Set<? extends OWLClassExpression> objects, boolean newline) {
-        boolean lastWasNamed = false;
+//        boolean lastWasNamed = false;
         boolean first = true;
 
         for (Iterator<? extends OWLObject> it = sort(objects).iterator(); it.hasNext();) {
@@ -227,12 +227,12 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
                 write(")");
             }
 
-            lastWasNamed = desc instanceof OWLClass;
+//            lastWasNamed = desc instanceof OWLClass;
         }
     }
 
 
-    private void writeRestriction(OWLQuantifiedRestriction restriction, ManchesterOWLSyntax keyword) {
+    private void writeRestriction(OWLQuantifiedRestriction<?, ?> restriction, ManchesterOWLSyntax keyword) {
         restriction.getProperty().accept(this);
         write(keyword);
         boolean conjunctionOrDisjunction = false;
@@ -254,14 +254,14 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    private void writeRestriction(OWLHasValueRestriction restriction) {
+    private void writeRestriction(OWLHasValueRestriction<?, ?> restriction) {
         restriction.getProperty().accept(this);
         write(VALUE);
         restriction.getValue().accept(this);
     }
 
 
-    private void writeRestriction(OWLCardinalityRestriction restriction, ManchesterOWLSyntax keyword) {
+    private void writeRestriction(OWLCardinalityRestriction<?, ?> restriction, ManchesterOWLSyntax keyword) {
         restriction.getProperty().accept(this);
         write(keyword);
         write(Integer.toString(restriction.getCardinality()));
@@ -647,7 +647,8 @@ public class ManchesterOWLSyntaxObjectRenderer extends AbstractRenderer implemen
     }
 
 
-    private void writePropertyCharacteristic(ManchesterOWLSyntax characteristic) {
+    @SuppressWarnings("unused")
+	private void writePropertyCharacteristic(ManchesterOWLSyntax characteristic) {
         setAxiomWriting();
         writeSectionKeyword(CHARACTERISTICS);
         write(characteristic);

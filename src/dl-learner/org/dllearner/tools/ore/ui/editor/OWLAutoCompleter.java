@@ -32,10 +32,9 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.dllearner.tools.ore.OREManager;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 
 
 /**
@@ -70,7 +69,7 @@ public class OWLAutoCompleter {
 
     public static final int POPUP_HEIGHT = 300;
 
-    private OWLExpressionChecker checker;
+    private OWLExpressionChecker<?> checker;
 
     private String lastTextUpdate = "*";
 
@@ -139,7 +138,7 @@ public class OWLAutoCompleter {
 
 
     public OWLAutoCompleter(OREManager oreManager, JTextComponent tc,
-                                       OWLExpressionChecker checker) {
+                                       OWLExpressionChecker<?> checker) {
         this.oreManager = oreManager;
         this.checker = checker;
         this.textComponent = tc;
@@ -244,7 +243,8 @@ public class OWLAutoCompleter {
     }
 
 
-    private List getMatches() {
+    @SuppressWarnings("unchecked")
+	private List<Comparable<?>> getMatches() {
         // We need to determine if the matches should be classes, individuals etc.
 
         try {
@@ -263,7 +263,7 @@ public class OWLAutoCompleter {
                                                             e.isDataPropertyNameExpected(),
                                                             e.isIndividualNameExpected(),
                                                             e.isDatatypeNameExpected());
-                List kwMatches = new ArrayList(matches.size() + 10);
+                List<Comparable<?>> kwMatches = new ArrayList<Comparable<?>>(matches.size() + 10);
                 for (String s : e.getExpectedKeywords()) {
                     if (s.toLowerCase().startsWith(word.toLowerCase())) {
                         kwMatches.add(s);
@@ -295,7 +295,7 @@ public class OWLAutoCompleter {
 
 
     private void performAutoCompletion() {
-        List matches = getMatches();
+        List<Comparable<?>> matches = getMatches();
         if (matches.size() == 1) {
             // Don't show popup
             insertWord(getInsertText(matches.iterator().next()));
@@ -363,7 +363,7 @@ public class OWLAutoCompleter {
     }
 
 
-    private void updatePopup(List matches) {
+    private void updatePopup(List<Comparable<?>> matches) {
         int count = matches.size();
         if(count > maxEntries) {
             count = maxEntries;

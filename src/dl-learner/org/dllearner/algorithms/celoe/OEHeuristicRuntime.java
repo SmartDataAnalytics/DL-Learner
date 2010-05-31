@@ -21,7 +21,6 @@ package org.dllearner.algorithms.celoe;
 
 import java.util.Comparator;
 
-import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**

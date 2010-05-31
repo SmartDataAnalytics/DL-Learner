@@ -21,7 +21,6 @@ public class LogHelper {
 		// initFile(log4jConfigFile);
 	}
 	
-	@SuppressWarnings("unused")
 	private static void initHere() {
 		Layout layout = new PatternLayout();
 		layout = new PatternLayout("%-5p [%C{1}]: %m%n");

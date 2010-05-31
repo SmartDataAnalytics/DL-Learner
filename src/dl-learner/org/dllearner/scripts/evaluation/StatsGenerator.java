@@ -343,6 +343,7 @@ public class StatsGenerator {
 		latexMetrics.append("\\hline\n");
 	}
 	
+	@SuppressWarnings("static-access")
 	private void addStatsTableRow() {
 		double accept = acceptedGlobalStat.getMean() / suggestionListsCount * 100;
 		double reject = rejectedGlobalStat.getMean() / suggestionListsCount * 100;
@@ -355,6 +356,7 @@ public class StatsGenerator {
 		double stdDeviationPosition = positionStat.getStandardDeviation();
 		DecimalFormat df = new DecimalFormat("0.0");
 		double additionalInstanceCountEq = new Stat(moreInstancesCountStats).getMean();
+		@SuppressWarnings("unused")
 		double additionalInstanceCountSC = new Stat(moreInstancesCountStatsSC).getMean();
 		double additionalInstanceCount = new Stat(new Stat(moreInstancesCountStats), new Stat(moreInstancesCountStatsSC)).getMean();
 		Stat avgSelectedAccuracyEq = new Stat(accSelectedStats);
@@ -409,6 +411,7 @@ public class StatsGenerator {
 	 * Loads the computed suggestion files.
 	 * @param resultFile The file where the suggestions are serialized.
 	 */
+	@SuppressWarnings("unchecked")
 	private void loadSuggestions(File resultFile) {
 		InputStream fis = null;
 
@@ -438,6 +441,7 @@ public class StatsGenerator {
 	 * Loads the user input evaluated in the EvaluationGUI.
 	 * @param input
 	 */
+	@SuppressWarnings("unchecked")
 	private void loadUserInput(File input) {
 		InputStream fis = null;
 

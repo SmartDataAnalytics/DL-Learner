@@ -43,7 +43,6 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
  */
 public class ClassNode extends Node {
 	
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 		.getLogger(ClassNode.class);
 	

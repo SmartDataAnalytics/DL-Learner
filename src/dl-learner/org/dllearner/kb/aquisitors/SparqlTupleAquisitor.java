@@ -46,7 +46,6 @@ import com.jamonapi.Monitor;
 public class SparqlTupleAquisitor extends TupleAquisitor {
 	
 	
-	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(SparqlTupleAquisitor.class);
 	protected static final String PREDICATE = "predicate";
 	protected static final String OBJECT = "object";

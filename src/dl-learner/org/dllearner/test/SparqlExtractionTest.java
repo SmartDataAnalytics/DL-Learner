@@ -101,7 +101,7 @@ public class SparqlExtractionTest {
 
 			
 			m.useConfiguration(conf);
-			@SuppressWarnings("unused")
+		
 			String example = "http://dbpedia.org/resource/Angela_Merkel";
 			
 			Set<String> startingInstances = new TreeSet<String>();

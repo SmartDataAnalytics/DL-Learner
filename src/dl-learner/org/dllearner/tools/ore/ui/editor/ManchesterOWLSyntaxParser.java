@@ -599,7 +599,7 @@ public class ManchesterOWLSyntaxParser {
     }
 
 
-    public OWLPropertyExpression parsePropertyExpression() throws ParserException {
+    public OWLPropertyExpression<?, ?> parsePropertyExpression() throws ParserException {
         String tok = peekToken();
         if (isObjectPropertyName(tok)) {
             return parseObjectPropertyExpression();
@@ -1265,11 +1265,11 @@ public class ManchesterOWLSyntaxParser {
         else {
             annotations = Collections.emptySet();
         }
-        Set<OWLPropertyExpression> properties = parsePropertyList();
+        Set<OWLPropertyExpression<?, ?>> properties = parsePropertyList();
         OWLAxiom propertyAxiom;
         if (properties.iterator().next().isObjectPropertyExpression()) {
             Set<OWLObjectPropertyExpression> ope = new HashSet<OWLObjectPropertyExpression>();
-            for (OWLPropertyExpression pe : properties) {
+            for (OWLPropertyExpression<?, ?> pe : properties) {
                 ope.add((OWLObjectPropertyExpression) pe);
             }
             propertyAxiom = getDataFactory().getOWLEquivalentObjectPropertiesAxiom(ope, annotations);
@@ -1278,7 +1278,7 @@ public class ManchesterOWLSyntaxParser {
         }
         else {
             Set<OWLDataPropertyExpression> dpe = new HashSet<OWLDataPropertyExpression>();
-            for (OWLPropertyExpression pe : properties) {
+            for (OWLPropertyExpression<?, ?> pe : properties) {
                 dpe.add((OWLDataPropertyExpression) pe);
             }
             propertyAxiom = getDataFactory().getOWLEquivalentDataPropertiesAxiom(dpe, annotations);
@@ -1488,7 +1488,7 @@ public class ManchesterOWLSyntaxParser {
                 else {
                     annos = Collections.emptySet();
                 }
-                Set<OWLPropertyExpression> props = parsePropertyList();
+                Set<OWLPropertyExpression<?, ?>> props = parsePropertyList();
                 for (OWLOntology ont : onts) {
                     axioms.add(new OntologyAxiomPair(ont, dataFactory.getOWLHasKeyAxiom(cls, props, annos)));
                 }
@@ -2386,19 +2386,19 @@ public class ManchesterOWLSyntaxParser {
         else {
             annotations = Collections.emptySet();
         }
-        Set<OWLPropertyExpression> props = parsePropertyList();
+        Set<OWLPropertyExpression<?, ?>> props = parsePropertyList();
         Set<OntologyAxiomPair> pairs = new HashSet<OntologyAxiomPair>();
         OWLAxiom propertiesAxiom;
         if (props.iterator().next().isObjectPropertyExpression()) {
             Set<OWLObjectPropertyExpression> ope = new HashSet<OWLObjectPropertyExpression>();
-            for (OWLPropertyExpression pe : props) {
+            for (OWLPropertyExpression<?, ?> pe : props) {
                 ope.add((OWLObjectPropertyExpression) pe);
             }
             propertiesAxiom = getDataFactory().getOWLDisjointObjectPropertiesAxiom(ope, annotations);
         }
         else {
             Set<OWLDataPropertyExpression> dpe = new HashSet<OWLDataPropertyExpression>();
-            for (OWLPropertyExpression pe : props) {
+            for (OWLPropertyExpression<?, ?> pe : props) {
                 dpe.add((OWLDataPropertyExpression) pe);
             }
             propertiesAxiom = getDataFactory().getOWLDisjointDataPropertiesAxiom(dpe, annotations);
@@ -2535,7 +2535,8 @@ public class ManchesterOWLSyntaxParser {
             String next = peekToken();
             if (next.equals(ANNOTATIONS)) {
                 consumeToken();
-                Set<OWLAnnotation> annos = parseAnnotationList();
+                @SuppressWarnings("unused")
+				Set<OWLAnnotation> annos = parseAnnotationList();
             }
             descs.add(parseIntersection());
             potentialKeywords.add(",");
@@ -2624,8 +2625,8 @@ public class ManchesterOWLSyntaxParser {
         return props;
     }
 
-    public Map<OWLPropertyExpression, Set<OWLAnnotation>> parseAnnotatedPropertyList() throws ParserException {
-        Map<OWLPropertyExpression, Set<OWLAnnotation>> props = new HashMap<OWLPropertyExpression, Set<OWLAnnotation>>();
+    public Map<OWLPropertyExpression<?, ?>, Set<OWLAnnotation>> parseAnnotatedPropertyList() throws ParserException {
+        Map<OWLPropertyExpression<?, ?>, Set<OWLAnnotation>> props = new HashMap<OWLPropertyExpression<?, ?>, Set<OWLAnnotation>>();
         String sep = ",";
         while (sep.equals(",")) {
             String next = peekToken();
@@ -2637,7 +2638,7 @@ public class ManchesterOWLSyntaxParser {
             else {
                 annos = Collections.emptySet();
             }
-            OWLPropertyExpression prop = parsePropertyExpression();
+            OWLPropertyExpression<?, ?> prop = parsePropertyExpression();
             props.put(prop, annos);
             sep = peekToken();
             if (sep.equals(",")) {
@@ -2647,11 +2648,11 @@ public class ManchesterOWLSyntaxParser {
         return props;
     }
 
-    public Set<OWLPropertyExpression> parsePropertyList() throws ParserException {
-        Set<OWLPropertyExpression> props = new HashSet<OWLPropertyExpression>();
+    public Set<OWLPropertyExpression<?, ?>> parsePropertyList() throws ParserException {
+        Set<OWLPropertyExpression<?, ?>> props = new HashSet<OWLPropertyExpression<?, ?>>();
         String sep = ",";
         while (sep.equals(",")) {
-            OWLPropertyExpression prop = parsePropertyExpression();
+            OWLPropertyExpression<?, ?> prop = parsePropertyExpression();
             props.add(prop);
             sep = peekToken();
             if (sep.equals(",")) {
@@ -3022,7 +3023,8 @@ public class ManchesterOWLSyntaxParser {
     }
 
 
-    private static void addNamesToSet(String buffer, String sectionName, Set<String> names) {
+    @SuppressWarnings("unused")
+	private static void addNamesToSet(String buffer, String sectionName, Set<String> names) {
         Pattern p = Pattern.compile("(" + sectionName + "\\s*)(\\S*)");
         Matcher matcher = p.matcher(buffer);
         while (matcher.find()) {
@@ -3526,7 +3528,8 @@ public class ManchesterOWLSyntaxParser {
     }
 
     public OWLAxiom parseAxiomWithDataPropertyStart() throws ParserException {
-        OWLDataPropertyExpression prop = parseDataProperty();
+        @SuppressWarnings("unused")
+		OWLDataPropertyExpression prop = parseDataProperty();
         return null;
     }
 

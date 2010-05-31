@@ -64,6 +64,7 @@ public class DBpediaLinkedGeoData {
 	private static boolean regenerateFile = false;
 	
 	private static File matchingFile = new File("log/DBpedia_GeoData_Links.nt");
+	@SuppressWarnings("unused")
 	private static File matchingFileMySQL =  new File("log/DBpedia_POIs.csv");	
 	private static File missesFile = new File("log/DBpedia_GeoData_Misses.dat");
 	private static double scoreThreshold = 0.85;

@@ -34,7 +34,6 @@ import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;

@@ -1484,6 +1484,9 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	private TreeSet<ObjectProperty> getFirstObjectProperties(NodeSet<OWLObjectProperty> setOfSets) {
 		TreeSet<ObjectProperty> roles = new TreeSet<ObjectProperty>(roleComparator);
 		for(Node<OWLObjectProperty> innerSet : setOfSets) {
+			if(innerSet.isBottomNode() || innerSet.isTopNode()){
+				continue;
+			}
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLObjectProperty property = innerSet.iterator().next();

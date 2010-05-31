@@ -835,6 +835,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<ObjectProperty> getFirstObjectProperties(NodeSet<OWLObjectProperty> nodeSet) {
 		TreeSet<ObjectProperty> roles = new TreeSet<ObjectProperty>(roleComparator);
 		for(Node<OWLObjectProperty> node : nodeSet) {
+			if(node.isBottomNode() || node.isTopNode()){
+				continue;
+			}
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLObjectProperty property = node.getRepresentativeElement();
@@ -848,6 +851,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<DatatypeProperty> getFirstDatatypeProperties(NodeSet<OWLDataProperty> nodeSet) {
 		TreeSet<DatatypeProperty> roles = new TreeSet<DatatypeProperty>(roleComparator);
 		for(Node<OWLDataProperty> node : nodeSet) {
+			if(node.isBottomNode() || node.isTopNode()){
+				continue;
+			}
 			OWLDataProperty property = node.getRepresentativeElement();
 			roles.add(new DatatypeProperty(property.toStringID()));
 		}

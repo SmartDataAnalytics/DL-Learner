@@ -537,7 +537,6 @@ public class Carcinogenesis {
 		return new DoubleDatatypePropertyAssertion(dp, ind, value);
 	}
 
-	@SuppressWarnings({"unused"})
 	private static DisjointClassesAxiom getDisjointClassesAxiom(Set<String> classes) {
 		Set<Description> descriptions = new HashSet<Description>();
 		for(String namedClass : classes)

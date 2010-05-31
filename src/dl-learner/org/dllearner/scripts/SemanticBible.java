@@ -165,7 +165,6 @@ public class SemanticBible {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void learnOriginal(NamedClass target, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
 		List<? extends EvaluatedDescription> conceptresults = new ArrayList<EvaluatedDescriptionPosNeg>();
 		System.out.println("Starting to learn original");
