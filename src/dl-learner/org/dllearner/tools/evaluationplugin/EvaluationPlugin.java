@@ -62,6 +62,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private GraphicalCoveragePanel coveragePanel;
 	private JLabel inconsistencyLabel;
 	private JButton nextSaveButton;
+	private JButton backButton;
 	private JLabel currentClassLabel;
 	private JProgressBar progressBar;
 
@@ -115,7 +116,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		System.out.println("Initializing DL-Learner Evaluation Plugin...");
 		createUI();
 		parseEvaluationFile();
-		showNextEvaluatedDescriptions();
+		showClassExpressions(classes.get(currentClassIndex));
+		backButton.setEnabled(false);
 		
 	}
 
@@ -149,6 +151,23 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			JPanel coverageHolderPanel = new JPanel(new BorderLayout());
 			coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
 			coverageHolderPanel.add(coveragePanel);
+			
+			backButton = new JButton();
+			backButton.setActionCommand("back");
+			backButton.setAction(new AbstractAction("Back") {
+				
+				private static final long serialVersionUID = 6982520538511324236L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					currentClassIndex--;
+					showClassExpressions(classes.get(currentClassIndex));
+					setInput(classes.get(currentClassIndex));
+					if(currentClassIndex == 0){
+						backButton.setEnabled(false);
+					}
+				}
+			});
 
 			nextSaveButton = new JButton();
 			nextSaveButton.setActionCommand("next");
@@ -161,8 +180,22 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					backButton.setEnabled(true);
 					traceInput(classes.get(currentClassIndex));
-					showNextEvaluatedDescriptions();
+					currentClassIndex++;
+					showClassExpressions(classes.get(currentClassIndex));
+					if (currentClassIndex == classes.size() - 1) {
+						nextSaveButton.setAction(new AbstractAction("Save") {
+							private static final long serialVersionUID = 8298689809521088714L;
+
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								traceInput(classes.get(currentClassIndex - 1));
+								saveUserInputToFile();
+							}
+						});
+						nextSaveButton.setToolTipText("Save the evaluation results to disk.");
+					}
 				}
 			});
 			JPanel buttonHolderPanel = new JPanel();
@@ -170,6 +203,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	        progressBar.setValue(0);
 	        progressBar.setStringPainted(true);
 	        buttonHolderPanel.add(progressBar);
+	        buttonHolderPanel.add(backButton);
 			buttonHolderPanel.add(nextSaveButton);
 			
 			coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
@@ -194,11 +228,10 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 			JPanel coverageHolderPanel = new JPanel(new BorderLayout());
 			coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
-
-			nextSaveButton = new JButton();
-			nextSaveButton.setActionCommand("next");
-			nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
-			nextSaveButton.setAction(new AbstractAction("Next") {
+			
+			backButton = new JButton();
+			backButton.setActionCommand("back");
+			backButton.setAction(new AbstractAction("Back") {
 				/**
 				 * 
 				 */
@@ -206,8 +239,40 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					currentClassIndex--;
+					showClassExpressions(classes.get(currentClassIndex));
+					setInput(classes.get(currentClassIndex));
+					if(currentClassIndex == 0){
+						backButton.setEnabled(false);
+					}
+				}
+			});
+			
+
+			nextSaveButton = new JButton();
+			nextSaveButton.setActionCommand("next");
+			nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
+			nextSaveButton.setAction(new AbstractAction("Next") {
+				private static final long serialVersionUID = 6982520538511324236L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					backButton.setEnabled(true);
 					traceInput(classes.get(currentClassIndex));
-					showNextEvaluatedDescriptions();
+					currentClassIndex++;
+					showClassExpressions(classes.get(currentClassIndex));
+					if (currentClassIndex == classes.size()) {
+						nextSaveButton.setAction(new AbstractAction("Save") {
+							private static final long serialVersionUID = 8298689809521088714L;
+
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								traceInput(classes.get(currentClassIndex - 1));
+								saveUserInputToFile();
+							}
+						});
+						nextSaveButton.setToolTipText("Save the evaluation results to disk.");
+					}
 				}
 			});
 			JPanel buttonHolderPanel = new JPanel();
@@ -215,6 +280,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	        progressBar.setValue(0);
 	        progressBar.setStringPainted(true);
 	        buttonHolderPanel.add(progressBar);
+	        buttonHolderPanel.add(backButton);
 			buttonHolderPanel.add(nextSaveButton);
 			
 			coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
@@ -224,71 +290,48 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 	}
 
-	/**
-	 * Show the descriptions for next class to evaluate.
-	 */
-	private void showNextEvaluatedDescriptions() {
-		
+	
+	private void showClassExpressions(NamedClass nc){
 		showInconsistencyWarning(false);
-		NamedClass newClass = classes.get(currentClassIndex++);
-
-		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass).asOWLClass().
+		
+		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
 		if(in_compare_mode){
-			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass).asOWLClass().
+			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
 		}
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
-				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass));
+				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc));
 		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + "<b>" + renderedClass + "</b></html>");
-		System.out.println("Showing evaluated descriptions for class " + newClass.toString());
+		System.out.println("Showing evaluated descriptions for class " + nc.toString());
 
 		// refresh coverage panel to the current class
 		if(!in_compare_mode){
-			coveragePanel.setConcept(newClass);
+			coveragePanel.setConcept(nc);
 		}
 		
-		//increment progress
-		progressBar.setValue(currentClassIndex);
-		progressBar.setString("class " + currentClassIndex + " of " + classes.size());
+		//dencrement progress
+		progressBar.setValue(currentClassIndex + 1);
+		progressBar.setString("class " + (currentClassIndex + 1) + " of " + classes.size());
 		
 		//reset last selected row to -1
 		lastSelectedRowIndex = -1;
 
 		// necessary to set the current class to evaluate as activated entity
-		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newClass);
+		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc);
 		OWLEntity curEntity = desc.asOWLClass();
 		getOWLEditorKit().getWorkspace().getOWLSelectionModel().setSelectedEntity(curEntity);
 		
 		//add the new disjoint descriptions to the table
-		evaluationTable.setDescriptions(getMergedDescriptions(newClass, false));
+		evaluationTable.setDescriptions(getMergedDescriptions(nc, false));
 		if(in_compare_mode){
-			compareEvaluationTable.setDescriptions(getMergedDescriptions(newClass, true));
+			compareEvaluationTable.setDescriptions(getMergedDescriptions(nc, true));
 		}
 		
-		// if the currently shown class expressions are for the last class to
-		// evaluate, change
-		// button text and action to save the user input
-		if (currentClassIndex == classes.size()) {
-			nextSaveButton.setAction(new AbstractAction("Save") {
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 8298689809521088714L;
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					traceInput(classes.get(currentClassIndex - 1));
-					saveUserInputToFile();
-				}
-
-			});
-			nextSaveButton.setToolTipText("Save the evaluation results to disk.");
-
-		}
+		
 	}
+	
 
 	/**
 	 * Load the computed DL-Learner results from a file, which name corresponds
@@ -379,6 +422,10 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	 */
 	private void traceInput(NamedClass nc){
 		userInputMap.put(nc, evaluationTable.getUserInputMap());
+	}
+	
+	private void setInput(NamedClass nc){
+		evaluationTable.setUserInput(userInputMap.get(nc));
 	}
 
 	/**
