@@ -73,7 +73,7 @@ public class EvaluationTableModel extends AbstractTableModel {
 		if(allColumnsEnabled){
 			return columnIndex >= 1;
 		} else {
-			return columnIndex <= 1 || columnIndex == 6;
+			return columnIndex <= 1 || columnIndex >= 5;
 		}
 		
 	}
@@ -106,6 +106,12 @@ public class EvaluationTableModel extends AbstractTableModel {
 			inputMap.put(ec, selected.get(descriptions.indexOf(ec)));
 		}
 		return inputMap;
+	}
+	
+	public void setUserInput(Map<EvaluatedDescriptionClass, Integer> inputMap) {
+		for(EvaluatedDescriptionClass ec : descriptions){
+			selected.set(descriptions.indexOf(ec), inputMap.get(ec));
+		}
 	}
 
 }

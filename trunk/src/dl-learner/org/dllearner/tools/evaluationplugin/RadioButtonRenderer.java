@@ -42,7 +42,7 @@ public class RadioButtonRenderer extends JRadioButton implements TableCellRender
 			setBorder(noFocusBorder);
 		}
 		if(!((EvaluationTable)table).isAllColumnsEnabled()){
-			if(column >= 2 && column <= 5){
+			if(column >= 2 && column <= 4){
 				setEnabled(false);
 			}
 		} else {

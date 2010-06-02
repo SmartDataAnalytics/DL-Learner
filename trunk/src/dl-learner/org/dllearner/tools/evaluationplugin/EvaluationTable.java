@@ -149,6 +149,10 @@ public class EvaluationTable extends JXTable implements LinkedObjectComponent{
 	public Map<EvaluatedDescriptionClass, Integer> getUserInputMap(){
 		return ((EvaluationTableModel)getModel()).getUserInputMap();
 	}
+	
+	public void setUserInput(Map<EvaluatedDescriptionClass, Integer> inputMap){
+		((EvaluationTableModel)getModel()).setUserInput(inputMap);
+	}
 
 	
 }
