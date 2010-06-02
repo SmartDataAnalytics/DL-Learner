@@ -94,7 +94,7 @@ public class Relevances {
 			String sEntity = getLabel(e);
 			int iEntity = m_searcher.count( sEntity );
 			int iEntityClass = m_searcher.count( sClass +" AND "+ sEntity );
-			double dPEntity = (double)iEntity / (double)iAll;
+//			double dPEntity = (double)iEntity / (double)iAll;
 			double dPClassEntity = (double) iEntityClass / (double)iEntity;
 			double dPMI = Math.log( dPClassEntity / dPClass );
 			if( !Double.isNaN( dPMI ) && !Double.isInfinite( dPMI ) ){

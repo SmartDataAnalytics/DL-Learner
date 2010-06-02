@@ -50,17 +50,20 @@ public class LinkLabel extends JLabel {
         setForeground(linkColor);
 
         addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
+            @Override
+			public void mouseEntered(MouseEvent e) {
                 setHoverMode(true);
             }
 
 
-            public void mouseExited(MouseEvent e) {
+            @Override
+			public void mouseExited(MouseEvent e) {
                 setHoverMode(false);
             }
 
 
-            public void mouseReleased(MouseEvent e) {
+            @Override
+			public void mouseReleased(MouseEvent e) {
                 activateLink();
             }
         });

@@ -1281,7 +1281,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		NodeSet<OWLClass> set = reasoner.getObjectPropertyRanges(prop, true);
 		if (set.isEmpty())
 			return new Thing();
-		OWLClass oc = set.iterator().next().getRepresentativeElement();
+//		OWLClass oc = set.iterator().next().getRepresentativeElement();
 		return getDescriptionFromReturnedDomain(set);
 
 	}

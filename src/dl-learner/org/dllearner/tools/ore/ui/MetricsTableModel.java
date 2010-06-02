@@ -47,7 +47,8 @@ public class MetricsTableModel extends AbstractTableModel {
     }
 
 
-    public String getColumnName(int column) {
+    @Override
+	public String getColumnName(int column) {
         if (column == 0) {
             return "Metric";
         }

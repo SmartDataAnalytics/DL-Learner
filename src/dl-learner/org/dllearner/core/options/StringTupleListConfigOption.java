@@ -75,7 +75,7 @@ public class StringTupleListConfigOption extends ConfigOption<List<StringTuple>>
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		if (!(object instanceof List))
+		if (!(object instanceof List<?>))
 			return false;
 
 		List<?> set = (List<?>) object;

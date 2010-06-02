@@ -77,6 +77,7 @@ public class PosNegLPStandard extends PosNegLP {
 		this.configurator = new PosNegLPStandardConfigurator(this);
 	}
 	
+	@Override
 	public void init() {
 		super.init();
 		useApproximations = configurator.getUseApproximations();

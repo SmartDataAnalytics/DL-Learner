@@ -79,6 +79,7 @@ import javax.swing.JButton;
 		}
 
 		// Paint the round background and label.
+		@Override
 		protected void paintComponent(Graphics g) {
 			if (getModel().isArmed()) {
 				// You might want to make the highlight color
@@ -95,6 +96,7 @@ import javax.swing.JButton;
 		}
 
 		// Paint the border of the button using a simple stroke.
+		@Override
 		protected void paintBorder(Graphics g) {
 			Graphics2D g2 = (Graphics2D)g;
 	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -105,6 +107,7 @@ import javax.swing.JButton;
 		// Hit detection.
 		Shape shape;
 
+		@Override
 		public boolean contains(int x, int y) {
 			// If the button has changed size,
 			// make a new shape object.

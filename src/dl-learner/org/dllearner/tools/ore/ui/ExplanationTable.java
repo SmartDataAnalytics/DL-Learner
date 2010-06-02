@@ -166,6 +166,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 			 */
 			private static final long serialVersionUID = -3386641672808329591L;
 
+			@Override
 			public String getToolTipText(MouseEvent e) {
              
                 java.awt.Point p = e.getPoint();
@@ -286,6 +287,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		 */
 		private static final long serialVersionUID = -1729370486474583609L;
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object obj, boolean isSelected, boolean hasFocus, int row,
 				int column) {
@@ -329,6 +331,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 					 */
 					private static final long serialVersionUID = 1277678457457723435L;
 
+			@Override
 			public void selectInitialValue() {
 				// This is overriden so that the option pane dialog default
 				// button
@@ -354,6 +357,7 @@ public class ExplanationTable extends JXTable implements RepairManagerListener, 
 		dlg.setLocationRelativeTo(parent);
 		dlg.addComponentListener(new ComponentAdapter() {
 
+			@Override
 			public void componentHidden(ComponentEvent e) {
 				Object retVal = optionPane.getValue();
 				editorComponent.setPreferredSize(editorComponent.getSize());

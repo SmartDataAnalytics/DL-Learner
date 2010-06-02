@@ -176,7 +176,8 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
     }
 
 
-    public void setBorder(Border border) {
+    @Override
+	public void setBorder(Border border) {
         outerBorder = border;
         // Override to set the outer border
         super.setBorder(BorderFactory.createCompoundBorder(outerBorder, stateBorder));
@@ -256,7 +257,8 @@ public class ExpressionEditor<O> extends JTextPane implements VerifiedInputEdito
     }
 
 
-    protected void paintComponent(Graphics g) {
+    @Override
+	protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Color oldColor = g.getColor();
         try {

@@ -41,6 +41,7 @@ public class RadioButtonEditor extends AbstractCellEditor implements TableCellEd
 			 */
 			private static final long serialVersionUID = -1736759123580734984L;
 
+			@Override
 			public void setValue(Object value) {
 				boolean selected = false;
 				if (value instanceof Boolean) {
@@ -51,6 +52,7 @@ public class RadioButtonEditor extends AbstractCellEditor implements TableCellEd
 				radioButton.setSelected(selected);
 			}
 
+			@Override
 			public Object getCellEditorValue() {
 				return Boolean.valueOf(radioButton.isSelected());
 			}
@@ -92,6 +94,7 @@ public class RadioButtonEditor extends AbstractCellEditor implements TableCellEd
 	 * 
 	 * @see EditorDelegate#shouldSelectCell(EventObject)
 	 */
+	@Override
 	public boolean shouldSelectCell(EventObject anEvent) {
 		return delegate.shouldSelectCell(anEvent);
 	}
@@ -102,6 +105,7 @@ public class RadioButtonEditor extends AbstractCellEditor implements TableCellEd
 	 * 
 	 * @see EditorDelegate#stopCellEditing
 	 */
+	@Override
 	public boolean stopCellEditing() {
 		return delegate.stopCellEditing();
 	}
@@ -112,6 +116,7 @@ public class RadioButtonEditor extends AbstractCellEditor implements TableCellEd
 	 * 
 	 * @see EditorDelegate#cancelCellEditing
 	 */
+	@Override
 	public void cancelCellEditing() {
 		delegate.cancelCellEditing();
 	}

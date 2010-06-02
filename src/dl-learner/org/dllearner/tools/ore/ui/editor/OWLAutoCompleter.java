@@ -76,11 +76,13 @@ public class OWLAutoCompleter {
     private int maxEntries = DEFAULT_MAX_ENTRIES;
 
     private KeyListener keyListener = new KeyAdapter() {
-        public void keyPressed(KeyEvent e) {
+        @Override
+		public void keyPressed(KeyEvent e) {
             processKeyPressed(e);
         }
 
-        public void keyReleased(KeyEvent e) {
+        @Override
+		public void keyReleased(KeyEvent e) {
 
             if (e.getKeyCode() != KeyEvent.VK_UP && e.getKeyCode() != KeyEvent.VK_DOWN) {
                 if (popupWindow.isVisible() && !lastTextUpdate.equals(textComponent.getText())) {
@@ -92,15 +94,18 @@ public class OWLAutoCompleter {
     };
 
     private ComponentAdapter componentListener = new ComponentAdapter() {
-        public void componentHidden(ComponentEvent event) {
+        @Override
+		public void componentHidden(ComponentEvent event) {
             hidePopup();
         }
 
-        public void componentResized(ComponentEvent event) {
+        @Override
+		public void componentResized(ComponentEvent event) {
             hidePopup();
         }
 
-        public void componentMoved(ComponentEvent event) {
+        @Override
+		public void componentMoved(ComponentEvent event) {
             hidePopup();
         }
     };
@@ -123,7 +128,8 @@ public class OWLAutoCompleter {
     };
 
     private MouseListener mouseListener = new MouseAdapter() {
-        public void mouseClicked(MouseEvent e) {
+        @Override
+		public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
                 completeWithPopupSelection();
             }
@@ -131,7 +137,8 @@ public class OWLAutoCompleter {
     };
 
     private FocusListener focusListener = new FocusAdapter(){
-        public void focusLost(FocusEvent event) {
+        @Override
+		public void focusLost(FocusEvent event) {
             hidePopup();
         }
     };

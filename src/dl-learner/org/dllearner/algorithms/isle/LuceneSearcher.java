@@ -43,12 +43,13 @@ public class LuceneSearcher {
 		System.out.println( "\nquery='"+ sQuery +"' all="+ searcher.indexSize() +" hits="+ docs.size() );
 		for( Document doc : docs )
 		{
-			String sDoc = doc.toString();
+//			String sDoc = doc.toString();
 			float score = searcher.getScore( doc );
 			System.out.println( "score="+ score +" doc="+ doc );
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public LuceneSearcher() throws Exception {
 		m_reader = IndexReader.open( FSDirectory.open( new File( INDEX ) ), true );
 		m_searcher = new IndexSearcher( m_reader );
@@ -89,6 +90,7 @@ public class LuceneSearcher {
 				else if( s1 < s2 ) return 1;
 				return 0;
 			}
+			@Override
 			public boolean equals( Object obj ){
 				return false;
 			}
@@ -101,22 +103,27 @@ public class LuceneSearcher {
 	}
 
 	private void search( Query query ) throws IOException {
+		@SuppressWarnings("unused")
 		Collector collector = new Collector() 
 		{
 			private Scorer scorer;
 			private int docBase;
 			private Map<Document,Float> results = new HashMap<Document,Float>();
       
+			@Override
 			public void collect(int doc) throws IOException {
 				// System.out.println("doc=" + doc + docBase + " score=" + scorer.score());
 				m_results.put( m_searcher.doc( doc ), scorer.score() );
 			}
+			@Override
 			public boolean acceptsDocsOutOfOrder() {
 				return true;
 			}
+			@Override
 			public void setNextReader( IndexReader reader, int docBase ) throws IOException {
 				this.docBase = docBase;
 			}
+			@Override
 			public void setScorer(Scorer scorer) throws IOException {
 				this.scorer = scorer;
 			}

@@ -61,7 +61,7 @@ public class KRK {
 	static boolean closeKB=false;
 	static boolean closeConcise= true && closeKB;
 	static boolean writeClosedOWL = true && closeKB;
-	static boolean verifySomeConcepts = false && closeKB;
+	static boolean verifySomeConcepts = false; // && closeKB; <-- && closeKB does not make sense
 	
 
 	static boolean useInverse = false;
