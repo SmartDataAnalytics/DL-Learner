@@ -307,6 +307,7 @@ public class UnsatisfiableExplanationPanel extends JPanel{
 		explanationsPanel.add(explanationHolderPanel);
 	}
 	
+	@Override
 	public void validate(){
 		explanationsScrollPane.validate();
 	}

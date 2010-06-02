@@ -51,22 +51,26 @@ public class ManchesterOWLSyntaxOWLObjectRendererImpl implements OWLObjectRender
         }
 
 
-        public String toString() {
+        @Override
+		public String toString() {
             return delegate.getBuffer().toString();
         }
 
 
-        public void close() throws IOException {
+        @Override
+		public void close() throws IOException {
             delegate.close();
         }
 
 
-        public void flush() throws IOException {
+        @Override
+		public void flush() throws IOException {
             delegate.flush();
         }
 
 
-        public void write(char cbuf[], int off, int len) throws IOException {
+        @Override
+		public void write(char cbuf[], int off, int len) throws IOException {
             delegate.write(cbuf, off, len);
         }
     }

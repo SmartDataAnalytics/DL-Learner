@@ -19,7 +19,8 @@ public RolloverButton()
   }
 
 
-  protected void paintBorder( Graphics g ) 
+  @Override
+protected void paintBorder( Graphics g ) 
   { 
     if( model.isRollover() )
     {

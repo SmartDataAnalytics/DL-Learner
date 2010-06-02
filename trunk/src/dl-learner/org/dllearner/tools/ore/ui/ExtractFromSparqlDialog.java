@@ -242,6 +242,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		optionsButton.setBorderPainted(false);
 		optionsButton.setContentAreaFilled(false);
 		optionsButton.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseEntered(MouseEvent e) {
 				optionsButton.setBorderPainted(true);
 				optionsButton.setContentAreaFilled(true);

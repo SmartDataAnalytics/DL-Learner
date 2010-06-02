@@ -22,14 +22,16 @@ public class LuceneIndexer {
 			System.out.println("<delete index!>");
 			System.exit(1);
 		}
-		final File docDir = new File( args[0] );
-		LuceneIndexer indexer = new LuceneIndexer( docDir );
+//		final File docDir = new File( args[0] );
+//		LuceneIndexer indexer = new LuceneIndexer( docDir );
 	}
 	
+	@SuppressWarnings("deprecation")
 	public LuceneIndexer( File docDir ){
 		System.out.println( "LuceneIndex: "+ docDir );
 		Date start = new Date();
 		try {
+
 			IndexWriter writer = new IndexWriter( FSDirectory.open( INDEX ), 
 										new StandardAnalyzer( Version.LUCENE_CURRENT ), true, IndexWriter.MaxFieldLength.LIMITED );
 			System.out.println( "Creating index ..." );

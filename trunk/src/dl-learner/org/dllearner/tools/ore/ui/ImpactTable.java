@@ -57,6 +57,7 @@ public class ImpactTable extends JXTable {
 			table = ImpactTable.this;
 		}
 
+		@Override
 		public void mouseMoved(MouseEvent e) {
 			int row = rowAtPoint(e.getPoint());
 			int column = columnAtPoint(e.getPoint());
@@ -76,6 +77,7 @@ public class ImpactTable extends JXTable {
 			table = ImpactTable.this;
 		}
 
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			int row = rowAtPoint(e.getPoint());
 			int column = columnAtPoint(e.getPoint());
@@ -87,6 +89,7 @@ public class ImpactTable extends JXTable {
 		}
 		
 	
+			@Override
 			public void mousePressed(MouseEvent e) {
 				int row = rowAtPoint(e.getPoint());
 				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {
@@ -96,6 +99,7 @@ public class ImpactTable extends JXTable {
 
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				int row = rowAtPoint(e.getPoint());
 				if (row >= 0 && row < getRowCount() && e.isPopupTrigger()) {

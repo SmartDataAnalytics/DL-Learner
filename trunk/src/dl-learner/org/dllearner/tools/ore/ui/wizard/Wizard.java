@@ -139,7 +139,8 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         wizardModel = new WizardModel();
         wizardDialog = new JFrame();
         wizardDialog.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
+            @Override
+			public void windowClosing(WindowEvent e) {
             	System.out.println("Exited application");
             	wizardDialog.dispose();
             	System.exit(0);

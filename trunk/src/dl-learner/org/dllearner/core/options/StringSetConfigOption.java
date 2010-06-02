@@ -81,7 +81,7 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		if (!(object instanceof Set))
+		if (!(object instanceof Set<?>))
 			return false;
 
 		Set<?> set = (Set<?>) object;

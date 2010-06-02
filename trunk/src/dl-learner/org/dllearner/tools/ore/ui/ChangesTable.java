@@ -40,7 +40,8 @@ public class ChangesTable extends JXTable {
 		
 		addKeyListener(new KeyAdapter() {
 
-            public void keyPressed(KeyEvent e)
+            @Override
+			public void keyPressed(KeyEvent e)
             {
                 handleKeyPressed(e);
             }
@@ -55,6 +56,7 @@ public class ChangesTable extends JXTable {
 				table = ChangesTable.this;
 			}
 
+			@Override
 			public void mouseMoved(MouseEvent e) {
 				int row = rowAtPoint(e.getPoint());
 				int column = columnAtPoint(e.getPoint());
@@ -75,6 +77,7 @@ public class ChangesTable extends JXTable {
 				table = ChangesTable.this;
 			}
 
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				int row = rowAtPoint(e.getPoint());
 				int column = columnAtPoint(e.getPoint());

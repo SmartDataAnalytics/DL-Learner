@@ -75,7 +75,7 @@ public final class ConfigJavaGenerator {
 	@SuppressWarnings("unchecked")
 	private static final Class EXTENDSREFINEMENTOPERATORCLASS = RefinementOperatorConfigurator.class;
 
-	private static final boolean INCLUDE_UNUSED = false;
+//	private static final boolean INCLUDE_UNUSED = false;
 
 	private static final String UNUSED = "@SuppressWarnings(\"unused\")\n";
 	private static final String OVERRIDE = "@SuppressWarnings(\"all\")\n";
@@ -542,7 +542,7 @@ public final class ConfigJavaGenerator {
 		ret += "package " + packagE + ";\n\n";
 		ret += imports + "\n";
 		ret += fillJavaDocComment(CLASS_COMMENT);
-		ret += (INCLUDE_UNUSED) ? UNUSED : "";
+//		ret += (INCLUDE_UNUSED) ? UNUSED : "";
 		ret += (!extendS.isEmpty()) ? OVERRIDE : "";
 		ret += "public "+classModifier+" class " + className + " "
 				+ ((extendS.length() > 0) ? " extends " + extendS : "")

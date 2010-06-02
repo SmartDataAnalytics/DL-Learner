@@ -27,6 +27,8 @@ public class ADC extends Description {
 	}
 	*/
 
+	private static final long serialVersionUID = -3820156025424386445L;
+
 	public int getLength() {
 		// ein ADC-Knoten hat Laenge 1, da effektiv nur ein Knoten benoetigt wird
 		// um die Gesamtlaenge des gelernten Konzepts zu haben, muss man natuerlich

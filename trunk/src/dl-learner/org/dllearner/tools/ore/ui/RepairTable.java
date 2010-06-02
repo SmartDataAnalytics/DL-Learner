@@ -53,6 +53,7 @@ public class RepairTable extends JXTable {
 
 		addKeyListener(new KeyAdapter() {
 
+			@Override
 			public void keyPressed(KeyEvent e) {
 				handleKeyPressed(e);
 			}
@@ -66,6 +67,7 @@ public class RepairTable extends JXTable {
 				table = RepairTable.this;
 			}
 
+			@Override
 			public void mouseMoved(MouseEvent e) {
 				int row = rowAtPoint(e.getPoint());
 				int column = columnAtPoint(e.getPoint());
@@ -86,6 +88,7 @@ public class RepairTable extends JXTable {
 				table = RepairTable.this;
 			}
 
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				int row = rowAtPoint(e.getPoint());
 				int column = columnAtPoint(e.getPoint());
