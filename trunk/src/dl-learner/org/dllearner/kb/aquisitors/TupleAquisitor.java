@@ -50,10 +50,9 @@ public abstract class TupleAquisitor {
 
 	
 	/**
-	 * this function is still used somewhere, but should be replaced
+	 * TODO: this function is still used somewhere, but should be replaced
 	 * @return
 	 */
-	@Deprecated
 	public boolean isDissolveBlankNodes(){
 		return dissolveBlankNodes;
 	}
