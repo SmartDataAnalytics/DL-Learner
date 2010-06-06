@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -153,55 +154,17 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			coverageHolderPanel.add(coveragePanel);
 			
 			backButton = new JButton();
-			backButton.setActionCommand("back");
-			backButton.setAction(new AbstractAction("Back") {
-				
-				private static final long serialVersionUID = 6982520538511324236L;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					currentClassIndex--;
-					showClassExpressions(classes.get(currentClassIndex));
-					setInput(classes.get(currentClassIndex));
-					if(currentClassIndex == 0){
-						backButton.setEnabled(false);
-					}
-				}
-			});
+			backButton.setAction(new ShowPreviousClassAction());
 
 			nextSaveButton = new JButton();
-			nextSaveButton.setActionCommand("next");
 			nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
-			nextSaveButton.setAction(new AbstractAction("Next") {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 6982520538511324236L;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					backButton.setEnabled(true);
-					traceInput(classes.get(currentClassIndex));
-					currentClassIndex++;
-					showClassExpressions(classes.get(currentClassIndex));
-					if (currentClassIndex == classes.size() - 1) {
-						nextSaveButton.setAction(new AbstractAction("Save") {
-							private static final long serialVersionUID = 8298689809521088714L;
-
-							@Override
-							public void actionPerformed(ActionEvent arg0) {
-								traceInput(classes.get(currentClassIndex - 1));
-								saveUserInputToFile();
-							}
-						});
-						nextSaveButton.setToolTipText("Save the evaluation results to disk.");
-					}
-				}
-			});
-			JPanel buttonHolderPanel = new JPanel();
+			nextSaveButton.setAction(new ShowNextClassAction());
+			
 			progressBar = new JProgressBar();
 	        progressBar.setValue(0);
 	        progressBar.setStringPainted(true);
+			
+			JPanel buttonHolderPanel = new JPanel();
 	        buttonHolderPanel.add(progressBar);
 	        buttonHolderPanel.add(backButton);
 			buttonHolderPanel.add(nextSaveButton);
@@ -230,55 +193,17 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			coveragePanel = new GraphicalCoveragePanel(getOWLEditorKit());
 			
 			backButton = new JButton();
-			backButton.setActionCommand("back");
-			backButton.setAction(new AbstractAction("Back") {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 6982520538511324236L;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					currentClassIndex--;
-					showClassExpressions(classes.get(currentClassIndex));
-					setInput(classes.get(currentClassIndex));
-					if(currentClassIndex == 0){
-						backButton.setEnabled(false);
-					}
-				}
-			});
-			
+			backButton.setAction(new ShowPreviousClassAction());
 
 			nextSaveButton = new JButton();
-			nextSaveButton.setActionCommand("next");
 			nextSaveButton.setToolTipText("Show class expressions for next class to evaluate.");
-			nextSaveButton.setAction(new AbstractAction("Next") {
-				private static final long serialVersionUID = 6982520538511324236L;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					backButton.setEnabled(true);
-					traceInput(classes.get(currentClassIndex));
-					currentClassIndex++;
-					showClassExpressions(classes.get(currentClassIndex));
-					if (currentClassIndex == classes.size()) {
-						nextSaveButton.setAction(new AbstractAction("Save") {
-							private static final long serialVersionUID = 8298689809521088714L;
-
-							@Override
-							public void actionPerformed(ActionEvent arg0) {
-								traceInput(classes.get(currentClassIndex - 1));
-								saveUserInputToFile();
-							}
-						});
-						nextSaveButton.setToolTipText("Save the evaluation results to disk.");
-					}
-				}
-			});
-			JPanel buttonHolderPanel = new JPanel();
+			nextSaveButton.setAction(new ShowNextClassAction());
+			
 			progressBar = new JProgressBar();
 	        progressBar.setValue(0);
 	        progressBar.setStringPainted(true);
+			
+			JPanel buttonHolderPanel = new JPanel();
 	        buttonHolderPanel.add(progressBar);
 	        buttonHolderPanel.add(backButton);
 			buttonHolderPanel.add(nextSaveButton);
@@ -286,7 +211,6 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			coverageHolderPanel.add(buttonHolderPanel, BorderLayout.SOUTH);
 			add(coverageHolderPanel, BorderLayout.SOUTH);
 		}
-		
 
 	}
 
@@ -329,6 +253,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			compareEvaluationTable.setDescriptions(getMergedDescriptions(nc, true));
 		}
 		
+		setInput(classes.get(currentClassIndex));
 		
 	}
 	
@@ -425,7 +350,10 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	}
 	
 	private void setInput(NamedClass nc){
-		evaluationTable.setUserInput(userInputMap.get(nc));
+		Map<EvaluatedDescriptionClass, Integer> input = userInputMap.get(nc);
+		if(input != null){
+			evaluationTable.setUserInput(userInputMap.get(nc));
+		}
 	}
 
 	/**
@@ -441,7 +369,6 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			fos = new FileOutputStream(file);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
 			o.writeObject(userInputMap);
-			
 			o.flush();
 			o.close();
 		} catch (IOException e) {
@@ -452,6 +379,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			} catch (Exception e) {
 			}
 		}
+		JOptionPane.showMessageDialog(this.getParent(), "Saved evaluation to ." + file);
+
 	}
 
 	/**
@@ -539,6 +468,61 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			coveragePanel.setNewClassDescription(evaluationTable.getSelectedEvaluatedDescription());
 			showInconsistencyWarning(!evaluationTable.getSelectedEvaluatedDescription().isConsistent());
 			lastSelectedRowIndex = selectedRow;
+		}
+	}
+	
+	private class ShowNextClassAction extends AbstractAction{
+		private static final long serialVersionUID = 2739746405142077803L;
+		
+		public ShowNextClassAction(){
+			super("Next");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			backButton.setEnabled(true);
+			traceInput(classes.get(currentClassIndex));
+			currentClassIndex++;
+			showClassExpressions(classes.get(currentClassIndex));
+			if (currentClassIndex == classes.size() - 1) {
+				nextSaveButton.setAction(new SaveToDiskAction());
+			}
+		}
+	}
+	
+	private class ShowPreviousClassAction extends AbstractAction{
+		private static final long serialVersionUID = -7689154691704844040L;
+		
+		public ShowPreviousClassAction() {
+			super("Back");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentClassIndex == classes.size() - 1){
+				nextSaveButton.setAction(new ShowNextClassAction());
+			}
+			traceInput(classes.get(currentClassIndex));
+			currentClassIndex--;
+			showClassExpressions(classes.get(currentClassIndex));
+			if(currentClassIndex == 0){
+				backButton.setEnabled(false);
+			}
+		}
+	}
+	
+	private class SaveToDiskAction extends AbstractAction{
+		private static final long serialVersionUID = -7588319245317451924L;
+		
+		public SaveToDiskAction(){
+			super("Save");
+			nextSaveButton.setToolTipText("Save the evaluation results to disk.");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			traceInput(classes.get(currentClassIndex - 1));
+			saveUserInputToFile();
 		}
 	}
 
