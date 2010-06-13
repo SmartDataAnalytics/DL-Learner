@@ -121,7 +121,7 @@ public class DLLearnerView {
 	private String labels;
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
-	private StatusBar2 stat;
+	private StatusBar stat;
 	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for an introduction.</font></html>";
 
 	/**
@@ -166,7 +166,7 @@ public class DLLearnerView {
 		runPanel = new JPanel(new FlowLayout());
 		accept = new JButton("<html>ADD</html>");
 		addButtonPanel = new JPanel(new BorderLayout());
-		stat = new StatusBar2();
+		stat = new StatusBar();
 		stat.setBackground(learnerScroll.getBackground());
 		this.setStatusBarVisible(false);
 		hint = new JTextPane();
@@ -583,7 +583,7 @@ public class DLLearnerView {
 	 * This method returns the statusbar.
 	 * @return statusbar
 	 */
-	public StatusBar2 getStatusBar() {
+	public StatusBar getStatusBar() {
 		return stat;
 	}
 	

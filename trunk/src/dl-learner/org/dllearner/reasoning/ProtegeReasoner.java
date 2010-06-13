@@ -1,7 +1,6 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -9,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +17,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.configurators.PelletReasonerConfigurator;
+import org.dllearner.core.configurators.ProtegeReasonerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Axiom;
@@ -68,29 +64,23 @@ import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
-import org.mindswap.pellet.PelletOptions;
-import org.mindswap.pellet.utils.progress.ProgressMonitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
@@ -101,25 +91,20 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLStringLiteralImpl;
 
-import com.clarkparsia.modularity.IncrementalClassifier;
-import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-
-public class PelletReasoner extends ReasonerComponent {
+public class ProtegeReasoner extends ReasonerComponent {
 	
-	private com.clarkparsia.pellet.owlapiv3.PelletReasoner reasoner;
 	private OWLOntologyManager manager;
 	private OWLOntology ontology;
-	private IncrementalClassifier classifier;
-	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
+	private OWLReasoner reasoner;
 	
-	private PelletReasonerConfigurator configurator;
+	private ProtegeReasonerConfigurator configurator;
 	
 	private Set<OWLOntology> loadedOntologies;
 	
@@ -162,250 +147,33 @@ public class PelletReasoner extends ReasonerComponent {
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 
-	public PelletReasoner(Set<KnowledgeSource> sources) {
+	public ProtegeReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
-		this.configurator = new PelletReasonerConfigurator(this);
+		this.configurator = new ProtegeReasonerConfigurator(this);
 	}
 	
-	public void loadOntologies() throws URISyntaxException, OWLOntologyCreationException {
-		Comparator<OWLNamedObject> namedObjectComparator = new Comparator<OWLNamedObject>() {
-			public int compare(OWLNamedObject o1, OWLNamedObject o2) {
-				return o1.getIRI().compareTo(o2.getIRI());
-			}
-		};
-		Set<OWLClass> classes = new TreeSet<OWLClass>(namedObjectComparator);
-		Set<OWLObjectProperty> owlObjectProperties = new TreeSet<OWLObjectProperty>(
-				namedObjectComparator);
-		Set<OWLDataProperty> owlDatatypeProperties = new TreeSet<OWLDataProperty>(
-				namedObjectComparator);
-		Set<OWLNamedIndividual> owlIndividuals = new TreeSet<OWLNamedIndividual>(
-				namedObjectComparator);
-		loadedOntologies = new HashSet<OWLOntology>();
-		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
-		prefixes = new TreeMap<String, String>();
-
-		for (KnowledgeSource source : sources) {
-
-			if (source instanceof OWLFile
-					|| source instanceof SparqlKnowledgeSource
-					|| source instanceof OWLAPIOntology) {
-				URL url = null;
-				if (source instanceof OWLFile) {
-					url = ((OWLFile) source).getURL();
-				}
-
-//				try {
-
-					if (source instanceof OWLAPIOntology) {
-						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
-					} else if (source instanceof SparqlKnowledgeSource) {
-						ontology = ((SparqlKnowledgeSource) source)
-								.getOWLAPIOntology();
-					} else {
-						ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url));
-					}
-					
-					owlAPIOntologies.add(ontology);
-					// imports includes the ontology itself
-					Set<OWLOntology> imports = manager
-							.getImportsClosure(ontology);
-					allImports.addAll(imports);
-					loadedOntologies.addAll(imports);
-					// System.out.println(imports);
-				classes.addAll(ontology.getClassesInSignature(true));
-				owlObjectProperties.addAll(ontology.getObjectPropertiesInSignature(true));
-				owlDatatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
-				owlIndividuals.addAll(ontology.getIndividualsInSignature(true));
-
-					// if several knowledge sources are included, then we can
-					// only
-					// guarantee that the base URI is from one of those sources
-					// (there
-					// can't be more than one); but we will take care that all
-					// prefixes are
-					// correctly imported
-					OWLOntologyFormat format = manager
-							.getOntologyFormat(ontology);
-					if (format instanceof PrefixOWLOntologyFormat) {
-						prefixes.putAll(((PrefixOWLOntologyFormat) format)
-								.getPrefixName2PrefixMap());
-						baseURI = prefixes.get("");
-						prefixes.remove("");
-					}
-					
-					// read in primitives
-					for(OWLClass owlClass : classes)
-						atomicConcepts.add(new NamedClass(owlClass.toStringID()));
-					for(OWLObjectProperty owlProperty : owlObjectProperties)
-						atomicRoles.add(new ObjectProperty(owlProperty.toStringID()));
-					for(OWLDataProperty owlProperty : owlDatatypeProperties) {
-						DatatypeProperty dtp = new DatatypeProperty(owlProperty.toStringID());
-						Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
-						Iterator<OWLDataRange> it = ranges.iterator();
-						if(it.hasNext()) {
-							OWLDataRange range = it.next();
-							if(range.isDatatype()) {
-								URI uri = ((OWLDatatype)range).getIRI().toURI();
-								if(uri.equals(Datatype.BOOLEAN.getURI()))
-									booleanDatatypeProperties.add(dtp);
-								else if(uri.equals(Datatype.DOUBLE.getURI()))
-									doubleDatatypeProperties.add(dtp);
-								else if(uri.equals(Datatype.INT.getURI()))
-									intDatatypeProperties.add(dtp);
-								else if(uri.equals(Datatype.STRING.getURI()))
-									stringDatatypeProperties.add(dtp);
-							}
-						}
-						datatypeProperties.add(dtp);
-					}
-					for(OWLNamedIndividual owlIndividual : owlIndividuals) {
-						individuals.add(new Individual(owlIndividual.toStringID()));
-					}		
-
-//				} catch (OWLOntologyCreationException e) {
-//					e.printStackTrace();
-//				} catch (URISyntaxException e) {
-//					e.printStackTrace();
-//				}
-				// all other sources are converted to KB and then to an
-				// OWL API ontology
-			} else {
-				KB kb = source.toKB();
-				// System.out.println(kb.toString(null,null));
-
-				IRI ontologyIRI = IRI.create("http://example.com");
-				ontology = null;
-				try {
-					ontology = manager.createOntology(ontologyIRI);
-				} catch (OWLOntologyCreationException e) {
-					e.printStackTrace();
-				}
-				OWLAPIAxiomConvertVisitor
-						.fillOWLOntology(manager, ontology, kb);
-				owlAPIOntologies.add(ontology);
-				allImports.add(ontology);
-				atomicConcepts.addAll(kb.findAllAtomicConcepts());
-				atomicRoles.addAll(kb.findAllAtomicRoles());
-				individuals.addAll(kb.findAllIndividuals());
-				// TODO: add method to find datatypes
-			}
-		}
-//		try {
-//			classifier.loadOntologies(allImports);
-//		} catch (OWLReasonerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		reasoner.loadOntologies(allImports);
-//		dematerialise();
+	public ProtegeReasoner(Set<KnowledgeSource> sources, OWLReasoner reasoner) {
+		this(sources);
+		this.reasoner = reasoner;
 	}
-	
-	/*
-	 * Updates the CWA ontology dematerialised before
-	 */
-	public void updateCWAOntology(List<OWLOntologyChange> changes){
-		for(OWLOntologyChange change : changes){
-			OWLAxiom axiom = change.getAxiom();
-			if(axiom instanceof OWLClassAssertionAxiom){
-				Individual ind = OWLAPIConverter.convertIndividual(((OWLClassAssertionAxiom)axiom).getIndividual().asOWLNamedIndividual());
-				Description desc = OWLAPIConverter.convertClass(((OWLClassAssertionAxiom)axiom).getClassExpression().asOWLClass());
-				if(change instanceof RemoveAxiom){
-					classInstancesPos.get(desc).remove(ind);
-				} else if(change instanceof AddAxiom){
-					classInstancesPos.get(desc).add(ind);
-				}
-			} else if(axiom instanceof OWLObjectPropertyAssertionAxiom){
-				Individual obj = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getObject().asOWLNamedIndividual());
-				Individual sub = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getSubject().asOWLNamedIndividual());
-				ObjectProperty prop = OWLAPIConverter.convertObjectProperty(((OWLObjectPropertyAssertionAxiom)axiom).getProperty().asOWLObjectProperty());
-				if(change instanceof RemoveAxiom){
-					SortedSet<Individual> fillers = opPos.get(prop).get(sub);
-					if(fillers != null){
-						fillers.remove(obj);
-					}
-				} else if(change instanceof AddAxiom){
-					SortedSet<Individual> fillers = opPos.get(prop).get(sub);
-					if(fillers == null){
-						fillers = new TreeSet<Individual>();
-						fillers.add(obj);
-						opPos.get(prop).put(sub, fillers);
-					} else {
-						fillers.add(obj);
-					}
-				}
-				
-				
-			}
-		}
-		
-	}
-	
-	public void dematerialise(){
-		long dematStartTime = System.currentTimeMillis();
-		logger.debug("dematerialising concepts");
 
-		for (NamedClass atomicConcept : atomicConcepts) {
 
-			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
-			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
-
-			if (configurator.getDefaultNegation()) {
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
-			} else {
-				// Pellet needs approximately infinite time to answer
-				// negated queries
-				// on the carcinogenesis data set (and probably others), so
-				// we have to
-				// be careful here
-				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) getIndividuals(negatedAtomicConcept));
-			}
-
-		}
-
-		logger.debug("dematerialising object properties");
-
-		for (ObjectProperty atomicRole : atomicRoles) {
-			opPos.put(atomicRole, getPropertyMembers(atomicRole));
-		}
-
-		logger.debug("dematerialising datatype properties");
-
-		for (DatatypeProperty dp : booleanDatatypeProperties) {
-			bdPos.put(dp, (TreeSet<Individual>) getTrueDatatypeMembers(dp));
-			bdNeg.put(dp, (TreeSet<Individual>) getFalseDatatypeMembers(dp));
-		}
-
-		for (DatatypeProperty dp : intDatatypeProperties) {
-			id.put(dp, getIntDatatypeMembers(dp));
-		}
-
-		for (DatatypeProperty dp : doubleDatatypeProperties) {
-			dd.put(dp, getDoubleDatatypeMembers(dp));
-		}
-
-		long dematDuration = System.currentTimeMillis() - dematStartTime;
-		logger.debug("TBox dematerialised in " + dematDuration + " ms");
-	}
-	
 	public boolean isConsistent(){
-		return classifier.getReasoner().isConsistent();
-//		return reasoner.isConsistent();
+		return reasoner.isConsistent();
 	}
 
 	@Override
 	public ReasonerType getReasonerType() {
-		// TODO Auto-generated method stub
-		return null;
+		return ReasonerType.PROTEGE;
 	}
 
 	@Override
 	public void releaseKB() {
-		classifier.dispose();
+		reasoner.dispose();
 	}
 
 	@Override
-	public PelletReasonerConfigurator getConfigurator() {
+	public ProtegeReasonerConfigurator getConfigurator() {
 		return configurator;
 	}
 	
@@ -422,6 +190,10 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	public OWLOntologyManager getOWLOntologyManager(){
 		return manager;
+	}
+	
+	public void setOWLReasoner(OWLReasoner owlReasoner){
+		this.reasoner = owlReasoner;
 	}
 
 	@Override
@@ -492,12 +264,6 @@ public class PelletReasoner extends ReasonerComponent {
 					}
 					
 					owlAPIOntologies.add(ontology);
-					// imports includes the ontology itself
-					Set<OWLOntology> imports = manager
-							.getImportsClosure(ontology);
-					allImports.addAll(imports);
-					loadedOntologies.addAll(imports);
-					// System.out.println(imports);
 				classes.addAll(ontology.getClassesInSignature(true));
 				owlObjectProperties.addAll(ontology.getObjectPropertiesInSignature(true));
 				owlDatatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
@@ -571,38 +337,51 @@ public class PelletReasoner extends ReasonerComponent {
 				// TODO: add method to find datatypes
 			}
 		}
-		//
-		//
-		//////////////////////////////////////////////////////////////////////////
-		
-		
-		
-		
-		//set classification output to "none", while default is "console"
-		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.NONE;
-//		PelletOptions.USE_FULL_DATATYPE_REASONING = false;
-		
-		// change log level to WARN for Pellet, because otherwise log
-		// output will be very large
-		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
-		pelletLogger.setLevel(Level.WARN);
+		dematerialise();
+	}
+	
+	private void dematerialise(){
+		long dematStartTime = System.currentTimeMillis();
+		logger.debug("dematerialising concepts");
 
-		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
-		classifier = PelletIncremantalReasonerFactory.getInstance().createReasoner(reasoner);
+		for (NamedClass atomicConcept : atomicConcepts) {
 
+			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
+			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
+			if (configurator.getDefaultNegation()) {
+				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+			} else {
+				Negation negatedAtomicConcept = new Negation(atomicConcept);
+				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) getIndividuals(negatedAtomicConcept));
+			}
+
+		}
+
+		logger.debug("dematerialising object properties");
+
+		for (ObjectProperty atomicRole : atomicRoles) {
+			opPos.put(atomicRole, getPropertyMembers(atomicRole));
+		}
+
+		logger.debug("dematerialising datatype properties");
+
+		for (DatatypeProperty dp : booleanDatatypeProperties) {
+			bdPos.put(dp, (TreeSet<Individual>) getTrueDatatypeMembers(dp));
+			bdNeg.put(dp, (TreeSet<Individual>) getFalseDatatypeMembers(dp));
+		}
+
+		for (DatatypeProperty dp : intDatatypeProperties) {
+			id.put(dp, getIntDatatypeMembers(dp));
+		}
+
+		for (DatatypeProperty dp : doubleDatatypeProperties) {
+			dd.put(dp, getDoubleDatatypeMembers(dp));
+		}
+
+		long dematDuration = System.currentTimeMillis() - dematStartTime;
+		logger.debug("TBox dematerialised in " + dematDuration + " ms");
 	}
 	
-	public void classify(){
-		classifier.classify();
-	}
-	
-	public void realise(){
-		reasoner.prepareReasoner();
-	}
-	
-	public void addProgressMonitor(ProgressMonitor monitor){
-		reasoner.getKB().getTaxonomyBuilder().setProgressMonitor(monitor);
-	}
 
 	@Override
 	public String getBaseURI() {
@@ -1635,14 +1414,6 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		return consistent;
 	}
 
-	public com.clarkparsia.pellet.owlapiv3.PelletReasoner getReasoner() {
-		return reasoner;
-	}
-	
-	public IncrementalClassifier getClassifier(){
-		return classifier;
-	}
-	
 	public Set<OWLOntology> getLoadedOWLAPIOntologies(){
 		return loadedOntologies;
 	}
@@ -1672,7 +1443,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	}
 	
 	public static String getName() {
-		return "Pellet reasoner";
+		return "Protege internal reasoner";
 	}	
 
 }

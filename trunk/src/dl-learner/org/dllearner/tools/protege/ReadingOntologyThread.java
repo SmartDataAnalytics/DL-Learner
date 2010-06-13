@@ -26,7 +26,7 @@ import java.util.Set;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ProtegeReasoner;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -40,7 +40,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 public class ReadingOntologyThread extends Thread {
 
 	private boolean hasIndividuals;
-	private FastInstanceChecker reasoner;
+	private ProtegeReasoner reasoner;
 	private NamedClass currentConcept;
 	private Set<Individual> individual;
 	private Set<String> ontologieURI;

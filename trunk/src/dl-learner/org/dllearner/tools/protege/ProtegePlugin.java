@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
@@ -61,10 +62,9 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	public boolean isValidInput() {
 		view.getSuggestClassPanel().getSuggestModel().clear();
 		view.getSuggestClassPanel().getSuggestionsTable().clear();
-		//view.getSuggestClassPanel().repaint();
-		if(this.getAxiomType().toString().equals(EQUIVALENT_CLASS_STRING)) {
+		if(getAxiomType() == AxiomType.EQUIVALENT_CLASSES) {
 			view.makeView("equivalent class");
-		} else if(this.getAxiomType().toString().equals(SUPERCLASS_STRING)) {
+		} else if(getAxiomType() == AxiomType.SUBCLASS_OF) {
 			view.makeView("super class");
 		}
 		view.getMoreDetailForSuggestedConceptsPanel().unsetPanel();
@@ -79,11 +79,14 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	@Override
 	public void initialise() throws Exception {
 		view = new DLLearnerView(super.getOWLEditorKit());
+		System.out.println("Initializing DL-Learner plugin...");
+		addListeners();
 	}
 
 	@Override
 	public void dispose() throws Exception {
 		view.dispose();
+		removeListeners();
 		view = null;
 	}
 
@@ -95,5 +98,15 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	@Override
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
+	}
+	
+	private void addListeners(){
+		getOWLEditorKit().getOWLModelManager().addListener(Manager.getInstance(getOWLEditorKit()));
+		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().addListener(Manager.getInstance(getOWLEditorKit()));
+	}
+	
+	private void removeListeners(){
+		getOWLEditorKit().getOWLModelManager().removeListener(Manager.getInstance(getOWLEditorKit()));
+		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().removeListener(Manager.getInstance(getOWLEditorKit()));
 	}
 }

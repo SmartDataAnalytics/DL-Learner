@@ -41,10 +41,12 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ProtegeReasoner;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.model.event.EventType;
+import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
+import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -53,6 +55,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 
 /**
  * This Class provides the necessary methods to learn Concepts from the
@@ -61,13 +64,14 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerModel implements Runnable{
+public class DLLearnerModel implements Runnable, OWLModelManagerListener{
 
 	// The Sting is for components that are available in the DL-Learner
 
 	private final String[] componenten = { "org.dllearner.kb.OWLFile",
 			"org.dllearner.reasoning.OWLAPIReasoner",
 			"org.dllearner.reasoning.FastInstanceChecker",
+			"org.dllearner.reasoning.ProtegeReasoner",
 			"org.dllearner.reasoning.FastRetrievalReasoner",
 			"org.dllearner.algorithms.RandomGuesser",
 			"org.dllearner.algorithms.refinement.ROLearner",
@@ -105,7 +109,7 @@ public class DLLearnerModel implements Runnable{
 
 	// The Reasoner which is used to learn
 
-	private FastInstanceChecker reasoner;
+	private ProtegeReasoner reasoner;
 
 	// A Set of Descriptions in OWL Syntax which the DL-Learner suggested
 
@@ -181,6 +185,7 @@ public class DLLearnerModel implements Runnable{
 		suggestModel = new DefaultListModel();
 		ontologieURI = new HashSet<String>();
 		sources = new HashSet<KnowledgeSource>();
+		editor.getOWLModelManager().addListener(this);
 	}
 	
 	/**
@@ -215,6 +220,7 @@ public class DLLearnerModel implements Runnable{
 	 * OWLAPIOntology will be available.
 	 */
 	public void setKnowledgeSource() {
+		sources.clear();
 		Set<OWLOntology> ontologieSet = editor.getModelManager().getActiveOntologies();
 		for(OWLOntology onto : ontologieSet) {
 			sources.add(new OWLAPIOntology(onto));
@@ -226,7 +232,9 @@ public class DLLearnerModel implements Runnable{
 	 * FastInstanceChecker is available.
 	 */
 	public void setReasoner() {
-		this.reasoner = cm.reasoner(FastInstanceChecker.class, sources);
+		this.reasoner = cm.reasoner(ProtegeReasoner.class, sources);
+		reasoner.setOWLReasoner(editor.getOWLModelManager().getReasoner());
+//		this.reasoner = new ProtegeReasoner(sources, editor.getOWLModelManager().getReasoner());
 		try {
 			reasoner.init();
 			reasoner.isSatisfiable();
@@ -243,7 +251,7 @@ public class DLLearnerModel implements Runnable{
 	 * This method returns the fast instance checker reasoner.
 	 * @return fast instance checker reasoner
 	 */
-	public FastInstanceChecker getReasoner() {
+	public ProtegeReasoner getReasoner() {
 		return reasoner;
 	}
 	
@@ -450,7 +458,6 @@ public class DLLearnerModel implements Runnable{
 		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
 				.getOWLClassExpression(currentConcept);
 		ds.add(oldConceptOWLAPI);
-		System.out.println("Test: " + ds);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 		OWLDataFactory factory = manager.getOWLDataFactory();
@@ -532,7 +539,7 @@ public class DLLearnerModel implements Runnable{
 	}
 	
 	/**
-	 * Returns boolean if reasoner is allready set.
+	 * Returns boolean if reasoner is already set.
 	 * @return isReasonerSet
 	 */
 	public boolean isReasonerSet() {
@@ -549,8 +556,8 @@ public class DLLearnerModel implements Runnable{
 	}
 	
 	/**
-	 * This methode sets if the knowledge source is updated or not.
-	 * @param isUpdated boolean if knowledge sourec is updated
+	 * This method sets if the knowledge source is updated or not.
+	 * @param isUpdated boolean if knowledge source is updated
 	 */
 	public void setKnowledgeSourceIsUpdated(boolean isUpdated) {
 		knowledgeSourceIsUpdated = isUpdated;
@@ -567,6 +574,15 @@ public class DLLearnerModel implements Runnable{
 	
 	public OWLEditorKit getOWLEditorKit() {
 		return editor;
+	}
+
+	@Override
+	public void handleChange(OWLModelManagerChangeEvent event) {
+		if(event.isType(EventType.REASONER_CHANGED)){
+			System.out.println("Current reasoner changed.");
+			setKnowledgeSource();
+			setReasoner();
+		}
 	}
 }
 

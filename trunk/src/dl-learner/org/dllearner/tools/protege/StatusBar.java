@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,12 +14,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import org.mindswap.pellet.utils.progress.ProgressMonitor;
-import org.semanticweb.owlapi.model.OWLAxiom;
-
-import com.clarkparsia.owlapi.explanation.util.ExplanationProgressMonitor;
-
-public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationProgressMonitor, PropertyChangeListener {
+public class StatusBar extends JPanel implements PropertyChangeListener {
 	/**
 	 * 
 	 */
@@ -37,10 +31,9 @@ public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationPr
 	private Timer cancelTimeout;
 
 	private int progress;
-	private int progressLength;
 	private String progressTitle;
 
-	public StatusBar2() {
+	public StatusBar() {
 		setLayout(new BorderLayout());
 
 		infoLabel = new JLabel("");
@@ -89,22 +82,6 @@ public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationPr
 	}
 
 	@Override
-	public void foundAllExplanations() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void foundExplanation(Set<OWLAxiom> explanation) {
-
-	}
-
-	@Override
-	public boolean isCancelled() {
-		return cancelled;
-	}
-
-	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if ("progress" == evt.getPropertyName()) {
 			int progress = (Integer) evt.getNewValue();
@@ -113,38 +90,10 @@ public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationPr
 
 	}
 
-	@Override
-	public int getProgress() {
-		return progress;
-	}
-
-	@Override
-	public int getProgressPercent() {
-		return (int) (progress * 100.0) / progressBar.getMaximum();
-	}
-
-	@Override
-	public void incrementProgress() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				progressBar.setValue(progress++);
-				// double percentDone = (progress * 100.0) /
-				// progressBar.getMaximum();
-				// if(percentDone / 100.0 == 0) {
-				// label.setText("Classifying ontology " + getProgressPercent()
-				// + " %");
-				// }
-			}
-		});
-
-	}
-
-	@Override
 	public boolean isCanceled() {
 		return cancelled;
 	}
 
-	@Override
 	public void setProgress(int progr) {
 		this.progress = progr;
 		SwingUtilities.invokeLater(new Runnable() {
@@ -155,29 +104,6 @@ public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationPr
 
 	}
 
-	@Override
-	public void setProgressLength(int length) {
-		this.progressLength = length;
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				progressBar.setValue(0);
-				progressBar.setMaximum((int) progressLength);
-			}
-		});
-
-	}
-
-	@Override
-	public void setProgressMessage(String message) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				// label.setText(message);
-			}
-		});
-
-	}
-
-	@Override
 	public void setProgressTitle(String title) {
 		this.progressTitle = title;
 		SwingUtilities.invokeLater(new Runnable() {
@@ -186,29 +112,6 @@ public class StatusBar2 extends JPanel implements ProgressMonitor, ExplanationPr
 			}
 		});
 
-	}
-
-	@Override
-	public void taskFinished() {
-		cancelTimeout.stop();
-		progress = 0;
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				progressBar.setValue(progress);
-			}
-		});
-
-	}
-
-	@Override
-	public void taskStarted() {
-
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				progressBar.setIndeterminate(false);
-			}
-		});
 	}
 
 }

@@ -30,6 +30,12 @@ allowed values: boolean
 default value: true
 conf file usage: sparql.useCache = true;
 
+option name: useCacheDatabase
+description: If true, H2 database is used, otherwise one file per query is written.
+allowed values: boolean
+default value: false
+conf file usage: sparql.useCacheDatabase = false;
+
 option name: instances
 description: relevant instances e.g. positive and negative examples in a learning problem
 allowed values: Set<String>
@@ -215,8 +221,20 @@ default value: pellet
 conf file usage: owlAPIReasoner.reasonerType = pellet;
 
 
-component: unnamed component (org.dllearner.reasoning.PelletReasoner)
-=====================================================================
+component: Pellet reasoner (org.dllearner.reasoning.PelletReasoner)
+===================================================================
+
+conf file usage: reasoner = null;
+
+option name: defaultNegation
+description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
+allowed values: boolean
+default value: true
+conf file usage: null.defaultNegation = true;
+
+
+component: Protege internal reasoner (org.dllearner.reasoning.ProtegeReasoner)
+==============================================================================
 
 conf file usage: reasoner = null;
 
@@ -254,6 +272,24 @@ allowed values: boolean
 default value: true
 conf file usage: classLearning.useApproximations = true;
 
+option name: approxAccuracy
+description: accuracy of the approximation (only for expert use)
+allowed values: double 
+default value: 0.05
+conf file usage: classLearning.approxAccuracy = 0.05;
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy.
+allowed values: String [fmeasure, generalised_fmeasure, jaccard, pred_acc, standard] 
+default value: standard
+conf file usage: classLearning.accuracyMethod = standard;
+
+option name: checkConsistency
+description: Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive.
+allowed values: boolean
+default value: true
+conf file usage: classLearning.checkConsistency = true;
+
 
 component: pos neg learning problem (org.dllearner.learningproblems.PosNegLPStandard)
 =====================================================================================
@@ -289,6 +325,24 @@ description: See UseMultiInstanceChecks enum.
 allowed values: String [never, oneCheck, twoChecks] 
 default value: twoChecks
 conf file usage: posNegLPStandard.useMultiInstanceChecks = twoChecks;
+
+option name: useApproximations
+description: whether to use stochastic approximations for computing accuracy
+allowed values: boolean
+default value: false
+conf file usage: posNegLPStandard.useApproximations = false;
+
+option name: approxAccuracy
+description: accuracy of the approximation (only for expert use)
+allowed values: double 
+default value: 0.05
+conf file usage: posNegLPStandard.approxAccuracy = 0.05;
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy.
+allowed values: String [fmeasure, predacc] 
+default value: predacc
+conf file usage: posNegLPStandard.accuracyMethod = predacc;
 
 
 component: three valued definition learning problem (org.dllearner.learningproblems.PosNegLPStrict)
@@ -420,6 +474,12 @@ allowed values: boolean
 default value: false
 conf file usage: celoe.useHasValueConstructor = false;
 
+option name: useDataHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties
+allowed values: boolean
+default value: false
+conf file usage: celoe.useDataHasValueConstructor = false;
+
 option name: valueFrequencyThreshold
 description: specifies how often an object must occur as value in order to be considered for hasValue restrictions
 allowed values: int 
@@ -480,11 +540,41 @@ allowed values: int  min 1 max 100
 default value: 10
 conf file usage: celoe.maxNrOfResults = 10;
 
+option name: singleSuggestionMode
+description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
+allowed values: boolean
+default value: false
+conf file usage: celoe.singleSuggestionMode = false;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: celoe.instanceBasedDisjoints = true;
+
+option name: filterDescriptionsFollowingFromKB
+description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
+allowed values: boolean
+default value: false
+conf file usage: celoe.filterDescriptionsFollowingFromKB = false;
+
+option name: reuseExistingDescription
+description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
+allowed values: boolean
+default value: false
+conf file usage: celoe.reuseExistingDescription = false;
+
 
 component: standard EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithm)
 ===========================================================================================
 
 conf file usage: algorithm = el;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: el.instanceBasedDisjoints = true;
 
 
 component: disjunctive EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive)
@@ -503,6 +593,12 @@ description: the named class which should be used to start the algorithm (GUI: n
 allowed values: String [] 
 default value: not set
 conf file usage: disjunctiveEL.startClass = ;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: disjunctiveEL.instanceBasedDisjoints = true;
 
 
 component: genetic programming learning algorithm (org.dllearner.algorithms.gp.GP)
@@ -611,6 +707,120 @@ description: maximum concept length (higher length means lowest possible fitness
 allowed values: int  min 1
 default value: 75
 conf file usage: gp.maxConceptLength = 75;
+
+
+component: ISLE (org.dllearner.algorithms.isle.ISLE)
+====================================================
+
+conf file usage: algorithm = null;
+
+option name: useAllConstructor
+description: specifies whether the universal concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: null.useAllConstructor = true;
+
+option name: useExistsConstructor
+description: specifies whether the existential concept constructor is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: null.useExistsConstructor = true;
+
+option name: useHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm
+allowed values: boolean
+default value: false
+conf file usage: null.useHasValueConstructor = false;
+
+option name: useDataHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties
+allowed values: boolean
+default value: false
+conf file usage: null.useDataHasValueConstructor = false;
+
+option name: valueFrequencyThreshold
+description: specifies how often an object must occur as value in order to be considered for hasValue restrictions
+allowed values: int 
+default value: 3
+conf file usage: null.valueFrequencyThreshold = 3;
+
+option name: useCardinalityRestrictions
+description: specifies whether CardinalityRestrictions is used in the learning algorithm
+allowed values: boolean
+default value: true
+conf file usage: null.useCardinalityRestrictions = true;
+
+option name: cardinalityLimit
+description: Gives the maximum number used in cardinality restrictions.
+allowed values: int 
+default value: 5
+conf file usage: null.cardinalityLimit = 5;
+
+option name: useNegation
+description: specifies whether negation is used in the learning algorothm
+allowed values: boolean
+default value: false
+conf file usage: null.useNegation = false;
+
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: null.useBooleanDatatypes = true;
+
+option name: useDoubleDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+allowed values: boolean
+default value: true
+conf file usage: null.useDoubleDatatypes = true;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 10
+conf file usage: null.maxExecutionTimeInSeconds = 10;
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+allowed values: double  min 0.0 max 100.0
+default value: 0.0
+conf file usage: null.noisePercentage = 0.0;
+
+option name: maxDepth
+description: maximum depth of description
+allowed values: int 
+default value: 7
+conf file usage: null.maxDepth = 7;
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
+allowed values: int  min 1 max 100
+default value: 10
+conf file usage: null.maxNrOfResults = 10;
+
+option name: singleSuggestionMode
+description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
+allowed values: boolean
+default value: false
+conf file usage: null.singleSuggestionMode = false;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: null.instanceBasedDisjoints = true;
+
+option name: filterDescriptionsFollowingFromKB
+description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
+allowed values: boolean
+default value: false
+conf file usage: null.filterDescriptionsFollowingFromKB = false;
+
+option name: reuseExistingDescription
+description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
+allowed values: boolean
+default value: false
+conf file usage: null.reuseExistingDescription = false;
 
 
 component: refinement operator based learning algorithm (org.dllearner.algorithms.refinement.ROLearner)
@@ -768,6 +978,12 @@ allowed values: String []
 default value: DEBUG
 conf file usage: refinement.logLevel = DEBUG;
 
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: refinement.instanceBasedDisjoints = true;
+
 
 component: refinement operator based learning algorithm II (org.dllearner.algorithms.refinement2.ROLComponent2)
 ===============================================================================================================
@@ -852,18 +1068,6 @@ allowed values: Set<String>
 default value: not set
 conf file usage: refexamples.ignoredConcepts = ;
 
-option name: allowedRoles
-description: roles the algorithm is allowed to use
-allowed values: Set<String>
-default value: not set
-conf file usage: refexamples.allowedRoles = ;
-
-option name: ignoredRoles
-description: roles the algorithm must ignore
-allowed values: Set<String>
-default value: not set
-conf file usage: refexamples.ignoredRoles = ;
-
 option name: useAllConstructor
 description: specifies whether the universal concept constructor is used in the learning algorithm
 allowed values: boolean
@@ -881,6 +1085,12 @@ description: specifies whether the hasValue constructor is used in the learning 
 allowed values: boolean
 default value: false
 conf file usage: refexamples.useHasValueConstructor = false;
+
+option name: useDataHasValueConstructor
+description: specifies whether the hasValue constructor is used in the learning algorithm in combination with data properties
+allowed values: boolean
+default value: false
+conf file usage: refexamples.useDataHasValueConstructor = false;
 
 option name: valueFrequencyThreshold
 description: specifies how often an object must occur as value in order to be considered for hasValue restrictions
@@ -1007,5 +1217,11 @@ description: describes the reduction in heuristic score one is willing to accept
 allowed values: double 
 default value: 0.02
 conf file usage: refexamples.expansionPenaltyFactor = 0.02;
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+allowed values: boolean
+default value: true
+conf file usage: refexamples.instanceBasedDisjoints = true;
 
 

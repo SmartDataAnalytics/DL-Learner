@@ -355,24 +355,16 @@ public class Info {
 		<mkdir dir="${release}" />
 		<mkdir dir="${temp}/META-INF" />
 		<mkdir dir="${temp}/lib" />
-		<mkdir dir="${temp}/lib/pellet" />
 		<mkdir dir="${temp}/lib/jena" />
 		<mkdir dir="${temp}/lib/ore-tool" />
-		<mkdir dir="${temp}/lib/owlapi" />
 		<copy toDir="${temp}/META-INF" >
 			<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />
 		</copy>
-		<copy toDir="${temp}/lib/owlapi" >
-			<fileset dir="${lib_dir}/owlapi" includes="owlapiV3-bin.jar" />
-		</copy>
 		<copy toDir="${temp}/lib/ore-tool" >
-			<fileset dir="${lib_dir}/ore-tool" includes="BrowserLauncher2-all-1_3.jar, swingx-1.6.jar" />
+			<fileset dir="${lib_dir}/ore-tool" includes="swingx-1.6.jar" />
 		</copy>
 		<copy toDir="${temp}/lib" >
 			<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
-		</copy>
-		<copy toDir="${temp}/lib/pellet" >
-			<fileset dir="${lib_dir}/pellet" includes="**/*.jar" />
 		</copy>
 		<copy toDir="${temp}/lib/jena" >
 			<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar" />
