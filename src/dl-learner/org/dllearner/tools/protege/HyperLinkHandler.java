@@ -27,9 +27,7 @@ import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
-import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
+import org.protege.editor.core.ui.util.NativeBrowserLauncher;
 
 /**
  * This is the Hyperlink Handler that handles what happens when a 
@@ -39,23 +37,6 @@ import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
  */
 public class HyperLinkHandler implements HyperlinkListener {
 
-	private  BrowserLauncher launcher;
-	
-	/**
-	 * This is the constructor that instantiate the
-	 * BrowserLauncher.
-	 */
-	public HyperLinkHandler() {
-        try {
-			launcher = new BrowserLauncher();
-		} catch (BrowserLaunchingInitializingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedOperatingSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	@Override
 	/**
@@ -72,7 +53,7 @@ public class HyperLinkHandler implements HyperlinkListener {
 			URL url;
 			try {
 				url = new URL(event.getDescription());
-				launcher.openURLinBrowser(url.toString());
+				NativeBrowserLauncher.openURL(url.toString());
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

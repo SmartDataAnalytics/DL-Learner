@@ -36,7 +36,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ProtegeReasoner;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -116,7 +116,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		}
 
 		Vector<IndividualPoint> v = panel.getIndividualVector();
-		FastInstanceChecker reasoner = model.getReasoner();
+		ProtegeReasoner reasoner = model.getReasoner();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
 					&& v.get(i).getXAxis() <= m.getX() + 5

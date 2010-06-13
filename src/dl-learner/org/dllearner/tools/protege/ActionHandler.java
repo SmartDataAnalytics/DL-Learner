@@ -100,7 +100,7 @@ public class ActionHandler implements ActionListener {
 
 		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
 				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
-			model.setKnowledgeSource();
+//			model.setKnowledgeSource();
 			view.getSuggestClassPanel().getSuggestionsTable().clear();
 			view.getSuggestClassPanel().repaint();
 			model.setLearningProblem();

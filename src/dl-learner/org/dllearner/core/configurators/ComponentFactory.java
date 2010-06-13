@@ -48,6 +48,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.PelletReasoner;
+import org.dllearner.reasoning.ProtegeReasoner;
 
 /**
 * automatically generated, do not edit manually.
@@ -126,6 +127,14 @@ return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 **/
 public static PelletReasoner getPelletReasoner(Set<KnowledgeSource> knowledgeSource)  {
 return PelletReasonerConfigurator.getPelletReasoner(knowledgeSource);
+}
+
+/**
+* @param knowledgeSource see KnowledgeSource
+* @return a component ready for initialization ProtegeReasoner
+**/
+public static ProtegeReasoner getProtegeReasoner(Set<KnowledgeSource> knowledgeSource)  {
+return ProtegeReasonerConfigurator.getProtegeReasoner(knowledgeSource);
 }
 
 /**

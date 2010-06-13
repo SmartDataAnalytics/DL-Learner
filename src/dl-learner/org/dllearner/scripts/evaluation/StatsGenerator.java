@@ -13,7 +13,9 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +37,28 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.DLExpressivityChecker;
 
 public class StatsGenerator {
+	
+	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap;
+	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap;
+
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap;
+
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
+	
+	
+	
+	
+	
+
 
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> equivalentSuggestions;
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> superSuggestions;
@@ -88,23 +112,44 @@ public class StatsGenerator {
 		beginStatsTable();
 		// for each ontology
 		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
-			loadSuggestions(suggestionFile);
+			loadLearnResults(suggestionFile);
 			loadOntology(suggestionFile);
-			resetStats();
+//			resetStats();
 			// for each user evaluation input file
 			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
-				makeSingleStat();
+				evaluateOWLStandard();
+//				makeSingleStat();
 			}
 			// add row to the metrics latex table for current ontology
 			addOntologyMetricsTableRow();
 			// add row to the stats latex table for current ontology
-			addStatsTableRow();
+//			addStatsTableRow();
+			break;
 		}
 		// end latex tables
 		endTables();
 		printLatexCode();
 
+	}
+	
+	private void evaluateOWLStandard(){
+		Stat value = new Stat();
+		Map<EvaluatedDescriptionClass, Integer> input;
+		for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : owlEquivalenceStandardMap.entrySet()){
+			input = userInputMap.get(entry.getKey());
+			for(EvaluatedDescriptionClass ec : entry.getValue()){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(ec.getDescription().equals(ec2.getDescription())){
+						value.addNumber(input.get(ec2));
+					}
+				}
+				
+			}
+			
+		}
+		System.out.println(value.getMean());
+		
 	}
 
 	private void loadOntology(File file) {
@@ -449,15 +494,8 @@ public class StatsGenerator {
 			fis = new FileInputStream(input);
 			ObjectInputStream o = new ObjectInputStream(fis);
 
-			//load the single list evaluation
-			equivalentInput = (Map<NamedClass, String>) o.readObject();
-			superInput = (Map<NamedClass, String>) o.readObject();
-			//load the ratings for the multilists
-			equivalentRating = (Map<NamedClass, List<Integer>>) o.readObject();
-			superRating = (Map<NamedClass, List<Integer>>) o.readObject();
-			
-			System.out.println(equivalentRating);
-			System.out.println(superRating);
+			userInputMap = (Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>>) o.readObject();
+			System.out.println("User input: " + userInputMap);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -468,6 +506,41 @@ public class StatsGenerator {
 			} catch (Exception e) {
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void loadLearnResults(File file){
+		
+		InputStream fis = null;
+
+		try {
+			fis = new FileInputStream(file);
+			ObjectInputStream o = new ObjectInputStream(fis);
+
+			owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			
+			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+
+			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			System.err.println(e);
+		} finally {
+			try {
+				fis.close();
+			} catch (Exception e) {
+			}
+		}
+		
 	}
 	
 

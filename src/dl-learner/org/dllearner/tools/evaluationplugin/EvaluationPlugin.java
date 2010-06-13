@@ -442,7 +442,8 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 //		for(Node node : tree.getRoot().getSubClasses()){
 //			System.out.println(node.getSubClasses());
 //		}
-		
+		System.out.println("NC: " + nc);
+		System.out.println("MERGED: " + merged);
 		return merged;
 	}
 
@@ -521,7 +522,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			traceInput(classes.get(currentClassIndex - 1));
+			traceInput(classes.get(currentClassIndex));
 			saveUserInputToFile();
 		}
 	}
