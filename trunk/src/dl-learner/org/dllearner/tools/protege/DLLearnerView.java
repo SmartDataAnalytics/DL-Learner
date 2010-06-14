@@ -21,6 +21,7 @@ package org.dllearner.tools.protege;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -39,7 +40,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
@@ -88,7 +88,7 @@ public class DLLearnerView {
 
 	// Selection panel for the positive and negative examples
 
-	private final PosAndNegSelectPanel posPanel;
+	private final OptionPanel posPanel;
 
 	// Picture for the advanced button when it is not toggled
 
@@ -182,7 +182,7 @@ public class DLLearnerView {
 		advanced.setName("Advanced");
 		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
-		posPanel = new PosAndNegSelectPanel(model, action);
+		posPanel = new OptionPanel();
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
 		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
 		sugPanel.getSuggestionsTable().getSelectionModel().addListSelectionListener(sugPanelHandler);
@@ -203,7 +203,7 @@ public class DLLearnerView {
 	 * This method returns the PosAndNegSelectPanel.
 	 * @return PosAndNegSelectPanel
 	 */
-	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
+	public OptionPanel getOptionsPanel() {
 		return posPanel;
 	}
 	
@@ -433,13 +433,14 @@ public class DLLearnerView {
 	/**
 	 * This method unsets all results after closing the plugin.
 	 */
-	public void dispose() {
+	public void dispose() throws Exception{
 		this.unsetEverything();
 		sugPanel.getSuggestionsTable().clear();
 		learner.removeAll();
 		sugPanel = null;
 		model.getSuggestModel().clear();
 		model.getIndividual().clear();
+		model.dispose();
 	}
 
 	/**
@@ -518,10 +519,13 @@ public class DLLearnerView {
 	/**
 	 * This method sets the run button enable after learning.
 	 */
-	public void algorithmTerminated() {
-		CELOE celoe = (CELOE) model.getLearningAlgorithm();
+	public void showAlgorithmTerminatedMessage() {
 		this.setStatusBarVisible(false);
-		String message = "<html><font size=\"3\" color=\"black\">Learning successful. All expressions up to length " + (celoe.getMinimumHorizontalExpansion()-1) +  " and some expressions up to <br>length " + celoe.getMaximumHorizontalExpansion() + " searched.";
+		String message = "<html><font size=\"3\" color=\"black\">Learning successful. All expressions up to length "
+			+ (Manager.getInstance().getMinimumHorizontalExpansion()-1) + 
+			" and some expressions up to <br>length "
+			+ Manager.getInstance().getMaximumHorizontalExpansion() 
+			+ " searched.";
 		hint.setForeground(Color.RED);
 		if(isInconsistent) {
 			message +="<font size=\"3\" color=\"red\"><br>Class expressions marked red will lead to an inconsistent ontology. <br>Please click on them to view detail information.</font></html>";
@@ -589,6 +593,15 @@ public class DLLearnerView {
 	
 	public HyperLinkHandler getHyperLinkHandler() {
 		return hyperHandler;
+	}
+	
+	public void setBusy(boolean busy){
+		if(busy){
+			getLearnerView().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		} else {
+			getLearnerView().setCursor(Cursor.getDefaultCursor());
+		}
+		
 	}
 	
 }

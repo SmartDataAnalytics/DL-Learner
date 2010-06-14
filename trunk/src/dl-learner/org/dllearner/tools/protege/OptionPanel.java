@@ -40,13 +40,9 @@ public class OptionPanel extends JPanel {
 	
 	private static final long serialVersionUID = 2190682281812478244L;
 	
-	private final JLabel minAccuracyLabel;
-	private final JLabel maxExecutionTimeLabel;
-	private final JLabel nrOfConceptsLabel;
-	
-	private final JSlider minAccuracy;
-	private final JSlider maxExecutionTime;
-	private final JSlider nrOfConcepts;
+	private final JSlider noiseInPercentage;
+	private final JSlider maxExecutionTimeInSeconds;
+	private final JSlider maxNumberOfResults;
 	
 	private JRadioButton owlRadioButton;
 	private JRadioButton elProfileButton;
@@ -56,9 +52,9 @@ public class OptionPanel extends JPanel {
 	private JCheckBox someBox;
 	private JCheckBox notBox;
 	private JCheckBox valueBox;
-	private JCheckBox moreBox;
+	private JCheckBox cardinalityBox;
 	
-	private JComboBox countMoreBox;
+	private JComboBox cardinalityLimitBox;
 	
 	private JPanel profilePanel;
 	private JPanel radioBoxPanel;
@@ -86,29 +82,29 @@ public class OptionPanel extends JPanel {
 		checkBoxPanel = new JPanel();
 		checkBoxPanel.setLayout(new GridBagLayout());
 		
-		minAccuracyLabel = new JLabel("<html>noise in %:    </html>");
-		maxExecutionTimeLabel = new JLabel("<html>maximum execution time:    </html>");
-		nrOfConceptsLabel = new JLabel("<html>max. number of results:    </html>");
+		JLabel noiseInPercentageLabel = new JLabel("<html>noise in %:    </html>");
+		JLabel maxExecutionTimeLabel = new JLabel("<html>maximum execution time:    </html>");
+		JLabel nrOfConceptsLabel = new JLabel("<html>max. number of results:    </html>");
 		
-		minAccuracy = new JSlider(0, 50, 5);
-		minAccuracy.setPaintTicks(true);
-		minAccuracy.setMajorTickSpacing(10);
-		minAccuracy.setMinorTickSpacing(1);
-		minAccuracy.setPaintLabels(true);
+		noiseInPercentage = new JSlider(0, 50, 5);
+		noiseInPercentage.setPaintTicks(true);
+		noiseInPercentage.setMajorTickSpacing(10);
+		noiseInPercentage.setMinorTickSpacing(1);
+		noiseInPercentage.setPaintLabels(true);
 
 		
-		maxExecutionTime = new JSlider(0, 40, 8);
-		maxExecutionTime.setPaintTicks(true);
-		maxExecutionTime.setMajorTickSpacing(10);
-		maxExecutionTime.setMinorTickSpacing(1);
-		maxExecutionTime.setPaintLabels(true);
+		maxExecutionTimeInSeconds = new JSlider(0, 40, 8);
+		maxExecutionTimeInSeconds.setPaintTicks(true);
+		maxExecutionTimeInSeconds.setMajorTickSpacing(10);
+		maxExecutionTimeInSeconds.setMinorTickSpacing(1);
+		maxExecutionTimeInSeconds.setPaintLabels(true);
 
 		
-		nrOfConcepts = new JSlider(2, 20, 10);
-		nrOfConcepts.setPaintTicks(true);
-		nrOfConcepts.setMajorTickSpacing(2);
-		nrOfConcepts.setMinorTickSpacing(1);
-		nrOfConcepts.setPaintLabels(true);
+		maxNumberOfResults = new JSlider(2, 20, 10);
+		maxNumberOfResults.setPaintTicks(true);
+		maxNumberOfResults.setMajorTickSpacing(2);
+		maxNumberOfResults.setMinorTickSpacing(1);
+		maxNumberOfResults.setPaintLabels(true);
 		
 		owlRadioButton = new JRadioButton("<html>OWL 2</html>", false);
 		elProfileButton = new JRadioButton("<html>EL Profile</html>", false);
@@ -118,6 +114,7 @@ public class OptionPanel extends JPanel {
 		elProfileButton.addActionListener(optionHandler);
 		defaultProfileButton.addActionListener(optionHandler);
 		
+		
 		allBox = new JCheckBox("<html>all</html>", true);
 		//allBox.addItemListener(optionHandler);
 		someBox = new JCheckBox("<html>some</html>", true);
@@ -126,22 +123,17 @@ public class OptionPanel extends JPanel {
 		//notBox.addItemListener(optionHandler);
 		valueBox = new JCheckBox("<html>value</html>", false);
 		//valueBox.addItemListener(optionHandler);
-		moreBox = new JCheckBox("<html> &#8249;=x, &#8250;=x with max.:</html>", true);
+		cardinalityBox = new JCheckBox("<html> &#8249;=x, &#8250;=x with max.:</html>", true);
+		cardinalityBox.setActionCommand("Cardinality");
+		cardinalityBox.addActionListener(optionHandler);
 		//moreBox.addItemListener(optionHandler);
 		
-		countMoreBox = new JComboBox();
-		countMoreBox.addItem(1);
-		countMoreBox.addItem(2);
-		countMoreBox.addItem(3);
-		countMoreBox.addItem(4);
-		countMoreBox.addItem(5);
-		countMoreBox.addItem(6);
-		countMoreBox.addItem(7);
-		countMoreBox.addItem(8);
-		countMoreBox.addItem(9);
-		countMoreBox.addItem(10);
-		countMoreBox.setSelectedItem(5);
-		countMoreBox.setEditable(false);
+		cardinalityLimitBox = new JComboBox();
+		for(int i = 1; i <= 10; i++){
+			cardinalityLimitBox.addItem(i);
+		}
+		cardinalityLimitBox.setSelectedItem(5);
+		cardinalityLimitBox.setEditable(false);
 		GridBagConstraints c = new GridBagConstraints();
 		
 		c.fill = GridBagConstraints.BOTH;
@@ -182,7 +174,7 @@ public class OptionPanel extends JPanel {
 		c.gridx = 8;
 		c.gridy = 0;
 		c.gridwidth = 1;
-		checkBoxPanel.add(moreBox, c);
+		checkBoxPanel.add(cardinalityBox, c);
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.0;
@@ -190,7 +182,7 @@ public class OptionPanel extends JPanel {
 		c.gridx = 9;
 		c.gridy = 0;
 		c.gridwidth = 1;
-		checkBoxPanel.add(countMoreBox, c);
+		checkBoxPanel.add(cardinalityLimitBox, c);
 		
 		
 		radioBoxPanel.add(owlRadioButton);
@@ -200,13 +192,13 @@ public class OptionPanel extends JPanel {
 		profilePanel.add(radioBoxPanel);
 		profilePanel.add(checkBoxPanel);
 		
-		labelPanel.add(minAccuracyLabel);
+		labelPanel.add(noiseInPercentageLabel);
 		labelPanel.add(maxExecutionTimeLabel);
 		labelPanel.add(nrOfConceptsLabel);
 		
-		sliderPanel.add(minAccuracy);
-		sliderPanel.add(maxExecutionTime);
-		sliderPanel.add(nrOfConcepts);
+		sliderPanel.add(noiseInPercentage);
+		sliderPanel.add(maxExecutionTimeInSeconds);
+		sliderPanel.add(maxNumberOfResults);
 		
 		add(BorderLayout.SOUTH, profilePanel);
 		add(BorderLayout.WEST, labelPanel);
@@ -217,30 +209,30 @@ public class OptionPanel extends JPanel {
 	 * This method returns the min accuracy chosen in the slider.
 	 * @return double minAccuracy
 	 */
-	public double getMinAccuracy() {
-		double acc = minAccuracy.getValue();
+	public double getNoise() {
+		double acc = noiseInPercentage.getValue();
 		accuracy = (acc/100.0);
 		return accuracy;
 	}
 	
 	/**
-	 * This method returns the max executiontime chosen in the slider.
+	 * This method returns the max execution time chosen in the slider.
 	 * @return int maxExecutionTime
 	 */
-	public int getMaxExecutionTime() {
-		return maxExecutionTime.getValue();
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds.getValue();
 	}
 	
 	/**
-	 * This method returns the nr. of concepts chosen in the slider.
+	 * This method returns the number of concepts chosen in the slider.
 	 * @return int nrOfConcepts
 	 */
-	public int getNrOfConcepts() {
-		return nrOfConcepts.getValue();
+	public int getMaxNumberOfResults() {
+		return maxNumberOfResults.getValue();
 	}
 
 	/**
-	 * This methode returns the OWLRadioButton.
+	 * This method returns the OWLRadioButton.
 	 * @return OWLRAdioButton
 	 */
 	public JRadioButton getOwlRadioButton() {
@@ -263,7 +255,7 @@ public class OptionPanel extends JPanel {
 	 * This methode returns if the allquantor box is selected.
 	 * @return boolean if allquantor box is selected
 	 */
-	public boolean getAllBox() {
+	public boolean isUseAllQuantor() {
 		return allBox.isSelected();
 	}
 
@@ -271,7 +263,7 @@ public class OptionPanel extends JPanel {
 	 * This methode returns if the some box is selected.
 	 * @return boolean if some box is selected
 	 */
-	public boolean getSomeBox() {
+	public boolean isUseExistsQuantor() {
 		return someBox.isSelected();
 	}
 
@@ -279,7 +271,7 @@ public class OptionPanel extends JPanel {
 	 * This methode returns if the not box is selected.
 	 * @return boolean if not box is selected
 	 */
-	public boolean getNotBox() {
+	public boolean isUseNegation() {
 		return notBox.isSelected();
 	}
 
@@ -287,7 +279,7 @@ public class OptionPanel extends JPanel {
 	 * This methode returns if the value box is selected.
 	 * @return boolean if value box is selected
 	 */
-	public boolean getValueBox() {
+	public boolean isUseHasValue() {
 		return valueBox.isSelected();
 	}
 
@@ -303,16 +295,16 @@ public class OptionPanel extends JPanel {
 	 * This methode returns the int of the cardinality restriction. 
 	 * @return cardinality restriction int
 	 */
-	public int getCountMoreBox() {
-		return Integer.parseInt(countMoreBox.getSelectedItem().toString());
+	public int getCardinalityLimit() {
+		return Integer.parseInt(cardinalityLimitBox.getSelectedItem().toString());
 	}
 
 	/**
 	 * This methode returns if the cardinality restiction box is selected.
 	 * @return boolean if cardinality restiction box is selected
 	 */
-	public boolean getMoreBox() {
-		return moreBox.isSelected();
+	public boolean isUseCardinalityRestrictions() {
+		return cardinalityBox.isSelected();
 	}
 	
 	/**
@@ -327,7 +319,7 @@ public class OptionPanel extends JPanel {
 		someBox.setSelected(true);
 		notBox.setSelected(true);
 		valueBox.setSelected(true);
-		moreBox.setSelected(true);
+		cardinalityBox.setSelected(true);
 		this.setCountMoreBoxEnabled(true);
 	}
 	
@@ -340,7 +332,7 @@ public class OptionPanel extends JPanel {
 		someBox.setSelected(true);
 		notBox.setSelected(false);
 		valueBox.setSelected(false);
-		moreBox.setSelected(false);
+		cardinalityBox.setSelected(false);
 		owlRadioButton.setSelected(false);
 		elProfileButton.setSelected(true);
 		defaultProfileButton.setSelected(false);
@@ -352,7 +344,7 @@ public class OptionPanel extends JPanel {
 		someBox.setSelected(true);
 		notBox.setSelected(false);
 		valueBox.setSelected(false);
-		moreBox.setSelected(true);
+		cardinalityBox.setSelected(true);
 		owlRadioButton.setSelected(false);
 		elProfileButton.setSelected(false);
 		defaultProfileButton.setSelected(true);
@@ -365,7 +357,7 @@ public class OptionPanel extends JPanel {
 	 * @param isEnabled
 	 */
 	public void setCountMoreBoxEnabled(boolean isEnabled) {
-		countMoreBox.setEnabled(isEnabled);
+		cardinalityLimitBox.setEnabled(isEnabled);
 	}
 	
 }

@@ -1,6 +1,8 @@
 package org.dllearner.tools.protege;
 
 import java.net.MalformedURLException;
+import java.util.Collections;
+import java.util.List;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
@@ -11,6 +13,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.ProtegeReasoner;
 import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.owl.OWLEditorKit;
@@ -38,7 +41,6 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	private double noisePercentage;
 	private double threshold;
 	private int maxNrOfResults;
-	private int minInstanceCount;
 	private boolean useAllConstructor;
 	private boolean useExistsConstructor;
 	private boolean useHasValueConstructor;
@@ -53,13 +55,31 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		return instance;
 	}
 	
+	public static synchronized Manager getInstance(){
+		return instance;
+	}
+	
 	private Manager(OWLEditorKit editorKit){
 		this.editorKit = editorKit;
 		cm = ComponentManager.getInstance();
 	}
+	
+	public void setOWLEditorKit(OWLEditorKit editorKit){
+		this.editorKit = editorKit;
+	}
 
 	public boolean isReinitNecessary(){
 		return reinitNecessary;
+	}
+	
+	public void init(){
+		initKnowledgeSource();
+		if(reinitNecessary){
+			initReasoner();
+		}
+		initLearningProblem();
+		initLearningAlgorithm();
+		reinitNecessary = false;
 	}
 	
 	public void initLearningAlgorithm(){
@@ -123,6 +143,18 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		}
 	}
 	
+	public void startLearning(){
+		la.start();
+	}
+	
+	public void stopLearning(){
+		la.stop();
+	}
+	
+	public boolean isLearning(){
+		return la != null && la.isRunning();
+	}
+	
 	public LearningType getLearningType() {
 		return learningType;
 	}
@@ -139,16 +171,8 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
-	public double getNoisePercentage() {
-		return noisePercentage;
-	}
-
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
-	}
-
-	public double getThreshold() {
-		return threshold;
 	}
 
 	public void setThreshold(double threshold) {
@@ -163,60 +187,48 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		this.maxNrOfResults = maxNrOfResults;
 	}
 
-	public int getMinInstanceCount() {
-		return minInstanceCount;
-	}
-
-	public void setMinInstanceCount(int minInstanceCount) {
-		this.minInstanceCount = minInstanceCount;
-	}
-
-	public boolean isUseAllConstructor() {
-		return useAllConstructor;
-	}
-
 	public void setUseAllConstructor(boolean useAllConstructor) {
 		this.useAllConstructor = useAllConstructor;
-	}
-
-	public boolean isUseExistsConstructor() {
-		return useExistsConstructor;
 	}
 
 	public void setUseExistsConstructor(boolean useExistsConstructor) {
 		this.useExistsConstructor = useExistsConstructor;
 	}
 
-	public boolean isUseHasValueConstructor() {
-		return useHasValueConstructor;
-	}
-
 	public void setUseHasValueConstructor(boolean useHasValueConstructor) {
 		this.useHasValueConstructor = useHasValueConstructor;
-	}
-
-	public boolean isUseNegation() {
-		return useNegation;
 	}
 
 	public void setUseNegation(boolean useNegation) {
 		this.useNegation = useNegation;
 	}
 
-	public boolean isUseCardinalityRestrictions() {
-		return useCardinalityRestrictions;
-	}
-
 	public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 	}
 
-	public int getCardinalityLimit() {
-		return cardinalityLimit;
-	}
-
 	public void setCardinalityLimit(int cardinalityLimit) {
 		this.cardinalityLimit = cardinalityLimit;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public synchronized List<EvaluatedDescriptionClass> getCurrentlyLearnedDescriptions() {
+		List<EvaluatedDescriptionClass> result;
+		if (la != null) {
+			result = Collections.unmodifiableList((List<EvaluatedDescriptionClass>) la
+					.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults, threshold, true));
+		} else {
+			result = Collections.emptyList();
+		}
+		return result;
+	}
+	
+	public int getMinimumHorizontalExpansion(){
+		return ((CELOE)la).getMinimumHorizontalExpansion();
+	}
+	
+	public int getMaximumHorizontalExpansion(){
+		return ((CELOE)la).getMaximumHorizontalExpansion();
 	}
 
 	@Override

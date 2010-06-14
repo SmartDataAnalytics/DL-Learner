@@ -29,10 +29,10 @@ import java.awt.event.ActionListener;
  */
 public class OptionPanelHandler implements ActionListener {
 
-	private static final String OWL_RADIO_STRING = "OWL 2";
-	private static final String EL_RADIO_STRING = "EL Profile";
-	private static final String DEFAULT_RADIO_STRING = "Default";
-	private static final String VALUE_STRING = "<=x, >=x with max.:";
+	private static final String OPTION_PROFILE_OWL = "OWL 2";
+	private static final String OPTION_PROFILE_EL = "EL Profile";
+	private static final String OPTION_PROFILE_DEFAULT = "Default";
+	private static final String OPTION_CARDINALITY = "Cardinality";
 
 	private OptionPanel option;
 
@@ -51,21 +51,17 @@ public class OptionPanelHandler implements ActionListener {
 	 * radio button is selected/deselected.
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if (e.toString().contains(OWL_RADIO_STRING)) {
+		if (e.toString().contains(OPTION_PROFILE_OWL)) {
 				this.setToOWLProfile();
 		} 
-		if (e.toString().contains(EL_RADIO_STRING)) {
+		if (e.toString().contains(OPTION_PROFILE_EL)) {
 				this.setToELProfile();
 		}
-		if (e.toString().contains(DEFAULT_RADIO_STRING)) {
+		if (e.toString().contains(OPTION_PROFILE_DEFAULT)) {
 				this.setToDefaultProfile();
 		}
-		if(e.toString().contains(VALUE_STRING)) {
-			if(option.getMoreBox()) {
-				option.setCountMoreBoxEnabled(true);
-			} else {
-				option.setCountMoreBoxEnabled(false);
-			}
+		if(e.getActionCommand().equals(OPTION_CARDINALITY)) {
+			option.setCountMoreBoxEnabled(option.isUseCardinalityRestrictions());
 		}
 	}
 

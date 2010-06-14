@@ -43,6 +43,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.ProtegeReasoner;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.protege.editor.core.Disposable;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
@@ -64,7 +65,7 @@ import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerModel implements Runnable, OWLModelManagerListener{
+public class DLLearnerModel implements Runnable, OWLModelManagerListener, Disposable{
 
 	// The Sting is for components that are available in the DL-Learner
 
@@ -308,25 +309,25 @@ public class DLLearnerModel implements Runnable, OWLModelManagerListener{
 		
 		//Config options set in the gui.
 		//config option if all is used for suggestions
-		cm.applyConfigEntry(la, "useAllConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getAllBox());
+		cm.applyConfigEntry(la, "useAllConstructor", view.getOptionsPanel().isUseAllQuantor());
 		//config option if exists is used for suggestions
-		cm.applyConfigEntry(la, "useExistsConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getSomeBox());
+		cm.applyConfigEntry(la, "useExistsConstructor", view.getOptionsPanel().isUseExistsQuantor());
 		//config option if hasValue is used for suggestions
-		cm.applyConfigEntry(la, "useHasValueConstructor", view.getPosAndNegSelectPanel().getOptionPanel().getValueBox());
+		cm.applyConfigEntry(la, "useHasValueConstructor", view.getOptionsPanel().isUseHasValue());
 		//config option if negation is used for suggestions
-		cm.applyConfigEntry(la, "useNegation", view.getPosAndNegSelectPanel().getOptionPanel().getNotBox());
+		cm.applyConfigEntry(la, "useNegation", view.getOptionsPanel().isUseNegation());
 		//config option if cardinalitylimits is used for suggestions
-		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox());
-		if(view.getPosAndNegSelectPanel().getOptionPanel().getMoreBox()) {
+		cm.applyConfigEntry(la, "useCardinalityRestrictions", view.getOptionsPanel().isUseCardinalityRestrictions());
+		if(view.getOptionsPanel().isUseCardinalityRestrictions()) {
 			//config option to set the cardinalityrestrictions
-			cm.applyConfigEntry(la, "cardinalityLimit", view.getPosAndNegSelectPanel().getOptionPanel().getCountMoreBox());
+			cm.applyConfigEntry(la, "cardinalityLimit", view.getOptionsPanel().getCardinalityLimit());
 		}
 		//config option to set the noise
-		cm.applyConfigEntry(la, "noisePercentage", view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy());
+		cm.applyConfigEntry(la, "noisePercentage", view.getOptionsPanel().getNoise());
 		//config option to set the maximum execution time
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
-				.getPosAndNegSelectPanel().getOptionPanel()
-				.getMaxExecutionTime());
+				.getOptionsPanel()
+				.getMaxExecutionTimeInSeconds());
 		try {
 			// initializes the learning algorithm
 			la.init();
@@ -583,6 +584,12 @@ public class DLLearnerModel implements Runnable, OWLModelManagerListener{
 			setKnowledgeSource();
 			setReasoner();
 		}
+	}
+
+	@Override
+	public void dispose() throws Exception {
+		editor.getOWLModelManager().removeListener(this);
+		
 	}
 }
 
