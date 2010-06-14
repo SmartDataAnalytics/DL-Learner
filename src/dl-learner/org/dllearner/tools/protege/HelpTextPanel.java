@@ -45,8 +45,7 @@ public class HelpTextPanel extends JTextPane{
             + "get a high accuracy and are displayed as suggestions. The learning algorithm prefers short expressions. 'Currently searching class expressions with length"
             + " between 4 and 7.' means that it has already evaluated all class expressions of length 1 to 3 or excluded them as possible suggestions. All the expressions"
             + " currently evaluated have length between 4 and 7. If you want to search for longer expressions, then you have to increase the maximum runtime setting (it is "
-            + "set to " + view.getPosAndNegSelectPanel().getOptionPanel()
-            .getMaxExecutionTime()
+            + "set to " + view.getOptionsPanel().getMaxExecutionTimeInSeconds()
             + " seconds by default).</p>"
             + "<p>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for more details.</p></html>";
 		this.setEditable(false);

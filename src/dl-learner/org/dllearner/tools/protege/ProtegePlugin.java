@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
+import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -38,9 +39,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	private static final long serialVersionUID = 728362819273927L;
 	private DLLearnerView view;
-	private static final String EQUIVALENT_CLASS_STRING = "Equivalent classes axiom";
-	private static final String SUPERCLASS_STRING = "SubClass axiom";
-
 	
 	@Override
 	public JComponent getComponent() {
@@ -63,9 +61,11 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 		view.getSuggestClassPanel().getSuggestModel().clear();
 		view.getSuggestClassPanel().getSuggestionsTable().clear();
 		if(getAxiomType() == AxiomType.EQUIVALENT_CLASSES) {
+			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.EQUIVALENT);
 			view.makeView("equivalent class");
 		} else if(getAxiomType() == AxiomType.SUBCLASS_OF) {
 			view.makeView("super class");
+			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.SUPER);
 		}
 		view.getMoreDetailForSuggestedConceptsPanel().unsetPanel();
 		return true;
