@@ -19,20 +19,20 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.protege.editor.core.ProtegeApplication;
+import org.protege.editor.core.ui.progress.BackgroundTask;
 
 /**
  * This class processes input from the user.
@@ -66,6 +66,8 @@ public class ActionHandler implements ActionListener {
 	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
 	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expression</html>";
 	private static JOptionPane optionPane;
+	
+	private BackgroundTask learningTask;
 
 	/**
 	 * This is the constructor for the action handler.
@@ -96,52 +98,29 @@ public class ActionHandler implements ActionListener {
 
 		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
 				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
-			
-			setLearningOptions();
-			
 			Manager manager = Manager.getInstance(model.getOWLEditorKit());
-//			manager.initKnowledgeSource();
-//			manager.initReasoner();
-//			manager.initLearningProblem();
-//			manager.initLearningAlgorithm();
-			view.setBusy(true);
-			manager.init();
+			setLearningOptions();
+			view.setBusyTaskStarted("Preparing ...");
+			manager.initLearningProblem();
+			manager.initLearningAlgorithm();
+			view.setBusyTaskEnded();
 			
-			view.getRunButton().setEnabled(false);
-			String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-					+ manager.getMinimumHorizontalExpansion()
-					+ " and "
-					+ manager.getMaximumHorizontalExpansion() + ".</font></html>";
-			view.setHelpButtonVisible(true);
-			view.setHintMessage(moreInformationsMessage);
+			
+			learningTask = ProtegeApplication.getBackgroundTaskManager().startTask("Learning...");
+			
+			view.setLearningStarted();
+			view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
+					Manager.getInstance().getMaximumHorizontalExpansion());
+			
 			retriever = new SuggestionRetriever();
 			retriever.addPropertyChangeListener(view.getStatusBar());
 			retriever.execute();
 			
-			//#########################################################################
-//			model.setKnowledgeSource();
-			
-//			view.getSuggestClassPanel().getSuggestionsTable().clear();
-//			view.getSuggestClassPanel().repaint();
-//			model.setLearningProblem();
-//			model.setLearningAlgorithm();
-//			view.getRunButton().setEnabled(false);
-//			view.getHintPanel().setForeground(Color.RED);
-//			CELOE celoe = (CELOE) model.getLearningAlgorithm();
-//
-//			String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-//					+ celoe.getMinimumHorizontalExpansion()
-//					+ " and "
-//					+ celoe.getMaximumHorizontalExpansion() + ".</font></html>";
-//			view.setHelpButtonVisible(true);
-//			view.setHintMessage(moreInformationsMessage);
-//			retriever = new SuggestionRetriever();
-//			retriever.addPropertyChangeListener(view.getStatusBar());
-//			retriever.execute();
 		}
 
 		if (z.getActionCommand().equals(ADD_BUTTON_STRING)) {
-			model.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription.getDescription());
+			Manager.getInstance().addAxiom(OWLAPIDescriptionConvertVisitor
+					.getOWLClassExpression(evaluatedDescription.getDescription()));
 			String message = "<html><font size=\"3\">class expression added</font></html>";
 			view.setHintMessage(message);
 			view.setHelpButtonVisible(false);
@@ -159,14 +138,7 @@ public class ActionHandler implements ActionListener {
 		}
 		if (z.toString().contains(HELP_BUTTON_STRING)) {
 
-			Set<String> uris = model.getOntologyURIString();
-			String currentClass = "";
-			for (String uri : uris) {
-				if (model.getCurrentConcept().toString().contains(uri)) {
-					currentClass = model.getCurrentConcept()
-							.toManchesterSyntaxString(uri, null);
-				}
-			}
+			String currentClass = Manager.getInstance().getCurrentlySelectedClassRendered();
 			
 			//helpPanel.renderHelpTextMessage(currentClass);
 			//view.getLearnerView().add();
@@ -223,16 +195,14 @@ public class ActionHandler implements ActionListener {
 		@Override
 		protected List<? extends EvaluatedDescription> doInBackground()
 				throws Exception {
-
-			view.setStatusBarVisible(true);
-			view.getStatusBar().setMaximumValue(Manager.getInstance().getMaxExecutionTimeInSeconds());
+			
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
 				int progress = 0;
 				List<? extends EvaluatedDescription> result;
 				@Override
 				public void run() {
-					progress += 1;
+					progress++;
 					setProgress(progress);
 					if(!isCancelled() && Manager.getInstance().isLearning()){
 						result = Manager.getInstance().getCurrentlyLearnedDescriptions();
@@ -249,46 +219,28 @@ public class ActionHandler implements ActionListener {
 
 		@Override
 		public void done() {
-
 			timer.cancel();
 			List<? extends EvaluatedDescription> result = Manager.getInstance().getCurrentlyLearnedDescriptions();
-			setProgress(0);
-			view.stopStatusBar();
-			view.setBusy(false);
 			updateList(result);
-			view.showAlgorithmTerminatedMessage();
-
+			setProgress(0);
+			view.setLearningFinished();
+			ProtegeApplication.getBackgroundTaskManager().endTask(learningTask);
 		}
 
 		@Override
-		protected void process(
-				List<List<? extends EvaluatedDescription>> resultLists) {
-
+		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {
 			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
 		}
 
-		private void updateList(
-				final List<? extends EvaluatedDescription> result) {
-
-			Runnable doUpdateList = new Runnable() {
-
-				public void run() {
-					model.setSuggestList(result);
-					view.getSuggestClassPanel().addSuggestions(result);
-					String moreInformationsMessage = "<html><font size=\"3\">Learning started. Currently searching class expressions with length between "
-						+ Manager.getInstance().getMinimumHorizontalExpansion()
-						+ " and "
-						+ Manager.getInstance().getMaximumHorizontalExpansion()
-						+ ".</font></html>";
-					view.setHintMessage(moreInformationsMessage);
-				}
-			};
-			SwingUtilities.invokeLater(doUpdateList);
+		private void updateList(final List<? extends EvaluatedDescription> result) {
+			model.setSuggestList(result);
+			view.setSuggestions(result);
+			view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
+					Manager.getInstance().getMaximumHorizontalExpansion());
 
 		}
-
 	}
-
+	
 }

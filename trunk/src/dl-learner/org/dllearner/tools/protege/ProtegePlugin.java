@@ -79,6 +79,7 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	@Override
 	public void initialise() throws Exception {
 		view = new DLLearnerView(super.getOWLEditorKit());
+		Manager.getInstance(getOWLEditorKit()).setProgressMonitor(view.getStatusBar());
 		System.out.println("Initializing DL-Learner plugin...");
 		addListeners();
 	}

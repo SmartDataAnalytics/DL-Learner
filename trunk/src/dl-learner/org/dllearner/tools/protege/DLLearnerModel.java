@@ -235,6 +235,7 @@ public class DLLearnerModel implements Runnable, OWLModelManagerListener, Dispos
 	public void setReasoner() {
 		this.reasoner = cm.reasoner(ProtegeReasoner.class, sources);
 		reasoner.setOWLReasoner(editor.getOWLModelManager().getReasoner());
+		reasoner.setProgressMonitor(view.getStatusBar());
 //		this.reasoner = new ProtegeReasoner(sources, editor.getOWLModelManager().getReasoner());
 		try {
 			reasoner.init();

@@ -92,6 +92,7 @@ import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
@@ -103,6 +104,8 @@ public class ProtegeReasoner extends ReasonerComponent {
 	private OWLOntology ontology;
 	private OWLDataFactory factory;
 	private OWLReasoner reasoner;
+	
+	private ReasonerProgressMonitor progressMonitor;
 	
 	private ProtegeReasonerConfigurator configurator;
 	
@@ -165,6 +168,10 @@ public class ProtegeReasoner extends ReasonerComponent {
 	@Override
 	public ReasonerType getReasonerType() {
 		return ReasonerType.PROTEGE;
+	}
+	
+	public void setProgressMonitor(ReasonerProgressMonitor progressMonitor){
+		this.progressMonitor = progressMonitor;
 	}
 
 	@Override
@@ -343,9 +350,14 @@ public class ProtegeReasoner extends ReasonerComponent {
 	private void dematerialise(){
 		long dematStartTime = System.currentTimeMillis();
 		logger.debug("dematerialising concepts");
-
+		progressMonitor.reasonerTaskStarted("Preparing DL-Learner ...");
+		int size = atomicConcepts.size() + atomicRoles.size() 
+		+ booleanDatatypeProperties.size() + intDatatypeProperties.size()
+		+ doubleDatatypeProperties.size();
+		int cnt = 1;
+		
 		for (NamedClass atomicConcept : atomicConcepts) {
-
+			
 			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
 			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 			if (configurator.getDefaultNegation()) {
@@ -354,13 +366,14 @@ public class ProtegeReasoner extends ReasonerComponent {
 				Negation negatedAtomicConcept = new Negation(atomicConcept);
 				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) getIndividuals(negatedAtomicConcept));
 			}
-
+			progressMonitor.reasonerTaskProgressChanged(cnt++, size);
 		}
 
 		logger.debug("dematerialising object properties");
 
 		for (ObjectProperty atomicRole : atomicRoles) {
 			opPos.put(atomicRole, getPropertyMembers(atomicRole));
+			progressMonitor.reasonerTaskProgressChanged(cnt++, size);
 		}
 
 		logger.debug("dematerialising datatype properties");
@@ -368,18 +381,22 @@ public class ProtegeReasoner extends ReasonerComponent {
 		for (DatatypeProperty dp : booleanDatatypeProperties) {
 			bdPos.put(dp, (TreeSet<Individual>) getTrueDatatypeMembers(dp));
 			bdNeg.put(dp, (TreeSet<Individual>) getFalseDatatypeMembers(dp));
+			progressMonitor.reasonerTaskProgressChanged(cnt++, size);
 		}
 
 		for (DatatypeProperty dp : intDatatypeProperties) {
 			id.put(dp, getIntDatatypeMembers(dp));
+			progressMonitor.reasonerTaskProgressChanged(cnt++, size);
 		}
 
 		for (DatatypeProperty dp : doubleDatatypeProperties) {
 			dd.put(dp, getDoubleDatatypeMembers(dp));
+			progressMonitor.reasonerTaskProgressChanged(cnt++, size);
 		}
 
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
 		logger.debug("TBox dematerialised in " + dematDuration + " ms");
+		progressMonitor.reasonerTaskStopped();
 	}
 	
 

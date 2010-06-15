@@ -96,7 +96,7 @@ public class SuggestClassPanel extends JPanel {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void addSuggestions(List<? extends EvaluatedDescription> result){
+	public void setSuggestions(List<? extends EvaluatedDescription> result){
 		suggestionTable.setSuggestions((List<EvaluatedDescriptionClass>)result);
 	}
 
