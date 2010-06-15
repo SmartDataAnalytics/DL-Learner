@@ -57,7 +57,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 
 	private final GraphicalCoveragePanel panel;
 	private final EvaluatedDescription description;
-	private final DLLearnerModel model;
 	private BasicComboPopup scrollPopup;
 	private final Vector<String> individualComboBox;
 	private JComboBox indiBox;
@@ -74,12 +73,10 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	 *            DLLearnerModel
 	 */
 	public GraphicalCoveragePanelHandler(GraphicalCoveragePanel p,
-			EvaluatedDescription eval, DLLearnerModel m) {
+			EvaluatedDescription eval) {
 		this.panel = p;
 		description = eval;
-		model = m;
-		ontology = model.getOWLEditorKit().getOWLModelManager()
-				.getActiveOntology();
+		ontology = Manager.getInstance().getActiveOntology();
 		individualComboBox = new Vector<String>();
 
 	}
@@ -116,7 +113,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		}
 
 		Vector<IndividualPoint> v = panel.getIndividualVector();
-		ProtegeReasoner reasoner = model.getReasoner();
+		ProtegeReasoner reasoner = Manager.getInstance().getReasoner();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
 					&& v.get(i).getXAxis() <= m.getX() + 5
@@ -227,13 +224,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				int i = covInd.size();
 				if (i > 0) {
 					for (Individual ind : covInd) {
-						Set<String> uriString = model.getOntologyURIString();
-						for (String uri : uriString) {
-							if (ind.toString().contains(uri)) {
-								individualComboBox.add(ind
-										.toManchesterSyntaxString(uri, null));
-							}
-						}
+						individualComboBox.add(Manager.getInstance().getRendering(ind));
 					}
 					indiBox = new JComboBox(individualComboBox);
 					scrollPopup = new BasicComboPopup(indiBox);
@@ -262,13 +253,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				int i = addInd.size();
 				if (i > 0) {
 					for (Individual ind : addInd) {
-						Set<String> uriString = model.getOntologyURIString();
-						for (String uri : uriString) {
-							if (ind.toString().contains(uri)) {
-								individualComboBox.add(ind
-										.toManchesterSyntaxString(uri, null));
-							}
-						}
+						individualComboBox.add(Manager.getInstance().getRendering(ind));
 					}
 					indiBox = new JComboBox(individualComboBox);
 					scrollPopup = new BasicComboPopup(indiBox);
@@ -284,20 +269,13 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 					&& arg0.getY() <= panel.getY2()) {
 
 				individualComboBox.clear();
-				Set<Individual> notCovInd = model.getReasoner().getIndividuals(
-						model.getCurrentConcept());
+				Set<Individual> notCovInd = Manager.getInstance().getIndividuals();
 				notCovInd.removeAll(((EvaluatedDescriptionClass) description)
 						.getCoveredInstances());
 				int i = notCovInd.size();
 				if (i > 0) {
 					for (Individual ind : notCovInd) {
-						Set<String> uriString = model.getOntologyURIString();
-						for (String uri : uriString) {
-							if (ind.toString().contains(uri)) {
-								individualComboBox.add(ind
-										.toManchesterSyntaxString(uri, null));
-							}
-						}
+						individualComboBox.add(Manager.getInstance().getRendering(ind));
 					}
 					indiBox = new JComboBox(individualComboBox);
 					scrollPopup = new BasicComboPopup(indiBox);

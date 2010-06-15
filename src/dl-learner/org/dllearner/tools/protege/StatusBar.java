@@ -14,7 +14,9 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-public class StatusBar extends JPanel implements PropertyChangeListener {
+import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
+
+public class StatusBar extends JPanel implements PropertyChangeListener, ReasonerProgressMonitor {
 	/**
 	 * 
 	 */
@@ -112,6 +114,30 @@ public class StatusBar extends JPanel implements PropertyChangeListener {
 			}
 		});
 
+	}
+
+	@Override
+	public void reasonerTaskBusy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reasonerTaskProgressChanged(int value, int max) {
+		progressBar.setMaximum(max);
+		setProgress(value);
+	}
+
+	@Override
+	public void reasonerTaskStarted(String message) {
+		setProgress(0);
+		setMessage(message);
+	}
+
+	@Override
+	public void reasonerTaskStopped() {
+		setMessage("");
+		setProgress(0);
 	}
 
 }

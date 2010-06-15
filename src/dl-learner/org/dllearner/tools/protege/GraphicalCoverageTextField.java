@@ -32,7 +32,8 @@ public class GraphicalCoverageTextField extends JTextPane{
 	private final String id;
 	private DLLearnerModel model;
 	EvaluatedDescription description;
-	private String conceptNew;
+	private String newConceptRendered;
+	private String oldConceptRendered;
 	//private final JScrollPane textScroll;
 	
 	public GraphicalCoverageTextField(EvaluatedDescription desc, DLLearnerModel m) {
@@ -45,41 +46,46 @@ public class GraphicalCoverageTextField extends JTextPane{
 		this.setBackground(model.getOWLEditorKit().getOWLWorkspace().getOWLComponentFactory().getOWLClassSelectorPanel().getBackground());
 		this.id = model.getID();
 		this.description = desc;
-		
-		for(String uri : model.getOntologyURIString()) {
-			if(description.getDescription().toString().contains(uri)) {
-				conceptNew = description.getDescription().toManchesterSyntaxString(uri, null);
-			}
-		}
+		Manager manager = Manager.getInstance();
+		newConceptRendered = manager.getRendering(desc.getDescription());
+		oldConceptRendered = manager.getRendering(manager.getCurrentlySelectedClass());
 		this.setText();
 	}
 
 	private void setText() {
-		int coveredInstances = ((EvaluatedDescriptionClass) description).getCoveredInstances().size();
-		int allInstances = coveredInstances + ((EvaluatedDescriptionClass) description).getNotCoveredInstances().size();
+		int coveredInstancesCount = ((EvaluatedDescriptionClass) description).getCoveredInstances().size();
+		int allInstancesCount = coveredInstancesCount + ((EvaluatedDescriptionClass) description).getNotCoveredInstances().size();
+		int additionalInstancesCount = ((EvaluatedDescriptionClass) description).getAdditionalInstances().size();
 		int coverage = (int)(((EvaluatedDescriptionClass) description).getCoverage() * 100);
-		String text ="<html><p><font size=\"3\" color=\"yellow\">\u25cf</font><font size=\"3\" color=\"black\"> " + model.getOldConceptOWLAPI().toString() + "</font></p>" +
-			         "<p style=\"max-width:50px;\"><font size=\"3\" color=\"EE9A00\">\u25cf</font><font size=\"3\" color=\"black\"> " + conceptNew + "</font></p>" +
-			         "<p><font size=\"1\" color=\"green\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font> <font size=\"3\" color=\"EE9A00\">\u25cf</font>" + 
-		             "<font size=\"3\" color=\"black\"> and </font> <font size=\"3\" color=\"yellow\">\u25cf</font><font size=\"3\" color=\"black\"> (OK)</font></p> ";
-		             if(id.equals(EQUI_STRING)) {
-		             text += "<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"EE9A00\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>" + 
-		                     "<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"yellow\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>"; 
-		             } else {
-		            	 text += "<p><font size=\"1\" color=\"green\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"EE9A00\">\u25cf</font></font><font size=\"3\" color=\"black\"> (no problem)</font></p>" + 
-	                     "<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"yellow\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>";;
-		             }
-		             text += "<p><font size=\"3\" color=\"black\">Covers " + coveredInstances + 
-						" of " + allInstances + "(" + coverage + " %) of class instances</font></p>" +
-		             "<p><font size=\"3\" color=\"black\">Covers " + ((EvaluatedDescriptionClass) description).getAdditionalInstances().size() + " additional instances</font></p>";
-		             if(!((EvaluatedDescriptionClass) description).isConsistent()) {
-		            	 text += "<p style=\"max-width:100px;\"><font size=\"3\" color=\"red\">Adding this class expression may lead to an inconsistent ontology.</font></p>";
-		             } 
-		             if(description.getAccuracy() == 1.0) {
-		            	 text += "<p><font size=\"3\" color=\"EE9A00\">\u25cf</font><font size=\"3\" color=\"black\"> and </font> <font size=\"3\" color=\"yellow\">\u25cf</font> cover the same instances.</p>";
-		             }
-		             text += "</html>";
-		this.setText(text);
+		             
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><p><font size=\"3\" color=\"yellow\">\u25cf</font><font size=\"3\" color=\"black\"> ");
+		sb.append(oldConceptRendered);
+		sb.append("</font></p>");
+		sb.append("<p style=\"max-width:50px;\"><font size=\"3\" color=\"EE9A00\">\u25cf</font><font size=\"3\" color=\"black\"> ");
+		sb.append(newConceptRendered);
+		sb.append("</font></p>");
+		sb.append("<p><font size=\"1\" color=\"green\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font> <font size=\"3\" color=\"EE9A00\">\u25cf</font>");
+		sb.append("<font size=\"3\" color=\"black\"> and </font> <font size=\"3\" color=\"yellow\">\u25cf</font><font size=\"3\" color=\"black\"> (OK)</font></p> ");
+		if(id.equals(EQUI_STRING)){
+			sb.append("<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"EE9A00\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>");
+			sb.append("<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"yellow\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>");
+		} else {
+			sb.append("<p><font size=\"1\" color=\"green\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"EE9A00\">\u25cf</font></font><font size=\"3\" color=\"black\"> (no problem)</font></p>");
+			sb.append("<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"yellow\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>");
+		}
+		sb.append("<p><font size=\"3\" color=\"black\">Covers ").append(coveredInstancesCount).append(" of ").append(allInstancesCount).append("(").append(coverage).append(" %) of class instances</font></p>");
+		sb.append("<p><font size=\"3\" color=\"black\">Covers ").append(additionalInstancesCount).append(" additional instances</font></p>");
+		if(!((EvaluatedDescriptionClass) description).isConsistent()) {
+			sb.append("<p style=\"max-width:100px;\"><font size=\"3\" color=\"red\">Adding this class expression may lead to an inconsistent ontology.</font></p>");
+        } 
+        if(description.getAccuracy() == 1.0) {
+        	sb.append("<p><font size=\"3\" color=\"EE9A00\">\u25cf</font><font size=\"3\" color=\"black\"> and </font> <font size=\"3\" color=\"yellow\">\u25cf</font> cover the same instances.</p>");
+        }
+		sb.append("</html>");
+		
+		
+		this.setText(sb.toString());
 		//textScroll.setViewportView(this);
 	}
 	

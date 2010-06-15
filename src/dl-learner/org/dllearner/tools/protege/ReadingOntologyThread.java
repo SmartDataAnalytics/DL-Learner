@@ -32,7 +32,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLClass;
 
 /**
- * This class reads the ontologie in a separate thread.
+ * This class reads the ontology in a separate thread.
  * 
  * @author Christian Koetteritzsch
  * 
@@ -172,40 +172,58 @@ public class ReadingOntologyThread extends Thread {
 
 	@Override
 	public void run() {
-		String loading = "<html><font size=\"3\">loading instances...</font></html>";
-		view.getHintPanel().setForeground(Color.RED);
-		view.setHintMessage(loading);
-		if (!model.isReasonerSet()
-				|| model.getIsKnowledgeSourceIsUpdated() == true) {
-			model.setKnowledgeSource();
-			model.setReasoner();
-		}
-		reasoner = model.getReasoner();
-		isInconsistent = view.getIsInconsistent();
-		if (!isInconsistent) {
-			this.checkURI();
-			this.setPositiveConcept();
-			if (this.hasIndividuals()) {
-				view.getRunButton().setEnabled(true);
-				view.getHintPanel().setForeground(Color.BLACK);
-				view
-						.setHintMessage("<html><font size=\"3\">To get suggestions for class descriptions, please click the button above.</font></html>");
-
-			} else {
-				view.getRunButton().setEnabled(false);
-				view.getHintPanel().setVisible(true);
-				String message = "<html><font size=\"3\" color=\"red\">There are no Instances for "
-						+ current
-						+ " available. Please insert some Instances.</font></html>";
-				view.getHintPanel().setForeground(Color.RED);
-				view.setHintMessage(message);
-			}
-		} else {
-			view.getHintPanel().setForeground(Color.RED);
-			view.getRunButton().setEnabled(false);
+		view.setStatusBarVisible(true);
+		view.setBusy(true);
+		Manager.getInstance().initKnowledgeSource();
+		Manager.getInstance().initReasoner();
+		view.setStatusBarVisible(false);
+		view.setBusy(false);
+		if(Manager.getInstance().canLearn()){
+			view.getRunButton().setEnabled(true);
 			view
-					.setHintMessage("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
+			.setHintMessage("<html><font size=\"3\">To get suggestions for class descriptions, please click the button above.</font></html>");
+		} else {
+			String message = "<html><font size=\"3\" color=\"red\">There are no instances for "
+				+ current
+				+ " available. Please insert some instances.</font></html>";
+		view.getHintPanel().setForeground(Color.RED);
+		view.setHintMessage(message);
 		}
+		
+//		String loading = "<html><font size=\"3\">loading instances...</font></html>";
+//		view.getHintPanel().setForeground(Color.RED);
+//		view.setHintMessage(loading);
+//		if (!model.isReasonerSet()
+//				|| model.getIsKnowledgeSourceIsUpdated() == true) {
+//			model.setKnowledgeSource();
+//			model.setReasoner();
+//		}
+//		reasoner = model.getReasoner();
+//		isInconsistent = view.getIsInconsistent();
+//		if (!isInconsistent) {
+//			this.checkURI();
+//			this.setPositiveConcept();
+//			if (this.hasIndividuals()) {
+//				view.getRunButton().setEnabled(true);
+//				view.getHintPanel().setForeground(Color.BLACK);
+//				view
+//						.setHintMessage("<html><font size=\"3\">To get suggestions for class descriptions, please click the button above.</font></html>");
+//
+//			} else {
+//				view.getRunButton().setEnabled(false);
+//				view.getHintPanel().setVisible(true);
+//				String message = "<html><font size=\"3\" color=\"red\">There are no Instances for "
+//						+ current
+//						+ " available. Please insert some Instances.</font></html>";
+//				view.getHintPanel().setForeground(Color.RED);
+//				view.setHintMessage(message);
+//			}
+//		} else {
+//			view.getHintPanel().setForeground(Color.RED);
+//			view.getRunButton().setEnabled(false);
+//			view
+//					.setHintMessage("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
+//		}
 	}
 
 	/**

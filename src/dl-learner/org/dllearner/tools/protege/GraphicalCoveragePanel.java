@@ -62,7 +62,6 @@ public class GraphicalCoveragePanel extends JPanel {
 	private Ellipse2D newConcept;
 
 	private EvaluatedDescription eval;
-	private final DLLearnerModel model;
 	private String conceptNew;
 	private final Vector<IndividualPoint> posCovIndVector;
 	private final Vector<IndividualPoint> posNotCovIndVector;
@@ -102,16 +101,17 @@ public class GraphicalCoveragePanel extends JPanel {
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
 		eval = desc;
-		model = m;
-		id = model.getID();
+//		id = model.getID();
+		id = EQUI_STRING;
 		darkGreen = new Color(0, 100, 0);
 		darkRed = new Color(205, 0, 0);
 		random = new Random();
-		for(String uri : model.getOntologyURIString()) {
-			if(eval.getDescription().toString().contains(uri)) {
-				conceptNew = eval.getDescription().toManchesterSyntaxString(uri, null);
-			}
-		}
+//		for(String uri : model.getOntologyURIString()) {
+//			if(eval.getDescription().toString().contains(uri)) {
+//				conceptNew = eval.getDescription().toManchesterSyntaxString(uri, null);
+//			}
+//		}
+		conceptNew = Manager.getInstance().getRendering(eval.getDescription());
 		
 		conceptVector = new Vector<String>();
 		posCovIndVector = new Vector<IndividualPoint>();
@@ -119,7 +119,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		additionalIndividuals = new Vector<IndividualPoint>();
 		points = new Vector<IndividualPoint>();
 		this.computeGraphics();
-		handler = new GraphicalCoveragePanelHandler(this, desc, model);
+		handler = new GraphicalCoveragePanelHandler(this, desc);
 		if(shiftXAxis == 0) {
 		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment)+3,
 				ELLIPSE_Y_AXIS+3, WIDTH, HEIGHT);
@@ -137,7 +137,7 @@ public class GraphicalCoveragePanel extends JPanel {
 					+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
 					+ distortionOld);
 		}
-		factory = model.getOWLEditorKit().getOWLModelManager().getOWLDataFactory();
+		factory = Manager.getInstance().getActiveOntology().getOWLOntologyManager().getOWLDataFactory();
 		this.computeIndividualPoints();
 		this.addMouseMotionListener(handler);
 		this.addMouseListener(handler);
@@ -159,8 +159,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			g2D.setColor(Color.BLACK);
 
 			// Plus 1
-			if (coveredIndividualSize != model.getReasoner().getIndividuals(
-					model.getCurrentConcept()).size()
+			if (coveredIndividualSize != Manager.getInstance().getIndividuals().size()
 					&& notCoveredInd != 0) {
 				g2D.drawLine(x1 - 1 - shiftOldConcept, y1 - 1, x2 + 1
 						- shiftOldConcept, y1 - 1);
@@ -211,8 +210,7 @@ public class GraphicalCoveragePanel extends JPanel {
 					y2 + 1);
 
 			// Plus 3
-			if (coveredIndividualSize != model.getReasoner().getIndividuals(
-					model.getCurrentConcept()).size() && ((EvaluatedDescriptionClass) eval).getAdditionalInstances().size() != 0) {
+			if (coveredIndividualSize != Manager.getInstance().getIndividuals().size() && ((EvaluatedDescriptionClass) eval).getAdditionalInstances().size() != 0) {
 				g2D.drawLine(x1 - 1 + shiftNewConcept, y1 - 1, x2 + 1
 						+ shiftNewConcept, y1 - 1);
 				g2D.drawLine(x1 + shiftNewConcept, centerY - 1, x2
@@ -407,13 +405,8 @@ public class GraphicalCoveragePanel extends JPanel {
 												+ this.getShiftCovered()
 										&& y >= this.getY1() && y <= this
 										.getY2())) {
-							Set<String> uriString = model.getOntologyURIString();
-							for(String uri : uriString) {
-								if(ind.toString().contains(uri)) {
-									posCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
-								}
-							}
+							posCovIndVector.add(new IndividualPoint("*",
+									(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
 							i++;
 							flag = false;
 
@@ -455,21 +448,11 @@ public class GraphicalCoveragePanel extends JPanel {
 										.getY2()
 										+ this.getShiftNewConcept())) {
 							if (id.equals(EQUI_STRING)) {
-								Set<String> uriString = model.getOntologyURIString();
-								for(String uri : uriString) {
-									if(ind.toString().contains(uri)) {
-										posNotCovIndVector.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
-									}
-								}
+								posNotCovIndVector.add(new IndividualPoint("*",
+										(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
 							} else {
-								Set<String> uriString = model.getOntologyURIString();
-								for(String uri : uriString) {
-									if(ind.toString().contains(uri)) {
-										additionalIndividuals.add(new IndividualPoint("*",
-												(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
-									}
-								}
+								additionalIndividuals.add(new IndividualPoint("*",
+										(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
 							}
 							j++;
 							flag = false;
@@ -485,8 +468,7 @@ public class GraphicalCoveragePanel extends JPanel {
 				}
 			}
 
-			Set<Individual> notCovInd = model.getReasoner().getIndividuals(
-					model.getCurrentConcept());
+			Set<Individual> notCovInd = Manager.getInstance().getIndividuals();
 			notCovInd.removeAll(posInd);
 			notCoveredInd = notCovInd.size();
 			int k = 0;
@@ -504,13 +486,8 @@ public class GraphicalCoveragePanel extends JPanel {
 												- this.getShiftOldConcept()
 										&& y >= this.getY1() && y <= this
 										.getY2())) {
-							Set<String> uriString = model.getOntologyURIString();
-							for(String uri : uriString) {
-								if(ind.toString().contains(uri)) {
-									posNotCovIndVector.add(new IndividualPoint("*",
-											(int) x, (int) y, ind.toManchesterSyntaxString(uri, null), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, uri));
-								}
-							}
+							posNotCovIndVector.add(new IndividualPoint("*",
+									(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
 							k++;
 							flag = false;
 							x = random.nextInt(MAX_RANDOM_NUMBER);

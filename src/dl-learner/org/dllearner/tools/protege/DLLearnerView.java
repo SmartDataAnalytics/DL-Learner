@@ -28,6 +28,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
@@ -40,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 
+import org.dllearner.core.EvaluatedDescription;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
@@ -121,7 +123,7 @@ public class DLLearnerView {
 	private String labels;
 	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
-	private StatusBar stat;
+	private StatusBar statusBar;
 	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for an introduction.</font></html>";
 
 	/**
@@ -166,14 +168,14 @@ public class DLLearnerView {
 		runPanel = new JPanel(new FlowLayout());
 		accept = new JButton("<html>ADD</html>");
 		addButtonPanel = new JPanel(new BorderLayout());
-		stat = new StatusBar();
-		stat.setBackground(learnerScroll.getBackground());
+		statusBar = new StatusBar();
+		statusBar.setBackground(learnerScroll.getBackground());
 		this.setStatusBarVisible(false);
 		hint = new JTextPane();
 		hint.setBackground(learnerScroll.getBackground());
 		hint.setContentType("text/html");
 		hint.setEditable(false);
-		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
+//		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(new GridBagLayout());
@@ -216,7 +218,7 @@ public class DLLearnerView {
 
 		helpButton.setVisible(false);
 		hint.setForeground(Color.BLACK);
-		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
+//		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
 		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
 		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
 			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
@@ -274,7 +276,7 @@ public class DLLearnerView {
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 2;
-		learner.add(stat, c);
+		learner.add(statusBar, c);
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.0;
@@ -350,7 +352,7 @@ public class DLLearnerView {
 	 * is started.
 	 */
 	public void setStatusBarVisible(boolean b) {
-		stat.setVisible(b);
+		statusBar.setVisible(b);
 	}
 	/**
 	 * This method enables the GraphicalCoveragePanel after a class expression is
@@ -573,14 +575,14 @@ public class DLLearnerView {
 	 * This method starts the status bar.
 	 */
 	public void startStatusBar() {
-		stat.showProgress(true);
+		statusBar.showProgress(true);
 	}
 	
 	/**
 	 * This method stops the status bar.
 	 */
 	public void stopStatusBar() {
-		stat.showProgress(false);
+		statusBar.showProgress(false);
 	}
 	
 	/**
@@ -588,7 +590,7 @@ public class DLLearnerView {
 	 * @return statusbar
 	 */
 	public StatusBar getStatusBar() {
-		return stat;
+		return statusBar;
 	}
 	
 	public HyperLinkHandler getHyperLinkHandler() {
@@ -602,6 +604,51 @@ public class DLLearnerView {
 			getLearnerView().setCursor(Cursor.getDefaultCursor());
 		}
 		
+	}
+	
+	public void setBusyTaskStarted(String taskName){
+		setBusy(true);
+		setHelpButtonVisible(true);
+		setStatusBarVisible(true);
+		statusBar.showProgress(true);
+		statusBar.setMessage(taskName);
+	}
+	
+	public void setBusyTaskEnded(){
+		setBusy(false);
+		setHelpButtonVisible(false);
+		setStatusBarVisible(false);
+		statusBar.showProgress(false);
+		statusBar.setMessage("");
+	}
+	
+	public void setLearningStarted(){
+		setBusy(true);
+		setHelpButtonVisible(true);
+		setStatusBarVisible(true);
+		run.setEnabled(false);
+		statusBar.setMaximumValue(Manager.getInstance().getMaxExecutionTimeInSeconds());
+		statusBar.setMessage("Learning ...");
+	}
+	
+	public void setLearningFinished(){
+		stopStatusBar();
+		setBusy(false);
+		showAlgorithmTerminatedMessage();
+	}
+	
+	public void showHorizontalExpansionMessage(int min, int max){
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><font size=\"3\">Currently searching class expressions with length between ");
+		sb.append(min);
+		sb.append(" and ");
+		sb.append(max);
+		sb.append(".</font></html>");
+		setHintMessage(sb.toString());
+	}
+	
+	public void setSuggestions(List<? extends EvaluatedDescription> suggestions){
+		sugPanel.setSuggestions(suggestions);
 	}
 	
 }
