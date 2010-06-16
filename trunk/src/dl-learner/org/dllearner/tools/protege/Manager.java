@@ -8,6 +8,7 @@ import java.util.SortedSet;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -21,6 +22,7 @@ import org.dllearner.reasoning.ProtegeReasoner;
 import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.protege.editor.core.Disposable;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
@@ -35,7 +37,18 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 
-public class Manager implements OWLModelManagerListener, OWLSelectionModelListener{
+public class Manager implements OWLModelManagerListener, OWLSelectionModelListener, Disposable{
+	
+	private final String[] components = { "org.dllearner.kb.OWLFile",
+			"org.dllearner.reasoning.OWLAPIReasoner",
+			"org.dllearner.reasoning.FastInstanceChecker",
+			"org.dllearner.reasoning.ProtegeReasoner",
+			"org.dllearner.reasoning.FastRetrievalReasoner",
+			"org.dllearner.algorithms.RandomGuesser",
+			"org.dllearner.algorithms.refinement.ROLearner",
+			"org.dllearner.algorithms.celoe.CELOE",
+			"org.dllearner.algorithms.gp.GP", "org.dllearner.learningproblems.PosOnlyLP",
+			"org.dllearner.learningproblems.PosNegLPStandard", "org.dllearner.learningproblems.ClassLearningProblem"};
 	
 	private static Manager instance;
 	
@@ -62,6 +75,8 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	private boolean useCardinalityRestrictions;
 	private int cardinalityLimit;
 	
+	private volatile boolean isPreparing = false;
+	
 	public static synchronized Manager getInstance(OWLEditorKit editorKit){
 		if(instance == null){
 			instance = new Manager(editorKit);
@@ -75,6 +90,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	private Manager(OWLEditorKit editorKit){
 		this.editorKit = editorKit;
+		ComponentManager.setComponentClasses(components);
 		cm = ComponentManager.getInstance();
 	}
 	
@@ -175,12 +191,13 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		t.start();
 	}
 	
-	public void addAxiom(OWLClassExpression description){
+	public void addAxiom(EvaluatedDescription description){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
+		OWLClassExpression exp = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description.getDescription());
 		if(learningType == LearningType.EQUIVALENT){
-			addEquivalentClassesAxiom(selectedClass, description);
+			addEquivalentClassesAxiom(selectedClass, exp);
 		} else {
-			addSuperClassAxiom(selectedClass, description);
+			addSuperClassAxiom(selectedClass, exp);
 		}
 	}
 	
@@ -340,6 +357,14 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		return getRendering(getCurrentlySelectedClass());
 	}
 	
+	public synchronized void setIsPreparing(boolean isPreparing){
+		this.isPreparing = isPreparing;
+	}
+	
+	public synchronized boolean isPreparing(){
+		return isPreparing;
+	}
+	
 	@Override
 	public void handleChange(OWLModelManagerChangeEvent event) {
 		if(event.isType(EventType.REASONER_CHANGED) || event.isType(EventType.ACTIVE_ONTOLOGY_CHANGED)){
@@ -349,6 +374,15 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 
 	@Override
 	public void selectionChanged() throws Exception {
+	}
+
+	@Override
+	public void dispose() throws Exception {
+		reasoner.releaseKB();
+		cm.freeAllComponents();
+		editorKit.getOWLModelManager().removeListener(this);
+		editorKit.getOWLWorkspace().getOWLSelectionModel().removeListener(this);
+		
 	}
 
 }

@@ -56,7 +56,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		MouseListener, PropertyChangeListener {
 
 	private final GraphicalCoveragePanel panel;
-	private final EvaluatedDescription description;
+	private EvaluatedDescription description;
 	private BasicComboPopup scrollPopup;
 	private final Vector<String> individualComboBox;
 	private JComboBox indiBox;
@@ -79,6 +79,10 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 		ontology = Manager.getInstance().getActiveOntology();
 		individualComboBox = new Vector<String>();
 
+	}
+	
+	public void setDescription(EvaluatedDescription description){
+		this.description = description;
 	}
 
 	@Override

@@ -19,15 +19,18 @@
  */
 package org.dllearner.tools.protege;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.swing.JComponent;
 
 import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
+import org.protege.editor.owl.model.inference.NoOpReasoner;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
  * This is the class that must be implemented to get the plugin integrated in
@@ -42,32 +45,31 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	
 	@Override
 	public JComponent getComponent() {
-		return view.getLearnerView();
+		return view.getView();
 	}
 
 	@Override
 	public Set<OWLClassExpression> getClassExpressions() {
-		if(view.getDLLearnerModel().getLearningAlgorithm() != null) {
-			if(view.getDLLearnerModel().getLearningAlgorithm().isRunning()) {
-				view.getDLLearnerModel().getLearningAlgorithm().stop();
-				view.unsetEverything();
-			}
-		}
-		return view.getSolutions();
+		return Collections.emptySet();
 	}
 
 	@Override
 	public boolean isValidInput() {
-		view.getSuggestClassPanel().getSuggestModel().clear();
-		view.getSuggestClassPanel().getSuggestionsTable().clear();
 		if(getAxiomType() == AxiomType.EQUIVALENT_CLASSES) {
 			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.EQUIVALENT);
-			view.makeView("equivalent class");
 		} else if(getAxiomType() == AxiomType.SUBCLASS_OF) {
-			view.makeView("super class");
 			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.SUPER);
 		}
-		view.getMoreDetailForSuggestedConceptsPanel().unsetPanel();
+		view.reset();
+		OWLReasoner r = getOWLEditorKit().getModelManager().getReasoner();
+		if(r instanceof NoOpReasoner){
+			view.setHintMessage("<html><font size=\"3\" color=\"red\">You have to select a reasoner first.</font></html>");
+			view.setRunButtonEnabled(false);
+		} else {
+			if(!Manager.getInstance().isPreparing() && Manager.getInstance().isReinitNecessary()){
+				new ReadingOntologyThread(view).start();
+			}
+		}
 		return true;
 	}
 
@@ -78,8 +80,9 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 
 	@Override
 	public void initialise() throws Exception {
+		Manager.getInstance(getOWLEditorKit());
 		view = new DLLearnerView(super.getOWLEditorKit());
-		Manager.getInstance(getOWLEditorKit()).setProgressMonitor(view.getStatusBar());
+		Manager.getInstance().setProgressMonitor(view.getStatusBar());
 		System.out.println("Initializing DL-Learner plugin...");
 		addListeners();
 	}
@@ -87,6 +90,7 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	@Override
 	public void dispose() throws Exception {
 		view.dispose();
+		Manager.getInstance().dispose();
 		removeListeners();
 		view = null;
 	}

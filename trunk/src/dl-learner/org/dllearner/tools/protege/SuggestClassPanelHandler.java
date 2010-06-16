@@ -30,8 +30,6 @@ import org.dllearner.core.EvaluatedDescription;
  */
 public class SuggestClassPanelHandler implements  ListSelectionListener{
 	private DLLearnerView view;
-//	private DLLearnerModel model;
-	private ActionHandler action;
 	private EvaluatedDescription evaluatedDescription;
 	
 	/**
@@ -39,10 +37,8 @@ public class SuggestClassPanelHandler implements  ListSelectionListener{
 	 * @param v DLLearnerView
 	 * @param m DLLearnerModel
 	 */
-	public SuggestClassPanelHandler(DLLearnerView v, DLLearnerModel m, ActionHandler a) {
+	public SuggestClassPanelHandler(DLLearnerView v) {
 		this.view = v;
-//		this.model = m;
-		this.action = a;
 	}
 
 	@Override
@@ -55,10 +51,10 @@ public class SuggestClassPanelHandler implements  ListSelectionListener{
 //			evaluatedDescription = view.getSuggestClassPanel().getSuggestionsTable().getSelectedSuggestion();
 			if(!e.getValueIsAdjusting() && (evaluatedDescription == null || !evaluatedDescription.equals(newDesc))){
 				evaluatedDescription = newDesc;
-				view.getMoreDetailForSuggestedConceptsPanel().
-				renderDetailPanel(evaluatedDescription);
-				view.setGraphicalPanel();
-				action.setEvaluatedClassExpression(evaluatedDescription);
+//				view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(evaluatedDescription);
+				view.showHintMessagePanel(false);
+				view.showGraphicalPanel(true);
+				view.getGraphicalPanel().setDescription(evaluatedDescription);
 				view.getAddButton().setEnabled(true);
 			}
 		}

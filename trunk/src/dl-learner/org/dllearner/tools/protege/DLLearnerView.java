@@ -29,9 +29,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.List;
-import java.util.Set;
 
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -42,8 +40,8 @@ import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
  * This class is responsible for the view of the dllearner. It renders the
  * output for the user and is the graphical component of the plugin.
@@ -51,38 +49,35 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerView {
+public class DLLearnerView extends JPanel{
 
 	
 	private static final  long serialVersionUID = 624829578325729385L; 
 	//TODO: gucken wie geht
 	private HyperLinkHandler hyperHandler;
 	// this is the Component which shows the view of the dllearner
-	private final JComponent learner;
+	private JComponent learner;
 
 	// Accept button to add the learned concept to the owl
 
-	private final JButton accept;
+	private JButton addButton;
 
 	// Runbutton to start the learning algorithm
 
-	private final JButton run;
+	private JButton runButton;
 
 	// This is the label for the advanced button.
 
-	private final JLabel adv;
+	private JLabel advancedLabel;
 
 	// Advanced Button to activate/deactivate the example select panel
 
-	private final JToggleButton advanced;
+	private JToggleButton advancedButton;
 
 	// Action Handler that manages the Button actions
 
-	private final ActionHandler action;
+	private ActionHandler actionHandler;
 
-	// This is the model of the dllearner plugin which includes all data
-
-	private final DLLearnerModel model;
 
 	// Panel for the suggested concepts
 
@@ -90,38 +85,32 @@ public class DLLearnerView {
 
 	// Selection panel for the positive and negative examples
 
-	private final OptionPanel posPanel;
+	private OptionPanel optionsPanel;
 
 	// Picture for the advanced button when it is not toggled
 
-	private final ImageIcon icon;
+	private ImageIcon icon;
 
 	// Picture of the advanced button when it is toggled
-	private final JPanel addButtonPanel;
-	private final JTextPane wikiPane;
-	private final ImageIcon toggledIcon;
+	private JTextPane wikiPane;
+	private ImageIcon toggledIcon;
 	private ImageIcon helpIcon;
-	private final JTextPane hint;
+	private JTextPane hint;
 	private JButton helpButton;
-	private final JPanel runPanel;
-	private final JPanel advancedPanel;
+	private JPanel advancedPanel;
 	private JPanel hintPanel;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
-	private final MoreDetailForSuggestedConceptsPanel detail;
-	private ReadingOntologyThread readThread;
-	private final OWLEditorKit editorKit;
-	private final JPanel learnerPanel;
-	private final JScrollPane learnerScroll;
-	private static  final int SCROLL_SPEED = 10;
+	private MoreDetailForSuggestedConceptsPanel detail;
+	private OWLEditorKit editorKit;
+	private JScrollPane learnerScroll;
+	private static final int SCROLL_SPEED = 10;
 	private static final int WIDTH = 575;
 	private static final int HEIGHT = 350;
 	private static final int OPTION_HEIGHT = 400;
 	private static final int SCROLL_WIDTH = 600;
 	private static final int SCROLL_HEIGHT = 400;
 	private boolean toogled = false;
-	private String labels;
-	private int individualSize;
 	private SuggestClassPanelHandler sugPanelHandler;
 	private StatusBar statusBar;
 	private static final String WIKI_STRING = "<html><font size=\"3\">See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">DL-Learner plugin page</a> for an introduction.</font></html>";
@@ -134,63 +123,7 @@ public class DLLearnerView {
 	 */
 	public DLLearnerView(OWLEditorKit editor) {
 		editorKit = editor;
-		labels = "";
-		individualSize = 0;
-		hyperHandler = new HyperLinkHandler();
-		model = new DLLearnerModel(editorKit, this);
-		sugPanel = new SuggestClassPanel(model, this);
-		learnerPanel = new JPanel();
-		hintPanel = new JPanel(new FlowLayout());
-		learnerPanel.setLayout(new BorderLayout());
-		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		action = new ActionHandler(model, this);
-		wikiPane = new JTextPane();
-		wikiPane.setContentType("text/html");
-		wikiPane.setBackground(learnerScroll.getBackground());
-		wikiPane.setEditable(false);
-		wikiPane.setText(WIKI_STRING);
-		wikiPane.addHyperlinkListener(hyperHandler);
-		URL iconUrl = this.getClass().getResource("arrow.gif");
-		icon = new ImageIcon(iconUrl);
-		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
-		toggledIcon = new ImageIcon(toggledIconUrl);
-		adv = new JLabel("<html>Advanced Settings</html>");
-		advanced = new JToggleButton(icon);
-		advanced.setVisible(true);
-		advancedPanel = new JPanel();
-		run = new JButton();
-		URL helpIconUrl = this.getClass().getResource("Help-16x16.png");
-		helpIcon = new ImageIcon(helpIconUrl);
-		helpButton = new JButton(helpIcon);
-		helpButton.setPreferredSize(new Dimension(20, 20));
-		helpButton.setName("help");
-		helpButton.addActionListener(action);
-		runPanel = new JPanel(new FlowLayout());
-		accept = new JButton("<html>ADD</html>");
-		addButtonPanel = new JPanel(new BorderLayout());
-		statusBar = new StatusBar();
-		statusBar.setBackground(learnerScroll.getBackground());
-		this.setStatusBarVisible(false);
-		hint = new JTextPane();
-		hint.setBackground(learnerScroll.getBackground());
-		hint.setContentType("text/html");
-		hint.setEditable(false);
-//		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
-		learner = new JPanel();
-		advanced.setSize(20, 20);
-		learner.setLayout(new GridBagLayout());
-		accept.setPreferredSize(new Dimension(70, 40));
-		run.setPreferredSize(new Dimension(260, 30));
-		advanced.setName("Advanced");
-		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
-		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
-		posPanel = new OptionPanel();
-		detail = new MoreDetailForSuggestedConceptsPanel(model);
-		sugPanelHandler = new SuggestClassPanelHandler(this, model, action);
-		sugPanel.getSuggestionsTable().getSelectionModel().addListSelectionListener(sugPanelHandler);
-		this.addAcceptButtonListener(this.action);
-		this.addRunButtonListener(this.action);
-		this.addAdvancedButtonListener(this.action);	
+		createUI();
 	}
 	
 	
@@ -206,121 +139,160 @@ public class DLLearnerView {
 	 * @return PosAndNegSelectPanel
 	 */
 	public OptionPanel getOptionsPanel() {
-		return posPanel;
+		return optionsPanel;
 	}
 	
-	/**
-	 * This Method renders the view of the plugin.
-	 * @param label label if it is an equivalent or superclass
-	 */
-	public void makeView(String label) {
-		run.setEnabled(false);
-
-		helpButton.setVisible(false);
-		hint.setForeground(Color.BLACK);
-//		hint.setText("<html><font size=\"3\">To get suggestions for class expression, please click the button above.</font></html>");
-		String currentConcept = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().toString();
-		if(!labels.equals(currentConcept) || individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
-			if(individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
-				model.setKnowledgeSourceIsUpdated(true);
-			} else {
-				model.setKnowledgeSourceIsUpdated(false);
-			}
-			readThread = new ReadingOntologyThread(editorKit, this, model);
-		}
-		if(!readThread.isAlive() && !labels.equals(currentConcept)|| individualSize != editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size()) {
-			readThread.start();
-		}
-		if(readThread.hasIndividuals()) {
-			run.setEnabled(true);
-		}
-		individualSize = editorKit.getModelManager().getActiveOntology().getIndividualsInSignature(true).size();
-		labels = currentConcept;
-		run.setText("<html>suggest " + label + " expression</html>");
+	
+	private void createUI(){
+		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		learner.remove(detail);
-		model.setID(label);
-		runPanel.add(BorderLayout.WEST, run);
-		runPanel.add(BorderLayout.EAST, wikiPane);
 		
+		hyperHandler = new HyperLinkHandler();
+		actionHandler = new ActionHandler(this);
 		
+		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
+		learnerScroll.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
+		
+		JPanel addButtonPanel = new JPanel(new BorderLayout());
+		addButton = new JButton("<html>ADD</html>");
+		addButton.setPreferredSize(new Dimension(70, 40));
+		addButton.setEnabled(false);
+		c.gridx = 2;
+		c.gridy = 1;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridwidth = 1;
+		addButtonPanel.add("North", addButton);
+		add(addButtonPanel, c);
+		
+		JPanel runButtonPanel = new JPanel(new FlowLayout());
+		runButton = new JButton();
+		runButton.setPreferredSize(new Dimension(260, 30));
+		runButton.setEnabled(false);
+		runButtonPanel.add(BorderLayout.WEST, runButton);
+		wikiPane = new JTextPane();
+		wikiPane.setContentType("text/html");
+		wikiPane.setBackground(learnerScroll.getBackground());
+		wikiPane.setEditable(false);
+		wikiPane.setText(WIKI_STRING);
+		wikiPane.addHyperlinkListener(hyperHandler);
+		runButtonPanel.add(BorderLayout.EAST, wikiPane);
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridy = 0;
 		c.gridwidth = 3;
-		learner.add(runPanel, c);
+		add(runButtonPanel, c);
 		
-		sugPanel.setSuggestList(new DefaultListModel());
+		sugPanel = new SuggestClassPanel(editorKit);
+		sugPanelHandler = new SuggestClassPanelHandler(this);
+		sugPanel.getSuggestionsTable().getSelectionModel().addListSelectionListener(sugPanelHandler);
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.gridwidth = 2;
-		sugPanel.setSuggestList(model.getSuggestModel());
-		learner.add(sugPanel, c);
+		add(sugPanel, c);
 		
-		accept.setEnabled(false);
-		c.gridx = 2;
-		c.gridy = 1;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridwidth = 1;
-		addButtonPanel.add("North", accept);
-		learner.add(addButtonPanel, c);
-		
+		statusBar = new StatusBar();
+		statusBar.setBackground(learnerScroll.getBackground());
+		showStatusBar(false);
 		c.fill = GridBagConstraints.WEST;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 2;
-		learner.add(statusBar, c);
+		add(statusBar, c);
 		
+		hintPanel = new JPanel(new FlowLayout());
+		hint = new JTextPane();
+		hint.setBackground(learnerScroll.getBackground());
+		hint.setContentType("text/html");
+		hint.setEditable(false);
+		hintPanel.add(BorderLayout.CENTER, hint);
+		URL helpIconUrl = this.getClass().getResource("Help-16x16.png");
+		helpIcon = new ImageIcon(helpIconUrl);
+		helpButton = new JButton(helpIcon);
+		helpButton.setName("help");
+		helpButton.addActionListener(actionHandler);
+		helpButton.setPreferredSize(new Dimension(30, 30));
+		helpButton.setVisible(false);
+		hintPanel.add(BorderLayout.EAST, helpButton);
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = 3;
-		helpButton.setPreferredSize(new Dimension(30, 30));
-		hintPanel.add(BorderLayout.CENTER, hint);
-		hintPanel.add(BorderLayout.EAST, helpButton);
-		learner.add(hintPanel, c);
+		add(hintPanel, c);
 		
-		advancedPanel.add(advanced);
-		advancedPanel.add(adv);
-		advanced.setIcon(icon);
-		advanced.setSelected(false);
+		detail = new MoreDetailForSuggestedConceptsPanel(editorKit);
+//		detail.unsetPanel();
+		detail.setVisible(false);
+		c.fill = GridBagConstraints.VERTICAL;
+		c.gridx = 0;
+		c.gridy = 4;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		add(detail, c);
+		
+		advancedPanel = new JPanel();
+		URL iconUrl = this.getClass().getResource("arrow.gif");
+		icon = new ImageIcon(iconUrl);
+		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
+		toggledIcon = new ImageIcon(toggledIconUrl);
+		advancedLabel = new JLabel("<html>Advanced Settings</html>");
+		advancedPanel.add(advancedLabel);
+		advancedButton = new JToggleButton(icon);
+		advancedButton.setName("Advanced");
+		advancedButton.setIcon(icon);
+		advancedButton.setSelected(false);
+		advancedButton.setVisible(true);
+		advancedButton.setSize(20, 20);
+		advancedPanel.add(advancedButton);
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
-		c.gridy = 4;
-		learner.add(advancedPanel, c);
+		c.gridy = 5;
+		add(advancedPanel, c);
 		
-		posPanel.setVisible(false);
+		optionsPanel = new OptionPanel();
+		optionsPanel.setVisible(false);
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
-		c.gridy = 5;
+		c.gridy = 6;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridwidth = 3;
-		learner.add(posPanel, c);
+		add(optionsPanel, c);
 		
+		this.addAcceptButtonListener(this.actionHandler);
+		this.addRunButtonListener(this.actionHandler);
+		this.addAdvancedButtonListener(this.actionHandler);	
 		
-		detail.unsetPanel();
-		learnerPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		detail.setVisible(false);
-		isInconsistent = false;
-
-		hint.setVisible(true);
-		action.resetToggled();
-		detail.setVisible(true);
-		sugPanel.setVisible(true);
-		learnerScroll.setViewportView(learner);
-		this.getSuggestClassPanel().getSuggestModel().clear();
-			
+		learnerScroll.setViewportView(this);
+	}
+	
+	public void reset(){
+		String learningType = "";
+		if(Manager.getInstance().getLearningType() == LearningType.EQUIVALENT){
+			learningType = "equivalent class";
+		} else {
+			learningType = "super class";
+		}
+		runButton.setText("<html>suggest " + learningType + " expressions</html>");
+		sugPanel.getSuggestionsTable().clear();
+		showGraphicalPanel(false);
+		setHintMessage("");
+		setHelpButtonVisible(false);
+		
+	}
+	
+	public JComponent getView(){
+		return learnerScroll;
 	}
 	
 	/**
@@ -330,67 +302,29 @@ public class DLLearnerView {
 	public void setIconToggled(boolean toggled) {
 		this.toogled = toggled;
 		if (this.toogled) {
-			advanced.setIcon(toggledIcon);
-			learnerPanel.setPreferredSize(new Dimension(WIDTH, OPTION_HEIGHT));
-			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
+			advancedButton.setIcon(toggledIcon);
+//			learnerPanel.setPreferredSize(new Dimension(WIDTH, OPTION_HEIGHT));
+//			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		}
 		if (!this.toogled) {
-			advanced.setIcon(icon);
-			learnerPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
+			advancedButton.setIcon(icon);
+//			learnerPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//			learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
 		}
 	}
-	/**
-	 * This methode returns the help button.
-	 * @return help button
-	 */
-	public JButton getHelpButton() {
-		return helpButton;
-	}
+	
 	/**
 	 * This method sets the status bar visible when learning
 	 * is started.
 	 */
-	public void setStatusBarVisible(boolean b) {
-		statusBar.setVisible(b);
+	public void showStatusBar(boolean show) {
+		statusBar.setVisible(show);
 	}
-	/**
-	 * This method enables the GraphicalCoveragePanel after a class expression is
-	 * selected from the list.
-	 */
-	public void setGraphicalPanel() {
-		GridBagConstraints c = new GridBagConstraints();
-		learner.remove(posPanel);
-		learner.remove(advancedPanel);
-		detail.setVisible(true);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 0;
-		c.gridy = 4;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		learner.add(detail, c);
-		
-
-		c.fill = GridBagConstraints.NONE;
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridx = 0;
-		c.gridy = 5;
-		learner.add(advancedPanel, c);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridx = 0;
-		c.gridy = 6;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		learner.add(posPanel, c);
-		
-		learnerScroll.setPreferredSize(new Dimension(SCROLL_WIDTH, SCROLL_HEIGHT));
-		learnerScroll.setViewportView(learner);
+	
+	public void showGraphicalPanel(boolean show){
+		detail.setVisible(show);
 	}
+	
 	/**
 	 * This Method changes the hint message. 
 	 * @param message String hintmessage
@@ -411,8 +345,12 @@ public class DLLearnerView {
 	 * Sets the panel to select/deselect the examples visible/invisible.
 	 * @param visible boolean
 	 */
-	public void setExamplePanelVisible(boolean visible) {
-		posPanel.setVisible(visible);
+	public void showOptionsPanel(boolean show) {
+		optionsPanel.setVisible(show);
+	}
+	
+	public void showHintMessagePanel(boolean show){
+		hintPanel.setVisible(show);
 	}
 
 	/**
@@ -420,17 +358,9 @@ public class DLLearnerView {
 	 * @return JButton
 	 */
 	public JButton getAddButton() {
-		return accept;
+		return addButton;
 	}
 
-	/**
-	 * Returns all added descriptions.
-	 * @return Set(OWLClassExpression) 
-	 */
-	public Set<OWLClassExpression> getSolutions() {
-
-		return model.getNewOWLDescription();
-	}
 	
 	/**
 	 * This method unsets all results after closing the plugin.
@@ -440,25 +370,14 @@ public class DLLearnerView {
 		sugPanel.getSuggestionsTable().clear();
 		learner.removeAll();
 		sugPanel = null;
-		model.getSuggestModel().clear();
-		model.getIndividual().clear();
-		model.dispose();
 	}
 
-	/**
-	 * Returns the last added description.
-	 * @return OWLClassExpression
-	 */
-	public OWLClassExpression getSolution() {
-		return model.getSolution();
-	}
 
 	/**
     * Destroys everything in the view after the plugin is closed.
     */
 	public void unsetEverything() {
-		run.setEnabled(true);
-		model.getNewOWLDescription().clear();
+		runButton.setEnabled(true);
 		learner.removeAll();
 	}
 
@@ -466,21 +385,27 @@ public class DLLearnerView {
 	 * This Method returns the panel for more details for the chosen concept.
 	 * @return MoreDetailForSuggestedConceptsPanel
 	 */
-	public MoreDetailForSuggestedConceptsPanel getMoreDetailForSuggestedConceptsPanel() {
+	public MoreDetailForSuggestedConceptsPanel getGraphicalPanel() {
 		return detail;
 	}
 
-	/**
-	 * This method returns the run button.
-	 * @return JButton
-	 */
-	public JButton getRunButton() {
-		return run;
+	
+	public void setLearningEnabled(){
+		runButton.setEnabled(true);
+		setHintMessage("<html><font size=\"3\">To get suggestions for class descriptions," +
+				" please click the button above.</font></html>");
+	}
+	
+	public void showNoInstancesMessage() {
+		String message = "<html><font size=\"3\" color=\"red\">There are no instances for "
+				+ Manager.getInstance().getCurrentlySelectedClassRendered()
+				+ " available. Please insert some instances.</font></html>";
+		setHintMessage(message);
 	}
 	
 	/**
 	 * This method sets if ontology is inconsistent or not.
-	 * @param isIncon boolean if ontology is consisten
+	 * @param isIncon boolean if ontology is consistent
 	 */
 	public void setIsInconsistent(boolean isIncon) {
 		this.isInconsistent = isIncon;
@@ -499,7 +424,7 @@ public class DLLearnerView {
 	 * @param a ActionListener
 	 */
 	public void addRunButtonListener(ActionListener a) {
-		run.addActionListener(a);
+		runButton.addActionListener(a);
 	}
 
 	/**
@@ -507,7 +432,7 @@ public class DLLearnerView {
 	 * @param a ActionListener
 	 */
 	public void addAcceptButtonListener(ActionListener a) {
-		accept.addActionListener(a);
+		addButton.addActionListener(a);
 	}
 
 	/**
@@ -515,14 +440,14 @@ public class DLLearnerView {
 	 * @param a ActionListener
 	 */
 	public void addAdvancedButtonListener(ActionListener a) {
-		advanced.addActionListener(a);
+		advancedButton.addActionListener(a);
 	}
 	
 	/**
 	 * This method sets the run button enable after learning.
 	 */
 	public void showAlgorithmTerminatedMessage() {
-		this.setStatusBarVisible(false);
+		this.showStatusBar(false);
 		String message = "<html><font size=\"3\" color=\"black\">Learning successful. All expressions up to length "
 			+ (Manager.getInstance().getMinimumHorizontalExpansion()-1) + 
 			" and some expressions up to <br>length "
@@ -534,8 +459,7 @@ public class DLLearnerView {
 		} else {
 			message +="<br>To view details about why a class expression was suggested, please click on it.</font><html>";
 		}
-		run.setEnabled(true);
-		// start the algorithm and print the best concept found;
+		runButton.setEnabled(true);
 		this.setHintMessage(message);
 	}
 	
@@ -555,35 +479,6 @@ public class DLLearnerView {
 		helpButton.setVisible(isVisible);
 	}
 	
-	/**
-	 * This method returns the model of the DL-Learner plugin.
-	 * @return model of the plugin
-	 */
-	public DLLearnerModel getDLLearnerModel() {
-		return model;
-	}
-	
-	/**
-	 * This method returns the thread for initializing the reasoner and reading the ontology.
-	 * @return thread that initializes the reasoner
-	 */
-	public ReadingOntologyThread getReadingOntologyThread() {
-		return readThread;
-	}
-	
-	/**
-	 * This method starts the status bar.
-	 */
-	public void startStatusBar() {
-		statusBar.showProgress(true);
-	}
-	
-	/**
-	 * This method stops the status bar.
-	 */
-	public void stopStatusBar() {
-		statusBar.showProgress(false);
-	}
 	
 	/**
 	 * This method returns the statusbar.
@@ -609,7 +504,7 @@ public class DLLearnerView {
 	public void setBusyTaskStarted(String taskName){
 		setBusy(true);
 		setHelpButtonVisible(true);
-		setStatusBarVisible(true);
+		showStatusBar(true);
 		statusBar.showProgress(true);
 		statusBar.setMessage(taskName);
 	}
@@ -617,7 +512,7 @@ public class DLLearnerView {
 	public void setBusyTaskEnded(){
 		setBusy(false);
 		setHelpButtonVisible(false);
-		setStatusBarVisible(false);
+		showStatusBar(false);
 		statusBar.showProgress(false);
 		statusBar.setMessage("");
 	}
@@ -625,16 +520,20 @@ public class DLLearnerView {
 	public void setLearningStarted(){
 		setBusy(true);
 		setHelpButtonVisible(true);
-		setStatusBarVisible(true);
-		run.setEnabled(false);
-		statusBar.setMaximumValue(Manager.getInstance().getMaxExecutionTimeInSeconds());
+		showStatusBar(true);
+		runButton.setEnabled(false);
+		statusBar.setMaximumValue(Manager.getInstance().getMaxExecutionTimeInSeconds() * 2);
 		statusBar.setMessage("Learning ...");
 	}
 	
 	public void setLearningFinished(){
-		stopStatusBar();
+		statusBar.setProgress(0);
 		setBusy(false);
 		showAlgorithmTerminatedMessage();
+	}
+	
+	public void setRunButtonEnabled(boolean enabled){
+		runButton.setEnabled(enabled);
 	}
 	
 	public void showHorizontalExpansionMessage(int min, int max){

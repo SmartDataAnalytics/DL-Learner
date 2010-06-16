@@ -2,7 +2,6 @@ package org.dllearner.tools.protege;
 
 import java.util.List;
 
-
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.jdesktop.swingx.JXTable;
 import org.protege.editor.owl.OWLEditorKit;
@@ -28,6 +27,8 @@ public class SuggestionsTable extends JXTable {
 		
 		owlRenderer = new OWLCellRenderer(editorKit, false, false);
 		owlRenderer.setHighlightKeywords(true);
+		owlRenderer.setHighlightUnsatisfiableClasses(false);
+		owlRenderer.setHighlightUnsatisfiableProperties(false);
 		owlRenderer.setWrap(false);
 		getColumn(2).setCellRenderer(owlRenderer);
 		
