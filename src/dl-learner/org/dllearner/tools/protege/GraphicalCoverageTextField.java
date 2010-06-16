@@ -24,32 +24,33 @@ import javax.swing.JTextPane;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
+import org.dllearner.tools.ore.LearningManager.LearningType;
+import org.protege.editor.owl.OWLEditorKit;
 
 public class GraphicalCoverageTextField extends JTextPane{
 
 	private static final long serialVersionUID = 8971091768497004453L;
-	private static final String EQUI_STRING = "equivalent class";
-	private final String id;
-	private DLLearnerModel model;
 	EvaluatedDescription description;
 	private String newConceptRendered;
 	private String oldConceptRendered;
 	//private final JScrollPane textScroll;
 	
-	public GraphicalCoverageTextField(EvaluatedDescription desc, DLLearnerModel m) {
+	public GraphicalCoverageTextField(EvaluatedDescription desc, OWLEditorKit editorKit) {
 		this.setContentType("text/html");
 		this.setEditable(false);
-		this.model = m;
 		//textScroll = new JScrollPane(
 		//		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 		//		JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		this.setBackground(model.getOWLEditorKit().getOWLWorkspace().getOWLComponentFactory().getOWLClassSelectorPanel().getBackground());
-		this.id = model.getID();
+		this.setBackground(editorKit.getOWLWorkspace().getOWLComponentFactory().getOWLClassSelectorPanel().getBackground());
 		this.description = desc;
+	}
+	
+	public void setDescription(EvaluatedDescription description){
+		this.description = description;
 		Manager manager = Manager.getInstance();
-		newConceptRendered = manager.getRendering(desc.getDescription());
+		newConceptRendered = manager.getRendering(description.getDescription());
 		oldConceptRendered = manager.getRendering(manager.getCurrentlySelectedClass());
-		this.setText();
+		setText();
 	}
 
 	private void setText() {
@@ -67,7 +68,7 @@ public class GraphicalCoverageTextField extends JTextPane{
 		sb.append("</font></p>");
 		sb.append("<p><font size=\"1\" color=\"green\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font> <font size=\"3\" color=\"EE9A00\">\u25cf</font>");
 		sb.append("<font size=\"3\" color=\"black\"> and </font> <font size=\"3\" color=\"yellow\">\u25cf</font><font size=\"3\" color=\"black\"> (OK)</font></p> ");
-		if(id.equals(EQUI_STRING)){
+		if(Manager.getInstance().getLearningType() == LearningType.EQUIVALENT){
 			sb.append("<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"EE9A00\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>");
 			sb.append("<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"yellow\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>");
 		} else {

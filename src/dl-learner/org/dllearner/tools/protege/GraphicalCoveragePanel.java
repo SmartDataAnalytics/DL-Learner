@@ -97,8 +97,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	 * @param m
 	 *            DLLearnerModel
 	 */
-	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m) {
-		this.setVisible(false);
+	public GraphicalCoveragePanel(EvaluatedDescription desc) {
 		this.setForeground(Color.GREEN);
 		eval = desc;
 //		id = model.getID();
@@ -111,7 +110,12 @@ public class GraphicalCoveragePanel extends JPanel {
 //				conceptNew = eval.getDescription().toManchesterSyntaxString(uri, null);
 //			}
 //		}
-		conceptNew = Manager.getInstance().getRendering(eval.getDescription());
+		if(eval != null){
+			conceptNew = Manager.getInstance().getRendering(eval.getDescription());
+		} else{
+			conceptNew = "";
+		}
+		
 		
 		conceptVector = new Vector<String>();
 		posCovIndVector = new Vector<IndividualPoint>();
@@ -120,23 +124,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		points = new Vector<IndividualPoint>();
 		this.computeGraphics();
 		handler = new GraphicalCoveragePanelHandler(this, desc);
-		if(shiftXAxis == 0) {
-		oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment)+3,
-				ELLIPSE_Y_AXIS+3, WIDTH, HEIGHT);
-		} else {
-			oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + (2 * adjustment),
-					ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
-		}
 		
-		if(shiftXAxis == 0){
-		newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
-				+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld+6, HEIGHT
-				+ distortionOld+6);
-		} else {
-			newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
-					+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld, HEIGHT
-					+ distortionOld);
-		}
 		factory = Manager.getInstance().getActiveOntology().getOWLOntologyManager().getOWLDataFactory();
 		this.computeIndividualPoints();
 		this.addMouseMotionListener(handler);
@@ -148,6 +136,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		if (eval != null) {
 			Graphics2D g2D;
 			g2D = (Graphics2D) g;
+			g2D.clearRect(0, 0, getWidth(), getHeight());
 			AlphaComposite ac = AlphaComposite.getInstance(
 					AlphaComposite.SRC_OVER, 0.5f);
 			
@@ -281,13 +270,22 @@ public class GraphicalCoveragePanel extends JPanel {
 				g2D.setColor(Color.BLACK);
 				g2D.fill(additionalIndividuals.get(i).getIndividualPoint());
 			}
-			this.setVisible(true);
 		}
+	}
+	
+	public void setDescription(EvaluatedDescription desc){
+		this.eval = desc;
+		handler.setDescription(desc);
+		
+		computeGraphics();
+		computeIndividualPoints();
+		repaint();
+		
+		
 	}
 
 	private void computeGraphics() {
 		if (eval != null) {
-			this.setVisible(true);
 			additionalIndividualSize = ((EvaluatedDescriptionClass) eval)
 					.getAdditionalInstances().size();
 			distortionOld = 0;
@@ -303,11 +301,31 @@ public class GraphicalCoveragePanel extends JPanel {
 			double coverage = ((EvaluatedDescriptionClass) eval).getCoverage();
 			shiftXAxis = (int) Math.round((WIDTH) * (1 - coverage));
 			
+			
+			
 			if (additionalIndividualSize != 0 && ((EvaluatedDescriptionClass) eval).getCoverage() == 1.0 && ((EvaluatedDescriptionClass) eval).getAddition() < 1.0) {
 				distortionOld = (int) Math.round((WIDTH) * 0.3);
 				Ellipse2D newer = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis,
 						ELLIPSE_Y_AXIS, (WIDTH), HEIGHT);
 				adjustment = (int) Math.round(newer.getCenterY() / 4);
+			}
+			if (shiftXAxis == 0) {
+				oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS
+						+ (2 * adjustment) + 3, ELLIPSE_Y_AXIS + 3, WIDTH,
+						HEIGHT);
+			} else {
+				oldConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS
+						+ (2 * adjustment), ELLIPSE_Y_AXIS, WIDTH, HEIGHT);
+			}
+
+			if (shiftXAxis == 0) {
+				newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
+						+ adjustment, ELLIPSE_Y_AXIS,
+						WIDTH + distortionOld + 6, HEIGHT + distortionOld + 6);
+			} else {
+				newConcept = new Ellipse2D.Double(ELLIPSE_X_AXIS + shiftXAxis
+						+ adjustment, ELLIPSE_Y_AXIS, WIDTH + distortionOld,
+						HEIGHT + distortionOld);
 			}
 			this.renderPlus();
 		}
@@ -387,6 +405,10 @@ public class GraphicalCoveragePanel extends JPanel {
 	}
 
 	private void computeIndividualPoints() {
+		posCovIndVector.clear();
+		posNotCovIndVector.clear();
+		additionalIndividuals.clear();
+		points.clear();
 		if (eval != null) {
 			Set<Individual> posInd = ((EvaluatedDescriptionClass) eval)
 					.getCoveredInstances();

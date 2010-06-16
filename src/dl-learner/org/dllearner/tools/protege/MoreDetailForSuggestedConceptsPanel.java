@@ -18,12 +18,14 @@
  *
  */
 package org.dllearner.tools.protege;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.protege.editor.owl.OWLEditorKit;
 
 
 
@@ -41,7 +43,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	
 	 // Model of the dllearner
 	 
-	private final DLLearnerModel model;
 	private EvaluatedDescription eval;
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 540;
@@ -52,33 +53,25 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * This is the constructor for the Panel.
 	 * @param model DLLearnerModel
 	 */
-	public MoreDetailForSuggestedConceptsPanel(DLLearnerModel model) {
+	public MoreDetailForSuggestedConceptsPanel(OWLEditorKit editorKit) {
 		super();
 		setLayout(new GridLayout(1, 2));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		this.model = model;
-	}
-
-	/**
-	 * This method renders the output for the detail panel.
-	 * @param desc selected description
-	 */
-	public void renderDetailPanel(EvaluatedDescription desc) {
-		eval = desc;
-
-		//panel for the informations of the selected concept
-		//this method adds the informations for the selected concept to the panel
-		graphicalPanel = new GraphicalCoveragePanel(eval, model);
-		graphicalText = new GraphicalCoverageTextField(eval, model);
+		graphicalPanel = new GraphicalCoveragePanel(eval);
+		graphicalText = new GraphicalCoverageTextField(eval, editorKit);
 		graphicalPanel.setBounds(5, 0, 300, 350);
-		//adds all information to the example panel
-		unsetEverything();
-		this.add(graphicalPanel, "Center");
-		this.add(graphicalText.getTextScroll(), "East");
+		add(graphicalPanel, BorderLayout.CENTER);
+		add(graphicalText.getTextScroll(), BorderLayout.EAST);
 	}
+
 
 	private void unsetEverything() {
 		removeAll();
+	}
+	
+	public void setDescription(EvaluatedDescription desc){
+		graphicalText.setDescription(desc);
+		graphicalPanel.setDescription(desc);
 	}
 
 

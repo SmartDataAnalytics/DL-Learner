@@ -27,10 +27,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ui.progress.BackgroundTask;
 
@@ -42,18 +42,8 @@ import org.protege.editor.core.ui.progress.BackgroundTask;
  */
 public class ActionHandler implements ActionListener {
 
-	// This is the DLLearnerModel.
 
-	private final DLLearnerModel model;
-	
-
-	// This is the id that checks if the equivalent class or subclass button is
-	// pressed in protege
-	// this is a boolean that checked if the advanced button was pressed or not.
 	private boolean toggled;
-	// This is the Tread of the DL-Learner
-	private EvaluatedDescription evaluatedDescription;
-	// This is the view of the DL-Learner tab.
 	private Timer timer;
 	private SuggestionRetriever retriever;
 	private HelpTextPanel helpPanel;
@@ -63,8 +53,8 @@ public class ActionHandler implements ActionListener {
 	private static final String HELP_BUTTON_STRING = "help";
 	private static final String ADD_BUTTON_STRING = "<html>ADD</html>";
 	private static final String ADVANCED_BUTTON_STRING = "Advanced";
-	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expression</html>";
-	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expression</html>";
+	private static final String EQUIVALENT_CLASS_LEARNING_STRING = "<html>suggest equivalent class expressions</html>";
+	private static final String SUPER_CLASS_LEARNING_STRING = "<html>suggest super class expressions</html>";
 	private static JOptionPane optionPane;
 	
 	private BackgroundTask learningTask;
@@ -78,14 +68,11 @@ public class ActionHandler implements ActionListener {
 	 *            DLlearner tab
 	 * 
 	 */
-	public ActionHandler(DLLearnerModel m, DLLearnerView view) {
+	public ActionHandler(DLLearnerView view) {
 		this.view = view;
-		this.model = m;
 		toggled = false;
 		helpPanel = new HelpTextPanel(view);
 		optionPane = new JOptionPane();
-		
-
 	}
 
 	/**
@@ -98,19 +85,19 @@ public class ActionHandler implements ActionListener {
 
 		if (z.getActionCommand().equals(EQUIVALENT_CLASS_LEARNING_STRING)
 				|| z.getActionCommand().equals(SUPER_CLASS_LEARNING_STRING)) {
-			Manager manager = Manager.getInstance(model.getOWLEditorKit());
 			setLearningOptions();
-			view.setBusyTaskStarted("Preparing ...");
-			manager.initLearningProblem();
-			manager.initLearningAlgorithm();
-			view.setBusyTaskEnded();
-			
+			view.showGraphicalPanel(false);
+			view.getSuggestClassPanel().getSuggestionsTable().clear();
+//			view.setBusyTaskStarted("Preparing ...");
+//			manager.initLearningProblem();
+//			manager.initLearningAlgorithm();
+//			view.setBusyTaskEnded();
 			
 			learningTask = ProtegeApplication.getBackgroundTaskManager().startTask("Learning...");
 			
-			view.setLearningStarted();
-			view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
-					Manager.getInstance().getMaximumHorizontalExpansion());
+//			view.setLearningStarted();
+//			view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
+//					Manager.getInstance().getMaximumHorizontalExpansion());
 			
 			retriever = new SuggestionRetriever();
 			retriever.addPropertyChangeListener(view.getStatusBar());
@@ -119,8 +106,7 @@ public class ActionHandler implements ActionListener {
 		}
 
 		if (z.getActionCommand().equals(ADD_BUTTON_STRING)) {
-			Manager.getInstance().addAxiom(OWLAPIDescriptionConvertVisitor
-					.getOWLClassExpression(evaluatedDescription.getDescription()));
+			Manager.getInstance().addAxiom(view.getSuggestClassPanel().getSelectedSuggestion());
 			String message = "<html><font size=\"3\">class expression added</font></html>";
 			view.setHintMessage(message);
 			view.setHelpButtonVisible(false);
@@ -129,21 +115,16 @@ public class ActionHandler implements ActionListener {
 			if (!toggled) {
 				toggled = true;
 				view.setIconToggled(toggled);
-				view.setExamplePanelVisible(toggled);
+				view.showOptionsPanel(toggled);
 			} else {
 				toggled = false;
 				view.setIconToggled(toggled);
-				view.setExamplePanelVisible(toggled);
+				view.showOptionsPanel(toggled);
 			}
 		}
 		if (z.toString().contains(HELP_BUTTON_STRING)) {
 
 			String currentClass = Manager.getInstance().getCurrentlySelectedClassRendered();
-			
-			//helpPanel.renderHelpTextMessage(currentClass);
-			//view.getLearnerView().add();
-			//help = new JTextPane();
-			//help.setText(helpText);
 			optionPane.setPreferredSize(new Dimension(300, 200));
 			JOptionPane.showMessageDialog(view.getLearnerView(), helpPanel.renderHelpTextMessage(currentClass), "Help",
 					JOptionPane.INFORMATION_MESSAGE);
@@ -157,20 +138,10 @@ public class ActionHandler implements ActionListener {
 		toggled = false;
 	}
 
-	/**
-	 * This Methode sets the evaluated class expression that is selected in the
-	 * panel.
-	 * 
-	 * @param desc
-	 *            evaluated descriptions
-	 */
-	public void setEvaluatedClassExpression(EvaluatedDescription desc) {
-		this.evaluatedDescription = desc;
-	}
 	
 	private void setLearningOptions(){
 		OptionPanel options = view.getOptionsPanel();
-		Manager manager = Manager.getInstance(model.getOWLEditorKit());
+		Manager manager = Manager.getInstance();
 		manager.setMaxExecutionTimeInSeconds(options.getMaxExecutionTimeInSeconds());
 		manager.setMaxNrOfResults(options.getMaxNumberOfResults());
 		manager.setNoisePercentage(options.getNoise());
@@ -196,6 +167,26 @@ public class ActionHandler implements ActionListener {
 		protected List<? extends EvaluatedDescription> doInBackground()
 				throws Exception {
 			
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					view.setBusyTaskStarted("Preparing ...");
+				}
+			});
+			
+			Manager manager = Manager.getInstance();
+			manager.initLearningProblem();
+			manager.initLearningAlgorithm();
+			view.setBusyTaskEnded();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					view.setLearningStarted();
+					view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
+							Manager.getInstance().getMaximumHorizontalExpansion());
+				}
+			});
+			
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
 				int progress = 0;
@@ -210,7 +201,7 @@ public class ActionHandler implements ActionListener {
 					}
 				}
 				
-			}, 1000, 1000);
+			}, 1000, 500);
 			Manager.getInstance().startLearning();
 			
 			
@@ -235,7 +226,6 @@ public class ActionHandler implements ActionListener {
 		}
 
 		private void updateList(final List<? extends EvaluatedDescription> result) {
-			model.setSuggestList(result);
 			view.setSuggestions(result);
 			view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
 					Manager.getInstance().getMaximumHorizontalExpansion());
