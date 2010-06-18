@@ -1,5 +1,6 @@
 package org.dllearner.tools.protege;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -33,6 +34,16 @@ public class SuggestionsTable extends JXTable {
 		getColumn(2).setCellRenderer(owlRenderer);
 		
 		setColumnSizes();
+		
+		Comparator<Integer> comparator = new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return o1.compareTo(o2);
+			}
+		};
+		getColumnExt(0).setComparator(comparator);
+		
+		
 	}
 
 	private void setColumnSizes(){
