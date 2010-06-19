@@ -12,6 +12,7 @@ import org.dllearner.tools.ore.explanation.ExplanationGenerator;
 import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -32,6 +33,7 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -59,13 +61,16 @@ public class IncrementalInconsistencyFinder {
 	
 	private String endpointURI;
 	
+	private Monitor overallMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Overall monitor");
 	private Monitor queryMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Query monitor");
+	private Monitor reasonerMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Reasoning monitor");
+	
+	private int queryCount = 0;
 	
 	public IncrementalInconsistencyFinder() throws OWLOntologyCreationException{
 		manager = OWLManager.createOWLOntologyManager();
 		ontology = manager.createOntology();
 		factory = manager.getOWLDataFactory();
-		reasoner = PelletIncremantalReasonerFactory.getInstance().createReasoner(ontology);
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -75,11 +80,21 @@ public class IncrementalInconsistencyFinder {
 		
 	}
 	
+	/**
+	 * THis method checks incrementally for unsatisfiable classes in the knowledgebase.
+	 * @param endpointURI
+	 */
 	private void checkForUnsatisfiableClasses(String endpointURI){
 		this.endpointURI = endpointURI;
+		logger.info("Searching for unsatisfiable classes in " + endpointURI);
 		
-		Monitor overallMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Overall monitor").start();
-		Monitor reasonerMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Reasoning monitor");
+		reasoner = PelletIncremantalReasonerFactory.getInstance().createReasoner(ontology);
+		
+		overallMonitor.reset();
+		reasonerMonitor.reset();
+		queryMonitor.reset();
+		overallMonitor.start();
+		
 		
 		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
 		Set<OWLClass> classesToVisit = new HashSet<OWLClass>();
@@ -99,10 +114,10 @@ public class IncrementalInconsistencyFinder {
 		boolean foundUnsatisfiableClasses = false;
 		logger.info("Starting with " + classesToVisit.size() + " classes to visit.");
 		for(int i = 1; i <= RECURSION_DEPTH; i++){
-			logger.info("Recursion depth = " + (i-1));
+			logger.info("Recursion depth = " + i);
 			for(OWLClass cl : classesToVisit){
 				logger.info("Starting retrieving axioms for class " + cl);
-				Set<OWLAxiom> axioms = retrieveAxioms(cl);
+				Set<OWLAxiom> axioms = retrieveAxioms(cl, false);
 				manager.addAxioms(ontology, axioms);
 				if(!axioms.isEmpty()){
 					logger.info("Checking for unsatisfiable classes");
@@ -129,46 +144,10 @@ public class IncrementalInconsistencyFinder {
 			tmp.clear();
 		}
 		
-//		 for each disjointClasses axiom we retrieve all subClassOf axioms, domain and range axioms of the disjoint classes
-//		 after each time we added axioms to the ontology, we check for unsatisfiable classes
-//		for(OWLDisjointClassesAxiom ax : disjointAxioms){
-//			for(OWLClassExpression cl : ax.getClassExpressions()){
-//				//retrieve subClassOf axioms
-//				Set<OWLSubClassOfAxiom> subClassOfAxioms = retrieveSubClassAxioms(cl.asOWLClass());
-//				manager.addAxioms(ontology, subClassOfAxioms);
-//				if(!subClassOfAxioms.isEmpty()){
-//					reasoner.getUnsatisfiableClasses();
-//				}
-//				//retrieve objectPropertyDomain axioms
-//				Set<OWLObjectPropertyDomainAxiom> propertyDomainAxioms = retrievePropertyDomainAxioms(cl.asOWLClass());
-//				manager.addAxioms(ontology, propertyDomainAxioms);
-//				if(!propertyDomainAxioms.isEmpty()){
-//					reasoner.getUnsatisfiableClasses();
-//				}
-//				//retrieve objectPropertyRange axioms
-//				Set<OWLObjectPropertyRangeAxiom> propertyRangeAxioms = retrievePropertyRangeAxioms(cl.asOWLClass());
-//				manager.addAxioms(ontology, propertyRangeAxioms);
-//				if(!propertyRangeAxioms.isEmpty()){
-//					reasoner.getUnsatisfiableClasses();
-//				}
-//				//retrieve classAssertion axioms
-//				Set<OWLClassAssertionAxiom> classAssertionAxioms = retrieveClassAssertionAxioms(cl.asOWLClass());
-//				manager.addAxioms(ontology, classAssertionAxioms);
-//			}
-//		}
+
 		overallMonitor.stop();
-		logger.info("Overall execution time: " + overallMonitor.getTotal() + " ms");
-		logger.info("Overall query time: " + queryMonitor.getTotal() + " ms");
-		logger.info("Average query time: " + queryMonitor.getAvg() + " ms");
-		logger.info("Longest query time: " + queryMonitor.getMax() + " ms");
-		logger.info("Shortest query time: " + queryMonitor.getMin() + " ms");
-		logger.info("Overall reasoning time: " + reasonerMonitor.getTotal() + " ms");
-		logger.info("Average reasoning time: " + reasonerMonitor.getAvg() + " ms");
-		logger.info("Longest reasoning time: " + reasonerMonitor.getMax() + " ms");
-		logger.info("Shortest reasoning time: " + reasonerMonitor.getMin() + " ms");
-		System.out.println(ontology.getLogicalAxiomCount() + " logical axioms in the ontology:");
-		System.out.println(ontology.getLogicalAxioms());
-		System.out.println("Ontology is " + (reasoner.isConsistent() ? "consistent" : "inconsistent"));
+		showStats();
+		
 		Node<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses();
 		System.out.println("Found " + unsatisfiableClasses.getSize() + " unsatisfiable class(es):");
 		System.out.println(unsatisfiableClasses.getEntities());
@@ -180,7 +159,87 @@ public class IncrementalInconsistencyFinder {
 		
 	}
 	
-	private Set<OWLDisjointClassesAxiom> retrieveDisjointClassAxioms(){
+	/**
+	 * This method checks incrementally the consistency of the knowledgebase.
+	 * @param endpointURI
+	 */
+	private void checkForInconsistency(String endpointURI){
+		this.endpointURI = endpointURI;
+		logger.info("Searching for inconsistency in " + endpointURI);
+		
+		PelletOptions.USE_COMPLETION_QUEUE = true;
+		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
+		PelletOptions.USE_SMART_RESTORE = false;
+		
+		OWLReasoner reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+		
+		overallMonitor.reset();
+		reasonerMonitor.reset();
+		queryMonitor.reset();
+		overallMonitor.start();
+		
+		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
+		Set<OWLClass> classesToVisit = new HashSet<OWLClass>();
+		Set<OWLClass> tmp = new HashSet<OWLClass>();
+		
+		//we are starting with disjointClasses axioms
+		Set<OWLDisjointClassesAxiom> disjointAxioms = retrieveDisjointClassAxioms();
+		manager.addAxioms(ontology, disjointAxioms);
+		
+		for(OWLDisjointClassesAxiom ax : disjointAxioms){
+			for(OWLClassExpression cl : ax.getClassExpressions()){
+				if(!cl.isAnonymous()){
+					classesToVisit.add(cl.asOWLClass());
+				}
+			}
+		}
+		boolean isConsistent = true;
+		logger.info("Starting with " + classesToVisit.size() + " classes to visit.");
+		for(int i = 1; i <= RECURSION_DEPTH; i++){
+			logger.info("Recursion depth = " + i);
+			for(OWLClass cl : classesToVisit){
+				logger.info("Starting retrieving axioms for class " + cl);
+				Set<OWLAxiom> axioms = retrieveAxioms(cl, true);
+				manager.addAxioms(ontology, axioms);
+				if(!axioms.isEmpty()){
+					logger.info("Checking for consistency");
+					reasonerMonitor.start();
+					isConsistent = reasoner.isConsistent();
+					reasonerMonitor.stop();
+					
+				}
+				for(OWLAxiom ax : axioms){
+					tmp.addAll(ax.getClassesInSignature());
+				}
+				if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
+					logger.info("Detected inconsistency. Aborting.");
+					break;
+				}
+			}
+			if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
+				break;
+			}
+			visitedClasses.addAll(classesToVisit);
+			tmp.removeAll(visitedClasses);
+			classesToVisit.clear();
+			classesToVisit.addAll(tmp);
+			tmp.clear();
+		}
+		
+
+		overallMonitor.stop();
+		showStats();
+
+		if(!reasoner.isConsistent()){
+			ExplanationGenerator expGen = new PelletExplanationGenerator(ontology);
+			System.out.println(expGen.getExplanation(factory.getOWLSubClassOfAxiom(factory.getOWLThing(), factory.getOWLNothing())));
+		}
+	}
+	
+	private Set<OWLDisjointClassesAxiom> retrieveDisjointClassAxioms(){queryCount++;
+		logger.info("Retrieving disjointClasses axioms");
+		queryMonitor.start();
+		
 		Query sparqlQuery = createSimpleSelectSPARQLQuery("?x", OWLVocabulary.OWL_DISJOINT_WITH, "?y",
 				"regex(?x,\"http://dbpedia.org/ontology/\", \"i\")", RESULT_LIMIT);
 		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, DEFAULT_GRAPH_URI);
@@ -204,10 +263,12 @@ public class IncrementalInconsistencyFinder {
 			
 			axioms.add(factory.getOWLDisjointClassesAxiom(disjointClass1, disjointClass2));
 		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
 		return axioms;
 	}
 	
-	private Set<OWLSubClassOfAxiom> retrieveSubClassAxioms(OWLClass cl){
+	private Set<OWLSubClassOfAxiom> retrieveSubClassAxioms(OWLClass cl){queryCount++;
 		logger.info("Retrieving subClassOf axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -251,7 +312,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLObjectPropertyDomainAxiom> retrievePropertyDomainAxioms(OWLClass cl){
+	private Set<OWLObjectPropertyDomainAxiom> retrievePropertyDomainAxioms(OWLClass cl){queryCount++;
 		logger.info("Retrieving objectPropertyDomain axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -279,7 +340,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLObjectPropertyRangeAxiom> retrievePropertyRangeAxioms(OWLClass cl){
+	private Set<OWLObjectPropertyRangeAxiom> retrievePropertyRangeAxioms(OWLClass cl){queryCount++;
 		logger.info("Retrieving objectPropertyRange axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -307,7 +368,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLClassAssertionAxiom> retrieveClassAssertionAxioms(OWLClass cl){
+	private Set<OWLClassAssertionAxiom> retrieveClassAssertionAxioms(OWLClass cl){queryCount++;
 		logger.info("Retrieving classAssertion axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -335,15 +396,32 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLAxiom> retrieveAxioms(OWLClass cl){
+	private Set<OWLAxiom> retrieveAxioms(OWLClass cl, boolean retrieveABoxAxioms){
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		axioms.addAll(retrieveSubClassAxioms(cl));
 		axioms.addAll(retrievePropertyDomainAxioms(cl));
 		axioms.addAll(retrievePropertyRangeAxioms(cl));
-		
+		if(retrieveABoxAxioms){
+			axioms.addAll(retrieveClassAssertionAxioms(cl));
+		}
 		return axioms;
 	}
 	
+	private void showStats(){
+		logger.info("###########################STATS###########################");
+		logger.info(ontology);
+		logger.info("Overall execution time: " + overallMonitor.getTotal() + " ms");
+		logger.info("Overall query time: " + queryMonitor.getTotal() + " ms (" + (int)(queryMonitor.getTotal()/overallMonitor.getTotal()*100) + "%)");
+		logger.info("Number of queries sent: " + (int)queryMonitor.getHits());
+		logger.info("Average query time: " + queryMonitor.getAvg() + " ms");
+		logger.info("Longest query time: " + queryMonitor.getMax() + " ms");
+		logger.info("Shortest query time: " + queryMonitor.getMin() + " ms");
+		logger.info("Overall reasoning time: " + reasonerMonitor.getTotal() + " ms (" + (int)(reasonerMonitor.getTotal()/overallMonitor.getTotal()*100) + "%)");
+		logger.info("Number of reasoner calls: " + (int)reasonerMonitor.getHits());
+		logger.info("Average reasoning time: " + reasonerMonitor.getAvg() + " ms");
+		logger.info("Longest reasoning time: " + reasonerMonitor.getMax() + " ms");
+		logger.info("Shortest reasoning time: " + reasonerMonitor.getMin() + " ms");
+	}
 	
 	
 	private Query createSimpleSelectSPARQLQuery(String subject, String predicate, String object, String filter, int limit){
@@ -379,7 +457,8 @@ public class IncrementalInconsistencyFinder {
 	
 	public static void main(String[] args) throws OWLOntologyCreationException{
 		IncrementalInconsistencyFinder incFinder = new IncrementalInconsistencyFinder();
-		incFinder.checkForUnsatisfiableClasses(ENDPOINT_URL);
+//		incFinder.checkForUnsatisfiableClasses(ENDPOINT_URL);
+		incFinder.checkForInconsistency(ENDPOINT_URL);
 		
 	}
 	
