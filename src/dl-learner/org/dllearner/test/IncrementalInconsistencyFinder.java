@@ -8,6 +8,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
+import org.dllearner.tools.ore.explanation.ExplanationGenerator;
+import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -47,6 +49,8 @@ public class IncrementalInconsistencyFinder {
 	private static String DEFAULT_GRAPH_URI = "http://dbpedia.org";
 	private static int RESULT_LIMIT = 20;
 	private static int RECURSION_DEPTH = 2;
+	
+	private static boolean BREAK_AFTER_ERROR_FOUND = true;
 	
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
@@ -110,11 +114,12 @@ public class IncrementalInconsistencyFinder {
 				for(OWLAxiom ax : axioms){
 					tmp.addAll(ax.getClassesInSignature());
 				}
-				if(foundUnsatisfiableClasses){
+				if(foundUnsatisfiableClasses && BREAK_AFTER_ERROR_FOUND){
+					logger.info("Found unsatisfiable classes. Aborting.");
 					break;
 				}
 			}
-			if(foundUnsatisfiableClasses){
+			if(foundUnsatisfiableClasses && BREAK_AFTER_ERROR_FOUND){
 				break;
 			}
 			visitedClasses.addAll(classesToVisit);
@@ -165,8 +170,13 @@ public class IncrementalInconsistencyFinder {
 		System.out.println(ontology.getLogicalAxioms());
 		System.out.println("Ontology is " + (reasoner.isConsistent() ? "consistent" : "inconsistent"));
 		Node<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses();
-		System.out.println("Found " + unsatisfiableClasses.getSize() + " unsatisfiable classes:");
+		System.out.println("Found " + unsatisfiableClasses.getSize() + " unsatisfiable class(es):");
 		System.out.println(unsatisfiableClasses.getEntities());
+		if(!unsatisfiableClasses.getEntities().isEmpty()){
+			ExplanationGenerator expGen = new PelletExplanationGenerator(ontology);
+			System.out.println(expGen.getExplanation(factory.getOWLSubClassOfAxiom(unsatisfiableClasses.getRepresentativeElement(), factory.getOWLNothing())));
+		}
+		
 		
 	}
 	
@@ -201,16 +211,15 @@ public class IncrementalInconsistencyFinder {
 		logger.info("Retrieving subClassOf axioms for class " + cl);
 		queryMonitor.start();
 		
+		Set<OWLSubClassOfAxiom> axioms = new HashSet<OWLSubClassOfAxiom>();
+		QuerySolution solution;
+		RDFNode rdfNode;
+		
 		//we retrieve first all axioms, where the class is the subClass
 		Query sparqlQuery = createSimpleSelectSPARQLQuery(cl.toStringID(), OWLVocabulary.RDFS_SUBCLASS_OF,
 				"?y", "regex(?y,\"http://dbpedia.org/ontology/\", \"i\")", RESULT_LIMIT);
 		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, DEFAULT_GRAPH_URI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-
-		Set<OWLSubClassOfAxiom> axioms = new HashSet<OWLSubClassOfAxiom>();
-		
-		QuerySolution solution;
-		RDFNode rdfNode;
 		OWLClass superClass;
 		while(sparqlResults.hasNext()){
 			solution = sparqlResults.nextSolution();
@@ -227,14 +236,15 @@ public class IncrementalInconsistencyFinder {
 				cl.toStringID(), "regex(?x,\"http://dbpedia.org/ontology/\", \"i\")", RESULT_LIMIT);
 		sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, DEFAULT_GRAPH_URI);
 		sparqlResults = sparqlQueryExec.execSelect();
+		OWLClass subClass;
 		while(sparqlResults.hasNext()){
 			solution = sparqlResults.nextSolution();
 			
 			rdfNode = solution.getResource("?x");
 			
-			superClass = factory.getOWLClass(IRI.create(rdfNode.toString()));
+			subClass = factory.getOWLClass(IRI.create(rdfNode.toString()));
 			
-			axioms.add(factory.getOWLSubClassOfAxiom(cl, superClass));
+			axioms.add(factory.getOWLSubClassOfAxiom(subClass, cl));
 		}
 		queryMonitor.stop();
 		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
