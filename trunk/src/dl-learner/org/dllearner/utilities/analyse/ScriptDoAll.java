@@ -30,11 +30,12 @@ public class ScriptDoAll {
 		String dbpediaFile = "dbpedia_3.4.owl";
 		@SuppressWarnings("unused")
 		String yagoFile = "yagoclasses_links.nt";
+		@SuppressWarnings("unused")
 		String categoryFile = "skoscategories_en.nt";
 		
-//		doIt(dbpediaFile, "RDF/XML", subclassof, rdftype, dbns,false);
-//		doIt(yagoFile, "N-TRIPLES", subclassof, rdftype, yagons,false);
-		doIt(categoryFile, "N-TRIPLES", broader, subject, catns, true);
+		doIt(dbpediaFile, "RDF/XML", subclassof, rdftype, dbns,false);
+		doIt(yagoFile, "N-TRIPLES", subclassof, rdftype, yagons,false);
+//		doIt(categoryFile, "N-TRIPLES", broader, subject, catns, true);
 		
 	}
 	
@@ -46,8 +47,7 @@ public class ScriptDoAll {
 		Files.writeObjectToFile(dbup, new File(file+".super.ser"));
 		
 		dbup = null;
-		
-		
+
 		List<Count> countdb = c.countInstances(type, nsFilter);
 		
 		toFile(countdb, file+".count");
@@ -80,22 +80,33 @@ public class ScriptDoAll {
 	}
 	
 	public static List<Count> expand(List<Count> count, Map<String, SortedSet<String>> hierarchy){
-		Map<String, Integer> map = toMap(count);
+		Map<String, Integer> classNrOfInstances = toMap(count);
 		SortedSet<Count> ret = new TreeSet<Count>();
-		for(String key : map.keySet()){
-			int now = map.get(key).intValue();
-			SortedSet<String> exp = hierarchy.get(key);
-			if(exp == null){
+		SortedSet<String> allClasses = new TreeSet<String>();
+		allClasses.addAll(classNrOfInstances.keySet());
+		allClasses.addAll(hierarchy.keySet());
+		
+		for(String key : allClasses){
+			
+			SortedSet<String> expanded = hierarchy.get(key);
+			int now = 0;
+			if(classNrOfInstances.get(key) != null){
+				now = classNrOfInstances.get(key).intValue();
+			}
+			
+			if(expanded == null){
+				//just add this one, i.e. no subclasses
 				ret.add(new CountInstances().new Count(key, now));
-				continue;
-			}
-			Integer add = null;
-			for(String rel:exp){
-				if(!rel.equals(key) && (add = map.get(rel))!=null ){
-					now += add;
+			}else{
+				Integer add = null;
+				for(String rel:expanded){
+					if(!rel.equals(key) && (add = classNrOfInstances.get(rel))!=null ){
+						now += add;
+					}
 				}
+				ret.add(new CountInstances().new Count(key, now));
 			}
-			ret.add(new CountInstances().new Count(key, now));
+			
 		}
 		return new ArrayList<Count>(ret);
 	}
