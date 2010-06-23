@@ -17,7 +17,6 @@ import org.dllearner.utilities.owl.OWLVocabulary;
 import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -32,7 +31,6 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
@@ -45,7 +43,11 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -61,7 +63,7 @@ public class IncrementalInconsistencyFinder {
 //	private static String DEFAULT_GRAPH_URI = "http://opencyc2.org";
 	
 	private static int RESULT_LIMIT = 100;
-	private static int RECURSION_DEPTH = 2;
+	private static int RECURSION_DEPTH = 3;
 	
 	//stop if algorithm founds unsatisfiable class or ontology is inconsistent
 	private static boolean BREAK_AFTER_ERROR_FOUND = true;
@@ -241,19 +243,45 @@ public class IncrementalInconsistencyFinder {
 			}
 			//we retrieve axioms for each individual in the ontology
 			logger.info("Retrieving axioms for " + ontology.getIndividualsInSignature().size() + " instances");
+			int cnt = 0;
 			for(OWLNamedIndividual ind : ontology.getIndividualsInSignature()){
 				if(!visitedIndividuals.contains(ind)){
 					manager.addAxioms(ontology, retrieveAxiomsForIndividual(ind));
 					visitedIndividuals.add(ind);
+					logger.info("Checking for consistency");
+					reasonerMonitor.start();
+					isConsistent = reasoner.isConsistent();
+					reasonerMonitor.stop();
+				}
+				if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
+					logger.info("Detected inconsistency. Aborting.");
+					break;
+				}
+				cnt++;
+				if(cnt == 100){
+					break;
 				}
 				
 			}
+			cnt = 0;
 			//we retrieve axioms for each object property in the ontology
 			logger.info("Retrieving axioms for " + ontology.getObjectPropertiesInSignature().size() + " properties");
 			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature()){
 				if(!visitedObjectProperties.contains(prop)){
 					manager.addAxioms(ontology, retrieveAxiomsForObjectProperty(prop));
 					visitedObjectProperties.add(prop);
+					logger.info("Checking for consistency");
+					reasonerMonitor.start();
+					isConsistent = reasoner.isConsistent();
+					reasonerMonitor.stop();
+				}
+				if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
+					logger.info("Detected inconsistency. Aborting.");
+					break;
+				}
+				cnt++;
+				if(cnt == 100){
+					break;
 				}
 				
 			}
@@ -287,7 +315,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append("?subject ").append("<").append(OWL.disjointWith).append(">").append(" ?object");
 		sb.append("}");
 		sb.append("LIMIT ").append(RESULT_LIMIT);
-		
+		System.out.println(sb);
 		Query query = QueryFactory.create(sb.toString());
 		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
@@ -486,9 +514,9 @@ public class IncrementalInconsistencyFinder {
 			if(rdfNodePredicate.equals(RDF.type)){
 				axioms.add(factory.getOWLClassAssertionAxiom(factory.getOWLClass(IRI.create(rdfNodeObject.toString())), ind));
 			} else if(rdfNodePredicate.equals(OWL.sameAs)){
-				axioms.add(factory.getOWLSameIndividualAxiom(ind, factory.getOWLNamedIndividual(IRI.create(rdfNodePredicate.toString()))));
+				axioms.add(factory.getOWLSameIndividualAxiom(ind, factory.getOWLNamedIndividual(IRI.create(rdfNodeObject.toString()))));
 			} else if(rdfNodePredicate.equals(OWL.differentFrom)){
-				axioms.add(factory.getOWLDifferentIndividualsAxiom(ind, factory.getOWLNamedIndividual(IRI.create(rdfNodePredicate.toString()))));
+				axioms.add(factory.getOWLDifferentIndividualsAxiom(ind, factory.getOWLNamedIndividual(IRI.create(rdfNodeObject.toString()))));
 			} else if(rdfNodeObject.isLiteral()){
 				if(rdfNodeObject.equals(RDFS.comment)){
 					
@@ -771,6 +799,14 @@ public class IncrementalInconsistencyFinder {
 		IncrementalInconsistencyFinder incFinder = new IncrementalInconsistencyFinder();
 //		incFinder.checkForUnsatisfiableClasses(ENDPOINT_URL);
 		incFinder.checkForInconsistency(ENDPOINT_URL);
+		
+//		String queryString = "CONSTRUCT { ?x <" + RDFS.subClassOf + "> ?y } WHERE { ?x <" + RDFS.subClassOf + "> ?y } ORDER BY ?x LIMIT 100 ";
+//		Query query = QueryFactory.create(queryString) ;
+//		QueryExecution qexec = QueryExecutionFactory.sparqlService(ENDPOINT_URL, query);
+//		Model resultModel = qexec.execConstruct() ;
+//		qexec.close() ;
+//		resultModel.write(System.out);
+		
 		
 	}
 	
