@@ -10,13 +10,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
-import org.dllearner.tools.ore.explanation.ExplanationGenerator;
-import org.dllearner.tools.ore.explanation.PelletExplanationGenerator;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -34,8 +33,12 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
+import aterm.ATermAppl;
+
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
+import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -43,11 +46,11 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -64,6 +67,7 @@ public class IncrementalInconsistencyFinder {
 	
 	private static int RESULT_LIMIT = 100;
 	private static int RECURSION_DEPTH = 3;
+	private static int AXIOM_COUNT = 100;
 	
 	//stop if algorithm founds unsatisfiable class or ontology is inconsistent
 	private static boolean BREAK_AFTER_ERROR_FOUND = true;
@@ -92,6 +96,62 @@ public class IncrementalInconsistencyFinder {
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.INFO);
 		
+	}
+	
+	private void run(String endpointURI){
+		this.endpointURI = endpointURI;
+		logger.info("Searching for inconsistency in " + endpointURI);
+		
+		PelletOptions.USE_COMPLETION_QUEUE = true;
+		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
+		PelletOptions.USE_SMART_RESTORE = false;
+		
+		OWLReasoner reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+		
+		overallMonitor.reset();
+		reasonerMonitor.reset();
+		queryMonitor.reset();
+		overallMonitor.start();
+		
+		//fist we expand the ontology schema
+		
+		//retrieve TBox axioms
+		manager.addAxioms(ontology, retrieveClassExpressionsAxioms(OWL.disjointWith, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrieveClassExpressionsAxioms(OWL.equivalentClass, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrieveClassExpressionsAxioms(RDFS.subClassOf, AXIOM_COUNT));
+		
+		//retrieve RBox axioms
+		manager.addAxioms(ontology, retrievePropertyAxioms(RDFS.domain, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyAxioms(RDFS.range, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyAxioms(RDFS.subPropertyOf, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyAxioms(OWL.equivalentProperty, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyAxioms(OWL.inverseOf, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.FunctionalProperty, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.InverseFunctionalProperty, AXIOM_COUNT));
+		manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.TransitiveProperty, AXIOM_COUNT));
+		
+
+		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
+		Set<OWLObjectProperty> visitedObjectProperties = new HashSet<OWLObjectProperty>();
+		Set<OWLNamedIndividual> visitedIndividuals = new HashSet<OWLNamedIndividual>();
+		Set<OWLClass> classesToVisit = new HashSet<OWLClass>();
+		Set<OWLClass> tmp = new HashSet<OWLClass>();
+		
+		//now we retrieve for each DisjointClasses axiom at first instance that are contained in both (disjoint) classes,
+		//and furthermore instances of each particular class in the axiom
+		for(OWLDisjointClassesAxiom ax : ontology.getAxioms(AxiomType.DISJOINT_CLASSES)){
+			manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClasses(
+					ax.getClassExpressionsAsList().get(0).asOWLClass(),
+					ax.getClassExpressionsAsList().get(1).asOWLClass(), AXIOM_COUNT));
+			manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(ax.getClassExpressionsAsList().get(0).asOWLClass(), AXIOM_COUNT));
+			manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(ax.getClassExpressionsAsList().get(1).asOWLClass(), AXIOM_COUNT));
+		}
+		logger.info("Ontology is consistent: " + reasoner.isConsistent());
+		
+		overallMonitor.stop();
+		//show some statistics
+		showStats();
+	
 	}
 	
 	/**
@@ -225,6 +285,7 @@ public class IncrementalInconsistencyFinder {
 			for(OWLClass cl : classesToVisit){
 				axioms = retrieveAxiomsForClass(cl);
 				manager.addAxioms(ontology, axioms);
+				System.out.println(ontology.getObjectPropertiesInSignature());
 				if(!axioms.isEmpty()){
 					logger.info("Checking for consistency");
 					reasonerMonitor.start();
@@ -240,6 +301,9 @@ public class IncrementalInconsistencyFinder {
 					break;
 				}
 				
+			}
+			if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
+				break;
 			}
 			//we retrieve axioms for each individual in the ontology
 			logger.info("Retrieving axioms for " + ontology.getIndividualsInSignature().size() + " instances");
@@ -262,6 +326,9 @@ public class IncrementalInconsistencyFinder {
 					break;
 				}
 				
+			}
+			if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
+				break;
 			}
 			cnt = 0;
 			//we retrieve axioms for each object property in the ontology
@@ -301,9 +368,309 @@ public class IncrementalInconsistencyFinder {
 
 		//compute an explanation
 		if(!reasoner.isConsistent()){
-			ExplanationGenerator expGen = new PelletExplanationGenerator(ontology);
-			logger.info(expGen.getExplanation(factory.getOWLSubClassOfAxiom(factory.getOWLThing(), factory.getOWLNothing())));
+			((PelletReasoner)reasoner).getKB().setDoExplanation(true);
+//			ExplanationGenerator expGen = new PelletExplanationGenerator(ontology);
+//			logger.info(expGen.getExplanation(factory.getOWLSubClassOfAxiom(factory.getOWLThing(), factory.getOWLNothing())));
+			for(ATermAppl a : ((PelletReasoner)reasoner).getKB().getExplanationSet()){
+				System.out.println(a);
+			}
 		}
+	}
+	
+	private Set<OWLAxiom> retrieveClassExpressionsAxioms(Property property, int limit){
+		logger.info("Retrieving " + property + " axioms");
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(property).append(">").append(" ?object");
+		sb.append("}");
+		sb.append(" ORDER BY ").append("?subject");
+		sb.append(" LIMIT ").append(limit);
+		
+		
+//		Query query = QueryFactory.create(sb.toString());
+//		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
+		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
+		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		
+		QuerySolution solution;
+		RDFNode rdfNodeSubject;
+		RDFNode rdfNodeObject;
+		OWLClass cls1;
+		OWLClass cls2;
+		while(sparqlResults.hasNext()){
+			solution = sparqlResults.nextSolution();
+			
+			rdfNodeSubject = solution.getResource("?subject");
+			rdfNodeObject = solution.getResource("?object");
+			
+			//skip if solution contains blank node
+			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
+				continue;
+			}
+			
+			cls1 = factory.getOWLClass(IRI.create(rdfNodeSubject.toString()));
+			cls2 = factory.getOWLClass(IRI.create(rdfNodeObject.toString()));
+			
+			if(property.equals(RDFS.subClassOf)){
+				axioms.add(factory.getOWLSubClassOfAxiom(cls1, cls2));
+			} else if(property.equals(OWL.disjointWith)){
+				axioms.add(factory.getOWLDisjointClassesAxiom(cls1, cls2));
+			} else if(property.equals(OWL.equivalentClass)){
+				axioms.add(factory.getOWLEquivalentClassesAxiom(cls1, cls2));
+			}
+			
+		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
+		return axioms;
+	}
+	
+	private Set<OWLAxiom> retrievePropertyAxioms(Property property, int limit){
+		logger.info("Retrieving " + property + " axioms");
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(property).append(">").append(" ?object");
+		sb.append("}");
+		sb.append(" ORDER BY ").append("?subject");
+		sb.append(" LIMIT ").append(limit);
+		
+//		Query query = QueryFactory.create(sb.toString());
+//		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
+		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
+		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		
+		QuerySolution solution;
+		RDFNode rdfNodeSubject;
+		RDFNode rdfNodeObject;
+		boolean isObjectProperty = true;
+		while(sparqlResults.hasNext()){
+			solution = sparqlResults.nextSolution();
+			
+			rdfNodeSubject = solution.getResource("?subject");
+			rdfNodeObject = solution.getResource("?object");
+			
+			//skip if solution contains blank node
+			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
+				continue;
+			}
+			
+			if(property.equals(OWL.inverseOf)){
+				axioms.add(factory.getOWLInverseObjectPropertiesAxiom(
+						factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString())),
+						factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString()))));
+			} else	if(property.equals(OWL.equivalentProperty)){
+				isObjectProperty = isObjectProperty(rdfNodeSubject.toString());
+				if(isObjectProperty){
+					axioms.add(factory.getOWLEquivalentObjectPropertiesAxiom(
+							factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLObjectProperty(IRI.create(rdfNodeObject.toString()))));
+				} else {
+					axioms.add(factory.getOWLEquivalentDataPropertiesAxiom(
+							factory.getOWLDataProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLDataProperty(IRI.create(rdfNodeObject.toString()))));
+				}
+			} else if(property.equals(RDFS.subPropertyOf)){
+				isObjectProperty = isObjectProperty(rdfNodeSubject.toString());
+				if(isObjectProperty){
+					axioms.add(factory.getOWLSubObjectPropertyOfAxiom(
+							factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLObjectProperty(IRI.create(rdfNodeObject.toString()))));
+				} else {
+					axioms.add(factory.getOWLSubDataPropertyOfAxiom(
+							factory.getOWLDataProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLDataProperty(IRI.create(rdfNodeObject.toString()))));
+				}
+			} else if(property.equals(RDFS.domain)){
+				isObjectProperty = isObjectProperty(rdfNodeSubject.toString());
+				if(isObjectProperty){
+					axioms.add(factory.getOWLObjectPropertyDomainAxiom(
+							factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLClass(IRI.create(rdfNodeObject.toString()))));
+				} else {
+					axioms.add(factory.getOWLDataPropertyDomainAxiom(
+							factory.getOWLDataProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLClass(IRI.create(rdfNodeObject.toString()))));
+				}
+			} else if(property.equals(RDFS.range)){
+				isObjectProperty = isObjectProperty(rdfNodeSubject.toString());
+				if(isObjectProperty){
+					axioms.add(factory.getOWLObjectPropertyRangeAxiom(
+							factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString())),
+							factory.getOWLClass(IRI.create(rdfNodeObject.toString()))));
+				} else {
+					//TODO
+				}
+			}
+			
+		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
+		return axioms;
+	}
+	
+	private Set<OWLAxiom> retrievePropertyCharacteristicAxioms(Resource characteristic, int limit){
+		logger.info("Retrieving " + characteristic + " axioms");
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(RDF.type).append("> ").append("<").append(characteristic).append(">");
+		sb.append("}");
+		sb.append(" ORDER BY ").append("?subject");
+		sb.append(" LIMIT ").append(limit);
+		
+//		Query query = QueryFactory.create(sb.toString());
+//		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
+		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
+		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		
+		QuerySolution solution;
+		RDFNode rdfNodeSubject;
+		boolean isObjectProperty = true;
+		while(sparqlResults.hasNext()){
+			solution = sparqlResults.nextSolution();
+			
+			rdfNodeSubject = solution.getResource("?subject");
+			
+			//skip if solution contains blank node
+			if(rdfNodeSubject.isAnon()){
+				continue;
+			}
+			
+			if(characteristic.equals(OWL.FunctionalProperty)){
+				isObjectProperty = isObjectProperty(rdfNodeSubject.toString());
+				if(isObjectProperty){
+					axioms.add(factory.getOWLFunctionalObjectPropertyAxiom(
+							factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString()))));
+				} else {
+					axioms.add(factory.getOWLFunctionalDataPropertyAxiom(
+							factory.getOWLDataProperty(IRI.create(rdfNodeSubject.toString()))));
+				}
+			} else if(characteristic.equals(OWL.TransitiveProperty)){
+				axioms.add(factory.getOWLTransitiveObjectPropertyAxiom(
+						factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString()))));
+			} else if(characteristic.equals(OWL.InverseFunctionalProperty)){
+				axioms.add(factory.getOWLInverseFunctionalObjectPropertyAxiom(
+						factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString()))));
+			}
+			
+		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
+		return axioms;
+	}
+	
+	private boolean isObjectProperty(String propertyURI){
+		if(ontology.getObjectPropertiesInSignature().contains(factory.getOWLObjectProperty(IRI.create(propertyURI)))){
+			return true;
+		}
+		if(ontology.getDataPropertiesInSignature().contains(factory.getOWLDataProperty(IRI.create(propertyURI)))){
+			return false;
+		}
+		logger.info("Checking if property " + propertyURI + " is ObjectProperty");
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(propertyURI).append("> ").append("?object");
+		sb.append("}");
+		sb.append("LIMIT 1");
+		
+		Query query = QueryFactory.create(sb.toString());
+		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		boolean isObjectProperty = true;
+		while(sparqlResults.hasNext()){
+			QuerySolution solution = sparqlResults.nextSolution();
+			
+			RDFNode rdfNodeSubject = solution.get("?object");
+			isObjectProperty = !rdfNodeSubject.isLiteral();
+		}
+		queryMonitor.stop();
+		logger.info("Found that it must be " + (isObjectProperty ? "an ObjectProperty" : "a DataProperty"));
+		return isObjectProperty;
+	}
+	
+	private Set<OWLClassAssertionAxiom> retrieveClassAssertionAxiomsForClasses(OWLClass cls1, OWLClass cls2, int limit){
+		logger.info("Retrieving classAssertion axioms for class " + cls1 + " and " + cls2);
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(RDF.type).append("> ").append("<").append(cls1.toStringID()).append(">.");
+		sb.append("?subject ").append("<").append(RDF.type).append("> ").append("<").append(cls2.toStringID()).append(">.");
+		sb.append("}");
+		sb.append(" LIMIT ").append(limit);
+		
+		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
+		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		Set<OWLClassAssertionAxiom> axioms = new HashSet<OWLClassAssertionAxiom>();
+		
+		QuerySolution solution;
+		RDFNode rdfNodeSubject;
+		OWLNamedIndividual individual;
+		while(sparqlResults.hasNext()){
+			solution = sparqlResults.nextSolution();
+			
+			rdfNodeSubject = solution.getResource("?subject");
+			
+			individual = factory.getOWLNamedIndividual(IRI.create(rdfNodeSubject.toString()));
+			
+			axioms.add(factory.getOWLClassAssertionAxiom(cls1, individual));
+			axioms.add(factory.getOWLClassAssertionAxiom(cls2, individual));
+		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
+		return axioms;
+	}
+	
+	private Set<OWLClassAssertionAxiom> retrieveClassAssertionAxiomsForClass(OWLClass cls, int limit){
+		logger.info("Retrieving classAssertion axioms for class " + cls);
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(RDF.type).append("> ").append("<").append(cls.toStringID()).append(">.");
+		sb.append("}");
+		sb.append(" LIMIT ").append(limit);
+		
+		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
+		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		Set<OWLClassAssertionAxiom> axioms = new HashSet<OWLClassAssertionAxiom>();
+		
+		QuerySolution solution;
+		RDFNode rdfNodeSubject;
+		OWLNamedIndividual individual;
+		while(sparqlResults.hasNext()){
+			solution = sparqlResults.nextSolution();
+			
+			rdfNodeSubject = solution.getResource("?subject");
+			
+			individual = factory.getOWLNamedIndividual(IRI.create(rdfNodeSubject.toString()));
+			
+			axioms.add(factory.getOWLClassAssertionAxiom(cls, individual));
+		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
+		return axioms;
 	}
 	
 	private Set<OWLDisjointClassesAxiom> retrieveDisjointClassAxioms(){
@@ -315,7 +682,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append("?subject ").append("<").append(OWL.disjointWith).append(">").append(" ?object");
 		sb.append("}");
 		sb.append("LIMIT ").append(RESULT_LIMIT);
-		System.out.println(sb);
+		
 		Query query = QueryFactory.create(sb.toString());
 		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
@@ -342,6 +709,48 @@ public class IncrementalInconsistencyFinder {
 			disjointClass2 = factory.getOWLClass(IRI.create(rdfNodeObject.toString()));
 			
 			axioms.add(factory.getOWLDisjointClassesAxiom(disjointClass1, disjointClass2));
+		}
+		queryMonitor.stop();
+		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
+		return axioms;
+	}
+	
+	private Set<OWLAxiom> retrieveSubClassAxioms(){
+		logger.info("Retrieving SubClassOf axioms");
+		queryMonitor.start();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * WHERE {");
+		sb.append("?subject ").append("<").append(RDFS.subClassOf).append(">").append(" ?object");
+		sb.append("}");
+		sb.append("LIMIT ").append(RESULT_LIMIT);
+		
+		Query query = QueryFactory.create(sb.toString());
+		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
+		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		
+		QuerySolution solution;
+		RDFNode rdfNodeSubject;
+		RDFNode rdfNodeObject;
+		OWLClass subClass;
+		OWLClass superClass;
+		while(sparqlResults.hasNext()){
+			solution = sparqlResults.nextSolution();
+			
+			rdfNodeSubject = solution.getResource("?subject");
+			rdfNodeObject = solution.getResource("?object");
+			
+			//skip if solution contains blank node
+			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
+				continue;
+			}
+			
+			subClass = factory.getOWLClass(IRI.create(rdfNodeSubject.toString()));
+			superClass = factory.getOWLClass(IRI.create(rdfNodeObject.toString()));
+			
+			axioms.add(factory.getOWLSubClassOfAxiom(subClass, superClass));
 		}
 		queryMonitor.stop();
 		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
@@ -406,8 +815,9 @@ public class IncrementalInconsistencyFinder {
 			
 		}
 		if(axioms.isEmpty()){
-			axioms.addAll(getAxiomsFromLinkedDataSource(cl.getIRI()));
+//			axioms.addAll(getAxiomsFromLinkedDataSource(cl.getIRI()));
 		}
+		System.out.println(axioms);
 		queryMonitor.stop();
 		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
 		return axioms;
@@ -494,7 +904,9 @@ public class IncrementalInconsistencyFinder {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
-		sb.append("<").append(ind.toStringID()).append("> ").append("?predicate").append(" ?object.}");
+		sb.append("<").append(ind.toStringID()).append("> ").append("?predicate").append(" ?object.");
+		sb.append("FILTER (!regex(?predicate, \"http://dbpedia.org/property\"))");
+		sb.append("}");
 		sb.append("LIMIT ").append(RESULT_LIMIT);
 		
 		Query query = QueryFactory.create(sb.toString());
@@ -523,10 +935,18 @@ public class IncrementalInconsistencyFinder {
 				} else if(rdfNodeObject.equals(RDFS.label)){
 					
 				} else {
+					//TODO add datatype if is available
+//					System.out.println(rdfNodePredicate);
+//					System.out.println(rdfNodeObject);
+//					System.out.println(((Literal)rdfNodeObject));
+//					System.out.println(((Literal)rdfNodeObject).getLexicalForm());
+//					System.out.println(((Literal)rdfNodeObject).getValue());
+//					System.out.println(((Literal)rdfNodeObject).getDatatype());
+//					System.out.println(((Literal)rdfNodeObject).getLanguage());
 					axioms.add(factory.getOWLDataPropertyAssertionAxiom(
 							factory.getOWLDataProperty(IRI.create(rdfNodePredicate.toString())),
 							ind,
-							rdfNodeObject.toString()));
+							((Literal)rdfNodeObject).getLexicalForm()));
 				}
 				
 			} else if(rdfNodeObject.isResource()){
@@ -544,9 +964,22 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
+	private int getAxiomCount(){
+		StringBuilder sb = new StringBuilder();
+//		sb.append("SELECT COUNT(*) WHERE {");
+//		sb.append("?s").append(" <").append(OWL.disjointWith).append("> ").append("?o}");
+		sb.append("select * where {?s ?p ?o} group by ?s having(count(distinct) < 5)");
+		
+		Query query = QueryFactory.create(sb.toString());
+		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
+		ResultSet results = queryExec.execSelect();
+		System.out.println(results.nextSolution());
+		
+		return 1;
+	}
 	
 	
-	private Set<OWLAxiom> retrieveSubClassAxioms(OWLClass cl){
+	private Set<OWLAxiom> retrieveSubClassAxiomsForClass(OWLClass cl){
 		logger.info("Retrieving subClassOf axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -587,7 +1020,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLObjectPropertyDomainAxiom> retrievePropertyDomainAxioms(OWLClass cl){
+	private Set<OWLObjectPropertyDomainAxiom> retrievePropertyDomainAxiomsForClass(OWLClass cl){
 		logger.info("Retrieving objectPropertyDomain axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -615,7 +1048,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLObjectPropertyRangeAxiom> retrievePropertyRangeAxioms(OWLClass cl){
+	private Set<OWLObjectPropertyRangeAxiom> retrievePropertyRangeAxiomsForClass(OWLClass cl){
 		logger.info("Retrieving objectPropertyRange axioms for class " + cl);
 		queryMonitor.start();
 		
@@ -643,41 +1076,14 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLClassAssertionAxiom> retrieveClassAssertionAxioms(OWLClass cl){
-		logger.info("Retrieving classAssertion axioms for class " + cl);
-		queryMonitor.start();
-		
-		Query sparqlQuery = createSimpleSelectSPARQLQuery("?s", OWLVocabulary.RDF_TYPE, cl.toStringID(),
-				null, RESULT_LIMIT);
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, DEFAULT_GRAPH_URI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-		
-		Set<OWLClassAssertionAxiom> axioms = new HashSet<OWLClassAssertionAxiom>();
-		
-		QuerySolution solution;
-		RDFNode rdfNodeSubject;
-		OWLNamedIndividual individual;
-		while(sparqlResults.hasNext()){
-			solution = sparqlResults.nextSolution();
-			
-			rdfNodeSubject = solution.getResource("?s");
-			
-			individual = factory.getOWLNamedIndividual(IRI.create(rdfNodeSubject.toString()));
-			
-			axioms.add(factory.getOWLClassAssertionAxiom(cl, individual));
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
 	
 	private Set<OWLAxiom> retrieveAxiomsForClass(OWLClass cl, boolean retrieveABoxAxioms){
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		axioms.addAll(retrieveSubClassAxioms(cl));
-		axioms.addAll(retrievePropertyDomainAxioms(cl));
-		axioms.addAll(retrievePropertyRangeAxioms(cl));
+		axioms.addAll(retrieveSubClassAxiomsForClass(cl));
+		axioms.addAll(retrievePropertyDomainAxiomsForClass(cl));
+		axioms.addAll(retrievePropertyRangeAxiomsForClass(cl));
 		if(retrieveABoxAxioms){
-			axioms.addAll(retrieveClassAssertionAxioms(cl));
+			axioms.addAll(retrieveClassAssertionAxiomsForClass(cl, AXIOM_COUNT));
 		}
 		return axioms;
 	}
@@ -796,9 +1202,11 @@ public class IncrementalInconsistencyFinder {
 	}
 	
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException{
+		PelletExplanation.setup();
 		IncrementalInconsistencyFinder incFinder = new IncrementalInconsistencyFinder();
 //		incFinder.checkForUnsatisfiableClasses(ENDPOINT_URL);
-		incFinder.checkForInconsistency(ENDPOINT_URL);
+//		incFinder.checkForInconsistency(ENDPOINT_URL);
+		incFinder.run(ENDPOINT_URL);
 		
 //		String queryString = "CONSTRUCT { ?x <" + RDFS.subClassOf + "> ?y } WHERE { ?x <" + RDFS.subClassOf + "> ?y } ORDER BY ?x LIMIT 100 ";
 //		Query query = QueryFactory.create(queryString) ;
