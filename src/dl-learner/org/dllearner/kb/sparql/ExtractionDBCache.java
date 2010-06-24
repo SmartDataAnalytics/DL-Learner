@@ -81,7 +81,7 @@ public class ExtractionDBCache {
 
         // create cache table if it does not exist
         Statement stmt = conn.createStatement();
-        stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(2000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");
 		} catch(NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
