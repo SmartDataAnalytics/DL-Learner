@@ -23,6 +23,7 @@ import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
@@ -62,6 +63,8 @@ public class IncrementalInconsistencyFinder {
 	
 	private static final String ENDPOINT_URL = "http://dbpedia-live.openlinksw.com/sparql";
 	private static String DEFAULT_GRAPH_URI = "http://dbpedia.org";
+	private static String DBPEDIA_PREDICATE_FILTER = "!regex(?predicate, \"http://dbpedia.org/property\")";
+	private static String DBPEDIA_SUBJECT_FILTER = "!regex(?subject, \"http://dbpedia.org/property\")";
 //	private static final String ENDPOINT_URL = "http://localhost:8890/sparql";
 //	private static String DEFAULT_GRAPH_URI = "http://opencyc2.org";
 	
@@ -131,13 +134,19 @@ public class IncrementalInconsistencyFinder {
 		manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.TransitiveProperty, AXIOM_COUNT));
 		
 
+		Set<OWLClass> classes2Visit = new HashSet<OWLClass>();
+		Set<OWLObjectProperty> properties2Visit = new HashSet<OWLObjectProperty>();
+		Set<OWLNamedIndividual> individuals2Visit = new HashSet<OWLNamedIndividual>();
+		
 		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
 		Set<OWLObjectProperty> visitedObjectProperties = new HashSet<OWLObjectProperty>();
 		Set<OWLNamedIndividual> visitedIndividuals = new HashSet<OWLNamedIndividual>();
-		Set<OWLClass> classesToVisit = new HashSet<OWLClass>();
-		Set<OWLClass> tmp = new HashSet<OWLClass>();
 		
-		//now we retrieve for each DisjointClasses axiom at first instance that are contained in both (disjoint) classes,
+		Set<OWLClass> classTmp = new HashSet<OWLClass>();
+		Set<OWLObjectProperty> propTmp = new HashSet<OWLObjectProperty>();
+		Set<OWLNamedIndividual> indTmp = new HashSet<OWLNamedIndividual>();
+		
+		//now we retrieve for each DisjointClasses axiom at first instances that are contained in both (disjoint) classes,
 		//and furthermore instances of each particular class in the axiom
 		for(OWLDisjointClassesAxiom ax : ontology.getAxioms(AxiomType.DISJOINT_CLASSES)){
 			manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClasses(
@@ -145,6 +154,56 @@ public class IncrementalInconsistencyFinder {
 					ax.getClassExpressionsAsList().get(1).asOWLClass(), AXIOM_COUNT));
 			manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(ax.getClassExpressionsAsList().get(0).asOWLClass(), AXIOM_COUNT));
 			manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(ax.getClassExpressionsAsList().get(1).asOWLClass(), AXIOM_COUNT));
+			
+			//for each class we retrieve axioms, and then add the classes in the signature of the found axioms to
+			//the set, we use later to start the recursion
+			for(OWLClass cls : ax.getClassesInSignature()){
+				manager.addAxioms(ontology, retrieveAxiomsForClass(cls, AXIOM_COUNT));
+				for(OWLClassExpression sub : cls.getSubClasses(ontology)){
+					classes2Visit.add(sub.asOWLClass());
+				}
+			}
+		}
+		
+		Set<OWLAxiom> axioms;
+		for(int i = 0; i <= RECURSION_DEPTH; i++){
+			for(OWLClass cls : classes2Visit){
+				axioms = retrieveAxiomsForClass(cls, AXIOM_COUNT);
+				manager.addAxioms(ontology, axioms);
+				for(OWLAxiom ax : axioms){
+					classTmp.addAll(ax.getClassesInSignature());
+				}
+			}
+			visitedClasses.addAll(classes2Visit);
+			classTmp.removeAll(visitedClasses);
+			classes2Visit.clear();
+			classes2Visit.addAll(classTmp);
+			classTmp.clear();
+			for(OWLObjectProperty prop : properties2Visit){
+				axioms = retrieveAxiomsForObjectProperty(prop, AXIOM_COUNT);
+				manager.addAxioms(ontology, axioms);
+				for(OWLAxiom ax : axioms){
+					propTmp.addAll(ax.getObjectPropertiesInSignature());
+				}
+			}
+			visitedObjectProperties.addAll(properties2Visit);
+			propTmp.removeAll(visitedObjectProperties);
+			properties2Visit.clear();
+			properties2Visit.addAll(propTmp);
+			propTmp.clear();
+			for(OWLNamedIndividual ind : individuals2Visit){
+				axioms = retrieveAxiomsForIndividual(ind, AXIOM_COUNT);
+				manager.addAxioms(ontology, axioms);
+				for(OWLAxiom ax : axioms){
+					indTmp.addAll(ax.getIndividualsInSignature());
+				}
+			}
+			visitedIndividuals.addAll(individuals2Visit);
+			indTmp.removeAll(visitedIndividuals);
+			individuals2Visit.clear();
+			individuals2Visit.addAll(indTmp);
+			indTmp.clear();
+			
 		}
 		logger.info("Ontology is consistent: " + reasoner.isConsistent());
 		
@@ -283,7 +342,7 @@ public class IncrementalInconsistencyFinder {
 			logger.info("Recursion depth = " + i);
 			//we retrieve axioms for each class
 			for(OWLClass cl : classesToVisit){
-				axioms = retrieveAxiomsForClass(cl);
+				axioms = retrieveAxiomsForClass(cl, RESULT_LIMIT);
 				manager.addAxioms(ontology, axioms);
 				System.out.println(ontology.getObjectPropertiesInSignature());
 				if(!axioms.isEmpty()){
@@ -310,7 +369,7 @@ public class IncrementalInconsistencyFinder {
 			int cnt = 0;
 			for(OWLNamedIndividual ind : ontology.getIndividualsInSignature()){
 				if(!visitedIndividuals.contains(ind)){
-					manager.addAxioms(ontology, retrieveAxiomsForIndividual(ind));
+					manager.addAxioms(ontology, retrieveAxiomsForIndividual(ind, RESULT_LIMIT));
 					visitedIndividuals.add(ind);
 					logger.info("Checking for consistency");
 					reasonerMonitor.start();
@@ -335,7 +394,7 @@ public class IncrementalInconsistencyFinder {
 			logger.info("Retrieving axioms for " + ontology.getObjectPropertiesInSignature().size() + " properties");
 			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature()){
 				if(!visitedObjectProperties.contains(prop)){
-					manager.addAxioms(ontology, retrieveAxiomsForObjectProperty(prop));
+					manager.addAxioms(ontology, retrieveAxiomsForObjectProperty(prop, RESULT_LIMIT));
 					visitedObjectProperties.add(prop);
 					logger.info("Checking for consistency");
 					reasonerMonitor.start();
@@ -383,14 +442,12 @@ public class IncrementalInconsistencyFinder {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
-		sb.append("?subject ").append("<").append(property).append(">").append(" ?object");
+		sb.append("?subject ").append("<").append(property).append(">").append(" ?object.");
+		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		
-		
-//		Query query = QueryFactory.create(sb.toString());
-//		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
 		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
 		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
@@ -436,13 +493,12 @@ public class IncrementalInconsistencyFinder {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
-		sb.append("?subject ").append("<").append(property).append(">").append(" ?object");
+		sb.append("?subject ").append("<").append(property).append(">").append(" ?object.");
+		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		
-//		Query query = QueryFactory.create(sb.toString());
-//		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
 		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
 		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
@@ -524,13 +580,12 @@ public class IncrementalInconsistencyFinder {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
-		sb.append("?subject ").append("<").append(RDF.type).append("> ").append("<").append(characteristic).append(">");
+		sb.append("?subject ").append("<").append(RDF.type).append("> ").append("<").append(characteristic).append(">.");
+		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		
-//		Query query = QueryFactory.create(sb.toString());
-//		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
 		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
 		sparqlQueryExec.addDefaultGraph(DEFAULT_GRAPH_URI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
@@ -764,7 +819,7 @@ public class IncrementalInconsistencyFinder {
 	 * @param cl
 	 * @return
 	 */
-	private Set<OWLAxiom> retrieveAxiomsForClass(OWLClass cl){
+	private Set<OWLAxiom> retrieveAxiomsForClass(OWLClass cl, int limit){
 		logger.info("Retrieving axioms for class " + cl);
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		queryMonitor.start();
@@ -775,7 +830,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" UNION ");
 		sb.append("{?subject").append("?predicate").append(" <").append(cl.toStringID()).append("> }");
 		sb.append("}");
-		sb.append("LIMIT ").append(RESULT_LIMIT);
+		sb.append("LIMIT ").append(limit);
 		
 		Query query = QueryFactory.create(sb.toString());
 		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
@@ -813,11 +868,10 @@ public class IncrementalInconsistencyFinder {
 			}
 			
 			
-		}
+		}System.out.println(axioms);
 		if(axioms.isEmpty()){
-//			axioms.addAll(getAxiomsFromLinkedDataSource(cl.getIRI()));
+			axioms.addAll(getAxiomsFromLinkedDataSource(cl.getIRI()));
 		}
-		System.out.println(axioms);
 		queryMonitor.stop();
 		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
 		return axioms;
@@ -831,7 +885,7 @@ public class IncrementalInconsistencyFinder {
 	 * @param prop
 	 * @return
 	 */
-	private Set<OWLAxiom> retrieveAxiomsForObjectProperty(OWLObjectProperty prop){
+	private Set<OWLAxiom> retrieveAxiomsForObjectProperty(OWLObjectProperty prop, int limit){
 		logger.info("Retrieving axioms for property " + prop);
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		queryMonitor.start();
@@ -839,7 +893,7 @@ public class IncrementalInconsistencyFinder {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
 		sb.append("<").append(prop.toStringID()).append("> ").append("?predicate").append(" ?object.}");
-		sb.append("LIMIT ").append(RESULT_LIMIT);
+		sb.append("LIMIT ").append(limit);
 		
 		Query query = QueryFactory.create(sb.toString());
 		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
@@ -897,7 +951,7 @@ public class IncrementalInconsistencyFinder {
 	 * @param ind
 	 * @return
 	 */
-	private Set<OWLAxiom> retrieveAxiomsForIndividual(OWLNamedIndividual ind){
+	private Set<OWLAxiom> retrieveAxiomsForIndividual(OWLNamedIndividual ind, int limit){
 		logger.info("Retrieving axioms for individual " + ind);
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		queryMonitor.start();
@@ -905,9 +959,9 @@ public class IncrementalInconsistencyFinder {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
 		sb.append("<").append(ind.toStringID()).append("> ").append("?predicate").append(" ?object.");
-		sb.append("FILTER (!regex(?predicate, \"http://dbpedia.org/property\"))");
+		sb.append("FILTER ").append("(").append(DBPEDIA_PREDICATE_FILTER).append(")");
 		sb.append("}");
-		sb.append("LIMIT ").append(RESULT_LIMIT);
+		sb.append("LIMIT ").append(limit);
 		
 		Query query = QueryFactory.create(sb.toString());
 		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, DEFAULT_GRAPH_URI);
