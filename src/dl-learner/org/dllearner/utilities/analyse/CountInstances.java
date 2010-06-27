@@ -1,5 +1,6 @@
 package org.dllearner.utilities.analyse;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,18 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class CountInstances {
 	
-		SPARQLTasks t = new SPARQLTasks(Cache.getDefaultCache(), SparqlEndpoint.getEndpointLOCALDBpedia());
+		SPARQLTasks t;
+		
+		public CountInstances( String url , List<String> defaultGraphs){
+			try{
+			 t = new SPARQLTasks(Cache.getDefaultCache(), 
+					 new SparqlEndpoint(new URL(url), defaultGraphs, new ArrayList<String>()));
+			}catch (Exception e) {
+				e.printStackTrace();	
+			}
+			
+		}
+		
 		public class Count implements Comparable<Count>{
 			public Count(String uri, int count) {
 				super();

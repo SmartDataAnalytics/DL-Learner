@@ -2,6 +2,7 @@ package org.dllearner.utilities.analyse;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,23 +25,25 @@ public class ScriptDoAll {
 	public static String dbns = "http://dbpedia.org/ontology/";
 	public static String yagons = "http://dbpedia.org/class/yago/";
 	
+	static CountInstances c = new CountInstances("http://db0.aksw.org:8893/sparql", Arrays.asList(new String[]{"http://dbpedia.org/ontology"}));
+	
 	public static void main(String[] args) {
 		
 		@SuppressWarnings("unused")
-		String dbpediaFile = "dbpedia_3.4.owl";
+		String dbpediaFile = "dbpedia_3.5.1.owl";
 		@SuppressWarnings("unused")
 		String yagoFile = "yagoclasses_links.nt";
 		@SuppressWarnings("unused")
 		String categoryFile = "skoscategories_en.nt";
 		
 		doIt(dbpediaFile, "RDF/XML", subclassof, rdftype, dbns,false);
-		doIt(yagoFile, "N-TRIPLES", subclassof, rdftype, yagons,false);
+//		doIt(yagoFile, "N-TRIPLES", subclassof, rdftype, yagons,false);
 //		doIt(categoryFile, "N-TRIPLES", broader, subject, catns, true);
 		
 	}
 	
 	public static void doIt(String file, String format, String relation, String type, String nsFilter, boolean noExpand){
-		CountInstances c = new CountInstances();
+		
 		Map<String, SortedSet<String>>  dbdown = new Hierarchy().getHierarchyDown(file, format, relation, noExpand);
 		Files.writeObjectToFile(dbdown, new File(file+".sub.ser"));
 		Map<String, SortedSet<String>>  dbup = new Hierarchy().getHierarchyUp(file, format,  relation, noExpand);
@@ -96,7 +99,7 @@ public class ScriptDoAll {
 			
 			if(expanded == null){
 				//just add this one, i.e. no subclasses
-				ret.add(new CountInstances().new Count(key, now));
+				ret.add(c.new Count(key, now));
 			}else{
 				Integer add = null;
 				for(String rel:expanded){
@@ -104,7 +107,7 @@ public class ScriptDoAll {
 						now += add;
 					}
 				}
-				ret.add(new CountInstances().new Count(key, now));
+				ret.add(c.new Count(key, now));
 			}
 			
 		}
