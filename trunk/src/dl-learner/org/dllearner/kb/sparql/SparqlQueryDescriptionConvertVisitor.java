@@ -136,6 +136,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	}
 	
 	
+	/**
+	 * finalizes the patterns with a point
+	 * @param toBePointed
+	 * @return
+	 */
 	private static String pointalize(String toBePointed){
 		if(toBePointed==null){
 			return "";
@@ -294,15 +299,38 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		return getSparqlQuery(rewritten, resultLimit, false, false);
 
 	}
+	
+	
+	public static void testHasValue() throws Exception{
+//		 String ttt = "(\"http://dbpedia.org/ontology/Plant\" AND (\"http://dbpedia.org/ontology/kingdom\" hasValue \"http://dbpedia.org/resource/Plantae\" OR EXISTS \"http://dbpedia.org/ontology/family\".\"http://dbpedia.org/ontology/FloweringPlant\"))";
+		 String ttt = "(\"http://dbpedia.org/ontology/Plant\" AND ((\"http://dbpedia.org/ontology/kingdom\" HASVALUE \"http://dbpedia.org/resource/Plantae\") OR EXISTS \"http://dbpedia.org/ontology/family\".\"http://dbpedia.org/ontology/FloweringPlant\"))";
+		 SparqlQueryDescriptionConvertVisitor testVisitor = new SparqlQueryDescriptionConvertVisitor();
+		 String q = testVisitor.getSparqlQuery(ttt);
+		 System.out.println(q);
+		 Description description = KBParser.parseConcept(ttt);
+		 System.out.println(description.toString());
+		 System.out.println(description.toKBSyntaxString());
+		 System.out.println(description.toKBSyntaxString(null,null));
+		 if (true) {
+			System.exit(0);
+		}
+			
+	}
 
 	/**
 	 * Used for testing the Sparql Query converter.
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		SparqlQueryConverter.test();
+	public static void main(String[] args) throws Exception{
+		
 		try {
+		
+		testHasValue();
+		
+		
+		SparqlQueryConverter.test();
+		
 			SortedSet<String> s = new TreeSet<String>();
 			HashMap<String, String> result = new HashMap<String, String>();
 			HashMap<String, String> subclassMap = new HashMap<String, String>();

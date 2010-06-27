@@ -71,13 +71,18 @@ public class Examples {
 	
 	/**
 	 * calculates precision based on the test set
+	 * CAVE: incorrect
 	 * @param retrieved
 	 * @return
 	 */
 	public double precision(SortedSet<String> retrieved){
 		if(retrieved.size()==0){return 0.0d;}
-		int posAsPos = Helper.intersection(retrieved, getPosTest()).size();
-		return ((double)posAsPos)/((double)retrieved.size());
+		SortedSet<String> retrievedClean = new TreeSet<String>(retrieved);
+		retrievedClean.removeAll(posTrain);
+		retrievedClean.removeAll(negTrain);
+		
+		int posAsPos = Helper.intersection(retrievedClean, getPosTest()).size();
+		return ((double)posAsPos)/((double)retrievedClean.size());
 	}
 	
 	/**
@@ -87,8 +92,12 @@ public class Examples {
 	 */
 	public double recall( SortedSet<String> retrieved){
 		if(sizeTotalOfPositives()==0){return 0.0d;}
-		int posAsPos = Helper.intersection(retrieved, getPosTest()).size();
-		return ((double)posAsPos)/((double)sizeTotalOfPositives());
+		SortedSet<String> retrievedClean = new TreeSet<String>(retrieved);
+		retrievedClean.removeAll(posTrain);
+		retrievedClean.removeAll(negTrain);
+		
+		int posAsPos = Helper.intersection(retrievedClean, getPosTest()).size();
+		return ((double)posAsPos)/((double)posTest.size());
 	}
 	
 	private void _remove(String toBeRemoved ){
