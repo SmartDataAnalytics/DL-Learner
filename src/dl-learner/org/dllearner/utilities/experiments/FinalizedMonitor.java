@@ -5,6 +5,11 @@ import java.io.Serializable;
 import com.jamonapi.MonKey;
 import com.jamonapi.Monitor;
 
+/**
+ * This a class to make a Jamon monitor persistent
+ * @author Sebastian Hellmann <hellmann@informatik.uni-leipzig.de>
+ *
+ */
 public class FinalizedMonitor implements Serializable{
 	private static final long serialVersionUID = 6617125369204663530L;
 	

@@ -92,11 +92,7 @@ public class Examples {
 	 */
 	public double recall( SortedSet<String> retrieved){
 		if(sizeTotalOfPositives()==0){return 0.0d;}
-		SortedSet<String> retrievedClean = new TreeSet<String>(retrieved);
-		retrievedClean.removeAll(posTrain);
-		retrievedClean.removeAll(negTrain);
-		
-		int posAsPos = Helper.intersection(retrievedClean, getPosTest()).size();
+		int posAsPos = Helper.intersection( getPosTest() , retrieved).size();
 		return ((double)posAsPos)/((double)posTest.size());
 	}
 	
@@ -175,17 +171,17 @@ public class Examples {
 
 		String ret = "Training:\n";
 		for (String one : posTrain) {
-			ret += "+" + one + "\n";
+			ret += "+\"" + one + "\"\n";
 		}
 		for (String one : negTrain) {
-			ret += "-" + one + "\n";
+			ret += "-\"" + one + "\"\n";
 		}
 		ret += "Testing:\n";
 		for (String one : posTest) {
-			ret += "+" + one + "\n";
+			ret += "+\"" + one + "\"\n";
 		}
 		for (String one : negTest) {
-			ret += "-" + one + "\n";
+			ret += "-\"" + one + "\"\n";
 		}
 
 		return ret+this.toString();

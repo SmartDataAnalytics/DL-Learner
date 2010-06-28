@@ -54,10 +54,10 @@ public class ExperimentConfiguration {
 	/**
 	 * sets sizeOfResultVector to 1, meaning no iterated experiments
 	 * 
-	 * @param label
+	 * @param experimentName
 	 */
-	public ExperimentConfiguration(String label) {
-		this(label, 1);
+	public ExperimentConfiguration(String experimentName) {
+		this(experimentName, 1);
 	}
 
 	public ExperimentConfiguration(String experimentName, int sizeOfResultVector) {
@@ -142,9 +142,9 @@ public class ExperimentConfiguration {
 	public void add(MonKeyImp monkey, int index, double value) {
 		try {
 			get(monkey).getMonitors()[index].add(value);
-		} catch (Exception e) {
+		} catch (IndexOutOfBoundsException e) {
 			e.printStackTrace();
-			logger.error("index too big, max = " + index);
+			logger.error("index too big, is: "+index+" max = " +  get(monkey).getMonitors().length);
 		}
 
 	}
