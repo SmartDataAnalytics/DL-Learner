@@ -280,7 +280,7 @@ public class ClassHierarchy {
 			Description key = entry.getKey();
 			if(allowed.contains(key)) {
 				TreeSet<Description> subClasses = new TreeSet<Description>(entry.getValue());
-				TreeSet<Description> newSubClasses = new TreeSet<Description>(entry.getValue());
+				TreeSet<Description> newSubClasses = new TreeSet<Description>(conceptComparator);
 				
 				while(!subClasses.isEmpty()) {
 					Description d = subClasses.pollFirst();
