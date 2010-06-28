@@ -239,6 +239,12 @@ public class Table implements Serializable{
 		tableRowColumns = newTrc;
 	}
 	
+	/**
+	 * Writes all possible outputs to the given folder, i.e. 
+	 * GNu plot rows and Columns and Latex tables
+	 * @param folder
+	 * @param fileprefix
+	 */
 	public void write(String folder, String fileprefix){
 		logger.info("Writing results to "+folder+fileprefix);
 		Files.mkdir(folder);
