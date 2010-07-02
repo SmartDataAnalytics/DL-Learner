@@ -316,6 +316,23 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		}
 			
 	}
+	public static void testTrans() throws Exception{
+//		 String ttt = "(\"http://dbpedia.org/ontology/Plant\" AND (\"http://dbpedia.org/ontology/kingdom\" hasValue \"http://dbpedia.org/resource/Plantae\" OR EXISTS \"http://dbpedia.org/ontology/family\".\"http://dbpedia.org/ontology/FloweringPlant\"))";
+//		String ttt = "(\"http://dbpedia.org/ontology/Plant\" AND ((\"http://dbpedia.org/ontology/kingdom\" HASVALUE \"http://dbpedia.org/resource/Plantae\") OR EXISTS \"http://dbpedia.org/ontology/family\".\"http://dbpedia.org/ontology/FloweringPlant\"))";
+		String ttt = "EXISTS \"http://dbpedia.org/ontology/kingdom\".\"http://dbpedia.org/resource/Plantae\"";
+		SparqlQueryDescriptionConvertVisitor testVisitor = new SparqlQueryDescriptionConvertVisitor();
+		testVisitor.setTransitiveProperties(new TreeSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/ontology/kingdom" })));
+		String q = testVisitor.getSparqlQuery(ttt);
+		System.out.println(q);
+		Description description = KBParser.parseConcept(ttt);
+		System.out.println(description.toString());
+		System.out.println(description.toKBSyntaxString());
+		System.out.println(description.toKBSyntaxString(null,null));
+		if (true) {
+			System.exit(0);
+		}
+		
+	}
 
 	/**
 	 * Used for testing the Sparql Query converter.
@@ -325,7 +342,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 	public static void main(String[] args) throws Exception{
 		
 		try {
-		
+//			testTrans();
 		testHasValue();
 		
 		

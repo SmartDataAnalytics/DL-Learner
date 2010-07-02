@@ -72,10 +72,8 @@ public class ExMakerFixedSize {
 	}
 	
 	/**
-	 * returns a new example object based on all Examples in the old set
-	 * picks a fixed number of examples, puts them into 
-	 * training sets, rest to test set
-	 * based on all examples found in examples object
+	 * returns a new example object based on ALL (train and test) examples in the old set
+	 * picks a fixed number of examples, puts them into training sets, rest to test set
 	 * @param nrOfPos
 	 * @param nrOfNeg
 	 * @return
