@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2010, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.examples;
 
 import java.io.File;
@@ -58,6 +77,8 @@ public class Suramin {
 	private static Set<String> compounds = new TreeSet<String>();
 	// list of all bonds
 	private static Set<String> bonds = new TreeSet<String>();
+	
+	private static List<String> posExamples = new LinkedList<String>();
 
 	public static void main(String[] args) throws FileNotFoundException,
 	IOException, ParseException{
@@ -138,6 +159,21 @@ public class Suramin {
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
+		
+		// generating conf files
+		File confTrainFile = new File("examples/suramin/train.conf");
+		Files.clearFile(confTrainFile);
+		String confHeader = "import(\"suramin.owl\");\n\n";
+		confHeader += "reasoner = fastInstanceChecker;\n";
+		confHeader += "algorithm = refexamples;\n";
+		confHeader += "refexamples.noisePercentage = 31;\n";
+		confHeader += "refexamples.startClass = " + getURI2("Compound") + ";\n";
+		confHeader += "refexamples.writeSearchTree = false;\n";
+		confHeader += "refexamples.searchTreeFile = \"log/suramin/searchTree.log\";\n";
+		confHeader += "\n";
+		Files.appendFile(confTrainFile, confHeader);
+		appendExamples(confTrainFile, posExamples);
+		
 	}
 
 	private static List<Axiom> mapClause(Clause clause) throws IOException,
@@ -217,14 +253,22 @@ public class Suramin {
 			axioms.add(op2);
 		} else if (headName.equals("drug")){
 			// ... currently ignored ...
+			// no new information
 		} else if (headName.equals("atomid")) {
 			// ... currently ignored ...
+			// no new information
 		} else if (headName.equals("element")) {
 			// ... currently ignored ...
+			// no new information
 		} else if (headName.equals("active")) {
-			
+			String compoundName = head.getArgument(0).toPLString();
+			posExamples.add(compoundName);
 		} else {
-			System.out.println("clause not supportet: " + headName);
+			// print clauses which are not supported yet
+			System.out.println("unsupported clause");
+			System.out.println(clause.toPLString());
+			System.out.println(clause);
+			System.exit(0);
 		}
 		
 		return axioms;
@@ -322,6 +366,23 @@ public class Suramin {
 	// returns URI including quotationsmark (need for KBparser)
 	private static String getURI2(String name) {
 		return "\"" + getURI(name) + "\"";
+	}
+	
+	/**
+	 * This method  
+	 * @param file
+	 * @param examples
+	 */
+	public static void appendExamples(File file, List<String> examples) {
+		StringBuffer content = new StringBuffer();
+		for(String compound : compounds) {
+			if(examples.contains(compound.toString())) {
+				content.append("+\""+getIndividual(compound)+"\"\n");
+			} else {
+				content.append("-\""+getIndividual(compound.toString())+"\"\n");
+			}
+		}
+		Files.appendFile(file, content.toString());
 	}
 
 }
