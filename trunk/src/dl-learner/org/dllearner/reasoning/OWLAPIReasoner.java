@@ -582,7 +582,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
 		SortedSet<Individual> inds = new TreeSet<Individual>();
 		for(OWLNamedIndividual ind : individuals)
-			inds.add(new Individual(ind.toStringID()));
+			//ugly code
+			if(ind != null)
+				inds.add(new Individual(ind.toStringID()));
 		return inds;
 	}
 	
