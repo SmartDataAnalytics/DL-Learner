@@ -78,10 +78,10 @@ public class OntologyEngineering {
 	private static DecimalFormat df = new DecimalFormat();
 
 	// for performance measurements and development
-	private static boolean autoMode = false;
+	private static boolean autoMode = true;
 	private static boolean useFastInstanceChecker = true;
 	private static boolean useApproximations = true;
-	private static boolean computeApproxDiff = false;
+	private static boolean computeApproxDiff = true;
 	
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException,
