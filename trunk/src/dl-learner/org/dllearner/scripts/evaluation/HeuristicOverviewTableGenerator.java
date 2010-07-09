@@ -19,6 +19,7 @@
  */
 package org.dllearner.scripts.evaluation;
 
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,6 +73,7 @@ public class HeuristicOverviewTableGenerator {
 	}
 	
 	private List<Input> inputs;
+	private DecimalFormat df = new DecimalFormat();
 	
 	public HeuristicOverviewTableGenerator(List<Input> inputs) {
 		this.inputs = inputs;
@@ -83,9 +85,18 @@ public class HeuristicOverviewTableGenerator {
 			double recall = getRecall(input);
 			double fMeasureEq = getFMeasure(recall, precision, 1);
 			double fMeasureSc = getFMeasure(recall, precision, 3);
+			double aMeasureEq = getAMeasure(recall, precision, 1);
+			double aMeasureSc = getAMeasure(recall, precision, 3);
+			double predAccEq = getPredAcc(input, 1);
+			double predAccSc = getPredAcc(input, 3);
+			double jaccard = getJaccard(input);
 			
 			System.out.println("input: " + input);
-			System.out.println("FMeasure: eq. " + fMeasureEq + " sc. " + fMeasureSc);
+			System.out.println("recall: " + df.format(recall) + " precision: " + df.format(precision));
+			System.out.println("FMeasure: eq. " + df.format(fMeasureEq) + " sc. " + df.format(fMeasureSc));
+			System.out.println("AMeasure: eq. " + df.format(aMeasureEq) + " sc. " + df.format(aMeasureSc));
+			System.out.println("pred.acc.: eq. " + df.format(predAccEq) + " sc. " + df.format(predAccSc));
+			System.out.println("Jaccard: " + df.format(jaccard));
 			System.out.println();
 			
 		}
@@ -103,6 +114,24 @@ public class HeuristicOverviewTableGenerator {
 		return (precision + recall == 0) ? 0 :
 			  ( (1+Math.sqrt(factor)) * (precision * recall)
 					/ (Math.sqrt(factor) * precision + recall) ); 		
+	}
+	
+	private double getAMeasure(double recall, double precision, double factor) {
+		return (factor * recall + precision) / (factor + 1);
+	}
+	
+	@SuppressWarnings("unused")
+	private double getOwnMeasure(double recall, double precision, double factor) {
+//		return (factor * recall + Math.sqrt(precision)) / (factor + 1);
+		return (factor * recall + Math.pow(precision, 0.8)) / (factor + 1);
+	}
+	
+	private double getPredAcc(Input input, double factor) {
+		return (factor*input.intersectionSuggestionClass + input.kbInstances - input.classInstances - input.suggestionInstances + input.intersectionSuggestionClass) / (double) (input.kbInstances + (factor-1)*input.classInstances);
+	}
+	
+	private double getJaccard(Input input) {
+		return input.intersectionSuggestionClass / (double) (input.classInstances + input.suggestionInstances - input.intersectionSuggestionClass);
 	}
 	
 	/**

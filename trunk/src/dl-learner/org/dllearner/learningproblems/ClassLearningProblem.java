@@ -720,9 +720,11 @@ public class ClassLearningProblem extends LearningProblem {
 	}
 	
 	// computes accuracy from coverage and protusion (changing this function may
-	// make it necessary to change the appoximation too)
-	private double getAccuracy(double coverage, double protusion) {
-		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
+	// make it necessary to change the appoximation too) => not the case anymore
+	private double getAccuracy(double recall, double precision) {
+//		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
+		// log: changed from precision^^0.5 (root) to precision^^0.8 as the root is too optimistic in some cases
+		return (coverageFactor * recall + Math.pow(precision, 0.8)) / (coverageFactor + 1);
 	}
 	
 	private double getFMeasure(double recall, double precision) {
