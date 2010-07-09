@@ -134,6 +134,7 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 		try {
 			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
 			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
+			object.put("signature", c.getSignature());
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
 			object.put("scoreValue", score.getAccuracy());	
