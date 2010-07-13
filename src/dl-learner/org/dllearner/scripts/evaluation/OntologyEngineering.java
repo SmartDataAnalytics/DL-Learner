@@ -79,9 +79,12 @@ public class OntologyEngineering {
 
 	// for performance measurements and development
 	private static boolean autoMode = true;
-	private static boolean useFastInstanceChecker = true;
-	private static boolean useApproximations = true;
+	// if set to true, this overrides the two options below and tests all four combinations => doesn't seem to work
+	private static boolean testFCIApprox = false;
+	private static boolean useFastInstanceChecker = false;
+	private static boolean useApproximations = false;
 	private static boolean computeApproxDiff = true;
+	private static boolean useFMeasure = false;
 	
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException,
@@ -93,8 +96,8 @@ public class OntologyEngineering {
 		if (args.length == 0) {
 			System.out.println("You need to give an OWL file as argument.");
 			System.exit(0);
-		}
-		
+		}		
+
 
 		ComponentManager cm = ComponentManager.getInstance();
 
@@ -115,7 +118,28 @@ public class OntologyEngineering {
 		}
 		reasoner.init();
 		System.out.println("Loaded ontology " + args[0] + ".");
-
+		
+		if(testFCIApprox) {
+			useFastInstanceChecker = false;
+			useApproximations = false;
+			run(reasoner);
+			useFastInstanceChecker = false;
+			useApproximations = true;
+			run(reasoner);
+			useFastInstanceChecker = true;
+			useApproximations = false;
+			run(reasoner);
+			useFastInstanceChecker = true;
+			useApproximations = true;
+			run(reasoner);			
+		} else {
+			run(reasoner);	
+		}
+	}
+		
+	public static void run(ReasonerComponent reasoner) throws ComponentInitException, IOException, LearningProblemUnsupportedException {
+		ComponentManager cm = ComponentManager.getInstance();
+		
 		String baseURI = reasoner.getBaseURI();
 		Map<String, String> prefixes = reasoner.getPrefixes();
 
@@ -191,6 +215,9 @@ public class OntologyEngineering {
 						lp.getConfigurator().setType("superClass");
 					}
 					lp.getConfigurator().setUseApproximations(useApproximations);
+					if(useFMeasure) {
+						lp.getConfigurator().setAccuracyMethod("fmeasure");	
+					}
 					lp.init();
 
 					CELOE celoe = cm.learningAlgorithm(CELOE.class, lp, reasoner);
@@ -380,7 +407,7 @@ public class OntologyEngineering {
 		System.out
 				.println("knowledge engineering process finished successfully - summary shown below");
 		System.out.println();
-		System.out.println("ontology: " + args[0]);
+//		System.out.println("ontology: " + args[0]);
 		System.out.println("settings: " + minAccuracy + " min accuracy, " + minInstanceCount + " min instances, " + algorithmRuntimeInSeconds + "s algorithm runtime");
 		System.out.println("user input protocol: " + userInputProtocol);
 		System.out.println("classes in ontology: " + classes.size());
