@@ -146,52 +146,95 @@ public class DescriptionMinimizer {
 			}
 			return description;
 		} else if(description instanceof Intersection || description instanceof Union) {
-			List<Integer> toRemove = new LinkedList<Integer>();
-			// intersection
+			
 			if(description instanceof Intersection) {
-				// in an intersection, we have that D1 \sqcap D2 \equiv D1 if
-				// D1 \sqsubseteq D2; this means we first check whether the
-				// first element in a union is superclass of any other element in the
-				// union; if yes, then we delete it and proceed to the next element
 				for(int i=0; i<children.size(); i++) {
-					for(int j=0; j<children.size(); j++) {
+					for(int j=0; j<children.size(); j++) {						
 						if(i != j && isSubclassOf(children.get(j), children.get(i))) {
-							toRemove.add(i-toRemove.size());
-							break;
-						}
-					}
-				}
-			// union
-			} else {
-				// in a union, we have that D1 \sqcup D2 \equiv D2 if
-				// D1 \sqsubseteq D2; this means we first check whether the
-				// first element in a union is subclass of any other element in the
-				// union; if yes, then we delete it and proceed to the next element
-				// (note the difference to intersection)				
-				for(int i=0; i<children.size(); i++) {
-					for(int j=0; j<children.size(); j++) {
-						if(i != j && isSubclassOf(children.get(i), children.get(j))) {
-							toRemove.add(i-toRemove.size());
-							break;
+							// remove element because it is super class of another element
+							children.remove(i);
+							// we apply the minimization procedure again after removal of the element
+							// (this is not the fastest implementation but avoids bugs as in the previous code)
+							if(children.size()==1) {
+								return minimize(children.get(0));
+							} else {
+								return minimize(description);
+							}
 						}
 					}
 				}				
-			}
-			// if all elements are superfluous wrt. another element, then we need
-			// to keep at least one
-			if(toRemove.size() == children.size()) {
-				return children.get(0);
 			} else {
-				// remove all elements according to remove list
-				for(int pos : toRemove) {
-					children.remove(pos);
+				for(int i=0; i<children.size(); i++) {
+					for(int j=0; j<children.size(); j++) {
+						if(i != j && isSubclassOf(children.get(i), children.get(j))) {
+							children.remove(i);
+							if(children.size()==1) {
+								return minimize(children.get(0));
+							} else {
+								return minimize(description);
+							}
+						}
+					}
 				}
-				// dissolve intersection with only one element
-				if(children.size()==1) {
-					return children.get(0);
-				}	
-				return description;
 			}
+			
+			// no subclass relationships => description is already minimal
+			return description;
+			
+			// the code below is buggy because in "A AND A AND C", it removes both As
+			
+//			List<Integer> toRemove = new LinkedList<Integer>();
+//			// intersection
+//			if(description instanceof Intersection) {
+//				// in an intersection, we have that D1 \sqcap D2 \equiv D1 if
+//				// D1 \sqsubseteq D2; this means we first check whether the
+//				// first element in an intersection is subclass of any other element in the
+//				// intersection; if yes, then we delete it and proceed to the next element
+//				for(int i=0; i<children.size(); i++) {
+//					for(int j=0; j<children.size(); j++) {
+//						if(i!=j)
+//						System.out.println(children.get(i) + " -- " + children.get(j));						
+//						if(i != j && isSubclassOf(children.get(j), children.get(i))) {
+//							System.out.println("sub");
+//							toRemove.add(i-toRemove.size());
+//							break;
+//						}
+//					}
+//				}
+//			// union
+//			} else {
+//				// in a union, we have that D1 \sqcup D2 \equiv D2 if
+//				// D1 \sqsubseteq D2; this means we first check whether the
+//				// first element in a union is subclass of any other element in the
+//				// union; if yes, then we delete it and proceed to the next element
+//				// (note the difference to intersection)				
+//				for(int i=0; i<children.size(); i++) {
+//					for(int j=0; j<children.size(); j++) {
+//						if(i != j && isSubclassOf(children.get(i), children.get(j))) {
+//							toRemove.add(i-toRemove.size());
+//							break;
+//						}
+//					}
+//				}				
+//			}
+//			
+//			System.out.println("to remove: " + toRemove);
+//			
+//			// if all elements are superfluous wrt. another element, then we need
+//			// to keep at least one
+//			if(toRemove.size() == children.size()) {
+//				return children.get(0);
+//			} else {
+//				// remove all elements according to remove list
+//				for(int pos : toRemove) {
+//					children.remove(pos);
+//				}
+//				// dissolve intersection with only one element
+//				if(children.size()==1) {
+//					return children.get(0);
+//				}	
+//				return description;
+//			}
 		} else {
 			throw new Error("Cannot minimize description " + description + ".");
 		}

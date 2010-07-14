@@ -115,6 +115,7 @@ public class HeuristicTests {
 		
 		// TODO: test super class learning
 		
+		// TODO: test noise parameter
 	}
 	
 	// the class learning problem provides several ways to get the accuracy of a description, this method

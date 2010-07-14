@@ -41,7 +41,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL, RHO1, SWORE };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER, FATHER_OE, CARCINOGENESIS, EPC_OE, KRK_ZERO_ONE, DBPEDIA_OWL, TRAINS_OWL, RHO1, SWORE, MDM };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -134,6 +134,8 @@ public final class TestOntologies {
 			owlFile = "examples/cross-benchmark/trains/trains.owl";
 		} else if(ont.equals(TestOntology.SWORE)) {
 			owlFile = "examples/swore/swore.rdf";
+		} else if(ont.equals(TestOntology.MDM)) {
+			owlFile = "resources/test/MDM0.73.owl";
 		} 
 		
 		try {	
