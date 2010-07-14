@@ -112,6 +112,10 @@ public class ClassLearningProblem extends LearningProblem {
 		BooleanConfigOption consistency = new BooleanConfigOption("checkConsistency", "Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive.", true);
 		options.add(consistency);	
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
+		DoubleConfigOption betaSC = new DoubleConfigOption("betaSC", "Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning.", 3.0);
+		options.add(betaSC);
+		DoubleConfigOption betaEq = new DoubleConfigOption("betaEq", "Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for equivalence class learning.", 1.0);
+		options.add(betaEq);
 		return options;
 	}
 
@@ -159,9 +163,9 @@ public class ClassLearningProblem extends LearningProblem {
 		maxExecutionTimeInSeconds = configurator.getMaxExecutionTimeInSeconds();
 		
 		if(equivalence) {
-			coverageFactor = 1;
+			coverageFactor = configurator.getBetaEq();
 		} else {
-			coverageFactor = 3;
+			coverageFactor = configurator.getBetaSC();
 		}
 		
 		// we compute the instances of the super class to perform

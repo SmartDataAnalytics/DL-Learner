@@ -33,6 +33,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.KBFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -64,15 +65,25 @@ public class HeuristicTests {
 			ind[i] = new Individual(ns + "i" + i);
 		}
 		
-		// A1 has instances i0 to i19 
+		// assert individuals to owl:Thing (such that they exist in the knowledge base)
+		for(int i=0; i<100; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(Thing.instance,ind[i]));
+		}
+		
+		// A0 has 20 instances (i0 to i19) 
 		for(int i=0; i<20; i++) {
 			kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[i]));
 		}
 		
-		// A2 has instances i10 to i29
+		// A1 has 20 instances (i10 to i29)
 		for(int i=10; i<30; i++) {
 			kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[i]));
 		}
+		
+		// A2 has 40 instances (i10 to i49)
+		for(int i=10; i<50; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(nc[2],ind[i]));
+		}		
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource ks = new KBFile(kb);
@@ -80,12 +91,30 @@ public class HeuristicTests {
 		ClassLearningProblem problem = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		ks.init();
 		reasoner.init();
-
+		
 		// evaluate A2 wrt. A1 using Jaccard
 		HeuristicTests.configureClassLP(problem, nc[0], "jaccard");
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
-
+		assertEqualsClassLP(problem, nc[2], 1/(double)5);
+		
+		HeuristicTests.configureClassLP(problem, nc[0], "pred_acc");
+		// the value should be the sum of 10 (correct positives) and 970 (correct negatives) divided by 1000
+		assertEqualsClassLP(problem, nc[1], (10+70)/(double)100);
+		assertEqualsClassLP(problem, nc[2], (10+50)/(double)100);
+		
+		HeuristicTests.configureClassLP(problem, nc[0], "fmeasure");
+		// recall = precision = F1-score = 0.5
+		assertEqualsClassLP(problem, nc[1], 0.5);
+		// recall = 0.5, precision = 0.25, F1-score = 0.33...
+		assertEqualsClassLP(problem, nc[2], 1/(double)3);
+		
+		// TODO: generalised F-Measure
+		
+		// TODO: test approximations
+		
+		// TODO: test super class learning
+		
 	}
 	
 	// the class learning problem provides several ways to get the accuracy of a description, this method
