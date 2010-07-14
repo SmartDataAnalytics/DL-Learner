@@ -29,6 +29,8 @@ package org.dllearner.learningproblems;
  */
 public class Heuristics {
 
+	public static enum HeuristicType { PRED_ACC, AMEASURE, JACCARD, FMEASURE, GEN_FMEASURE };	
+	
 	/**
 	 * Computes F1-Score.
 	 * @param recall Recall.
@@ -162,6 +164,12 @@ public class Heuristics {
 			throw new IllegalArgumentException();
 		}		
 		return (noise * nrOfPositiveExamples) < nrOfNegClassifiedPositives;
+	}
+	
+	// TODO: F-Measure mit bereits gemessenem |R(A) \cap R(C)| und |R(C)\R(A)| soll approximiert werden
+	public double getFMeasureApproximation() {
+		// TOOD: return mean and interval length?
+		return 0;
 	}
 	
 }
