@@ -108,6 +108,15 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(classLearnin
 public boolean getCheckConsistency() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "checkConsistency") ;
 }
+/**
+* maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
+* default value: 10
+* @return int 
+**/
+public int getMaxExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "maxExecutionTimeInSeconds") ;
+}
 
 /**
 * @param classToDescribe class of which a description should be learned.
@@ -160,6 +169,15 @@ reinitNecessary = true;
 **/
 public void setCheckConsistency(boolean checkConsistency) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "checkConsistency", checkConsistency);
+reinitNecessary = true;
+}
+/**
+* @param maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
+* default value: 10
+**/
+public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 
