@@ -117,6 +117,24 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(classLearni
 public int getMaxExecutionTimeInSeconds() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "maxExecutionTimeInSeconds") ;
 }
+/**
+* betaSC Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning..
+* mandatory: false| reinit necessary: true
+* default value: 3.0
+* @return double 
+**/
+public double getBetaSC() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "betaSC") ;
+}
+/**
+* betaEq Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for equivalence class learning..
+* mandatory: false| reinit necessary: true
+* default value: 1.0
+* @return double 
+**/
+public double getBetaEq() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(classLearningProblem,  "betaEq") ;
+}
 
 /**
 * @param classToDescribe class of which a description should be learned.
@@ -178,6 +196,24 @@ reinitNecessary = true;
 **/
 public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+reinitNecessary = true;
+}
+/**
+* @param betaSC Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning..
+* mandatory: false| reinit necessary: true
+* default value: 3.0
+**/
+public void setBetaSC(double betaSC) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "betaSC", betaSC);
+reinitNecessary = true;
+}
+/**
+* @param betaEq Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for equivalence class learning..
+* mandatory: false| reinit necessary: true
+* default value: 1.0
+**/
+public void setBetaEq(double betaEq) {
+ComponentManager.getInstance().applyConfigEntry(classLearningProblem, "betaEq", betaEq);
 reinitNecessary = true;
 }
 
