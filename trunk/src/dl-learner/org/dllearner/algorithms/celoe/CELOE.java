@@ -19,6 +19,7 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.refinement2.ExampleBasedNode;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
@@ -39,6 +41,7 @@ import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -53,6 +56,7 @@ import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -119,7 +123,12 @@ public class CELOE extends LearningAlgorithm {
 	// important parameters
 	private double noise;
 	private double maxDepth;
-	private boolean filterFollowsFromKB;
+	private boolean filterFollowsFromKB;	
+	
+	// less important parameters
+	// forces that one solution cannot be subexpression of another expression; this option is useful to get diversity
+	// but it can also suppress quite useful expressions
+	private boolean forceMutualDifference = false;
 	
 	// utility variables
 	private String baseURI;
@@ -169,6 +178,9 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
 		options.add(new BooleanConfigOption("filterDescriptionsFollowingFromKB", "If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.", false));
 		options.add(new BooleanConfigOption("reuseExistingDescription", "If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.", false));
+		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
+		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", "log/searchTree.txt"));
+		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));		
 		return options;
 	}
 	
@@ -193,6 +205,9 @@ public class CELOE extends LearningAlgorithm {
 		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();		
+		if(configurator.getWriteSearchTree()) {
+			Files.clearFile(new File(configurator.getSearchTreeFile()));
+		}
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(configurator.getMaxNrOfResults());
 		
@@ -374,6 +389,24 @@ public class CELOE extends LearningAlgorithm {
 			
 			updateMinMaxHorizExp(nextNode);
 			
+			// writing the search tree (if configured)
+			if (configurator.getWriteSearchTree()) {
+				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
+				if (refinements.size() > 1) {
+					treeString += "all expanded nodes:\n";
+					for (Description n : refinements) {
+						treeString += "   " + n + "\n";
+					}
+				}
+				treeString += startNode.toTreeString(baseURI);
+				treeString += "\n";
+
+				if (configurator.getReplaceSearchTree())
+					Files.createFile(new File(configurator.getSearchTreeFile()), treeString);
+				else
+					Files.appendFile(new File(configurator.getSearchTreeFile()), treeString);
+			}
+			
 //			System.out.println(loop);
 			loop++;
 		}
@@ -486,6 +519,8 @@ public class CELOE extends LearningAlgorithm {
 			return true;
 		} 
 		
+//		System.out.println("description " + description + " accuracy " + accuracy);
+		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
 		// necessary since rewriting is expensive
@@ -498,30 +533,42 @@ public class CELOE extends LearningAlgorithm {
 				(accuracy >= accThreshold && description.getLength() < worst.getDescriptionLength()));
 		}
 		
+//		System.out.println(isCandidate);
+		
 //		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
+			
 			Description niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
 //			Description niceDescription = node.getDescription();
 			
 			// another test: none of the other suggested descriptions should be 
 			// a subdescription of this one unless accuracy is different
+			// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
+			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
 			boolean shorterDescriptionExists = false;
-			for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
-				if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
-					shorterDescriptionExists = true;
-					break;
-				}
+			if(forceMutualDifference) {
+				for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+					if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+//						System.out.println("shorter: " + ed.getDescription());
+						shorterDescriptionExists = true;
+						break;
+					}
+				}				
 			}
+			
+//			System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
 			
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
+//					System.out.println("Test2");
 					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
 				}
 			}
 						
+//			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
 		
 //		System.out.println("Test5 " + new Date());

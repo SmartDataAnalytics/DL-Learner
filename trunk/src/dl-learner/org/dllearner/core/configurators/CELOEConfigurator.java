@@ -219,6 +219,33 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "fi
 public boolean getReuseExistingDescription() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "reuseExistingDescription") ;
 }
+/**
+* writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getWriteSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "writeSearchTree") ;
+}
+/**
+* searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
+* default value: log/searchTree.txt
+* @return String 
+**/
+public String getSearchTreeFile() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "searchTreeFile") ;
+}
+/**
+* replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getReplaceSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "replaceSearchTree") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -380,6 +407,33 @@ reinitNecessary = true;
 **/
 public void setReuseExistingDescription(boolean reuseExistingDescription) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "reuseExistingDescription", reuseExistingDescription);
+reinitNecessary = true;
+}
+/**
+* @param writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setWriteSearchTree(boolean writeSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "writeSearchTree", writeSearchTree);
+reinitNecessary = true;
+}
+/**
+* @param searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
+* default value: log/searchTree.txt
+**/
+public void setSearchTreeFile(String searchTreeFile) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "searchTreeFile", searchTreeFile);
+reinitNecessary = true;
+}
+/**
+* @param replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setReplaceSearchTree(boolean replaceSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "replaceSearchTree", replaceSearchTree);
 reinitNecessary = true;
 }
 

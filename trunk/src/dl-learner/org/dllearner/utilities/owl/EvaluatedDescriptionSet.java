@@ -51,7 +51,9 @@ public class EvaluatedDescriptionSet {
 	}
 	
 	public void add(Description description, double accuracy, LearningProblem problem) {
-		if(set.size()==0 || getWorst().getAccuracy() <= accuracy) {
+		// bug http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
+		// -> set should be filled up to max size before we compare acc. with the worst result
+		if(set.size()<maxSize || getWorst().getAccuracy() <= accuracy) {
 			set.add(problem.evaluate(description));
 		}	
 		if(set.size()>maxSize) {
