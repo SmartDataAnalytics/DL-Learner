@@ -73,7 +73,7 @@ public class HeuristicOverviewTableGenerator {
 	}
 	
 	private List<Input> inputs;
-	private DecimalFormat df = new DecimalFormat();
+	private DecimalFormat df = new DecimalFormat( "0.000000000000" );
 	
 	public HeuristicOverviewTableGenerator(List<Input> inputs) {
 		this.inputs = inputs;
@@ -144,7 +144,9 @@ public class HeuristicOverviewTableGenerator {
 		inputs.add(new Input(100, 400, 1000, 100));
 		inputs.add(new Input(100, 100, 1000, 90));
 		inputs.add(new Input(100, 50, 1000, 50));
-
+		inputs.add(new Input(20, 20, 100, 10));
+		inputs.add(new Input(20, 40, 100, 10));
+		
 		HeuristicOverviewTableGenerator gen = new HeuristicOverviewTableGenerator(inputs);
 		gen.printFullTable();
 	}
