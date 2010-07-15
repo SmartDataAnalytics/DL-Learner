@@ -92,6 +92,8 @@ public class HeuristicTests {
 		ks.init();
 		reasoner.init();
 		
+		//// equivalent classes, no noise, no approximations ////
+		
 		// evaluate A2 wrt. A1 using Jaccard
 		HeuristicTests.configureClassLP(problem, nc[0], "jaccard");
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
@@ -103,11 +105,37 @@ public class HeuristicTests {
 		assertEqualsClassLP(problem, nc[1], (10+70)/(double)100);
 		assertEqualsClassLP(problem, nc[2], (10+50)/(double)100);
 		
+		HeuristicTests.configureClassLP(problem, nc[0], "standard");
+		assertEqualsClassLP(problem, nc[1], 0.5);
+		assertEqualsClassLP(problem, nc[2], 0.375);
+		
 		HeuristicTests.configureClassLP(problem, nc[0], "fmeasure");
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		// recall = 0.5, precision = 0.25, F1-score = 0.33...
 		assertEqualsClassLP(problem, nc[2], 1/(double)3);
+		
+		//// super class learning ////
+		
+		// Jaccard
+		HeuristicTests.configureClassLP(problem, nc[0], "jaccard", false, false, 0.05);
+		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
+		assertEqualsClassLP(problem, nc[1], 1/(double)3);
+		assertEqualsClassLP(problem, nc[2], 1/(double)5);		
+		
+		HeuristicTests.configureClassLP(problem, nc[0], "pred_acc", false, false, 0.05);
+		assertEqualsClassLP(problem, nc[1], 5/(double)7);
+		assertEqualsClassLP(problem, nc[2], 4/(double)7);
+		
+		HeuristicTests.configureClassLP(problem, nc[0], "standard");
+		assertEqualsClassLP(problem, nc[1], 0.5);
+		assertEqualsClassLP(problem, nc[2], 0.4375);		
+		
+		HeuristicTests.configureClassLP(problem, nc[0], "fmeasure", false, false, 0.05);
+		// recall = precision = F1-score = 0.5
+		assertEqualsClassLP(problem, nc[1], 0.5);
+		// recall = 0.5, precision = 0.25, F1-score = 0.33...
+		assertEqualsClassLP(problem, nc[2], 0.366025403784);		
 		
 		// TODO: generalised F-Measure
 		
@@ -140,12 +168,13 @@ public class HeuristicTests {
 	}
 	
 	// convencience method to set the learning problem to a desired configuration
-	private static void configureClassLP(ClassLearningProblem problem, NamedClass classToDescribe, String accuracyMethod, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, NamedClass classToDescribe, String accuracyMethod, boolean equivalenceLearning, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
 		try {
 			problem.getConfigurator().setClassToDescribe(new URL(classToDescribe.getName()));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
+		problem.getConfigurator().setType("superClass");
 		problem.getConfigurator().setAccuracyMethod(accuracyMethod);
 		problem.getConfigurator().setUseApproximations(useApproximations);
 		problem.getConfigurator().setApproxAccuracy(approxAccuracy);

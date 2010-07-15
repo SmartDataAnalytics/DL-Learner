@@ -231,7 +231,7 @@ public class ClassLearningProblem extends LearningProblem {
 		if(heuristic.equals(HeuristicType.FMEASURE)) {
 			acc = getFMeasure(recall, precision);
 		} else if(heuristic.equals(HeuristicType.AMEASURE)) {
-			acc = getAccuracy(recall, precision);
+			acc = Heuristics.getAScore(recall, precision, coverageFactor);
 		} else {
 			// TODO: some superfluous instance checks are required to compute accuracy => 
 			// move accuracy computation here if possible 
@@ -431,10 +431,10 @@ public class ClassLearningProblem extends LearningProblem {
 					double size;
 					if(estimatedA) {
 //						size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);					
 					} else {
 //						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
+						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+lowerEstimate),coverageFactor) - Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+upperEstimate),coverageFactor);
 					}
 					
 					if(size < 0.1) {
@@ -457,7 +457,7 @@ public class ClassLearningProblem extends LearningProblem {
 				precision = 0;
 			}
 			
-			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
+			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : Heuristics.getAScore(recall, precision, coverageFactor);
 						
 		} else {
 			throw new Error("Approximation for " + heuristic + " not implemented.");
@@ -538,14 +538,13 @@ public class ClassLearningProblem extends LearningProblem {
 			
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 
-			
 			if(heuristic.equals(HeuristicType.AMEASURE)) {
 				// best reachable concept has same recall and precision 1:
 				// 1/t+1 * (t*r + 1)
 				if((coverageFactor*recall+1)/(double)(coverageFactor+1) <(1-noise)) {
 					return -1;
 				} else {
-					return getAccuracy(recall, precision);
+					return Heuristics.getAScore(recall, precision, coverageFactor);
 				}
 			} else if(heuristic.equals(HeuristicType.FMEASURE)) {
 				// best reachable concept has same recall and precision 1:
@@ -718,11 +717,11 @@ public class ClassLearningProblem extends LearningProblem {
 	
 	// computes accuracy from coverage and protusion (changing this function may
 	// make it necessary to change the appoximation too) => not the case anymore
-	private double getAccuracy(double recall, double precision) {
+//	private double getAccuracy(double recall, double precision) {
 //		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
 		// log: changed from precision^^0.5 (root) to precision^^0.8 as the root is too optimistic in some cases
-		return (coverageFactor * recall + Math.pow(precision, 0.8)) / (coverageFactor + 1);
-	}
+//		return (coverageFactor * recall + Math.pow(precision, 0.8)) / (coverageFactor + 1);
+//	}
 	
 	private double getFMeasure(double recall, double precision) {
 		// balanced F measure
