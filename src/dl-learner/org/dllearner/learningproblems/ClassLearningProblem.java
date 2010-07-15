@@ -68,7 +68,7 @@ public class ClassLearningProblem extends LearningProblem {
 	private boolean equivalence = true;
 	private ClassLearningProblemConfigurator configurator;
 	// approximation of accuracy
-	private double approx = 0.05;
+	private double approxDelta = 0.05;
 	
 	private boolean useApproximations;
 	
@@ -146,7 +146,7 @@ public class ClassLearningProblem extends LearningProblem {
 		}
 		
 //		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
-		approx = configurator.getApproxAccuracy();
+		approxDelta = configurator.getApproxAccuracy();
 		
 		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
@@ -274,163 +274,195 @@ public class ClassLearningProblem extends LearningProblem {
 
 	@Override
 	public double getAccuracyOrTooWeak(Description description, double noise) {
-//		if(useFMeasure) {
-//			if(useApproximations) {
-//				return getFMeasureOrTooWeakApprox(description, noise);
-//			} else {
-//				return getFMeasureOrTooWeakExact(description, noise);
-//			}
-//		} else {
-			if(useApproximations) {
-				return getAccuracyOrTooWeakApprox(description, noise);
-			} else {
-				return getAccuracyOrTooWeakExact(description, noise);
-			}			
-//		}
+		// delegates to the appropriate methods
+		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);		
 	}
 	
 	// instead of using the standard operation, we use optimisation
 	// and approximation here
 	public double getAccuracyOrTooWeakApprox(Description description, double noise) {
-		// we abort when there are too many uncovered positives
-		int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
-		int instancesCovered = 0;
-		int instancesNotCovered = 0;
-		int total = 0;
-		boolean estimatedA = false;
-		
-		double lowerBorderA = 0;
-		int lowerEstimateA = 0;
-		double upperBorderA = 1;
-		int upperEstimateA = classInstances.size();
-		
-		for(Individual ind : classInstances) {
-			if(reasoner.hasType(description, ind)) {
-				instancesCovered++;
-			} else {
-				instancesNotCovered ++;
-				if(instancesNotCovered > maxNotCovered) {
-					return -1;
-				}
-			}
+		if(heuristic.equals(HeuristicType.FMEASURE)) {
+			// we abort when there are too many uncovered positives
+			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
+			int instancesCovered = 0;
+			int instancesNotCovered = 0;
 			
-			// approximation step (starting after 10 tests)
-			total = instancesCovered + instancesNotCovered;
-			if(total > 10) {
-				// compute confidence interval
-				double p1 = p1(instancesCovered, total);
-				double p2 = p3(p1, total);
-				lowerBorderA = Math.max(0, p1 - p2);
-				upperBorderA = Math.min(1, p1 + p2);
-				double size = upperBorderA - lowerBorderA;
-				// if the interval has a size smaller than 10%, we can be confident
-				if(size < 2 * approx) {
-					// we have to distinguish the cases that the accuracy limit is
-					// below, within, or above the limit and that the mean is below
-					// or above the limit
-					double mean = instancesCovered/(double)total;
-					
-					// we can estimate the best possible concept to reach with downward refinement
-					// by setting precision to 1 and recall = mean stays as it is
-					double optimumEstimate = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(double)(coverageFactor+1);
-					
-					// if the mean is greater than the required minimum, we can accept;
-					// we also accept if the interval is small and close to the minimum
-					// (worst case is to accept a few inaccurate descriptions)
-					if(optimumEstimate > 1-noise-0.03) {
-//							|| (upperBorderA > mean && size < 0.03)) {
-						instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
-						upperEstimateA = (int) (upperBorderA * classInstances.size());
-						lowerEstimateA = (int) (lowerBorderA * classInstances.size());
-						estimatedA = true;
-						break;
-					}
-					
-					// reject only if the upper border is far away (we are very
-					// certain not to lose a potential solution)
-//					if(upperBorderA + 0.1 < 1-noise) {
-					double optimumEstimateUpperBorder = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(double)(coverageFactor+1);
-					if(optimumEstimateUpperBorder < 1 - noise) {
+			for(Individual ind : classInstances) {
+				if(reasoner.hasType(description, ind)) {
+					instancesCovered++;
+				} else {
+					instancesNotCovered ++;
+					if(instancesNotCovered > maxNotCovered) {
 						return -1;
 					}
-				}				
-			}
-		}	
-		
-		double recall = instancesCovered/(double)classInstances.size();
-		
-//		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
-//		MonitorFactory.add("aInstances","count", total);
-		
-		// we know that a definition candidate is always subclass of the
-		// intersection of all super classes, so we test only the relevant instances
-		// (leads to undesired effects for descriptions not following this rule,
-		// but improves performance a lot);
-		// for learning a superclass of a defined class, similar observations apply;
-
-
-		int testsPerformed = 0;
-		int instancesDescription = 0;
-//		boolean estimatedB = false;
-		
-		for(Individual ind : superClassInstances) {
-
-			if(reasoner.hasType(description, ind)) {
-				instancesDescription++;
-			}
+				}
+			}	
 			
-			testsPerformed++;
+			double recall = instancesCovered/(double)classInstances.size();
 			
-			if(testsPerformed > 10) {
+			int testsPerformed = 0;
+			int instancesDescription = 0;
+			
+			for(Individual ind : superClassInstances) {
+
+				if(reasoner.hasType(description, ind)) {
+					instancesDescription++;
+				}
+				testsPerformed++;
 				
-				// compute confidence interval
-				double p1 = p1(instancesDescription, testsPerformed);
-				double p2 = p3(p1, testsPerformed);
-				double lowerBorder = Math.max(0, p1 - p2);
-				double upperBorder = Math.min(1, p1 + p2);
-				int lowerEstimate = (int) (lowerBorder * superClassInstances.size());
-				int upperEstimate = (int) (upperBorder * superClassInstances.size());
+				// check whether approximation is sufficiently accurate
+				double[] approx = Heuristics.getFMeasureApproximation(instancesCovered, recall, coverageFactor, superClassInstances.size(), testsPerformed, instancesDescription);
+				if(approx[1]<approxDelta) {
+					return approx[0];
+				}
 				
-				double size;
-				if(estimatedA) {
-//					size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-					size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+			}		
+			
+			// standard computation (no approximation)
+			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
+//			if(instancesCovered + instancesDescription == 0) {
+//				precision = 0;
+//			}
+			return Heuristics.getFScore(recall, precision, coverageFactor);
+			
+		} else if(heuristic.equals(HeuristicType.AMEASURE)) {
+			// the F-MEASURE implementation is now separate (different optimisation
+			// strategy)
+			
+			// we abort when there are too many uncovered positives
+			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
+			int instancesCovered = 0;
+			int instancesNotCovered = 0;
+			int total = 0;
+			boolean estimatedA = false;
+			
+			double lowerBorderA = 0;
+			int lowerEstimateA = 0;
+			double upperBorderA = 1;
+			int upperEstimateA = classInstances.size();
+			
+			for(Individual ind : classInstances) {
+				if(reasoner.hasType(description, ind)) {
+					instancesCovered++;
 				} else {
-//					size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-					size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
+					instancesNotCovered ++;
+					if(instancesNotCovered > maxNotCovered) {
+						return -1;
+					}
 				}
 				
-				if(size < 0.1) {
-//					System.out.println(instancesDescription + " of " + testsPerformed);
-//					System.out.println("interval from " + lowerEstimate + " to " + upperEstimate);
-//					System.out.println("size: " + size);
+				// approximation step (starting after 10 tests)
+				total = instancesCovered + instancesNotCovered;
+				if(total > 10) {
+					// compute confidence interval
+					double p1 = p1(instancesCovered, total);
+					double p2 = p3(p1, total);
+					lowerBorderA = Math.max(0, p1 - p2);
+					upperBorderA = Math.min(1, p1 + p2);
+					double size = upperBorderA - lowerBorderA;
+					// if the interval has a size smaller than 10%, we can be confident
+					if(size < 2 * approxDelta) {
+						// we have to distinguish the cases that the accuracy limit is
+						// below, within, or above the limit and that the mean is below
+						// or above the limit
+						double mean = instancesCovered/(double)total;
+						
+						// we can estimate the best possible concept to reach with downward refinement
+						// by setting precision to 1 and recall = mean stays as it is
+						double optimumEstimate = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(double)(coverageFactor+1);
+						
+						// if the mean is greater than the required minimum, we can accept;
+						// we also accept if the interval is small and close to the minimum
+						// (worst case is to accept a few inaccurate descriptions)
+						if(optimumEstimate > 1-noise-0.03) {
+//								|| (upperBorderA > mean && size < 0.03)) {
+							instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
+							upperEstimateA = (int) (upperBorderA * classInstances.size());
+							lowerEstimateA = (int) (lowerBorderA * classInstances.size());
+							estimatedA = true;
+							break;
+						}
+						
+						// reject only if the upper border is far away (we are very
+						// certain not to lose a potential solution)
+//						if(upperBorderA + 0.1 < 1-noise) {
+						double optimumEstimateUpperBorder = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(double)(coverageFactor+1);
+						if(optimumEstimateUpperBorder < 1 - noise) {
+							return -1;
+						}
+					}				
+				}
+			}	
+			
+			double recall = instancesCovered/(double)classInstances.size();
+			
+//			MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
+//			MonitorFactory.add("aInstances","count", total);
+			
+			// we know that a definition candidate is always subclass of the
+			// intersection of all super classes, so we test only the relevant instances
+			// (leads to undesired effects for descriptions not following this rule,
+			// but improves performance a lot);
+			// for learning a superclass of a defined class, similar observations apply;
+
+
+			int testsPerformed = 0;
+			int instancesDescription = 0;
+//			boolean estimatedB = false;
+			
+			for(Individual ind : superClassInstances) {
+
+				if(reasoner.hasType(description, ind)) {
+					instancesDescription++;
+				}
+				
+				testsPerformed++;
+				
+				if(testsPerformed > 10) {
 					
-//					estimatedB = true;
-					// calculate total number of instances
-					instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
-					break;
+					// compute confidence interval
+					double p1 = p1(instancesDescription, testsPerformed);
+					double p2 = p3(p1, testsPerformed);
+					double lowerBorder = Math.max(0, p1 - p2);
+					double upperBorder = Math.min(1, p1 + p2);
+					int lowerEstimate = (int) (lowerBorder * superClassInstances.size());
+					int upperEstimate = (int) (upperBorder * superClassInstances.size());
+					
+					double size;
+					if(estimatedA) {
+//						size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
+						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : getAccuracy(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getAccuracy(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+					} else {
+//						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
+						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : getAccuracy(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getAccuracy(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
+					}
+					
+					if(size < 0.1) {
+//						System.out.println(instancesDescription + " of " + testsPerformed);
+//						System.out.println("interval from " + lowerEstimate + " to " + upperEstimate);
+//						System.out.println("size: " + size);
+						
+//						estimatedB = true;
+						// calculate total number of instances
+						instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
+						break;
+					}
 				}
 			}
+			
+			// since we measured/estimated accuracy only on instances outside A (superClassInstances
+			// does not include instances of A), we need to add it in the denominator
+			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
+			if(instancesCovered + instancesDescription == 0) {
+				precision = 0;
+			}
+			
+			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
+						
+		} else {
+			throw new Error("Approximation for " + heuristic + " not implemented.");
 		}
 		
-		// since we measured/estimated accuracy only on instances outside A (superClassInstances
-		// does not include instances of A), we need to add it in the denominator
-		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
-		if(instancesCovered + instancesDescription == 0) {
-			precision = 0;
-		}
-		
-//		MonitorFactory.add("estimatedB","count", estimatedB ? 1 : 0);
-//		MonitorFactory.add("bInstances","count", testsPerformed);		
-	
-		// debug code to compare the two measures
-//		System.out.println("recall: " + recall);
-//		System.out.println("precision: " + precision);
-//		System.out.println("F-measure: " + getFMeasure(recall, precision));
-//		System.out.println("standard acc: " + getAccuracy(recall, precision));
-		
-//		return getAccuracy(recall, precision);
-		return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
 	}
 	
 

@@ -165,11 +165,42 @@ public class Heuristics {
 		}		
 		return (noise * nrOfPositiveExamples) < nrOfNegClassifiedPositives;
 	}
-	
-	// TODO: F-Measure mit bereits gemessenem |R(A) \cap R(C)| und |R(C)\R(A)| soll approximiert werden
-	public double getFMeasureApproximation() {
-		// TOOD: return mean and interval length?
-		return 0;
+
+	/**
+	 * This method can be used to approximate F-Measure and thereby saving a lot of 
+	 * instance checks. It assumes that all positive examples (or instances of a class)
+	 * have already been tested via instance checks, i.e. recall is already known and
+	 * precision is approximated.
+	 * @param nrOfPosClassifiedPositives Positive examples (instance of a class), which are classified as positives.
+	 * @param recall The already known recall.
+	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
+	 * than precision.
+	 * @param nrOfRelevantInstances Number of relevant instances, i.e. number of instances, which
+	 * would have been tested without approximations.
+	 * @param nrOfInstanceChecks Performed instance checks for the approximation.
+	 * @param successfulInstanceChecks Number of successful performed instance checks.
+	 * @return A two element array, where the first element is the computed F-beta score and the
+	 * second element is the length of the 95% confidence interval around it.
+	 */
+	public static double[] getFMeasureApproximation(int nrOfPosClassifiedPositives, double recall, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int successfulInstanceChecks) {
+		// compute 95% confidence interval
+		double[] interval = Heuristics.getConfidenceInterval95Wald(successfulInstanceChecks, nrOfInstanceChecks);
+		// multiply by number of instances from which the random samples are drawn
+		double lowerBorder = interval[0] * nrOfRelevantInstances;
+		double upperBorder = interval[1] * nrOfRelevantInstances;
+		// compute F-Measure for both borders (lower value = higher F-Measure)
+		double fMeasureHigh = (1 + Math.sqrt(beta)) * (nrOfPosClassifiedPositives/(nrOfPosClassifiedPositives+lowerBorder)*recall) / (Math.sqrt(beta)*nrOfPosClassifiedPositives/(nrOfPosClassifiedPositives+lowerBorder)+recall);
+		double fMeasureLow = (1 + Math.sqrt(beta)) * (nrOfPosClassifiedPositives/(nrOfPosClassifiedPositives+upperBorder)*recall) / (Math.sqrt(beta)*nrOfPosClassifiedPositives/(nrOfPosClassifiedPositives+upperBorder)+recall);
+		double diff = fMeasureHigh - fMeasureLow;
+		// compute F-score for proportion ?
+		// double proportionInstanceChecks = successfulInstanceChecks / (double) nrOfInstanceChecks * nrOfRelevantInstances; // 
+		// => don't do it for now, because the difference between proportion and center of interval is usually quite small
+		// for sufficiently small diffs
+		// return interval length and center
+		double[] ret = new double[2];
+		ret[0] = fMeasureLow + 0.5 * diff;
+		ret[1] = diff;
+		return ret;
 	}
 	
 }
