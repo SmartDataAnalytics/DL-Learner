@@ -85,6 +85,11 @@ public class HeuristicTests {
 			kb.addAxiom(new ClassAssertionAxiom(nc[2],ind[i]));
 		}		
 		
+		// A3 has 5 instances (i8 to i12)
+		for(int i=8; i<13; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(nc[3],ind[i]));
+		}
+		
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource ks = new KBFile(kb);
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
@@ -115,6 +120,8 @@ public class HeuristicTests {
 		// recall = 0.5, precision = 0.25, F1-score = 0.33...
 		assertEqualsClassLP(problem, nc[2], 1/(double)3);
 		
+		// TODO: generalised F-Measure
+		
 		//// super class learning ////
 		
 		// Jaccard
@@ -139,11 +146,15 @@ public class HeuristicTests {
 		
 		// TODO: generalised F-Measure
 		
+		//// noise tests ////
+		
+		HeuristicTests.configureClassLP(problem, nc[0], "fmeasure", false, true, 0.05);
+		assertEquals(problem.getAccuracyOrTooWeak(nc[3], 0.5),-1,delta);
+		
 		// TODO: test approximations
+
 		
-		// TODO: test super class learning
-		
-		// TODO: test noise parameter
+
 	}
 	
 	// the class learning problem provides several ways to get the accuracy of a description, this method
