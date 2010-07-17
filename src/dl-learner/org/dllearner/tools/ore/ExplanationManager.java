@@ -65,8 +65,8 @@ public class ExplanationManager implements OREManagerListener{
 	private ExplanationManager(OREManager oreMan) {
 		OREManager.getInstance().addListener(this);
 		this.reasoner = oreMan.getReasoner().getReasoner();
-		this.manager = reasoner.getManager();
 		this.ontology = oreMan.getReasoner().getOWLAPIOntologies();
+		this.manager = ontology.getOWLOntologyManager();
 		
 		dataFactory = manager.getOWLDataFactory();
 		
