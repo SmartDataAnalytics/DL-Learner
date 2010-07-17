@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileFilter;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.RecentManager;
 import org.dllearner.tools.ore.TaskManager;
+import org.dllearner.tools.ore.ui.DebugFromSparqlDialog;
 import org.dllearner.tools.ore.ui.ExtractFromSparqlDialog;
 import org.dllearner.tools.ore.ui.LinkLabel;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
@@ -97,6 +98,8 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     		handleOpenFromFile();
     	} else if(linkname.equals("loadFromSparqlEndpointLink")){
     		handleLoadFromSparqlEndpoint();
+    	} else if(linkname.equals("debugFromSparqlEndpointLink")){
+    		handleDebugFromSparqlEndpoint();
     	} else {
     		handleOpenFromRecent(URI.create(((LinkLabel)e.getSource()).getText()));
     	}
@@ -167,6 +170,13 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			OREManager.getInstance().setCurrentKnowledgeSource(dialog.getKnowledgeSource());
 			new OntologyLoadingTask().execute();
 		}
+		
+	}
+	
+	private void handleDebugFromSparqlEndpoint(){
+		DebugFromSparqlDialog dialog = new DebugFromSparqlDialog(getWizard().getDialog());
+		int ret = dialog.showDialog();
+		
 		
 	}
 	

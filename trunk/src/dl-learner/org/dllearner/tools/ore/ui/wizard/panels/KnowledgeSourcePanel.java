@@ -52,6 +52,7 @@ public class KnowledgeSourcePanel extends JPanel{
 	private LinkLabel openFromFileLink;
 	private LinkLabel openFromURILink;
 	private LinkLabel loadFromSparqlEndpointLink;
+	private LinkLabel debugFromSparqlEndpointLink;
 	
 	private List<LinkLabel> openFromRecentLinks;
 	private Box recentLinkBox;
@@ -87,6 +88,12 @@ public class KnowledgeSourcePanel extends JPanel{
         loadFromSparqlEndpointLink = new LinkLabel("Open OWL-Ontology from Sparql-Endpoint");
         loadFromSparqlEndpointLink.setName("loadFromSparqlEndpointLink");
         box.add(loadFromSparqlEndpointLink);
+        
+        box.add(Box.createVerticalStrut(strutHeight));
+        
+        debugFromSparqlEndpointLink = new LinkLabel("Debug OWL-Ontology from Sparql-Endpoint");
+        debugFromSparqlEndpointLink.setName("debugFromSparqlEndpointLink");
+        box.add(debugFromSparqlEndpointLink);
         
         box.add(Box.createVerticalStrut(2 * strutHeight));
      
@@ -154,6 +161,7 @@ public class KnowledgeSourcePanel extends JPanel{
 		openFromFileLink.addLinkListener(aL);
 		openFromURILink.addLinkListener(aL);
 		loadFromSparqlEndpointLink.addLinkListener(aL);
+		debugFromSparqlEndpointLink.addLinkListener(aL);
 		for(LinkLabel link : openFromRecentLinks){
 			link.addLinkListener(aL);
 		}		
