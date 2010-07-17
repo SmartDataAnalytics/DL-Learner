@@ -167,6 +167,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		ExtractFromSparqlDialog dialog = new ExtractFromSparqlDialog(getWizard().getDialog());
 		int ret = dialog.showDialog();
 		if(ret == ExtractFromSparqlDialog.OK_RETURN_CODE){
+			currentURI = null;
 			OREManager.getInstance().setCurrentKnowledgeSource(dialog.getKnowledgeSource());
 			new OntologyLoadingTask().execute();
 		}
@@ -176,8 +177,11 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 	private void handleDebugFromSparqlEndpoint(){
 		DebugFromSparqlDialog dialog = new DebugFromSparqlDialog(getWizard().getDialog());
 		int ret = dialog.showDialog();
-		
-		
+		if(ret == DebugFromSparqlDialog.OK_RETURN_CODE){
+			currentURI = null;
+			OREManager.getInstance().setCurrentKnowledgeSource(dialog.getOWLOntology());
+			new OntologyLoadingTask().execute();
+		}
 	}
 	
 	private void handleOpenFromRecent(URI uri){
@@ -267,7 +271,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 			if(!isCancelled()){
 				TaskManager.getInstance().setTaskFinished();
 				getWizard().setNextFinishButtonEnabled(true);
-				updateRecentList();
+				if(currentURI != null){
+					updateRecentList();
+				}
 				updateMetrics();
 				
 			}

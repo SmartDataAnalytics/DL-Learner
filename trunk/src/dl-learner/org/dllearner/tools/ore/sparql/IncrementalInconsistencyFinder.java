@@ -107,9 +107,7 @@ public class IncrementalInconsistencyFinder {
 	private Monitor reasonerMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Reasoning monitor");
 	
 	public IncrementalInconsistencyFinder() throws OWLOntologyCreationException, IOException{
-		manager = OWLManager.createOWLOntologyManager();
-		ontology = manager.createOntology();
-		factory = manager.getOWLDataFactory();
+		
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -136,8 +134,16 @@ public class IncrementalInconsistencyFinder {
 		
 		mon.setMessage("Searching...");
 	
+		manager = OWLManager.createOWLOntologyManager();
+		try {
+			ontology = manager.createOntology(IRI.create(defaultGraphURI + "/" + "fragment"));
+		} catch (OWLOntologyCreationException e1) {
+			e1.printStackTrace();
+		}
+		factory = manager.getOWLDataFactory();
 		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
-
+		expGen = new PelletExplanation((PelletReasoner)reasoner);
+		
 		consistent = true;
 		
 		overallMonitor.reset();
@@ -148,14 +154,22 @@ public class IncrementalInconsistencyFinder {
 		int disjointWithCount = getAxiomCountForPredicate(OWL.disjointWith);
 		int equivalentClassCount = getAxiomCountForPredicate(OWL.equivalentClass);
 		int subClassOfCount = getAxiomCountForPredicate(RDFS.subClassOf);
+		
 		int domainCount = getAxiomCountForPredicate(RDFS.domain);
 		int rangeCount = getAxiomCountForPredicate(RDFS.range);
+		
 		int subPropertyOfCount = getAxiomCountForPredicate(RDFS.subPropertyOf);
 		int equivalentPropertyCount = getAxiomCountForPredicate(OWL.equivalentProperty);
 		int inverseOfCount = getAxiomCountForPredicate(OWL.inverseOf);
 		int functionalCount = getAxiomCountForObject(OWL.FunctionalProperty);
 		int inverseFunctionalCount = getAxiomCountForObject(OWL.InverseFunctionalProperty);
 		int transitiveCount = getAxiomCountForObject(OWL.TransitiveProperty);
+		
+		int classAssertionCount = getAxiomCountForPredicate(RDF.type);
+		
+		mon.setSize(disjointWithCount + equivalentClassCount + subClassOfCount + domainCount + rangeCount 
+				+ subPropertyOfCount + equivalentPropertyCount + inverseOfCount + functionalCount
+				+ inverseFunctionalCount + transitiveCount);
 		
 		
 		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
@@ -177,6 +191,7 @@ public class IncrementalInconsistencyFinder {
 				disjointAxioms.addAll(retrieveClassExpressionsAxioms(OWL.disjointWith, AXIOM_COUNT, OFFSET * i)); 
 				manager.addAxioms(ontology, disjointAxioms);
 			}
+			mon.setProgress(disjointAxioms.size());
 			if(ontology.getAxiomCount(AxiomType.EQUIVALENT_CLASSES) < equivalentClassCount){
 				manager.addAxioms(ontology, retrieveClassExpressionsAxioms(OWL.equivalentClass, AXIOM_COUNT, OFFSET * i));
 			}
@@ -286,12 +301,12 @@ public class IncrementalInconsistencyFinder {
 					classAssertionAxioms.addAll(retrieveClassAssertionAxiomsForClass(cls, 50));
 					visitedClasses.add(cls);
 				}
-				if(!isConsistent()){
-					break;
-				}
+				
 			}
 			manager.addAxioms(ontology, classAssertionAxioms);
-			
+			if(!isConsistent()){
+				break;
+			}
 			//for each individual in the ClassAssertion axioms found above, we retrieve further informations
 			for(OWLClassAssertionAxiom ax : classAssertionAxioms){
 				if(visitedIndividuals.contains(ax.getIndividual().asOWLNamedIndividual())){
@@ -299,7 +314,6 @@ public class IncrementalInconsistencyFinder {
 				}
 				manager.addAxioms(ontology, retrieveAxiomsForIndividual(ax.getIndividual().asOWLNamedIndividual(), 1000));
 				visitedIndividuals.add(ax.getIndividual().asOWLNamedIndividual());
-				reasonerMonitor.start();
 				if(!isConsistent()){
 					break;
 				}
@@ -362,7 +376,6 @@ public class IncrementalInconsistencyFinder {
 //		for(ATermAppl a : ((PelletReasoner)reasoner).getKB().getExplanationSet()){
 //			System.err.println(a);
 //		}
-		System.out.println(expGen.getInconsistencyExplanation());
 //		for(Set<OWLAxiom> exp : expGen.getInconsistencyExplanations()){
 //			for(OWLAxiom ax : exp){
 //				System.out.println(ax);
@@ -381,27 +394,26 @@ public class IncrementalInconsistencyFinder {
 //			}
 //			
 //		}
-		try {
-			ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
-			PrintWriter out = new PrintWriter( System.out );
-			renderer.startRendering( out );
-			renderer.render(expGen.getInconsistencyExplanations());
-			renderer.endRendering();
-		} catch (UnsupportedOperationException e) {
-			e.printStackTrace();
-		} catch (OWLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
+//			PrintWriter out = new PrintWriter( System.out );
+//			renderer.startRendering( out );
+//			renderer.render(expGen.getInconsistencyExplanations());
+//			renderer.endRendering();
+//		} catch (UnsupportedOperationException e) {
+//			e.printStackTrace();
+//		} catch (OWLException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	
 	}
 	
 	private boolean isConsistent(){
 		reasonerMonitor.start();
 		if(!consistent || !reasoner.isConsistent()){
-			System.out.println("EXPLANATION: " + expGen.getInconsistencyExplanation());
-			mon.inconsistencyFound(expGen.getInconsistencyExplanation());
+//			mon.inconsistencyFound(expGen.getInconsistencyExplanation());
 			consistent = false;
 		}
 		reasonerMonitor.stop();
@@ -410,6 +422,10 @@ public class IncrementalInconsistencyFinder {
 	
 	public OWLOntology getOntology(){
 		return ontology;
+	}
+	
+	public Set<OWLAxiom> getExplanation(){
+		return expGen.getInconsistencyExplanation();
 	}
 	
 	/**

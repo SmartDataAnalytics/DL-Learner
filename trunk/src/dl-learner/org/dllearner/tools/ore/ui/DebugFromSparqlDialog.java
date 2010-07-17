@@ -33,6 +33,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ProgressMonitor;
@@ -46,12 +47,12 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.sparql.IncrementalInconsistencyFinder;
 import org.dllearner.tools.ore.sparql.SPARQLProgressMonitor;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
@@ -79,7 +80,11 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	
 	private JLabel messageLabel;
 	private String progressMessage;
+	private int progress;
 	private boolean canceled;
+	private JProgressBar progressBar;
+	
+	private IncrementalInconsistencyFinder inc;
 	
 	private SparqlExtractOptionsPanel optionsPanel;
 	private JToggleButton optionsButton;
@@ -97,7 +102,6 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			"</tr>							" +
 			"</table></html>"; 
 	
-	private SparqlKnowledgeSource ks;
 	private OntologyExtractingTask extractTask;
 	private ProgressMonitor mon;
 	private Timer t;
@@ -183,6 +187,9 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		messageLabel = new JLabel("");
 		panel.add(messageLabel, c);
 		
+		progressBar = new JProgressBar();
+		panel.add(progressBar, c);
+		
 		JLabel padding = new JLabel();
 		c.weighty = 1.0;
 		panel.add(padding, c);
@@ -193,6 +200,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private void addPredefinedEndpoints(){
 		endpointToDefaultGraph = new HashMap<URI, List<String>>();
 		endpointToDefaultGraph.put(URI.create("http://dbpedia-live.openlinksw.com/sparql/"), Collections.singletonList("http://dbpedia.org"));	
+		endpointToDefaultGraph.put(URI.create("http://localhost:8890/sparql"), Collections.singletonList("http://opencyc2.org"));	
 		for(URI url : endpointToDefaultGraph.keySet()){
 			comboBox.addItem(url.toString());
 		}		
@@ -259,15 +267,15 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 				 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				setLocation(screenSize.width / 2 - getWidth() / 2,
                         screenSize.height / 2 - getHeight() / 2);
-				 setVisible(true);
+//				 setVisible(true);
 				
 			}
 		});
-		
+		 setVisible(true);
 		 return returnCode;
 	 }
 	 	
-	private void extract() {
+	private void searchInconsistency() {
 		messageLabel.setText("Checking SPARQL endpoint availability");
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
@@ -366,15 +374,14 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	}
 	
 	
-	public SparqlKnowledgeSource getKnowledgeSource(){
-		return ks;
+	public OWLOntology getOWLOntology(){
+		return inc.getOntology();
 	}
 	
-	class OntologyExtractingTask extends SwingWorker<Void, Void>{
+	private class OntologyExtractingTask extends SwingWorker<Void, Void>{
 		
 		private SPARQLProgressMonitor mon;
 		private JDialog dialog;
-		private IncrementalInconsistencyFinder inc;
 		
 		public OntologyExtractingTask(JDialog dialog, SPARQLProgressMonitor mon) {		
 			this.mon = mon;
@@ -411,7 +418,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		public void done() {
 			System.out.println(inc.getOntology());
 			dialog.setCursor(null);
-			if(!isCancelled() && ks != null){
+			if(!isCancelled()){
 				okButton.setEnabled(true);
 			} else if(isCancelled()){
 				System.out.println("Canceled");
@@ -425,7 +432,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Search")){
 			canceled = false;
-			extract();
+			searchInconsistency();
 		} else if(e.getActionCommand().equals("Ok")){
 			returnCode = OK_RETURN_CODE;
 			closeDialog();
@@ -506,18 +513,23 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 				messageLabel.setText(progressMessage);
 			}
 		});
-		
 	}
 
 	@Override
-	public void setProgress(long progress) {
-		// TODO Auto-generated method stub
+	public void setProgress(long progressLenght) {
+		this.progress = (int)progressLenght;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				progressBar.setValue(progress);
+			}
+		});
 		
 	}
 
 	@Override
 	public void setSize(long size) {
-		// TODO Auto-generated method stub
+		progressBar.setMaximum((int)size);
 		
 	}
 

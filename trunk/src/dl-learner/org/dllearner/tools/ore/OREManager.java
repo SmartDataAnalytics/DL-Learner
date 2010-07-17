@@ -27,6 +27,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.Union;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -117,7 +118,15 @@ public class OREManager {
 	
 	public void setCurrentKnowledgeSource(SparqlKnowledgeSource ks){
 		this.ks = ks;
-		
+	}
+	
+	public void setCurrentKnowledgeSource(OWLOntology ontology){
+		ks = new OWLAPIOntology(ontology);
+		try {
+			ks.init();
+		} catch (ComponentInitException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public KnowledgeSource getKnowledgeSource(){
