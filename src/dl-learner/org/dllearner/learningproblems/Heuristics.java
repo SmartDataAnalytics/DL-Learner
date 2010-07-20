@@ -120,7 +120,7 @@ public class Heuristics {
 	 * @return A two element double array, where element 0 is the lower border and element
 	 * 1 the upper border of the 95% confidence interval.
 	 */
-	public static double[] getConfidenceInterval95Wald(int success, int total) {
+	public static double[] getConfidenceInterval95Wald(int total, int success) {
 		if(success > total || total < 1) {
 			throw new IllegalArgumentException();
 		}
@@ -178,13 +178,13 @@ public class Heuristics {
 	 * @param nrOfRelevantInstances Number of relevant instances, i.e. number of instances, which
 	 * would have been tested without approximations.
 	 * @param nrOfInstanceChecks Performed instance checks for the approximation.
-	 * @param successfulInstanceChecks Number of successful performed instance checks.
+	 * @param nrOfSuccessfulInstanceChecks Number of successful performed instance checks.
 	 * @return A two element array, where the first element is the computed F-beta score and the
 	 * second element is the length of the 95% confidence interval around it.
 	 */
-	public static double[] getFMeasureApproximation(int nrOfPosClassifiedPositives, double recall, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int successfulInstanceChecks) {
+	public static double[] getFMeasureApproximation(int nrOfPosClassifiedPositives, double recall, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
 		// compute 95% confidence interval
-		double[] interval = Heuristics.getConfidenceInterval95Wald(successfulInstanceChecks, nrOfInstanceChecks);
+		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfInstanceChecks, nrOfSuccessfulInstanceChecks);
 		// multiply by number of instances from which the random samples are drawn
 		double lowerBorder = interval[0] * nrOfRelevantInstances;
 		double upperBorder = interval[1] * nrOfRelevantInstances;
@@ -199,6 +199,31 @@ public class Heuristics {
 		// return interval length and center
 		double[] ret = new double[2];
 		ret[0] = fMeasureLow + 0.5 * diff;
+		ret[1] = diff;
+		return ret;
+	}
+	
+	public static double[] getAMeasureApproximationStep1(double beta, int nrOfPosExamples, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
+		// the method is just a wrapper around a single confidence interval approximation;
+		// method approximates t * a / |R(A)|
+		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfInstanceChecks, nrOfSuccessfulInstanceChecks);
+		double diff = beta * (interval[1] - interval[0]);
+		double ret[] = new double[2];
+		ret[0] = beta * interval[0] + 0.5*diff;
+		ret[1] = diff;
+		return ret;
+	}
+	
+	public static double[] getAMeasureApproximationStep2(int nrOfPosClassifiedPositives, double[] recallInterval, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
+		// TODO: code untested
+		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfInstanceChecks, nrOfSuccessfulInstanceChecks);
+		double precisionLowerBorder = nrOfPosClassifiedPositives / interval[1] * nrOfRelevantInstances;
+		double precisionUpperBorder = nrOfPosClassifiedPositives / interval[0] * nrOfRelevantInstances;
+		double lowerBorder = Heuristics.getAScore(recallInterval[0] / beta, precisionLowerBorder, beta);
+		double upperBorder = Heuristics.getAScore(recallInterval[0] / beta, precisionUpperBorder, beta);
+		double diff = upperBorder - lowerBorder;
+		double ret[] = new double[2];
+		ret[0] = lowerBorder + 0.5*diff;
 		ret[1] = diff;
 		return ret;
 	}
