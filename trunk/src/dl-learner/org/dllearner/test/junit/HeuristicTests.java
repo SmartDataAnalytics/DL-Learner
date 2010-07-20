@@ -36,6 +36,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.KBFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 
@@ -155,6 +156,23 @@ public class HeuristicTests {
 
 		
 
+	}
+	
+	@Test
+	public void approximationTests() {
+		// perform F-Measure example in ontology engineering paper, which was computed on paper
+		// TODO: compute again, because unit tests fails (probably rounding errors)
+		double[] approx1 = Heuristics.getFMeasureApproximation(800, 0.8, 1, 10000, 41, 31);
+		assertEquals(0.0505, approx1[1], delta);
+		double[] approx2 = Heuristics.getFMeasureApproximation(800, 0.8, 1, 10000, 42, 32);
+		assertEquals(0.1699, approx2[0], delta);
+		assertEquals(0.0489, approx2[1], delta);
+		
+		// perform A-Measure example in ontology engineering paper
+		// setup: 1000 class instances, 10000 relevant instances, delta=0.10
+		// input1: 90 out of 95 tests => no success para 1, 91 out of 96 => success
+		// input2: using estimation from input 1, 32 out of 64 => success
+		// overall accuracy: 64%
 	}
 	
 	// the class learning problem provides several ways to get the accuracy of a description, this method
