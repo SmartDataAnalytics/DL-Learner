@@ -198,9 +198,11 @@ public class PelletReasoner extends ReasonerComponent {
 
 					if (source instanceof OWLAPIOntology) {
 						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
+						manager = ontology.getOWLOntologyManager();
 					} else if (source instanceof SparqlKnowledgeSource) {
 						ontology = ((SparqlKnowledgeSource) source)
 								.getOWLAPIOntology();
+						manager = ontology.getOWLOntologyManager();
 					} else {
 						ontology = manager.loadOntologyFromOntologyDocument(IRI.create(url));
 					}
@@ -475,6 +477,7 @@ public class PelletReasoner extends ReasonerComponent {
 
 					if (source instanceof OWLAPIOntology) {
 						ontology = ((OWLAPIOntology) source).getOWLOntolgy();
+						manager = ontology.getOWLOntologyManager();
 					} else if (source instanceof SparqlKnowledgeSource) {
 						ontology = ((SparqlKnowledgeSource) source).getOWLAPIOntology();
 						manager = ontology.getOWLOntologyManager();
@@ -1584,7 +1587,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	public Set<NamedClass> getInconsistentClassesImpl() {
 		Set<NamedClass> concepts = new HashSet<NamedClass>();
 
-		for (OWLClass concept : reasoner.getUnsatisfiableClasses().getEntities()){
+		for (OWLClass concept : reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom()){
 			concepts.add(new NamedClass(concept.toStringID()));
 		}
 
@@ -1593,7 +1596,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	
 	public Set<OWLClass> getInconsistentOWLClasses() {
-		return reasoner.getUnsatisfiableClasses().getEntities();
+		return reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 	}
 
 	@Override
