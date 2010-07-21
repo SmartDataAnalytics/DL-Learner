@@ -158,7 +158,7 @@ public class OREManager {
 	}
 	
 	public boolean isSourceOWLAxiom(OWLAxiom ax){
-		for(OWLOntology ont : reasoner.getLoadedOWLAPIOntologies()){System.out.println(ont.getLogicalAxiomCount());
+		for(OWLOntology ont : reasoner.getLoadedOWLAPIOntologies()){
 			if(ont.containsAxiom(ax)){
 				return true;
 			}
@@ -502,7 +502,6 @@ public class OREManager {
 
 		}
 		allIndividuals.remove(ind);
-		System.out.println();
 	
 		return allIndividuals;
 	}
@@ -526,7 +525,6 @@ public class OREManager {
 		
 		for(OWLClassExpression domain : domains){
 			if(complements.contains(OWLAPIConverter.convertClass(domain.asOWLClass()))){
-				System.out.println(domain);
 				return false;
 			}
 		}

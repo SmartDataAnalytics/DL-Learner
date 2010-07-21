@@ -349,11 +349,9 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
              */
             private static final long serialVersionUID = 6590889767286900162L;
 
-
             protected void handleAdd() {
                 addURI();
             }
-
 
             protected void handleDelete() {
                 deleteSelectedBookmark();
