@@ -28,6 +28,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -76,13 +77,16 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private JComboBox comboBox;
 	private JTextField defaultGraphField;
 	
-	private JButton extractButton;
+	private JButton searchStopButton;
 	
 	private JLabel messageLabel;
 	private String progressMessage;
 	private int progress;
 	private boolean canceled;
 	private JProgressBar progressBar;
+	
+	private JCheckBox useLinkedDataCheckBox;
+	private JCheckBox useCacheCheckBox;
 	
 	private IncrementalInconsistencyFinder inc;
 	
@@ -179,16 +183,24 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		panel.add(endPointHelpPanel, c);
 
-		extractButton = createButton("Search", 's');
-		extractButton.setEnabled(false);
+		searchStopButton = createButton("Search", 's');
+		searchStopButton.setEnabled(false);
 		c.fill = GridBagConstraints.NONE;
-		panel.add(extractButton, c);
+		panel.add(searchStopButton, c);
 		
 		messageLabel = new JLabel("");
 		panel.add(messageLabel, c);
 		
 		progressBar = new JProgressBar();
 		panel.add(progressBar, c);
+		
+		c.anchor = GridBagConstraints.WEST;
+		
+		useCacheCheckBox = new JCheckBox("Use cache");
+		panel.add(useCacheCheckBox, c);
+		
+		useLinkedDataCheckBox = new JCheckBox("Use linked data");
+		panel.add(useLinkedDataCheckBox, c);
 		
 		JLabel padding = new JLabel();
 		c.weighty = 1.0;
@@ -276,6 +288,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	 }
 	 	
 	private void searchInconsistency() {
+		canceled = false;
 		messageLabel.setText("Checking SPARQL endpoint availability");
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
@@ -307,6 +320,12 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		
 		
 		
+	}
+	
+	private void stopSearching() {
+		canceled = true;
+		setCursor(Cursor.getDefaultCursor());
+//		extractTask.cancel(true);
 	}
 	
 	@SuppressWarnings("unused")
@@ -370,7 +389,17 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	}
 	
 	private void setExtractButtonEnabledToValidInput(){		
-		extractButton.setEnabled(urlIsValid());
+		searchStopButton.setEnabled(urlIsValid());
+	}
+	
+	private void showSearchButton(){
+		searchStopButton.setText("Search");
+		searchStopButton.setActionCommand("Search");
+	}
+	
+	private void showStopButton(){
+		searchStopButton.setText("Stop");
+		searchStopButton.setActionCommand("Stop");
 	}
 	
 	
@@ -402,6 +431,8 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			String defaultGraphURI = defaultGraphField.getText();
 			try {
 				inc = new IncrementalInconsistencyFinder();
+				inc.setUseLinkedData(useLinkedDataCheckBox.isSelected());
+				inc.setUseCache(useCacheCheckBox.isSelected());
 				inc.setProgressMonitor(mon);
 				inc.run(endpointURI, defaultGraphURI);
 			} catch (OWLOntologyCreationException e) {
@@ -416,8 +447,9 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 
 		@Override
 		public void done() {
-			System.out.println(inc.getOntology());
-			dialog.setCursor(null);
+			showSearchButton();
+			dialog.setCursor(Cursor.getDefaultCursor());
+			messageLabel.setText(!inc.isConsistent() ? "Inconsistency detected" : "No inconsistency detected");
 			if(!isCancelled()){
 				okButton.setEnabled(true);
 			} else if(isCancelled()){
@@ -431,8 +463,12 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Search")){
+			showStopButton();
 			canceled = false;
 			searchInconsistency();
+		} else if(e.getActionCommand().equals("Stop")){
+			showSearchButton();
+			stopSearching();
 		} else if(e.getActionCommand().equals("Ok")){
 			returnCode = OK_RETURN_CODE;
 			closeDialog();
