@@ -85,13 +85,13 @@ public class KnowledgeSourcePanel extends JPanel{
         
         box.add(Box.createVerticalStrut(strutHeight));
         
-        loadFromSparqlEndpointLink = new LinkLabel("Open OWL-Ontology from Sparql-Endpoint");
+        loadFromSparqlEndpointLink = new LinkLabel("Open Knowledge Base from SPARQL endpoint (enrichment mode)");
         loadFromSparqlEndpointLink.setName("loadFromSparqlEndpointLink");
         box.add(loadFromSparqlEndpointLink);
         
         box.add(Box.createVerticalStrut(strutHeight));
         
-        debugFromSparqlEndpointLink = new LinkLabel("Search inconsistency at Sparql-Endpoint");
+        debugFromSparqlEndpointLink = new LinkLabel("Open Knowledge Base in SPARQL endpoint (debugging mode)");
         debugFromSparqlEndpointLink.setName("debugFromSparqlEndpointLink");
         box.add(debugFromSparqlEndpointLink);
         

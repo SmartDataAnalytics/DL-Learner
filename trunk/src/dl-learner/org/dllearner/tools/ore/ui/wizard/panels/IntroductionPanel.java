@@ -46,7 +46,7 @@ public class IntroductionPanel extends JPanel {
         
     private JLabel welcomeTitle;
     
-    private final String titleText = "<html><b>Welcome to the DL-Learner ORE (Ontology Repair and Enrichment) Tool!<br>(Version 0.1)</b></html>";
+    private final String titleText = "<html><b>Welcome to the DL-Learner ORE (Ontology Repair and Enrichment) Tool!<br>(Version 0.2)</b></html>";
 
     private final String introductionText = "<html><p>ORE is a tool for debugging and enriching OWL ontologies. It has the following features: </p>" +
     		"<UL>" + 
