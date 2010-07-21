@@ -23,16 +23,30 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.coode.owlapi.rdf.model.RDFTranslator;
 import org.dllearner.tools.ore.LearningManager;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.LearningManager.LearningMode;
+import org.dllearner.tools.ore.sparql.SPARULTranslator;
 import org.dllearner.tools.ore.ui.OverrideFileChooser;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.SavePanel;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyFormat;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Wizard panel descriptor that provides saving ontology and going back to class choose panel.
@@ -55,6 +69,22 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
         
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(savePanel);
+        fc.addChoosableFileFilter(new FileFilter() {
+			
+			@Override
+			public String getDescription() {
+				return "SPARUL";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				}
+				return f.getName().toLowerCase().endsWith(".sparul")
+						|| f.getName().toLowerCase().endsWith(".sparul");
+			}
+		});
         fc.setFileFilter(new FileFilter() {
 			
 			@Override
@@ -71,6 +101,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 						|| f.getName().toLowerCase().endsWith(".rdf");
 			}
 		});
+        
         
     }
     
@@ -124,6 +155,7 @@ public class SavePanelDescriptor extends WizardPanelDescriptor implements Action
 	}
 	
 	private boolean saveOntology(){
+		
 		int ret = fc.showSaveDialog(savePanel);
 
 		if(ret == JFileChooser.APPROVE_OPTION){

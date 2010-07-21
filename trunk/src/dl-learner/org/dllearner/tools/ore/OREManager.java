@@ -1,7 +1,10 @@
 package org.dllearner.tools.ore;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,12 +38,14 @@ import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.tools.ore.cache.DLSyntaxRenderingCache;
 import org.dllearner.tools.ore.cache.ManchesterSyntaxRenderingCache;
 import org.dllearner.tools.ore.cache.OWLEntityRenderingCache;
+import org.dllearner.tools.ore.sparql.SPARULTranslator;
 import org.dllearner.tools.ore.ui.DescriptionLabel;
 import org.dllearner.tools.ore.ui.editor.OWLEntityFinder;
 import org.dllearner.tools.ore.ui.rendering.KeywordColorMap;
 import org.dllearner.tools.ore.ui.rendering.OWLEntityRenderer;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -51,7 +56,9 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 
@@ -190,6 +197,28 @@ public class OREManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+	
+	}
+	
+	public void saveChangesAsSPARUL(File file) throws OWLOntologyStorageException{
+		try {
+			List<OWLOntologyChange> changes = OREManager.getInstance().getModifier().getChanges();
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			OWLOntology ontology = manager.createOntology(IRI.create("t"));
+			String str = new SPARULTranslator(manager, ontology, false).translate(changes);
+			FileWriter writer = new FileWriter(file);
+			BufferedWriter out = new BufferedWriter(writer);
+			out.write(str);
+			out.close();
+			writer.close();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}
+        
 	
 	}
 	

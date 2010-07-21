@@ -15,16 +15,13 @@ import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.owl.OWLVocabulary;
 import org.mindswap.pellet.PelletOptions;
-import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
@@ -39,12 +36,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyDomainAxiom;
-import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
-import aterm.ATermAppl;
-
-import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
@@ -78,13 +71,8 @@ public class IncrementalInconsistencyFinder {
 //	private static final String ENDPOINT_URL = "http://localhost:8890/sparql";
 //	private static String DEFAULT_GRAPH_URI = "http://opencyc2.org"; //(version 2.0)
 	
-	private static int RESULT_LIMIT = 100;
 	private static int OFFSET = 100;
-	private static int RECURSION_DEPTH = 100;
 	private static int AXIOM_COUNT = 100;
-	
-	//stop if algorithm founds unsatisfiable class or ontology is inconsistent
-	private static boolean BREAK_AFTER_ERROR_FOUND = true;
 	
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
@@ -99,6 +87,8 @@ public class IncrementalInconsistencyFinder {
 	private boolean consistent = true;
 	private boolean useLinkedData;
 	private boolean useCache;
+	
+	private Set<String> linkedDataNamespaces;
 	
 	private PelletExplanation expGen;
 	
@@ -115,17 +105,16 @@ public class IncrementalInconsistencyFinder {
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-//		DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, "log/incremental.log", "'.'yyyy-MM-dd_HH");
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-//		logger.addAppender(fileAppender);
-		logger.setLevel(Level.INFO);
+		logger.setLevel(Level.OFF);
 		
 		PelletOptions.USE_COMPLETION_QUEUE = true;
 		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
 		PelletOptions.USE_SMART_RESTORE = false;
 		
 		cache = Cache.getDefaultCache();
+		linkedDataNamespaces = new HashSet<String>();
 		
 	}
 	
@@ -136,7 +125,6 @@ public class IncrementalInconsistencyFinder {
 	public void run(String endpointURI, String defaultGraphURI){
 		this.endpointURI = endpointURI;
 		this.defaultGraphURI = defaultGraphURI;
-		
 		try {
 			this.endpoint = new SparqlEndpoint(new URL(endpointURI), Collections.singletonList(defaultGraphURI), Collections.EMPTY_LIST);
 		} catch (MalformedURLException e) {
@@ -182,7 +170,7 @@ public class IncrementalInconsistencyFinder {
 		
 		mon.setSize(disjointWithCount + equivalentClassCount + subClassOfCount + domainCount + rangeCount 
 				+ subPropertyOfCount + equivalentPropertyCount + inverseOfCount + functionalCount
-				+ inverseFunctionalCount + transitiveCount);
+				+ inverseFunctionalCount + transitiveCount + classAssertionCount);
 		
 		
 		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
@@ -195,7 +183,6 @@ public class IncrementalInconsistencyFinder {
 		Set<OWLAxiom> subClassOfAxioms = new HashSet<OWLAxiom>();
 		Set<OWLClassAssertionAxiom> classAssertionAxioms = new HashSet<OWLClassAssertionAxiom>();
 		
-		boolean schemaComplete = false;
 		int i = 0;
 		while(true){
 			//first we expand the ontology schema
@@ -286,10 +273,10 @@ public class IncrementalInconsistencyFinder {
 				break;
 			}
 			//removal due to find other inconsistencies not evolving this axiom
-			manager.removeAxiom(ontology, factory.getOWLDisjointClassesAxiom(
-					factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Organisation")),
-					factory.getOWLClass(IRI.create("http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"))
-					));
+//			manager.removeAxiom(ontology, factory.getOWLDisjointClassesAxiom(
+//					factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Organisation")),
+//					factory.getOWLClass(IRI.create("http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"))
+//					));
 //			manager.removeAxiom(ontology, factory.getOWLObjectPropertyRangeAxiom(
 //					factory.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/artist")),
 //					factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Person"))));
@@ -427,14 +414,29 @@ public class IncrementalInconsistencyFinder {
 					if(mon.isCancelled()){
 						break;
 					}
-					if(cls.toStringID().contains("#")){
-						if(visitedLinkedDataResources.contains(cls)){
-							continue;
+					if(!linkedDataNamespaces.isEmpty()){
+						for(String namespace : linkedDataNamespaces){
+							if(cls.toStringID().startsWith(namespace)){
+								if(visitedLinkedDataResources.contains(cls)){
+									continue;
+								}
+								manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(cls.getIRI()));
+								mon.setProgress(ontology.getLogicalAxiomCount());
+								visitedLinkedDataResources.add(cls);
+								break;
+							}
 						}
-						manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(cls.getIRI()));
-						mon.setProgress(ontology.getLogicalAxiomCount());
-						visitedLinkedDataResources.add(cls);
+					} else {
+						if(cls.toStringID().contains("#")){
+							if(visitedLinkedDataResources.contains(cls)){
+								continue;
+							}
+							manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(cls.getIRI()));
+							mon.setProgress(ontology.getLogicalAxiomCount());
+							visitedLinkedDataResources.add(cls);
+						}
 					}
+					
 				}
 				if(mon.isCancelled()){
 					break;
@@ -446,13 +448,27 @@ public class IncrementalInconsistencyFinder {
 					if(mon.isCancelled()){
 						break;
 					}
-					if(prop.toStringID().contains("#")){
-						if(visitedLinkedDataResources.contains(prop)){
-							continue;
+					if(!linkedDataNamespaces.isEmpty()){
+						for(String namespace : linkedDataNamespaces){
+							if(prop.toStringID().startsWith(namespace)){
+								if(visitedLinkedDataResources.contains(prop)){
+									continue;
+								}
+								manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
+								mon.setProgress(ontology.getLogicalAxiomCount());
+								visitedLinkedDataResources.add(prop);
+								break;
+							}
 						}
-						manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
-						mon.setProgress(ontology.getLogicalAxiomCount());
-						visitedLinkedDataResources.add(prop);
+					} else {
+						if(prop.toStringID().contains("#")){
+							if(visitedLinkedDataResources.contains(prop)){
+								continue;
+							}
+							manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
+							mon.setProgress(ontology.getLogicalAxiomCount());
+							visitedLinkedDataResources.add(prop);
+						}
 					}
 				}
 				if(mon.isCancelled()){
@@ -465,13 +481,27 @@ public class IncrementalInconsistencyFinder {
 					if(mon.isCancelled()){
 						break;
 					}
-					if(prop.toStringID().contains("#")){
-						if(visitedLinkedDataResources.contains(prop)){
-							continue;
+					if(!linkedDataNamespaces.isEmpty()){
+						for(String namespace : linkedDataNamespaces){
+							if(prop.toStringID().startsWith(namespace)){
+								if(visitedLinkedDataResources.contains(prop)){
+									continue;
+								}
+								manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
+								mon.setProgress(ontology.getLogicalAxiomCount());
+								visitedLinkedDataResources.add(prop);
+								break;
+							}
 						}
-						manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
-						mon.setProgress(ontology.getLogicalAxiomCount());
-						visitedLinkedDataResources.add(prop);
+					} else {
+						if(prop.toStringID().contains("#")){
+							if(visitedLinkedDataResources.contains(prop)){
+								continue;
+							}
+							manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
+							mon.setProgress(ontology.getLogicalAxiomCount());
+							visitedLinkedDataResources.add(prop);
+						}
 					}
 				}
 				if(mon.isCancelled()){
@@ -497,41 +527,6 @@ public class IncrementalInconsistencyFinder {
 		showStats();
 		
 		logger.info("Ontology is consistent: " + reasoner.isConsistent());
-//		((PelletReasoner)reasoner).getKB().setDoExplanation(true);
-//		for(ATermAppl a : ((PelletReasoner)reasoner).getKB().getExplanationSet()){
-//			System.err.println(a);
-//		}
-//		for(Set<OWLAxiom> exp : expGen.getInconsistencyExplanations()){
-//			for(OWLAxiom ax : exp){
-//				System.out.println(ax);
-//				for(OWLClass cls : ax.getClassesInSignature()){
-//					System.out.println(cls + " = " + getLabel(cls.toStringID()));
-//				}
-//				for(OWLObjectProperty prop : ax.getObjectPropertiesInSignature()){
-//					System.out.println(prop + " = " + getLabel(prop.toStringID()));
-//				}
-//				for(OWLNamedIndividual ind : ax.getIndividualsInSignature()){
-//					System.out.println(ind + " = " + getLabel(ind.toStringID()));
-//				}
-//				for(OWLDataProperty prop : ax.getDataPropertiesInSignature()){
-//					System.out.println(prop + " = " + getLabel(prop.toStringID()));
-//				}
-//			}
-//			
-//		}
-//		try {
-//			ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
-//			PrintWriter out = new PrintWriter( System.out );
-//			renderer.startRendering( out );
-//			renderer.render(expGen.getInconsistencyExplanations());
-//			renderer.endRendering();
-//		} catch (UnsupportedOperationException e) {
-//			e.printStackTrace();
-//		} catch (OWLException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	
 	}
 	
@@ -560,7 +555,9 @@ public class IncrementalInconsistencyFinder {
 		this.useCache = useCache;
 	}
 	
-	
+	public void setLinkedDataNamespaces(Set<String> namespaces){
+		this.linkedDataNamespaces = namespaces;
+	}
 	
 	
 	private int getAxiomCountForPredicate(Property predicate){
