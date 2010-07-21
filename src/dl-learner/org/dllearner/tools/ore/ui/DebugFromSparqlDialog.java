@@ -1,6 +1,7 @@
 package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -19,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -45,7 +48,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.ListSelectionModel;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -61,6 +63,10 @@ import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.sparql.IncrementalInconsistencyFinder;
 import org.dllearner.tools.ore.sparql.SPARQLProgressMonitor;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import org.protege.editor.core.ui.list.MList;
+import org.protege.editor.core.ui.list.MListItem;
+import org.protege.editor.core.ui.list.MListSectionHeader;
+import org.protege.editor.core.ui.util.ComponentFactory;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -102,14 +108,17 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	
 	private JList linkedDataNamespaceslist;
     private DefaultListModel linkedDataNamespaceslistModel;
+    private JScrollPane linkedDataNamespaceslistScrollPane;
 
-	
+	private MList namespacesList;
 	private IncrementalInconsistencyFinder inc;
 	
 	private JPanel optionsPanel;
 	private JToggleButton optionsButton;
 	private ImageIcon toggledIcon = new ImageIcon(OREApplication.class.getResource("toggled.gif"));
 	private ImageIcon untoggledIcon = new ImageIcon(OREApplication.class.getResource("untoggled.gif"));
+	
+	private List<String> namespaces = new ArrayList<String>();
 	
 	private static final String URL_HELP_TEXT = "<html><table border=\"1\">" +
 			"<tr>" +
@@ -275,14 +284,14 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		panel.add(useCacheCheckBox, c);
 		
 		c.gridwidth = 1;
-		useLinkedDataCheckBox = new JCheckBox("Use linked data");
+		useLinkedDataCheckBox = new JCheckBox("Retrieve remote RDF data available as Linked Data");
 		useLinkedDataCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				restrictNamespacesCheckBox.setEnabled(useLinkedDataCheckBox.isSelected());
-				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+//				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+//				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+//				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
 			}
 		});
 		panel.add(useLinkedDataCheckBox, c);
@@ -294,40 +303,67 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+//				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+//				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+//				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
 			}
 		});
 		panel.add(restrictNamespacesCheckBox, c);
 		c.weightx = 1.0;
 		c.gridx = 1;
-		linkedDataNamespaceslistModel = new DefaultListModel();
-		linkedDataNamespaceslist = new JList(linkedDataNamespaceslistModel);
-		linkedDataNamespaceslist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		linkedDataNamespaceslist.setSelectedIndex(0);
-		linkedDataNamespaceslist.setVisibleRowCount(5);
-		linkedDataNamespaceslist.setEnabled(false);
-        JScrollPane listScrollPane = new JScrollPane(linkedDataNamespaceslist);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(listScrollPane, c);
+//		linkedDataNamespaceslistModel = new DefaultListModel();
+//		linkedDataNamespaceslist = new JList(linkedDataNamespaceslistModel);
+//		linkedDataNamespaceslist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//		linkedDataNamespaceslist.setSelectedIndex(0);
+//		linkedDataNamespaceslist.setVisibleRowCount(5);
+//		linkedDataNamespaceslist.setEnabled(false);
+//		linkedDataNamespaceslistScrollPane = new JScrollPane(linkedDataNamespaceslist);
+//		linkedDataNamespaceslistScrollPane.setVisible(false);
+//        c.fill = GridBagConstraints.HORIZONTAL;
+//        panel.add(linkedDataNamespaceslistScrollPane, c);
+//        
+//        Box buttonBox = Box.createHorizontalBox();
+//        addNamespaceButton = createButton("Add", 'a');
+//        addNamespaceButton.setEnabled(false);
+//        buttonBox.add(addNamespaceButton);
+//        
+//        buttonBox.add(Box.createHorizontalGlue());
+//		buttonBox.add(Box.createHorizontalStrut(4));
+//        deleteNamespaceButton = createButton("Delete", 'a');
+//        deleteNamespaceButton.setEnabled(false);
+//        buttonBox.add(deleteNamespaceButton);
+//        
+//        JPanel buttonPanel = new JPanel();
+//		buttonPanel.add(buttonBox);
+//        c.anchor = GridBagConstraints.WEST;
+//        c.fill = GridBagConstraints.HORIZONTAL;
+//        panel.add(buttonPanel, c);
         
-        Box buttonBox = Box.createHorizontalBox();
-        addNamespaceButton = createButton("Add", 'a');
-        addNamespaceButton.setEnabled(false);
-        buttonBox.add(addNamespaceButton);
         
-        buttonBox.add(Box.createHorizontalGlue());
-		buttonBox.add(Box.createHorizontalStrut(4));
-        deleteNamespaceButton = createButton("Delete", 'a');
-        deleteNamespaceButton.setEnabled(false);
-        buttonBox.add(deleteNamespaceButton);
-        
-        JPanel buttonPanel = new JPanel();
-		buttonPanel.add(buttonBox);
-        c.anchor = GridBagConstraints.WEST;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(buttonPanel, c);
+        ///////////////////
+        JPanel namespacesHolder = new JPanel(new BorderLayout());
+        namespacesHolder.setBorder(ComponentFactory.createTitledBorder("Namespaces"));
+        namespacesList = new MList() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 6590889767286900162L;
+
+
+            protected void handleAdd() {
+                addURI();
+            }
+
+
+            protected void handleDelete() {
+                deleteSelectedBookmark();
+            }
+        };
+
+        namespacesList.setCellRenderer(new NamespaceItemListRenderer());
+        namespacesHolder.add(new JScrollPane(namespacesList));
+        panel.add(new JScrollPane(namespacesList), c);
+        fillList();
         
 		return panel;
 	}
@@ -379,7 +415,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	}
 	 
 	 public int showDialog(){
-		 setSize(500, 400);
+		 setSize(700, 600);
 		 setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);	
 		 SwingUtilities.invokeLater(new Runnable() {
 			
@@ -542,11 +578,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 				inc = new IncrementalInconsistencyFinder();
 				inc.setUseLinkedData(useLinkedDataCheckBox.isSelected());
 				if(restrictNamespacesCheckBox.isSelected()){
-					Set<String> namespaces = new HashSet<String>();
-					for(int i = 0; i < linkedDataNamespaceslistModel.size(); i++){
-						namespaces.add((String)linkedDataNamespaceslistModel.get(i));
-					}
-					inc.setLinkedDataNamespaces(namespaces);
+					inc.setLinkedDataNamespaces(new HashSet<String>(namespaces));
 				} else {
 					inc.setLinkedDataNamespaces(Collections.<String>emptySet());
 				}
@@ -605,10 +637,17 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
                     "");
 			if(s != null){
 				linkedDataNamespaceslistModel.addElement(s);
+				linkedDataNamespaceslistScrollPane.setVisible(true);
+				validate();
 			}
 		} else if(e.getActionCommand().equals("Delete")){ 
 			if(linkedDataNamespaceslist.getSelectedValue() != null){
 				linkedDataNamespaceslistModel.removeElement(linkedDataNamespaceslist.getSelectedValue());
+				if(linkedDataNamespaceslistModel.isEmpty()){
+					linkedDataNamespaceslistScrollPane.setVisible(false);
+					validate();
+				}
+				
 			}
 		} else if(e.getActionCommand().equals("endpoints")){
 			messageLabel.setText("");
@@ -719,6 +758,101 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		DebugFromSparqlDialog dialog = new DebugFromSparqlDialog(null);
 		dialog.showDialog();
 	}
+	
+	private void addURI() {
+        String namespace = JOptionPane.showInputDialog(this, "Please enter a namespace", "Namespace", JOptionPane.PLAIN_MESSAGE);
+        if (namespace != null) {
+        	namespaces.add(namespace);
+            fillList();
+        }
+    }
+	
+	private void fillList() {
+		ArrayList<Object> data = new ArrayList<Object>();
+
+        data.add(new AddURIItem());
+        for(String namespace : namespaces){
+        	data.add(new NamspaceListItem(namespace));
+        }
+        namespacesList.setListData(data.toArray());
+    }
+	
+	private void deleteSelectedBookmark() {
+        Object selObj = namespacesList.getSelectedValue();
+        if (!(selObj instanceof NamspaceListItem)) {
+            return;
+        }
+        NamspaceListItem item = (NamspaceListItem) selObj;
+        namespaces.remove(item.namespace);
+        fillList();
+    }
+	
+	private class NamespaceItemListRenderer extends DefaultListCellRenderer {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -833970269120392171L;
+
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                                                      boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            if (value instanceof NamspaceListItem) {
+            	NamspaceListItem item = (NamspaceListItem) value;
+                label.setText(item.namespace);
+            }
+            return label;
+        }
+    }
+
+
+    private class AddURIItem implements MListSectionHeader {
+
+        public String getName() {
+            return "Namespaces";
+        }
+
+
+        public boolean canAdd() {
+            return true;
+        }
+    }
+
+
+    private class NamspaceListItem implements MListItem {
+
+        private String namespace;
+
+
+        public NamspaceListItem(String namespace) {
+            this.namespace = namespace;
+        }
+
+
+        public boolean isEditable() {
+            return false;
+        }
+
+
+        public void handleEdit() {
+        }
+
+
+        public boolean isDeleteable() {
+            return true;
+        }
+
+
+        public boolean handleDelete() {
+            return true;
+        }
+
+
+        public String getTooltip() {
+            return namespace;
+        }
+    }
 
 	
 }
