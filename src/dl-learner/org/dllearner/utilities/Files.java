@@ -28,8 +28,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,25 @@ import com.ibm.icu.util.StringTokenizer;
 public class Files {
 	public static boolean debug = false;
 
+	/**
+	 * Reads input from a URL and stores it in a string (only recommend for small files).
+	 * @param file URL of a file.
+	 * @return Contents of the file.
+	 * @throws IOException URL not accessible or content cannot be read for some reason.
+	 */
+	public static String readFile(URL file) throws IOException {
+		 BufferedReader in = new BufferedReader(new InputStreamReader(file.openStream()));
+
+		StringBuffer input = new StringBuffer();
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+		    input.append(inputLine + "\n");
+		}		    
+		in.close();
+			    
+		return input.toString();
+	}
+	
 	/**
 	 * Reads in a file.
 	 * 
