@@ -82,7 +82,7 @@ public class IncrementalInconsistencyFinder {
 	private String endpointURI;
 	private String defaultGraphURI;
 	
-	private SPARQLProgressMonitor mon;
+	private SPARQLProgressMonitor mon = new SilentSPARQLProgressMonitor();
 	
 	private boolean consistent = true;
 	private boolean useLinkedData;
@@ -107,7 +107,7 @@ public class IncrementalInconsistencyFinder {
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(Level.INFO);
 		
 		PelletOptions.USE_COMPLETION_QUEUE = true;
 		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
@@ -1423,16 +1423,12 @@ public class IncrementalInconsistencyFinder {
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException{
 		PelletExplanation.setup();
 		IncrementalInconsistencyFinder incFinder = new IncrementalInconsistencyFinder();
-//		incFinder.checkForUnsatisfiableClasses(ENDPOINT_URL);
-//		incFinder.checkForInconsistency(ENDPOINT_URL);
-		incFinder.run(ENDPOINT_URL, DEFAULT_GRAPH_URI);
+		if(args.length == 1){
+			incFinder.run(args[0], "");
+		} else if(args.length == 2){
+			incFinder.run(args[0], args[1]);
+		}
 		
-//		String queryString = "CONSTRUCT { ?x <" + RDFS.subClassOf + "> ?y } WHERE { ?x <" + RDFS.subClassOf + "> ?y } ORDER BY ?x LIMIT 100 ";
-//		Query query = QueryFactory.create(queryString) ;
-//		QueryExecution qexec = QueryExecutionFactory.sparqlService(ENDPOINT_URL, query);
-//		Model resultModel = qexec.execConstruct() ;
-//		qexec.close() ;
-//		resultModel.write(System.out);
 		
 		
 	}
