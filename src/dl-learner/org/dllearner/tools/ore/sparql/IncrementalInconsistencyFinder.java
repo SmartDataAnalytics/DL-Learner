@@ -1,19 +1,19 @@
 package org.dllearner.tools.ore.sparql;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.mindswap.pellet.PelletOptions;
@@ -29,7 +29,6 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -42,13 +41,11 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyDomainAxiom;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.util.ProgressMonitor;
 
 import aterm.ATermAppl;
 
 import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
-import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
@@ -63,6 +60,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.resultset.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -99,8 +97,14 @@ public class IncrementalInconsistencyFinder {
 	private SPARQLProgressMonitor mon;
 	
 	private boolean consistent = true;
+	private boolean useLinkedData;
+	private boolean useCache;
 	
 	private PelletExplanation expGen;
+	
+	private SparqlEndpoint endpoint;
+	
+	private Cache cache;
 	
 	private Monitor overallMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Overall monitor");
 	private Monitor queryMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Query monitor");
@@ -121,6 +125,8 @@ public class IncrementalInconsistencyFinder {
 		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
 		PelletOptions.USE_SMART_RESTORE = false;
 		
+		cache = Cache.getDefaultCache();
+		
 	}
 	
 	public void setProgressMonitor(SPARQLProgressMonitor mon){
@@ -130,6 +136,13 @@ public class IncrementalInconsistencyFinder {
 	public void run(String endpointURI, String defaultGraphURI){
 		this.endpointURI = endpointURI;
 		this.defaultGraphURI = defaultGraphURI;
+		
+		try {
+			this.endpoint = new SparqlEndpoint(new URL(endpointURI), Collections.singletonList(defaultGraphURI), Collections.EMPTY_LIST);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		logger.info("Searching for inconsistency in " + endpointURI);
 		
 		mon.setMessage("Searching...");
@@ -183,50 +196,100 @@ public class IncrementalInconsistencyFinder {
 		Set<OWLClassAssertionAxiom> classAssertionAxioms = new HashSet<OWLClassAssertionAxiom>();
 		
 		boolean schemaComplete = false;
-		for(int i = 0; i <= RECURSION_DEPTH; i++){
+		int i = 0;
+		while(true){
 			//first we expand the ontology schema
-			
+			if(mon.isCancelled()){
+				break;
+			}
 			//retrieve TBox axioms
 			if(ontology.getAxiomCount(AxiomType.DISJOINT_CLASSES) < disjointWithCount){
 				disjointAxioms.addAll(retrieveClassExpressionsAxioms(OWL.disjointWith, AXIOM_COUNT, OFFSET * i)); 
 				manager.addAxioms(ontology, disjointAxioms);
 			}
-			mon.setProgress(disjointAxioms.size());
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			if(ontology.getAxiomCount(AxiomType.EQUIVALENT_CLASSES) < equivalentClassCount){
 				manager.addAxioms(ontology, retrieveClassExpressionsAxioms(OWL.equivalentClass, AXIOM_COUNT, OFFSET * i));
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
 			}
 			if(ontology.getAxiomCount(AxiomType.SUBCLASS_OF) < subClassOfCount){
 				subClassOfAxioms.addAll(retrieveClassExpressionsAxioms(RDFS.subClassOf, AXIOM_COUNT, OFFSET * i));
 				manager.addAxioms(ontology, subClassOfAxioms);
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
 			}
 			//retrieve RBox axioms
 			if(ontology.getAxiomCount(AxiomType.OBJECT_PROPERTY_DOMAIN) + ontology.getAxiomCount(AxiomType.DATA_PROPERTY_DOMAIN) < domainCount){
 				domainAxioms.addAll(retrievePropertyAxioms(RDFS.domain, AXIOM_COUNT, OFFSET * i));
 				manager.addAxioms(ontology, domainAxioms);
 			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			if(ontology.getAxiomCount(AxiomType.OBJECT_PROPERTY_RANGE) + ontology.getAxiomCount(AxiomType.DATA_PROPERTY_RANGE) < rangeCount){
 				rangeAxioms.addAll(retrievePropertyAxioms(RDFS.range, AXIOM_COUNT, OFFSET * i));
 				manager.addAxioms(ontology, rangeAxioms);
 			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			if(ontology.getAxiomCount(AxiomType.SUB_OBJECT_PROPERTY) + ontology.getAxiomCount(AxiomType.SUB_DATA_PROPERTY) < subPropertyOfCount){
 				manager.addAxioms(ontology, retrievePropertyAxioms(RDFS.subPropertyOf, AXIOM_COUNT, OFFSET * i));
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
 			}
 			if(ontology.getAxiomCount(AxiomType.EQUIVALENT_OBJECT_PROPERTIES) + ontology.getAxiomCount(AxiomType.EQUIVALENT_DATA_PROPERTIES) < equivalentPropertyCount){
 				manager.addAxioms(ontology, retrievePropertyAxioms(OWL.equivalentProperty, AXIOM_COUNT, OFFSET * i));
 			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			if(ontology.getAxiomCount(AxiomType.INVERSE_OBJECT_PROPERTIES) < inverseOfCount){
 				manager.addAxioms(ontology, retrievePropertyAxioms(OWL.inverseOf, AXIOM_COUNT, OFFSET * i));
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
 			}
 			if(ontology.getAxiomCount(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) + ontology.getAxiomCount(AxiomType.FUNCTIONAL_DATA_PROPERTY) < functionalCount){
 				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.FunctionalProperty, AXIOM_COUNT, OFFSET * i));
 			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			if(ontology.getAxiomCount(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) < inverseFunctionalCount){
 				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.InverseFunctionalProperty, AXIOM_COUNT, OFFSET * i));
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
 			}
 			if(ontology.getAxiomCount(AxiomType.TRANSITIVE_OBJECT_PROPERTY) < transitiveCount){
 				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.TransitiveProperty, AXIOM_COUNT, OFFSET * i));
 			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			//removal due to find other inconsistencies not evolving this axiom
+			manager.removeAxiom(ontology, factory.getOWLDisjointClassesAxiom(
+					factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Organisation")),
+					factory.getOWLClass(IRI.create("http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing"))
+					));
 //			manager.removeAxiom(ontology, factory.getOWLObjectPropertyRangeAxiom(
 //					factory.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/artist")),
 //					factory.getOWLClass(IRI.create("http://dbpedia.org/ontology/Person"))));
@@ -247,53 +310,80 @@ public class IncrementalInconsistencyFinder {
 //					factory.getOWLClass(IRI.create("http://sw.opencyc.org/concept/Mx8Ngh4rD2crlmAKQdmLOr88Soi59h4r8LonGrboEduAAADggVbxzQ"))));
 					
 			for(OWLAxiom ax : disjointAxioms){
+				if(mon.isCancelled()){
+					break;
+				}
 				//retrieve instances contained in both classes
 				manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClasses(
 						((OWLDisjointClassesAxiom)ax).getClassExpressionsAsList().get(0).asOWLClass(),
 						((OWLDisjointClassesAxiom)ax).getClassExpressionsAsList().get(1).asOWLClass(), AXIOM_COUNT));
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				//retrieve instances contained in first class
 				manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(
 						((OWLDisjointClassesAxiom)ax).getClassExpressionsAsList().get(0).asOWLClass(), AXIOM_COUNT));
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				//retrieve instances contained in second class
 				manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(
 						((OWLDisjointClassesAxiom)ax).getClassExpressionsAsList().get(1).asOWLClass(), AXIOM_COUNT));
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				
+			}
+			if(mon.isCancelled()){
+				break;
 			}
 			if(!isConsistent()){
 				break;
 			}
 			OWLClass domain;
 			for(OWLAxiom ax : domainAxioms){
+				if(mon.isCancelled()){
+					break;
+				}
 				domain = ((OWLPropertyDomainAxiom<?>)ax).getDomain().asOWLClass();
 				//retrieve instances for the domain class
 				manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(
 						domain, AXIOM_COUNT));
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				//retrieve property assertions
 				if(ax instanceof OWLObjectPropertyDomainAxiom){
 					manager.addAxioms(ontology, retrieveObjectPropertyAssertionAxioms(((OWLObjectPropertyDomainAxiom)ax).getProperty().asOWLObjectProperty(), AXIOM_COUNT));
 				} else {
 					manager.addAxioms(ontology, retrieveDataPropertyAssertionAxioms(((OWLDataPropertyDomainAxiom)ax).getProperty().asOWLDataProperty(), AXIOM_COUNT));
 				}
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				
+			}
+			if(mon.isCancelled()){
+				break;
 			}
 			if(!isConsistent()){
 				break;
 			}
 			OWLClass range;
 			for(OWLAxiom ax : rangeAxioms){
+				if(mon.isCancelled()){
+					break;
+				}
 				range = ((OWLObjectPropertyRangeAxiom)ax).getRange().asOWLClass();
 				//retrieve instances for the range class
 				manager.addAxioms(ontology, retrieveClassAssertionAxiomsForClass(
 						range, AXIOM_COUNT));
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				//retrieve property assertions
 				manager.addAxioms(ontology, retrieveObjectPropertyAssertionAxioms(((OWLObjectPropertyRangeAxiom)ax).getProperty().asOWLObjectProperty(), AXIOM_COUNT));
-				
+				mon.setProgress(ontology.getLogicalAxiomCount());
+			}
+			if(mon.isCancelled()){
+				break;
 			}
 			if(!isConsistent()){
 				break;
 			}
 			//retrieve ClassAssertion axioms for each new class
 			for(OWLAxiom ax : subClassOfAxioms){
+				if(mon.isCancelled()){
+					break;
+				}
 				for(OWLClass cls : ax.getClassesInSignature()){
 					if(visitedClasses.contains(cls)){
 						continue;
@@ -304,60 +394,93 @@ public class IncrementalInconsistencyFinder {
 				
 			}
 			manager.addAxioms(ontology, classAssertionAxioms);
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
 			if(!isConsistent()){
 				break;
 			}
 			//for each individual in the ClassAssertion axioms found above, we retrieve further informations
 			for(OWLClassAssertionAxiom ax : classAssertionAxioms){
+				if(mon.isCancelled()){
+					break;
+				}
 				if(visitedIndividuals.contains(ax.getIndividual().asOWLNamedIndividual())){
 					continue;
 				}
 				manager.addAxioms(ontology, retrieveAxiomsForIndividual(ax.getIndividual().asOWLNamedIndividual(), 1000));
+				mon.setProgress(ontology.getLogicalAxiomCount());
 				visitedIndividuals.add(ax.getIndividual().asOWLNamedIndividual());
 				if(!isConsistent()){
 					break;
 				}
 			}
+			if(mon.isCancelled()){
+				break;
+			}
 			if(!isConsistent()){
 				break;
 			}
-			for(OWLClass cls : ontology.getClassesInSignature()){
-				if(cls.toStringID().contains("#")){
-					if(visitedLinkedDataResources.contains(cls)){
-						continue;
+			if(useLinkedData){
+				for(OWLClass cls : ontology.getClassesInSignature()){
+					if(mon.isCancelled()){
+						break;
 					}
-					manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(cls.getIRI()));
-					visitedLinkedDataResources.add(cls);
+					if(cls.toStringID().contains("#")){
+						if(visitedLinkedDataResources.contains(cls)){
+							continue;
+						}
+						manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(cls.getIRI()));
+						mon.setProgress(ontology.getLogicalAxiomCount());
+						visitedLinkedDataResources.add(cls);
+					}
+				}
+				if(mon.isCancelled()){
+					break;
+				}
+				if(!isConsistent()){
+					break;
+				}
+				for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature()){
+					if(mon.isCancelled()){
+						break;
+					}
+					if(prop.toStringID().contains("#")){
+						if(visitedLinkedDataResources.contains(prop)){
+							continue;
+						}
+						manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
+						mon.setProgress(ontology.getLogicalAxiomCount());
+						visitedLinkedDataResources.add(prop);
+					}
+				}
+				if(mon.isCancelled()){
+					break;
+				}
+				if(!isConsistent()){
+					break;
+				}
+				for(OWLDataProperty prop : ontology.getDataPropertiesInSignature()){
+					if(mon.isCancelled()){
+						break;
+					}
+					if(prop.toStringID().contains("#")){
+						if(visitedLinkedDataResources.contains(prop)){
+							continue;
+						}
+						manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
+						mon.setProgress(ontology.getLogicalAxiomCount());
+						visitedLinkedDataResources.add(prop);
+					}
+				}
+				if(mon.isCancelled()){
+					break;
+				}
+				if(!isConsistent()){
+					break;
 				}
 			}
-			if(!isConsistent()){
-				break;
-			}
-			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature()){
-				if(prop.toStringID().contains("#")){
-					if(visitedLinkedDataResources.contains(prop)){
-						continue;
-					}
-					manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
-					visitedLinkedDataResources.add(prop);
-				}
-			}
-			if(!isConsistent()){
-				break;
-			}
-			for(OWLDataProperty prop : ontology.getDataPropertiesInSignature()){
-				if(prop.toStringID().contains("#")){
-					if(visitedLinkedDataResources.contains(prop)){
-						continue;
-					}
-					manager.addAxioms(ontology, getAxiomsFromLinkedDataSource(prop.getIRI()));
-					visitedLinkedDataResources.add(prop);
-				}
-			}
-			if(!isConsistent()){
-				break;
-			}
-			
 			
 			
 			disjointAxioms.clear();
@@ -365,6 +488,8 @@ public class IncrementalInconsistencyFinder {
 			rangeAxioms.clear();
 			subClassOfAxioms.clear();
 			classAssertionAxioms.clear();
+			
+			i++;
 		}
 		
 		overallMonitor.stop();
@@ -410,10 +535,9 @@ public class IncrementalInconsistencyFinder {
 	
 	}
 	
-	private boolean isConsistent(){
+	public boolean isConsistent(){
 		reasonerMonitor.start();
 		if(!consistent || !reasoner.isConsistent()){
-//			mon.inconsistencyFound(expGen.getInconsistencyExplanation());
 			consistent = false;
 		}
 		reasonerMonitor.stop();
@@ -428,231 +552,16 @@ public class IncrementalInconsistencyFinder {
 		return expGen.getInconsistencyExplanation();
 	}
 	
-	/**
-	 * THis method checks incrementally for unsatisfiable classes in the knowledgebase.
-	 * @param endpointURI
-	 */
-	private void checkForUnsatisfiableClasses(String endpointURI){
-		this.endpointURI = endpointURI;
-		logger.info("Searching for unsatisfiable classes in " + endpointURI);
-		
-//		reasoner = PelletIncremantalReasonerFactory.getInstance().createReasoner(ontology);
-		ReasonerFactory reasonerFactory = new ReasonerFactory();
-		reasoner = reasonerFactory.createNonBufferingReasoner(ontology);
-		
-		overallMonitor.reset();
-		reasonerMonitor.reset();
-		queryMonitor.reset();
-		overallMonitor.start();
-		
-		
-		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
-		Set<OWLClass> classesToVisit = new HashSet<OWLClass>();
-		Set<OWLClass> tmp = new HashSet<OWLClass>();
-		
-		//we are starting with disjointClasses axioms
-		Set<OWLDisjointClassesAxiom> disjointAxioms = retrieveDisjointClassAxioms();
-		manager.addAxioms(ontology, disjointAxioms);
-		
-		for(OWLDisjointClassesAxiom ax : disjointAxioms){
-			for(OWLClassExpression cl : ax.getClassExpressions()){
-				if(!cl.isAnonymous()){
-					classesToVisit.add(cl.asOWLClass());
-				}
-			}
-		}
-		boolean foundUnsatisfiableClasses = false;
-		Set<OWLClass> unsatClasses;
-		logger.info("Starting with " + classesToVisit.size() + " classes to visit.");
-		for(int i = 1; i <= RECURSION_DEPTH; i++){
-			logger.info("Recursion depth = " + i);
-			for(OWLClass cl : classesToVisit){
-				logger.info("Starting retrieving axioms for class " + cl);
-				Set<OWLAxiom> axioms = retrieveAxiomsForClass(cl, false);
-//				Set<OWLAxiom> axioms = retrieveAxiomsForClassSingleQuery(cl, false);
-				manager.addAxioms(ontology, axioms);
-//				if(!axioms.isEmpty()){
-//					logger.info("Checking for unsatisfiable classes");
-//					reasonerMonitor.start();
-//					unsatClasses = reasoner.getUnsatisfiableClasses().getEntities();
-//					foundUnsatisfiableClasses = !unsatClasses.isEmpty();
-//					logger.info("Found " + unsatClasses.size() + " unsatisfiable classes");
-//					reasonerMonitor.stop();
-//					
-//				}
-				for(OWLAxiom ax : axioms){
-					tmp.addAll(ax.getClassesInSignature());
-				}
-				if(foundUnsatisfiableClasses && BREAK_AFTER_ERROR_FOUND){
-					logger.info("Found unsatisfiable classes. Aborting.");
-					break;
-				}
-			}
-			if(foundUnsatisfiableClasses && BREAK_AFTER_ERROR_FOUND){
-				break;
-			}
-			visitedClasses.addAll(classesToVisit);
-			tmp.removeAll(visitedClasses);
-			classesToVisit.clear();
-			classesToVisit.addAll(tmp);
-			tmp.clear();
-		}
-		
-
-		overallMonitor.stop();
-		showStats();
-		
-		Node<OWLClass> unsatisfiableClasses = reasoner.getUnsatisfiableClasses();
-		logger.info("Found " + unsatisfiableClasses.getSize() + " unsatisfiable class(es):");
-		logger.info(unsatisfiableClasses.getEntities());
-		if(!unsatisfiableClasses.getEntities().isEmpty()){
-			BlackBoxExplanation expGen = new BlackBoxExplanation(ontology, reasonerFactory, reasoner);
-			for(OWLClass cls : unsatisfiableClasses){
-				System.err.println(cls);
-				System.out.println(expGen.getExplanation(cls));
-			}
-			
-		}
-		
-		
+	public void setUseLinkedData(boolean useLinkedData){
+		this.useLinkedData = useLinkedData;
 	}
 	
-	/**
-	 * This method checks incrementally the consistency of the knowledgebase.
-	 * @param endpointURI
-	 */
-	private void checkForInconsistency(String endpointURI){
-		this.endpointURI = endpointURI;
-		logger.info("Searching for inconsistency in " + endpointURI);
-		
-		PelletOptions.USE_COMPLETION_QUEUE = true;
-		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
-		PelletOptions.USE_SMART_RESTORE = false;
-		
-		OWLReasoner reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
-		
-		overallMonitor.reset();
-		reasonerMonitor.reset();
-		queryMonitor.reset();
-		overallMonitor.start();
-		
-		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
-		Set<OWLObjectProperty> visitedObjectProperties = new HashSet<OWLObjectProperty>();
-		Set<OWLNamedIndividual> visitedIndividuals = new HashSet<OWLNamedIndividual>();
-		Set<OWLClass> classesToVisit = new HashSet<OWLClass>();
-		Set<OWLClass> tmp = new HashSet<OWLClass>();
-		
-		//we are starting with disjointClasses axioms
-		Set<OWLDisjointClassesAxiom> disjointAxioms = retrieveDisjointClassAxioms();
-		manager.addAxioms(ontology, disjointAxioms);
-		
-		for(OWLDisjointClassesAxiom ax : disjointAxioms){
-			for(OWLClassExpression cl : ax.getClassExpressions()){
-				if(!cl.isAnonymous()){
-					classesToVisit.add(cl.asOWLClass());
-				}
-			}
-		}
-		boolean isConsistent = true;
-		Set<OWLAxiom> axioms;
-		logger.info("Starting with " + classesToVisit.size() + " classes to visit.");
-		for(int i = 1; i <= RECURSION_DEPTH; i++){
-			logger.info("Recursion depth = " + i);
-			//we retrieve axioms for each class
-			for(OWLClass cl : classesToVisit){
-				axioms = retrieveAxiomsForClass(cl, RESULT_LIMIT);
-				manager.addAxioms(ontology, axioms);
-				System.out.println(ontology.getObjectPropertiesInSignature());
-				if(!axioms.isEmpty()){
-					logger.info("Checking for consistency");
-					reasonerMonitor.start();
-					isConsistent = reasoner.isConsistent();
-					reasonerMonitor.stop();
-					
-				}
-				for(OWLAxiom ax : axioms){
-					tmp.addAll(ax.getClassesInSignature());
-				}
-				if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
-					logger.info("Detected inconsistency. Aborting.");
-					break;
-				}
-				
-			}
-			if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
-				break;
-			}
-			//we retrieve axioms for each individual in the ontology
-			logger.info("Retrieving axioms for " + ontology.getIndividualsInSignature().size() + " instances");
-			int cnt = 0;
-			for(OWLNamedIndividual ind : ontology.getIndividualsInSignature()){
-				if(!visitedIndividuals.contains(ind)){
-					manager.addAxioms(ontology, retrieveAxiomsForIndividual(ind, RESULT_LIMIT));
-					visitedIndividuals.add(ind);
-					logger.info("Checking for consistency");
-					reasonerMonitor.start();
-					isConsistent = reasoner.isConsistent();
-					reasonerMonitor.stop();
-				}
-				if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
-					logger.info("Detected inconsistency. Aborting.");
-					break;
-				}
-				cnt++;
-				if(cnt == 100){
-					break;
-				}
-				
-			}
-			if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
-				break;
-			}
-			cnt = 0;
-			//we retrieve axioms for each object property in the ontology
-			logger.info("Retrieving axioms for " + ontology.getObjectPropertiesInSignature().size() + " properties");
-			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature()){
-				if(!visitedObjectProperties.contains(prop)){
-					manager.addAxioms(ontology, retrieveAxiomsForObjectProperty(prop, RESULT_LIMIT));
-					visitedObjectProperties.add(prop);
-					logger.info("Checking for consistency");
-					reasonerMonitor.start();
-					isConsistent = reasoner.isConsistent();
-					reasonerMonitor.stop();
-				}
-				if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
-					logger.info("Detected inconsistency. Aborting.");
-					break;
-				}
-				cnt++;
-				if(cnt == 100){
-					break;
-				}
-				
-			}
-			if(!isConsistent && BREAK_AFTER_ERROR_FOUND){
-				break;
-			}
-			visitedClasses.addAll(classesToVisit);
-			tmp.removeAll(visitedClasses);
-			classesToVisit.clear();
-			classesToVisit.addAll(tmp);
-			tmp.clear();
-		}
-		
-		overallMonitor.stop();
-		//show some statistics
-		showStats();
-
-		//compute an explanation
-		if(!reasoner.isConsistent()){
-			((PelletReasoner)reasoner).getKB().setDoExplanation(true);
-//			ExplanationGenerator expGen = new PelletExplanationGenerator(ontology);
-//			logger.info(expGen.getExplanation(factory.getOWLSubClassOfAxiom(factory.getOWLThing(), factory.getOWLNothing())));
-			for(ATermAppl a : ((PelletReasoner)reasoner).getKB().getExplanationSet()){
-				System.out.println(a);
-			}
-		}
+	public void setUseCache(boolean useCache){
+		this.useCache = useCache;
 	}
+	
+	
+	
 	
 	private int getAxiomCountForPredicate(Property predicate){
 		StringBuilder sb = new StringBuilder();
@@ -696,9 +605,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		
@@ -749,9 +662,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		
@@ -760,6 +677,9 @@ public class IncrementalInconsistencyFinder {
 		RDFNode rdfNodeObject;
 		boolean isObjectProperty = true;
 		while(sparqlResults.hasNext()){
+			if(mon.isCancelled()){
+				break;
+			}
 			solution = sparqlResults.nextSolution();
 			
 			rdfNodeSubject = solution.getResource("?subject");
@@ -838,9 +758,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		
@@ -848,6 +772,9 @@ public class IncrementalInconsistencyFinder {
 		RDFNode rdfNodeSubject;
 		boolean isObjectProperty = true;
 		while(sparqlResults.hasNext()){
+			if(mon.isCancelled()){
+				break;
+			}
 			solution = sparqlResults.nextSolution();
 			
 			rdfNodeSubject = solution.getResource("?subject");
@@ -939,23 +866,37 @@ public class IncrementalInconsistencyFinder {
 		sb.append("ASK {");
 		sb.append("<").append(propertyURI).append("> ").append("<").append(RDF.type).append("> ").append("<").append(OWL.ObjectProperty).append(">");
 		sb.append("}");
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		if(sparqlQueryExec.execAsk()){
-			logger.info("YES");
-			return true;
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		if(useCache){
+			if(cache.executeSparqlAskQuery(query)){
+				logger.info("YES");
+				return true;
+			}
+			
+		} else {
+			if(query.sendAsk()){
+				logger.info("YES");
+				return true;
+			}
 		}
 		
-		//we check if triple ($prop rdf:type owl:DaatProperty) is in the knowledgebase
+		//we check if triple ($prop rdf:type owl:DataProperty) is in the knowledgebase
 		sb = new StringBuilder();
 		sb.append("ASK {");
 		sb.append("<").append(propertyURI).append("> ").append("<").append(RDF.type).append("> ").append("<").append(OWL.DatatypeProperty).append(">");
 		sb.append("}");
-		query = QueryFactory.create(sb.toString());
-		sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		if(sparqlQueryExec.execAsk()){
-			logger.info("NO");
-			return false;
+		query = new SparqlQuery(sb.toString(), endpoint);
+		if(useCache){
+			if(cache.executeSparqlAskQuery(query)){
+				logger.info("NO");
+				return false;
+			}
+			
+		} else {
+			if(query.sendAsk()){
+				logger.info("NO");
+				return false;
+			}
 		}
 		
 		//we check for one triple, and decide if object is an literal
@@ -964,9 +905,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append("?subject ").append("<").append(propertyURI).append("> ").append("?object");
 		sb.append("}");
 		sb.append("LIMIT 1");
-		query = QueryFactory.create(sb.toString());
-		sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet results = sparqlQueryExec.execSelect();
+		query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable results;
+		if(useCache){
+			results = cache.executeSparqlQuery(query);
+		} else {
+			results = query.send();
+		}
 		
 		boolean isObjectProperty = true;
 		while(results.hasNext()){
@@ -991,9 +936,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLClassAssertionAxiom> axioms = new HashSet<OWLClassAssertionAxiom>();
 		
@@ -1025,9 +974,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		
@@ -1063,9 +1016,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		
@@ -1124,9 +1081,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLClassAssertionAxiom> axioms = new HashSet<OWLClassAssertionAxiom>();
 		
@@ -1147,48 +1108,6 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLDisjointClassesAxiom> retrieveDisjointClassAxioms(){
-		logger.info("Retrieving disjointClasses axioms");
-		mon.setMessage("Retrieving disjointClasses axioms");
-		queryMonitor.start();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * WHERE {");
-		sb.append("?subject ").append("<").append(OWL.disjointWith).append(">").append(" ?object");
-		sb.append("}");
-		sb.append("LIMIT ").append(RESULT_LIMIT);
-		
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-		
-		Set<OWLDisjointClassesAxiom> axioms = new HashSet<OWLDisjointClassesAxiom>();
-		
-		QuerySolution solution;
-		RDFNode rdfNodeSubject;
-		RDFNode rdfNodeObject;
-		OWLClass disjointClass1;
-		OWLClass disjointClass2;
-		while(sparqlResults.hasNext()){
-			solution = sparqlResults.nextSolution();
-			
-			rdfNodeSubject = solution.getResource("?subject");
-			rdfNodeObject = solution.getResource("?object");
-			
-			//skip if solution contains blank node
-			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
-				continue;
-			}
-			
-			disjointClass1 = factory.getOWLClass(IRI.create(rdfNodeSubject.toString()));
-			disjointClass2 = factory.getOWLClass(IRI.create(rdfNodeObject.toString()));
-			
-			axioms.add(factory.getOWLDisjointClassesAxiom(disjointClass1, disjointClass2));
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
 	
 	private Set<OWLClassAssertionAxiom> retrievePropertyAssertionAxiomsWithFunctionalProperty(int limit){
 		queryMonitor.start();
@@ -1200,9 +1119,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" HAVING COUNT(?o)>1"); 
 		sb.append(" LIMIT ").append(limit);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		Set<OWLClassAssertionAxiom> axioms = new HashSet<OWLClassAssertionAxiom>();
 		
@@ -1221,112 +1144,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private Set<OWLAxiom> retrieveSubClassAxioms(){
-		logger.info("Retrieving SubClassOf axioms");
-		queryMonitor.start();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * WHERE {");
-		sb.append("?subject ").append("<").append(RDFS.subClassOf).append(">").append(" ?object");
-		sb.append("}");
-		sb.append("LIMIT ").append(RESULT_LIMIT);
-		
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-		
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		
-		QuerySolution solution;
-		RDFNode rdfNodeSubject;
-		RDFNode rdfNodeObject;
-		OWLClass subClass;
-		OWLClass superClass;
-		while(sparqlResults.hasNext()){
-			solution = sparqlResults.nextSolution();
-			
-			rdfNodeSubject = solution.getResource("?subject");
-			rdfNodeObject = solution.getResource("?object");
-			
-			//skip if solution contains blank node
-			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
-				continue;
-			}
-			
-			subClass = factory.getOWLClass(IRI.create(rdfNodeSubject.toString()));
-			superClass = factory.getOWLClass(IRI.create(rdfNodeObject.toString()));
-			
-			axioms.add(factory.getOWLSubClassOfAxiom(subClass, superClass));
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
 	
-	/**
-	 * Get axioms for a given class.
-	 * Axiom types: SubClassOf, EquivalentClass, ClassAssertion
-	 * 
-	 * @param cl
-	 * @return
-	 */
-	private Set<OWLAxiom> retrieveAxiomsForClass(OWLClass cl, int limit){
-		logger.info("Retrieving axioms for class " + cl);
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		queryMonitor.start();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * WHERE {");
-		sb.append("{<").append(cl.toStringID()).append("> ").append("?predicate").append(" ?object.}");
-		sb.append(" UNION ");
-		sb.append("{?subject").append("?predicate").append(" <").append(cl.toStringID()).append("> }");
-		sb.append("}");
-		sb.append("LIMIT ").append(limit);
-		
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet results = queryExec.execSelect();
-		QuerySolution solution;
-		RDFNode rdfNodeSubject;
-		RDFNode rdfNodePredicate;
-		RDFNode rdfNodeObject;
-		while(results.hasNext()){
-			solution = results.nextSolution();
-			if(solution.get("?object") != null){
-				rdfNodePredicate = solution.getResource("?predicate");
-				rdfNodeObject = solution.get("?object");
-				//skip if object is a blank node
-				if(rdfNodeObject.isAnon()){
-					continue;
-				}
-				if(rdfNodePredicate.equals(RDFS.subClassOf)){
-					axioms.add(factory.getOWLSubClassOfAxiom(cl, factory.getOWLClass(IRI.create(rdfNodeObject.toString()))));
-				} else if(rdfNodePredicate.equals(OWL.equivalentClass)){
-					axioms.add(factory.getOWLEquivalentClassesAxiom(cl, factory.getOWLClass(IRI.create(rdfNodeObject.toString()))));
-				}
-			} else if(solution.get("?subject") != null){
-				rdfNodePredicate = solution.getResource("?predicate");
-				rdfNodeSubject = solution.get("?subject");
-				//skip if subject is a blank node
-				if(rdfNodeSubject.isAnon()){
-					continue;
-				}
-				if(rdfNodePredicate.equals(RDF.type)){
-					axioms.add(factory.getOWLClassAssertionAxiom(cl, factory.getOWLNamedIndividual(IRI.create(rdfNodeSubject.toString()))));
-				} else if(rdfNodePredicate.equals(RDFS.subClassOf)){
-					axioms.add(factory.getOWLSubClassOfAxiom(factory.getOWLClass(IRI.create(rdfNodeSubject.toString())), cl));
-				}
-			}
-			
-			
-		}System.out.println(axioms);
-		if(axioms.isEmpty()){
-			axioms.addAll(getAxiomsFromLinkedDataSource(cl.getIRI()));
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
 	
 	/**
 	 * Get axioms for a given ObjectProperty.
@@ -1414,15 +1232,23 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet results = queryExec.execSelect();
+		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
+		
 		QuerySolution solution;
 		RDFNode rdfNodePredicate;
 		RDFNode rdfNodeObject;
 		OWLLiteral literal;
-		while(results.hasNext()){
-			solution = results.nextSolution();
+		while(sparqlResults.hasNext()){
+			if(mon.isCancelled()){
+				break;
+			}
+			solution = sparqlResults.nextSolution();
 			rdfNodePredicate = solution.getResource("?predicate");
 			rdfNodeObject = solution.get("?object");
 			//skip if object is a blank node
@@ -1500,180 +1326,6 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	private int getAxiomCount(){
-		StringBuilder sb = new StringBuilder();
-//		sb.append("SELECT COUNT(*) WHERE {");
-//		sb.append("?s").append(" <").append(OWL.disjointWith).append("> ").append("?o}");
-		sb.append("select * where {?s ?p ?o} group by ?s having(count(distinct) < 5)");
-		
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet results = queryExec.execSelect();
-		System.out.println(results.nextSolution());
-		
-		return 1;
-	}
-	
-	
-	private Set<OWLAxiom> retrieveSubClassAxiomsForClass(OWLClass cl){
-		logger.info("Retrieving subClassOf axioms for class " + cl);
-		queryMonitor.start();
-		
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		QuerySolution solution;
-		RDFNode rdfNode;
-		
-		Query sparqlQuery = createSimpleSelectSPARQLQuery("?x", OWLVocabulary.RDFS_SUBCLASS_OF,
-				cl.toStringID(), "regex(?x,\"http://dbpedia.org/ontology/\", \"i\")", RESULT_LIMIT);
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-		if(!sparqlResults.hasNext()){
-			logger.info("Got empty SPARQL result. Trying to get informations from linked data uri.");
-			try{
-				axioms.addAll(manager.loadOntology(IRI.create(cl.toStringID())).getLogicalAxioms());
-			} catch (Exception e){
-				logger.info("No linked data retrieved.");
-			}
-		} else {
-			OWLClass subClass;
-			while(sparqlResults.hasNext()){
-				solution = sparqlResults.nextSolution();
-				
-				rdfNode = solution.getResource("?x");
-				if(rdfNode.isAnon()){
-					System.out.println("BLANKNODE detected in solution " + solution);
-					continue;
-				}
-				
-				subClass = factory.getOWLClass(IRI.create(rdfNode.toString()));
-				
-				axioms.add(factory.getOWLSubClassOfAxiom(subClass, cl));
-			}
-		}
-		
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
-	
-	private Set<OWLObjectPropertyDomainAxiom> retrievePropertyDomainAxiomsForClass(OWLClass cl){
-		logger.info("Retrieving objectPropertyDomain axioms for class " + cl);
-		queryMonitor.start();
-		
-		Query sparqlQuery = createSimpleSelectSPARQLQuery("?s", OWLVocabulary.RDFS_domain, cl.toStringID(),
-				"regex(?s,\"http://dbpedia.org/ontology/\", \"i\")", RESULT_LIMIT);
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-		
-		Set<OWLObjectPropertyDomainAxiom> axioms = new HashSet<OWLObjectPropertyDomainAxiom>();
-		
-		QuerySolution solution;
-		RDFNode rdfNodeSubject;
-		OWLObjectProperty property;
-		while(sparqlResults.hasNext()){
-			solution = sparqlResults.nextSolution();
-			
-			rdfNodeSubject = solution.getResource("?s");
-			
-			property = factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString()));
-			
-			axioms.add(factory.getOWLObjectPropertyDomainAxiom(property, cl));
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
-	
-	private Set<OWLObjectPropertyRangeAxiom> retrievePropertyRangeAxiomsForClass(OWLClass cl){
-		logger.info("Retrieving objectPropertyRange axioms for class " + cl);
-		queryMonitor.start();
-		
-		Query sparqlQuery = createSimpleSelectSPARQLQuery("?s", OWLVocabulary.RDFS_range, cl.toStringID(),
-				"regex(?s,\"http://dbpedia.org/ontology/\", \"i\")", RESULT_LIMIT);
-		QueryExecution sparqlQueryExec = QueryExecutionFactory.sparqlService(endpointURI, sparqlQuery, defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
-		
-		Set<OWLObjectPropertyRangeAxiom> axioms = new HashSet<OWLObjectPropertyRangeAxiom>();
-		
-		QuerySolution solution;
-		RDFNode rdfNodeSubject;
-		OWLObjectProperty property;
-		while(sparqlResults.hasNext()){
-			solution = sparqlResults.nextSolution();
-			
-			rdfNodeSubject = solution.getResource("?s");
-			
-			property = factory.getOWLObjectProperty(IRI.create(rdfNodeSubject.toString()));
-			
-			axioms.add(factory.getOWLObjectPropertyRangeAxiom(property, cl));
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
-	
-	
-	private Set<OWLAxiom> retrieveAxiomsForClass(OWLClass cl, boolean retrieveABoxAxioms){
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		axioms.addAll(retrieveSubClassAxiomsForClass(cl));
-		axioms.addAll(retrievePropertyDomainAxiomsForClass(cl));
-		axioms.addAll(retrievePropertyRangeAxiomsForClass(cl));
-		if(retrieveABoxAxioms){
-			axioms.addAll(retrieveClassAssertionAxiomsForClass(cl, AXIOM_COUNT));
-		}
-		return axioms;
-	}
-	
-	private Set<OWLAxiom> retrieveAxiomsForClassSingleQuery(OWLClass cl, boolean retrieveABoxAxioms){
-		logger.info("Retrieving axioms for class " + cl);
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-		queryMonitor.start();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * WHERE {");
-		sb.append("{").append("<").append(cl.toStringID()).append("> <").append(OWLVocabulary.RDFS_SUBCLASS_OF).append("> ?superClass.").append("FILTER regex(?superClass,\"http://dbpedia.org/ontology/\", \"i\")}");
-		sb.append("UNION");
-		sb.append("{").append("?subClass ").append("<").append(OWLVocabulary.RDFS_SUBCLASS_OF).append("> <").append(cl.toStringID()).append(">.").append("FILTER regex(?subClass,\"http://dbpedia.org/ontology/\", \"i\")}");
-		sb.append("UNION");
-		sb.append("{").append("?domainProperty ").append("<").append(OWLVocabulary.RDFS_domain).append("> <").append(cl.toStringID()).append(">.").append("FILTER regex(?domainProperty,\"http://dbpedia.org/ontology/\", \"i\")}");
-		sb.append("UNION");
-		sb.append("{").append("?rangeProperty ").append("<").append(OWLVocabulary.RDFS_range).append("> <").append(cl.toStringID()).append(">.").append("FILTER regex(?rangeProperty,\"http://dbpedia.org/ontology/\", \"i\")}");
-		if(retrieveABoxAxioms){
-			sb.append("UNION");
-			sb.append("{").append("?instance ").append("<").append(OWLVocabulary.RDF_TYPE).append("> <").append(cl.toStringID()).append(">}");
-		}
-		sb.append("}");
-//		sb.append("LIMIT ").append(RESULT_LIMIT);
-		
-		Query query = QueryFactory.create(sb.toString());
-		QueryExecution queryExec = QueryExecutionFactory.sparqlService(endpointURI, query, defaultGraphURI);
-		ResultSet results = queryExec.execSelect();
-		QuerySolution solution;
-		RDFNode rdfNode;
-		while(results.hasNext()){
-			solution = results.nextSolution();
-			if(solution.varNames().next().equals("subClass")){
-				rdfNode = solution.getResource("?subClass");
-				axioms.add(factory.getOWLSubClassOfAxiom(factory.getOWLClass(IRI.create(rdfNode.toString())), cl));
-			} else if(solution.varNames().next().equals("superClass")){
-				rdfNode = solution.getResource("?superClass");
-				axioms.add(factory.getOWLSubClassOfAxiom(cl, factory.getOWLClass(IRI.create(rdfNode.toString()))));
-			} else if(solution.varNames().next().equals("domainProperty")){
-				rdfNode = solution.getResource("?domainProperty");
-				axioms.add(factory.getOWLObjectPropertyDomainAxiom(factory.getOWLObjectProperty(IRI.create(rdfNode.toString())), cl));
-			} else if(solution.varNames().next().equals("rangeProperty")){
-				rdfNode = solution.getResource("?rangeProperty");
-				axioms.add(factory.getOWLObjectPropertyRangeAxiom(factory.getOWLObjectProperty(IRI.create(rdfNode.toString())), cl));
-			} else if(solution.varNames().next().equals("instance")){
-				rdfNode = solution.getResource("?instance");
-				axioms.add(factory.getOWLClassAssertionAxiom(cl, factory.getOWLNamedIndividual(IRI.create(rdfNode.toString()))));
-			} 
-			
-		}
-		queryMonitor.stop();
-		logger.info("Found " + axioms.size() + " axioms in " + queryMonitor.getLastValue() + " ms");
-		return axioms;
-	}
 	
 	private Set<OWLAxiom> getAxiomsFromLinkedDataSource(IRI iri){
 		logger.info("Trying to get informations from linked data uri " + iri);
