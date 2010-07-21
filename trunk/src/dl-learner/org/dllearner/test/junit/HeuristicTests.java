@@ -161,18 +161,34 @@ public class HeuristicTests {
 	@Test
 	public void approximationTests() {
 		// perform F-Measure example in ontology engineering paper, which was computed on paper
-		// TODO: compute again, because unit tests fails (probably rounding errors)
-		double[] approx1 = Heuristics.getFMeasureApproximation(800, 0.8, 1, 10000, 41, 31);
-		assertEquals(0.0505, approx1[1], delta);
-		double[] approx2 = Heuristics.getFMeasureApproximation(800, 0.8, 1, 10000, 42, 32);
-		assertEquals(0.1699, approx2[0], delta);
-		assertEquals(0.0489, approx2[1], delta);
+		double[] approx1 = Heuristics.getFScoreApproximation(800, 0.8, 1, 10000, 41, 31);
+		// smaller delta, because of rounding errors
+		assertEquals(0.050517, approx1[1], 0.001);
+		double[] approx2 = Heuristics.getFScoreApproximation(800, 0.8, 1, 10000, 42, 32);
+		// 0.1699 in the paper is just current precision divided by  multiplied by relevant instances
+		// 0.1778 is the center of the interval
+		assertEquals(0.178091, approx2[0], 0.001);
+		assertEquals(0.048933, approx2[1], 0.001);
 		
 		// perform A-Measure example in ontology engineering paper
 		// setup: 1000 class instances, 10000 relevant instances, delta=0.10
 		// input1: 90 out of 95 tests => no success para 1, 91 out of 96 => success
 		// input2: using estimation from input 1, 32 out of 64 => success
 		// overall accuracy: 64%
+		double[] approx1Step1 = Heuristics.getAScoreApproximationStep1(1, 1000, 90, 95);
+		assertEquals(0.10006, approx1Step1[1], 0.001);
+		// on paper, it works with 91 out of 96; but in the implementation only with
+		// 92 out of 97 (probably rounding errors)
+		double[] approx2Step1 = Heuristics.getAScoreApproximationStep1(1, 1000, 92, 97);
+		assertTrue(approx2Step1[1] < 0.1);
+		
+		// double[] approxStep2 = Heuristics.getAScoreApproximationStep2(800, new double[] {approx2Step1[0]-0.5*approx2Step1[1], approx2Step1[0]+0.5*approx2Step1[1]}, 1, 10000, 64, 32);
+		// example computed by hand (note that it differs from the paper example in that
+		// we do not use the square root)
+		double[] approxStep2 = Heuristics.getAScoreApproximationStep2(800, approx2Step1, 1, 10000, 64, 32);
+		assertEquals(0.49822461, approxStep2[0]-0.5*approxStep2[1], 0.001);
+		assertEquals(0.5771179, approxStep2[0]+0.5*approxStep2[1], 0.001);
+//		System.out.println(approxStep2[0] + " " + approxStep2[1]);
 	}
 	
 	// the class learning problem provides several ways to get the accuracy of a description, this method

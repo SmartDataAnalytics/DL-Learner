@@ -311,7 +311,7 @@ public class ClassLearningProblem extends LearningProblem {
 				testsPerformed++;
 				
 				// check whether approximation is sufficiently accurate
-				double[] approx = Heuristics.getFMeasureApproximation(instancesCovered, recall, coverageFactor, superClassInstances.size(), testsPerformed, instancesDescription);
+				double[] approx = Heuristics.getFScoreApproximation(instancesCovered, recall, coverageFactor, superClassInstances.size(), testsPerformed, instancesDescription);
 				if(approx[1]<approxDelta) {
 					return approx[0];
 				}

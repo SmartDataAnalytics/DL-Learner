@@ -122,7 +122,7 @@ public class Heuristics {
 	 */
 	public static double[] getConfidenceInterval95Wald(int total, int success) {
 		if(success > total || total < 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("95% confidence interval for " + success + " out of " + total + " trials cannot be estimated.");
 		}
 		double[] ret = new double[2];
 		double p1 = (success+2)/(double)(total+4);
@@ -182,7 +182,7 @@ public class Heuristics {
 	 * @return A two element array, where the first element is the computed F-beta score and the
 	 * second element is the length of the 95% confidence interval around it.
 	 */
-	public static double[] getFMeasureApproximation(int nrOfPosClassifiedPositives, double recall, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
+	public static double[] getFScoreApproximation(int nrOfPosClassifiedPositives, double recall, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
 		// compute 95% confidence interval
 		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfInstanceChecks, nrOfSuccessfulInstanceChecks);
 		// multiply by number of instances from which the random samples are drawn
@@ -203,10 +203,21 @@ public class Heuristics {
 		return ret;
 	}
 	
-	public static double[] getAMeasureApproximationStep1(double beta, int nrOfPosExamples, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
+	/**
+	 * In the first step of the AScore approximation, we estimate recall (taking the factor
+	 * beta into account). This is not much more than a wrapper around the modified Wald method.
+	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
+	 * than precision.
+	 * @param nrOfPosExamples Number of positive examples (or instances of the considered class).
+	 * @param nrOfInstanceChecks Number of positive examples (or instances of the considered class) which have been checked.
+	 * @param nrOfSuccessfulInstanceChecks Number of positive examples (or instances of the considered class), where the instance check returned true.
+	 * @return A two element array, where the first element is the recall multiplied by beta and the
+	 * second element is the length of the 95% confidence interval around it.
+	 */
+	public static double[] getAScoreApproximationStep1(double beta, int nrOfPosExamples, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
 		// the method is just a wrapper around a single confidence interval approximation;
 		// method approximates t * a / |R(A)|
-		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfInstanceChecks, nrOfSuccessfulInstanceChecks);
+		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfSuccessfulInstanceChecks, nrOfInstanceChecks);
 		double diff = beta * (interval[1] - interval[0]);
 		double ret[] = new double[2];
 		ret[0] = beta * interval[0] + 0.5*diff;
@@ -214,13 +225,36 @@ public class Heuristics {
 		return ret;
 	}
 	
-	public static double[] getAMeasureApproximationStep2(int nrOfPosClassifiedPositives, double[] recallInterval, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
-		// TODO: code untested
+	/**
+	 * In step 2 of the A-Score approximation, the precision and overall A-Score is estimated based on
+	 * the estimated recall.
+	 * @param nrOfPosClassifiedPositives Positive examples (instance of a class), which are classified as positives.
+	 * @param recallInterval The estimated recall, which needs to be given as a two element array with the first element being the mean value and the second element being the length of the interval (to be compatible with the step1 method). 
+	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
+	 * than precision.
+	 * @param nrOfRelevantInstances Number of relevant instances, i.e. number of instances, which
+	 * would have been tested without approximations.
+	 * @param nrOfInstanceChecks Performed instance checks for the approximation.
+	 * @param nrOfSuccessfulInstanceChecks Number of performed instance checks, which returned true.
+	 * @return A two element array, where the first element is the estimated A-Score and the
+	 * second element is the length of the 95% confidence interval around it.
+	 */
+	public static double[] getAScoreApproximationStep2(int nrOfPosClassifiedPositives, double[] recallInterval, double beta, int nrOfRelevantInstances, int nrOfInstanceChecks, int nrOfSuccessfulInstanceChecks) {
+		// recall interval is given as mean + interval size (to fit the other method calls) => computer lower and upper border
+		double recallLowerBorder = (recallInterval[0] - 0.5*recallInterval[1]) / beta;
+		double recallUpperBorder = (recallInterval[0] + 0.5*recallInterval[1]) / beta;
+		// estimate precision
 		double[] interval = Heuristics.getConfidenceInterval95Wald(nrOfInstanceChecks, nrOfSuccessfulInstanceChecks);
-		double precisionLowerBorder = nrOfPosClassifiedPositives / interval[1] * nrOfRelevantInstances;
-		double precisionUpperBorder = nrOfPosClassifiedPositives / interval[0] * nrOfRelevantInstances;
-		double lowerBorder = Heuristics.getAScore(recallInterval[0] / beta, precisionLowerBorder, beta);
-		double upperBorder = Heuristics.getAScore(recallInterval[0] / beta, precisionUpperBorder, beta);
+		
+		double precisionLowerBorder = nrOfPosClassifiedPositives / (nrOfPosClassifiedPositives + interval[1] * nrOfRelevantInstances);
+		double precisionUpperBorder = nrOfPosClassifiedPositives / (nrOfPosClassifiedPositives + interval[0] * nrOfRelevantInstances);
+		
+//		System.out.println("rec low: " + recallLowerBorder);
+//		System.out.println("rec up: " + recallUpperBorder);
+//		System.out.println("prec low: " + precisionLowerBorder);
+//		System.out.println("prec up: " + precisionUpperBorder);
+		double lowerBorder = Heuristics.getAScore(recallLowerBorder, precisionLowerBorder, beta);
+		double upperBorder = Heuristics.getAScore(recallUpperBorder, precisionUpperBorder, beta);
 		double diff = upperBorder - lowerBorder;
 		double ret[] = new double[2];
 		ret[0] = lowerBorder + 0.5*diff;
