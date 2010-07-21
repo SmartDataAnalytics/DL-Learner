@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -19,13 +21,16 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -33,10 +38,14 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -78,6 +87,8 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private JTextField defaultGraphField;
 	
 	private JButton searchStopButton;
+	private JButton addNamespaceButton;
+	private JButton deleteNamespaceButton;
 	
 	private JLabel messageLabel;
 	private String progressMessage;
@@ -87,10 +98,15 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	
 	private JCheckBox useLinkedDataCheckBox;
 	private JCheckBox useCacheCheckBox;
+	private JCheckBox restrictNamespacesCheckBox;
+	
+	private JList linkedDataNamespaceslist;
+    private DefaultListModel linkedDataNamespaceslistModel;
+
 	
 	private IncrementalInconsistencyFinder inc;
 	
-	private SparqlExtractOptionsPanel optionsPanel;
+	private JPanel optionsPanel;
 	private JToggleButton optionsButton;
 	private ImageIcon toggledIcon = new ImageIcon(OREApplication.class.getResource("toggled.gif"));
 	private ImageIcon untoggledIcon = new ImageIcon(OREApplication.class.getResource("untoggled.gif"));
@@ -188,19 +204,58 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		c.fill = GridBagConstraints.NONE;
 		panel.add(searchStopButton, c);
 		
-		messageLabel = new JLabel("");
-		panel.add(messageLabel, c);
-		
 		progressBar = new JProgressBar();
 		panel.add(progressBar, c);
 		
+		messageLabel = new JLabel("");
+		panel.add(messageLabel, c);
+		
+		optionsButton = new JToggleButton(new AbstractAction("Advanced options") {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4395104616001102604L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JToggleButton button = (JToggleButton) e.getSource();
+
+				if (!button.getModel().isSelected()) {
+					collapseOptionsPanel();
+				} else {
+					expandOptionsPanel();
+				}
+
+			}
+		});
+		optionsButton.setIcon(untoggledIcon);
+		optionsButton.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+		optionsButton.setHorizontalAlignment(JButton.LEADING); // optional
+		optionsButton.setBorderPainted(false);
+		optionsButton.setContentAreaFilled(false);
+		optionsButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				optionsButton.setBorderPainted(true);
+				optionsButton.setContentAreaFilled(true);
+			};
+			@Override
+			public void mouseExited(MouseEvent e) {
+				optionsButton.setBorderPainted(false);
+				optionsButton.setContentAreaFilled(false);
+			}
+		
+		});
+		c.fill = GridBagConstraints.NONE;
 		c.anchor = GridBagConstraints.WEST;
-		
-		useCacheCheckBox = new JCheckBox("Use cache");
-		panel.add(useCacheCheckBox, c);
-		
-		useLinkedDataCheckBox = new JCheckBox("Use linked data");
-		panel.add(useLinkedDataCheckBox, c);
+		panel.add(optionsButton, c);
+        
+		c.anchor = GridBagConstraints.CENTER;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		optionsPanel = createSPARQLOptionsPanel();
+		panel.add(optionsPanel, c);
+		optionsPanel.setVisible(false);
 		
 		JLabel padding = new JLabel();
 		c.weighty = 1.0;
@@ -208,11 +263,79 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		getContentPane().add(panel, BorderLayout.CENTER);
 	}
 	
-	@SuppressWarnings("unused")
+	private JPanel createSPARQLOptionsPanel(){
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		
+		useCacheCheckBox = new JCheckBox("Use cache");
+		panel.add(useCacheCheckBox, c);
+		
+		c.gridwidth = 1;
+		useLinkedDataCheckBox = new JCheckBox("Use linked data");
+		useLinkedDataCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restrictNamespacesCheckBox.setEnabled(useLinkedDataCheckBox.isSelected());
+				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+			}
+		});
+		panel.add(useLinkedDataCheckBox, c);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		restrictNamespacesCheckBox = new JCheckBox("Restrict namespaces to:");
+		restrictNamespacesCheckBox.setEnabled(false);
+		restrictNamespacesCheckBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+			}
+		});
+		panel.add(restrictNamespacesCheckBox, c);
+		c.weightx = 1.0;
+		c.gridx = 1;
+		linkedDataNamespaceslistModel = new DefaultListModel();
+		linkedDataNamespaceslist = new JList(linkedDataNamespaceslistModel);
+		linkedDataNamespaceslist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		linkedDataNamespaceslist.setSelectedIndex(0);
+		linkedDataNamespaceslist.setVisibleRowCount(5);
+		linkedDataNamespaceslist.setEnabled(false);
+        JScrollPane listScrollPane = new JScrollPane(linkedDataNamespaceslist);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(listScrollPane, c);
+        
+        Box buttonBox = Box.createHorizontalBox();
+        addNamespaceButton = createButton("Add", 'a');
+        addNamespaceButton.setEnabled(false);
+        buttonBox.add(addNamespaceButton);
+        
+        buttonBox.add(Box.createHorizontalGlue());
+		buttonBox.add(Box.createHorizontalStrut(4));
+        deleteNamespaceButton = createButton("Delete", 'a');
+        deleteNamespaceButton.setEnabled(false);
+        buttonBox.add(deleteNamespaceButton);
+        
+        JPanel buttonPanel = new JPanel();
+		buttonPanel.add(buttonBox);
+        c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(buttonPanel, c);
+        
+		return panel;
+	}
+	
 	private void addPredefinedEndpoints(){
 		endpointToDefaultGraph = new HashMap<URI, List<String>>();
 		endpointToDefaultGraph.put(URI.create("http://dbpedia-live.openlinksw.com/sparql/"), Collections.singletonList("http://dbpedia.org"));	
-		endpointToDefaultGraph.put(URI.create("http://localhost:8890/sparql"), Collections.singletonList("http://opencyc2.org"));	
+//		endpointToDefaultGraph.put(URI.create("http://localhost:8890/sparql"), Collections.singletonList("http://opencyc2.org"));	
 		for(URI url : endpointToDefaultGraph.keySet()){
 			comboBox.addItem(url.toString());
 		}		
@@ -228,26 +351,12 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 
 	private void expandOptionsPanel(){
 		optionsButton.setIcon(toggledIcon);
-		Dimension dialogSize = getSize ();
-		Dimension detailSize = optionsPanel.getPreferredSize ();
-		dialogSize.height += detailSize.height;
-		setSize (dialogSize);
 		optionsPanel.setVisible(true);
-		//  Cause the new layout to take effect
-		invalidate ();
-		validate ();	
 	}
 
 	private void collapseOptionsPanel(){
 		optionsButton.setIcon(untoggledIcon);
-		Dimension dialogSize = getSize ();
-		Dimension detailSize = optionsPanel.getPreferredSize ();
-		dialogSize.height -= detailSize.height;
-		setSize (dialogSize);
 		optionsPanel.setVisible(false);
-		//  Cause the new layout to take effect
-		invalidate ();
-		validate ();		
 	}
 	 
 	 private JButton createButton (String label, char mnemonic)  {
@@ -426,12 +535,21 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 				messageLabel.setText("<html><font color=\"red\">Could not connect to SPARQL endpoint</html>");
 				cancel(true);
 			}	
-			
+			messageLabel.setText("Searching ...");
 			String endpointURI = comboBox.getSelectedItem().toString();
 			String defaultGraphURI = defaultGraphField.getText();
 			try {
 				inc = new IncrementalInconsistencyFinder();
 				inc.setUseLinkedData(useLinkedDataCheckBox.isSelected());
+				if(restrictNamespacesCheckBox.isSelected()){
+					Set<String> namespaces = new HashSet<String>();
+					for(int i = 0; i < linkedDataNamespaceslistModel.size(); i++){
+						namespaces.add((String)linkedDataNamespaceslistModel.get(i));
+					}
+					inc.setLinkedDataNamespaces(namespaces);
+				} else {
+					inc.setLinkedDataNamespaces(Collections.<String>emptySet());
+				}
 				inc.setUseCache(useCacheCheckBox.isSelected());
 				inc.setProgressMonitor(mon);
 				inc.run(endpointURI, defaultGraphURI);
@@ -476,6 +594,22 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			canceled = true;
 			returnCode = CANCEL_RETURN_CODE;
 			closeDialog();
+		} else if(e.getActionCommand().equals("Add")){ 
+			String s = (String)JOptionPane.showInputDialog(
+                    this,
+                    "Enter linked data namespace",
+                    "Enter namespace",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "");
+			if(s != null){
+				linkedDataNamespaceslistModel.addElement(s);
+			}
+		} else if(e.getActionCommand().equals("Delete")){ 
+			if(linkedDataNamespaceslist.getSelectedValue() != null){
+				linkedDataNamespaceslistModel.removeElement(linkedDataNamespaceslist.getSelectedValue());
+			}
 		} else if(e.getActionCommand().equals("endpoints")){
 			messageLabel.setText("");
 			JComboBox cb = (JComboBox)e.getSource();
@@ -546,7 +680,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				messageLabel.setText(progressMessage);
+//				messageLabel.setText(progressMessage);
 			}
 		});
 	}
