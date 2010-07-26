@@ -5,7 +5,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import javax.xml.ws.http.HTTPException;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -14,6 +17,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.scripts.SparqlEndpointFinder;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -53,6 +57,8 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.sparql.resultset.ResultSetException;
 import com.hp.hpl.jena.sparql.resultset.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -63,8 +69,6 @@ public class IncrementalInconsistencyFinder {
 	
 	private static Logger logger = Logger.getRootLogger();
 	
-	private static final String ENDPOINT_URL = "http://dbpedia-live.openlinksw.com/sparql";
-	private static String DEFAULT_GRAPH_URI = "http://dbpedia.org";
 	private static String DBPEDIA_PREDICATE_FILTER = "!regex(?predicate, \"http://dbpedia.org/property\")";
 	private static String DBPEDIA_SUBJECT_FILTER = "!regex(?subject, \"http://dbpedia.org/property\")";
 	private static String OWL_THING_OBJECT_FILTER = "!regex(?object, \"http://www.w3.org/2002/07/owl#Thing\")";
@@ -102,12 +106,11 @@ public class IncrementalInconsistencyFinder {
 	
 	public IncrementalInconsistencyFinder() throws OWLOntologyCreationException, IOException{
 		
-		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.INFO);
+		logger.setLevel(Level.OFF);
 		
 		PelletOptions.USE_COMPLETION_QUEUE = true;
 		PelletOptions.USE_INCREMENTAL_CONSISTENCY = true;
@@ -152,25 +155,49 @@ public class IncrementalInconsistencyFinder {
 		queryMonitor.reset();
 		overallMonitor.start();
 		
-		int disjointWithCount = getAxiomCountForPredicate(OWL.disjointWith);
-		int equivalentClassCount = getAxiomCountForPredicate(OWL.equivalentClass);
-		int subClassOfCount = getAxiomCountForPredicate(RDFS.subClassOf);
+		int disjointWithCount = Integer.MAX_VALUE; 
+		int functionalCount = Integer.MAX_VALUE; 
+		int inverseFunctionalCount = Integer.MAX_VALUE;  
+		int equivalentClassCount = Integer.MAX_VALUE; 
+		int subClassOfCount = Integer.MAX_VALUE; 
+		int domainCount = Integer.MAX_VALUE;  
+		int rangeCount = Integer.MAX_VALUE;  
+		int subPropertyOfCount = Integer.MAX_VALUE;  
+		int equivalentPropertyCount = Integer.MAX_VALUE; 
+		int inverseOfCount = Integer.MAX_VALUE;  
+		int transitiveCount = Integer.MAX_VALUE;  
+		int classAssertionCount = Integer.MAX_VALUE;  
+		int overallAxiomCount = Integer.MAX_VALUE;
 		
-		int domainCount = getAxiomCountForPredicate(RDFS.domain);
-		int rangeCount = getAxiomCountForPredicate(RDFS.range);
-		
-		int subPropertyOfCount = getAxiomCountForPredicate(RDFS.subPropertyOf);
-		int equivalentPropertyCount = getAxiomCountForPredicate(OWL.equivalentProperty);
-		int inverseOfCount = getAxiomCountForPredicate(OWL.inverseOf);
-		int functionalCount = getAxiomCountForObject(OWL.FunctionalProperty);
-		int inverseFunctionalCount = getAxiomCountForObject(OWL.InverseFunctionalProperty);
-		int transitiveCount = getAxiomCountForObject(OWL.TransitiveProperty);
-		
-		int classAssertionCount = getAxiomCountForPredicate(RDF.type);
-		
-		mon.setSize(disjointWithCount + equivalentClassCount + subClassOfCount + domainCount + rangeCount 
-				+ subPropertyOfCount + equivalentPropertyCount + inverseOfCount + functionalCount
-				+ inverseFunctionalCount + transitiveCount + classAssertionCount);
+		if(canCountAxioms()){
+			disjointWithCount = getAxiomCountForPredicate(OWL.disjointWith);
+			functionalCount = getAxiomCountForObject(OWL.FunctionalProperty);
+			inverseFunctionalCount = getAxiomCountForObject(OWL.InverseFunctionalProperty);
+			
+			if((disjointWithCount + functionalCount + inverseFunctionalCount) == 0){
+				return;
+			}
+			
+			equivalentClassCount = getAxiomCountForPredicate(OWL.equivalentClass);
+			subClassOfCount = getAxiomCountForPredicate(RDFS.subClassOf);
+			
+			domainCount = getAxiomCountForPredicate(RDFS.domain);
+			rangeCount = getAxiomCountForPredicate(RDFS.range);
+			
+			subPropertyOfCount = getAxiomCountForPredicate(RDFS.subPropertyOf);
+			equivalentPropertyCount = getAxiomCountForPredicate(OWL.equivalentProperty);
+			inverseOfCount = getAxiomCountForPredicate(OWL.inverseOf);
+			
+			transitiveCount = getAxiomCountForObject(OWL.TransitiveProperty);
+			
+			classAssertionCount = getAxiomCountForPredicate(RDF.type);
+			
+			overallAxiomCount = disjointWithCount + equivalentClassCount + subClassOfCount + domainCount + rangeCount 
+			+ subPropertyOfCount + equivalentPropertyCount + inverseOfCount + functionalCount
+			+ inverseFunctionalCount + transitiveCount + classAssertionCount;
+			
+			mon.setSize(overallAxiomCount);
+		}
 		
 		
 		Set<OWLClass> visitedClasses = new HashSet<OWLClass>();
@@ -197,6 +224,23 @@ public class IncrementalInconsistencyFinder {
 			mon.setProgress(ontology.getLogicalAxiomCount());
 			if(mon.isCancelled()){
 				break;
+			}
+			if(ontology.getAxiomCount(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) + ontology.getAxiomCount(AxiomType.FUNCTIONAL_DATA_PROPERTY) < functionalCount){
+				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.FunctionalProperty, AXIOM_COUNT, OFFSET * i));
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
+			if(ontology.getAxiomCount(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) < inverseFunctionalCount){
+				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.InverseFunctionalProperty, AXIOM_COUNT, OFFSET * i));
+			}
+			mon.setProgress(ontology.getLogicalAxiomCount());
+			if(mon.isCancelled()){
+				break;
+			}
+			if(ontology.getLogicalAxiomCount() == 0){
+				return;
 			}
 			if(ontology.getAxiomCount(AxiomType.EQUIVALENT_CLASSES) < equivalentClassCount){
 				manager.addAxioms(ontology, retrieveClassExpressionsAxioms(OWL.equivalentClass, AXIOM_COUNT, OFFSET * i));
@@ -246,20 +290,6 @@ public class IncrementalInconsistencyFinder {
 			}
 			if(ontology.getAxiomCount(AxiomType.INVERSE_OBJECT_PROPERTIES) < inverseOfCount){
 				manager.addAxioms(ontology, retrievePropertyAxioms(OWL.inverseOf, AXIOM_COUNT, OFFSET * i));
-			}
-			mon.setProgress(ontology.getLogicalAxiomCount());
-			if(mon.isCancelled()){
-				break;
-			}
-			if(ontology.getAxiomCount(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) + ontology.getAxiomCount(AxiomType.FUNCTIONAL_DATA_PROPERTY) < functionalCount){
-				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.FunctionalProperty, AXIOM_COUNT, OFFSET * i));
-			}
-			mon.setProgress(ontology.getLogicalAxiomCount());
-			if(mon.isCancelled()){
-				break;
-			}
-			if(ontology.getAxiomCount(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) < inverseFunctionalCount){
-				manager.addAxioms(ontology, retrievePropertyCharacteristicAxioms(OWL.InverseFunctionalProperty, AXIOM_COUNT, OFFSET * i));
 			}
 			mon.setProgress(ontology.getLogicalAxiomCount());
 			if(mon.isCancelled()){
@@ -559,6 +589,19 @@ public class IncrementalInconsistencyFinder {
 		this.linkedDataNamespaces = namespaces;
 	}
 	
+	private boolean canCountAxioms() {
+		boolean canCount = true;
+		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI,
+				"SELECT COUNT(*) WHERE {?s <http://test> ?o}");
+		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
+		try {
+			sparqlQueryExec.execSelect();
+		} catch (QueryExceptionHTTP e) {
+			canCount = false;
+		}
+		return canCount;
+	}
+	
 	
 	private int getAxiomCountForPredicate(Property predicate){
 		StringBuilder sb = new StringBuilder();
@@ -567,11 +610,15 @@ public class IncrementalInconsistencyFinder {
 //		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		
+		logger.info(sb);
+		
 		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
 		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
 		
-		return sparqlResults.nextSolution().getLiteral("?callret-0").getInt();
+		QuerySolution solution = sparqlResults.nextSolution();
+		return solution.getLiteral(solution.varNames().next().toString()).getInt();
+//		return sparqlResults.nextSolution().getLiteral("?callret-0").getInt();
 	}
 	
 	private int getAxiomCountForObject(Resource resource){
@@ -581,11 +628,15 @@ public class IncrementalInconsistencyFinder {
 		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		
+		logger.info(sb);
+		
 		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
 		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
 		ResultSet sparqlResults = sparqlQueryExec.execSelect();
 		
-		return sparqlResults.nextSolution().getLiteral("?callret-0").getInt();
+		QuerySolution solution = sparqlResults.nextSolution();
+		return solution.getLiteral(solution.varNames().next().toString()).getInt();
+//		return sparqlResults.nextSolution().getLiteral("?callret-0").getInt();
 	}
 	
 	private Set<OWLAxiom> retrieveClassExpressionsAxioms(Property property, int limit, int offset){
@@ -609,7 +660,6 @@ public class IncrementalInconsistencyFinder {
 		} else {
 			sparqlResults = query.send();
 		}
-		
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		
 		QuerySolution solution;
@@ -622,7 +672,9 @@ public class IncrementalInconsistencyFinder {
 			
 			rdfNodeSubject = solution.getResource("?subject");
 			rdfNodeObject = solution.getResource("?object");
-			
+			if(rdfNodeObject == null || rdfNodeSubject == null){
+				continue;
+			}
 			//skip if solution contains blank node
 			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
 				continue;
@@ -681,7 +733,9 @@ public class IncrementalInconsistencyFinder {
 			
 			rdfNodeSubject = solution.getResource("?subject");
 			rdfNodeObject = solution.getResource("?object");
-			
+			if(rdfNodeObject == null || rdfNodeSubject == null){
+				continue;
+			}
 			//skip if solution contains blank node
 			if(rdfNodeSubject.isAnon() || rdfNodeObject.isAnon()){
 				continue;
@@ -777,7 +831,7 @@ public class IncrementalInconsistencyFinder {
 			rdfNodeSubject = solution.getResource("?subject");
 			
 			//skip if solution contains blank node
-			if(rdfNodeSubject.isAnon()){
+			if(rdfNodeSubject == null || rdfNodeSubject.isAnon()){
 				continue;
 			}
 			
@@ -1421,13 +1475,25 @@ public class IncrementalInconsistencyFinder {
 	}
 	
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException{
-		PelletExplanation.setup();
+//		PelletExplanation.setup();
 		IncrementalInconsistencyFinder incFinder = new IncrementalInconsistencyFinder();
-		if(args.length == 1){
-			incFinder.run(args[0], "");
-		} else if(args.length == 2){
-			incFinder.run(args[0], args[1]);
+		List<String> endpoints = new SparqlEndpointFinder().find();
+		for(int i = 8; i < endpoints.size(); i++){
+			try{
+			incFinder.run(endpoints.get(i), "");
+			} catch (HTTPException e){
+				e.printStackTrace();
+			} catch (ResultSetException e){
+				e.printStackTrace();
+			} catch(Exception e){
+				e.printStackTrace();
+			}
 		}
+//		if(args.length == 1){
+//			incFinder.run(args[0], "");
+//		} else if(args.length == 2){
+//			incFinder.run(args[0], args[1]);
+//		}
 		
 		
 		

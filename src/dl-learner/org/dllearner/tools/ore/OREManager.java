@@ -91,7 +91,7 @@ public class OREManager {
 	
 	private boolean consistentOntology;
 
-	public OREManager(){
+	private OREManager(){
 		cm = ComponentManager.getInstance();
 		listeners = new ArrayList<OREManagerListener>();
 		manchesterSyntaxRenderingCache = new ManchesterSyntaxRenderingCache(this);
