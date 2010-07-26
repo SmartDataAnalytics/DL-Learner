@@ -1,9 +1,11 @@
 package org.dllearner.tools.ore.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -33,7 +35,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -46,12 +47,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -59,21 +62,23 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import org.dllearner.tools.ore.MemoryWarningSystem;
+import org.dllearner.tools.ore.MemoryWarningSystem.MemoryWarningListener;
 import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.sparql.IncrementalInconsistencyFinder;
 import org.dllearner.tools.ore.sparql.SPARQLProgressMonitor;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.core.ui.list.MList;
 import org.protege.editor.core.ui.list.MListItem;
 import org.protege.editor.core.ui.list.MListSectionHeader;
-import org.protege.editor.core.ui.util.ComponentFactory;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 
-public class DebugFromSparqlDialog extends JDialog implements ActionListener, PropertyChangeListener, DocumentListener, SPARQLProgressMonitor {
+public class DebugFromSparqlDialog extends JDialog implements ActionListener, PropertyChangeListener, DocumentListener, SPARQLProgressMonitor, MemoryWarningListener {
 
 	/**
 	 * 
@@ -93,8 +98,6 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private JTextField defaultGraphField;
 	
 	private JButton searchStopButton;
-	private JButton addNamespaceButton;
-	private JButton deleteNamespaceButton;
 	
 	private JLabel messageLabel;
 	private String progressMessage;
@@ -106,10 +109,6 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private JCheckBox useCacheCheckBox;
 	private JCheckBox restrictNamespacesCheckBox;
 	
-	private JList linkedDataNamespaceslist;
-    private DefaultListModel linkedDataNamespaceslistModel;
-    private JScrollPane linkedDataNamespaceslistScrollPane;
-
 	private MList namespacesList;
 	private IncrementalInconsistencyFinder inc;
 	
@@ -131,9 +130,12 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			"</tr>							" +
 			"</table></html>"; 
 	
-	private OntologyExtractingTask extractTask;
+	private static final String warningMessage = "Searching " + 
+	    "inconsistencies can take several minutes or may even result in an " + 
+	    "out of memory exception, in particular for large knowledge bases."; 
+	
+	private SearchInconsistencyTask extractTask;
 	private ProgressMonitor mon;
-	private Timer t;
 	
 	private Map<URI, List<String>> endpointToDefaultGraph;
 	
@@ -150,6 +152,11 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 //		addPredefinedEndpoints();
 		positionErrorDialog(owner);
 		addPredefinedEndpoints();
+		
+		//add listener to warn if programm runs into OutOfMemoryError
+		MemoryWarningSystem.setPercentageUsageThreshold(0.8);
+	    MemoryWarningSystem mws = MemoryWarningSystem.getInstance();
+	    mws.addListener(this);
 	}
 	 
 	private void createControls() {
@@ -162,10 +169,14 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 
 		// Create a panel to hold a box with the buttons in it - to give it the
 		// right space around them
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.add(buttonBox);
+		Box buttonPanel = Box.createVerticalBox();
+		JPanel b = new JPanel();b.add(buttonBox);
+		
+		buttonPanel.add(b);
+		buttonPanel.add(createProgressPanel());
+		
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+		
 		// Create the buttons and add them to the box (leading strut will give
 		// the dialog box its width)
 		buttonBox.add(okButton = createButton("Ok", 'o'));
@@ -177,6 +188,20 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 
 		// Add the button panel to the bottom of the BorderLayout
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+	}
+	
+	private JPanel createProgressPanel(){
+		JPanel panel = new JPanel(new BorderLayout());
+		JPanel leftPanel = new JPanel(new FlowLayout());
+		progressBar = new JProgressBar();
+		leftPanel.add(progressBar);
+		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
+		messageLabel = new JLabel();
+		leftPanel.add(messageLabel);
+		leftPanel.add(new JSeparator(JSeparator.VERTICAL));
+		leftPanel.setOpaque(false);
+		panel.add(leftPanel, BorderLayout.WEST);
+		return panel;
 	}
 	 
 	private void createSparqlPanel() {
@@ -208,16 +233,6 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		endPointHelpPanel.setBorder(new TitledBorder("SPARQL endpoint"));
 		panel.add(endPointHelpPanel, c);
 
-		searchStopButton = createButton("Search", 's');
-		searchStopButton.setEnabled(false);
-		c.fill = GridBagConstraints.NONE;
-		panel.add(searchStopButton, c);
-		
-		progressBar = new JProgressBar();
-		panel.add(progressBar, c);
-		
-		messageLabel = new JLabel("");
-		panel.add(messageLabel, c);
 		
 		optionsButton = new JToggleButton(new AbstractAction("Advanced options") {
 
@@ -259,21 +274,42 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		c.fill = GridBagConstraints.NONE;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(optionsButton, c);
-        
+		
 		c.anchor = GridBagConstraints.CENTER;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.fill = GridBagConstraints.BOTH;
+		c.weighty = 1.0;
 		optionsPanel = createSPARQLOptionsPanel();
 		panel.add(optionsPanel, c);
 		optionsPanel.setVisible(false);
 		
+		c.weighty = 0.0;
+		searchStopButton = createButton("Search", 's');
+		searchStopButton.setEnabled(false);
+		searchStopButton.setMinimumSize(new Dimension(90, 30));
+		c.fill = GridBagConstraints.NONE;
+		panel.add(searchStopButton, c);
+		
 		JLabel padding = new JLabel();
 		c.weighty = 1.0;
 		panel.add(padding, c);
+		
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		JTextPane instructionsField = new JTextPane();
+        instructionsField.setContentType("text/html");
+        Color color = UIManager.getColor("Panel.background");
+        instructionsField.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue()));
+        instructionsField.setOpaque(true);
+        instructionsField.setEditable(false);
+        instructionsField.setText(warningMessage);
+        panel.add(instructionsField, c);
+		
 		getContentPane().add(panel, BorderLayout.CENTER);
 	}
 	
 	private JPanel createSPARQLOptionsPanel(){
 		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -289,9 +325,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				restrictNamespacesCheckBox.setEnabled(useLinkedDataCheckBox.isSelected());
-//				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-//				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-//				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+				namespacesList.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
 			}
 		});
 		panel.add(useLinkedDataCheckBox, c);
@@ -303,65 +337,31 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				linkedDataNamespaceslist.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-//				addNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
-//				deleteNamespaceButton.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
+				namespacesList.setEnabled(restrictNamespacesCheckBox.isSelected() && useLinkedDataCheckBox.isSelected());
 			}
 		});
 		panel.add(restrictNamespacesCheckBox, c);
 		c.weightx = 1.0;
 		c.gridx = 1;
-//		linkedDataNamespaceslistModel = new DefaultListModel();
-//		linkedDataNamespaceslist = new JList(linkedDataNamespaceslistModel);
-//		linkedDataNamespaceslist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//		linkedDataNamespaceslist.setSelectedIndex(0);
-//		linkedDataNamespaceslist.setVisibleRowCount(5);
-//		linkedDataNamespaceslist.setEnabled(false);
-//		linkedDataNamespaceslistScrollPane = new JScrollPane(linkedDataNamespaceslist);
-//		linkedDataNamespaceslistScrollPane.setVisible(false);
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        panel.add(linkedDataNamespaceslistScrollPane, c);
-//        
-//        Box buttonBox = Box.createHorizontalBox();
-//        addNamespaceButton = createButton("Add", 'a');
-//        addNamespaceButton.setEnabled(false);
-//        buttonBox.add(addNamespaceButton);
-//        
-//        buttonBox.add(Box.createHorizontalGlue());
-//		buttonBox.add(Box.createHorizontalStrut(4));
-//        deleteNamespaceButton = createButton("Delete", 'a');
-//        deleteNamespaceButton.setEnabled(false);
-//        buttonBox.add(deleteNamespaceButton);
-//        
-//        JPanel buttonPanel = new JPanel();
-//		buttonPanel.add(buttonBox);
-//        c.anchor = GridBagConstraints.WEST;
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        panel.add(buttonPanel, c);
-        
-        
-        ///////////////////
-        JPanel namespacesHolder = new JPanel(new BorderLayout());
-        namespacesHolder.setBorder(ComponentFactory.createTitledBorder("Namespaces"));
+		
         namespacesList = new MList() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = 6590889767286900162L;
 
             protected void handleAdd() {
-                addURI();
+                addNamespace();
             }
 
             protected void handleDelete() {
-                deleteSelectedBookmark();
+                deleteSelectedNamespace();
             }
         };
-
+        c.fill = GridBagConstraints.BOTH;
+        c.weighty = 1.0;
         namespacesList.setCellRenderer(new NamespaceItemListRenderer());
-        namespacesHolder.add(new JScrollPane(namespacesList));
+        namespacesList.setVisibleRowCount(5);
+        fillNamespacesList();
         panel.add(new JScrollPane(namespacesList), c);
-        fillList();
+        
         
 		return panel;
 	}
@@ -413,7 +413,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	}
 	 
 	 public int showDialog(){
-		 setSize(700, 600);
+		 setSize(700, 400);
 		 setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);	
 		 SwingUtilities.invokeLater(new Runnable() {
 			
@@ -434,30 +434,9 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		canceled = false;
 		messageLabel.setText("Checking SPARQL endpoint availability");
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		mon = new ProgressMonitor(this, "Extracting fragment", "", 0, 100);
-		mon.setMillisToDecideToPopup(0);
-		mon.setMillisToPopup(0);
-		mon.getAccessibleContext().getLocale();
+		progressBar.setVisible(true);
 		
-		
-		t = new Timer(1000,new ActionListener() {
-			
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				if(mon.isCanceled()){
-					extractTask.cancel(true);
-					setCursor(null);
-					t.stop();
-					
-				}
-				
-			}
-		});
-		t.start();
-		
-		extractTask = new OntologyExtractingTask(this, this);
+		extractTask = new SearchInconsistencyTask(this, this);
 		extractTask.addPropertyChangeListener(this);
 		extractTask.execute();
 		
@@ -466,6 +445,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	}
 	
 	private void stopSearching() {
+		messageLabel.setText("Stopping ...");
 		canceled = true;
 		setCursor(Cursor.getDefaultCursor());
 //		extractTask.cancel(true);
@@ -550,12 +530,12 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		return inc.getOntology();
 	}
 	
-	private class OntologyExtractingTask extends SwingWorker<Void, Void>{
+	private class SearchInconsistencyTask extends SwingWorker<Void, Void>{
 		
 		private SPARQLProgressMonitor mon;
 		private JDialog dialog;
 		
-		public OntologyExtractingTask(JDialog dialog, SPARQLProgressMonitor mon) {		
+		public SearchInconsistencyTask(JDialog dialog, SPARQLProgressMonitor mon) {		
 			this.mon = mon;
 			this.dialog = dialog;
 		}
@@ -587,6 +567,8 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (Exception e){
+				ErrorLogPanel.showErrorDialog(e);
 			}
 			
 
@@ -624,29 +606,6 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 			canceled = true;
 			returnCode = CANCEL_RETURN_CODE;
 			closeDialog();
-		} else if(e.getActionCommand().equals("Add")){ 
-			String s = (String)JOptionPane.showInputDialog(
-                    this,
-                    "Enter linked data namespace",
-                    "Enter namespace",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    null,
-                    "");
-			if(s != null){
-				linkedDataNamespaceslistModel.addElement(s);
-				linkedDataNamespaceslistScrollPane.setVisible(true);
-				validate();
-			}
-		} else if(e.getActionCommand().equals("Delete")){ 
-			if(linkedDataNamespaceslist.getSelectedValue() != null){
-				linkedDataNamespaceslistModel.removeElement(linkedDataNamespaceslist.getSelectedValue());
-				if(linkedDataNamespaceslistModel.isEmpty()){
-					linkedDataNamespaceslistScrollPane.setVisible(false);
-					validate();
-				}
-				
-			}
 		} else if(e.getActionCommand().equals("endpoints")){
 			messageLabel.setText("");
 			JComboBox cb = (JComboBox)e.getSource();
@@ -757,15 +716,15 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		dialog.showDialog();
 	}
 	
-	private void addURI() {
+	private void addNamespace() {
         String namespace = JOptionPane.showInputDialog(this, "Please enter a namespace", "Namespace", JOptionPane.PLAIN_MESSAGE);
         if (namespace != null) {
         	namespaces.add(namespace);
-            fillList();
+            fillNamespacesList();
         }
     }
 	
-	private void fillList() {
+	private void fillNamespacesList() {
 		ArrayList<Object> data = new ArrayList<Object>();
 
         data.add(new AddURIItem());
@@ -775,14 +734,14 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
         namespacesList.setListData(data.toArray());
     }
 	
-	private void deleteSelectedBookmark() {
+	private void deleteSelectedNamespace() {
         Object selObj = namespacesList.getSelectedValue();
         if (!(selObj instanceof NamspaceListItem)) {
             return;
         }
         NamspaceListItem item = (NamspaceListItem) selObj;
         namespaces.remove(item.namespace);
-        fillList();
+        fillNamespacesList();
     }
 	
 	private class NamespaceItemListRenderer extends DefaultListCellRenderer {
@@ -851,6 +810,17 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
             return namespace;
         }
     }
+
+	@Override
+	public void memoryUsageLow(long usedMemory, long maxMemory) {
+		double percentageUsed = ((double) usedMemory) / maxMemory;
+		StringBuilder message = new StringBuilder();
+		message.append("Memory usage low! \n\n");
+		message.append("Currently ").append((int)(percentageUsed * 100)).append(" % of the assigned memory  is used.\n");
+		message.append("It is recommend to stop the task because otherwise the programm might crash.");
+		JOptionPane.showMessageDialog(this, message, "Memory usage low!", JOptionPane.WARNING_MESSAGE);
+        
+	}
 
 	
 }
