@@ -240,6 +240,14 @@ public class Alzheimer {
 		} else if (headName.equals("great_polar")) {
 			String firstPolar = head.getArgument(0).toPLString();
 			String secondPolar = head.getArgument(1).toPLString();
+			
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Polar",
+					firstPolar);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("Polar",
+					secondPolar);
+			axioms.add(cmpSecondAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterPolar",
 					firstPolar, secondPolar);
@@ -247,6 +255,14 @@ public class Alzheimer {
 		} else if (headName.equals("great_size")) {
 			String firstSize = head.getArgument(0).toPLString();
 			String secondSize = head.getArgument(1).toPLString();
+			
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Size",
+					firstSize);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("Size",
+					secondSize);
+			axioms.add(cmpSecondAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterSize",
 					firstSize, secondSize);
@@ -254,6 +270,14 @@ public class Alzheimer {
 		} else if (headName.equals("great_flex")) {
 			String firstFlex = head.getArgument(0).toPLString();
 			String secondFlex = head.getArgument(1).toPLString();
+			
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Flex",
+					firstFlex);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("Flex",
+					secondFlex);
+			axioms.add(cmpSecondAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterFlex",
 					firstFlex, secondFlex);
@@ -261,6 +285,14 @@ public class Alzheimer {
 		} else if (headName.equals("great_h_don")) {
 			String firstHDonor = head.getArgument(0).toPLString();
 			String secondHDonor = head.getArgument(1).toPLString();
+			
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("HDonor",
+					firstHDonor);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("HDonor",
+					secondHDonor);
+			axioms.add(cmpSecondAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterHDonor",
 					firstHDonor, secondHDonor);
@@ -269,6 +301,14 @@ public class Alzheimer {
 			String firstHAcc = head.getArgument(0).toPLString();
 			String secondHAcc = head.getArgument(1).toPLString();
 
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("HAcceptor",
+					firstHAcc);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("HAcceptor",
+					secondHAcc);
+			axioms.add(cmpSecondAxiom);
+			
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterHAcceptor",
 					firstHAcc, secondHAcc);
 			axioms.add(ra);
@@ -276,6 +316,14 @@ public class Alzheimer {
 			String firstPiDonor = head.getArgument(0).toPLString();
 			String secondPiDonor = head.getArgument(1).toPLString();
 
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("PiDonor",
+					firstPiDonor);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("PiDonor",
+					secondPiDonor);
+			axioms.add(cmpSecondAxiom);
+			
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterPiDonor",
 					firstPiDonor, secondPiDonor);
 			axioms.add(ra);
@@ -283,6 +331,14 @@ public class Alzheimer {
 			String firstPiAcc = head.getArgument(0).toPLString();
 			String secondPiAcc = head.getArgument(1).toPLString();
 
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("PiAcceptor",
+					firstPiAcc);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("PiAcceptor",
+					secondPiAcc);
+			axioms.add(cmpSecondAxiom);
+			
 			ObjectPropertyAssertion ra = getRoleAssertion(
 					"isGreaterPiAcceptor", firstPiAcc, secondPiAcc);
 			axioms.add(ra);
@@ -297,6 +353,14 @@ public class Alzheimer {
 			String firstSigma = head.getArgument(0).toPLString();
 			String secondSigma = head.getArgument(1).toPLString();
 
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Sigma",
+					firstSigma);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cmpSecondAxiom = getConceptAssertion("Sigma",
+					secondSigma);
+			axioms.add(cmpSecondAxiom);
+			
 			ObjectPropertyAssertion ra = getRoleAssertion("isGreaterSigma",
 					firstSigma, secondSigma);
 			axioms.add(ra);
@@ -309,10 +373,10 @@ public class Alzheimer {
 			substituent = changeSubstituionNames(substituent);
 
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"hasPositionOfSubstituent", drugName, positionrOfSubs);
+					"getsReplacedAtPosition", drugName, positionrOfSubs);
 			axioms.add(ra);
 
-			ObjectPropertyAssertion sub = getRoleAssertion("getsSubstituent",
+			ObjectPropertyAssertion sub = getRoleAssertion("getsReplacedBy",
 					drugName, substituent);
 			axioms.add(sub);
 		} else if (headName.equals("alk_groups")) {
@@ -332,7 +396,7 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion("getsSubstitued",
+			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedByFirst",
 					drugName, substituent);
 			axioms.add(ra);
 			// z.B. r_subst_l (n 1, single_alk(2)). R substitution beginnt mit 2
@@ -346,7 +410,7 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion("getsSubstitued",
+			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedBySecond",
 					drugName, substituent);
 			axioms.add(ra);
 			// z.B. r_subst_2(n 1, double_alk(1)). eine ethygruppe
@@ -357,7 +421,7 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion("getsSubstitued",
+			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedByThird",
 					drugName, substituent);
 			axioms.add(ra);
 			// z.B. r_subst_3(nl, 3, aro(2)). the final alkyl group in drug nl
@@ -381,10 +445,10 @@ public class Alzheimer {
 			axioms.add(cmpAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsRingNrSubstitute", drugName, "4");
+					"getsRingReplacedAtPosition", drugName, "4");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsSubstitentsInRing",
+			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_3")) {
@@ -398,10 +462,10 @@ public class Alzheimer {
 			axioms.add(cmpAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsRingNrSubstitute", drugName, "3");
+					"getsRingReplacedAtPosition", drugName, "3");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsSubstitentsInRing",
+			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_2")) {
@@ -415,10 +479,10 @@ public class Alzheimer {
 			axioms.add(cmpAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsRingNrSubstitute", drugName, "2");
+					"getsRingReplacedAtPosition", drugName, "2");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsSubstitentsInRing",
+			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_5")) {
@@ -432,10 +496,10 @@ public class Alzheimer {
 			axioms.add(cmpAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsRingNrSubstitute", drugName, "5");
+					"getsRingReplacedAtPosition", drugName, "5");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsSubstitentsInRing",
+			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_6")) {
@@ -449,10 +513,10 @@ public class Alzheimer {
 			axioms.add(cmpAxiom);
 
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsRingNrSubstitute", drugName, "6");
+					"getsRingReplacedAtPosition", drugName, "6");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsSubstitentsInRing",
+			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("r_subst")) {
@@ -464,11 +528,11 @@ public class Alzheimer {
 			substituent = changeSubstituionNames(substituent);
 			
 			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsNrOfSubstitute", drugName, subsCount);
+					"getsNrOfReplacementsInMiddleRing", drugName, subsCount);
 			axioms.add(ra);
 			
 			ObjectPropertyAssertion da = getRoleAssertion(
-					"getsSubstitute", drugName, substituent);
+					"getsReplacedBy", drugName, substituent);
 			axioms.add(da);
 			
 			
@@ -480,9 +544,24 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			ringStruct = changeSubstituionNames(ringStruct);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion(
-					"hasRingStructure", drugName, ringStruct);
-			axioms.add(ra);
+			if(ringStruct.startsWith("subs")) {
+				String substituent = replaceSubsString(ringStruct);
+				
+				String subsPosition = (substituent.substring(substituent.indexOf(" ") + 1));
+				String replacement = substituent.substring(0, substituent.indexOf(" "));
+				
+				ObjectPropertyAssertion da = getRoleAssertion(
+						"getsRingReplacementAt", drugName, subsPosition);
+				axioms.add(da);
+				
+				ObjectPropertyAssertion ma = getRoleAssertion(
+						"getsReplacedWith", drugName, replacement);
+				axioms.add(ma);
+			} else {
+				ObjectPropertyAssertion ra = getRoleAssertion(
+						"hasRingStructure", drugName, ringStruct);
+				axioms.add(ra);
+			}
 			
 		} else if (headName.equals("great_rsd")) {
 			String subs1 = head.getArgument(0).toPLString();
@@ -617,10 +696,16 @@ public class Alzheimer {
 			
 		} else if (subs.startsWith("bond(n,group(ch3,2)") || subs.startsWith("bond(n, group(ch3, 2))")) {
 			subs = "N(CH3)2";
-		} else if (subs.startsWith("subs")) {
-			subs = subs.replace(" ", "");
 		}
 		
+		return subs;
+	}
+	
+	private static String replaceSubsString(String subs) {
+		subs = subs.replace(" ", "");
+		String substi = subs.substring(subs.indexOf("(")+1, subs.indexOf(","));
+		String ringPosition = subs.substring(subs.indexOf(",") + 1, subs.indexOf(")"));
+		subs = substi + " " + ringPosition;
 		return subs;
 	}
 }
