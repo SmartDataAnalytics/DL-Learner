@@ -42,9 +42,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyDomainAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
-import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
-import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -69,9 +67,10 @@ public class IncrementalInconsistencyFinder {
 	
 	private static Logger logger = Logger.getRootLogger();
 	
-	private static String DBPEDIA_PREDICATE_FILTER = "!regex(?predicate, \"http://dbpedia.org/property\")";
-	private static String DBPEDIA_SUBJECT_FILTER = "!regex(?subject, \"http://dbpedia.org/property\")";
-	private static String OWL_THING_OBJECT_FILTER = "!regex(?object, \"http://www.w3.org/2002/07/owl#Thing\")";
+	private static final String DBPEDIA_PREDICATE_FILTER = "!regex(?predicate, \"http://dbpedia.org/property\")";
+	private static final String DBPEDIA_SUBJECT_FILTER = "!regex(?subject, \"http://dbpedia.org/property\")";
+	private static final String OWL_OBJECT_FILTER = "!regex(?object, \"http://www.w3.org/2002/07/owl#\")";
+	private static final String OWL_SUBJECT_FILTER = "!regex(?subject, \"http://www.w3.org/2002/07/owl#\")";
 //	private static final String ENDPOINT_URL = "http://localhost:8890/sparql";
 //	private static String DEFAULT_GRAPH_URI = "http://opencyc2.org"; //(version 2.0)
 	
@@ -92,9 +91,9 @@ public class IncrementalInconsistencyFinder {
 	private boolean useLinkedData;
 	private boolean useCache;
 	
-	private Set<String> linkedDataNamespaces;
+	private volatile boolean stop;
 	
-	private PelletExplanation expGen;
+	private Set<String> linkedDataNamespaces;
 	
 	private SparqlEndpoint endpoint;
 	
@@ -103,6 +102,8 @@ public class IncrementalInconsistencyFinder {
 	private Monitor overallMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Overall monitor");
 	private Monitor queryMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Query monitor");
 	private Monitor reasonerMonitor = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "Reasoning monitor");
+	
+	private SparqlQuery query;
 	
 	public IncrementalInconsistencyFinder() throws OWLOntologyCreationException, IOException{
 		
@@ -138,6 +139,8 @@ public class IncrementalInconsistencyFinder {
 		
 		mon.setMessage("Searching...");
 	
+		stop = false;
+		
 		manager = OWLManager.createOWLOntologyManager();
 		try {
 			ontology = manager.createOntology(IRI.create(defaultGraphURI + "/" + "fragment"));
@@ -146,7 +149,6 @@ public class IncrementalInconsistencyFinder {
 		}
 		factory = manager.getOWLDataFactory();
 		reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
-		expGen = new PelletExplanation((PelletReasoner)reasoner);
 		
 		consistent = true;
 		
@@ -573,10 +575,6 @@ public class IncrementalInconsistencyFinder {
 		return ontology;
 	}
 	
-	public Set<OWLAxiom> getExplanation(){
-		return expGen.getInconsistencyExplanation();
-	}
-	
 	public void setUseLinkedData(boolean useLinkedData){
 		this.useLinkedData = useLinkedData;
 	}
@@ -587,6 +585,17 @@ public class IncrementalInconsistencyFinder {
 	
 	public void setLinkedDataNamespaces(Set<String> namespaces){
 		this.linkedDataNamespaces = namespaces;
+	}
+	
+	public void dispose(){
+		reasoner.dispose();
+	}
+	
+	public void stop(){
+		stop = true;
+		if(query != null){
+			query.stop();
+		}
 	}
 	
 	private boolean canCountAxioms() {
@@ -602,7 +611,6 @@ public class IncrementalInconsistencyFinder {
 		return canCount;
 	}
 	
-	
 	private int getAxiomCountForPredicate(Property predicate){
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT COUNT(*) WHERE {");
@@ -612,9 +620,13 @@ public class IncrementalInconsistencyFinder {
 		
 		logger.info(sb);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		QuerySolution solution = sparqlResults.nextSolution();
 		return solution.getLiteral(solution.varNames().next().toString()).getInt();
@@ -630,9 +642,13 @@ public class IncrementalInconsistencyFinder {
 		
 		logger.info(sb);
 		
-		QueryEngineHTTP sparqlQueryExec = new QueryEngineHTTP(endpointURI, sb.toString());
-		sparqlQueryExec.addDefaultGraph(defaultGraphURI);
-		ResultSet sparqlResults = sparqlQueryExec.execSelect();
+		query = new SparqlQuery(sb.toString(), endpoint);
+		ResultSetRewindable sparqlResults;
+		if(useCache){
+			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
+		} else {
+			sparqlResults = query.send();
+		}
 		
 		QuerySolution solution = sparqlResults.nextSolution();
 		return solution.getLiteral(solution.varNames().next().toString()).getInt();
@@ -648,12 +664,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append("SELECT * WHERE {");
 		sb.append("?subject ").append("<").append(property).append(">").append(" ?object.");
 		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
+		sb.append("FILTER ").append("(").append(OWL_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -706,12 +723,13 @@ public class IncrementalInconsistencyFinder {
 		sb.append("SELECT * WHERE {");
 		sb.append("?subject ").append("<").append(property).append(">").append(" ?object.");
 		sb.append("FILTER ").append("(").append(DBPEDIA_SUBJECT_FILTER).append(")");
+		sb.append("FILTER ").append("(").append(OWL_SUBJECT_FILTER).append(")");
 		sb.append("}");
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -809,7 +827,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -917,13 +935,12 @@ public class IncrementalInconsistencyFinder {
 		sb.append("ASK {");
 		sb.append("<").append(propertyURI).append("> ").append("<").append(RDF.type).append("> ").append("<").append(OWL.ObjectProperty).append(">");
 		sb.append("}");
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		if(useCache){
 			if(cache.executeSparqlAskQuery(query)){
 				logger.info("YES");
 				return true;
 			}
-			
 		} else {
 			if(query.sendAsk()){
 				logger.info("YES");
@@ -942,7 +959,6 @@ public class IncrementalInconsistencyFinder {
 				logger.info("NO");
 				return false;
 			}
-			
 		} else {
 			if(query.sendAsk()){
 				logger.info("NO");
@@ -987,7 +1003,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -1025,7 +1041,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -1067,7 +1083,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -1132,7 +1148,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" ORDER BY ").append("?subject");
 		sb.append(" LIMIT ").append(limit);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -1170,7 +1186,7 @@ public class IncrementalInconsistencyFinder {
 		sb.append(" HAVING COUNT(?o)>1"); 
 		sb.append(" LIMIT ").append(limit);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -1279,11 +1295,12 @@ public class IncrementalInconsistencyFinder {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * WHERE {");
 		sb.append("<").append(ind.toStringID()).append("> ").append("?predicate").append(" ?object.");
-		sb.append("FILTER ").append("(").append(DBPEDIA_PREDICATE_FILTER).append(" && ").append(OWL_THING_OBJECT_FILTER).append(")");
+		sb.append("FILTER ").append("(").append(DBPEDIA_PREDICATE_FILTER).append(")");
+//		sb.append("FILTER ").append("(").append(OWL_OBJECT_FILTER).append(")");
 		sb.append("}");
 		sb.append(" LIMIT ").append(limit);
 		
-		SparqlQuery query = new SparqlQuery(sb.toString(), endpoint);
+		query = new SparqlQuery(sb.toString(), endpoint);
 		ResultSetRewindable sparqlResults;
 		if(useCache){
 			sparqlResults = cache.executeSparqlQuery(new SparqlQuery(sb.toString(), endpoint));
@@ -1478,7 +1495,7 @@ public class IncrementalInconsistencyFinder {
 //		PelletExplanation.setup();
 		IncrementalInconsistencyFinder incFinder = new IncrementalInconsistencyFinder();
 		List<String> endpoints = new SparqlEndpointFinder().find();
-		for(int i = 8; i < endpoints.size(); i++){
+		for(int i = 1; i < endpoints.size(); i++){
 			try{
 			incFinder.run(endpoints.get(i), "");
 			} catch (HTTPException e){

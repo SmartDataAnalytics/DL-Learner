@@ -115,14 +115,14 @@ public class LearningManager {
 			la.getConfigurator().setMaxNrOfResults(maxNrOfResults);
 
 		} catch (LearningProblemUnsupportedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}

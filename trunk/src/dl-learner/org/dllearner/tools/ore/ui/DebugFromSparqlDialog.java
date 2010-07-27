@@ -78,7 +78,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 
-public class DebugFromSparqlDialog extends JDialog implements ActionListener, PropertyChangeListener, DocumentListener, SPARQLProgressMonitor, MemoryWarningListener {
+public class DebugFromSparqlDialog extends JDialog implements ActionListener, PropertyChangeListener, DocumentListener, SPARQLProgressMonitor, MemoryWarningListener{
 
 	/**
 	 * 
@@ -100,7 +100,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private JButton searchStopButton;
 	
 	private JLabel messageLabel;
-	private String progressMessage;
+//	private String progressMessage;
 	private int progress;
 	private boolean canceled;
 	private JProgressBar progressBar;
@@ -447,6 +447,7 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	private void stopSearching() {
 		messageLabel.setText("Stopping ...");
 		canceled = true;
+		inc.stop();
 		setCursor(Cursor.getDefaultCursor());
 //		extractTask.cancel(true);
 	}
@@ -625,6 +626,10 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 	
 	private void closeDialog(){
 		setVisible(false);
+		MemoryWarningSystem.getInstance().removeListener(this);
+		if(inc != null){
+			inc.dispose();
+		}
 		dispose();
 	}
 	
@@ -672,13 +677,13 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 
 	@Override
 	public void setMessage(String message) {
-		this.progressMessage = message;
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-//				messageLabel.setText(progressMessage);
-			}
-		});
+//		this.progressMessage = message;
+//		SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+////				messageLabel.setText(progressMessage);
+//			}
+//		});
 	}
 
 	@Override
@@ -818,10 +823,18 @@ public class DebugFromSparqlDialog extends JDialog implements ActionListener, Pr
 		message.append("Memory usage low! \n\n");
 		message.append("Currently ").append((int)(percentageUsed * 100)).append(" % of the assigned memory  is used.\n");
 		message.append("It is recommend to stop the task because otherwise the programm might crash.");
-		JOptionPane.showMessageDialog(this, message, "Memory usage low!", JOptionPane.WARNING_MESSAGE);
+		final String m = message.toString();
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				JOptionPane.showMessageDialog(DebugFromSparqlDialog.this, m, "Memory usage low!", JOptionPane.WARNING_MESSAGE);
+			}
+		});
+		
         
 	}
-
+	
 	
 }
 
