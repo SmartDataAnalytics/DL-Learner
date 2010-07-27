@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -126,7 +125,7 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		//create main panel
 		createSparqlPanel();
 		//add predefined endpoints
-//		addPredefinedEndpoints();
+		addPredefinedEndpoints();
 		positionErrorDialog(owner);
 	}
 	 
@@ -278,20 +277,29 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 		getContentPane().add(panel, BorderLayout.CENTER);
 	}
 	
-	@SuppressWarnings("unused")
-	private void addPredefinedEndpoints(){
+	private void addPredefinedEndpoints() {
+		// endpointToDefaultGraph = new HashMap<URI, List<String>>();
+		// for(SparqlEndpoint endpoint : SparqlEndpoint.listEndpoints()){
+		// try {
+		// endpointToDefaultGraph.put(endpoint.getURL().toURI(),
+		// endpoint.getDefaultGraphURIs());
+		// } catch (URISyntaxException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// }
+		// for(URI url : endpointToDefaultGraph.keySet()){
+		// comboBox.addItem(url.toString());
+		// }
 		endpointToDefaultGraph = new HashMap<URI, List<String>>();
-		for(SparqlEndpoint endpoint : SparqlEndpoint.listEndpoints()){
-			try {
-				endpointToDefaultGraph.put(endpoint.getURL().toURI(), endpoint.getDefaultGraphURIs());
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}		
-		for(URI url : endpointToDefaultGraph.keySet()){
+		endpointToDefaultGraph.put(
+				URI.create("http://dbpedia-live.openlinksw.com/sparql/"),
+				Collections.singletonList("http://dbpedia.org"));
+		// endpointToDefaultGraph.put(URI.create("http://localhost:8890/sparql"),
+		// Collections.singletonList("http://opencyc2.org"));
+		for (URI url : endpointToDefaultGraph.keySet()) {
 			comboBox.addItem(url.toString());
-		}		
+		}
 	}
 	
 	private void positionErrorDialog(JFrame owner) {
@@ -355,11 +363,11 @@ public class ExtractFromSparqlDialog extends JDialog implements ActionListener, 
 				 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				setLocation(screenSize.width / 2 - getWidth() / 2,
                         screenSize.height / 2 - getHeight() / 2);
-				 setVisible(true);
+				 
 				
 			}
 		});
-		
+		 setVisible(true);
 		 return returnCode;
 	 }
 	 	
