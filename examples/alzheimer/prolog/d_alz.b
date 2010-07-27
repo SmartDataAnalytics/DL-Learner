@@ -599,7 +599,7 @@ n_val(g1,1).
 r_subst_1(h1,single_alk(1)).
 r_subst_1(i1,single_alk(3)).
 r_subst_1(j1,single_alk(2)).
-r_subst_2(j1,bond(n, group(ch3, 2))).
+r_subst_2(j1,bond(n,group(ch3,2))).
 r_subst_1(k1,single_alk(2)).
 r_subst_2(k1,aro(1)).
 r_subst_1(l1,single_alk(3)).
