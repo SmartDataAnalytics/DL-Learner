@@ -23,30 +23,16 @@ package org.dllearner.tools.ore.ui.wizard.descriptors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import org.coode.owlapi.rdf.model.RDFTranslator;
 import org.dllearner.tools.ore.LearningManager;
-import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.LearningManager.LearningMode;
-import org.dllearner.tools.ore.sparql.SPARULTranslator;
+import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.ui.OverrideFileChooser;
 import org.dllearner.tools.ore.ui.wizard.WizardPanelDescriptor;
 import org.dllearner.tools.ore.ui.wizard.panels.SavePanel;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyFormat;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Wizard panel descriptor that provides saving ontology and going back to class choose panel.

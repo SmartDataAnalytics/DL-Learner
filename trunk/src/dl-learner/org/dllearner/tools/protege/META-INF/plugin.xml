@@ -3,7 +3,6 @@
   <extension id="org.dllearner.tools.protege.ProtegePlugin"
               point="org.protege.editor.owl.ui_editor_description">
        <label value="DL-Learner"/>
-       
        <class value="org.dllearner.tools.protege.ProtegePlugin"/>
        <index value="E"/>
    </extension>
