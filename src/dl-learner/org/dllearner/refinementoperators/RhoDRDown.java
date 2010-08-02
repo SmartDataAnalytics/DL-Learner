@@ -1057,13 +1057,19 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		mA.get(nc).put(1,m1);
 		
 		// most specific negated classes, which are not disjoint with nc
-		SortedSet<Description> m2 = getNegClassCandidates(nc);
-		mA.get(nc).put(2,m2);
+		SortedSet<Description> m2 = new TreeSet<Description>();
+		if(useNegation) {
+			m2 = getNegClassCandidates(nc);
+			mA.get(nc).put(2,m2);
+		}
+		
+		System.out.println("m1 " + "(" + nc + "): " + m1);
+		System.out.println("m2 " + "(" + nc + "): " + m2);
 		
 		/*
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
-			// the definition in the paper is more complex, but acutally
+			// the definition in the paper is more complex, but actually
 			// we only have to insert the most specific concepts satisfying
 			// the mentioned restrictions; there is no need to implement a
 			// recursive method because for A subClassOf A' we have not A'
@@ -1174,11 +1180,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	
 	private SortedSet<Description> getClassCandidatesRecursive(Description index, Description upperClass) {
 		SortedSet<Description> candidates = new TreeSet<Description>();
+//		System.out.println("index " + index + " upper class " + upperClass);
 		
 		// we descend the subsumption hierarchy to ensure that we get
 		// the most general concepts satisfying the criteria
 		for(Description candidate :  subHierarchy.getSubClasses(upperClass)) {
-//				System.out.print("testing " + candidate + " ... ");
+//				System.out.println("testing " + candidate + " ... ");
 							
 //				NamedClass candidate = (NamedClass) d;
 				// check disjointness with index (if not no further traversal downwards is necessary)
@@ -1191,9 +1198,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					// upper class
 					boolean meaningful;
 					if(instanceBasedDisjoints) {
-						SortedSet<Individual> tmp = rs.getIndividuals(upperClass);
+						// bug: tests should be performed against the index, not the upper class
+//						SortedSet<Individual> tmp = rs.getIndividuals(upperClass);
+						SortedSet<Individual> tmp = rs.getIndividuals(index);
 						tmp.removeAll(rs.getIndividuals(candidate));
-//						System.out.println("tmp: " + tmp);
+//						System.out.println("  instances of " + index + " and not " + candidate + ": " + tmp.size());
 						meaningful = tmp.size() != 0;
 					} else {
 						meaningful = !isDisjoint(new Negation(candidate),index);
@@ -1213,6 +1222,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //					System.out.println(" ruled out, because it is disjoint");
 //				}
 		}
+//		System.out.println("cc method exit");
 		return candidates;
 	}	
 	
@@ -1223,14 +1233,20 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	
 	private SortedSet<Description> getNegClassCandidatesRecursive(Description index, Description lowerClass) {
 		SortedSet<Description> candidates = new TreeSet<Description>(conceptComparator);
+//		System.out.println("index " + index + " lower class " + lowerClass);
 		
 		for(Description candidate :  subHierarchy.getSuperClasses(lowerClass)) {
+			if(!(candidate instanceof Thing)) {
+//				System.out.println("candidate: " + candidate);
+				// check disjointness with index/range (should not be disjoint otherwise not useful)
 				if(!isDisjoint(new Negation(candidate),index)) {
 					boolean meaningful;
+//					System.out.println("not disjoint");
 					if(instanceBasedDisjoints) {
-						SortedSet<Individual> tmp = rs.getIndividuals(lowerClass);
+						SortedSet<Individual> tmp = rs.getIndividuals(index);
 						tmp.removeAll(rs.getIndividuals(new Negation(candidate)));
 						meaningful = tmp.size() != 0;
+//						System.out.println("instances " + tmp.size());
 					} else {
 						meaningful = !isDisjoint(candidate,index);
 					}
@@ -1238,9 +1254,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 					if(meaningful) {
 						candidates.add(new Negation(candidate));
 					} else {
-						candidates.addAll(getClassCandidatesRecursive(index, candidate));
+						candidates.addAll(getNegClassCandidatesRecursive(index, candidate));
 					}
 				} 
+			}
 		}
 		return candidates;
 	}	

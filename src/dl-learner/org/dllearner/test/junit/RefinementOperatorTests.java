@@ -175,6 +175,18 @@ public class RefinementOperatorTests {
 		// EXISTS hasPiece.>= 2 hasLowerRankThan.(WRook AND TOP)
 		// >= 2 hasPiece.EXISTS hasLowerRankThan.(WRook AND TOP)
 		
+		// the 8 refinements found on 2010/08/02 are as follows:
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(BKing AND WRook)
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(WKing AND WRook)
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(WRook AND WRook)
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(WRook AND (NOT BKing))
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(WRook AND (NOT WKing))
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(WRook AND (NOT WRook))
+		
+		// EXISTS hasPiece.EXISTS hasLowerRankThan.(Piece AND WRook)
+		// EXISTS hasPiece.>= 2 hasLowerRankThan.(WRook AND TOP)
+		// >= 2 hasPiece.EXISTS hasLowerRankThan.(WRook AND TOP)		
+		
 		assertTrue(results.size()==desiredResultSize);
 	}
 			
