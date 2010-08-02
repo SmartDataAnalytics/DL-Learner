@@ -1,6 +1,5 @@
 package org.dllearner.tools.protege;
 
-import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
@@ -12,7 +11,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLAPIOntology;
@@ -44,10 +42,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 			"org.dllearner.reasoning.FastInstanceChecker",
 			"org.dllearner.reasoning.ProtegeReasoner",
 			"org.dllearner.reasoning.FastRetrievalReasoner",
-			"org.dllearner.algorithms.RandomGuesser",
-			"org.dllearner.algorithms.refinement.ROLearner",
 			"org.dllearner.algorithms.celoe.CELOE",
-			"org.dllearner.algorithms.gp.GP", "org.dllearner.learningproblems.PosOnlyLP",
 			"org.dllearner.learningproblems.PosNegLPStandard", "org.dllearner.learningproblems.ClassLearningProblem"};
 	
 	private static Manager instance;
@@ -102,7 +97,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		return reinitNecessary;
 	}
 	
-	public void init(){
+	public void init() throws Exception{
 		initKnowledgeSource();
 		if(reinitNecessary){
 			initReasoner();
@@ -112,66 +107,51 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		reinitNecessary = false;
 	}
 	
-	public void initLearningAlgorithm(){
-		try {
-			la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
-			cm.applyConfigEntry(la, "useAllConstructor", useAllConstructor);
-			cm.applyConfigEntry(la, "useExistsConstructor", useExistsConstructor);
-			cm.applyConfigEntry(la, "useHasValueConstructor", useHasValueConstructor);
-			cm.applyConfigEntry(la, "useNegation", useNegation);
-			cm.applyConfigEntry(la, "useCardinalityRestrictions", useCardinalityRestrictions);
-			if(useCardinalityRestrictions) {
-				cm.applyConfigEntry(la, "cardinalityLimit", cardinalityLimit);
-			}
-			cm.applyConfigEntry(la, "noisePercentage", noisePercentage);
-			cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
-			
-			la.init();
-		} catch (LearningProblemUnsupportedException e) {
-			e.printStackTrace();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
+	public void initLearningAlgorithm() throws Exception {
+		la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
+		cm.applyConfigEntry(la, "useAllConstructor", useAllConstructor);
+		cm.applyConfigEntry(la, "useExistsConstructor", useExistsConstructor);
+		cm.applyConfigEntry(la, "useHasValueConstructor",
+				useHasValueConstructor);
+		cm.applyConfigEntry(la, "useNegation", useNegation);
+		cm.applyConfigEntry(la, "useCardinalityRestrictions",
+				useCardinalityRestrictions);
+		if (useCardinalityRestrictions) {
+			cm.applyConfigEntry(la, "cardinalityLimit", cardinalityLimit);
 		}
-		
+		cm.applyConfigEntry(la, "noisePercentage", noisePercentage);
+		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds",
+				maxExecutionTimeInSeconds);
+
+		la.init();
+
 	}
 	
-	public void initLearningProblem(){
+	public void initLearningProblem() throws Exception {
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
-		try {
-			cm.applyConfigEntry(lp, "classToDescribe", editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass().getIRI().toURI().toURL());
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		}
+		cm.applyConfigEntry(lp, "classToDescribe", editorKit.getOWLWorkspace()
+				.getOWLSelectionModel().getLastSelectedClass().getIRI().toURI()
+				.toURL());
 		if (learningType == LearningType.EQUIVALENT) {
 			cm.applyConfigEntry(lp, "type", "equivalence");
-		} else if(learningType == LearningType.SUPER){
+		} else if (learningType == LearningType.SUPER) {
 			cm.applyConfigEntry(lp, "type", "superClass");
 		}
-		try {
-			lp.init();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
-		}
+
+		lp.init();
+
 	}
 	
-	public void initKnowledgeSource(){
+	public void initKnowledgeSource() throws Exception{
 		ks = new OWLAPIOntology(editorKit.getOWLModelManager().getActiveOntology());
-		try {
-			ks.init();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
-		}
+		ks.init();
 	}
 	
-	public void initReasoner(){
+	public void initReasoner() throws Exception{
 		reasoner = cm.reasoner(ProtegeReasoner.class, ks);
 		reasoner.setOWLReasoner(editorKit.getOWLModelManager().getReasoner());
 		reasoner.setProgressMonitor(progressMonitor);
-		try {
-			reasoner.init();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
-		}
+		reasoner.init();
 	}
 	
 	public void initReasonerAsynchronously(){
