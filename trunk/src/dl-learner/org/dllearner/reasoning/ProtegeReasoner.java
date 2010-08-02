@@ -356,8 +356,8 @@ public class ProtegeReasoner extends ReasonerComponent {
 		+ doubleDatatypeProperties.size();
 		int cnt = 1;
 		
+		
 		for (NamedClass atomicConcept : atomicConcepts) {
-			
 			SortedSet<Individual> pos = getIndividualsWithPellet(atomicConcept);
 			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 			if (configurator.getDefaultNegation()) {
