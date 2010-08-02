@@ -99,9 +99,9 @@ public class ELDownTests {
 		Description input = KBParser.parseConcept("(human AND EXISTS has.animal)");
 		System.out.println("refining: " + input.toString(KBParser.internalNamespace, null));		
 		
-		// TODO For this test, we need to turn instance based disjoints
+		// For this test, we need to turn instance based disjoints
 		// off! (We do not have any instances here.)
-		RefinementOperator operator = new ELDown2(rs);
+		RefinementOperator operator = new ELDown2(rs, false);
 		
 		// desired refinements as strings
 		Set<String> desiredString = new TreeSet<String>();
