@@ -105,9 +105,6 @@ public class DLLearnerView extends JPanel{
 	private OWLEditorKit editorKit;
 	private JScrollPane learnerScroll;
 	private static final int SCROLL_SPEED = 10;
-	private static final int WIDTH = 575;
-	private static final int HEIGHT = 350;
-	private static final int OPTION_HEIGHT = 400;
 	private static final int SCROLL_WIDTH = 600;
 	private static final int SCROLL_HEIGHT = 400;
 	private boolean toogled = false;

@@ -88,8 +88,8 @@ public class MetricsPanel extends JPanel {
 		add(sp);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void createBasicMetrics() {
+		@SuppressWarnings("rawtypes")
 		List<OWLMetric> metrics = new ArrayList<OWLMetric>();
 		metrics.add(new ReferencedClassCount(manager));
 		metrics.add(new ReferencedObjectPropertyCount(manager));

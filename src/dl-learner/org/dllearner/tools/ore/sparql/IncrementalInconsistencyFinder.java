@@ -69,6 +69,7 @@ public class IncrementalInconsistencyFinder {
 	
 	private static final String DBPEDIA_PREDICATE_FILTER = "!regex(?predicate, \"http://dbpedia.org/property\")";
 	private static final String DBPEDIA_SUBJECT_FILTER = "!regex(?subject, \"http://dbpedia.org/property\")";
+	@SuppressWarnings("unused")
 	private static final String OWL_OBJECT_FILTER = "!regex(?object, \"http://www.w3.org/2002/07/owl#\")";
 	private static final String OWL_SUBJECT_FILTER = "!regex(?subject, \"http://www.w3.org/2002/07/owl#\")";
 //	private static final String ENDPOINT_URL = "http://localhost:8890/sparql";
@@ -91,6 +92,7 @@ public class IncrementalInconsistencyFinder {
 	private boolean useLinkedData;
 	private boolean useCache;
 	
+	@SuppressWarnings("unused")
 	private volatile boolean stop;
 	
 	private Set<String> linkedDataNamespaces;
@@ -130,9 +132,8 @@ public class IncrementalInconsistencyFinder {
 		this.endpointURI = endpointURI;
 		this.defaultGraphURI = defaultGraphURI;
 		try {
-			this.endpoint = new SparqlEndpoint(new URL(endpointURI), Collections.singletonList(defaultGraphURI), Collections.EMPTY_LIST);
+			this.endpoint = new SparqlEndpoint(new URL(endpointURI), Collections.singletonList(defaultGraphURI), Collections.<String>emptyList());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		logger.info("Searching for inconsistency in " + endpointURI);
@@ -876,6 +877,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
+	@SuppressWarnings("unused")
 	private Set<OWLClassAssertionAxiom> retrieveClassAssertionAxioms(int limit, int offset){
 		logger.info("Retrieving ClassAssertionAxioms axioms");
 		queryMonitor.start();
@@ -1175,7 +1177,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
-	
+	@SuppressWarnings("unused")
 	private Set<OWLClassAssertionAxiom> retrievePropertyAssertionAxiomsWithFunctionalProperty(int limit){
 		queryMonitor.start();
 		StringBuilder sb = new StringBuilder();
@@ -1221,6 +1223,7 @@ public class IncrementalInconsistencyFinder {
 	 * @param prop
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private Set<OWLAxiom> retrieveAxiomsForObjectProperty(OWLObjectProperty prop, int limit){
 		logger.info("Retrieving axioms for property " + prop);
 		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
@@ -1422,6 +1425,7 @@ public class IncrementalInconsistencyFinder {
 		return axioms;
 	}
 	
+	@SuppressWarnings("unused")
 	private String getLabel(String uri){
 		String label = "";
 		
@@ -1460,6 +1464,7 @@ public class IncrementalInconsistencyFinder {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private Query createSimpleSelectSPARQLQuery(String subject, String predicate, String object, String filter, int limit){
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT * WHERE {");

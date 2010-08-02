@@ -217,12 +217,11 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	
 	private void showClassExpressions(NamedClass nc){
 		showInconsistencyWarning(false);
-		
 		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
-					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
+					getEquivalentClasses(getOWLModelManager().getActiveOntology().getImportsClosure()).size() > 0);
 		if(in_compare_mode){
 			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
-					getEquivalentClasses(getOWLModelManager().getActiveOntology()).size() > 0);
+					getEquivalentClasses(getOWLModelManager().getActiveOntology().getImportsClosure()).size() > 0);
 		}
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
