@@ -151,8 +151,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		StringConfigOption type = new StringConfigOption("reasonerType",
-				"FaCT++ or Pellet to dematerialize", "pellet", false, true);
-		type.setAllowedValues(new String[] { "fact", "pellet" });
+				"FaCT++, HermiT or Pellet to dematerialize", "pellet", false, true);
+		type.setAllowedValues(new String[] { "fact", "hermit", "pellet" });
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
@@ -218,7 +218,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 			logger.debug("dematerialising concepts");
 
 			for (NamedClass atomicConcept : rc.getNamedClasses()) {
-
 				SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
 				classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 

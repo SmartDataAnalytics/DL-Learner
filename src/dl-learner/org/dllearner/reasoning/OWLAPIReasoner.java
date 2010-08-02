@@ -71,6 +71,7 @@ import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
+import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -117,9 +118,9 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently 
- * supports two reasoners: FaCT++ and Pellet. FaCT++ is connected
- * using JNI and native libraries, while Pellet is a pure Java
- * library.
+ * supports three reasoners: FaCT++, HermiT and Pellet. FaCT++ is connected
+ * using JNI and native libraries, while HermiT and Pellet are pure Java
+ * libraries.
  * 
  * @author Jens Lehmann
  *
@@ -180,8 +181,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet, which means \"pellet\" or \"fact\"", "pellet", false, true);
-		type.setAllowedValues(new String[] {"fact", "pellet"});
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++,, HermiT or Pellet, which means \"fact\", \"hermit\" or \"pellet\"", "pellet", false, true);
+		type.setAllowedValues(new String[] {"fact", "pellet", "hermit"});
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
@@ -314,6 +315,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				e.printStackTrace();
 			}		
 			System.out.println("Using FaCT++.");
+		} else if(configurator.getReasonerType().equals("hermit")){
+			// instantiate HermiT reasoner
+			reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
 		} else {
 			// instantiate Pellet reasoner
 			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
@@ -427,10 +431,13 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 */
 	@Override
 	public ReasonerType getReasonerType() {
-		if(configurator.getReasonerType().equals("fact"))
+		if(configurator.getReasonerType().equals("fact")){
 			return ReasonerType.OWLAPI_FACT;
-		else
+		} else if(configurator.getReasonerType().equals("hermit")){
+			return ReasonerType.OWLAPI_HERMIT;
+		} else{
 			return ReasonerType.OWLAPI_PELLET;
+		}
 	}
 
 //	@Override
@@ -1044,7 +1051,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	@Override
 	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
 		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass();
-		Set<OWLClassExpression> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
+		Set<OWLClassExpression> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies.get(0).getImportsClosure()));
 		Set<Description> definitions = new HashSet<Description>();
 		for(OWLClassExpression owlAPIDescription : owlAPIDescriptions) {
 			definitions.add(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(owlAPIDescription));
