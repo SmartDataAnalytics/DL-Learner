@@ -20,8 +20,6 @@
 package org.dllearner.scripts;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -31,9 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -42,7 +38,6 @@ import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.components.ReasonerComponentFactory;
@@ -166,12 +161,14 @@ public class SemanticBible {
 	}
 
 	private static void learnOriginal(NamedClass target, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
+		/*
 		List<? extends EvaluatedDescription> conceptresults = new ArrayList<EvaluatedDescriptionPosNeg>();
 		System.out.println("Starting to learn original");
 		//System.out.println(ConfWriter.listExamples(true, posExamples));
 		//System.out.println(ConfWriter.listExamples(false, negExamples));
 		//System.exit(0);
 //		LearnOWLFile learner = new LearnOWLFile(getConfForOriginal(target));
+		
 		LearningAlgorithm la = null;
 		try{
 //		la = learner.learn(
@@ -189,7 +186,7 @@ public class SemanticBible {
 		for (EvaluatedDescription description : conceptresults) {
 			Files.appendFile(file,"\t"+ description+"\n" );
 		}
-		
+		*/
 		
 	}
 

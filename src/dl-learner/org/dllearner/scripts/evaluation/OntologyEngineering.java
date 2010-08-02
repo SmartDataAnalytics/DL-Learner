@@ -137,6 +137,7 @@ public class OntologyEngineering {
 		}
 	}
 		
+	@SuppressWarnings("unchecked")
 	public static void run(ReasonerComponent reasoner) throws ComponentInitException, IOException, LearningProblemUnsupportedException {
 		ComponentManager cm = ComponentManager.getInstance();
 		
