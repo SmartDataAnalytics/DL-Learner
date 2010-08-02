@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,15 +23,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.owl.Individual;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.utilities.statistics.FleissKappa;
+import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.statistics.RawAgreement;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -40,73 +46,196 @@ public class StatsGenerator {
 	
 	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap;
 	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastStandardMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastPredaccMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastGenFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlStandardMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlPredaccMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlGenFMeasureMap;
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
-	
-	
-	
-	
-	
+	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultMap;
 
-
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> equivalentSuggestions;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> superSuggestions;
-
-	private Map<NamedClass, String> equivalentInput;
-	private Map<NamedClass, String> superInput;
 	
-	private Map<NamedClass, List<Integer>> equivalentRating;
-	private Map<NamedClass, List<Integer>> superRating;
-
 	private StringBuilder latexStats;
 	private StringBuilder latexMetrics;
+	
+	@SuppressWarnings("unused")
+	private Map<NamedClass, Map<EvaluatedDescriptionClass, Integer>> incMap;
 
-	// general stats
-	private Stat acceptedGlobalStat = new Stat();
-	private Stat rejectedGlobalStat = new Stat();
-	private Stat failedGlobalStat = new Stat();
+	List<Stat> defaultFractions = new ArrayList<Stat>();
+	List<Stat> owlStandardFractions = new ArrayList<Stat>();
+	List<Stat> owlFMeasureFractions = new ArrayList<Stat>();
+	List<Stat> owlGenFMeasureFractions = new ArrayList<Stat>();
+	List<Stat> owlPredaccFractions = new ArrayList<Stat>();
+	List<Stat> owlJaccardFractions = new ArrayList<Stat>();
+	List<Stat> fastStandardFractions = new ArrayList<Stat>();
+	List<Stat> fastFMeasureFractions = new ArrayList<Stat>();
+	List<Stat> fastGenFMeasureFractions = new ArrayList<Stat>();
+	List<Stat> fastPredaccFractions = new ArrayList<Stat>();
+	List<Stat> fastJaccardFractions = new ArrayList<Stat>();
+	
+	List<Stat> defaultFractionsBest = new ArrayList<Stat>();
+	List<Stat> owlStandardFractionsBest = new ArrayList<Stat>();
+	List<Stat> owlFMeasureFractionsBest = new ArrayList<Stat>();
+	List<Stat> owlGenFMeasureFractionsBest = new ArrayList<Stat>();
+	List<Stat> owlPredaccFractionsBest = new ArrayList<Stat>();
+	List<Stat> owlJaccardFractionsBest = new ArrayList<Stat>();
+	List<Stat> fastStandardFractionsBest = new ArrayList<Stat>();
+	List<Stat> fastFMeasureFractionsBest = new ArrayList<Stat>();
+	List<Stat> fastGenFMeasureFractionsBest = new ArrayList<Stat>();
+	List<Stat> fastPredaccFractionsBest = new ArrayList<Stat>();
+	List<Stat> fastJaccardFractionsBest = new ArrayList<Stat>();
+	
+	int[] count = new int[6];
+	int[] bestCount = new int[6];
+	int best = 6;
+	
+	int classesCount = 0;
+	
+	private static final int RATER = 4;
+	private static final double MIN_ACCURACY = 0.9;
+	
+	int defaultMissedImprovementsCount = 0;
+	int owlStandardMissedImprovementsCount = 0;
+	int owlFMeasureMissedImprovementsCount = 0;
+	int owlGenFMeasureMissedImprovementsCount = 0;
+	int owlJaccardMissedImprovementsCount = 0;
+	int owlPredaccMissedImprovementsCount = 0;
+	int fastStandardMissedImprovementsCount = 0;
+	int fastFMeasureMissedImprovementsCount = 0;
+	int fastGenFMeasureMissedImprovementsCount = 0;
+	int fastJaccardMissedImprovementsCount = 0;
+	int fastPredaccMissedImprovementsCount = 0;
+	
+	double defaultSuggestions = 0;
+	double owlStandardSuggestions = 0;
+	double owlFMeasureSuggestions = 0;
+	double owlGenFMeasureSuggestions = 0;
+	double owlJaccardSuggestions = 0;
+	double owlPredaccSuggestions = 0;
+	double fastStandardSuggestions = 0;
+	double fastFMeasureSuggestions = 0;
+	double fastGenFMeasureSuggestions = 0;
+	double fastJaccardSuggestions = 0;
+	double fastPredaccSuggestions = 0;
+	
+	private Set<Stat> defaultPositionStats = new HashSet<Stat>();
+	private Set<Stat> defaultAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> defaultAccStats = new HashSet<Stat>();
+	private Set<Stat> defaultHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> owlStandardPositionStats = new HashSet<Stat>();
+	private Set<Stat> owlStandardAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> owlStandardAccStats = new HashSet<Stat>();
+	private Set<Stat> owlStandardHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> owlFMeasurePositionStats = new HashSet<Stat>();
+	private Set<Stat> owlFMeasureAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> owlFMeasureAccStats = new HashSet<Stat>();
+	private Set<Stat> owlFMeasureHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> owlGenFMeasurePositionStats = new HashSet<Stat>();
+	private Set<Stat> owlGenFMeasureAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> owlGenFMeasureAccStats = new HashSet<Stat>();
+	private Set<Stat> owlGenFMeasureHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> owlJaccardPositionStats = new HashSet<Stat>();
+	private Set<Stat> owlJaccardAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> owlJaccardAccStats = new HashSet<Stat>();
+	private Set<Stat> owlJaccardHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> owlPredaccPositionStats = new HashSet<Stat>();
+	private Set<Stat> owlPredaccAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> owlPredaccAccStats = new HashSet<Stat>();
+	private Set<Stat> owlPredaccHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> fastStandardPositionStats = new HashSet<Stat>();
+	private Set<Stat> fastStandardAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> fastStandardAccStats = new HashSet<Stat>();
+	private Set<Stat> fastStandardHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> fastFMeasurePositionStats = new HashSet<Stat>();
+	private Set<Stat> fastFMeasureAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> fastFMeasureAccStats = new HashSet<Stat>();
+	private Set<Stat> fastFMeasureHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> fastGenFMeasurePositionStats = new HashSet<Stat>();
+	private Set<Stat> fastGenFMeasureAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> fastGenFMeasureAccStats = new HashSet<Stat>();
+	private Set<Stat> fastGenFMeasureHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> fastJaccardPositionStats = new HashSet<Stat>();
+	private Set<Stat> fastJaccardAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> fastJaccardAccStats = new HashSet<Stat>();
+	private Set<Stat> fastJaccardHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	private Set<Stat> fastPredaccPositionStats = new HashSet<Stat>();
+	private Set<Stat> fastPredaccAddInstancesCountStats = new HashSet<Stat>();
+	private Set<Stat> fastPredaccAccStats = new HashSet<Stat>();
+	private Set<Stat> fastPredaccHiddenInconsistenciesCountStats = new HashSet<Stat>();
+	
+	@SuppressWarnings("unused")
+	private Stat defaultSuggestionsCountStat = new Stat();
+	private Stat owlStandardSuggestionsCountStat = new Stat();
+	private Stat owlFMeasureSuggestionsCountStat = new Stat();
+	private Stat owlGenFMeasureSuggestionsCountStat = new Stat();
+	private Stat owlPredaccSuggestionsCountStat = new Stat();
+	private Stat owlJaccardSuggestionsCountStat = new Stat();
+	private Stat fastStandardSuggestionsCountStat = new Stat();
+	private Stat fastFMeasureSuggestionsCountStat = new Stat();
+	private Stat fastGenFMeasureSuggestionsCountStat = new Stat();
+	private Stat fastPredaccSuggestionsCountStat = new Stat();
+	private Stat fastJaccardSuggestionsCountStat = new Stat();
 
-	// equivalent class stats
-	private Stat acceptedStat = new Stat();
-	private Stat rejectedStat = new Stat();
-	private Stat failedStat = new Stat();
-	private Set<Stat> moreInstancesCountStats = new HashSet<Stat>();
-	private Set<Stat> accStats = new HashSet<Stat>();
-	private Set<Stat> accSelectedStats = new HashSet<Stat>();
-	private Set<Stat> accAboveThresholdStats = new HashSet<Stat>();
-	private Set<Stat> positionStats = new HashSet<Stat>();
-
-	// super class stats
-	private Stat acceptedStatSC = new Stat();
-	private Stat rejectedStatSC = new Stat();
-	private Stat failedStatSC = new Stat();
-	private Set<Stat> moreInstancesCountStatsSC = new HashSet<Stat>();
-	private Set<Stat> accStatsSC = new HashSet<Stat>();
-	private Set<Stat> accSelectedStatsSC = new HashSet<Stat>();
-	private Set<Stat> accAboveThresholdStatsSC = new HashSet<Stat>();
-	private Set<Stat> positionStatsSC = new HashSet<Stat>();
-
-	private int suggestionListsCount;
-	private int logicalAxiomCount;
 	private OWLOntology ont;
 	
 	//matrix for Fleiss Kappa input
 	private short[][] mat;
-	private List<NamedClass> equivalentLists;
-	private List<NamedClass> superLists;
-
+	
+	private Set<NamedClass> classesToEvaluate = new HashSet<NamedClass>();
+	
+	private ConceptComparator c = new ConceptComparator();
+	
+	private File directory;
+	
+	OWLDataFactory factory ;
+	ClassLearningProblem lp;
+	FastInstanceChecker rc;
+	
 	public StatsGenerator(File directory) {
+		this.directory = directory;
+	
+		for(int i = 0; i < 6; i++){
+			defaultFractions.add(new Stat());
+			owlStandardFractions.add(new Stat());
+			owlFMeasureFractions.add(new Stat());
+			owlGenFMeasureFractions.add(new Stat());
+			owlPredaccFractions.add(new Stat());
+			owlJaccardFractions.add(new Stat());
+			fastStandardFractions.add(new Stat());
+			fastFMeasureFractions.add(new Stat());
+			fastGenFMeasureFractions.add(new Stat());
+			fastPredaccFractions.add(new Stat());
+			fastJaccardFractions.add(new Stat());
+			
+			defaultFractionsBest.add(new Stat());
+			owlStandardFractionsBest.add(new Stat());
+			owlFMeasureFractionsBest.add(new Stat());
+			owlGenFMeasureFractionsBest.add(new Stat());
+			owlPredaccFractionsBest.add(new Stat());
+			owlJaccardFractionsBest.add(new Stat());
+			fastStandardFractionsBest.add(new Stat());
+			fastFMeasureFractionsBest.add(new Stat());
+			fastGenFMeasureFractionsBest.add(new Stat());
+			fastPredaccFractionsBest.add(new Stat());
+			fastJaccardFractionsBest.add(new Stat());
+		}
+		count();
 		// begin latex table with headers
 		beginOntologyMetricsTable();
 		beginStatsTable();
@@ -114,250 +243,1300 @@ public class StatsGenerator {
 		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
 			loadLearnResults(suggestionFile);
 			loadOntology(suggestionFile);
-//			resetStats();
+			computeClassesToEvaluate();
 			// for each user evaluation input file
 			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
-				evaluateOWLStandard();
-//				makeSingleStat();
+				evaluateUserInput();
 			}
 			// add row to the metrics latex table for current ontology
 			addOntologyMetricsTableRow();
-			// add row to the stats latex table for current ontology
-//			addStatsTableRow();
-			break;
+//			break;
 		}
+//		showMeasureValues();
+		computeAverageSuggestionsPerClass();
+		showMeasureFractions();
+		generateBestMeasureFractionsTable();
+		generateMetricsTable();
+		computeFleissKappa(directory);
 		// end latex tables
 		endTables();
 		printLatexCode();
 
 	}
 	
-	private void evaluateOWLStandard(){
-		Stat value = new Stat();
-		Map<EvaluatedDescriptionClass, Integer> input;
-		for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : owlEquivalenceStandardMap.entrySet()){
-			input = userInputMap.get(entry.getKey());
-			for(EvaluatedDescriptionClass ec : entry.getValue()){
-				for(EvaluatedDescriptionClass ec2 : input.keySet()){
-					if(ec.getDescription().equals(ec2.getDescription())){
-						value.addNumber(input.get(ec2));
+	private void evaluateUserInput(){
+		evaluateDefault();
+		evaluateFastFMeasure();
+		evaluateFastGenFMeasure();
+		evaluateFastJaccard();
+		evaluateFastPredacc();
+		evaluateFastStandard();
+		evaluateOWLFMeasure();
+		evaluateOWLGenFMeasure();
+		evaluateOWLJaccard();
+		evaluateOWLPredacc();
+		evaluateOWLStandard();
+	}
+	
+	private void computeAverageSuggestionsPerClass(){
+		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
+			loadLearnResults(suggestionFile);
+			computeClassesToEvaluate();
+			classesCount += classesToEvaluate.size();
+			defaultSuggestions += getSuggestionsCount(defaultMap);
+			owlStandardSuggestions += getSuggestionsCount(owlStandardMap);
+			owlFMeasureSuggestions += getSuggestionsCount(owlFMeasureMap);
+			owlGenFMeasureSuggestions += getSuggestionsCount(owlGenFMeasureMap);
+			owlPredaccSuggestions += getSuggestionsCount(owlPredaccMap);
+			owlJaccardSuggestions += getSuggestionsCount(owlJaccardMap);
+			fastStandardSuggestions += getSuggestionsCount(fastStandardMap);
+			fastFMeasureSuggestions += getSuggestionsCount(fastFMeasureMap);
+			fastGenFMeasureSuggestions += getSuggestionsCount(fastGenFMeasureMap);
+			fastPredaccSuggestions += getSuggestionsCount(fastPredaccMap);
+			fastJaccardSuggestions += getSuggestionsCount(fastJaccardMap);
+		}
+		System.out.println(classesCount);
+	}
+	
+	private void count(){
+	
+		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
+			loadLearnResults(suggestionFile);
+			computeClassesToEvaluate();
+			for(NamedClass nc : classesToEvaluate){
+				System.out.println(nc + " : " + fastStandardMap.get(nc).size());
+				owlStandardSuggestionsCountStat.addNumber(owlStandardMap.get(nc).size());
+				owlFMeasureSuggestionsCountStat.addNumber(owlFMeasureMap.get(nc).size());
+				owlGenFMeasureSuggestionsCountStat.addNumber(owlGenFMeasureMap.get(nc).size());
+				owlPredaccSuggestionsCountStat.addNumber(owlPredaccMap.get(nc).size());
+				owlJaccardSuggestionsCountStat.addNumber(owlJaccardMap.get(nc).size());
+				fastStandardSuggestionsCountStat.addNumber(fastStandardMap.get(nc).size());
+				fastFMeasureSuggestionsCountStat.addNumber(fastFMeasureMap.get(nc).size());
+				fastGenFMeasureSuggestionsCountStat.addNumber(fastGenFMeasureMap.get(nc).size());
+				fastPredaccSuggestionsCountStat.addNumber(fastPredaccMap.get(nc).size());
+				fastJaccardSuggestionsCountStat.addNumber(fastJaccardMap.get(nc).size());
+			}
+		}
+	}
+	
+	private int getSuggestionsCount(Map<NamedClass, List<EvaluatedDescriptionClass>> map){
+		int suggestionsCount = 0;
+		for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
+			if(!classesToEvaluate.contains(entry.getKey())){
+				continue;
+			}
+			suggestionsCount += entry.getValue().size();
+		}
+		
+		return suggestionsCount;
+	}
+	
+	private void showMeasureFractions(){
+		DecimalFormat df = new DecimalFormat( "0.00" ); 
+		StringBuilder sb = new StringBuilder();
+		sb.append("\\begin{tabular}{| l | c | c | c | c | c | c |} \n");
+		sb.append(" & ");
+		sb.append("\\rotatebox{90}{Improvement} & ");
+		sb.append("\\rotatebox{90}{Equal quality (+)} & ");
+		sb.append("\\rotatebox{90}{Equal quality (-)} & ");
+		sb.append("\\rotatebox{90}{Inferior} & ");
+		sb.append("\\rotatebox{90}{Not acceptable} & ");
+		sb.append("\\rotatebox{90}{Error}");
+		sb.append(" \\\\\n");
+		sb.append("\\hline\n");
+		
+		
+		sb.append("Default & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(defaultFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("OWLAPI Reasoner Standard & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlStandardFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("OWLAPI Reasoner FMeasure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlFMeasureFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("OWLAPI Reasoner GenFMeasure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlGenFMeasureFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("OWLAPI Reasoner Predacc & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlPredaccFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("OWLAPI Reasoner Jaccard & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlJaccardFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("FastInstanceChecker Standard & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastStandardFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("FastInstanceChecker FMeasure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastFMeasureFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("FastInstanceChecker GenFMeasure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastGenFMeasureFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("FastInstanceChecker Predacc & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastPredaccFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		sb.append(" \\\\\n");
+		sb.append("FastInstanceChecker Jaccard & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastJaccardFractions.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+		
+		sb.append(" \\\\\n");
+		sb.append("\\hline\n");
+		sb.append("\\end{tabular}");
+		System.out.println(sb.toString());
+
+	}
+	
+	private void generateMetricsTable(){
+		  
+		DecimalFormat df = new DecimalFormat( "0.00" ); 
+		DecimalFormat df1 = new DecimalFormat( "0" ); 
+		StringBuilder sb = new StringBuilder();
+		sb.append("\\begin{tabular}{ l | c | c | c | c | c | c  } \n");
+		sb.append("reasoner / heuristic & \n");
+		sb.append("\\rotatebox{90}{missed improvements in \\%} & \n");
+		sb.append("\\rotatebox{90}{avg. suggestions per class} & \n");
+		sb.append("\\begin{sideways}\\makecell[l]{selected position\\\\on suggestion list\\\\(incl.~std.~deviation)}\\end{sideways} & \n");
+		sb.append("\\begin{sideways}\\makecell[l]{avg. accuracy of\\\\selected suggestion in \\%}\\end{sideways} & \n");
+		sb.append("\\begin{sideways}\\makecell[l]{\\#hidden inconsistencies}\\end{sideways} & \n");
+		sb.append("\\rotatebox{90}{\\#add.~instances total}");
+		sb.append(" \\\\\n");
+		sb.append("\\hline\n");
+		
+		sb.append("Pellet / R-Measure & ");
+		sb.append(df.format((double)owlStandardMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(owlStandardSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlStandardPositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(owlStandardPositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlStandardAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlStandardHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(owlStandardAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / F-Measure & ");
+		sb.append(df.format((double)owlFMeasureMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(owlFMeasureSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlFMeasurePositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(owlFMeasurePositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlFMeasureAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlFMeasureHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(owlFMeasureAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / Gen. F-Measure & ");
+		sb.append(df.format((double)owlGenFMeasureMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(owlGenFMeasureSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlGenFMeasurePositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(owlGenFMeasurePositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlGenFMeasureAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlGenFMeasureHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(owlGenFMeasureAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / pred. acc. & ");
+		sb.append(df.format((double)owlPredaccMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(owlPredaccSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlPredaccPositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(owlPredaccPositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlPredaccAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlPredaccHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(owlPredaccAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / Jaccard & ");
+		sb.append(df.format((double)owlJaccardMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(owlJaccardSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlJaccardPositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(owlJaccardPositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlJaccardAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(owlJaccardHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(owlJaccardAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / R-Measure & ");
+		sb.append(df.format((double)fastStandardMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(fastStandardSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastStandardPositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(fastStandardPositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastStandardAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastStandardHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(fastStandardAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / F-Measure & ");
+		sb.append(df.format((double)fastFMeasureMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(fastFMeasureSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastFMeasurePositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(fastFMeasurePositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastFMeasureAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastFMeasureHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(fastFMeasureAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / Gen. F-Measure & ");
+		sb.append(df.format((double)fastGenFMeasureMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(fastGenFMeasureSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastGenFMeasurePositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(fastGenFMeasurePositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastGenFMeasureAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastGenFMeasureHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(fastGenFMeasureAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / pred. acc. & ");
+		sb.append(df.format((double)fastPredaccMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(fastPredaccSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastPredaccPositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(fastPredaccPositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastPredaccAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastPredaccHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(fastPredaccAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / Jaccard & ");
+		sb.append(df.format((double)fastJaccardMissedImprovementsCount / classesCount * 100));
+		sb.append(" & ");
+		sb.append(df.format(fastJaccardSuggestionsCountStat.getMean()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastJaccardPositionStats).getMean()));
+		sb.append(" $\\pm$ ");
+		sb.append(df.format(new Stat(fastJaccardPositionStats).getStandardDeviation()));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastJaccardAccStats).getMean() * 100));
+		sb.append(" & ");
+		sb.append(df.format(new Stat(fastJaccardHiddenInconsistenciesCountStats).getSum() / 5));
+		sb.append(" & ");
+		sb.append(df1.format(new Stat(fastJaccardAddInstancesCountStats).getSum() / RATER));
+		sb.append(" \\\\\n");
+		
+		sb.append("\\hline\n");
+		sb.append("\\end{tabular}");
+		
+		System.out.println(sb.toString());
+	}
+	
+	private void generateBestMeasureFractionsTable(){
+		DecimalFormat df = new DecimalFormat( "0.00" ); 
+		StringBuilder sb = new StringBuilder();
+		sb.append("\\begin{tabular}{| l | c | c | c | c | c | c |} \n");
+		sb.append(" & ");
+		sb.append("\\rotatebox{90}{improvement} & ");
+		sb.append("\\rotatebox{90}{equal quality (+)} & ");
+		sb.append("\\rotatebox{90}{equal quality (-)} & ");
+		sb.append("\\rotatebox{90}{inferior} & ");
+		sb.append("\\rotatebox{90}{not acceptable} & ");
+		sb.append("\\rotatebox{90}{error} ");
+		sb.append(" \\\\\n");
+		sb.append("\\hline\n");
+		
+		classesCount *= RATER;
+		
+//		sb.append("Default & ");
+//		for(int i = 0; i < 6; i++){
+//			sb.append(df.format(defaultFractionsBest.get(i).getMean() * 100));
+//			sb.append(" & ");
+//		}
+//		sb.append(df.format((double)defaultMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(defaultSuggestions/(double)classesCount * 4));
+//		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / R-Measure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlStandardFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)owlStandardMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(owlStandardSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / F-Measure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlFMeasureFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)owlFMeasureMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(owlFMeasureSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / Gen. F-Measure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlGenFMeasureFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)owlGenFMeasureMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(owlGenFMeasureSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / pred. acc. & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlPredaccFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)owlPredaccMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(owlPredaccSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet / Jaccard & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(owlJaccardFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)owlJaccardMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(owlJaccardSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / R-Measure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastStandardFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)fastStandardMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(fastStandardSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / F-Measure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastFMeasureFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)fastFMeasureMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(fastFMeasureSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / Gen. F-Measure & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastGenFMeasureFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)fastGenFMeasureMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(fastGenFMeasureSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / pred. acc. & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastPredaccFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)fastPredaccMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(fastPredaccSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("Pellet FIC / Jaccard & ");
+		for(int i = 0; i < 6; i++){
+			sb.append(df.format(fastJaccardFractionsBest.get(i).getMean() * 100));
+			if(i < 5){
+				sb.append(" & ");
+			}
+		}
+//		sb.append(df.format((double)fastJaccardMissedImprovementsCount / classesCount * 100));
+//		sb.append(" & ");
+//		sb.append(df.format(fastJaccardSuggestions/(double)classesCount * 4));
+		sb.append(" \\\\\n");
+		
+		sb.append("\\hline\n");
+		sb.append("\\end{tabular}");
+		System.out.println(sb.toString());
+	}
+	
+
+	
+	private boolean isImprovementSelected(NamedClass nc){
+		Map<EvaluatedDescriptionClass, Integer> input = userInputMap.get(nc);
+		boolean improvementSelected = false;
+		for(EvaluatedDescriptionClass ec : input.keySet()){
+			for(EvaluatedDescriptionClass ec2 : defaultMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
 					}
 				}
-				
+			}
+			for(EvaluatedDescriptionClass ec2 : fastStandardMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : fastFMeasureMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : fastGenFMeasureMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : fastJaccardMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : fastPredaccMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : owlStandardMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : owlFMeasureMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : owlGenFMeasureMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : owlJaccardMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
+			}
+			for(EvaluatedDescriptionClass ec2 : owlPredaccMap.get(nc)){
+				if(ec2.getAccuracy() < MIN_ACCURACY){
+					continue;
+				}
+				if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+					if(input.get(ec) == 1){
+						return true;
+					}
+				}
 			}
 			
 		}
-		System.out.println(value.getMean());
+		
+		return improvementSelected;
+	}
+	
+	private void computeClassesToEvaluate(){
+		classesToEvaluate.clear();
+		for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : defaultMap.entrySet()){
+			for(EvaluatedDescriptionClass ec : entry.getValue()){
+				if(ec.getAccuracy() >= MIN_ACCURACY){
+					classesToEvaluate.add(entry.getKey());
+					break;
+				}
+			}
+		}
+	}
+	
+	
+	private void evaluateDefault(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : defaultMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+							
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				defaultFractions.get(i).addNumber((double)count[i]/defaultMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					defaultMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			defaultFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		defaultPositionStats.add(positionStat);
+		defaultAccStats.add(accStat);
+		defaultAddInstancesCountStats.add(moreInstancesCountStat);
+		defaultHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
 		
 	}
+	
+	private void evaluateOWLStandard(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : owlStandardMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				owlStandardFractions.get(i).addNumber((double)count[i]/owlStandardMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					owlStandardMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			owlStandardFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		owlStandardPositionStats.add(positionStat);
+		owlStandardAccStats.add(accStat);
+		owlStandardAddInstancesCountStats.add(moreInstancesCountStat);
+		owlStandardHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateOWLFMeasure(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : owlFMeasureMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+							
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				owlFMeasureFractions.get(i).addNumber((double)count[i]/owlFMeasureMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					owlFMeasureMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			owlFMeasureFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		owlFMeasurePositionStats.add(positionStat);
+		owlFMeasureAccStats.add(accStat);
+		owlFMeasureAddInstancesCountStats.add(moreInstancesCountStat);
+		owlFMeasureHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateOWLGenFMeasure(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : owlGenFMeasureMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				owlGenFMeasureFractions.get(i).addNumber((double)count[i]/owlGenFMeasureMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					owlGenFMeasureMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			owlGenFMeasureFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		owlGenFMeasurePositionStats.add(positionStat);
+		owlGenFMeasureAccStats.add(accStat);
+		owlGenFMeasureAddInstancesCountStats.add(moreInstancesCountStat);
+		owlGenFMeasureHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateOWLJaccard(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : owlJaccardMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				owlJaccardFractions.get(i).addNumber((double)count[i]/owlJaccardMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					owlJaccardMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			owlJaccardFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		owlJaccardPositionStats.add(positionStat);
+		owlJaccardAccStats.add(accStat);
+		owlJaccardAddInstancesCountStats.add(moreInstancesCountStat);
+		owlJaccardHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateOWLPredacc(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : owlPredaccMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				owlPredaccFractions.get(i).addNumber((double)count[i]/owlPredaccMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					owlPredaccMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			owlPredaccFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		owlPredaccPositionStats.add(positionStat);
+		owlPredaccAccStats.add(accStat);
+		owlPredaccAddInstancesCountStats.add(moreInstancesCountStat);
+		owlPredaccHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateFastStandard(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : fastStandardMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				fastStandardFractions.get(i).addNumber((double)count[i]/fastStandardMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					fastStandardMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			fastStandardFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		fastStandardPositionStats.add(positionStat);
+		fastStandardAccStats.add(accStat);
+		fastStandardAddInstancesCountStats.add(moreInstancesCountStat);
+		fastStandardHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateFastFMeasure(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : fastFMeasureMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if((best == 1 || best == 2) && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){System.out.println("CLASS: " + nc);System.out.println(ec);System.out.println(fastFMeasureMap.get(nc));
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				fastFMeasureFractions.get(i).addNumber((double)count[i]/fastFMeasureMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					fastFMeasureMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			fastFMeasureFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		fastFMeasurePositionStats.add(positionStat);
+		fastFMeasureAccStats.add(accStat);
+		fastFMeasureAddInstancesCountStats.add(moreInstancesCountStat);
+		fastFMeasureHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateFastGenFMeasure(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : fastGenFMeasureMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				fastGenFMeasureFractions.get(i).addNumber((double)count[i]/fastGenFMeasureMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					fastGenFMeasureMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			fastGenFMeasureFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		fastGenFMeasurePositionStats.add(positionStat);
+		fastGenFMeasureAccStats.add(accStat);
+		fastGenFMeasureAddInstancesCountStats.add(moreInstancesCountStat);
+		fastGenFMeasureHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateFastJaccard(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : fastJaccardMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				fastJaccardFractions.get(i).addNumber((double)count[i]/fastJaccardMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					fastJaccardMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			fastJaccardFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		fastJaccardPositionStats.add(positionStat);
+		fastJaccardAccStats.add(accStat);
+		fastJaccardAddInstancesCountStats.add(moreInstancesCountStat);
+		fastJaccardHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
+	private void evaluateFastPredacc(){
+		Map<EvaluatedDescriptionClass, Integer> input;
+		resetBestCount();
+		Stat positionStat = new Stat();
+		Stat moreInstancesCountStat = new Stat();
+		Stat accStat = new Stat();
+		Stat hiddenIncCountStat = new Stat();
+		boolean first = true;
+		for(NamedClass nc : classesToEvaluate){
+			first = true;
+			resetCount();
+			input = userInputMap.get(nc);
+			for(EvaluatedDescriptionClass ec : fastPredaccMap.get(nc)){
+				for(EvaluatedDescriptionClass ec2 : input.keySet()){
+					if(c.compare(ec.getDescription(), ec2.getDescription()) == 0){
+						count[input.get(ec2) - 1]++;
+						if(best > input.get(ec2)){
+							best = input.get(ec2);
+						}
+						if(best == 1 && first){
+							first = false;
+							positionStat.addNumber(defaultMap.get(nc).indexOf(ec));
+							moreInstancesCountStat.addNumber(ec.getAdditionalInstances().size());
+							if(!ec.isConsistent()){
+								hiddenIncCountStat.addNumber(1);
+							}
+						}
+						if(input.get(ec2) == 1){
+							accStat.addNumber(ec.getAccuracy());
+						}
+					}
+				}
+			}
+			for(int i = 0; i < 6; i++){
+				fastPredaccFractions.get(i).addNumber((double)count[i]/fastPredaccMap.get(nc).size());
+			}
+			bestCount[best - 1]++;
+			if(best != 1){
+				if(isImprovementSelected(nc)){
+					fastPredaccMissedImprovementsCount++;
+				}
+			}
+			
+		}
+		for(int i = 0; i < 6; i++){
+			fastPredaccFractionsBest.get(i).addNumber((double)bestCount[i]/classesToEvaluate.size());
+		}
+		fastPredaccPositionStats.add(positionStat);
+		fastPredaccAccStats.add(accStat);
+		fastPredaccAddInstancesCountStats.add(moreInstancesCountStat);
+		fastPredaccHiddenInconsistenciesCountStats.add(hiddenIncCountStat);
+	}
+	
 
 	private void loadOntology(File file) {
 		String ontologyPath = file.toURI().toString().substring(0, file.toURI().toString().lastIndexOf('.')) + ".owl";
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+//		factory = man.getOWLDataFactory();
+//		ComponentManager cm = ComponentManager.getInstance();
+//		try {
+//			OWLFile ks = cm.knowledgeSource(OWLFile.class);
+//			ks.getConfigurator().setUrl(new URL(ontologyPath));
+//			ks.init();
+//			rc = cm.reasoner(FastInstanceChecker.class, ks);
+//			rc.init();
+//		} catch (MalformedURLException e1) {
+//			e1.printStackTrace();
+//		} catch (ComponentInitException e1) {
+//			e1.printStackTrace();
+//		}
 		try {
 			ont = man.loadOntologyFromOntologyDocument(IRI.create(ontologyPath));
-			logicalAxiomCount = ont.getLogicalAxiomCount();
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("Loaded ontology " + ont.getOntologyID());
 	}
-
-	private void resetStats() {
-		acceptedGlobalStat = new Stat();
-		rejectedGlobalStat = new Stat();
-		failedGlobalStat = new Stat();
-
-		moreInstancesCountStats.clear();
-		accStats.clear();
-		accSelectedStats.clear();
-		accAboveThresholdStats.clear();
-		positionStats.clear();
-
-		moreInstancesCountStatsSC.clear();
-		accStatsSC.clear();
-		accSelectedStatsSC.clear();
-		accAboveThresholdStatsSC.clear();
-		positionStatsSC.clear();
-		
-		equivalentLists = new ArrayList<NamedClass>(equivalentSuggestions.keySet());
-		superLists = new ArrayList<NamedClass>(superSuggestions.keySet());
-		mat = new short[suggestionListsCount][3];
-	}
-
-	private void makeSingleStat() {
-		// equivalence classes
-		int candidatesAboveThresholdCount = 0;
-		int missesCount = 0;
-		int foundDescriptionCount = 0;
-		int noSensibleDescriptionCount = 0;
-		int inconsistencyDetected = 0;
-		int moreInstancesCount = 0;
-		int nonPerfectCount = 0;
-		Stat moreInstancesCountStat = new Stat();
-		Stat accStat = new Stat();
-		Stat accSelectedStat = new Stat();
-		Stat accAboveThresholdStat = new Stat();
-		Stat positionStat = new Stat();
-
-		// super classes
-		int candidatesAboveThresholdCountSC = 0;
-		int missesCountSC = 0;
-		int foundDescriptionCountSC = 0;
-		int noSensibleDescriptionCountSC = 0;
-		int inconsistencyDetectedSC = 0;
-		int moreInstancesCountSC = 0;
-		int nonPerfectCountSC = 0;
-		Stat moreInstancesCountStatSC = new Stat();
-		Stat accStatSC = new Stat();
-		Stat accSelectedStatSC = new Stat();
-		Stat accAboveThresholdStatSC = new Stat();
-		Stat positionStatSC = new Stat();
-		// analysing input for equivalent class expressions
-		for (Entry<NamedClass, String> e : equivalentInput.entrySet()) {
-			NamedClass currentClass = e.getKey();
-			String input = e.getValue();
-			if(input.equals("-1")){
-				input = "n";
-			}
-			if (input.equals("m")) {
-				missesCount++;
-				mat[equivalentLists.indexOf(currentClass)][2]++;
-			} else if (input.equals("n")) {
-				noSensibleDescriptionCount++;
-				mat[equivalentLists.indexOf(currentClass)][1]++;
-			} else {
-				mat[equivalentLists.indexOf(currentClass)][0]++;
-				int selectedIndex = Integer.parseInt(input);
-				EvaluatedDescriptionClass selectedExpression = equivalentSuggestions.get(currentClass).get(
-						selectedIndex);
-				double bestAcc = equivalentSuggestions.get(currentClass).get(0).getAccuracy();
-				int selectedNr = selectedIndex + 1;
-				boolean isConsistent = selectedExpression.isConsistent();
-				Set<Individual> addInst = selectedExpression.getAdditionalInstances();
-				int additionalInstances = addInst.size();
-
-				accSelectedStat.addNumber(selectedExpression.getAccuracy());
-				positionStat.addNumber(selectedNr);
-				foundDescriptionCount++;
-				if (!isConsistent) {
-					inconsistencyDetected++;
-				}
-				if (additionalInstances > 0) {
-					moreInstancesCount++;
-					moreInstancesCountStat.addNumber(additionalInstances);
-				}
-				if (bestAcc < 0.9999) {
-					nonPerfectCount++;
-				}
-			}
+	
+	private void resetCount(){
+		for(int i = 0; i < 6; i++){
+			count[i] = 0;
 		}
-		acceptedStat.addNumber(foundDescriptionCount);
-		rejectedStat.addNumber(noSensibleDescriptionCount);
-		failedStat.addNumber(missesCount);
-		moreInstancesCountStats.add(moreInstancesCountStat);
-		accStats.add(accStat);
-		accSelectedStats.add(accSelectedStat);
-		accAboveThresholdStats.add(accSelectedStat);
-		positionStats.add(positionStat);
-
-		// analysing input for super class expressions
-		for (Entry<NamedClass, String> e : superInput.entrySet()) {
-			NamedClass currentClass = e.getKey();
-			if (e.getValue().equals("m")) {
-				missesCountSC++;
-				mat[superLists.indexOf(currentClass) + equivalentLists.size()][2]++;
-			} else if (e.getValue().equals("n")) {
-				noSensibleDescriptionCountSC++;
-				mat[superLists.indexOf(currentClass) + equivalentLists.size()][1]++;
-			} else {
-				mat[superLists.indexOf(currentClass) + equivalentLists.size()][0]++;
-				int selectedIndex = Integer.parseInt(e.getValue());
-				EvaluatedDescriptionClass selectedExpression = superSuggestions.get(currentClass).get(selectedIndex);
-				double bestAcc = superSuggestions.get(currentClass).get(0).getAccuracy();
-				int selectedNr = selectedIndex + 1;
-				boolean isConsistent = selectedExpression.isConsistent();
-				Set<Individual> addInst = selectedExpression.getAdditionalInstances();
-				int additionalInstances = addInst.size();
-
-				accSelectedStatSC.addNumber(selectedExpression.getAccuracy());
-				positionStatSC.addNumber(selectedNr);
-				foundDescriptionCountSC++;
-				if (!isConsistent) {
-					inconsistencyDetectedSC++;
-				}
-				if (additionalInstances > 0) {
-					moreInstancesCountSC++;
-					moreInstancesCountStatSC.addNumber(additionalInstances);
-				}
-				if (bestAcc < 0.9999) {
-					nonPerfectCountSC++;
-				}
-			}
-		}
-		acceptedStatSC.addNumber(foundDescriptionCountSC);
-		rejectedStatSC.addNumber(noSensibleDescriptionCountSC);
-		failedStatSC.addNumber(missesCountSC);
-		moreInstancesCountStatsSC.add(moreInstancesCountStatSC);
-		accStatsSC.add(accStatSC);
-		accSelectedStatsSC.add(accSelectedStatSC);
-		accAboveThresholdStatsSC.add(accSelectedStatSC);
-		positionStatsSC.add(positionStatSC);
-
-		acceptedGlobalStat.addNumber(foundDescriptionCount + foundDescriptionCountSC);
-		rejectedGlobalStat.addNumber(noSensibleDescriptionCountSC + noSensibleDescriptionCount);
-		failedGlobalStat.addNumber(missesCountSC + missesCount);
-
-		System.out.println("Ontology URL: " + ont.getOntologyID());
-		System.out.println("statistics for equivalence axioms:");
-		System.out.println("classes above 85% threshold: " + candidatesAboveThresholdCount);
-		System.out.println("axioms learned succesfully: " + foundDescriptionCount);
-		System.out.println("axioms missed: " + missesCount);
-		System.out.println("class with no sensible axioms: " + noSensibleDescriptionCount);
-		System.out.println("inconsistencies detected: " + inconsistencyDetected);
-		System.out.println("additional instances found: " + moreInstancesCountStat.prettyPrint(""));
-		System.out.println("average accuracy overall: " + accStat.prettyPrint(""));
-		System.out.println("average accuracy of selected expressions: " + accSelectedStat.prettyPrint(""));
-		System.out.println("average accuracy of expressions above threshold: " + accAboveThresholdStat.prettyPrint(""));
-		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + nonPerfectCount);
-		System.out.println("average number typed by user: " + positionStat.prettyPrint(""));
-		System.out.println();
-
-		System.out.println("statistics for super class axioms:");
-		System.out.println("classes above 85% threshold: " + candidatesAboveThresholdCountSC);
-		System.out.println("axioms learned succesfully: " + foundDescriptionCountSC);
-		System.out.println("axioms missed: " + missesCountSC);
-		System.out.println("class with no sensible axioms: " + noSensibleDescriptionCountSC);
-		System.out.println("inconsistencies detected: " + inconsistencyDetectedSC);
-		System.out.println("additional instances found: " + moreInstancesCountStatSC.prettyPrint(""));
-		System.out.println("average accuracy overall: " + accStatSC.prettyPrint(""));
-		System.out.println("average accuracy of selected expressions: " + accSelectedStatSC.prettyPrint(""));
-		System.out.println("average accuracy of expressions above threshold: "
-				+ accAboveThresholdStatSC.prettyPrint(""));
-		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + nonPerfectCountSC);
-		System.out.println("average number typed by user: " + positionStatSC.prettyPrint(""));
-		System.out.println();
-
-		System.out.println("merged statistics for equivalence/superclass:");
-		System.out.println("classes above 85% threshold: "
-				+ (candidatesAboveThresholdCount + candidatesAboveThresholdCountSC));
-		System.out.println("axioms learned succesfully: " + (foundDescriptionCount + foundDescriptionCountSC));
-		System.out.println("axioms missed: " + (missesCount + missesCountSC));
-		System.out.println("class with no sensible axioms: "
-				+ (noSensibleDescriptionCount + noSensibleDescriptionCountSC));
-		System.out.println("inconsistencies detected: " + (inconsistencyDetected + inconsistencyDetectedSC));
-		System.out.println("additional instances found: "
-				+ new Stat(moreInstancesCountStat, moreInstancesCountStatSC).prettyPrint(""));
-		System.out.println("average accuracy overall: " + new Stat(accStat, accStatSC).prettyPrint(""));
-		System.out.println("average accuracy of selected expressions: "
-				+ new Stat(accSelectedStat, accSelectedStatSC).prettyPrint(""));
-		System.out.println("average accuracy of expressions above threshold: "
-				+ new Stat(accAboveThresholdStat, accAboveThresholdStatSC).prettyPrint(""));
-		System.out.println("non-perfect (not 100% accuracy) axioms selected: " + (nonPerfectCount + nonPerfectCountSC));
-		System.out.println("average number typed by user: " + new Stat(positionStat, positionStatSC).prettyPrint(""));
-		System.out.println();
+		best = 6;
 	}
+	
+	private void resetBestCount(){
+		for(int i = 0; i < 6; i++){
+			bestCount[i] = 0;
+		}
+		best = 6;
+	}
+
+
 
 	private void beginStatsTable() {
 		latexStats = new StringBuilder();
@@ -377,56 +1556,18 @@ public class StatsGenerator {
 	
 	private void beginOntologyMetricsTable(){
 		latexMetrics = new StringBuilder();
-		latexMetrics.append("\\begin{tabular}{ c | c | c | c | c | c  } \n");
-		latexMetrics.append("\\#logical axioms & ");
-		latexMetrics.append("\\#classes & ");
-		latexMetrics.append("\\#object properties & ");
-		latexMetrics.append("\\#data properties & ");
-		latexMetrics.append("\\#individuals & ");
+		latexMetrics.append("\\begin{tabular}{| l | c | c | c | c | c | c  } \n");
+		latexMetrics.append("Ontology ID & ");
+		latexMetrics.append("\\rotatebox{90}{\\#logical axioms} & ");
+		latexMetrics.append("\\rotatebox{90}{\\#classes} & ");
+		latexMetrics.append("\\rotatebox{90}{\\#object properties} & ");
+		latexMetrics.append("\\rotatebox{90}{\\#data properties} & ");
+		latexMetrics.append("\\rotatebox{90}{\\#individuals} & ");
 		latexMetrics.append("DL expressivity");
 		latexMetrics.append(" \\\\\n");
 		latexMetrics.append("\\hline\n");
 	}
 	
-	@SuppressWarnings("static-access")
-	private void addStatsTableRow() {
-		double accept = acceptedGlobalStat.getMean() / suggestionListsCount * 100;
-		double reject = rejectedGlobalStat.getMean() / suggestionListsCount * 100;
-		double fail = failedGlobalStat.getMean() / suggestionListsCount * 100;
-		Stat positionStat = new Stat(positionStats);
-		double avgPosition = positionStat.getMean();
-		if(Double.isNaN(avgPosition)){
-			avgPosition = -1;
-		}
-		double stdDeviationPosition = positionStat.getStandardDeviation();
-		DecimalFormat df = new DecimalFormat("0.0");
-		double additionalInstanceCountEq = new Stat(moreInstancesCountStats).getMean();
-		@SuppressWarnings("unused")
-		double additionalInstanceCountSC = new Stat(moreInstancesCountStatsSC).getMean();
-		double additionalInstanceCount = new Stat(new Stat(moreInstancesCountStats), new Stat(moreInstancesCountStatsSC)).getMean();
-		Stat avgSelectedAccuracyEq = new Stat(accSelectedStats);
-		Stat avgSelectedAccuracySC = new Stat(accSelectedStatsSC);
-		Stat avgSelectedAccuracy = new Stat(avgSelectedAccuracyEq, avgSelectedAccuracySC);
-		double avgAccuracy = avgSelectedAccuracy.getMean();
-		
-		latexStats.append(logicalAxiomCount + " & " 
-				+ suggestionListsCount + " & " 
-				+ df.format(accept) + " & " 
-				+ df.format(reject) + " & " 
-				+ df.format(fail) + " & "
-				+ df.format(avgPosition) + " $\\pm$ " + df.format(stdDeviationPosition) + " & "
-				+ df.format(avgAccuracy * 100) + " & "
-				+ df.format(additionalInstanceCountEq) + " & "
-				+ df.format(additionalInstanceCount)
-				+ "\\\\\n");
-		for(int i = 0; i < mat.length; i++){
-			for(int j = 0; j < mat[i].length; j++){
-				System.out.print(mat[i][j]);
-			}
-			System.out.println();
-		}
-		System.out.println(new FleissKappa().computeKappa(mat));
-	}
 	
 	private void addOntologyMetricsTableRow(){
 		int logicalAxiomsCount = ont.getLogicalAxiomCount();
@@ -435,7 +1576,9 @@ public class StatsGenerator {
 		int dataPropertiesCount = ont.getDataPropertiesInSignature(true).size();
 		int individualsCount = ont.getIndividualsInSignature(true).size();
 		String expressivity = new DLExpressivityChecker(Collections.singleton(ont)).getDescriptionLogicName();
-		latexMetrics.append(logicalAxiomsCount + " & " 
+		latexMetrics.append(
+				ont.getOntologyID() + " & "
+				+ logicalAxiomsCount + " & " 
 				+ classesCount + " & " 
 				+ objectPropertiesCount + " & " 
 				+ dataPropertiesCount + " & " 
@@ -452,35 +1595,6 @@ public class StatsGenerator {
 		latexStats.append("\\end{tabular}");
 	}
 
-	/**
-	 * Loads the computed suggestion files.
-	 * @param resultFile The file where the suggestions are serialized.
-	 */
-	@SuppressWarnings("unchecked")
-	private void loadSuggestions(File resultFile) {
-		InputStream fis = null;
-
-		try {
-			fis = new FileInputStream(resultFile);
-			ObjectInputStream o = new ObjectInputStream(fis);
-			for (int i = 0; i < 20; i++) {
-				o.readObject();
-			}
-			equivalentSuggestions = (Map<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			superSuggestions = (Map<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-
-		} catch (IOException e) {
-			System.err.println(e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(e);
-		} finally {
-			try {
-				fis.close();
-			} catch (Exception e) {
-			}
-		}
-		suggestionListsCount = equivalentSuggestions.keySet().size() + superSuggestions.keySet().size();
-	}
 
 	/**
 	 * Loads the user input evaluated in the EvaluationGUI.
@@ -495,7 +1609,13 @@ public class StatsGenerator {
 			ObjectInputStream o = new ObjectInputStream(fis);
 
 			userInputMap = (Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>>) o.readObject();
-			System.out.println("User input: " + userInputMap);
+//			for(Entry<NamedClass, Map<EvaluatedDescriptionClass, Integer>> entry : userInputMap.entrySet()){
+//				System.out.println(entry.getKey());
+//				for(Entry<EvaluatedDescriptionClass, Integer> e : entry.getValue().entrySet()){
+//					System.out.println(e.getKey() + " --> " + e.getValue());
+//				}
+//			}
+			System.out.println("Loaded user input file " + input);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -517,19 +1637,20 @@ public class StatsGenerator {
 			fis = new FileInputStream(file);
 			ObjectInputStream o = new ObjectInputStream(fis);
 
-			owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
-			fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-			defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			defaultMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -541,6 +1662,82 @@ public class StatsGenerator {
 			}
 		}
 		
+	}
+	
+	private void computeFleissKappa(File directory){
+		System.out.println("Computing Fleiss Kappa...");
+		Map<NamedClass, Map<EvaluatedDescriptionClass, Map<Integer, Integer>>> map = new HashMap<NamedClass, Map<EvaluatedDescriptionClass,Map<Integer,Integer>>>();
+		Map<EvaluatedDescriptionClass, Map<Integer, Integer>> m;
+		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {System.out.println(suggestionFile);
+			loadLearnResults(suggestionFile);
+			computeClassesToEvaluate();
+			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
+				loadUserInput(inputFile);
+				for(Entry<NamedClass, Map<EvaluatedDescriptionClass, Integer>> e : userInputMap.entrySet()){
+					if(!classesToEvaluate.contains(e.getKey())){
+						continue;
+					}
+					m = new HashMap<EvaluatedDescriptionClass, Map<Integer,Integer>>();
+					for(EvaluatedDescriptionClass ec : e.getValue().keySet()){
+						m.put(ec, new HashMap<Integer, Integer>());
+					}
+					map.put(e.getKey(), m);
+				}
+				break;
+			}
+//			break;
+			
+		}
+		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {
+			loadLearnResults(suggestionFile);
+			computeClassesToEvaluate();
+			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
+				loadUserInput(inputFile);
+				for(Entry<NamedClass, Map<EvaluatedDescriptionClass, Integer>> e : userInputMap.entrySet()){
+					if(!classesToEvaluate.contains(e.getKey())){
+						continue;
+					}
+					for(Entry<EvaluatedDescriptionClass, Integer> e2 : e.getValue().entrySet()){
+						m = map.get(e.getKey());
+						Integer i = map.get(e.getKey()).get(e2.getKey()).get(e2.getValue());
+						if(i == null){
+							i = Integer.valueOf(0);
+							
+						}
+						i++;
+						map.get(e.getKey()).get(e2.getKey()).put(e2.getValue(), i);
+					}
+					
+					
+				}
+//				break;
+			}
+//			break;
+			
+		}
+		int cnt = 0;
+		for(Map<EvaluatedDescriptionClass, Map<Integer, Integer>> m1 : map.values()){
+			cnt += m1.keySet().size();
+		}
+		mat = new short[cnt][6];
+		int i = 0;
+		for(Map<EvaluatedDescriptionClass, Map<Integer, Integer>> m1 : map.values()){
+			for(Map<Integer, Integer> m2 : m1.values()){
+				for(Entry<Integer, Integer> entry : m2.entrySet()){
+					mat[i][entry.getKey()-1] = entry.getValue().shortValue();
+				}
+				i++;
+//				if(i == 10)break;
+			}
+//			if(i == 10)break;
+		}
+		System.out.println("MATRIX" + mat.length);
+//		float kappa = FleissKappa.computeKappa(mat);
+		for(int j = 0; j < mat.length; j++){
+			System.out.println(Arrays.toString(mat[j]));
+		}
+		float raw = RawAgreement.computeRawAgreement(mat);
+		System.out.println("Raw Agreement: "+ raw);
 	}
 	
 
@@ -565,6 +1762,7 @@ public class StatsGenerator {
 	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
 		Locale.setDefault(Locale.ENGLISH);
 		Logger.getRootLogger().setLevel(Level.DEBUG);
+		Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
 		File directory = new File(new URL(args[0]).toURI());
 		new StatsGenerator(directory);
 	}

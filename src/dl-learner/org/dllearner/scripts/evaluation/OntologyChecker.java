@@ -77,7 +77,6 @@ public class OntologyChecker {
 	
 	private static long reasonerTaskTimeoutInMinutes = 10;
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		Map<String, Integer> ontologyRelClassCountMap = new HashMap<String, Integer>();
 		Set<String> inconsistentOntologies = new HashSet<String>();
@@ -243,17 +242,17 @@ public class OntologyChecker {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
-	static Map sortByValue(Map map) {
-		List list = new LinkedList(map.entrySet());
-		Collections.sort(list, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+	
+	private static Map<String, Integer> sortByValue(Map<String, Integer> map) {
+		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
+		Collections.sort(list, new Comparator<Entry<String, Integer>>() {
+			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+				return o1.getValue().compareTo(o2.getValue());
 			}
 		});
-		Map result = new LinkedHashMap();
-		for (Iterator it = list.iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+		Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+		for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+			Entry<String, Integer> entry = it.next();
 			result.put(entry.getKey(), entry.getValue());
 		}
 		return result;
