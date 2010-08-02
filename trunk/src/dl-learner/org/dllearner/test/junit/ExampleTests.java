@@ -70,7 +70,7 @@ public class ExampleTests {
 		boolean randomize = true;
 		
 		// GPs can be excluded temporarily (because those tests are very time-consuming)
-		boolean testGP = true;
+		boolean testGP = false;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
