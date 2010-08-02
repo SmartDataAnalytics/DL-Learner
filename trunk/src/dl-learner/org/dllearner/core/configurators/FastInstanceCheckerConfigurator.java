@@ -53,7 +53,7 @@ return component;
 }
 
 /**
-* reasonerType FaCT++ or Pellet to dematerialize.
+* reasonerType FaCT++, HermiT or Pellet to dematerialize.
 * mandatory: false| reinit necessary: true
 * default value: pellet
 * @return String 
@@ -72,7 +72,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(fastInstanc
 }
 
 /**
-* @param reasonerType FaCT++ or Pellet to dematerialize.
+* @param reasonerType FaCT++, HermiT or Pellet to dematerialize.
 * mandatory: false| reinit necessary: true
 * default value: pellet
 **/
