@@ -1063,8 +1063,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			mA.get(nc).put(2,m2);
 		}
 		
-		System.out.println("m1 " + "(" + nc + "): " + m1);
-		System.out.println("m2 " + "(" + nc + "): " + m2);
+//		System.out.println("m1 " + "(" + nc + "): " + m1);
+//		System.out.println("m2 " + "(" + nc + "): " + m2);
 		
 		/*
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
