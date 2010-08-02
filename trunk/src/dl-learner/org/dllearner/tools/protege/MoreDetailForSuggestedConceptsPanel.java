@@ -44,7 +44,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 // Model of the dllearner
 	 
 	private EvaluatedDescription eval;
-	private static final int HEIGHT = 230;
+	private static final int HEIGHT = 300;
 	private static final int WIDTH = 540;
 	private GraphicalCoveragePanel graphicalPanel;
 	private GraphicalCoverageTextField graphicalText;
@@ -59,7 +59,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		graphicalPanel = new GraphicalCoveragePanel(eval);
 		graphicalText = new GraphicalCoverageTextField(eval, editorKit);
-		graphicalPanel.setBounds(5, 0, 300, 350);
+		graphicalPanel.setBounds(5, 0, 300, 370);
 		add(graphicalPanel, BorderLayout.CENTER);
 		add(graphicalText.getTextScroll(), BorderLayout.EAST);
 	}

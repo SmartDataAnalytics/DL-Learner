@@ -76,7 +76,7 @@ public class GraphicalCoverageTextField extends JTextPane{
 			sb.append("<p><font size=\"1\" color=\"red\">\u25aa </font><font size=\"3\" color=\"black\">individuals covered by </font><font size=\"3\" color=\"yellow\">\u25cf</font></font><font size=\"3\" color=\"black\"> (potential problem)</font></p>");
 		}
 		sb.append("<p><font size=\"3\" color=\"black\">Covers ").append(coveredInstancesCount).append(" of ").append(allInstancesCount).append("(").append(coverage).append(" %) of class instances</font></p>");
-		sb.append("<p><font size=\"3\" color=\"black\">Covers ").append(additionalInstancesCount).append(" additional instances</font></p>");
+		sb.append("<p><font size=\"3\" color=\"black\">Covers ").append(additionalInstancesCount).append(additionalInstancesCount == 1 ? " additional instance" : " additional instances").append("</font></p>");
 		if(!((EvaluatedDescriptionClass) description).isConsistent()) {
 			sb.append("<p style=\"max-width:100px;\"><font size=\"3\" color=\"red\">Adding this class expression may lead to an inconsistent ontology.</font></p>");
         } 

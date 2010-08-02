@@ -19,6 +19,8 @@
  */
 package org.dllearner.tools.protege;
 
+import org.protege.editor.core.ui.error.ErrorLogPanel;
+
 
 /**
  * This class reads the ontology in a separate thread.
@@ -48,15 +50,19 @@ public class ReadingOntologyThread extends Thread {
 		Manager.getInstance().setIsPreparing(true);
 		view.showStatusBar(true);
 		view.setBusy(true);
-		Manager.getInstance().initKnowledgeSource();
-		Manager.getInstance().initReasoner();
+		try {
+			Manager.getInstance().initKnowledgeSource();
+			Manager.getInstance().initReasoner();
+			if(Manager.getInstance().canLearn()){
+				view.setLearningEnabled();
+			} else {
+				view.showNoInstancesMessage();
+			}
+		} catch (Exception e) {
+			ErrorLogPanel.showErrorDialog(e);
+		}
 		view.showStatusBar(false);
 		view.setBusy(false);
-		if(Manager.getInstance().canLearn()){
-			view.setLearningEnabled();
-		} else {
-			view.showNoInstancesMessage();
-		}
 		Manager.getInstance().setIsPreparing(false);
 		
 	}

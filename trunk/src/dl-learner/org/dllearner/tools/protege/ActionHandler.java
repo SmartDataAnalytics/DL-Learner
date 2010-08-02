@@ -32,6 +32,7 @@ import javax.swing.SwingWorker;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.protege.editor.core.ProtegeApplication;
+import org.protege.editor.core.ui.error.ErrorLogPanel;
 import org.protege.editor.core.ui.progress.BackgroundTask;
 
 /**
@@ -174,35 +175,42 @@ public class ActionHandler implements ActionListener {
 				}
 			});
 			
-			Manager manager = Manager.getInstance();
-			manager.initLearningProblem();
-			manager.initLearningAlgorithm();
-			view.setBusyTaskEnded();
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					view.setLearningStarted();
-					view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
-							Manager.getInstance().getMaximumHorizontalExpansion());
-				}
-			});
-			
-			timer = new Timer();
-			timer.schedule(new TimerTask(){
-				int progress = 0;
-				List<? extends EvaluatedDescription> result;
-				@Override
-				public void run() {
-					progress++;
-					setProgress(progress);
-					if(!isCancelled() && Manager.getInstance().isLearning()){
-						result = Manager.getInstance().getCurrentlyLearnedDescriptions();
-						publish(result);
-					}
-				}
+			try {
+				Manager manager = Manager.getInstance();
+				manager.initLearningProblem();
+				manager.initLearningAlgorithm();
 				
-			}, 1000, 500);
-			Manager.getInstance().startLearning();
+				view.setBusyTaskEnded();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						view.setLearningStarted();
+						view.showHorizontalExpansionMessage(Manager.getInstance().getMinimumHorizontalExpansion(),
+								Manager.getInstance().getMaximumHorizontalExpansion());
+					}
+				});
+				
+				timer = new Timer();
+				timer.schedule(new TimerTask(){
+					int progress = 0;
+					List<? extends EvaluatedDescription> result;
+					@Override
+					public void run() {
+						progress++;
+						setProgress(progress);
+						if(!isCancelled() && Manager.getInstance().isLearning()){
+							result = Manager.getInstance().getCurrentlyLearnedDescriptions();
+							publish(result);
+						}
+					}
+					
+				}, 1000, 500);
+				Manager.getInstance().startLearning();
+			} catch (Exception e) {
+				ErrorLogPanel.showErrorDialog(e);
+				cancel(true);
+				view.setBusyTaskEnded();
+			}
 			
 			
 			return null;
@@ -210,11 +218,13 @@ public class ActionHandler implements ActionListener {
 
 		@Override
 		public void done() {
-			timer.cancel();
-			List<? extends EvaluatedDescription> result = Manager.getInstance().getCurrentlyLearnedDescriptions();
-			updateList(result);
-			setProgress(0);
-			view.setLearningFinished();
+			if(!isCancelled()){
+				timer.cancel();
+				List<? extends EvaluatedDescription> result = Manager.getInstance().getCurrentlyLearnedDescriptions();
+				updateList(result);
+				setProgress(0);
+				view.setLearningFinished();
+			}
 			ProtegeApplication.getBackgroundTaskManager().endTask(learningTask);
 		}
 
