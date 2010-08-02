@@ -53,7 +53,7 @@ return component;
 }
 
 /**
-* reasonerType FaCT++ or Pellet, which means "pellet" or "fact".
+* reasonerType FaCT++,, HermiT or Pellet, which means "pellet" or "fact".
 * mandatory: false| reinit necessary: true
 * default value: pellet
 * @return String 
@@ -63,7 +63,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(oWLAPIReason
 }
 
 /**
-* @param reasonerType FaCT++ or Pellet, which means "pellet" or "fact".
+* @param reasonerType FaCT++,, HermiT or Pellet, which means "pellet" or "fact".
 * mandatory: false| reinit necessary: true
 * default value: pellet
 **/

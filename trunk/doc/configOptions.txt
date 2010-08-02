@@ -191,8 +191,8 @@ component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker)
 conf file usage: reasoner = fastInstanceChecker;
 
 option name: reasonerType
-description: FaCT++ or Pellet to dematerialize
-allowed values: String [fact, pellet] 
+description: FaCT++, HermiT or Pellet to dematerialize
+allowed values: String [fact, hermit, pellet] 
 default value: pellet
 conf file usage: fastInstanceChecker.reasonerType = pellet;
 
@@ -215,8 +215,8 @@ component: OWL API reasoner (org.dllearner.reasoning.OWLAPIReasoner)
 conf file usage: reasoner = owlAPIReasoner;
 
 option name: reasonerType
-description: FaCT++ or Pellet, which means "pellet" or "fact"
-allowed values: String [fact, pellet] 
+description: FaCT++,, HermiT or Pellet, which means "fact", "hermit" or "pellet"
+allowed values: String [fact, hermit, pellet] 
 default value: pellet
 conf file usage: owlAPIReasoner.reasonerType = pellet;
 
@@ -289,6 +289,24 @@ description: Specify whether to check consistency for solution candidates. This 
 allowed values: boolean
 default value: true
 conf file usage: classLearning.checkConsistency = true;
+
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+allowed values: int 
+default value: 10
+conf file usage: classLearning.maxExecutionTimeInSeconds = 10;
+
+option name: betaSC
+description: Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning.
+allowed values: double 
+default value: 3.0
+conf file usage: classLearning.betaSC = 3.0;
+
+option name: betaEq
+description: Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for equivalence class learning.
+allowed values: double 
+default value: 1.0
+conf file usage: classLearning.betaEq = 1.0;
 
 
 component: pos neg learning problem (org.dllearner.learningproblems.PosNegLPStandard)
@@ -563,6 +581,24 @@ description: If true, the algorithm tries to find a good starting point close to
 allowed values: boolean
 default value: false
 conf file usage: celoe.reuseExistingDescription = false;
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+allowed values: boolean
+default value: false
+conf file usage: celoe.writeSearchTree = false;
+
+option name: searchTreeFile
+description: file to use for the search tree
+allowed values: String [] 
+default value: log/searchTree.txt
+conf file usage: celoe.searchTreeFile = log/searchTree.txt;
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+allowed values: boolean
+default value: false
+conf file usage: celoe.replaceSearchTree = false;
 
 
 component: standard EL learning algorithm (org.dllearner.algorithms.el.ELLearningAlgorithm)
