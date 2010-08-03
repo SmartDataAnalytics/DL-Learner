@@ -63,7 +63,7 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 		view.reset();
 		OWLReasoner r = getOWLEditorKit().getModelManager().getReasoner();
 		if(r instanceof NoOpReasoner){
-			view.setHintMessage("<html><font size=\"3\" color=\"red\">You have to select a reasoner first.</font></html>");
+			view.setHintMessage("<html><font size=\"3\" color=\"red\">You have to select a reasoner (click on menu \"Reasoner\"). We recommend to use Pellet. </font></html>");
 			view.setRunButtonEnabled(false);
 		} else {
 			if(!Manager.getInstance().isPreparing() && Manager.getInstance().isReinitNecessary()){
