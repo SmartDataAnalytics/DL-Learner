@@ -32,8 +32,6 @@ import org.dllearner.reasoning.PelletReasoner;
 public  class PelletReasonerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private PelletReasoner pelletReasoner;
 
 /**

@@ -32,8 +32,6 @@ import org.dllearner.reasoning.ProtegeReasoner;
 public  class ProtegeReasonerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private ProtegeReasoner protegeReasoner;
 
 /**

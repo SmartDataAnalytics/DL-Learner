@@ -34,8 +34,6 @@ import org.dllearner.utilities.datastructures.StringTuple;
 public  class SparqlKnowledgeSourceConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private SparqlKnowledgeSource sparqlKnowledgeSource;
 
 /**

@@ -33,8 +33,6 @@ import org.dllearner.core.ReasonerComponent;
 public  class GPConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private GP gP;
 
 /**

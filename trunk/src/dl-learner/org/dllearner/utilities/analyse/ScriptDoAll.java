@@ -29,7 +29,6 @@ public class ScriptDoAll {
 	
 	public static void main(String[] args) {
 		
-		@SuppressWarnings("unused")
 		String dbpediaFile = "dbpedia_3.5.1.owl";
 		@SuppressWarnings("unused")
 		String yagoFile = "yagoclasses_links.nt";

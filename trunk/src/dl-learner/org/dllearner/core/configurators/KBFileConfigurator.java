@@ -31,8 +31,6 @@ import org.dllearner.kb.KBFile;
 public  class KBFileConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private KBFile kBFile;
 
 /**

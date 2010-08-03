@@ -1,6 +1,5 @@
 package org.dllearner.utilities.statistics;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class RawAgreement {
