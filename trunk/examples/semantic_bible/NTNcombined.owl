@@ -923,7 +923,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                   <Man rdf:ID="HerodAntipas">
                                     <spouseOf>
                                       <Woman rdf:ID="Herodias">
-                                        <description xml:lang="en"
+                                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >wife of Herod Antipas who had John the Baptist put to death</description>
                                         <spouseOf>
                                           <Man rdf:ID="PhilipSonOfHerod">
@@ -951,7 +951,8 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                     <parentOf rdf:resource="#PhilipSonOfHerod"/>
                                                     <parentOf rdf:resource="#Archelaus"/>
                                                     <occupation
-                                                     xml:lang="en"
+                                                     rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#string"
                                                     >king</occupation>
                                                   </Man>
                                                 </childOf>
@@ -1082,7 +1083,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                             </subregion>
                                             <nativePlaceOf>
                                               <Woman rdf:ID="Elizabeth">
-                                                <description xml:lang="en"
+                                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                 >the mother of John the Baptist</description>
                                                 <ethnicity>
                                                   <EthnicityAttribute rdf:ID="Jewish">
@@ -1175,20 +1176,20 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
       <Man rdf:ID="Ahaz">
         <childOf>
           <Man rdf:ID="Jotham">
-            <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
             <rdfs:label xml:lang="en">Jotham</rdfs:label>
             <ethnicity rdf:resource="#Jewish"/>
             <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >His occupation as King comes from Old Testament sources, 2Chron.26-27. </rdfs:comment>
             <parentOf rdf:resource="#Ahaz"/>
-            <occupation xml:lang="en">king of Judah</occupation>
+            <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king of Judah</occupation>
             <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
             >true</hasOnlyGenealogyMention>
             <childOf>
               <Man rdf:ID="Uzziah">
                 <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
                 >true</hasOnlyGenealogyMention>
-                <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                 <childOf>
                   <Man rdf:ID="Joram">
                     <parentOf rdf:resource="#Uzziah"/>
@@ -1198,12 +1199,12 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                           <Man rdf:ID="Asaph">
                             <rdfs:label xml:lang="en">Asaph</rdfs:label>
                             <ethnicity rdf:resource="#Jewish"/>
-                            <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
-                            <occupation xml:lang="en">king of Judah</occupation>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                            <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king of Judah</occupation>
                             <relativeOf>
                               <Man rdf:ID="AbijahSonOfRehoboam">
-                                <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
-                                <occupation xml:lang="en">king of Judah</occupation>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                                <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king of Judah</occupation>
                                 <hasOnlyGenealogyMention rdf:datatype=
                                 "http://www.w3.org/2001/XMLSchema#boolean"
                                 >true</hasOnlyGenealogyMention>
@@ -1236,7 +1237,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                         <rdfs:label xml:lang="en"
                                         >Solomon</rdfs:label>
                                         <parentOf rdf:resource="#Rehoboam"/>
-                                        <occupation xml:lang="en"
+                                        <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >king</occupation>
                                         <ethnicity rdf:resource="#Jewish"/>
                                         <childOf>
@@ -1259,7 +1260,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                     "http://www.w3.org/2001/XMLSchema#boolean"
                                                     >true</hasOnlyGenealogyMention>
                                                     <description
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >the father of King David</description>
                                                     <parentOf rdf:resource="#David"/>
                                                     <ethnicity rdf:resource="#Jewish"/>
@@ -1285,11 +1286,11 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
     <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >An Old Testament example of faith who hid Joshua's spies</description>
     <rdfs:label xml:lang="en">Rahab</rdfs:label>
-    <occupation xml:lang="en">prostitute</occupation>
+    <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">prostitute</occupation>
     <spouseOf>
       <Man rdf:ID="Salmon">
         <spouseOf rdf:resource="#Rahab"/>
-        <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew and Luke's geneaologies</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew and Luke's geneaologies</description>
         <parentOf rdf:resource="#Boaz"/>
         <ethnicity rdf:resource="#Jewish"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1302,7 +1303,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
             <rdfs:label xml:lang="en">Nahshon</rdfs:label>
             <childOf>
               <Man rdf:ID="Amminadab">
-                <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                 <ethnicity rdf:resource="#Jewish"/>
                 <childOf>
                   <Man rdf:ID="Ram">
@@ -1334,7 +1335,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                             <parentOf rdf:resource="#Arni"/>
                             <parentOf rdf:resource="#Ram"/>
                             <rdfs:label xml:lang="en">Hezron</rdfs:label>
-                            <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                             <ethnicity rdf:resource="#Jewish"/>
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
@@ -1388,7 +1389,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                          xml:lang="en"
                                                         >Esau</rdfs:label>
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >a character from the Old Testament era</description>
                                                         <childOf>
                                                           <Man rdf:ID="Isaac">
@@ -1401,7 +1402,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                             <childOf>
                                                               <Woman rdf:ID="Sarah">
     <rdfs:label xml:lang="en">Sarah</rdfs:label>
-    <description xml:lang="en">the wife of Abraham and an example of faith</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the wife of Abraham and an example of faith</description>
     <childOf>
       <Man rdf:ID="Terah">
         <parentOf>
@@ -1420,13 +1421,13 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                   <Woman rdf:ID="Hagar">
                     <antagonistOf rdf:resource="#Sarah"/>
                     <hasAntagonist rdf:resource="#Sarah"/>
-                    <occupation xml:lang="en">servant</occupation>
+                    <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">servant</occupation>
                     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
                     >false</hasOnlyGenealogyMention>
                     <knows rdf:resource="#Abraham"/>
                     <residentPlace rdf:resource="#Canaan"/>
                     <rdfs:label xml:lang="en">Hagar</rdfs:label>
-                    <description xml:lang="en">mother of Ishmael; servant to Abraham's wife Sarah </description>
+                    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mother of Ishmael; servant to Abraham's wife Sarah </description>
                     <ethnicity>
                       <EthnicityAttribute rdf:ID="Egyptian">
                         <ethnicityOf rdf:resource="#Hagar"/>
@@ -1518,7 +1519,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                         <childOf>
                                                           <Man rdf:ID="Enoch">
                                                             <description
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >One of the ancestors of Jesus mentioned in Luke's geneaology</description>
                                                             <rdfs:label
                                                              xml:lang="en"
@@ -1549,7 +1550,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
             <parentOf rdf:resource="#Mahalaleel"/>
             <childOf>
               <Man rdf:ID="Enos">
-                <description xml:lang="en">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
+                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
                 <childOf>
                   <Man rdf:ID="Seth">
                     <rdfs:label xml:lang="en">Seth</rdfs:label>
@@ -1712,7 +1713,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
     <spouseOf rdf:resource="#Isaac"/>
     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</hasOnlyGenealogyMention>
-    <description xml:lang="en">husband of Isaac</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">husband of Isaac</description>
     <parentOf rdf:resource="#Jacob"/>
     <parentOf rdf:resource="#Esau"/>
     <ethnicity rdf:resource="#Jewish"/>
@@ -1752,7 +1753,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                     <spouseOf>
                                                       <Woman rdf:ID="Rachel">
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >one of Jacob's wives</description>
                                                         <rdfs:label
                                                          xml:lang="en"
@@ -1809,7 +1810,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                     <parentOf rdf:resource="#JosephThePatriarch"/>
                                                     <childOf rdf:resource="#Isaac"/>
                                                     <description
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >The patriarch of the nation of Israel, son of Isaac and Abraham</description>
                                                     <parentOf rdf:resource="#Benjamin"/>
                                                     <parentOf rdf:resource="#Gad"/>
@@ -1824,7 +1825,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                             <childOf>
                                                               <Man rdf:ID="Eleazar">
     <rdfs:label xml:lang="en">Eleazar</rdfs:label>
-    <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
     <ethnicity rdf:resource="#Jewish"/>
     <childOf>
       <Man rdf:ID="Eliud">
@@ -1871,13 +1872,13 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
         </childOf>
         <parentOf rdf:resource="#Eleazar"/>
         <ethnicity rdf:resource="#Jewish"/>
-        <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
       </Man>
     </childOf>
     <parentOf rdf:resource="#Matthan"/>                       </Man>
                                                             </childOf>
                                                             <description
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                                             <parentOf rdf:resource="#JacobSonOfMatthan"/>
                                                           </Man>
@@ -1973,7 +1974,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                 <knows>
                   <Woman rdf:ID="Susanna">
                     <ethnicity rdf:resource="#Jewish"/>
-                    <description xml:lang="en">a woman who contributed to Jesus' support</description>
+                    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a woman who contributed to Jesus' support</description>
                     <rdfs:label xml:lang="en">Susanna</rdfs:label>
                     <knows rdf:resource="#MaryMagdalene"/>
                     <knows>
@@ -2045,13 +2046,13 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                      xml:lang="en"
                                                     >See comment on DemetriusTheSilversmith. Keener suggests that 3John is a letter of support which Demetrius carried to Gaius. </rdfs:comment>
                                                     <description
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >a disciple mentioned in 3 John as having a good reputation</description>
                                                     <knows rdf:resource="#GaiusTheBeloved"/>
                                                     <possiblySamePersonAs>
                                                       <Man rdf:ID="DemetriusTheSilversmith">
                                                         <occupation
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >silversmith</occupation>
                                                         <possiblySamePersonAs rdf:resource="#Demetrius"/>
                                                         <rdfs:comment
@@ -2059,7 +2060,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                         >Demetrius was a common name, so it's unlikely this man is the same as the disciple mentioned in 3John.1.12.</rdfs:comment>
                                                         <enemyOf rdf:resource="#Paul"/>
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >a craftsman in Ephesus who made silver shrines of Artemis</description>
                                                         <rdfs:label
                                                          xml:lang="en"
@@ -2079,7 +2080,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                     >Diotrephes</rdfs:label>
                                                     <antagonistOf rdf:resource="#JohnSonOfZebedee"/>
                                                     <description
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >a member of the church to which 3 John was addressed</description>
                                                   </Man>
                                                 </knows>
@@ -2113,7 +2114,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                             <collaboratesWith rdf:resource="#Andrew"/>
                                                             <childOf>
                                                               <Man rdf:ID="Alphaeus">
-    <description xml:lang="en">The father of James, one of the Twelve</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The father of James, one of the Twelve</description>
     <parentOf rdf:resource="#JamesSonOfAlphaeus"/>
     <rdfs:label xml:lang="en">Alphaeus</rdfs:label>
     <spouseOf>
@@ -2189,7 +2190,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
             <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >tanner</occupation>
             <residentPlace rdf:resource="#Joppa"/>
-            <description xml:lang="en">Simon Peter stayed at Simon the Tanner's house in Joppa</description>
+            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Simon Peter stayed at Simon the Tanner's house in Joppa</description>
             <rdfs:label xml:lang="en">Simon</rdfs:label>
           </Man>
         </residentPlaceOf>
@@ -2197,7 +2198,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
         <rdfs:comment xml:lang="en">In Joppa, Peter raised the woman Tabitha from the dead. Later, he had a vision while praying there that prepared him for the coming of the Holy Spirit to the first Gentiles.</rdfs:comment>
       </City>
     </residentPlace>
-    <description xml:lang="en">a Christian in Joppa known for her charity</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian in Joppa known for her charity</description>
     <rdfs:label xml:lang="en">Tabitha</rdfs:label>
     <rdfs:label xml:lang="en">Dorcas</rdfs:label>             </Woman>
                                                             </knows>
@@ -2216,7 +2217,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
         <residentPlace rdf:resource="#Jerusalem"/>
         <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
         >false</hasOnlyGenealogyMention>
-        <description xml:lang="en">a member of the early church who misrepresented a gift and died as a 
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a member of the early church who misrepresented a gift and died as a 
     consequence</description>
       </Woman>
     </spouseOf>
@@ -2320,12 +2321,12 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                 <member rdf:resource="#Gamaliel"/>
                                               </ReligiousOrganization>
                                             </memberOf>
-                                            <description xml:lang="en"
+                                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >a respected Jewish teacher whom Paul studied under</description>
                                             <hasOnlyGenealogyMention
                                              rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
                                             >false</hasOnlyGenealogyMention>
-                                            <occupation xml:lang="en"
+                                            <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >teacher of the Jewish Law</occupation>
                                             <religiousBelief>
                                               <ReligiousBeliefSystem rdf:ID="Phariseeism">
@@ -2381,14 +2382,14 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                         >King of Chalcis from AD 50-92: the last member of the Herodian dynasty</description>
                                         <rdfs:label xml:lang="en"
                                         >Herod Agrippa II</rdfs:label>
-                                        <occupation xml:lang="en"
+                                        <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >king</occupation>
                                         <siblingOf>
                                           <Woman rdf:ID="Bernice">
                                             <ethnicity rdf:resource="#Jewish"/>
                                             <childOf>
                                               <Man rdf:ID="HerodAgrippaI">
-                                                <occupation xml:lang="en"
+                                                <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                 >king</occupation>
                                                 <rdfs:label xml:lang="en"
                                                 >Herod Agrippa I</rdfs:label>
@@ -2399,7 +2400,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                                     "http://www.w3.org/2001/XMLSchema#string"
                                                     >Drusilla's locations are inferred from those of her husband. According to Josephus, she was the daughter of Herod Agrippa I. </rdfs:comment>
                                                     <description
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >wife of Felix</description>
                                                     <childOf rdf:resource="#HerodAgrippaI"/>
                                                     <siblingOf rdf:resource="#Bernice"/>
@@ -2425,7 +2426,7 @@ Since Protege (3.0 build 141) doesn't seem to support loading and saving xml:lan
                                             </childOf>
                                             <siblingOf rdf:resource="#HerodAgrippaII"/>
                                             <siblingOf rdf:resource="#Drusilla"/>
-                                            <description xml:lang="en"
+                                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >a daughter of Herod Agrippa I who heard Paul's defense to her brother, Herod Agrippa II</description>
                                             <hasOnlyGenealogyMention
                                              rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -2678,7 +2679,7 @@ The use of the name Elijah to refer to John the Baptist is figurative.</rdfs:com
                                         <hasOnlyGenealogyMention
                                          rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
                                         >false</hasOnlyGenealogyMention>
-                                        <description xml:lang="en"
+                                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >a woman to whose house Peter came after his release from prison</description>
                                         <ethnicity rdf:resource="#Jewish"/>
                                         <parentOf rdf:resource="#JohnMark"/>
@@ -3026,7 +3027,7 @@ The use of the name Elijah to refer to John the Baptist is figurative.</rdfs:com
                             >true</hasOnlyGenealogyMention>
                             <ethnicity rdf:resource="#Jewish"/>
                             <childOf rdf:resource="#JoshuaSonOfEliezer"/>
-                            <description xml:lang="en">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
                             <parentOf>
                               <Man rdf:ID="Elmadam">
                                 <parentOf>
@@ -3094,7 +3095,7 @@ The use of the name Elijah to refer to John the Baptist is figurative.</rdfs:com
                                   </Man>
                                 </parentOf>
                                 <ethnicity rdf:resource="#Jewish"/>
-                                <description xml:lang="en">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
                                 <hasOnlyGenealogyMention rdf:datatype=
                                 "http://www.w3.org/2001/XMLSchema#boolean"
                                 >true</hasOnlyGenealogyMention>
@@ -3133,7 +3134,7 @@ The use of the name Elijah to refer to John the Baptist is figurative.</rdfs:com
     </owl:differentFrom>
     <childOf rdf:resource="#AlphaeusFatherOfLevi"/>
     <rdfs:label xml:lang="en">Levi</rdfs:label>
-    <description xml:lang="en">One of Jesus' twelve apostles</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of Jesus' twelve apostles</description>
     <ethnicity rdf:resource="#Galilean"/>
     <owl:differentFrom>
       <Man rdf:ID="LeviSonOfMelki">
@@ -3355,7 +3356,7 @@ The use of the name Elijah to refer to John the Baptist is figurative.</rdfs:com
                                 <collaboratesWith rdf:resource="#Jesus"/>
                                 <spouseOf rdf:resource="#Zebedee"/>
                                 <parentOf rdf:resource="#JohnSonOfZebedee"/>
-                                <description xml:lang="en">one of the woman who came to annoint Jesus' body after his crucifixion</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">one of the woman who came to annoint Jesus' body after his crucifixion</description>
                                 <rdfs:label xml:lang="en">Salome</rdfs:label>
                                 <rdfs:comment xml:lang="en">Matthew and Mark's accounts of the crucifixion together identify Salome as the mother of the sons of Zebedee. 
 This is also the traditional name of the daughter of Herodias, whose dance before King Herod led to the beheading of John the Baptist. But this woman is not named in the New Testament. </rdfs:comment>
@@ -3368,7 +3369,7 @@ This is also the traditional name of the daughter of Herodias, whose dance befor
                           </SonOfGod>
                         </collaboratesWith>
                         <rdfs:label xml:lang="en">Joanna</rdfs:label>
-                        <description xml:lang="en">a woman wno contributed to Jesus' support</description>
+                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a woman wno contributed to Jesus' support</description>
                         <religiousBelief rdf:resource="#Christianity"/>
                         <knows rdf:resource="#Susanna"/>
                         <spouseOf>
@@ -3497,7 +3498,7 @@ or only one</rdfs:comment>
         </location>
       </City>
     </visitedPlace>
-    <description xml:lang="en">the mother of Jesus</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the mother of Jesus</description>
     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</hasOnlyGenealogyMention>
     <rdfs:label xml:lang="en">Mary</rdfs:label>
@@ -3519,11 +3520,11 @@ or only one</rdfs:comment>
                                                             >Joseph was Jesus' parent in the normal sense, even though not his biological father.
 Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Jacob. Here I've represented the opinion that Joseph was actually son-in-law of Heli, and that Luke's geneaology describes Mary's lineage rather than Joseph's. </rdfs:comment>
                                                             <occupation
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >carpenter</occupation>
                                                             <parentOf rdf:resource="#Jesus"/>
                                                             <description
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >the earthly father of Jesus</description>
                                                             <rdfs:label
                                                              xml:lang="en"
@@ -3537,7 +3538,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                          xml:lang="en"
                                                         >Jacob</rdfs:label>
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                                       </Man>
                                                     </owl:differentFrom>
@@ -3579,7 +3580,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                 >Reuben</rdfs:label>
                                               </Man>
                                             </siblingOf>
-                                            <description xml:lang="en"
+                                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >One of the 12 Patriarchs of Israel</description>
                                             <rdfs:comment rdf:datatype=
                                             "http://www.w3.org/2001/XMLSchema#string"
@@ -3616,7 +3617,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                     </childOf>
                                     <childOf>
                                       <Woman rdf:ID="Tamar">
-                                        <description xml:lang="en"
+                                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                         <ethnicity rdf:resource="#Jewish"/>
                                         <hasOnlyGenealogyMention
@@ -3629,7 +3630,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                       </Woman>
                                     </childOf>
                                     <siblingOf rdf:resource="#Perez"/>
-                                    <description xml:lang="en"
+                                    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                     >One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                     <rdfs:label xml:lang="en"
                                     >Zerah</rdfs:label>
@@ -3639,7 +3640,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                 <hasOnlyGenealogyMention rdf:datatype=
                                 "http://www.w3.org/2001/XMLSchema#boolean"
                                 >true</hasOnlyGenealogyMention>
-                                <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                 <childOf rdf:resource="#Tamar"/>
                                 <childOf rdf:resource="#Judah"/>
                               </Man>
@@ -3647,12 +3648,12 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                           </Man>
                         </childOf>
                         <rdfs:label xml:lang="en">Arni</rdfs:label>
-                        <description xml:lang="en">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
+                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Luke's geneaology</description>
                       </Man>
                     </possiblySamePersonAs>
                     <rdfs:label xml:lang="en">Ram</rdfs:label>
                     <childOf rdf:resource="#Hezron"/>
-                    <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                     <ethnicity rdf:resource="#Jewish"/>
                   </Man>
                 </childOf>
@@ -3667,7 +3668,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
             >true</hasOnlyGenealogyMention>
             <ethnicity rdf:resource="#Jewish"/>
             <parentOf rdf:resource="#Salmon"/>
-            <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
           </Man>
         </childOf>
       </Man>
@@ -3676,7 +3677,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                             </childOf>
                                                             <childOf rdf:resource="#Salmon"/>
                                                             <description
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                                             <rdfs:label
                                                              xml:lang="en"
@@ -3703,7 +3704,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
       </EthnicityAttribute>
     </ethnicity>
     <rdfs:comment xml:lang="en">An Old Testament figure</rdfs:comment>
-    <description xml:lang="en">an ancestor of King David in Matthew's genealogy of Jesus</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an ancestor of King David in Matthew's genealogy of Jesus</description>
     <parentOf rdf:resource="#Obed"/>
     <spouseOf rdf:resource="#Boaz"/>
     <rdfs:label xml:lang="en">Ruth</rdfs:label>               </Woman>
@@ -3719,13 +3720,13 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                         <childOf rdf:resource="#Ruth"/>
                                                         <ethnicity rdf:resource="#Jewish"/>
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >One of the ancestors of Jesus mentioned in Matthew and Luke's geneaologies</description>
                                                       </Man>
                                                     </childOf>
                                                   </Man>
                                                 </childOf>
-                                                <occupation xml:lang="en"
+                                                <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                 >king of Israel</occupation>
                                                 <enemyOf>
                                                   <Man rdf:ID="Uriah">
@@ -3737,12 +3738,12 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                      xml:lang="en"
                                                     >From OT sources, Uriah was a Hittite and a soldier in David's army (therefore having both collaboratesWith and hasEnemy relationships with David). </rdfs:comment>
                                                     <occupation
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >soldier</occupation>
                                                     <collaboratesWith rdf:resource="#David"/>
                                                     <hasEnemy rdf:resource="#David"/>
                                                     <description
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                                                     <hasOnlyGenealogyMention
                                                      rdf:datatype=
@@ -3770,7 +3771,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                           </Woman>
                                         </childOf>
                                         <childOf rdf:resource="#David"/>
-                                        <description xml:lang="en"
+                                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >King of Israel renowned for his wisdom</description>
                                       </Man>
                                     </childOf>
@@ -3787,9 +3788,9 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                             <rdfs:comment xml:lang="en">Not the same as the psalmist and leader of King David's choir in 1Chr.6.39.</rdfs:comment>
                           </Man>
                         </childOf>
-                        <occupation xml:lang="en">king of Judah</occupation>
+                        <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king of Judah</occupation>
                         <parentOf rdf:resource="#Joram"/>
-                        <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                         <rdfs:label xml:lang="en">Jehoshaphat</rdfs:label>
                         <ethnicity rdf:resource="#Jewish"/>
                         <hasOnlyGenealogyMention rdf:datatype=
@@ -3798,18 +3799,18 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                       </Man>
                     </childOf>
                     <ethnicity rdf:resource="#Jewish"/>
-                    <description xml:lang="en">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
+                    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the ancestors of Jesus mentioned in Matthew's geneaology</description>
                     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
                     >true</hasOnlyGenealogyMention>
                     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                     >His occupation as King comes from Old Testament sources. </rdfs:comment>
                     <rdfs:label xml:lang="en">Joram</rdfs:label>
-                    <occupation xml:lang="en">king of Judah</occupation>
+                    <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king of Judah</occupation>
                   </Man>
                 </childOf>
                 <parentOf rdf:resource="#Jotham"/>
                 <ethnicity rdf:resource="#Jewish"/>
-                <occupation xml:lang="en">king of Judah</occupation>
+                <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king of Judah</occupation>
                 <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                 >His occupation as King comes from Old Testament sources. </rdfs:comment>
                 <rdfs:label xml:lang="en">Uzziah</rdfs:label>
@@ -3817,14 +3818,14 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
             </childOf>
           </Man>
         </childOf>
-        <description xml:lang="en">King of Judah during the time of Isaiah</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">King of Judah during the time of Isaiah</description>
         <parentOf rdf:resource="#Hezekiah"/>
         <ethnicity rdf:resource="#Jewish"/>
         <rdfs:label xml:lang="en">Ahaz</rdfs:label>
         <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
         >true</hasOnlyGenealogyMention>
         <rdfs:comment xml:lang="en">See OT descriptions in 2 Kings 16; Isa. 7-9; 2 Chr. 28.</rdfs:comment>
-        <occupation xml:lang="en">king</occupation>
+        <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king</occupation>
       </Man>
     </childOf>
     <rdfs:label xml:lang="en">Hezekiah</rdfs:label>
@@ -4055,7 +4056,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
         <rdfs:label xml:lang="en">Tertius</rdfs:label>
         <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
         >false</hasOnlyGenealogyMention>
-        <description xml:lang="en">the scribe of Paul's letter to the Roman church</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the scribe of Paul's letter to the Roman church</description>
         <residentPlace rdf:resource="#Corinth"/>
         <collaboratesWith rdf:resource="#Paul"/>
         <religiousBelief rdf:resource="#Christianity"/>
@@ -4233,7 +4234,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                 <possiblySamePersonAs>
                                                   <Man rdf:ID="ErastusTheTreasurer">
                                                     <occupation
-                                                     xml:lang="en"
+                                                     rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                     >treasurer</occupation>
                                                     <knows rdf:resource="#Paul"/>
                                                     <possiblySamePersonAs rdf:resource="#Erastus"/>
@@ -4256,7 +4257,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                 <rdfs:comment
                                                  xml:lang="en"
                                                 >There are two references to this Erastus: it's possible they represent two different people. See also the comment on ErastusTheTreasurer.	</rdfs:comment>
-                                                <description xml:lang="en"
+                                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                 >a travelling companion of Paul</description>
                                                 <hasOnlyGenealogyMention
                                                  rdf:datatype=
@@ -4298,7 +4299,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                         <collaboratesWith rdf:resource="#Secundus"/>
                                         <collaboratesWith>
                                           <Man rdf:ID="Aristarchus">
-                                            <description xml:lang="en"
+                                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >a traveling companion of Paul</description>
                                             <collaboratesWith rdf:resource="#Sopater"/>
                                             <hasOnlyGenealogyMention
@@ -4530,7 +4531,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
     </location>
     <residentPlaceOf>
       <Man rdf:ID="Jason">
-        <description xml:lang="en"> a companion of Paul's who sent greetings to the Roman church</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> a companion of Paul's who sent greetings to the Roman church</description>
         <knows rdf:resource="#Timothy"/>
         <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
         >false</hasOnlyGenealogyMention>
@@ -4545,7 +4546,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
             <knows rdf:resource="#Jason"/>
             <knows rdf:resource="#ErastusTheTreasurer"/>
             <knows rdf:resource="#GaiusOfCorinth"/>
-            <description xml:lang="en">a companion of Paul's who sent greetings to the Roman church</description>
+            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a companion of Paul's who sent greetings to the Roman church</description>
             <knows rdf:resource="#Tertius"/>
             <residentPlace rdf:resource="#Corinth"/>
             <knows>
@@ -4706,7 +4707,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
     </location>                                               </City>
                                                             </nativePlace>
                                                             <occupation
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >ruler</occupation>
                                                             <ethnicity rdf:resource="#Canaanite"/>
                                                             <hasOnlyGenealogyMention
@@ -4755,7 +4756,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                     <ethnicityOf>
                                                       <Man rdf:ID="Gideon">
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >a  judge of Israel prior to the monarchy</description>
                                                         <rdfs:label
                                                          xml:lang="en"
@@ -4789,7 +4790,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
     <residentPlaceOf>
       <Woman rdf:ID="Martha">
         <residentPlace rdf:resource="#Bethany"/>
-        <description xml:lang="en">the sister of Lazarus and Mary who annointed Jesus before his death</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the sister of Lazarus and Mary who annointed Jesus before his death</description>
         <knows rdf:resource="#Jesus"/>
         <rdfs:label xml:lang="en">Martha</rdfs:label>
         <ethnicity rdf:resource="#Jewish"/>
@@ -4805,7 +4806,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                              xml:lang="en"
                                                             >There's no evidence to suggest a connection between Lazarus of Bethany and the same-named subject of Jesus' parable.</rdfs:comment>
                                                             <description
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >a man Jesus brought back to life</description>
                                                             <rdfs:label
                                                              xml:lang="en"
@@ -4816,7 +4817,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                           </Man>
                                                         </siblingOf>
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >a follower of Jesus who annointed him late in his ministry</description>
                                                         <religiousBelief rdf:resource="#Christianity"/>
                                                         <rdfs:label
@@ -4941,7 +4942,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                         >Elisha</rdfs:label>
                                                         <ethnicity rdf:resource="#Jewish"/>
                                                         <description
-                                                         xml:lang="en"
+                                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                         >an Old Testament prophet</description>
                                                       </Man>
                                                     </ethnicityOf>
@@ -4963,7 +4964,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
     <rdfs:label xml:lang="en">Alexander</rdfs:label>
     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</hasOnlyGenealogyMention>
-    <description xml:lang="en">Probably an early Christian known to Mark, who mentions him as the son of Simon of Cyrene, who was compelled to carry Jesus' cross</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Probably an early Christian known to Mark, who mentions him as the son of Simon of Cyrene, who was compelled to carry Jesus' cross</description>
                                                               </Man>
                                                             </siblingOf>
                                                             <rdfs:label
@@ -5037,7 +5038,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                                              xml:lang="en"
                                                             >Candace is actually a title like "Pharaoh" rather than a personal name, hence her occupation as queen.</rdfs:comment>
                                                             <occupation
-                                                             xml:lang="en"
+                                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                                             >queen</occupation>
                                                           </Woman>
                                                         </ethnicityOf>
@@ -5279,13 +5280,13 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                             >Greek ethnicity is suggested by his surname. </rdfs:comment>
                                             <knows rdf:resource="#Felix"/>
                                             <knows rdf:resource="#Paul"/>
-                                            <occupation xml:lang="en"
+                                            <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >tribune</occupation>
                                             <hasOnlyGenealogyMention
                                              rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
                                             >false</hasOnlyGenealogyMention>
                                             <residentPlace rdf:resource="#Jerusalem"/>
-                                            <description xml:lang="en"
+                                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                             >the military tribune commanding the Roman forces in Jerusalem</description>
                                           </Man>
                                         </residentPlaceOf>
@@ -5414,7 +5415,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                             <residentPlace rdf:resource="#Rome"/>
                             <rdfs:label xml:lang="en">Julia</rdfs:label>
                             <religiousBelief rdf:resource="#Christianity"/>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <knows rdf:resource="#Paul"/>
                             <knows rdf:resource="#Priscilla"/>
                             <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -5447,7 +5448,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                 </collaboratesWith>
                                 <collaboratesWith rdf:resource="#Euodia"/>
                                 <religiousBelief rdf:resource="#Christianity"/>
-                                <description xml:lang="en">a Philippian Christian who worked alongside Paul</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Philippian Christian who worked alongside Paul</description>
                                 <hasOnlyGenealogyMention rdf:datatype=
                                 "http://www.w3.org/2001/XMLSchema#boolean"
                                 >false</hasOnlyGenealogyMention>
@@ -5457,7 +5458,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                     <visitedPlaceOf>
                                       <Woman rdf:ID="Lydia">
                                         <collaboratesWith rdf:resource="#Paul"/>
-                                        <description xml:lang="en"
+                                        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >a convert from Paul's preaching in Philippi</description>
                                         <visitedPlace rdf:resource="#Philippi"/>
                                         <nativePlace>
@@ -5482,7 +5483,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                                             >Thyatira</rdfs:label>
                                           </City>
                                         </nativePlace>
-                                        <occupation xml:lang="en"
+                                        <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                         >seller of purple goods</occupation>
                                         <hasOnlyGenealogyMention
                                          rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -5538,14 +5539,14 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                             >false</hasOnlyGenealogyMention>
                             <rdfs:comment xml:lang="en">The circumstances behind his "turning away" from Paul are unknown. Likewise, Paul's description of him as being "is Asia" isn't specific enough to assign a place. </rdfs:comment>
                             <rdfs:label xml:lang="en">Phygelus</rdfs:label>
-                            <description xml:lang="en">a Christian who refused to help Paul during his Roman imprisonment</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian who refused to help Paul during his Roman imprisonment</description>
                             <knows rdf:resource="#Paul"/>
                             <knows>
                               <Man rdf:ID="Hermogenes">
                                 <hasOnlyGenealogyMention rdf:datatype=
                                 "http://www.w3.org/2001/XMLSchema#boolean"
                                 >false</hasOnlyGenealogyMention>
-                                <description xml:lang="en">a Christian who refused to help Paul during his Roman imprisonment</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian who refused to help Paul during his Roman imprisonment</description>
                                 <rdfs:label xml:lang="en">Hermogenes</rdfs:label>
                                 <knows rdf:resource="#Paul"/>
                                 <knows rdf:resource="#Phygelus"/>
@@ -5577,7 +5578,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <knows rdf:resource="#Paul"/>
                             <knows rdf:resource="#Priscilla"/>
                             <religiousBelief rdf:resource="#Christianity"/>
@@ -5586,7 +5587,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                         </knows>
                         <knows>
                           <Man rdf:ID="Hermas">
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <residentPlace rdf:resource="#Rome"/>
                             <rdfs:label xml:lang="en">Hermas</rdfs:label>
                             <knows rdf:resource="#Priscilla"/>
@@ -5607,7 +5608,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                             >false</hasOnlyGenealogyMention>
                             <residentPlace rdf:resource="#Rome"/>
                             <rdfs:label xml:lang="en">Apelles</rdfs:label>
-                            <description xml:lang="en">a Christian in Rome whom Paul greeted</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian in Rome whom Paul greeted</description>
                             <religiousBelief rdf:resource="#Christianity"/>
                             <knows rdf:resource="#Paul"/>
                             <knows rdf:resource="#Priscilla"/>
@@ -5661,7 +5662,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <residentPlace rdf:resource="#Rome"/>
                             <religiousBelief rdf:resource="#Christianity"/>
                             <knows rdf:resource="#Priscilla"/>
@@ -5672,7 +5673,7 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
                         >tentmaker</occupation>
                         <knows>
                           <Woman rdf:ID="MaryOfRome">
-                            <description xml:lang="en">a woman to whom Paul sent greetings in his letter to the Romans</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a woman to whom Paul sent greetings in his letter to the Romans</description>
                             <religiousBelief rdf:resource="#Christianity"/>
                             <knows rdf:resource="#Priscilla"/>
                             <knows rdf:resource="#Paul"/>
@@ -5695,12 +5696,12 @@ Luke 3:23 has "Joseph, son of Heli", though Matthew has Joseph's father named Ja
 Rome as a visitedPlace assumes Paul was there while writing Philippians. </rdfs:comment>
                                 <owl:differentFrom rdf:resource="#Epaphras"/>
                                 <collaboratesWith rdf:resource="#Paul"/>
-                                <description xml:lang="en">A Christian sent by the Philippian church with a gift for Paul</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Christian sent by the Philippian church with a gift for Paul</description>
                               </Man>
                             </owl:differentFrom>
-                            <description xml:lang="en">A fellow minister with Paul, and likely founder of the Colossian church</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A fellow minister with Paul, and likely founder of the Colossian church</description>
                             <rdfs:comment xml:lang="en">Paul mentions that Epaphras "worked hard" for those in Laodicea and Hierapolis, so it's possible (but not certain) he visited there as well. </rdfs:comment>
-                            <occupation xml:lang="en">missionary</occupation>
+                            <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">missionary</occupation>
                           </Man>
                         </collaboratesWith>
                         <collaboratesWith rdf:resource="#Syntyche"/>
@@ -5732,7 +5733,7 @@ Rome as a visitedPlace assumes Paul was there while writing Philippians. </rdfs:
                             <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                             >A resident of Ephesus who caused Paul "great harm"</description>
                             <enemyOf rdf:resource="#Paul"/>
-                            <occupation xml:lang="en">coppersmith</occupation>
+                            <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">coppersmith</occupation>
                             <rdfs:label xml:lang="en">Alexander</rdfs:label>
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
@@ -5743,7 +5744,7 @@ Rome as a visitedPlace assumes Paul was there while writing Philippians. </rdfs:
                           <Man rdf:ID="Epaenetus">
                             <rdfs:label xml:lang="en">Epaenetus</rdfs:label>
                             <residentPlace rdf:resource="#Rome"/>
-                            <description xml:lang="en">A Christian in Rome whom Paul describes as "the first convert to Christ in Asia"</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Christian in Rome whom Paul describes as "the first convert to Christ in Asia"</description>
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
@@ -5775,12 +5776,12 @@ Rome as a visitedPlace assumes Paul was there while writing Philippians. </rdfs:
                                 <rdfs:comment xml:lang="en">Given their joint mention by Paul, it seems likely that Junia was Andronicus' spouse, though this is not explicitly stated. Paul's description of Andronicus and Junia as "my kinsmen" is taken in the general sense (e.g. coming from the same region), rather than literally. 
 Given they were Christians before Paul, their conversion must have been relatively early in the history of the church, and so it is quite likely they also visited Jerusalem (though this is nowhere stated). 
 Much controversy rests on whether this description means they were well-known _to_ the apostles, or well-known _as_ apostles. </rdfs:comment>
-                                <description xml:lang="en">a "kinsman" and fellow prisoner of Paul</description>
+                                <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a "kinsman" and fellow prisoner of Paul</description>
                                 <knows rdf:resource="#Priscilla"/>
                                 <religiousBelief rdf:resource="#Christianity"/>
                               </Woman>
                             </collaboratesWith>
-                            <description xml:lang="en">A Christian in Rome to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Christian in Rome to whom Paul sent greetings</description>
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
@@ -5819,7 +5820,7 @@ Much controversy rests on whether this description means they were well-known _t
                                 <residentPlaceOf rdf:resource="#Nympha"/>
                               </City>
                             </residentPlace>
-                            <description xml:lang="en">the church in Laodicea met in her house</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the church in Laodicea met in her house</description>
                             <rdfs:label xml:lang="en">Nympha</rdfs:label>
                           </Woman>
                         </collaboratesWith>
@@ -5849,7 +5850,7 @@ Much controversy rests on whether this description means they were well-known _t
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
                             <rdfs:label xml:lang="en">Nereus</rdfs:label>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                           </Man>
                         </knows>
                         <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -5861,7 +5862,7 @@ Much controversy rests on whether this description means they were well-known _t
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <knows rdf:resource="#Paul"/>
                             <knows rdf:resource="#Priscilla"/>
                             <religiousBelief rdf:resource="#Christianity"/>
@@ -5871,7 +5872,7 @@ Much controversy rests on whether this description means they were well-known _t
                         </knows>
                         <knows>
                           <Man rdf:ID="Philologus">
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <residentPlace rdf:resource="#Rome"/>
                             <knows rdf:resource="#Paul"/>
                             <knows rdf:resource="#Priscilla"/>
@@ -5887,7 +5888,7 @@ Much controversy rests on whether this description means they were well-known _t
                             <rdfs:label xml:lang="en">Olympas</rdfs:label>
                             <residentPlace rdf:resource="#Rome"/>
                             <religiousBelief rdf:resource="#Christianity"/>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <knows rdf:resource="#Priscilla"/>
                             <knows rdf:resource="#Paul"/>
                             <hasOnlyGenealogyMention rdf:datatype=
@@ -5931,7 +5932,7 @@ Much controversy rests on whether this description means they were well-known _t
                           <Man rdf:ID="Asyncritus">
                             <rdfs:label xml:lang="en">Asyncritus</rdfs:label>
                             <residentPlace rdf:resource="#Rome"/>
-                            <description xml:lang="en">a Roman to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Roman to whom Paul sent greetings</description>
                             <hasOnlyGenealogyMention rdf:datatype=
                             "http://www.w3.org/2001/XMLSchema#boolean"
                             >false</hasOnlyGenealogyMention>
@@ -5944,7 +5945,7 @@ Much controversy rests on whether this description means they were well-known _t
                         <knows>
                           <Man rdf:ID="Stachys">
                             <residentPlace rdf:resource="#Rome"/>
-                            <description xml:lang="en">a Christian in Rome to whom Paul sent greetings</description>
+                            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian in Rome to whom Paul sent greetings</description>
                             <knows rdf:resource="#Paul"/>
                             <knows rdf:resource="#Priscilla"/>
                             <hasOnlyGenealogyMention rdf:datatype=
@@ -5978,7 +5979,7 @@ Much controversy rests on whether this description means they were well-known _t
                       </Man>
                     </collaboratesWith>
                     <knows rdf:resource="#Priscilla"/>
-                    <description xml:lang="en">a Christian in Rome to whom Paul sent greetings</description>
+                    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian in Rome to whom Paul sent greetings</description>
                   </Man>
                 </knows>
                 <knows rdf:resource="#Hermas"/>
@@ -6052,7 +6053,7 @@ Much controversy rests on whether this description means they were well-known _t
             <knows rdf:resource="#Timothy"/>
             <rdfs:label xml:lang="en">Claudia</rdfs:label>
             <knows rdf:resource="#Eubulus"/>
-            <description xml:lang="en">a Christian who sent greeetings to Timothy in Paul's second epislte.</description>
+            <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a Christian who sent greeetings to Timothy in Paul's second epislte.</description>
             <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >Rome as ResidentPlace because Paul was imprisoned there when writing to Timothy.</rdfs:comment>
             <religiousBelief rdf:resource="#Christianity"/>
@@ -6498,7 +6499,7 @@ Paul describes her as "our sister", presumably in Christ rather than literally. 
     >false</hasOnlyGenealogyMention>
     <rdfs:label xml:lang="en">Gog</rdfs:label>
     <rdfs:comment xml:lang="en">The historic background of the reference to Gog is most likely the Lydian king in the 7th Century BC. Its usage in Revelation seems to describe a group of people,  but it is hard to be certain what is intended in this apocalyptic context.</rdfs:comment>
-    <description xml:lang="en">an apocalyptic opponent of God's people</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an apocalyptic opponent of God's people</description>
   </GroupOfPeople>
   <Island rdf:ID="Malta">
     <location>
@@ -6642,7 +6643,7 @@ Paul describes her as "our sister", presumably in Christ rather than literally. 
         >false</hasOnlyGenealogyMention>
         <rdfs:comment xml:lang="en">Damaris was converted through Paul's preaching in Athens.</rdfs:comment>
         <knows rdf:resource="#Paul"/>
-        <description xml:lang="en">a convert from Paul's address to the Aeropagus</description>
+        <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a convert from Paul's address to the Aeropagus</description>
       </Woman>
     </residentPlaceOf>
     <rdfs:label xml:lang="en">Athens</rdfs:label>
@@ -7041,7 +7042,7 @@ Paul describes her as "our sister", presumably in Christ rather than literally. 
   </SupernaturalBeing>
   <Man rdf:ID="Pharaoh">
     <rdfs:comment xml:lang="en">Pharaoh is actually a title rather than a personal name, but in the New Testament it refers to a single individual.</rdfs:comment>
-    <occupation xml:lang="en">king</occupation>
+    <occupation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">king</occupation>
     <rdfs:label xml:lang="en">Pharaoh</rdfs:label>
   </Man>
   <GeographicLocation rdf:ID="SardisGeodata">
@@ -7229,7 +7230,7 @@ Paul describes her as "our sister", presumably in Christ rather than literally. 
   <Woman rdf:ID="Jezebel">
     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</hasOnlyGenealogyMention>
-    <description xml:lang="en">the pagan wife of Ahab in the Old Testament</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the pagan wife of Ahab in the Old Testament</description>
     <rdfs:label xml:lang="en">Jezebel</rdfs:label>
     <rdfs:comment xml:lang="en">This may be a figurative reference based on the pagan wife of Ahab in the Old Testament, rather than the actual name of a contemporary person.</rdfs:comment>
   </Woman>
@@ -7387,7 +7388,7 @@ Part of the Decapolis.</rdfs:comment>
     <hasOnlyGenealogyMention rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</hasOnlyGenealogyMention>
     <rdfs:label xml:lang="en">Magog</rdfs:label>
-    <description xml:lang="en">an apocalyptic opponent of God's people</description>
+    <description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an apocalyptic opponent of God's people</description>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Though in its original Old Testament context Magog  referred to a region, its New Testament usage seems to describe a group of people. </rdfs:comment>
   </GroupOfPeople>
