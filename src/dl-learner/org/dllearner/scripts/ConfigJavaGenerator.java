@@ -72,11 +72,11 @@ public final class ConfigJavaGenerator {
 				ISLEConfigurator.class.getSimpleName()
 				}));
 	
-	@SuppressWarnings("unchecked")
-	private static final Class EXTENDSREFINEMENTOPERATORCLASS = RefinementOperatorConfigurator.class;
+	private static final Class<RefinementOperatorConfigurator> EXTENDSREFINEMENTOPERATORCLASS = RefinementOperatorConfigurator.class;
 
 //	private static final boolean INCLUDE_UNUSED = false;
 
+	@SuppressWarnings("unused")
 	private static final String UNUSED = "@SuppressWarnings(\"unused\")\n";
 	private static final String OVERRIDE = "@SuppressWarnings(\"all\")\n";
 
@@ -297,7 +297,7 @@ public final class ConfigJavaGenerator {
 		}
 
 		body.add("private boolean " + REINITVAR + " = false;");
-		body.add(UNUSED);
+//		body.add(UNUSED);
 		body.add(expandCollection(vars, "", "", 0));
 		body.add(fillConstructorTemplate(className));
 

@@ -86,7 +86,6 @@ public class OntologyEngineering {
 	private static boolean computeApproxDiff = true;
 	private static boolean useFMeasure = false;
 	
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ComponentInitException,
 			LearningProblemUnsupportedException, IOException {
 

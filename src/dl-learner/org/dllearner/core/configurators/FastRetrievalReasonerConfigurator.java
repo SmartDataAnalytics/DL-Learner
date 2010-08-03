@@ -32,8 +32,6 @@ import org.dllearner.reasoning.FastRetrievalReasoner;
 public  class FastRetrievalReasonerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private FastRetrievalReasoner fastRetrievalReasoner;
 
 /**

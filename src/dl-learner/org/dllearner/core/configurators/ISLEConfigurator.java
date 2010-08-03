@@ -35,8 +35,6 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 public  class ISLEConfigurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private ISLE iSLE;
 
 /**

@@ -213,7 +213,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 					// werden dürfen
 					// List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
 					// TODO: Class Cast ist nur ein Hack
-					List<Description> newChildren = (List<Description>)((LinkedList)concept.getChildren()).clone();
+					List<Description> newChildren = (List<Description>)((LinkedList<Description>)concept.getChildren()).clone();
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					// int index = newChildren.indexOf(child);

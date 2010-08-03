@@ -471,7 +471,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				
 				// create new intersection
 				for(Description c : tmp) {
-					List<Description> newChildren = (List<Description>)((LinkedList)description.getChildren()).clone();
+					List<Description> newChildren = (List<Description>)((LinkedList<Description>)description.getChildren()).clone();
 					newChildren.add(c);
 					newChildren.remove(child);
 					Intersection mc = new Intersection(newChildren);

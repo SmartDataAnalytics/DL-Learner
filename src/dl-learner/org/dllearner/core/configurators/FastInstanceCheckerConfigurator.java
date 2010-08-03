@@ -32,8 +32,6 @@ import org.dllearner.reasoning.FastInstanceChecker;
 public  class FastInstanceCheckerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
 private FastInstanceChecker fastInstanceChecker;
 
 /**
