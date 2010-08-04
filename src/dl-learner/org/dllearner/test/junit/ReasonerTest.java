@@ -74,7 +74,7 @@ public class ReasonerTest {
 	
 	private Set<File> getTestConfigFiles(){
 		Set<File> files = new HashSet<File>();
-		File directory = new File("examples" + File.separator + "testReasoners");
+		File directory = new File("test" + File.separator + "testReasoners");
 		for(File file : directory.listFiles()){
 			if(file.toString().endsWith(".conf")){
 				files.add(file);
