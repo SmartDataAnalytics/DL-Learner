@@ -558,6 +558,12 @@ allowed values: int  min 1 max 100
 default value: 10
 conf file usage: celoe.maxNrOfResults = 10;
 
+option name: maxClassDescriptionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+allowed values: int 
+default value: 0
+conf file usage: celoe.maxClassDescriptionTests = 0;
+
 option name: singleSuggestionMode
 description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
 allowed values: boolean

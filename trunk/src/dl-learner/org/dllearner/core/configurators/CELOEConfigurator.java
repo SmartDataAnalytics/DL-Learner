@@ -182,6 +182,15 @@ public int getMaxNrOfResults() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxNrOfResults") ;
 }
 /**
+* maxClassDescriptionTests The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.).
+* mandatory: false| reinit necessary: true
+* default value: 0
+* @return int 
+**/
+public int getMaxClassDescriptionTests() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxClassDescriptionTests") ;
+}
+/**
 * singleSuggestionMode Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples..
 * mandatory: false| reinit necessary: true
 * default value: false
@@ -369,6 +378,15 @@ reinitNecessary = true;
 **/
 public void setMaxNrOfResults(int maxNrOfResults) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "maxNrOfResults", maxNrOfResults);
+reinitNecessary = true;
+}
+/**
+* @param maxClassDescriptionTests The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.).
+* mandatory: false| reinit necessary: true
+* default value: 0
+**/
+public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "maxClassDescriptionTests", maxClassDescriptionTests);
 reinitNecessary = true;
 }
 /**

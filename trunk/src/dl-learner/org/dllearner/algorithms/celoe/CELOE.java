@@ -173,6 +173,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(CommonConfigOptions.getMaxDepth(7));
 		options.add(CommonConfigOptions.maxNrOfResults(10));
+		options.add(CommonConfigOptions.maxClassDescriptionTests());
 		options.add(new BooleanConfigOption("singleSuggestionMode", "Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.", false));
 		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
 		options.add(new BooleanConfigOption("filterDescriptionsFollowingFromKB", "If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.", false));
@@ -671,7 +672,10 @@ public class CELOE extends LearningAlgorithm {
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-		return stop || ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l));
+		return 
+		stop || 
+		(configurator.getMaxClassDescriptionTests() != 0 && (expressionTests >= configurator.getMaxClassDescriptionTests())) ||
+		(configurator.getMaxExecutionTimeInSeconds() != 0 && ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l)));
 	}
 	
 	private void reset() {
