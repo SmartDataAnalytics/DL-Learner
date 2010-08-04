@@ -41,6 +41,7 @@ import org.dllearner.cli.QuickStart;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
 
@@ -71,6 +72,10 @@ public class ExampleTests {
 		
 		// GPs can be excluded temporarily (because those tests are very time-consuming)
 		boolean testGP = false;
+		
+		// setting for SPARQL based tests (0 = no special treatment, 1 = test only SPARQL
+		// examples, 2 = skip SPARQL tests)
+		int sparql = 0;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
@@ -118,10 +123,7 @@ public class ExampleTests {
 		// ignored due to errors (should be fixed; in case of long running problems or
 		// our of memory, it is better to increase the noise parameter and add comments
 		// in the conf file about "optimal" parameters)
-		
-		// problems before latest release (kept to see if errors re-occurr,
-		// delete before next release)
-		// ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error
+		 ignore.add("./examples/sparql/govtrack.conf"); // blank node handling error
 		//working fine here ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
 		// ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
 		// ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error => disallowing ALL helps (TODO find out details) 
@@ -148,16 +150,22 @@ public class ExampleTests {
 			} else {
 				System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
 				long startTime = System.nanoTime();
-				boolean success = false;
+				boolean success = false, started = false;
 				try {
 					// start example
 					Start start = new Start(new File(conf));
-					if(testGP || !(start.getLearningAlgorithm() instanceof GP)) {
+//					System.out.println("algorithm: " + start.getLearningAlgorithm());
+					boolean isSparql = start.getSources().iterator().next() instanceof SparqlKnowledgeSource;
+					if((testGP || !(start.getLearningAlgorithm() instanceof GP)) &&
+							(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
+						started = true;
 						start.start(false);
 						// test is successful if a concept was learned
 						assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
 						start.getReasonerComponent().releaseKB();
 						success = true;						
+					} else {
+						System.out.println("Test skipped, because of GP/SPARQL settings.");
 					}
 				} catch (Exception e) {
 					// unit test not succesful (exceptions are caught explicitly to find 
@@ -167,10 +175,12 @@ public class ExampleTests {
 				}
 				long timeNeeded = System.nanoTime() - startTime;
 				ComponentManager.getInstance().freeAllComponents();
-				if(!success) {
+				if(!success && started) {
 					System.out.println("TEST FAILED.");
 				}
-				System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+				if(started) {
+					System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+				}
 			}	
 			counter++;
 		}
