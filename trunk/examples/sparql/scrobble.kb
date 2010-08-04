@@ -5,11 +5,3 @@
 // progressive rock is rock
 "http://dbtune.org/musicbrainz/resource/tag/29" SUBCLASSOF "http://dbtune.org/musicbrainz/resource/tag/7".
 
-//repetition for valid xml by OWL API
-
-// english implies british
-"http://dbtune.org/musicbrainz/resource/tag/tag1391" SUBCLASSOF  "http://dbtune.org/musicbrainz/resource/tag/tag171".
-// Britain = UK
-"http://dbtune.org/musicbrainz/resource/tag/tag171" = "http://dbtune.org/musicbrainz/resource/tag/tag237".
-// progressive rock is rock
-"http://dbtune.org/musicbrainz/resource/tag/tag29" SUBCLASSOF "http://dbtune.org/musicbrainz/resource/tag/tag7".

@@ -124,6 +124,8 @@ public class ExampleTests {
 		// our of memory, it is better to increase the noise parameter and add comments
 		// in the conf file about "optimal" parameters)
 		 ignore.add("./examples/sparql/govtrack.conf"); // blank node handling error
+		 ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // XML parse error (works sometimes)
+		 
 		//working fine here ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
 		// ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
 		// ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error => disallowing ALL helps (TODO find out details) 
@@ -165,7 +167,7 @@ public class ExampleTests {
 						start.getReasonerComponent().releaseKB();
 						success = true;						
 					} else {
-						System.out.println("Test skipped, because of GP/SPARQL settings.");
+						System.out.println("Test skipped, because of GP or SPARQL settings.");
 					}
 				} catch (Exception e) {
 					// unit test not succesful (exceptions are caught explicitly to find 
