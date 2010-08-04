@@ -176,6 +176,26 @@ public Set<String> getIgnoredConcepts() {
 return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "ignoredConcepts") ;
 }
 /**
+* allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
+* default value: null
+* @return Set(String) 
+**/
+@SuppressWarnings("unchecked")
+public Set<String> getAllowedRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "allowedRoles") ;
+}
+/**
+* ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
+* default value: null
+* @return Set(String) 
+**/
+@SuppressWarnings("unchecked")
+public Set<String> getIgnoredRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "ignoredRoles") ;
+}
+/**
 * useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
 * mandatory: false| reinit necessary: true
 * default value: true
@@ -525,6 +545,24 @@ reinitNecessary = true;
 **/
 public void setIgnoredConcepts(Set<String> ignoredConcepts) {
 ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "ignoredConcepts", ignoredConcepts);
+reinitNecessary = true;
+}
+/**
+* @param allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
+* default value: null
+**/
+public void setAllowedRoles(Set<String> allowedRoles) {
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "allowedRoles", allowedRoles);
+reinitNecessary = true;
+}
+/**
+* @param ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
+* default value: null
+**/
+public void setIgnoredRoles(Set<String> ignoredRoles) {
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "ignoredRoles", ignoredRoles);
 reinitNecessary = true;
 }
 /**

@@ -1,7 +1,7 @@
 README
 ======
 
-DL-Learner ist a tool to learn Description Logic concepts from positive and 
+DL-Learner is a tool to learn Description Logic concepts from positive and 
 negative examples. Equivalently, it can learn OWL classes given objects as
 positive and negative instances.
 
@@ -11,8 +11,18 @@ Bugs & Feature Requests: http://sourceforge.net/tracker/?group_id=203619
 Mailing Lists: http://sourceforge.net/mail/?group_id=203619
 Latest Release: http://sourceforge.net/project/showfiles.php?group_id=203619
 
-DL-Learner is Open Source and licenced unter the GNU General Public License.
-
 Documentation for DL-Learner (e.g. various configuration options) can be found
 in the "doc" directory and at http://dl-learner.org. We recommend to read
 doc/manual.pdf to get started.
+
+DL-Learner is Open Source and licensed under the GNU General Public License.
+(Copyright (c) 2007-2010, Jens Lehmann).
+
+DL-Learner uses several other libraries. An incomplete list is as follows:
+  * OWL API (licensed under LGPL)
+  * Pellet (licensed under AGPL 3 , (c) Clark & Parsia LLC)
+  * FaCT++ (licensed under LGPL, (c) The Victoria University of Manchester) 
+  * HermiT (licensed under LGPL)
+  * Jena (Jena license, (c) Copyright Hewlett-Packard)
+  * Protege (licensed under MPL)
+  

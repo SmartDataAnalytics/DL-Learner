@@ -44,6 +44,8 @@ import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.ConfigOption;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.utilities.Files;
 
 /**
@@ -297,7 +299,10 @@ public final class ConfigJavaGenerator {
 		}
 
 		body.add("private boolean " + REINITVAR + " = false;");
-//		body.add(UNUSED);
+		// suppress warnings if necessary
+		if(component.equals(FastRetrievalReasoner.class) || component.equals(OWLAPIOntology.class)) {
+			body.add(UNUSED);
+		}
 		body.add(expandCollection(vars, "", "", 0));
 		body.add(fillConstructorTemplate(className));
 
