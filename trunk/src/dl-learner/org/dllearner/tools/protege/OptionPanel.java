@@ -20,10 +20,12 @@
 package org.dllearner.tools.protege;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -69,6 +71,9 @@ public class OptionPanel extends JPanel {
 	 * Constructor for the Option Panel. 
 	 */
 	public OptionPanel() {
+		
+		setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), 
+				BorderFactory.createTitledBorder("Options")));
 		setLayout(new BorderLayout());
 		optionHandler = new OptionPanelHandler(this);
 		labelPanel = new JPanel();
@@ -78,7 +83,7 @@ public class OptionPanel extends JPanel {
 		profilePanel = new JPanel();
 		profilePanel.setLayout(new GridLayout(0, 1));
 		radioBoxPanel = new JPanel();
-		radioBoxPanel.setLayout(new GridLayout(1, 3));
+		radioBoxPanel.setLayout(new FlowLayout());
 		checkBoxPanel = new JPanel();
 		checkBoxPanel.setLayout(new GridBagLayout());
 		
@@ -189,6 +194,7 @@ public class OptionPanel extends JPanel {
 		radioBoxPanel.add(elProfileButton);
 		radioBoxPanel.add(defaultProfileButton);
 		
+		profilePanel.setBorder(BorderFactory.createTitledBorder("OWL Profile"));
 		profilePanel.add(radioBoxPanel);
 		profilePanel.add(checkBoxPanel);
 		

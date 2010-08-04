@@ -6,6 +6,7 @@ Bundle-Category: protege
 Bundle-Description: Protege DL-Learner Plugin
 Bundle-Vendor: DL-Learner Project
 Bundle-DocURL: http://dl-learner.org/wiki/ProtegePlugin
+Update-Url: http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/dl-learner/org/dllearner/tools/protege/META-INF/update.properties
 Bundle-ClassPath: .,
  lib/junit-4.4.jar,
  lib/jamon-2.7.jar,
