@@ -186,11 +186,11 @@ public class ROLComponent2 extends LearningAlgorithm {
 		horizExp.setUpperLimit(1.0);
 		options.add(horizExp);
 		options.add(new BooleanConfigOption("improveSubsumptionHierarchy", "simplify subsumption hierarchy to reduce search space (see publication for description)", true));
-		// allowed/ignored concepts/roles could also be a reasoner option (?)
 		options.add(CommonConfigOptions.allowedConcepts());
 		options.add(CommonConfigOptions.ignoredConcepts());
-//		options.add(CommonConfigOptions.allowedRoles());
-//		options.add(CommonConfigOptions.ignoredRoles());
+		// allowed/ignored roles are an unstable/untested feature
+		options.add(CommonConfigOptions.allowedRoles());
+		options.add(CommonConfigOptions.ignoredRoles());
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useHasValueConstructor());
@@ -428,7 +428,8 @@ public class ROLComponent2 extends LearningAlgorithm {
 	}
 	
 	public static String getName() {
-		return "refinement operator based learning algorithm II";
+//		return "refinement operator based learning algorithm II";
+		return "OCEL";
 	}
 	
 	public static String getUsage() {
