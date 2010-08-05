@@ -357,6 +357,24 @@ public final class ComponentManager {
 	}
 
 	/**
+	 * Factory method for creating a reasoner component from a set of
+	 * knowledge sources.
+	 * @see #reasoner(Class, KnowledgeSource)
+	 * @param <T> The type of this method is a subclass of reasoner component.
+	 * @param reasoner A class object, where the class is subclass of ReasonerComponent.
+	 * @param sources A set of knowledge sources.
+	 * @return A reasoner component.
+	 */
+	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
+			KnowledgeSource ... sources) {
+		Set<KnowledgeSource> s = new HashSet<KnowledgeSource>();
+		for(KnowledgeSource source : sources) {
+			s.add(source);
+		}
+		return reasoner(reasoner, s);
+	}	
+	
+	/**
 	 * This method returns an instance of <code>ReasonerComponent</code>. The
 	 * difference between <code>ReasonerComponent</code> and <code>ReasonerComponent</code>
 	 * is that the former delegates all calls to the latter and collects statistics
