@@ -20,6 +20,7 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,11 +33,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -48,6 +49,7 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
@@ -99,7 +101,10 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLTypedLiteral;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
+import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
+import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
+import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
@@ -181,11 +186,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++,, HermiT or Pellet, which means \"fact\", \"hermit\" or \"pellet\"", "pellet", false, true);
-		type.setAllowedValues(new String[] {"fact", "pellet", "hermit"});
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++, HermiT, OWLlink or Pellet, which means \"fact\", \"hermit\", \"owllink\" or \"pellet\"", "pellet", false, true);
+		type.setAllowedValues(new String[] {"fact", "hermit", "owllink", "pellet" });
+		
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
+		try {
+			URLConfigOption owlLinkURL = new URLConfigOption("owlLinkURL", "the URL to the remote OWLlink server", new URL("http://localhost:8080/"), false, true);
+			options.add(owlLinkURL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		return options;
 	}	
 	
@@ -299,6 +311,11 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				// TODO: add method to find datatypes
 			}
 		}
+		try {
+			ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
+		} catch (OWLOntologyCreationException e1) {
+			e1.printStackTrace();
+		}
 		
 		//configure reasoner
 		ReasonerProgressMonitor progressMonitor = new NullReasonerProgressMonitor();
@@ -318,7 +335,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		} else if(configurator.getReasonerType().equals("hermit")){
 			// instantiate HermiT reasoner
 			reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
-		} else {
+		} else if(configurator.getReasonerType().equals("pellet")){
 			// instantiate Pellet reasoner
 			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
 			
@@ -326,6 +343,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// output will be very large
 			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 			pelletLogger.setLevel(Level.WARN);
+		} else {
+			try {
+				OWLlinkHTTPXMLReasonerFactory factory = new OWLlinkHTTPXMLReasonerFactory();
+				URL url = getConfigurator().getOwlLinkURL();//Configure the server end-point
+				OWLlinkReasonerConfiguration config = new OWLlinkReasonerConfiguration(url);
+				reasoner = factory.createNonBufferingReasoner(ontology, config);
+				System.out.println(reasoner.getReasonerName());
+			} catch (IllegalConfigurationException e) {
+				e.printStackTrace();
+			}
 		}
 
 		/*

@@ -20,6 +20,7 @@
 
 package org.dllearner.core.configurators;
 
+import java.net.URL;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -51,13 +52,22 @@ return component;
 }
 
 /**
-* reasonerType FaCT++, HermiT or Pellet to dematerialize.
+* reasonerType FaCT++, HermiT, OWLlink or Pellet to dematerialize.
 * mandatory: false| reinit necessary: true
 * default value: pellet
 * @return String 
 **/
 public String getReasonerType() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "reasonerType") ;
+}
+/**
+* owlLinkURL the URL to the remote OWLlink server.
+* mandatory: false| reinit necessary: true
+* default value: http://localhost:8080/
+* @return URL 
+**/
+public URL getOwlLinkURL() {
+return (URL) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "owlLinkURL") ;
 }
 /**
 * defaultNegation Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class..
@@ -70,12 +80,21 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(fastInstanc
 }
 
 /**
-* @param reasonerType FaCT++, HermiT or Pellet to dematerialize.
+* @param reasonerType FaCT++, HermiT, OWLlink or Pellet to dematerialize.
 * mandatory: false| reinit necessary: true
 * default value: pellet
 **/
 public void setReasonerType(String reasonerType) {
 ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "reasonerType", reasonerType);
+reinitNecessary = true;
+}
+/**
+* @param owlLinkURL the URL to the remote OWLlink server.
+* mandatory: false| reinit necessary: true
+* default value: http://localhost:8080/
+**/
+public void setOwlLinkURL(URL owlLinkURL) {
+ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "owlLinkURL", owlLinkURL);
 reinitNecessary = true;
 }
 /**

@@ -20,6 +20,8 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,7 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.Constant;
@@ -151,11 +154,17 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		StringConfigOption type = new StringConfigOption("reasonerType",
-				"FaCT++, HermiT or Pellet to dematerialize", "pellet", false, true);
-		type.setAllowedValues(new String[] { "fact", "hermit", "pellet" });
+				"FaCT++, HermiT, OWLlink or Pellet to dematerialize", "pellet", false, true);
+		type.setAllowedValues(new String[] { "fact", "hermit", "owllink", "pellet" });
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
+		try {
+			URLConfigOption owlLinkURL = new URLConfigOption("owlLinkURL", "the URL to the remote OWLlink server", new URL("http://localhost:8080/"), false, true);
+			options.add(owlLinkURL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		options.add(new BooleanConfigOption("defaultNegation", "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", true, false, true));
 		StringConfigOption forallSemantics = new StringConfigOption("forallRetrievalSemantics",
 				"This option controls how to interpret the all quantifier in \forall r.C. The standard option is" +
@@ -195,6 +204,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		// rc = new OWLAPIReasoner(sources);
 		rc = ComponentFactory.getOWLAPIReasoner(sources);
 		rc.getConfigurator().setReasonerType(configurator.getReasonerType());
+		rc.getConfigurator().setOwlLinkURL(configurator.getOwlLinkURL());
 		rc.init();
 
 //		try {
