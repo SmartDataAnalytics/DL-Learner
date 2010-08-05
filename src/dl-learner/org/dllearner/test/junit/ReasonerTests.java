@@ -22,15 +22,24 @@ package org.dllearner.test.junit;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -48,6 +57,7 @@ import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
+import org.dllearner.utilities.owl.ConceptComparator;
 import org.junit.Test;
 
 /**
@@ -61,6 +71,8 @@ public class ReasonerTests {
 	private static Logger logger = Logger.getLogger(ReasonerTests.class);
 	
 	private String baseURI;
+	
+	private ConceptComparator comparator = new ConceptComparator();
 
 	public KB getSimpleKnowledgeBase() {
 		String kb = "person SUB TOP.";
@@ -276,7 +288,7 @@ public class ReasonerTests {
 		assertTrue(reasoner.getDomain(property).equals(description));
 		
 				
-		file = "examples/ore/koala.owl";
+		file = "test/ore/koala.owl";
 		ks = cm.knowledgeSource(OWLFile.class);
 		cm.applyConfigEntry(ks, "url", new File(file).toURI().toURL());
 		ks.init();
@@ -296,6 +308,93 @@ public class ReasonerTests {
 		Axiom axiom = new EquivalentClassesAxiom(nc, d);
 		boolean res = rs.remainsSatisfiable(axiom);
 		System.out.println(res);
+	}
+	
+	@Test
+	public void compareReasoners() throws FileNotFoundException, ComponentInitException, ParseException{
+		
+		ComponentManager cm = ComponentManager.getInstance();
+		Start start;
+		FastInstanceChecker reasoner;
+		LearningProblem lp;
+		LearningAlgorithm la;
+		KnowledgeSource ks;
+		
+		for(File conf : getTestConfigFiles()){
+			start = new Start(conf);
+			lp = start.getLearningProblem();
+			la = start.getLearningAlgorithm();
+			ks = start.getSources().iterator().next();
+			
+			TreeSet<? extends EvaluatedDescription> result = new TreeSet<EvaluatedDescription>();
+			
+			for(String type : getReasonerTypes()){
+				System.out.println("Using " + type + " reasoner...");
+				try {
+					reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+					reasoner.getConfigurator().setReasonerType(type);
+					reasoner.init();
+					
+					lp.changeReasonerComponent(reasoner);
+					lp.init();
+					
+					la.init();
+					la.start();
+					if(!result.isEmpty()){
+						assertTrue(compareTreeSets(la.getCurrentlyBestEvaluatedDescriptions(), result));
+					}
+					
+					result = la.getCurrentlyBestEvaluatedDescriptions();
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
+	}
+	
+	public boolean compareTreeSets(TreeSet<? extends EvaluatedDescription> tree1, TreeSet<? extends EvaluatedDescription> tree2){
+		boolean equal = true;
+		
+		List<? extends EvaluatedDescription> list1 = new ArrayList<EvaluatedDescription>(tree1);
+		List<? extends EvaluatedDescription> list2 = new ArrayList<EvaluatedDescription>(tree2);
+		
+		EvaluatedDescription d1;
+		EvaluatedDescription d2;
+		for(int i = 0; i < list1.size(); i++){
+			d1 = list1.get(i);
+			d2 = list2.get(i);
+			if(!(comparator.compare(d1.getDescription(), d2.getDescription()) == 0) && 
+					d1.getAccuracy() == d2.getAccuracy()){
+				equal = false;
+				break;
+			}
+		}
+		
+		return equal;
+	}
+	
+	private Set<File> getTestConfigFiles(){
+		Set<File> files = new HashSet<File>();
+		File directory = new File("test" + File.separator + "testReasoners");
+		for(File file : directory.listFiles()){
+			if(file.toString().endsWith(".conf")){
+				files.add(file);
+			}
+		}
+		return files;
+	}
+	
+	private List<String> getReasonerTypes(){
+		List<String> reasonerTypes = new LinkedList<String>();
+		reasonerTypes.add("pellet");
+		reasonerTypes.add("hermit");
+		reasonerTypes.add("fact");
+		reasonerTypes.add("owllink");
+		
+		return reasonerTypes;
 	}
 	
 	private List<Individual> getIndSet(String... inds) {

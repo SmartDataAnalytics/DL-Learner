@@ -20,6 +20,7 @@
 
 package org.dllearner.core.configurators;
 
+import java.net.URL;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -51,7 +52,7 @@ return component;
 }
 
 /**
-* reasonerType FaCT++,, HermiT or Pellet, which means "fact", "hermit" or "pellet".
+* reasonerType FaCT++, HermiT, OWLlink or Pellet, which means "fact", "hermit", "owllink" or "pellet".
 * mandatory: false| reinit necessary: true
 * default value: pellet
 * @return String 
@@ -59,14 +60,32 @@ return component;
 public String getReasonerType() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(oWLAPIReasoner,  "reasonerType") ;
 }
+/**
+* owlLinkURL the URL to the remote OWLlink server.
+* mandatory: false| reinit necessary: true
+* default value: http://localhost:8080/
+* @return URL 
+**/
+public URL getOwlLinkURL() {
+return (URL) ComponentManager.getInstance().getConfigOptionValue(oWLAPIReasoner,  "owlLinkURL") ;
+}
 
 /**
-* @param reasonerType FaCT++,, HermiT or Pellet, which means "fact", "hermit" or "pellet".
+* @param reasonerType FaCT++, HermiT, OWLlink or Pellet, which means "fact", "hermit", "owllink" or "pellet".
 * mandatory: false| reinit necessary: true
 * default value: pellet
 **/
 public void setReasonerType(String reasonerType) {
 ComponentManager.getInstance().applyConfigEntry(oWLAPIReasoner, "reasonerType", reasonerType);
+reinitNecessary = true;
+}
+/**
+* @param owlLinkURL the URL to the remote OWLlink server.
+* mandatory: false| reinit necessary: true
+* default value: http://localhost:8080/
+**/
+public void setOwlLinkURL(URL owlLinkURL) {
+ComponentManager.getInstance().applyConfigEntry(oWLAPIReasoner, "owlLinkURL", owlLinkURL);
 reinitNecessary = true;
 }
 

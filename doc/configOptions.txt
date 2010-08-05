@@ -191,10 +191,16 @@ component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker)
 conf file usage: reasoner = fastInstanceChecker;
 
 option name: reasonerType
-description: FaCT++, HermiT or Pellet to dematerialize
-allowed values: String [fact, hermit, pellet] 
+description: FaCT++, HermiT, OWLlink or Pellet to dematerialize
+allowed values: String [fact, hermit, owllink, pellet] 
 default value: pellet
 conf file usage: fastInstanceChecker.reasonerType = pellet;
+
+option name: owlLinkURL
+description: the URL to the remote OWLlink server
+allowed values: URL
+default value: http://localhost:8080/
+conf file usage: fastInstanceChecker.owlLinkURL = http://localhost:8080/;
 
 option name: defaultNegation
 description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
@@ -215,10 +221,16 @@ component: OWL API reasoner (org.dllearner.reasoning.OWLAPIReasoner)
 conf file usage: reasoner = owlAPIReasoner;
 
 option name: reasonerType
-description: FaCT++,, HermiT or Pellet, which means "fact", "hermit" or "pellet"
-allowed values: String [fact, hermit, pellet] 
+description: FaCT++, HermiT, OWLlink or Pellet, which means "fact", "hermit", "owllink" or "pellet"
+allowed values: String [fact, hermit, owllink, pellet] 
 default value: pellet
 conf file usage: owlAPIReasoner.reasonerType = pellet;
+
+option name: owlLinkURL
+description: the URL to the remote OWLlink server
+allowed values: URL
+default value: http://localhost:8080/
+conf file usage: owlAPIReasoner.owlLinkURL = http://localhost:8080/;
 
 
 component: Pellet reasoner (org.dllearner.reasoning.PelletReasoner)
@@ -1027,8 +1039,8 @@ default value: true
 conf file usage: refinement.instanceBasedDisjoints = true;
 
 
-component: refinement operator based learning algorithm II (org.dllearner.algorithms.refinement2.ROLComponent2)
-===============================================================================================================
+component: OCEL (org.dllearner.algorithms.refinement2.ROLComponent2)
+====================================================================
 
 conf file usage: algorithm = refexamples;
 
@@ -1109,6 +1121,18 @@ description: concepts the algorithm must ignore
 allowed values: Set<String>
 default value: not set
 conf file usage: refexamples.ignoredConcepts = ;
+
+option name: allowedRoles
+description: roles the algorithm is allowed to use
+allowed values: Set<String>
+default value: not set
+conf file usage: refexamples.allowedRoles = ;
+
+option name: ignoredRoles
+description: roles the algorithm must ignore
+allowed values: Set<String>
+default value: not set
+conf file usage: refexamples.ignoredRoles = ;
 
 option name: useAllConstructor
 description: specifies whether the universal concept constructor is used in the learning algorithm
