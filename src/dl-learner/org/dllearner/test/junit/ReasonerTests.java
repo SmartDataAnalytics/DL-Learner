@@ -49,6 +49,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
@@ -308,6 +309,29 @@ public class ReasonerTests {
 		Axiom axiom = new EquivalentClassesAxiom(nc, d);
 		boolean res = rs.remainsSatisfiable(axiom);
 		System.out.println(res);
+	}
+	
+	@Test
+	public void multipleKnowledgeSourcesTest() throws ComponentInitException {
+		String file1 = "examples/father.owl";
+		String file2 = "examples/lymphography/lymphography.owl";
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource ks1 = cm.knowledgeSource(OWLFile.class);
+		KnowledgeSource ks2 = cm.knowledgeSource(OWLFile.class);
+		try {
+			cm.applyConfigEntry(ks1, "url", new File(file1).toURI().toURL());
+			cm.applyConfigEntry(ks2, "url", new File(file2).toURI().toURL());
+		} catch (MalformedURLException e) {
+			// should never happen
+			e.printStackTrace();
+		}
+		ks1.init();
+		ks2.init();
+		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks1, ks2);
+		reasoner.init();
+		baseURI = reasoner.getBaseURI();
+		System.out.println(reasoner.getSubClasses(Thing.instance));
+		assertTrue(reasoner.getSubClasses(Thing.instance).size()==55);
 	}
 	
 	@Test
