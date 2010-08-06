@@ -345,6 +345,7 @@ public class ReasonerTests {
 		KnowledgeSource ks;
 		
 		for(File conf : getTestConfigFiles()){
+			System.out.println("Test file: " + conf.getName());
 			start = new Start(conf);
 			lp = start.getLearningProblem();
 			la = start.getLearningAlgorithm();
