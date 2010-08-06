@@ -606,16 +606,23 @@ public class ConceptTransformation {
 			Property op = (Property) ((Restriction)description).getRestrictedPropertyExpression();
 			// object restrictions
 			if(op instanceof ObjectProperty) {
-				currentContext.add((ObjectProperty)op);
-				// if we have an all-restriction, we return it; otherwise we only change the context
-				// and call the method on the child
+				PropertyContext currentContextCopy = (PropertyContext) currentContext.clone();
+				// if we have an all-restriction, we return it; otherwise we call the child
+				// (if it exists)
 				if(description instanceof ObjectAllRestriction) {
+					currentContextCopy.add((ObjectProperty)op);
+//					System.out.println("cc: " + currentContext);
 					TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
-					contexts.add(currentContext);
-					contexts.addAll(getForallContexts(description.getChild(0), currentContext));
+					contexts.add(currentContextCopy);
+					contexts.addAll(getForallContexts(description.getChild(0), currentContextCopy));
 					return contexts;
+				// restriction with one child
+				} else if(description.getChildren().size()>0) {
+					currentContextCopy.add((ObjectProperty)op);
+					return getForallContexts(description.getChild(0), currentContextCopy);
+				// restrictions without a child (has value)
 				} else {
-					return getForallContexts(description.getChild(0), currentContext);
+					return new TreeSet<PropertyContext>();
 				}
 			// we have a data restriction => no \forall can occur in those
 			} else {
@@ -625,6 +632,7 @@ public class ConceptTransformation {
 		} else {
 			TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
 			for(Description child : description.getChildren()) {
+//				System.out.println("testing child " + child + " " + currentContext);
 				contexts.addAll(getForallContexts(child, currentContext));
 			}
 			return contexts;
