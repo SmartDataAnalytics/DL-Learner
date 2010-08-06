@@ -36,6 +36,11 @@ import org.junit.runner.JUnitCore;
  */
 public class AllTestsRunner {
 
+	/**
+	 * use the following arguments (or similar): -Djava.library.path=lib/fact/32bit/ -Xmx2000m
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		
 		// create logger
@@ -44,7 +49,7 @@ public class AllTestsRunner {
 		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.INFO);
+		logger.setLevel(Level.DEBUG);
 		
 		// runs everything except example test
 		JUnitCore.main("org.dllearner.test.junit.ClassExpressionTests",

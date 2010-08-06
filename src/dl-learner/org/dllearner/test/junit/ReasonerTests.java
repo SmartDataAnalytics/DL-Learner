@@ -98,7 +98,7 @@ public class ReasonerTests {
 	 * Performs an instance checks on all reasoner components to verify that
 	 * they all return the correct result.
 	 */
-//	@Test
+	@Test
 	public void instanceCheckTest() {
 		
 		// DIG can be excluded from test since it requires a separate DIG reasoner and is no
@@ -144,7 +144,7 @@ public class ReasonerTests {
 	 * @throws ComponentInitException 
 	 * @throws ParseException 
 	 */
-//	@Test
+	@Test
 	public void fastInstanceCheckTest() throws ComponentInitException, ParseException {
 		String file = "examples/carcinogenesis/carcinogenesis.owl";
 		ComponentManager cm = ComponentManager.getInstance();
@@ -189,7 +189,7 @@ public class ReasonerTests {
 		}
 	}
 
-//	@Test
+	@Test
 	public void fastInstanceCheck2() throws ComponentInitException, ParseException {
 		String file = "examples/epc/sap_epc.owl";
 		ComponentManager cm = ComponentManager.getInstance();
@@ -212,7 +212,7 @@ public class ReasonerTests {
 	}
 	
 	// simple unit test for new retrieval algorithm
-//	@Test
+	@Test
 	public void fastInstanceCheck3() throws MalformedURLException, ComponentInitException, ParseException {
 		String file = "examples/family/father_oe.owl";
 		ComponentManager cm = ComponentManager.getInstance();
@@ -415,7 +415,7 @@ public class ReasonerTests {
 	private List<String> getReasonerTypes(){
 		List<String> reasonerTypes = new LinkedList<String>();
 		reasonerTypes.add("pellet");
-		reasonerTypes.add("hermit");
+//		reasonerTypes.add("hermit"); too slow at the moment
 		reasonerTypes.add("fact");
 		reasonerTypes.add("owllink");
 		

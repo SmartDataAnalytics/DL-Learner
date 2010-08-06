@@ -135,7 +135,7 @@ public final class TestOntologies {
 		} else if(ont.equals(TestOntology.SWORE)) {
 			owlFile = "examples/swore/swore.rdf";
 		} else if(ont.equals(TestOntology.MDM)) {
-			owlFile = "resources/test/MDM0.73.owl";
+			owlFile = "test/MDM0.73.owl";
 		} 
 		
 		try {	
