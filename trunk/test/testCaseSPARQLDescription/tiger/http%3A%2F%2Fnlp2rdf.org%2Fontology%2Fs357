@@ -1,0 +1,322 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w18_Machthabern">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Machthabern</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w17_lokalen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w19_%2C"/>
+    <j.0:hasLemma>Machthaber</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w0_Erst">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Erst</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w1_mit"/>
+    <j.0:hasLemma>erst</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w24_werden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w23_zu"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w25_."/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w5_anderen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>anderen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w4_aus"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w6_Orten"/>
+    <j.0:hasLemma>anderer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w9_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w8_Milit%C3%A4reinheiten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w10_mit"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w6_Orten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Orten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w5_anderen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w7_herbeigeeilten"/>
+    <j.0:hasLemma>Ort</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w21_Lage">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Lage</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w20_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w22_Herr"/>
+    <j.0:hasLemma>Lage</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w10_mit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w9_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w11_Verh%C3%A4ngung"/>
+    <j.0:hasLemma>mit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w20_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w19_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w21_Lage"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w4_aus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aus</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w3_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w5_anderen"/>
+    <j.0:hasLemma>aus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w3_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w2_Hilfe"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w4_aus"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w2_Hilfe">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Hilfe</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w1_mit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w3_der"/>
+    <j.0:hasLemma>Hilfe</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w16_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w15_es"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w17_lokalen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKZU">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ZuWithInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w22_Herr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Herr</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w21_Lage"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w23_zu"/>
+    <j.0:hasLemma>Herr</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w13_Ausnahmezustandes">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Ausnahmezustandes</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w12_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w14_gelang"/>
+    <j.0:hasLemma>Ausnahmezustand</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w12_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w11_Verh%C3%A4ngung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w13_Ausnahmezustandes"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w25_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w24_werden"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w17_lokalen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>lokalen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w16_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w18_Machthabern"/>
+    <j.0:hasLemma>lokal</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w11_Verh%C3%A4ngung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Verhängung</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w10_mit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w12_des"/>
+    <j.0:hasLemma>Verhängung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPER">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w1_mit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w0_Erst"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w2_Hilfe"/>
+    <j.0:hasLemma>mit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w8_Milit%C3%A4reinheiten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Militäreinheiten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w7_herbeigeeilten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w9_und"/>
+    <j.0:hasLemma>Militäreinheit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w15_es">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>es</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w14_gelang"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w16_den"/>
+    <j.0:hasLemma>es</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPER"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w12_des"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w13_Ausnahmezustandes"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w19_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w24_werden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w18_Machthabern"/>
+    <rdfs:label>Erst mit Hilfe der aus anderen Orten herbeigeeilten Militäreinheiten und mit Verhängung des Ausnahmezustandes gelang es den lokalen Machthabern , der Lage Herr zu werden .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w9_und"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s357w0_Erst"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w6_Orten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w1_mit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w7_herbeigeeilten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w23_zu"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w10_mit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w3_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w14_gelang"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w25_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w16_den"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w17_lokalen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w0_Erst"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w20_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w21_Lage"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w8_Milit%C3%A4reinheiten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w4_aus"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w11_Verh%C3%A4ngung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w15_es"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w2_Hilfe"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w5_anderen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s357w22_Herr"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w14_gelang">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gelang</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w13_Ausnahmezustandes"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w15_es"/>
+    <j.0:hasLemma>gelingen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w7_herbeigeeilten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>herbeigeeilten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w6_Orten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w8_Milit%C3%A4reinheiten"/>
+    <j.0:hasLemma>herbeigeeilt</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w23_zu">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zu</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w22_Herr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w24_werden"/>
+    <j.0:hasLemma>zu</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKZU"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s357w19_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s357"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s357w18_Machthabern"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s357w20_der"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+</rdf:RDF>
