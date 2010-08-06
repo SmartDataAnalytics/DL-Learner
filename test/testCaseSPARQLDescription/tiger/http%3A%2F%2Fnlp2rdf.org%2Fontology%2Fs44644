@@ -1,0 +1,249 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w16_Hilfe">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Hilfe</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w15_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w17_Deutschlands"/>
+    <j.0:hasLemma>Hilfe</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w1_Mauss">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Mauss</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w0_Ida"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w2_schrieb"/>
+    <j.0:hasLemma>Mauss</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w18_annehmen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>annehmen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w17_Deutschlands"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w19_."/>
+    <j.0:hasLemma>annehmen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w17_Deutschlands">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Deutschlands</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w16_Hilfe"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w18_annehmen"/>
+    <j.0:hasLemma>Deutschland</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w9_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w8_Antioquia"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w10_Alvaro"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w11_Uribe">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Uribe</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w10_Alvaro"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w12_%2C"/>
+    <j.0:hasLemma>Uribe</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w19_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w18_annehmen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w10_Alvaro">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Alvaro</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w9_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w11_Uribe"/>
+    <j.0:hasLemma>Alvaro</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w3_an">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>an</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w2_schrieb"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w4_den"/>
+    <j.0:hasLemma>an</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w5_Gouverneur">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Gouverneur</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w4_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w6_der"/>
+    <j.0:hasLemma>Gouverneur</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w0_Ida">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Ida</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w1_Mauss"/>
+    <j.0:hasLemma>Ida</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w8_Antioquia">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Antioquia</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w7_Provinz"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w9_%2C"/>
+    <j.0:hasLemma>Antioquia</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w6_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w5_Gouverneur"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w7_Provinz"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w12_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w11_Uribe"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w13_Kolumbien"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w13_Kolumbien">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kolumbien</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w12_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w14_solle"/>
+    <j.0:hasLemma>Kolumbien</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w2_schrieb">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schrieb</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w1_Mauss"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w3_an"/>
+    <j.0:hasLemma>schreiben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w15_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w14_solle"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w16_Hilfe"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w14_solle"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w13_Kolumbien"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w10_Alvaro"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w2_schrieb"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w3_an"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w17_Deutschlands"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w4_den"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w18_annehmen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w12_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w5_Gouverneur"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w15_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w8_Antioquia"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w19_."/>
+    <rdfs:label>Ida Mauss schrieb an den Gouverneur der Provinz Antioquia , Alvaro Uribe , Kolumbien solle die Hilfe Deutschlands annehmen .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w16_Hilfe"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w6_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w1_Mauss"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w11_Uribe"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w7_Provinz"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w9_%2C"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s44644w0_Ida"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s44644w0_Ida"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w14_solle">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>solle</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w13_Kolumbien"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w15_die"/>
+    <j.0:hasLemma>sollen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w7_Provinz">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Provinz</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w6_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w8_Antioquia"/>
+    <j.0:hasLemma>Provinz</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s44644w4_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s44644"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s44644w3_an"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s44644w5_Gouverneur"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+</rdf:RDF>
