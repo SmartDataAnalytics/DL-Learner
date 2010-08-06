@@ -286,7 +286,7 @@ public class ELDownTests {
 	}	
 	
 	// not part of the regular test suite, since Galen 2 is required
-//	@Test
+	@Test
 	public void test4() throws ComponentInitException, ParseException, IOException {
 		
 		Logger logger = Logger.getRootLogger();
@@ -298,7 +298,7 @@ public class ELDownTests {
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String ont = "/home/jl/ontologien/galen2.owl";
+		String ont = "test/galen2.owl";
 		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
 		source.init();
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
@@ -330,12 +330,12 @@ public class ELDownTests {
 	}
 	
 	//	 not part of the regular test suite, since Galen 2 is required
-//	@Test
+	@Test
 	public void asTest() throws ComponentInitException, MalformedURLException {
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String ont = "/home/jl/ontologien/galen2.owl";
+		String ont = "test/galen2.owl";
 		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
 		source.init();
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);

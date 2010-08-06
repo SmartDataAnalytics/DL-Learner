@@ -33,11 +33,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -104,7 +104,6 @@ import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
-import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
@@ -350,8 +349,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				OWLlinkReasonerConfiguration config = new OWLlinkReasonerConfiguration(url);
 				reasoner = factory.createNonBufferingReasoner(ontology, config);
 				System.out.println(reasoner.getReasonerName());
-			} catch (IllegalConfigurationException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+//				e.printStackTrace();
+				throw new ComponentInitException(e);
 			}
 		}
 
