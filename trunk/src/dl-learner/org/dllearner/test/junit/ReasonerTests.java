@@ -57,6 +57,8 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.PelletReasoner;
+import org.dllearner.reasoning.ProtegeReasoner;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.junit.Test;
@@ -116,11 +118,19 @@ public class ReasonerTests {
 			Individual i = new Individual(KBParser.getInternalURI("stephen"));
 			List<Class<? extends ReasonerComponent>> reasonerClasses = cm.getReasonerComponents();
 			for (Class<? extends ReasonerComponent> reasonerClass : reasonerClasses) {
+				//we skip the ProtegeReasoner, because the underlying OWLReasoner is not available in this test
+				if(reasonerClass.equals(ProtegeReasoner.class)){
+					continue;
+				}
 				if(excludeDIG && reasonerClass.equals(DIGReasoner.class)) {
 					continue;
 				}
 				ReasonerComponent reasoner = cm.reasoner(reasonerClass, ks);
 				reasoner.init();
+				//if it is the PelletReasoner we have to call a separate method to make the CWA
+				if(reasonerClass.equals(PelletReasoner.class)){
+					((PelletReasoner)reasoner).dematerialise();
+				}
 //				long startTime = System.nanoTime();
 				boolean result = false;
 //				for(int n=0; n<10000; n++) {
