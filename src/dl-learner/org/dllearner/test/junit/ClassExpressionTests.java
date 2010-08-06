@@ -23,10 +23,14 @@ import static org.junit.Assert.*;
 
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.ObjectValueRestriction;
+import org.dllearner.core.owl.Union;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
@@ -82,6 +86,54 @@ public class ClassExpressionTests {
 		Description d5 = KBParser.parseConcept("(\"http://acl/BMV#MedicalThings\" AND (\"http://acl/BMV#MedicalThings\" AND ALL \"http://acl/BMV#refersSubstance\".\"http://acl/BMV#MedicalThings\"))");
 		Description d6 = KBParser.parseConcept("ALL \"http://acl/BMV#refersSubstance\".\"http://acl/BMV#MedicalThings\"");
 		assertTrue(ConceptTransformation.isSubdescription(d5, d6));	
+		
+	}
+	
+	/**
+	 * We test a method, which delivers in which context all quantifiers occur
+	 * (i.e. how they are nested in a class expression).
+	 */
+	@Test
+	public void forAllContextTest() {
+		// create some basic ontology elements
+		NamedClass a1 = new NamedClass("a1");
+		NamedClass a2 = new NamedClass("a2");
+		ObjectProperty p1 = new ObjectProperty("p1");
+		ObjectProperty p2 = new ObjectProperty("p2");
+		ObjectProperty p3 = new ObjectProperty("p3");
+		Individual i1 = new Individual("i1");
+		
+		// create some class expressions
+		Description d1 = new Intersection(a1,a2);
+		Description d2 = new ObjectAllRestriction(p1,a1);
+		Description d3 = new Union(d1,d2);
+		Description d4 = new ObjectValueRestriction(p2,i1);
+		Description d5 = new ObjectAllRestriction(p2,d2);
+		Description d6 = new ObjectAllRestriction(p1,d4);
+		Description d7 = new ObjectSomeRestriction(p3,d5);
+		Description d8 = new Union(d2,d5);
+		Description d9 = new ObjectAllRestriction(p1,d8);
+		
+		// a1 AND a2 => should be empty result
+		assertTrue(ConceptTransformation.getForallContexts(d1).isEmpty());
+		// note: the assertions below use toString() which should usually be avoided, but since
+		// the toString() method of SortedSet is unlikely to change we use it here for convenience
+		// ALL p1.a1 => context: [[p1]]		
+		assertTrue(ConceptTransformation.getForallContexts(d2).toString().equals("[[p1]]"));
+		// (a1 AND a2) OR ALL p1.a1 => [[p1]]
+		assertTrue(ConceptTransformation.getForallContexts(d3).toString().equals("[[p1]]"));
+		// p2 hasValue i1 => []
+		assertTrue(ConceptTransformation.getForallContexts(d4).isEmpty());
+		// ALL p2.ALL p1.a1 => [[p2],[p1,p2]]
+		assertTrue(ConceptTransformation.getForallContexts(d5).toString().equals("[[p2, p1], [p2]]"));
+		// ALL p1.p2 hasValue i1 => [[p1]]
+		assertTrue(ConceptTransformation.getForallContexts(d6).toString().equals("[[p1]]"));
+		// EXISTS p3.ALL p2.ALL p1.a1 => [[p3,p2],[p3,p2,p1]]
+		assertTrue(ConceptTransformation.getForallContexts(d7).toString().equals("[[p3, p2, p1], [p3, p2]]"));
+		// (ALL p1.a1 OR ALL p2.ALL p1.a1)
+		assertTrue(ConceptTransformation.getForallContexts(d8).toString().equals("[[p2, p1], [p1], [p2]]"));
+		// ALL p1.(ALL p1.a1 OR ((a1 AND a2) OR ALL p1.a1)) => [[p1],[p1,p1],[p1,p2],[p1,p2,p1]]
+		assertTrue(ConceptTransformation.getForallContexts(d9).toString().equals("[[p1, p2, p1], [p1, p1], [p1, p2], [p1]]"));
 		
 	}
 }
