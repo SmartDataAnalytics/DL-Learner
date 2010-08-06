@@ -277,9 +277,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	 * Underlining label when mouse over.
 	 */
 	public void mouseEntered(MouseEvent e) {
-		setText("<html><u>"
-				+ ((Description) desc).toManchesterSyntaxString(oreMan
-						.getBaseURI(), oreMan.getPrefixes()) + "</u></html>");
+		setText("<html><u>" + oreMan.getManchesterSyntaxRendering(desc) + "</u></html>");
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		if(desc instanceof ObjectCardinalityRestriction){
 			setToolTipText("ObjectCardinality repair not available at present");
@@ -291,9 +289,8 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	 * Removing underlining when mosue relased.
 	 */
 	public void mouseExited(MouseEvent e) {
-		setText(((Description) desc).toManchesterSyntaxString(oreMan.getBaseURI(),
-				oreMan.getPrefixes()));
-		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		setText(oreMan.getManchesterSyntaxRendering(desc));
+		setCursor(Cursor.getDefaultCursor());
 	}
 
 	public void mousePressed(MouseEvent e) {

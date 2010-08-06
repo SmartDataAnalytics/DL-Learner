@@ -42,7 +42,6 @@ import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.tools.ore.OREApplication;
 import org.dllearner.tools.ore.OREManager;
 import org.dllearner.tools.ore.OntologyModifier;
-import org.dllearner.tools.ore.ui.rendering.ManchesterSyntaxRenderer;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 
@@ -70,9 +69,6 @@ public class StatsPanel extends JPanel{
 	
 	private Icon newIcon = new ImageIcon(OREApplication.class.getResource("new.gif"));
 	
-	private String baseURI;
-	private Map<String, String> prefixes;
-	
 	public StatsPanel(Individual ind){
 		super();
 
@@ -85,11 +81,6 @@ public class StatsPanel extends JPanel{
 	 * Initializes the panel. 
 	 */
 	public void init(){
-		prefixes = OREManager.getInstance().getPrefixes();
-		baseURI = OREManager.getInstance().getBaseURI();
-		
-		
-		
 		setLayout(new GridLayout());
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));		
@@ -102,13 +93,13 @@ public class StatsPanel extends JPanel{
 				
 		indPane = new JXTaskPane();
 		indPane.setTitle("Individual");
-        indPane.add(new JLabel(ind.toManchesterSyntaxString(baseURI, prefixes)));
+        indPane.add(new JLabel(OREManager.getInstance().getManchesterSyntaxRendering(ind)));
            
         classPane = new JXTaskPane();
         classPane.setTitle("Classes");
         oldClasses = OREManager.getInstance().getReasoner().getTypes(ind);
        	for(NamedClass nc : oldClasses){
-			classPane.add(new JLabel(nc.toManchesterSyntaxString(baseURI, prefixes)));
+			classPane.add(new JLabel(OREManager.getInstance().getManchesterSyntaxRendering(nc)));
        	}
        	propertyPane = new JXTaskPane();
         propertyPane.setTitle("Properties");		
@@ -116,8 +107,8 @@ public class StatsPanel extends JPanel{
         oldProperties = modifier.getObjectProperties(ind);
         oldPropMap = new HashMap<String, Set<String>>();
         for(ObjectPropertyAssertion ob : oldProperties){
-        	String role = ob.getRole().toString(baseURI, prefixes);
-        	String ind = ob.getIndividual2().toManchesterSyntaxString(baseURI, prefixes);
+        	String role = OREManager.getInstance().getManchesterSyntaxRendering(ob.getRole());
+        	String ind = OREManager.getInstance().getManchesterSyntaxRendering(ob.getIndividual2());
         	if(oldPropMap.containsKey(role)){
         		Set<String> oldSet = oldPropMap.get(role);
         		oldSet.add(ind);
@@ -161,11 +152,11 @@ public class StatsPanel extends JPanel{
 				
 		Set<String> newClassesString = new HashSet<String>();
 		for (NamedClass nc : OREManager.getInstance().getReasoner().getTypes(ind)){
-			newClassesString.add(ManchesterSyntaxRenderer.renderSimple(nc));
+			newClassesString.add(OREManager.getInstance().getManchesterSyntaxRendering(nc));
 		}
 		Set<String> oldClassesString = new HashSet<String>();
 		for (NamedClass nc : oldClasses){
-			oldClassesString.add(ManchesterSyntaxRenderer.renderSimple(nc));
+			oldClassesString.add(OREManager.getInstance().getManchesterSyntaxRendering(nc));
 		}
 		for (String nc : oldClassesString){
 			if (!newClassesString.contains(nc)){
@@ -189,8 +180,8 @@ public class StatsPanel extends JPanel{
 		
 		Map<String, Set<String>> newPropMap = new HashMap<String, Set<String>>();
         for(ObjectPropertyAssertion ob : modifier.getObjectProperties(ind)){
-        	String role = ob.getRole().toString(baseURI, prefixes);
-        	String ind = ob.getIndividual2().toManchesterSyntaxString(baseURI, prefixes);
+        	String role = OREManager.getInstance().getManchesterSyntaxRendering(ob.getRole());
+        	String ind = OREManager.getInstance().getManchesterSyntaxRendering(ob.getIndividual2());
         	if(newPropMap.containsKey(role)){
         		Set<String> oldSet = newPropMap.get(role);
         		oldSet.add(ind);
