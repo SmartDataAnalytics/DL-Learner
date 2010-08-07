@@ -38,6 +38,8 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.reasoning.PelletReasoner;
+import org.dllearner.reasoning.ProtegeReasoner;
 
 /**
  * Class displaying a component (and its options).
@@ -107,6 +109,8 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			selectableComponents.addAll(config.getComponentManager().getKnowledgeSources());
 		} else if (panelClass == ReasonerComponent.class) {
 			selectableComponents.addAll(config.getComponentManager().getReasonerComponents());
+			selectableComponents.remove(PelletReasoner.class);
+			selectableComponents.remove(ProtegeReasoner.class);
 		} else if (panelClass == LearningProblem.class) {
 			selectableComponents.addAll(config.getComponentManager().getLearningProblems());
 		} else if (panelClass == LearningAlgorithm.class) {
