@@ -283,14 +283,14 @@ public class Info {
 			<map from="${removeprefix}" to="."/>
 		</pathconvert>
 
-		<echo file="bin/quickstart.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
-		<echo file="bin/dllearner.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
-		<echo file="bin/ws.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
-		<echo file="bin/gui.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>
-		<echo file="bin/quickstart" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
-		<echo file="bin/dllearner" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
-		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
-		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
+		<echo file="bin/quickstart.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
+		<echo file="bin/ws.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
+		<echo file="bin/gui.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>
+		<echo file="bin/quickstart" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
+		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
+		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
 	</target>
 
 	<!-- generate manual -->
@@ -529,8 +529,8 @@ public class Info {
 		<copy toDir="${release_ore_dir}/examples">
 			<fileset dir="examples/ore"/>
 		</copy>
-		<echo file="${release_ore_dir}/ore.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.tools.ore.OREApplication"/>
-		<echo file="${release_ore_dir}/ore" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.tools.ore.OREApplication $@"/>
+		<echo file="${release_ore_dir}/ore.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringWin} org.dllearner.tools.ore.OREApplication"/>
+		<echo file="${release_ore_dir}/ore" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/64bit/ -cp ${pathStringUnix}  org.dllearner.tools.ore.OREApplication $@"/>
 		
 
 		<!-- create file containing the build info -->
