@@ -678,11 +678,11 @@ public class Alzheimer {
 			}
 		} else if(subs.startsWith("double_alk")) {
 			if(subs.contains("1")) {
-				subs = "CH2–CH3";
+				subs = "CH2-CH3";
 			} else if (subs.contains("2")) {
-				subs = "(CH2–CH3)2";
+				subs = "(CH2-CH3)2";
 			} else if (subs.contains("3")) {
-				subs = "(CH2–CH3)3";
+				subs = "(CH2-CH3)3";
 			}
 			
 		} else if(subs.startsWith("aro")) {
