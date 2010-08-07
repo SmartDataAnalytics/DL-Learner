@@ -97,7 +97,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 					e1.printStackTrace();
 				}
 			}
-		} else if (e.getSource() == setButton) {
+		} else if (e.getSource() == setButton && !stringField.getText().isEmpty()) {
 			String stringValue = stringField.getText();
 			try {
 				value = new URL(stringValue);
