@@ -38,14 +38,24 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.w3.x2001.xmlSchema.impl.AttributeImpl.UseImpl;
+
+import com.clarkparsia.modularity.IncrementalClassifier;
+import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
 
 /**
  * 
@@ -57,8 +67,57 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  *
  */
 public class OWLAPIReasonerIncremental {
-
-	public static void main(String[] args) throws MalformedURLException, ComponentInitException {
+	
+	private static void usePelletIncremantalClassifier() throws OWLOntologyCreationException{
+		System.out.println("Using Pellet IncrementalClassifier");
+		String url = "http://morpheus.cs.umbc.edu/aks1/ontosem.owl";
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLOntology ontology = manager.loadOntology(IRI.create(url));
+		IncrementalClassifier incReasoner = PelletIncremantalReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
+		incReasoner.prepareReasoner();
+		System.out.println("Loaded ontology " + url + ".");
+		
+		OWLClass cl1 = factory.getOWLClass(IRI.create("http://morpheus.cs.umbc.edu/aks1/ontosem.owl#christianity"));
+		OWLClass cl2 = factory.getOWLClass(IRI.create("http://morpheus.cs.umbc.edu/aks1/ontosem.owl#priest"));
+		OWLClass newCl = factory.getOWLClass(IRI.create("http://nke.aksw.org/new"));
+		OWLObjectProperty op1 = factory.getOWLObjectProperty(IRI.create("http://morpheus.cs.umbc.edu/aks1/ontosem.owl#operated-by"));
+		OWLClassExpression exp1 = factory.getOWLObjectSomeValuesFrom(op1, cl2);
+		OWLClassExpression exp2 = factory.getOWLObjectIntersectionOf(cl1, exp1);
+		OWLEquivalentClassesAxiom eq = factory.getOWLEquivalentClassesAxiom(newCl, exp2);
+		
+		System.out.println("Adding " + eq + ".");
+		long startTime = System.nanoTime();
+		manager.applyChange(new AddAxiom(ontology, eq));
+		// perform reasoning using OWL API
+		boolean consistent = incReasoner.isConsistent();
+		Set<OWLClass> superClasses = incReasoner.getSuperClasses(newCl, true).getFlattened();
+		Set<OWLClass> subClasses = incReasoner.getSubClasses(newCl, true).getFlattened();
+		Set<OWLClass> parallelClasses = new TreeSet<OWLClass>(); 
+		for(OWLClass clazz : superClasses) {
+			parallelClasses.addAll(incReasoner.getSubClasses(clazz, true).getFlattened());
+		}
+		parallelClasses.remove(newCl);
+		// remove axiom again (otherwise internal DL-Learner state would be corrupt!) 
+		manager.applyChange(new RemoveAxiom(ontology, eq));
+		String timeStr = Helper.prettyPrintNanoSeconds(System.nanoTime()-startTime);
+		
+		if(!consistent) {
+			System.out.println("Adding the axiom renders the ontology inconsistent.");
+		} else {
+			System.out.println("\nSuper classes of " + newCl + ":");
+			System.out.println(superClasses);
+			System.out.println("\nSub classes of " + newCl + ":");
+			System.out.println(subClasses);
+			System.out.println("\nParallel classes of " + newCl + ":");
+			System.out.println(parallelClasses);
+			System.out.println("\nReasoning time: " + timeStr);
+		}
+	}
+	
+	private static void useOWLAPIReasoner() throws MalformedURLException, ComponentInitException{
+		System.out.println("Using DL-Learner OWLAPIReasoner");
 		// some random OWL file
 		String url = "http://morpheus.cs.umbc.edu/aks1/ontosem.owl";
 		// create reasoner
@@ -110,7 +169,11 @@ public class OWLAPIReasonerIncremental {
 			System.out.println(parallelClasses);
 			System.out.println("\nReasoning time: " + timeStr);
 		}
-		
+	}
+
+	public static void main(String[] args) throws MalformedURLException, ComponentInitException, OWLOntologyCreationException {
+		useOWLAPIReasoner();
+		usePelletIncremantalClassifier();
 	}
 
 }
