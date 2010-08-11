@@ -119,7 +119,18 @@ public class StringFormatter {
 	}
 	
 	
-	
+	 public static boolean isWhitespace(String str) {
+	      if (str == null) {
+	          return false;
+	      }
+	      int sz = str.length();
+	      for (int i = 0; i < sz; i++) {
+	          if ((Character.isWhitespace(str.charAt(i)) == false)) {
+	              return false;
+	          }
+	      }
+	      return true;
+	  }
 	
 	
 	public static void main(String[] args) {
