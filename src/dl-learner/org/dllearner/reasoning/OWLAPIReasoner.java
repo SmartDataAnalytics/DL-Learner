@@ -143,6 +143,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private OWLReasoner reasoner;
 	private OWLOntologyManager manager;
+
 	private OWLOntology ontology;
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
@@ -1084,6 +1085,30 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			definitions.add(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(owlAPIDescription));
 		}
 		return definitions;
+	}
+	
+	/**
+	 * Gets the OWL API ontology manager. Use with great caution.
+	 * @return The OWL API ontology manager.
+	 */
+	public OWLOntologyManager getManager() {
+		return manager;
+	}
+
+	/**
+	 * Gets the internal OWL API ontology. Use with great caution.
+	 * @return The internal OWL API ontology.
+	 */
+	public OWLOntology getOntology() {
+		return ontology;
+	}
+
+	/**
+	 * Gets the internal OWL API reasoner. Use with great caution.
+	 * @return The internal OWL API reasoner.
+	 */
+	public OWLReasoner getReasoner() {
+		return reasoner;
 	}
 	
 }
