@@ -4,16 +4,24 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyAssertion;
+import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
+import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.PrologParser;
 import org.dllearner.prolog.Atom;
@@ -29,18 +37,12 @@ public class Alzheimer {
 	private static IRI ontologyIRI = IRI
 			.create("http://dl-learner.org/alzheimer");
 	// directory of Prolog files
-	private static final String prologDirectory = "examples/alzheimer/prolog/";
-	private static List<String> positiveToxicExamples = new LinkedList<String>();
-	private static List<String> negativeToxicExamples = new LinkedList<String>();
-
-	private static List<String> positiveScopolamineExamples = new LinkedList<String>();
-	private static List<String> negativeScopolamineExamples = new LinkedList<String>();
-
-	private static List<String> positiveCholineExamples = new LinkedList<String>();
-	private static List<String> negativeCholineExamples = new LinkedList<String>();
-
-	private static List<String> positiveAmineExamples = new LinkedList<String>();
-	private static List<String> negativeAmineExamples = new LinkedList<String>();
+	private static final String prologDirectory = "test/alzheimer/prolog/";
+	private static HashMap<String, Integer> substancesToxic = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> substancesScopolamine = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> substancesCholine = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> substancesAmine = new HashMap<String, Integer>();
+	private static Set<String> measures = new TreeSet<String>();
 
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException, ParseException {
@@ -48,8 +50,8 @@ public class Alzheimer {
 				"amine_uptake/ne.f", "choline/inh.f", "scopolamine/rsd.f",
 				"toxic/toxic.f" };
 
-		File owlFile = new File("examples/alzheimer/alzheimer.owl");
-
+		File owlFile = new File("test/alzheimer/alzheimer.owl");
+		setMeasures();
 		Program program = null;
 		long startTime, duration;
 		String time;
@@ -76,7 +78,18 @@ public class Alzheimer {
 
 		// prepare mapping
 		KB kb = new KB();
-
+		
+		NamedClass atomClass = getAtomicConcept("Measure");
+		for (String measure : measures) {
+			NamedClass elClass = getAtomicConcept(measure);
+			SubClassAxiom sc = new SubClassAxiom(elClass, atomClass);
+			kb.addAxiom(sc);
+		}
+		
+		String kbString = generateDomainAndRangeForObjectProperties();		
+		KB kb2 = KBParser.parseKBFile(kbString);
+		kb.addKB(kb2);
+		
 		// mapping clauses to axioms
 		System.out.print("Mapping clauses to axioms ... ");
 		startTime = System.nanoTime();
@@ -99,40 +112,40 @@ public class Alzheimer {
 
 		System.out.print("Generatin first conf file ... ");
 		startTime = System.nanoTime();
-		File confTrainFile = new File("examples/alzheimer/train1.conf");
+		File confTrainFile = new File("test/alzheimer/train1.conf");
 		Files.clearFile(confTrainFile);
 		generateConfFile(confTrainFile);
-		generateExamples(positiveToxicExamples, negativeToxicExamples, confTrainFile);
+		generateExamples(substancesToxic, confTrainFile);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
 
 		// generating second conf file
 		System.out.print("Generatin second conf file ... ");
-		File confSecondTrainFile = new File("examples/alzheimer/train2.conf");
+		File confSecondTrainFile = new File("test/alzheimer/train2.conf");
 		Files.clearFile(confSecondTrainFile);
 		generateConfFile(confSecondTrainFile);
-		generateExamples(positiveScopolamineExamples, negativeScopolamineExamples, confSecondTrainFile);
+		generateExamples(substancesScopolamine, confSecondTrainFile);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
 
 		System.out.print("Generatin third conf file ... ");
 		startTime = System.nanoTime();
-		File confThirdTrainFile = new File("examples/alzheimer/train3.conf");
+		File confThirdTrainFile = new File("test/alzheimer/train3.conf");
 		Files.clearFile(confThirdTrainFile);
 		generateConfFile(confThirdTrainFile);
-		generateExamples(positiveCholineExamples, negativeCholineExamples, confThirdTrainFile);
+		generateExamples(substancesCholine, confThirdTrainFile);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
 
 		// generating second conf file
 		System.out.print("Generatin fourth conf file ... ");
-		File confFourthTrainFile = new File("examples/alzheimer/train4.conf");
+		File confFourthTrainFile = new File("test/alzheimer/train4.conf");
 		Files.clearFile(confFourthTrainFile);
 		generateConfFile(confFourthTrainFile);
-		generateExamples(positiveAmineExamples, negativeAmineExamples, confFourthTrainFile);
+		generateExamples(substancesAmine, confFourthTrainFile);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
@@ -155,7 +168,7 @@ public class Alzheimer {
 					compoundName);
 			axioms.add(cmpAxiom);
 
-			ObjectPropertyAssertion ra = getRoleAssertion("hasPolatisation",
+			ObjectPropertyAssertion ra = getRoleAssertion("hasPolarisation",
 					compoundName, polatisation);
 			axioms.add(ra);
 		} else if (headName.equals("size")) {
@@ -187,7 +200,7 @@ public class Alzheimer {
 			compoundName = changeSubstituionNames(compoundName);
 			String hDoner = head.getArgument(1).toPLString();
 
-			ObjectPropertyAssertion ra = getRoleAssertion("isHDoner",
+			ObjectPropertyAssertion ra = getRoleAssertion("isHDonor",
 					compoundName, hDoner);
 			axioms.add(ra);
 		} else if (headName.equals("h_acceptor")) {
@@ -203,7 +216,7 @@ public class Alzheimer {
 			compoundName = changeSubstituionNames(compoundName);
 			String piDoner = head.getArgument(1).toPLString();
 
-			ObjectPropertyAssertion ra = getRoleAssertion("isPiDoner",
+			ObjectPropertyAssertion ra = getRoleAssertion("isPiDonor",
 					compoundName, piDoner);
 			axioms.add(ra);
 		} else if (headName.equals("pi_acceptor")) {
@@ -369,14 +382,18 @@ public class Alzheimer {
 			String positionrOfSubs = head.getArgument(1).toPLString();
 			String substituent = head.getArgument(2).toPLString();
 			
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Position",
+					positionrOfSubs);
+			axioms.add(cmpAxiom);
+			
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
-
+			
 			ObjectPropertyAssertion ra = getRoleAssertion(
 					"getsReplacedAtPosition", drugName, positionrOfSubs);
 			axioms.add(ra);
 
-			ObjectPropertyAssertion sub = getRoleAssertion("getsReplacedBy",
+			ObjectPropertyAssertion sub = getRoleAssertion("getsReplacedAtPosition"+positionrOfSubs+"By",
 					drugName, substituent);
 			axioms.add(sub);
 		} else if (headName.equals("alk_groups")) {
@@ -385,9 +402,16 @@ public class Alzheimer {
 			
 			drugName = changeSubstituionNames(drugName);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion(
-					"hasNrOfAlkylSubstitutions", drugName, nrOfSubs);
-			axioms.add(ra);
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Drug",
+					drugName);
+			axioms.add(cmpAxiom);
+			
+			double subs = Double
+			.parseDouble(nrOfSubs);
+			
+			DatatypePropertyAssertion dpa = getDoubleDatatypePropertyAssertion(
+					drugName, "hasNrOfAlkylSubstitutions", subs);
+			axioms.add(dpa);
 
 		} else if (headName.equals("r_subst_1")) {
 			String drugName = head.getArgument(0).toPLString();
@@ -396,7 +420,15 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedByFirst",
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"1");
+			axioms.add(cpAxiom);
+			
+			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedAtPositionOneBy",
 					drugName, substituent);
 			axioms.add(ra);
 			// z.B. r_subst_l (n 1, single_alk(2)). R substitution beginnt mit 2
@@ -410,7 +442,15 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedBySecond",
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"2");
+			axioms.add(cpAxiom);
+			
+			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedAtPositionTwoBy",
 					drugName, substituent);
 			axioms.add(ra);
 			// z.B. r_subst_2(n 1, double_alk(1)). eine ethygruppe
@@ -421,7 +461,15 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedByThird",
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(cmpAxiom);
+			
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"3");
+			axioms.add(cpAxiom);
+			
+			ObjectPropertyAssertion ra = getRoleAssertion("getsReplacedAtPositionThreeBy",
 					drugName, substituent);
 			axioms.add(ra);
 			// z.B. r_subst_3(nl, 3, aro(2)). the final alkyl group in drug nl
@@ -430,10 +478,13 @@ public class Alzheimer {
 		} else if (headName.equals("ring_substitutions")) {
 			String drugName = head.getArgument(0).toPLString();
 			String nrOfSubs = head.getArgument(1).toPLString();
-
-			ObjectPropertyAssertion is = getRoleAssertion("nrOfSubstitutionsInRing",
-					drugName, nrOfSubs);
-			axioms.add(is);
+			
+			double subs = Double
+			.parseDouble(nrOfSubs);
+			
+			DatatypePropertyAssertion dpa = getDoubleDatatypePropertyAssertion(
+					drugName, "nrOfSubstitutionsInRing", subs);
+			axioms.add(dpa);
 		} else if (headName.equals("ring_subst_4")) {
 			String drugName = head.getArgument(0).toPLString();
 			String substituent = head.getArgument(1).toPLString();
@@ -441,14 +492,22 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
+			ClassAssertionAxiom compAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(compAxiom);
+			
 			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Drug", drugName);
 			axioms.add(cmpAxiom);
 
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+					"4");
+			axioms.add(cpAxiom);
+			
 			ObjectPropertyAssertion ra = getRoleAssertion(
 					"getsRingReplacedAtPosition", drugName, "4");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
+			ObjectPropertyAssertion is = getRoleAssertion("getsRingReplacedAtPositionFourBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_3")) {
@@ -458,6 +517,14 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
+			ClassAssertionAxiom compAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(compAxiom);
+			
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"3");
+			axioms.add(cpAxiom);
+			
 			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Drug", drugName);
 			axioms.add(cmpAxiom);
 
@@ -465,7 +532,7 @@ public class Alzheimer {
 					"getsRingReplacedAtPosition", drugName, "3");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
+			ObjectPropertyAssertion is = getRoleAssertion("getsRingReplacedAtPositionThreeBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_2")) {
@@ -475,6 +542,15 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
+			
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"2");
+			axioms.add(cpAxiom);
+			
+			ClassAssertionAxiom compAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(compAxiom);
+			
 			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Drug", drugName);
 			axioms.add(cmpAxiom);
 
@@ -482,7 +558,7 @@ public class Alzheimer {
 					"getsRingReplacedAtPosition", drugName, "2");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
+			ObjectPropertyAssertion is = getRoleAssertion("getsRingReplacedAtPositionTwoBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_5")) {
@@ -492,14 +568,22 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
+			ClassAssertionAxiom compAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(compAxiom);
+			
 			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Drug", drugName);
 			axioms.add(cmpAxiom);
 
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"5");
+			axioms.add(cpAxiom);
+	
 			ObjectPropertyAssertion ra = getRoleAssertion(
 					"getsRingReplacedAtPosition", drugName, "5");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
+			ObjectPropertyAssertion is = getRoleAssertion("getsRingReplacedAtPositionFifeBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("ring_subst_6")) {
@@ -509,6 +593,14 @@ public class Alzheimer {
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
+			ClassAssertionAxiom compAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(compAxiom);
+			
+			ClassAssertionAxiom cpAxiom = getConceptAssertion("Position",
+			"6");
+			axioms.add(cpAxiom);
+			
 			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Drug", drugName);
 			axioms.add(cmpAxiom);
 
@@ -516,20 +608,19 @@ public class Alzheimer {
 					"getsRingReplacedAtPosition", drugName, "6");
 			axioms.add(ra);
 
-			ObjectPropertyAssertion is = getRoleAssertion("getsReplacedBy",
+			ObjectPropertyAssertion is = getRoleAssertion("getsRingReplacedAtPositionSixBy",
 					drugName, substituent);
 			axioms.add(is);
 		} else if (headName.equals("r_subst")) {
 			String drugName = head.getArgument(0).toPLString();
-			String subsCount = head.getArgument(1).toPLString();
 			String substituent = head.getArgument(2).toPLString();
 			
 			drugName = changeSubstituionNames(drugName);
 			substituent = changeSubstituionNames(substituent);
 			
-			ObjectPropertyAssertion ra = getRoleAssertion(
-					"getsNrOfReplacementsInMiddleRing", drugName, subsCount);
-			axioms.add(ra);
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Substituent",
+					substituent);
+			axioms.add(cmpAxiom);
 			
 			ObjectPropertyAssertion da = getRoleAssertion(
 					"getsReplacedBy", drugName, substituent);
@@ -566,39 +657,71 @@ public class Alzheimer {
 		} else if (headName.equals("great_rsd")) {
 			String subs1 = head.getArgument(0).toPLString();
 			String subs2 = head.getArgument(1).toPLString();
-			if(!positiveScopolamineExamples.contains(subs1))
-				positiveScopolamineExamples.add(subs1);
+			if(!substancesScopolamine.containsKey(subs1)) {
+				substancesScopolamine.put(subs1, new Integer(1));
+			} else {
+				Integer subsValue = substancesScopolamine.get(subs1);
+				substancesScopolamine.put(subs1, subsValue+1);
+			}
 			
-			if(!negativeScopolamineExamples.contains(subs2))
-				negativeScopolamineExamples.add(subs2);
+			if(!substancesScopolamine.containsKey(subs2)) {
+				substancesScopolamine.put(subs2, new Integer(-1));
+			} else {
+				Integer subsValue = substancesScopolamine.get(subs2);
+				substancesScopolamine.put(subs2, subsValue-1);
+			}
 
 		} else if (headName.equals("less_toxic")) {
 			String subs1 = head.getArgument(0).toPLString();
 			String subs2 = head.getArgument(1).toPLString();
 			
-			if(!positiveToxicExamples.contains(subs1))
-				positiveToxicExamples.add(subs1);
+			if(!substancesToxic.containsKey(subs1)) {
+				substancesToxic.put(subs1, new Integer(1));
+			} else {
+				Integer subsValue = substancesToxic.get(subs1);
+				substancesToxic.put(subs1, subsValue+1);
+			}
 			
-			if(!negativeToxicExamples.contains(subs2))
-				negativeToxicExamples.add(subs2);
+			if(!substancesToxic.containsKey(subs2)) {
+				substancesToxic.put(subs2, new Integer(-1));
+			} else {
+				Integer subsValue = substancesToxic.get(subs2);
+				substancesToxic.put(subs2, subsValue-1);
+			}
 		} else if (headName.equals("great")) {
 			String subs1 = head.getArgument(0).toPLString();
 			String subs2 = head.getArgument(1).toPLString();
 
-			if(!positiveCholineExamples.contains(subs1))
-				positiveCholineExamples.add(subs1);
+			if(!substancesCholine.containsKey(subs1)) {
+				substancesCholine.put(subs1, new Integer(1));
+			} else {
+				Integer subsValue = substancesCholine.get(subs1);
+				substancesCholine.put(subs1, subsValue+1);
+			}
 			
-			if(!negativeCholineExamples.contains(subs2))
-				negativeCholineExamples.add(subs2);
+			if(!substancesCholine.containsKey(subs2)) {
+				substancesCholine.put(subs2, new Integer(-1));
+			} else {
+				Integer subsValue = substancesCholine.get(subs2);
+				substancesCholine.put(subs2, subsValue-1);
+			}
 		} else if (headName.equals("great_ne")) {
 			String subs1 = head.getArgument(0).toPLString();
 			String subs2 = head.getArgument(1).toPLString();
 
-			if(!positiveAmineExamples.contains(subs1))
-				positiveAmineExamples.add(subs1);
+			if(!substancesAmine.containsKey(subs1)) {
+				substancesAmine.put(subs1, new Integer(1));
+			} else {
+				Integer subsValue = substancesAmine.get(subs1);
+				substancesAmine.put(subs1, subsValue+1);
+			}
 			
-			if(!negativeAmineExamples.contains(subs2))
-				negativeAmineExamples.add(subs2);
+			if(!substancesAmine.containsKey(subs2)) {
+				substancesAmine.put(subs2, new Integer(-1));
+			} else {
+				Integer subsValue = substancesAmine.get(subs2);
+				substancesAmine.put(subs2, subsValue-1);
+			}
 		} else {
 			System.out.println("clause not supportet: " + headName);
 		}
@@ -632,13 +755,15 @@ public class Alzheimer {
 		return new ObjectProperty(ontologyIRI + "#" + name);
 	}
 	
-	private static void generateExamples(List<String>posEx, List<String>negEx, File file) {
+	private static void generateExamples(HashMap<String,Integer> examples, File file) {
 		StringBuffer content = new StringBuffer();
-		for(String pos: posEx) {
-			if(negEx.contains(pos)) {
-				content.append("-\"" + getIndividual(pos.toString()) + "\"\n");
+		Set<String> keys = examples.keySet();
+		for(String key: keys) {
+			Integer subsValue = examples.get(key);
+			if(subsValue > 0) {
+				content.append("+\"" + getIndividual(key) + "\"\n");
 			} else {
-				content.append("+\"" + getIndividual(pos.toString()) + "\"\n");
+				content.append("-\"" + getIndividual(key) + "\"\n");
 			}
 		}
 		Files.appendFile(file, content.toString());
@@ -648,7 +773,7 @@ public class Alzheimer {
 		String confHeader = "import(\"alzheimer.owl\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
 		confHeader += "algorithm = refexamples;\n";
-		confHeader += "refexamples.noisePercentage = 15;\n";
+		confHeader += "refexamples.noisePercentage = 16;\n";
 		confHeader += "refexamples.startClass = " + getURI2("Drug") + ";\n";
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/alzheimer/searchTree.log\";\n";
@@ -708,4 +833,181 @@ public class Alzheimer {
 		subs = substi + " " + ringPosition;
 		return subs;
 	}
+	
+	/**
+	 * This method contains all subclasses of measure
+	 */
+	private static void setMeasures() {
+		measures.add("Polar");
+		measures.add("Size");
+		measures.add("Sigma");
+		measures.add("PiDonor");
+		measures.add("PiAcceptor");
+		measures.add("HDonor");
+		measures.add("HAcceptor");
+		measures.add("Flex");
+		measures.add("Position");
+	}
+	
+	/**
+	 * In this method the domain and range for all object properties is generated.
+	 * @return domain and range for object properties
+	 */
+	private static String generateDomainAndRangeForObjectProperties() {
+		// define properties including domain and range
+		String kbString = "OPDOMAIN(" + getURI2("hasFlex") + ") = "
+				+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasFlex") + ") = " + getURI2("Flex")
+				+ ".\n";
+				
+		kbString += "OPDOMAIN(" + getURI2("hasSize") + ") = "
+				+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasSize") + ") = " + getURI2("Size")
+				+ ".\n";
+				
+		kbString += "OPDOMAIN(" + getURI2("hasSigma") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasSigma") + ") = " + getURI2("Sigma")
+		+ ".\n";
+
+		kbString += "OPDOMAIN(" + getURI2("hasPolarisation") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasPolarisation") + ") = " + getURI2("Polar")
+		+ ".\n";
+
+		kbString += "OPDOMAIN(" + getURI2("isPiDonor") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("isPiDonor") + ") = " + getURI2("PiDonor")
+		+ ".\n";
+
+		kbString += "OPDOMAIN(" + getURI2("isPiAcceptor") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("isPiAcceptor") + ") = " + getURI2("PiAcceptor")
+		+ ".\n";
+
+		kbString += "OPDOMAIN(" + getURI2("isHDonor") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("isHDonor") + ") = " + getURI2("HDonor")
+		+ ".\n";
+
+		kbString += "OPDOMAIN(" + getURI2("isHAcceptor") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		kbString += "OPRANGE(" + getURI2("isHAcceptor") + ") = " + getURI2("HAcceptor")
+		+ ".\n";
+
+		kbString += "OPDOMAIN(" + getURI2("isPolarisable") + ") = "
+		+ getURI2("Substituent") + ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsNrOfReplacementsInMiddleRing") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsNrOfReplacementsInMiddleRing") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedAtPosition") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedAtPosition") + ") = " + getURI2("Position")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedByFirst") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedByFirst") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedBySecond") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedBySecond") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedByThird") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedByThird") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacedAtPosition") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacedAtPosition") + ") = " + getURI2("Position")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacementAt") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacementAt") + ") = " + getURI2("Position")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedWith") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedWith") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("hasRingStructure") + ") = "
+		+ getURI2("Drug") + ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedAtPosition6By") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedAtPosition6By") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedAtPosition7By") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedAtPosition7By") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedAtPositionOneBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedAtPositionOneBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedAtPositionTwoBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedAtPositionTwoBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsReplacedAtPositionThreeBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsReplacedAtPositionThreeBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacedAtPositionTwoBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacedAtPositionTwoBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacedAtPositionThreeBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacedAtPositionThreeBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacedAtPositionFourBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacedAtPositionFourBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacedAtPositionFifeBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacedAtPositionFifeBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		kbString += "OPDOMAIN(" + getURI2("getsRingReplacedAtPositionSixBy") + ") = "
+		+ getURI2("Drug") + ".\n";
+		kbString += "OPRANGE(" + getURI2("getsRingReplacedAtPositionSixBy") + ") = " + getURI2("Substituent")
+		+ ".\n";
+		
+		return kbString;
+	}
+	
+	private static DoubleDatatypePropertyAssertion getDoubleDatatypePropertyAssertion(
+			String individual, String datatypeProperty, double value) {
+		Individual ind = getIndividual(individual);
+		DatatypeProperty dp = getDatatypeProperty(datatypeProperty);
+		return new DoubleDatatypePropertyAssertion(dp, ind, value);
+	}
+	
+	private static DatatypeProperty getDatatypeProperty(String name) {
+		return new DatatypeProperty(ontologyIRI + "#" + name);
+	}
+	
 }
