@@ -11,14 +11,14 @@
   </properties>
    <distributionManagement>
       <repository>
-        <id>archiva.internal</id>
-        <name>Internal Release Repository</name>
-        <url> 	http://db0.aksw.org:8081/archiva/repository/internal/</url>
+        <id>maven.aksw.internal</id>
+        <name>AKSW Internal Release Repository</name>
+        <url>http://db0.aksw.org:8081/archiva/repository/internal</url>
       </repository>
       <snapshotRepository>
-        <id>archiva.snapshots</id>
-        <name>Internal Snapshot Repository</name>
-        <url>http://db0.aksw.org:8081/archiva/repository/snapshots/</url>
+        <id>maven.aksw.snapshot</id>
+        <name>AKSW Snapshot Repository</name>
+        <url>http://db0.aksw.org:8081/archiva/repository/snapshots</url>
       </snapshotRepository>
     </distributionManagement>
    
@@ -82,12 +82,6 @@
 <dependency> <groupId>dllearnerDependency</groupId> <artifactId>dig1.1-xmlbeans.jar</artifactId>  <version>snapshot</version>  </dependency>
 <dependency> <groupId>dllearnerDependency</groupId> <artifactId>lucene-core-3.0.1.jar</artifactId>  <version>snapshot</version>  </dependency>
 <dependency> <groupId>dllearnerDependency</groupId> <artifactId>ini4j-0.3.2.jar</artifactId>  <version>snapshot</version>  </dependency>
-<dependency> <groupId>dllearnerDependency</groupId> <artifactId>converter.jar</artifactId>  <version>snapshot</version>  </dependency>
-<dependency> <groupId>dllearnerDependency</groupId> <artifactId>commons-lang-2.3.jar</artifactId>  <version>snapshot</version>  </dependency>
-<dependency> <groupId>dllearnerDependency</groupId> <artifactId>rdbtoonto.jar</artifactId>  <version>snapshot</version>  </dependency>
-<dependency> <groupId>dllearnerDependency</groupId> <artifactId>mysql-connector-java-5.1.6-bin.jar</artifactId>  <version>snapshot</version>  </dependency>
-<dependency> <groupId>dllearnerDependency</groupId> <artifactId>commons-collections-3.2.jar</artifactId>  <version>snapshot</version>  </dependency>
-<dependency> <groupId>dllearnerDependency</groupId> <artifactId>commons-configuration-1.4.jar</artifactId>  <version>snapshot</version>  </dependency>
 <dependency> <groupId>dllearnerDependency</groupId> <artifactId>org.protege.editor.core.application.jar</artifactId>  <version>snapshot</version>  </dependency>
 <dependency> <groupId>dllearnerDependency</groupId> <artifactId>org.protege.editor.owl.jar</artifactId>  <version>snapshot</version>  </dependency>
 <dependency> <groupId>dllearnerDependency</groupId> <artifactId>org.semanticweb.HermiT.jar</artifactId>  <version>snapshot</version>  </dependency>
