@@ -11,7 +11,7 @@ do
 
 artifactid=$(echo $filepath | sed 's/.*\///') 
 
-#~ mvn deploy:deploy-file -Dfile=$filepath -DrepositoryId=archiva.snapshots -Durl=http://db0.aksw.org:8081/archiva/repository/snapshots -DartifactId=$artifactid  -DgroupId=dllearnerDependency -Dversion=snapshot -Dpackaging=jar
+#~ mvn deploy:deploy-file -Dfile=$filepath -DrepositoryId=maven.aksw.snapshots -Durl=http://db0.aksw.org:8081/archiva/repository/snapshots -DartifactId=$artifactid  -DgroupId=dllearnerDependency -Dversion=snapshot -Dpackaging=jar
 
 echo "writing to "$PWD"/pomtmp.xml"
 echo "<dependency> <groupId>dllearnerDependency</groupId> <artifactId>"$artifactid"</artifactId>  <version>snapshot</version>  </dependency>" >> pomtmp.xml
