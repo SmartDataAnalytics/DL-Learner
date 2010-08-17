@@ -57,6 +57,12 @@
     <testOutputDirectory>target/test-classes</testOutputDirectory>
     <sourceDirectory>src/dl-learner</sourceDirectory>
     <scriptSourceDirectory>bin</scriptSourceDirectory>
+     <resources>
+      <resource>
+        <directory>src/dl-learner</directory>
+      </resource>
+    </resources>
+
    <!--  <testSourceDirectory>src/test/java</testSourceDirectory>  -->
   </build>
   

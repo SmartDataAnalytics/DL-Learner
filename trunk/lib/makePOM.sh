@@ -20,7 +20,7 @@ done
 
 cat pomEnd.xml >>  pomtmp.xml
 
-mv pomtmp.xml ../pom.xml
+mv -v pomtmp.xml ../pom.xml
 
 
 echo "in case the script fails with 401 you need to update credentials in ~/.m2/settings.xml"
