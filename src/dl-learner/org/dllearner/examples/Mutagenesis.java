@@ -141,6 +141,19 @@ public class Mutagenesis {
 		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = "
 				+ getURI2("Atom") + ".\n";
 		kbString += "DPRANGE(" + getURI2("charge") + ") = DOUBLE.\n";
+
+		kbString += "DPDOMAIN(" + getURI2("logp") + ") = "
+				+ getURI2("Compound") + ".\n";
+		kbString += "DPRANGE(" + getURI2("logp") + ") = DOUBLE.\n";
+
+		kbString += "DPDOMAIN(" + getURI2("act") + ") = "
+				+ getURI2("Compound") + ".\n";
+		kbString += "DPRANGE(" + getURI2("act") + ") = DOUBLE.\n";
+
+		kbString += "DPDOMAIN(" + getURI2("lumo") + ") = "
+				+ getURI2("Compound") + ".\n";
+		kbString += "DPRANGE(" + getURI2("lumo") + ") = DOUBLE.\n";
+		
 		kbString += "OPDOMAIN(" + getURI2("hasAtom") + ") = "
 				+ getURI2("Compound") + ".\n";
 		kbString += "OPRANGE(" + getURI2("hasAtom") + ") = " + getURI2("Atom")
@@ -153,8 +166,10 @@ public class Mutagenesis {
 				+ ".\n";
 		kbString += "OPRANGE(" + getURI2("inBond") + ") = " + getURI2("Atom")
 				+ ".\n";
-		kbString += "OPDOMAIN(" + getURI2("hasStructure") + ") = " + getURI2("Compound") + ".\n";
-		kbString += "OPRANGE(" + getURI2("inStructure") + ") = " + getURI2("RingStructure") + ".\n";
+		kbString += "OPDOMAIN(" + getURI2("hasStructure") + ") = "
+				+ getURI2("Compound") + ".\n";
+		kbString += "OPRANGE(" + getURI2("inStructure") + ") = "
+				+ getURI2("RingStructure") + ".\n";
 		KB kb2 = KBParser.parseKBFile(kbString);
 		kb.addKB(kb2);
 
@@ -176,32 +191,31 @@ public class Mutagenesis {
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
-		
+
 		// generating first conf file
 		System.out.print("Generatin first conf file ... ");
 		startTime = System.nanoTime();
 		File confTrainFile = new File("examples/mutagenesis/train1.conf");
 		Files.clearFile(confTrainFile);
 		generateConfFile(confTrainFile);
-		String[] trainingFiles = new String[] { "s1.pl", "s2.pl",
-				"s3.pl", "s4.pl", "s5.pl", "s6.pl", "s7.pl",
-				"s8.pl", "s9.pl", "s10.pl"};
-		
+		String[] trainingFiles = new String[] { "s1.pl", "s2.pl", "s3.pl",
+				"s4.pl", "s5.pl", "s6.pl", "s7.pl", "s8.pl", "s9.pl", "s10.pl" };
+
 		for (String file : trainingFiles) {
-			generatePositiveExamples(prologDirectory + "188/" + file); 	
+			generatePositiveExamples(prologDirectory + "188/" + file);
 		}
 		appendExamples(confTrainFile, positiveExamples);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
-		
-		
+
 		// generating second conf file
 		System.out.print("Generatin second conf file ... ");
 		File confSecondTrainFile = new File("examples/mutagenesis/train2.conf");
 		Files.clearFile(confSecondTrainFile);
 		generateConfFile(confSecondTrainFile);
-		generatePositiveExamples(prologDirectory + "42/all.pl"); 	
+		positiveExamples.clear();
+		generatePositiveExamples(prologDirectory + "42/all.pl");
 		appendExamples(confSecondTrainFile, positiveExamples);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
@@ -213,27 +227,30 @@ public class Mutagenesis {
 		String confHeader = "import(\"mutagenesis.owl\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
 		confHeader += "algorithm = refexamples;\n";
-		confHeader += "refexamples.noisePercentage = 31;\n";
+		confHeader += "refexamples.noisePercentage = 0;\n";
 		confHeader += "refexamples.startClass = " + getURI2("Compound") + ";\n";
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/mutagenesis/searchTree.log\";\n";
 		confHeader += "\n";
 		Files.appendFile(file, confHeader);
 	}
-	
-	private static void generatePositiveExamples(String fileName) throws FileNotFoundException {
+
+	private static void generatePositiveExamples(String fileName)
+			throws FileNotFoundException {
 		Scanner input = new Scanner(new File(fileName), "UTF-8");
 		String trainingContent = "";
-		while ( input.hasNextLine() ) {
+		
+		while (input.hasNextLine()) {
 			trainingContent = input.nextLine();
-			if(trainingContent.startsWith("active")) {
+			if (trainingContent.startsWith("active")) {
 				int start = trainingContent.indexOf("(") + 1;
 				int end = trainingContent.indexOf(")");
-				String individual = trainingContent.substring(start,end);			
+				String individual = trainingContent.substring(start, end);
 				positiveExamples.add(individual);
 			}
 		}
 	}
+
 	private static List<Axiom> mapClause(Clause clause) throws IOException,
 			ParseException {
 		List<Axiom> axioms = new LinkedList<Axiom>();
@@ -509,19 +526,21 @@ public class Mutagenesis {
 			ringStructureTypes.add(structureClass);
 		}
 	}
-	
+
 	/**
-	 * This method  
+	 * This method
+	 * 
 	 * @param file
 	 * @param examples
 	 */
 	public static void appendExamples(File file, List<String> examples) {
 		StringBuffer content = new StringBuffer();
-		for(String compound : compounds) {
-			if(examples.contains(compound.toString())) {
-				content.append("+\""+getIndividual(compound)+"\"\n");
+		for (String compound : compounds) {
+			if (examples.contains(compound.toString())) {
+				content.append("+\"" + getIndividual(compound) + "\"\n");
 			} else {
-				content.append("-\""+getIndividual(compound.toString())+"\"\n");
+				content.append("-\"" + getIndividual(compound.toString())
+						+ "\"\n");
 			}
 		}
 		Files.appendFile(file, content.toString());
