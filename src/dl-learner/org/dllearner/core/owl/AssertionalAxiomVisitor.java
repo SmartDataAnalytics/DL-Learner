@@ -37,4 +37,6 @@ public interface AssertionalAxiomVisitor {
 	
 	public void visit(DifferentIndividualsAxiom axiom);
 	
+	public void visit(StringDatatypePropertyAssertion axiom);
+	
 }
