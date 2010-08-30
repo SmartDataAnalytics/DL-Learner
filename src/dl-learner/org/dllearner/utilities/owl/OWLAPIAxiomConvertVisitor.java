@@ -44,6 +44,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
 import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
+import org.dllearner.core.owl.StringDatatypePropertyAssertion;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
@@ -343,6 +344,14 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 			owlAPIDescriptions.add(getOWLClassExpression(description));
 		OWLAxiom axiomOWLAPI = factory.getOWLDisjointClassesAxiom(owlAPIDescriptions);
 		addAxiom(axiomOWLAPI);		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AssertionalAxiomVisitor#visit(org.dllearner.core.owl.StringDatatypePropertyAssertion)
+	 */
+	@Override
+	public void visit(StringDatatypePropertyAssertion axiom) {
+		throw new UnsupportedOperationException("String datatype conversion not implemented");
 	}
 
 }
