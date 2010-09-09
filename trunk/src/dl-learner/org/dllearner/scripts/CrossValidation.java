@@ -62,7 +62,8 @@ public class CrossValidation {
 	// statistical values
 	private Stat runtime = new Stat();
 	private Stat accuracy = new Stat();
-	private Stat length = new Stat();	
+	private Stat length = new Stat();
+	private Stat accuracyTraining = new Stat();
 	
 	public static void main(String[] args) {
 		File file = new File(args[0]);
@@ -252,7 +253,7 @@ public class CrossValidation {
 			int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
 			double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainingSetsPos.get(currFold).size()+
 					trainingSetsNeg.get(currFold).size()));			
-			
+			accuracyTraining.addNumber(trainingAccuracy);
 			// calculate test accuracies
 			int correctPosClassified = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold));
 			int correctNegClassified = getCorrectNegClassified(rs, concept, testSetsNeg.get(currFold));
@@ -282,6 +283,7 @@ public class CrossValidation {
 		System.out.println("runtime: " + statOutput(df, runtime, "s"));
 		System.out.println("length: " + statOutput(df, length, ""));
 		System.out.println("accuracy: " + statOutput(df, accuracy, "%"));
+		System.out.println("accuracy on training set: " + statOutput(df, accuracyTraining, "%"));
 		
 	}
 	
