@@ -78,8 +78,9 @@ public final class ComponentManager {
 	private static Collection<Class<? extends LearningProblem>> learningProblems;
 	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
-	private static String componentsFile = "org/dllearner/components.ini";
-	private static String[] componentClasses = new String[]{}; 
+	@Deprecated
+    private static String componentsFile = "org/dllearner/components.ini";
+	private static String[] componentClasses = intComponents(); 
 	private static ComponentManager cm = null;	
 
 	// list of all configuration options of all components
@@ -105,12 +106,14 @@ public final class ComponentManager {
 	@SuppressWarnings("unchecked")
 	private ComponentManager() {
 		// read in components file
-		List<String> componentsString;
+        /*REMOVED THE BLOCK*/
+		/*List<String> componentsString;
 		if(componentClasses.length > 0) {
 			componentsString = Arrays.asList(componentClasses);
 		} else {
 			componentsString = readComponentsFile();
-		}
+		}*/
+       List<String> componentsString = Arrays.asList(componentClasses);
 
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
@@ -767,5 +770,39 @@ public final class ComponentManager {
 		}
 		return list;
 	}
+
+
+    private static String[] intComponents(){
+        String[] s = new String[]{
+                "org.dllearner.kb.OWLFile",
+                "org.dllearner.kb.KBFile",
+                "org.dllearner.kb.sparql.SparqlKnowledgeSource",
+                "org.dllearner.kb.OWLAPIOntology",
+//reasoners
+                "org.dllearner.reasoning.OWLAPIReasoner",
+                "org.dllearner.reasoning.DIGReasoner",
+                "org.dllearner.reasoning.FastRetrievalReasoner",
+                "org.dllearner.reasoning.FastInstanceChecker",
+                "org.dllearner.reasoning.ProtegeReasoner",
+                "org.dllearner.reasoning.PelletReasoner",
+//learning problems
+                "org.dllearner.learningproblems.PosNegLPStandard",
+                "org.dllearner.learningproblems.PosNegLPStrict",
+                "org.dllearner.learningproblems.PosOnlyLP",
+                "org.dllearner.learningproblems.ClassLearningProblem",
+//learning algorithms
+                "org.dllearner.algorithms.RandomGuesser",
+                "org.dllearner.algorithms.BruteForceLearner",
+                "org.dllearner.algorithms.refinement.ROLearner",
+                "org.dllearner.algorithms.refinement2.ROLComponent2",
+                "org.dllearner.algorithms.gp.GP",
+                "org.dllearner.algorithms.el.ELLearningAlgorithm",
+                "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
+                "org.dllearner.algorithms.celoe.CELOE",
+                "org.dllearner.algorithms.isle.ISLE"
+
+        };
+        return   s;
+    }
 
 }
