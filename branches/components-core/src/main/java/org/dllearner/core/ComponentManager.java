@@ -80,7 +80,35 @@ public final class ComponentManager {
 	// you can either use the components.ini file or directly specify the classes to use
 	@Deprecated
     private static String componentsFile = "org/dllearner/components.ini";
-	private static String[] componentClasses = intComponents(); 
+    private static List<String> componentClasses = new ArrayList<String>  ( Arrays.asList(new String[]{
+            "org.dllearner.kb.OWLFile",
+            "org.dllearner.kb.KBFile",
+            "org.dllearner.kb.sparql.SparqlKnowledgeSource",
+            "org.dllearner.kb.OWLAPIOntology",
+//reasoners
+            "org.dllearner.reasoning.OWLAPIReasoner",
+            "org.dllearner.reasoning.DIGReasoner",
+            "org.dllearner.reasoning.FastRetrievalReasoner",
+            "org.dllearner.reasoning.FastInstanceChecker",
+            "org.dllearner.reasoning.ProtegeReasoner",
+            "org.dllearner.reasoning.PelletReasoner",
+//learning problems
+            "org.dllearner.learningproblems.PosNegLPStandard",
+            "org.dllearner.learningproblems.PosNegLPStrict",
+            "org.dllearner.learningproblems.PosOnlyLP",
+            "org.dllearner.learningproblems.ClassLearningProblem",
+//learning algorithms
+            "org.dllearner.algorithms.RandomGuesser",
+            "org.dllearner.algorithms.BruteForceLearner",
+            "org.dllearner.algorithms.refinement.ROLearner",
+            "org.dllearner.algorithms.refinement2.ROLComponent2",
+            "org.dllearner.algorithms.gp.GP",
+            "org.dllearner.algorithms.el.ELLearningAlgorithm",
+            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
+            "org.dllearner.algorithms.celoe.CELOE",
+            "org.dllearner.algorithms.isle.ISLE"
+
+     } ));
 	private static ComponentManager cm = null;	
 
 	// list of all configuration options of all components
@@ -105,6 +133,7 @@ public final class ComponentManager {
 
 	@SuppressWarnings("unchecked")
 	private ComponentManager() {
+        
 		// read in components file
         /*REMOVED THE BLOCK*/
 		/*List<String> componentsString;
@@ -113,7 +142,7 @@ public final class ComponentManager {
 		} else {
 			componentsString = readComponentsFile();
 		}*/
-       List<String> componentsString = Arrays.asList(componentClasses);
+       //List<String> componentsString2 = Arrays.asList(componentClasses);
 
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
@@ -125,7 +154,7 @@ public final class ComponentManager {
 				classComparator);		
 
 		// create classes from strings
-		for (String componentString : componentsString) {
+		for (String componentString : componentClasses) {
 			try {
 				Class<? extends Component> component = Class.forName(componentString).asSubclass(
 						Component.class);
@@ -200,9 +229,10 @@ public final class ComponentManager {
 	 * org.dllearner.refinement.ROLearner.
 	 */
 	public static void setComponentClasses(String[] componentClasses) {
-		ComponentManager.componentClasses = componentClasses;
+		ComponentManager.componentClasses = new ArrayList<String> (Arrays.asList(componentClasses));
 	}
-	
+
+    @Deprecated
 	private static List<String> readComponentsFile() {
 		List<String> componentStrings = new LinkedList<String>();
 
@@ -772,37 +802,6 @@ public final class ComponentManager {
 	}
 
 
-    private static String[] intComponents(){
-        String[] s = new String[]{
-                "org.dllearner.kb.OWLFile",
-                "org.dllearner.kb.KBFile",
-                "org.dllearner.kb.sparql.SparqlKnowledgeSource",
-                "org.dllearner.kb.OWLAPIOntology",
-//reasoners
-                "org.dllearner.reasoning.OWLAPIReasoner",
-                "org.dllearner.reasoning.DIGReasoner",
-                "org.dllearner.reasoning.FastRetrievalReasoner",
-                "org.dllearner.reasoning.FastInstanceChecker",
-                "org.dllearner.reasoning.ProtegeReasoner",
-                "org.dllearner.reasoning.PelletReasoner",
-//learning problems
-                "org.dllearner.learningproblems.PosNegLPStandard",
-                "org.dllearner.learningproblems.PosNegLPStrict",
-                "org.dllearner.learningproblems.PosOnlyLP",
-                "org.dllearner.learningproblems.ClassLearningProblem",
-//learning algorithms
-                "org.dllearner.algorithms.RandomGuesser",
-                "org.dllearner.algorithms.BruteForceLearner",
-                "org.dllearner.algorithms.refinement.ROLearner",
-                "org.dllearner.algorithms.refinement2.ROLComponent2",
-                "org.dllearner.algorithms.gp.GP",
-                "org.dllearner.algorithms.el.ELLearningAlgorithm",
-                "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
-                "org.dllearner.algorithms.celoe.CELOE",
-                "org.dllearner.algorithms.isle.ISLE"
 
-        };
-        return   s;
-    }
 
 }
