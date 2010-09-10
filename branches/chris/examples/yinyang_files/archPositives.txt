@@ -1,2 +1,0 @@
-http://localhost/foo#c1
-http://localhost/foo#c4
