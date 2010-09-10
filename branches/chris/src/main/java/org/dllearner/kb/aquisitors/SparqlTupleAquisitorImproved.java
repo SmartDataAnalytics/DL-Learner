@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
@@ -72,14 +73,14 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 			return super.retrieveTupel(uri);
 		}
 			@SuppressWarnings("unchecked")
-		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
+		List<QuerySolution> l = ResultSetFormatter.toList(rsw);
 		rsw.reset();
 		
 		
 		
 		int resultsetcount = 0;
 		int i = 0;
-		for (ResultBinding binding : l) {
+		for (QuerySolution binding : l) {
 			i = 0;
 			RDFNode nextOBJ = binding.get(OBJECT+i);
 			RDFNode nextPRED = binding.get(PREDICATE+i);

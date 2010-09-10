@@ -21,7 +21,6 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.w3c.dom.Document;
 
-import com.hp.hpl.jena.reasoner.dig.DIGReasonerException;
 
 public class OWLAPIDIGConverter {
 
@@ -40,9 +39,7 @@ public class OWLAPIDIGConverter {
 //			dig.translateToDIG(manager.getOntologies(), doc, doc.getDocumentElement());
 //			ret = xml2string(doc);
 
-		} catch (DIGReasonerException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyCreationException e) {
+		}catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
