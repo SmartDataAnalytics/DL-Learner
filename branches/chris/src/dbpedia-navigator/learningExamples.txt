@@ -1,0 +1,45 @@
++Pythagoras
+-Plato
+--------
+http://dbpedia.org/class/yago/ReligiousPerson109628382
+
++Angela Merkel
+-Joschka Fischer
+----------------
+http://dbpedia.org/class/yago/Adult109605289 (length 1, depth 1)
+http://dbpedia.org/class/yago/Communicator109610660 (length 1, depth 1)
+http://dbpedia.org/class/yago/Female109619168 (length 1, depth 1)
+http://dbpedia.org/class/yago/Scientist110560637 (length 1, depth 1)
+
++Germany
+-Russia
+-Mongolia
+---------------
+http://dbpedia.org/class/yago/PhysicalEntity100001930
+
++Tiger
+-Elefant
+---------------
+http://dbpedia.org/class/yago/CausalAgent100007347
+
++Mother
++Father
+-Child
+-----------------
+http://dbpedia.org/class/yago/Adult109605289
+
++Leipzig
++Dresden
+-Berlin
+-Hamburg
+----------------
+EXISTS http://dbpedia.org/property/wappen.TOP
+EXISTS http://dbpedia.org/property/wordnet_type.TOP
+
++Germany
++Poland
++France
+-India
+-Australia
+-----------------
+EXISTS http://dbpedia.org/property/leaderName.(http://dbpedia.org/class/yago/Politician110451263 AND http://dbpedia.org/class/yago/President110468559)

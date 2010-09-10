@@ -1,0 +1,9 @@
+knows(a,d).
+knows(b,d).
+knows(c,d).
+knows(e,a).
+knows(f,b).
+
+// TODO bug: apparently there are problems if no class is present in the background ontology,
+// so we need to add one
+person(a).

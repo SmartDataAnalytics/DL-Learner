@@ -1,0 +1,4870 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+  <!ENTITY Economy "http://reliant.teknowledge.com/DAML/Economy.owl#">
+  <!ENTITY Economy.owl "http://reliant.teknowledge.com/DAML/Economy.owl">
+  <!ENTITY Government "http://reliant.teknowledge.com/DAML/Government.owl#">
+  <!ENTITY Mid-level-ontology "http://reliant.teknowledge.com/DAML/Mid-level-ontology.owl#">
+  <!ENTITY SUMO "http://reliant.teknowledge.com/DAML/SUMO.owl#">
+  <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+  <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+  <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+]>
+<rdf:RDF xml:base="&Economy.owl;"
+         xmlns:Economy="&Economy;"
+         xmlns:Government="&Government;"
+         xmlns:Mid-level-ontology="&Mid-level-ontology;"
+         xmlns:SUMO="&SUMO;"
+         xmlns:owl="&owl;"
+         xmlns:rdf="&rdf;"
+         xmlns:rdfs="&rdfs;">
+
+<!-- Ontology Information -->
+  <owl:Ontology rdf:about=""/>
+
+<!-- Classes -->
+  <SUMO:UnitOfMeasure rdf:about="#AfghanAfghani">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>AfghanAfghani represents the basic unit of 
+
+currency of Afghanistan.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#AgriculturalProduct">
+    <rdfs:comment>AgriculturalProduct is the 
+
+subclass of Product that comprises the products of agricultural 
+
+activity.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;OrganicObject"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+    <owl:disjointWith rdf:resource="&Mid-level-ontology;Fodder"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Alfalfa">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Fodder"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Plant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#AlmondNut">
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Aloes">
+    <rdfs:comment>Aloes is the class of 
+
+PlantAgriculturalProducts that are dried juice of 
+
+the Aloe plant.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Alumina">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Alumina is the naturally occurring oxide 
+
+of aluminum which is found in corundum and bauxite.</rdfs:comment>
+    <rdfs:label>alumina</rdfs:label>
+    <rdfs:label>aluminum oxide</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&SUMO;CompoundSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#AluminumMetal">
+    <SUMO:relatedInternalConcept rdf:resource="http://reliant.teknowledge.com/DAML/elements.owl#Aluminum"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MetalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#AnimalAgriculturalProduct">
+    <rdfs:comment>AnimalAgriculturalProduct is the class of AgriculturalProducts 
+
+that are animal in nature, including meat, fish, dairy products, 
+
+hides, furs, animal fats and oils, etc.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#AnimalSkin">
+    <rdfs:comment>AnimalSkin is the subclass of 
+
+BodyCovering that includes the skins, or parts of skins, 
+
+of animals.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;BodyCovering"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Apple">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Asphalt">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Asphalt is the subclass of 
+
+RefinedPetroleumProducts that are asphalts.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RefinedPetroleumProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#BalsaWood">
+    <rdfs:subClassOf rdf:resource="#WoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Banana">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#BarleyGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Bean">
+    <rdfs:subClassOf rdf:resource="#Legume"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Berry">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#BeverageProduct">
+    <rdfs:comment>BeverageProduct is the class of products 
+
+that are Beverages, packaged or unpackaged.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#BlackPepper">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Breadfruit">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#BritishPound">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>BritishPound represents the basic unit of 
+
+currency of the UnitedKingdomOfGreatBritainAndNorthernIreland.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#Cabbage">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Camel">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mammal"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#CanadianDollar">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>CanadianDollar represents the basic unit of 
+
+currency of Canada.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#Cannabis">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CapitalGood">
+    <rdfs:comment>CapitalGoods are those that are used 
+
+in the production of other Products.  For example, raw materials 
+
+from which end products are manufactured, or machines and other 
+
+structures used in the production process.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cardamom">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Carrot">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#RootVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CashewNut">
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cassava">
+    <rdfs:label>cassava</rdfs:label>
+    <rdfs:label>manioc</rdfs:label>
+    <rdfs:label>tapioca</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#RootVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cattle">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cauliflower">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Caviar">
+    <rdfs:subClassOf rdf:resource="#FishRoe"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CerealGrass">
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Grass"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cheese">
+    <rdfs:subClassOf rdf:resource="#DairyProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ChemicalProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>ChemicalProduct is the subclass 
+
+of Product comprising all chemical compounds that are end products 
+
+or industrial products used in the manufacture of end products.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;CompoundSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Chrysanthemum">
+    <SUMO:relatedInternalConcept rdf:resource="#Pyrethrum"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FloweringPlant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cinnamon">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CitrusFruit">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ClothesDrier">
+    <rdfs:comment>ClothesDrier is the class of automatic clothes 
+
+driers.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ClothesWashingMachine">
+    <rdfs:comment>ClothesWashingMachine is the class of 
+
+washing machines.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Clove">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Clover">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Fodder"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Plant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Coca">
+    <rdfs:comment>Coca is the class of 
+
+PlantAgriculturalProducts consisting of the parts, 
+
+especially leaves, of the coca plant.  Coca leaves 
+
+are the source of Cocaine.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cocaine">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Narcotic"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cocoa">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Cocoa is the class of powdered 
+
+PlantAgriculturalProduct derived from cacao beans.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CocoaBean">
+    <SUMO:relatedInternalConcept rdf:resource="#Cocoa"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Coconut">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CoffeeBean">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ConsumerGood">
+    <SUMO:disjoint rdf:resource="#DurableGood"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>ConsumerGood is the subclass of 
+
+ManufacturedProducts that are intended for immediate or short-term 
+
+consumption.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CookingOven">
+    <rdfs:comment>CookingOven is the class of ovens for cooking.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CookingRange">
+    <rdfs:comment>CookingRange is the class of cooktops or 
+
+ranges.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CopperOre">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mineral"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Copra">
+    <SUMO:relatedInternalConcept rdf:resource="#VegetableOil"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Copra is the class of dried coconut 
+
+meat valued for the extracted coconut oil.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Corn">
+    <SUMO:relatedInternalConcept rdf:resource="#MaizeGrain"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CottonFiber">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CowPea">
+    <rdfs:subClassOf rdf:resource="#Legume"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Crayfish">
+    <rdfs:subClassOf rdf:resource="#Shellfish"/>
+  </owl:Class>
+
+  <Economy:IndustryAttribute rdf:about="#CropProduction">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Plant"/>
+    <SUMO:subAttribute rdf:resource="#AgriculturalSector"/>
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>CropProduction is the IndustryAttribute 
+
+that describes crop farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Class rdf:about="#Cucumber">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#CutFlower">
+    <SUMO:relatedInternalConcept rdf:resource="&SUMO;FloweringPlant"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#DairyProduct">
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Deer">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Dishwasher">
+    <rdfs:comment>Dishwasher is the class of automatic dishwashers.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Duck">
+    <rdfs:subClassOf rdf:resource="#Poultry"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#DurableGood">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>DurableGood is the subclass of 
+
+ManufacturedProducts which are designed to last for three years 
+
+or more.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#EconomicDevelopmentLevel">
+    <rdfs:comment>EconomicDevelopmentLevel is a subclass of EconomicAttribute  
+
+containing terms used to describe the economic development level of a 
+
+Nation or GeopoliticalArea.  This class is further subdivided into 
+
+different scales devised or used by different agencies.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;EconomicAttribute"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#EconomicSector">
+    <rdfs:comment>EconomicSector is the subclass of 
+
+IndustryAttributes that describe broad characterizations of different 
+
+kinds of business activities; e.g., manufacturing; services; retail trade; 
+
+wholesale trade; finance, insurance, and real estate; transportation and 
+
+utilities; construction; mining; agriculture, forestry, and fishing.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#IndustryAttribute"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#EdibleNut">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#EdibleTuber">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="#RootVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Eggplant">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ElectricalPowerGeneration">
+    <Mid-level-ontology:industryProductType rdf:resource="#Electricity"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>ElectricalPowerGeneration is 
+
+the subclass of PowerGeneration processes in which electricity is 
+
+generated.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PowerGeneration"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Electricity">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Substance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Fertilizer">
+    <SUMO:relatedInternalConcept rdf:resource="#PhosphoricAcid"/>
+    <SUMO:relatedInternalConcept rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#Potash"/>
+    <SUMO:relatedInternalConcept rdf:resource="&Mid-level-ontology;Nitrogen"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Fertilizer is the subclass of ChemicalProducts 
+
+that are used in Agriculture to enrich soils to produce more or better 
+
+quality crop yields.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ChemicalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mixture"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FinancialSectorAttribute">
+    <rdfs:comment>FinancialSectorAttribute is 
+
+a class of Attributes that are used to indicate which financial sectors 
+
+are most important in the economy of a Nation or GeopoliticalArea.  
+
+These terms classify nations (or areas) according to the concentration of 
+
+their economy into one or more EconomicSectors.  See also EconomicSector 
+
+and IndustryAttribute, which classify business organizations into sectors.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;EconomicAttribute"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FishProduct">
+    <SUMO:relatedInternalConcept rdf:resource="#FoodFish"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>FishProduct is the subclass of 
+
+AnimalAgriculturalProduct that comprises products derived  
+
+from fish.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FishRoe">
+    <rdfs:subClassOf rdf:resource="#FishProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FlaxFiber">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FoodEgg">
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FoodFish">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Seafood"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#FoodProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>FoodProduct is the class of food 
+
+products, packaged or unpackaged.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Footwear">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Footwear is the subclass of Clothing that 
+
+includes shoes, boots, slippers, and other clothing designed to be worn 
+
+on feet.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Clothing"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ForageCrop">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Fodder"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Plant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ForestProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Freezer">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Freezer is the class of household freezers.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#FrenchFranc">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>FrenchFranc represents the basic unit of 
+
+currency of France.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#Fruit">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#RootStarch"/>
+    <owl:disjointWith rdf:resource="#RootVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Gemstone">
+    <rdfs:comment>Gemstone is the subclass of Minerals or 
+
+petrified organic substances that are especially valued for use in 
+
+jewelry and other decorative items; some Gemstones are also valuable 
+
+for mechanical or industrial applications.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Object"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#GermanMark">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>GermanMark represents the basic unit of 
+
+currency of Germany.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#Ginger">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Goose">
+    <rdfs:subClassOf rdf:resource="#Poultry"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Grape">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#GreenPepper">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#GroceryProduce">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#Fruit"/>
+    <owl:disjointWith rdf:resource="#RootStarch"/>
+    <owl:disjointWith rdf:resource="#RootVegetable"/>
+    <owl:disjointWith rdf:resource="#Spice"/>
+    <owl:disjointWith rdf:resource="#TeaPlantAerialPart"/>
+    <owl:disjointWith rdf:resource="#Vegetable"/>
+    <owl:disjointWith rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Groundnut">
+    <rdfs:subClassOf rdf:resource="#EdibleTuber"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#GuernseyCattle">
+    <rdfs:subClassOf rdf:resource="#Cattle"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#GumArabic">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Substance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#HandicraftProduct">
+    <rdfs:comment>HandicraftProduct is the class of 
+
+Products that are manufactured by hand with a special skill.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#HandwovenCarpet">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>HandwovenCarpet is the class of carpets 
+
+that are woven, tied, knitted, or otherwise manufactured by hand.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#HandicraftProduct"/>
+    <rdfs:subClassOf rdf:resource="#TextileProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Hardwood">
+    <rdfs:subClassOf rdf:resource="#WoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#HempFiber">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#HotWaterHeater">
+    <rdfs:comment>HotWaterHeater is the class of hot water 
+
+heaters.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#IMFDevelopmentLevel">
+    <rdfs:comment>IMFDevelopmentLevel is a 
+
+collection of Attributes representing economic development levels 
+
+used by the InternationalMonetaryFund (IMF) to characterize national 
+
+economies.  The hierarchy of IMF levels includes: AdvancedEconomy, 
+
+CountryInTransition, and DevelopingCountry.  There is some, but not  
+
+complete, overlap with concepts used by UnitedNations agencies.  
+
+See</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#EconomicDevelopmentLevel"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#IndustrialRawMaterial">
+    <rdfs:comment>IndustrialRawMaterial is the 
+
+subclass of objects or substances that are used as inputs to manufacturing 
+
+or other industrial processes.  IndustrialRawMaterials are resources 
+
+and as such are consumed in the process for which they are used.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#CapitalGood"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#IndustrialSupply">
+    <rdfs:comment>IndustrialSupply is the class of 
+
+products that are used in industry but which are not raw materials 
+
+for products being manufactured.  IndustrialSupply includes maintenance, 
+
+repair, and operation (MRO) supplies, including janitorial, electrical, 
+
+bearings, tools, machinery, accessories, fire and safety equipment, and 
+
+other industrial items.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#CapitalGood"/>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#IndustryAttribute">
+    <rdfs:comment>IndustryAttribute is a class of 
+
+Attributes which identify an Organization as belonging to a particular 
+
+industry type.  For example, the company Hallmark has the attribute 
+
+of GreetingCardPublishers.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;RelationalAttribute"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#IronMetal">
+    <SUMO:relatedInternalConcept rdf:resource="&Mid-level-ontology;Iron"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MetalProduct"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#ItalianLire">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>ItalianLire represents the basic unit of 
+
+currency of Italy.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <SUMO:UnitOfMeasure rdf:about="#JapaneseYen">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>JapaneseYen represents the basic unit of 
+
+currency of Japan.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#Jewelry">
+    <rdfs:comment>Jewelry is the subclass of WearableItems 
+
+that are worn primarily for decorative purposes (sometimes with social 
+
+significance, e.g., wedding rings).  Jewelry may be made of metals 
+
+(especially precious metals), gems, or other materials.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#WearableItem"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#JuteFiber">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#KentiaPalmSeed">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Khat">
+    <rdfs:comment>Khat is the class of PlantAgriculturalProducts 
+
+made from the leaves and buds of the staff tree, which 
+
+are chewed or brewed as a stimulating tea.</rdfs:comment>
+    <rdfs:label>khat</rdfs:label>
+    <rdfs:label>qat</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#LambMeat">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Lambskin">
+    <rdfs:subClassOf rdf:resource="#Pelt"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#LeadMetal">
+    <SUMO:relatedInternalConcept rdf:resource="&Mid-level-ontology;Lead"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MetalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#LeadOre">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mineral"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#LeadProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#LeadMetal"/>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Leaf">
+    <rdfs:subClassOf rdf:resource="&SUMO;AnatomicalStructure"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#LeafyGreenVegetable">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Legume">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Lemon">
+    <rdfs:subClassOf rdf:resource="#CitrusFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Lentil">
+    <rdfs:subClassOf rdf:resource="#Legume"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Lime">
+    <rdfs:subClassOf rdf:resource="#CitrusFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Livestock">
+    <rdfs:comment>Livestock is the class of live animals 
+
+raised as AgriculturalProducts.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Lumber">
+    <rdfs:subClassOf rdf:resource="#DurableGood"/>
+    <rdfs:subClassOf rdf:resource="#ForestProduct"/>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MacademiaNut">
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Mace">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MachineTool">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Machinery"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Machinery">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Machinery is the class of products 
+
+that includes Machines, tools, and machine parts used in industrial 
+
+or other commercial processes.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#DurableGood"/>
+    <rdfs:subClassOf rdf:resource="#IndustrialSupply"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Device"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MaizeGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:label>corn</rdfs:label>
+    <rdfs:label>maize</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MajorAppliance">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>MajorAppliance is the subclass of 
+
+ElectricDevices that are large DurableGoods manufactured for use 
+
+in household tasks.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#DurableGood"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;ElectricDevice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Mango">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ManufacturedProduct">
+    <rdfs:comment>ManufacturedProduct is 
+
+the subclass of Product that includes goods that are produced 
+
+or assembled in factories or other manufacturing processes, 
+
+in contrast to AgriculturalProducts.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MeatOfLandAnimal">
+    <rdfs:subClassOf rdf:resource="&SUMO;Meat"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Melon">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MetalProduct">
+    <SUMO:relatedInternalConcept rdf:resource="&SUMO;Metal"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#DurableGood"/>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MilletGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MiningProduct">
+    <rdfs:comment>MiningProduct is the class of things 
+
+that are produced from the earth for human use by mining or another form 
+
+of extraction.  This includes metal ores, petroleum, and other products.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MotorOil">
+    <rdfs:comment>MotorOil is the subclass of PetroleumLubricants 
+
+that are used to lubricate motors.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PetroleumLubricant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#MulberryLeaf">
+    <rdfs:subClassOf rdf:resource="#Leaf"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Fodder"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Mutton">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#NaturalRubber">
+    <rdfs:comment>NaturalRubber is the subclass of 
+
+PlantAgriculturalProducts made from the sap of plant species 
+
+which produce natural polymers.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#NickelOre">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mineral"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#NorfolkIslandPineSeed">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Nut">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;ReproductiveBody"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Nutmeg">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#OatGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Oilseed">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Okoume">
+    <rdfs:comment>Okoume (Aucoumea klaineana), also called 
+
+'gaboon', is a wood of West African origin.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Hardwood"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#OldTajikSomoni">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>OldTajikSomoni represents a former unit of 
+
+currency of Tajikistan.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#Olive">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#OliveOil">
+    <rdfs:subClassOf rdf:resource="#VegetableOil"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#OpiumPoppy">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FloweringPlant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#OpiumPoppyFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#OpiumPoppy"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>OpiumPoppyFarming is the specification 
+
+of CropProduction that describes OpiumPoppy farming operations.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#CropProduction"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Orchid">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FloweringPlant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#OrnamentalFish">
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Fish"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PPPBasedEconomicValuation">
+    <rdfs:comment>PPPBasedEconomicValuation 
+
+is a class of relations used to state international economic information 
+
+in U.S. dollar amounts.  The U.S. dollar amounts are derived from Purchasing 
+
+Power Parity conversions of economic totals (e.g., GDP)  given in local 
+
+currency.  This contrasts with a method of conversion based on currency 
+
+exchange rates.  The PPP method is used by the CIA World Fact Book for 
+
+the purpose of presenting economic data for all countries covered.  Their 
+
+basis for PPP dollar price weights is the UN International Comparison Program 
+
+(UNICP) and the work of Professors Robert Summers and Alan Heston of the 
+
+University of Pennsylvania.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Relation"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PackagedBeverageProduct">
+    <rdfs:comment>PackagedBeverageProduct is the 
+
+class of Products that consist of a BeverageProduct in some kind of 
+
+packaging, including cups and bottles.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedFoodProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PackagedFoodProduct">
+    <rdfs:comment>PackagedFoodProduct is the 
+
+class of Products that consist of a FoodProduct in a package.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Product"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#BeverageProduct"/>
+    <owl:disjointWith rdf:resource="#CapitalGood"/>
+    <owl:disjointWith rdf:resource="#FoodProduct"/>
+    <owl:disjointWith rdf:resource="#ForestProduct"/>
+    <owl:disjointWith rdf:resource="#HandicraftProduct"/>
+    <owl:disjointWith rdf:resource="#ManufacturedProduct"/>
+    <owl:disjointWith rdf:resource="#MiningProduct"/>
+    <owl:disjointWith rdf:resource="#PackagedBeverageProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PaddyRice">
+    <rdfs:subClassOf rdf:resource="#CerealGrass"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PalmKernel">
+    <SUMO:relatedInternalConcept rdf:resource="#PalmOilNut"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PalmOil">
+    <rdfs:subClassOf rdf:resource="#VegetableOil"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PalmOilNut">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:label>coquilla nut</rdfs:label>
+    <rdfs:label>palm oil nut</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Nut"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Papaw">
+    <rdfs:label>papaw</rdfs:label>
+    <rdfs:label>pawpaw</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Papaya">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PassionFruit">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Pea">
+    <rdfs:subClassOf rdf:resource="#Legume"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Peanut">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Pearl"
+             rdfs:comment="Pearl is a subclass of Gemstone.">
+    <rdfs:subClassOf rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#SemipreciousGemstone"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PecanNut">
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Pelt">
+    <rdfs:comment>Pelt is the subclass of AnimalSkin 
+
+that comprises the pelts or hides of animals that are used in 
+
+the manufacture of wearable or household items.</rdfs:comment>
+    <rdfs:label>hide</rdfs:label>
+    <rdfs:label>pelt</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="#AnimalSkin"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PerfumeEssence">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PetroleumLubricant">
+    <rdfs:comment>PetroleumLubricant is the subclass of 
+
+RefinedPetroleumProducts that are lubricants.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RefinedPetroleumProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PetroleumProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>PetroleumProduct is a broad class that 
+
+includes both crude oil (Petroleum) and RefinedPetroleumProducts.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;CompoundSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PharmaceuticalProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>PharmaceuticalProduct is the 
+
+subclass of ChemicalProducts that are BiologicallyActiveSubstances 
+
+used in treating disorders and diseases in humans and other animals.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ChemicalProduct"/>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;BiologicallyActiveSubstance"/>
+    <owl:disjointWith rdf:resource="#Pyrethrum"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PhosphoricAcid">
+    <SUMO:relatedInternalConcept rdf:resource="http://reliant.teknowledge.com/DAML/elements.owl#Phosphorus"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>PhosphoricAcid represents phosphoric acid.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CompoundSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Pineapple">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PlantAgriculturalProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>PlantAgriculturalProduct 
+
+is the class of AgriculturalProducts that are vegetable in nature, 
+
+in the widest sense, e.g., fruits, grains, green vegetables, cotton, 
+
+linen, flowers, wine grapes, hops.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#AgriculturalProduct"/>
+    <owl:disjointWith rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Plantain">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Plastic">
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Pork">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PotatoTuber">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>PotatoTuber represents the edible tubrous part 
+
+of the potato plant.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#EdibleTuber"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Poultry">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Bird"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#PowerGeneration">
+    <rdfs:comment>PowerGeneration is the class of 
+
+Processes in which some kind of power is generated either for immediate 
+
+use in a Device or to be stored for future use.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Process"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ProductPackage">
+    <rdfs:comment>ProductPackage is the class of objects 
+
+designed to contain Products for shipping and sale.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Object"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Pyrethrum">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Pyrethrum is the subclass of 
+
+BiologicallyActiveSubstance consisting of insecticidal 
+
+derivations from the flower heads of Chrysanthemums.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;BiologicallyActiveSubstance"/>
+    <owl:disjointWith rdf:resource="#PharmaceuticalProduct"/>
+    <owl:disjointWith rdf:resource="&Mid-level-ontology;ControlledSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Quinine">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ReadyMixConcrete">
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Concrete"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#RefinedPetroleumProduct">
+    <rdfs:comment>RefinedPetroleumProduct is the 
+
+subclass of PetroleumProducts that are refined from Petroleum (crude oil).</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#PetroleumProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Refrigerator">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Refrigerator is the class of refrigerators.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#MajorAppliance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Reindeer">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#RiceGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#RootStarch">
+    <SUMO:relatedInternalConcept rdf:resource="#RootVegetable"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#Fruit"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#Spice"/>
+    <owl:disjointWith rdf:resource="#TeaPlantAerialPart"/>
+    <owl:disjointWith rdf:resource="#Vegetable"/>
+    <owl:disjointWith rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#RootVegetable">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:label>root crop</rdfs:label>
+    <rdfs:label>root vegetable</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#Fruit"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#Spice"/>
+    <owl:disjointWith rdf:resource="#TeaPlantAerialPart"/>
+    <owl:disjointWith rdf:resource="#Vegetable"/>
+    <owl:disjointWith rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#RyeGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Salmon">
+    <rdfs:subClassOf rdf:resource="#FoodFish"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Seafood">
+    <rdfs:subClassOf rdf:resource="&SUMO;Meat"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SenepolCattle">
+    <rdfs:subClassOf rdf:resource="#Cattle"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Sesame">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SheaNut">
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Sheepskin">
+    <rdfs:subClassOf rdf:resource="#Pelt"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Shellfish">
+    <rdfs:subClassOf rdf:resource="#Seafood"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Shrimp">
+    <rdfs:subClassOf rdf:resource="#Shellfish"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SisalFiber">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Soap">
+    <rdfs:comment>Soap is the class of cleaning agents based on fatty 
+
+acids.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Detergent"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Sorghum">
+    <rdfs:subClassOf rdf:resource="#CerealGrass"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SorghumGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Soya">
+    <SUMO:relatedInternalConcept rdf:resource="#Soybean"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Soybean">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Bean"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Spice">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#RootStarch"/>
+    <owl:disjointWith rdf:resource="#RootVegetable"/>
+    <owl:disjointWith rdf:resource="#TeaPlantAerialPart"/>
+    <owl:disjointWith rdf:resource="#Vegetable"/>
+    <owl:disjointWith rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SpicePepper">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Squash">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SugarBeet">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SugarCane">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Sunflower">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FloweringPlant"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SunflowerSeed">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SweetPepper">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#SweetPotatoTuber">
+    <rdfs:subClassOf rdf:resource="#EdibleTuber"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <SUMO:UnitOfMeasure rdf:about="#TajikSomoni">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>TajikSomoni represents the basic unit of 
+
+currency of Tajikistan.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="#TaroTuber">
+    <rdfs:subClassOf rdf:resource="#EdibleTuber"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#TeaLeaf">
+    <rdfs:subClassOf rdf:resource="#TeaPlantAerialPart"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#TeaPlantAerialPart">
+    <rdfs:comment>TeaPlantAerialPart is the 
+
+class of all parts of the tea plant from which tea may be made, 
+
+including leaves, stems, and twigs.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#RootStarch"/>
+    <owl:disjointWith rdf:resource="#RootVegetable"/>
+    <owl:disjointWith rdf:resource="#Spice"/>
+    <owl:disjointWith rdf:resource="#Vegetable"/>
+    <owl:disjointWith rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#TextileProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>TextileProduct is the subclass of 
+
+ManufacturedProducts consisting of Fabrics or finished fabric items 
+
+(e.g., linens), excluding Clothing.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Tobacco">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Tomato">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#TropicalFruit">
+    <rdfs:subClassOf rdf:resource="#Fruit"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <Government:IndependentState rdf:about="#Turkey"
+                               rdfs:label="Turkey">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+    <SUMO:geographicSubregion rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#SoutheasternEurope"/>
+    <rdf:type rdf:resource="&SUMO;Nation"/>
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:subClassOf rdf:resource="#Poultry"/>
+  </Government:IndependentState>
+
+  <owl:Class rdf:about="#TurkeyMeat">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Turnip">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#RootVegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Turtle">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Reptile"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#UNEconomicDevelopmentLevel">
+    <rdfs:comment>UNEconomicDevelopmentLevel 
+
+is a subclass of EconomicDevelopmentLevel containing terms used to 
+
+represent economic development classifications used by UnitedNations 
+
+agencies.  The top level of this classification scheme includes the 
+
+concepts of DevelopedCountry, FormerSovietOrEasternEuropeanCountry, 
+
+and LessDevelopedCountry.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#EconomicDevelopmentLevel"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Vanilla">
+    <rdfs:subClassOf rdf:resource="#Spice"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Veal">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Vegetable">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#RootStarch"/>
+    <owl:disjointWith rdf:resource="#RootVegetable"/>
+    <owl:disjointWith rdf:resource="#Spice"/>
+    <owl:disjointWith rdf:resource="#TeaPlantAerialPart"/>
+    <owl:disjointWith rdf:resource="&SUMO;Seed"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#VegetableOil">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Walnut">
+    <rdfs:subClassOf rdf:resource="#EdibleNut"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WaterBuffalo">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WaterBuffaloMeat">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Watermelon">
+    <rdfs:subClassOf rdf:resource="#Melon"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WearableItem">
+    <rdfs:comment>WearableItem is the subclass of 
+
+Artifacts that are made to be worn on the body, including Clothing, 
+
+Footwear, and Jewelry.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;Artifact"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WheatGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;CerealGrain"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WineGrape">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WoodProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#ForestProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WoolFiber">
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#WorldBankGNIPerCapitaLevel">
+    <rdfs:comment>WorldBankGNIPerCapitaLevel 
+
+is the subclass of EconomicDevelopmentLevel containing attributes 
+
+that characterize countries according to their per capita gross national 
+
+income (GNI), as determined by the WorldBankGroup.  The World Bank 
+
+uses the Atlas method for making cross-country comparisons of national 
+
+income.</rdfs:comment>
+    <rdfs:label>GNI per capita</rdfs:label>
+    <rdfs:label>gross national income per capita</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#EconomicDevelopmentLevel"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#YamTuber">
+    <rdfs:subClassOf rdf:resource="#EdibleTuber"/>
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#YlangYlang">
+    <rdfs:subClassOf rdf:resource="#PerfumeEssence"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ZincOre">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mineral"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="#ZincProduct">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+    <rdfs:subClassOf rdf:resource="#MetalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#Bauxite"
+             rdfs:label="bauxite">
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mixture"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#IronOre"
+             rdfs:label="iron ore">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mineral"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#Petroleum">
+    <rdfs:label>crude oil</rdfs:label>
+    <rdfs:label>petroleum</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#PetroleumProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#PreciousGemstone">
+    <rdfs:comment>PreciousGemstone is the subclass of 
+
+Gemstones that bring the highest prices.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Gemstone"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#SemipreciousGemstone">
+    <rdfs:comment>SemipreciousGemstone is the subclass 
+
+of Gemstones that are valuable but not as much as PreciousGemstones.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Gemstone"/>
+    <rdfs:subClassOf rdf:resource="#MiningProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#Timber"
+             rdfs:label="timber">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#ForestProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Government;IndependentState"/>
+  <owl:Class rdf:about="&Mid-level-ontology;Automobile">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#DurableGood"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Avocado">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Beef">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Cement">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Cement is a subclass of CompoundSubstance 
+
+whose instances may contain various minerals or ores, prepared by 
+
+heating and pulverizing, and used in binding Concrete or in laying 
+
+brick or stone.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;CompoundSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;CerealGrain">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Chicken">
+    <rdfs:subClassOf rdf:resource="#Poultry"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;ChickenMeat">
+    <rdfs:subClassOf rdf:resource="#MeatOfLandAnimal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Concrete">
+    <rdfs:comment>Concrete is a class of CompoundSubstances 
+
+used as building materials.  Concrete is made up of Mineral pieces 
+
+(sand or gravel) and a Cement material used to bind them together.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ManufacturedProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Mixture"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;ControlledSubstance">
+    <rdfs:comment>ControlledSubstance is 
+
+the subclass of BiologicallyActiveSubstances whose distribution 
+
+and use is controlled by government regulation.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;BiologicallyActiveSubstance"/>
+    <owl:disjointWith rdf:resource="#Pyrethrum"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;DateFruit">
+    <rdfs:subClassOf rdf:resource="#GroceryProduce"/>
+    <rdfs:subClassOf rdf:resource="#TropicalFruit"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Detergent">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:comment>Detergent is the class of cleaning agents, 
+
+including both Soap and synthetic cleaning solutions.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CompoundSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;DieselFuel">
+    <rdfs:comment>DieselFuel is the subclass of 
+
+RefinedPetroleumProducts that are fuels for diesel engines.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RefinedPetroleumProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Donkey">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;EconomicAttribute">
+    <rdfs:comment>EconomicAttribute is the class 
+
+of terms including all Attributes used to characterize the 
+
+economic systems or development levels of Nations or dependent 
+
+GeopoliticalAreas.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;RelationalAttribute"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;EconomicSystemAttribute">
+    <rdfs:comment>EconomicSystemAttribute 
+
+is the class of Attributes that describe the type of economic 
+
+system that a country or area has.  For example, CapitalistEconomy 
+
+or SocialistEconomy.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;EconomicAttribute"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;ElectricDevice">
+    <rdf:type rdf:resource="&owl;Thing"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Exporting">
+    <rdfs:comment>Exporting is the class of actions in 
+
+which there is a ChangeOfPossession of goods shipped from a 
+
+provider in one Nation to a destination in another Nation. 
+
+Typically, there are Selling and Buying events associated 
+
+with an Exporting.  Either the seller or the exporting country 
+
+may be considered the origin of Exporting.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;ChangeOfPossession"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;FinancialTransaction"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Fodder">
+    <rdfs:comment>Fodder is the class of OrganicObjects that 
+
+are used as food for domesticated animals.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;OrganicObject"/>
+    <owl:disjointWith rdf:resource="#AgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Furniture">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#DurableGood"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Gasoline">
+    <rdfs:comment>Gasoline is the subclass of 
+
+RefinedPetroleumProducts that are fuels for internal combustion engines.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RefinedPetroleumProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Goat">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Grass"/>
+  <owl:Class rdf:about="&Mid-level-ontology;Honey">
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Horse">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;IndustryAttribute"/>
+  <SUMO:UnitOfMeasure rdf:about="&Mid-level-ontology;KilowattHour">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>KilowattHour is a UnitOfMeasure for 
+
+energy that represents 1000 Watts (1 kW) of power expended over one 
+
+hour (1 h) of time.  This is the unit commonly used in commercial 
+
+power contexts.  It is equivalent to 3,600,000 Joules.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;FunctionQuantity"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Milk">
+    <rdfs:subClassOf rdf:resource="#DairyProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Narcotic">
+    <rdfs:comment>Narcotic is a subclass of addictive 
+
+BiologicallyActiveSubstances that have damping effects on the 
+
+nervous system and may be fatal in large doses.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;ControlledSubstance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Opium">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&Mid-level-ontology;Narcotic"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Pig">
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Sheep">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;HoofedMammal"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Steel">
+    <SUMO:relatedInternalConcept rdf:resource="&Mid-level-ontology;Iron"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#MetalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Sugar">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Substance"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&Mid-level-ontology;Wine">
+    <rdfs:subClassOf rdf:resource="#PlantAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="&SUMO;Beverage"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;Agent"/>
+  <owl:Class rdf:about="&SUMO;AnatomicalStructure"/>
+  <owl:Class rdf:about="&SUMO;Artifact">
+    <rdf:type rdf:resource="&owl;Thing"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;Beverage"/>
+  <owl:Class rdf:about="&SUMO;BinaryPredicate"/>
+  <owl:Class rdf:about="&SUMO;BiologicallyActiveSubstance"/>
+  <owl:Class rdf:about="&SUMO;Bird"/>
+  <owl:Class rdf:about="&SUMO;BodyCovering"/>
+  <owl:Class rdf:about="&SUMO;ChangeOfPossession"/>
+  <owl:Class rdf:about="&SUMO;Clothing">
+    <SUMO:disjoint rdf:resource="#TextileProduct"/>
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#WearableItem"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;CompoundSubstance"/>
+  <owl:Class rdf:about="&SUMO;CurrencyMeasure"/>
+  <owl:Class rdf:about="&SUMO;Device"/>
+  <SUMO:UnitOfMeasure rdf:about="&SUMO;EuroDollar">
+    <rdf:type rdf:resource="&owl;Class"/>
+    <rdfs:comment>EuroDollar represents the basic unit of 
+
+currency of the EuropeanUnion.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:UnitOfMeasure>
+
+  <owl:Class rdf:about="&SUMO;Fabric">
+    <rdf:type rdf:resource="&owl;Thing"/>
+    <rdfs:subClassOf rdf:resource="#TextileProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;FinancialTransaction"/>
+  <owl:Class rdf:about="&SUMO;Fish"/>
+  <owl:Class rdf:about="&SUMO;FloweringPlant">
+    <rdf:type rdf:resource="&owl;Thing"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;FruitOrVegetable"/>
+  <owl:Class rdf:about="&SUMO;FunctionQuantity"/>
+  <owl:Class rdf:about="&SUMO;GeopoliticalArea"/>
+  <owl:Class rdf:about="&SUMO;HoofedMammal">
+    <rdfs:comment>HoofedMammal is the subclass of Livestock
+
+that are hoofed animals.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+    <rdfs:subClassOf rdf:resource="#Livestock"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;IntentionalProcess"/>
+  <owl:Class rdf:about="&SUMO;IrreflexiveRelation"/>
+  <owl:Class rdf:about="&SUMO;Machine">
+    <rdfs:subClassOf rdf:resource="#Machinery"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;Mammal"/>
+  <owl:Class rdf:about="&SUMO;Meat">
+    <rdfs:subClassOf rdf:resource="#AnimalAgriculturalProduct"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;Mineral"/>
+  <owl:Class rdf:about="&SUMO;Mixture"/>
+  <owl:Class rdf:about="&SUMO;Nation"/>
+  <owl:Class rdf:about="&SUMO;Object"/>
+  <owl:Class rdf:about="&SUMO;OrganicObject"/>
+  <owl:Class rdf:about="&SUMO;Organization"/>
+  <owl:Class rdf:about="&SUMO;PhysicalQuantity"/>
+  <owl:Class rdf:about="&SUMO;Plant">
+    <rdf:type rdf:resource="&owl;Thing"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;Process"/>
+  <owl:Class rdf:about="&SUMO;Product"/>
+  <owl:Class rdf:about="&SUMO;Relation"/>
+  <owl:Class rdf:about="&SUMO;RelationalAttribute"/>
+  <owl:Class rdf:about="&SUMO;ReproductiveBody"/>
+  <owl:Class rdf:about="&SUMO;Reptile"/>
+  <owl:Class rdf:about="&SUMO;Seed">
+    <rdfs:subClassOf rdf:resource="&SUMO;FruitOrVegetable"/>
+    <owl:disjointWith rdf:resource="#GroceryProduce"/>
+    <owl:disjointWith rdf:resource="#RootStarch"/>
+    <owl:disjointWith rdf:resource="#RootVegetable"/>
+    <owl:disjointWith rdf:resource="#Spice"/>
+    <owl:disjointWith rdf:resource="#TeaPlantAerialPart"/>
+    <owl:disjointWith rdf:resource="#Vegetable"/>
+  </owl:Class>
+
+  <owl:Class rdf:about="&SUMO;Substance"/>
+  <owl:Class rdf:about="&SUMO;SymbolicString"/>
+  <owl:Class rdf:about="&SUMO;TernaryPredicate"/>
+  <owl:Class rdf:about="&SUMO;UnaryFunction"/>
+  <owl:Class rdf:about="&SUMO;UnitOfMeasure"/>
+
+<!-- Annotation Properties -->
+  <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+  <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+
+<!-- Datatype Properties -->
+  <SUMO:BinaryPredicate rdf:about="#highestDecileShareOfHouseholdIncome">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(highestDecileShareOfHouseholdIncome ?AREA ?FRACTION) means that 
+
+in the GeopoliticalArea ?AREA, the highest decile (90-100%) of 
+
+households with respect to household income (or consumption) had 
+
+?FRACTION amount of the total household income (or consumption).  
+
+Data from different countries may not be directly comparable due to 
+
+variation in the basis of the data (e.g., based on income versus 
+
+based on consumption).</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#incomeDistributionByGiniIndex">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(incomeDistributionByGiniIndex ?AREA ?INDEX) means that in the 
+
+GeopoliticalArea ?AREA, the distribution of family income is ?INDEX, 
+
+as measured by the Gini index for family income distribution.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#industrialProductionGrowthRate">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(industrialProductionGrowthRate ?AREA ?RATE) means that in 
+
+the GeopoliticalArea ?AREA, the annual percentage increase in 
+
+industrial production is ?RATE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#inflationRateOfConsumerPrices">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(inflationRateOfConsumerPrices ?AREA ?FRACTION) means that in the 
+
+GeopoliticalArea ?AREA, the annual change in consumer prices was 
+
+?FRACTION, compared with prices from the previous year.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#laborForceTotal">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(laborForceTotal ?AREA ?AMOUNT) means that the total labor 
+
+force of the GeopoliticalArea ?AREA is ?AMOUNT. This includes 
+
+unemployed workers.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#lowestDecileShareOfHouseholdIncome">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(lowestDecileShareOfHouseholdIncome ?AREA ?FRACTION) means that 
+
+in the GeopoliticalArea ?AREA, the lowest decile (0-10%) of 
+
+households with respect to household income (or consumption) had 
+
+?FRACTION amount of the total household income (or consumption).  
+
+Data from different countries may not be directly comparable due to 
+
+variation in the basis of the data (e.g., based on income versus based 
+
+on consumption).</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#populationFractionBelowPovertyLine">
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(populationFractionBelowPovertyLine ?AREA ?FRACTION) means that in 
+
+the GeopoliticalArea ?AREA, the segment of the population living 
+
+below the (locally defined) poverty line is ?FRACTION.  Note that the 
+
+definition of the poverty line varies internationally.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </SUMO:BinaryPredicate>
+
+  <Economy:PPPBasedEconomicValuation rdf:about="#realGrowthRateOfGDP">
+    <rdf:type rdf:resource="&SUMO;BinaryPredicate"/>
+    <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+    <rdfs:comment>(realGrowthRateOfGDP ?AREA ?RATE) 
+
+means that the annual rate of growth in the Gross Domestic Product (GDP) 
+
+for the GeopoliticalArea ?AREA is the fraction ?RATE, adjusted for 
+
+inflation, with GDP calculated on a purchasing power parity basis.  
+
+See PPPBasedEconomicValuation.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+  </Economy:PPPBasedEconomicValuation>
+
+<!-- Object Properties -->
+  <SUMO:UnaryFunction rdf:about="#AgricultureFn">
+    <SUMO:rangeSubclass rdf:resource="&Mid-level-ontology;Agriculture"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(AgricultureFn ?PRODUCT) denotes the 
+
+subclass of Agriculture processes in which the AgriculturalProduct 
+
+?PRODUCT is cultivated.</rdfs:comment>
+    <rdfs:domain rdf:resource="#AgriculturalProduct"/>
+  </SUMO:UnaryFunction>
+
+  <SUMO:UnaryFunction rdf:about="#FiscalYearFn">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(FiscalYearFn ?PLACE) denotes the subclass 
+
+of TimeIntervals that are fiscalYearPeriods of the Organization or 
+
+GeopoliticalArea ?PLACE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+  </SUMO:UnaryFunction>
+
+  <SUMO:BinaryPredicate rdf:about="#agriculturalProductType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(agriculturalProductType ?AREA ?TYPE) means that the 
+
+GeopoliticalArea ?AREA produces a crop or other 
+
+agricultural product of ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;Object"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualElectricityConsumption">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualElectricityConsumption ?AREA ?AMOUNT) means that the 
+
+GeopoliticalArea ?AREA uses ?AMOUNT of electricity (measured in 
+
+KilowattHours) annually.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;PhysicalQuantity"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualElectricityExport">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualElectricityExport ?AREA ?AMOUNT) means that the 
+
+GeopoliticalArea ?AREA exported the total ?AMOUNT of 
+
+electricity (measured in KilowattHours) annually.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;PhysicalQuantity"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualElectricityImport">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualElectricityImport ?AREA ?AMOUNT) means that the 
+
+GeopoliticalArea ?AREA imported the total ?AMOUNT of 
+
+electricity (measured in KilowattHours) annually.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;PhysicalQuantity"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualElectricityProduction">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualElectricityProduction ?AREA ?AMOUNT) means that the amount of 
+
+electricity generated annually in the GeographicalArea ?AREA is 
+
+?AMOUNT, measured in KilowattHours.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;PhysicalQuantity"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualExpenditures">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualExpenditures ?AGENT ?AMOUNT) means that the annual 
+
+budgetary expenditures of the Agent ?AGENT are ?AMOUNT.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualExpendituresOfArea">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualExpendituresOfArea ?AREA ?AMOUNT) means that the annual 
+
+budgetary expenditures of the GeopoliticalArea ?AREA are ?AMOUNT, 
+
+calculated in U.S. dollars according  to the currency exchange rate 
+
+method.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+    <rdfs:subPropertyOf rdf:resource="#annualExpenditures"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualExportTotal">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualExportTotal ?AREA ?AMOUNT) means that the total 
+
+value of exports from the GeopoliticalArea ?AREA is ?AMOUNT 
+
+(in UnitedStatesDollars) annually.  Export value is calculated 
+
+on a Free on Board (F.O.B.) basis.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualImportTotal">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualImportTotal ?AREA ?AMOUNT) means that the total 
+
+value of imports to the GeopoliticalArea ?AREA is ?AMOUNT (in 
+
+UnitedStatesDollars) annually.  Import value is calculated on a Cost, 
+
+Insurance, and Freight (C.I.F.) or a Free on Board (F.O.B.) basis.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualRevenues">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualRevenues ?AGENT ?AMOUNT) means that the annual budgetary 
+
+revenues of the Agent ?AGENT are ?AMOUNT.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#annualRevenuesOfArea">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(annualRevenuesOfArea ?AREA ?AMOUNT) means that the annual budgetary 
+
+revenues of the GeopoliticalArea ?AREA are ?AMOUNT, calculated in U.S. 
+
+dollars according  to the currency exchange rate method.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+    <rdfs:subPropertyOf rdf:resource="#annualRevenues"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#capitalExpenditures">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(capitalExpenditures ?AGENT ?AMOUNT) means that the annual capital 
+
+expenditures of the Agent ?AGENT are ?AMOUNT.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#capitalExpendituresOfArea">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(capitalExpendituresOfArea ?AREA ?AMOUNT) means that the annual 
+
+capital expenditures of the GeopoliticalArea ?AREA are ?AMOUNT, 
+
+calculated in U.S. dollars according to the currency exchange rate 
+
+method.  This figure is a portion of the annualExpendituresOfArea 
+
+for ?AREA.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+    <rdfs:subPropertyOf rdf:resource="#capitalExpenditures"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#currencyCode">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(currencyCode ?CODE ?UNIT) means 
+
+that ?CODE is the InternationalOrganizationForStandardization 
+
+(ISO) 4217 alphabetic currency code for the national 
+
+CurrencyMeasure ?UNIT.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;SymbolicString"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+    <rdfs:range rdf:resource="&SUMO;UnitOfMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#currencyExchangePerUSDollar">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(currencyExchangePerUSDollar ?AMOUNT ?PERIOD) means that one 
+
+UnitedStatesDollar is worth ?AMOUNT (in a non-U.S. CurrencyMeasure), 
+
+during the TimeInterval indicated by ?PERIOD.  The rate of exchange may 
+
+be based either on international market forces or official fiat.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#currencyExchangeRate">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(currencyExchangeRate ?UNIT ?AMOUNT) means that the currency 
+
+denomination ?UNIT is worth ?AMOUNT (which is in another 
+
+CurrencyMeasure).</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;CurrencyMeasure"/>
+    <rdfs:domain rdf:resource="&SUMO;UnitOfMeasure"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#economicAidDonated">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(economicAidDonated ?AGENT ?AMOUNT) means that the GeopoliticalArea 
+
+?AREA donated ?AMOUNT of aid (valued in U.S. dollars) to developing 
+
+countries and multilateral organizations.  This figure covers 'net 
+
+official development assistance' (ODA), which is net financial assistance 
+
+from nations belonging to the 
+
+OrganizationForEconomicCooperationAndDevelopment (OECD), with the main 
+
+goal of promoting economic development and welfare.  Such aid contains a 
+
+grant element of at least 25%.  This statistic does not cover private 
+
+flows of assistance or other official flows (OOF).</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#economicAidReceivedNet">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(economicAidReceivedNet ?AREA ?AMOUNT) means that the 
+
+GeopoliticalArea ?AREA had a net inflow of Official Development Finance 
+
+(ODF) of ?AMOUNT.  ODF includes funds from the World Bank, the IMF, other 
+
+international organizations, and individual donor nations, including both 
+
+grants and loans.  The figure includes formal commitments of aid not yet 
+
+disbursed.  The figure is the net amount of inflow after deducting 
+
+repayments, valued in U.S. dollars.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#exportCommodityType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(exportCommodityType ?AREA ?TYPE) means that the GeopoliticalArea 
+
+?AREA exports the commodity ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;Object"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#exportPartner">
+    <rdf:type rdf:resource="&SUMO;IrreflexiveRelation"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(exportPartner ?AGENT1 ?AGENT2) 
+
+means that the Agent ?AGENT1 exports goods to the Agent 
+
+?AGENT2.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;Agent"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:IrreflexiveRelation rdf:about="#exportPartnerInPeriod">
+    <rdf:type rdf:resource="&SUMO;TernaryPredicate"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(exportPartnerInPeriod ?AGENT1 ?AGENT2 ?PERIOD) means that the Agent 
+
+?AGENT1 exports goods to the Agent ?AGENT2 during the TimeInterval 
+
+indicated by ?PERIOD.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;Agent"/>
+  </SUMO:IrreflexiveRelation>
+
+  <SUMO:BinaryPredicate rdf:about="#externalDebt">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(externalDebt ?COUNTRY ?AMOUNT) means 
+
+that the GeopoliticalArea ?COUNTRY owes the total sum ?AMOUNT of debt 
+
+(public and private) to nonresidents.  The amount is valued in U.S. 
+
+dollars but may be repayable in foreign currency, goods, or services.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#importCommodityType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(importCommodityType ?AREA ?TYPE) means that the GeopoliticalArea 
+
+?AREA imports the commodity ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;Object"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#importPartner">
+    <rdf:type rdf:resource="&SUMO;IrreflexiveRelation"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(importPartner ?AGENT1 ?AGENT2) means 
+
+that the Agent ?AGENT1 imports goods from the Agent ?AGENT2.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;Agent"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:IrreflexiveRelation rdf:about="#importPartnerInPeriod">
+    <rdf:type rdf:resource="&SUMO;TernaryPredicate"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(importPartnerInPeriod ?AGENT1 ?AGENT2 ?PERIOD) means that the Agent 
+
+?AGENT1 imports goods from the Agent ?AGENT2 during the TimeInterval 
+
+indicated by ?PERIOD.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&SUMO;Agent"/>
+  </SUMO:IrreflexiveRelation>
+
+  <SUMO:BinaryPredicate rdf:about="#industryServiceType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(industryServiceType ?INDUSTRY ?TYPE) means that organizations with 
+
+the IndustryAttribute ?INDUSTRY provide services of the kind ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&Mid-level-ontology;IndustryAttribute"/>
+    <rdfs:range rdf:resource="&SUMO;IntentionalProcess"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#organizationProductType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(organizationProductType ?BUSINESS ?TYPE) means that the Organization 
+
+?BUSINESS produces products of the kind ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Organization"/>
+    <rdfs:range rdf:resource="&SUMO;Object"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="#organizationServiceType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(organizationServiceType ?BUSINESS ?TYPE) means that the Organization 
+
+?BUSINESS provides services of the kind ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Organization"/>
+    <rdfs:range rdf:resource="&SUMO;IntentionalProcess"/>
+  </SUMO:BinaryPredicate>
+
+  <Economy:PPPBasedEconomicValuation rdf:about="#perCapitaGDP">
+    <rdf:type rdf:resource="&SUMO;BinaryPredicate"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(perCapitaGDP ?AREA ?AMOUNT) means 
+
+that the Gross Domestic Product, on a per capita basis, for the 
+
+GeopoliticalArea ?AREA is ?AMOUNT, calculated in U.S. dollars on a 
+
+purchasing power parity basis.  See PPPBasedEconomicValuation.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </Economy:PPPBasedEconomicValuation>
+
+  <SUMO:BinaryPredicate rdf:about="#resultType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(resultType ?PROCESS ?TYPE) means that 
+
+the Process ?PROCESS produces some result(s) of the type ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Process"/>
+    <rdfs:range rdf:resource="&SUMO;Object"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="&Mid-level-ontology;currencyType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(currencyType ?AREA ?UNIT) means 
+
+that the official currency used in the GeopoliticalArea ?AREA 
+
+is the UnitOfMeasure ?UNIT.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+    <rdfs:range rdf:resource="&SUMO;UnitOfMeasure"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="&Mid-level-ontology;economyType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(economyType ?POLITY ?TYPE) means that the 
+
+GeopoliticalArea ?POLITY has an economic system of TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+    <rdfs:range rdf:resource="&Mid-level-ontology;EconomicAttribute"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="&Mid-level-ontology;fiscalYearPeriod">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>The predicate fiscalYearPeriod 
+
+indicates the period that an Agent or Organization uses as its 
+
+12-month accounting period.  (fiscalYearPeriod ?AGENT Year) means 
+
+that ?AGENT observes its 12-month accounting period during the 
+
+regular calendar year (CY), from January to December.  For 
+
+fiscal years with other beginning and ending months (FYs), use 
+
+(fiscalYearPeriod ?AGENT (RecurrentTimeIntervalFn ?STARTMONTH ?ENDMONTH)).  
+
+For example, (fiscalYearPeriod (GovernmentFn UnitedStates) 
+
+(RecurrentTimeIntervalFn October September)).  For FYs that begin 
+
+or end mid-month, days may be specified within RecurrentTimeIntervalFn.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;Agent"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="&Mid-level-ontology;industryOfArea">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(industryOfArea ?AREA ?SECTOR) 
+
+means that the GeopoliticalArea ?AREA produces goods or services 
+
+in the economic area ?SECTOR.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="#IndustryAttribute"/>
+  </SUMO:BinaryPredicate>
+
+  <SUMO:BinaryPredicate rdf:about="&Mid-level-ontology;industryProductType">
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(industryProductType ?INDUSTRY ?TYPE) means that organizations with 
+
+the IndustryAttribute ?INDUSTRY produce products of the kind ?TYPE.</rdfs:comment>
+    <rdfs:domain rdf:resource="&Mid-level-ontology;IndustryAttribute"/>
+    <rdfs:range rdf:resource="&SUMO;Object"/>
+  </SUMO:BinaryPredicate>
+
+  <Economy:PPPBasedEconomicValuation rdf:about="&Mid-level-ontology;totalGDP">
+    <rdf:type rdf:resource="&SUMO;BinaryPredicate"/>
+    <rdf:type rdf:resource="&owl;ObjectProperty"/>
+    <rdfs:comment>(totalGDP ?AREA ?AMOUNT) means that the value 
+
+of all final goods and services produced within the GeopoliticalArea 
+
+?AREA is ?AMOUNT, in U.S. dollars, calculated on a purchasing power parity 
+
+basis.  This represents Gross Domestic Product (GDP).  See 
+
+PPPBasedEconomicValuation.</rdfs:comment>
+    <rdfs:domain rdf:resource="&SUMO;GeopoliticalArea"/>
+    <rdfs:range rdf:resource="&SUMO;CurrencyMeasure"/>
+  </Economy:PPPBasedEconomicValuation>
+
+  <owl:ObjectProperty rdf:about="&SUMO;contraryAttribute"/>
+  <owl:ObjectProperty rdf:about="&SUMO;disjoint"/>
+  <owl:ObjectProperty rdf:about="&SUMO;geographicSubregion"/>
+  <owl:ObjectProperty rdf:about="&SUMO;rangeSubclass"/>
+  <owl:ObjectProperty rdf:about="&SUMO;relatedInternalConcept"/>
+  <owl:ObjectProperty rdf:about="&SUMO;subAttribute"/>
+  <owl:ObjectProperty rdf:about="&SUMO;successorAttribute"/>
+
+<!-- Instances -->
+  <Economy:EconomicDevelopmentLevel rdf:about="#AdvancedDevelopingCountry"
+                                    rdfs:label="Advanced Developing Country">
+    <SUMO:subAttribute rdf:resource="#LessDevelopedCountry"/>
+    <rdfs:comment>AdvancedDevelopingCountry 
+
+is an Attribute used to describe a LessDevelopedCountry (LDC) 
+
+that is undergoing rapid industrial development.  Also called 'newly 
+
+industrializing economy' (or 'country').</rdfs:comment>
+  </Economy:EconomicDevelopmentLevel>
+
+  <Economy:IMFDevelopmentLevel rdf:about="#AdvancedEconomy">
+    <rdfs:comment>AdvancedEconomy is an Attribute 
+
+used to represent the InternationalMonetaryFund's top category of 
+
+development levels (AdvancedEconomy,, countries in transition, and 
+
+developing countries.  Generally (but not exactly) corresponds with 
+
+DevelopedCountry classification used by UnitedNations agencies.</rdfs:comment>
+  </Economy:IMFDevelopmentLevel>
+
+  <owl:Thing rdf:about="#AerospaceIndustry">
+    <SUMO:subAttribute rdf:resource="#TransportationEquipmentIndustry"/>
+    <rdfs:comment>AerospaceIndustry is the Attribute 
+
+of an Organization whose primary business involves manufacturing 
+
+aerospace products.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Afghanistan">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:EconomicSector rdf:about="#AgriculturalSector">
+    <rdfs:comment>AgriculturalSector is an attribute 
+
+that describes commercial organizations or agents whose business is in 
+
+the agricultural sector of the economy.</rdfs:comment>
+  </Economy:EconomicSector>
+
+  <Economy:FinancialSectorAttribute rdf:about="#AgricultureBasedEconomy">
+    <rdfs:comment>AgricultureBasedEconomy is 
+
+the Attribute of an economy that is based primarily or significantly 
+
+on AgriculturalSector businesses.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <owl:Thing rdf:about="#AircraftManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Aircraft"/>
+    <SUMO:subAttribute rdf:resource="#AerospaceIndustry"/>
+    <rdfs:comment>AircraftManufacturing is the 
+
+Attribute of an Organization whose primary business involves 
+
+designing or manufacturing Aircraft or aircraft parts.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Albania">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Algeria">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#AluminaAndAluminumIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#Alumina"/>
+    <Mid-level-ontology:industryProductType rdf:resource="#AluminumMetal"/>
+    <SUMO:subAttribute rdf:resource="#PrimaryMetalManufacturing"/>
+    <rdfs:comment>AluminaAndAluminumIndustry is the Attribute of an Organization whose 
+
+primary business involves processing or producing alumina or aluminum.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Andorra">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Angola">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#AnimalProduction">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Animal"/>
+    <SUMO:subAttribute rdf:resource="#AgriculturalSector"/>
+    <rdfs:comment>AnimalProduction is the IndustryAttribute that describes animal 
+
+agriculture operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#AntiguaAndBarbuda">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Argentina">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Armenia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Aruba">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#AsphaltMaterialsIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#Asphalt"/>
+    <SUMO:subAttribute rdf:resource="#PetroleumIndustry"/>
+    <rdfs:comment>AsphaltMaterialsIndustry is the 
+
+Attribute of an Organization whose primary business involves 
+
+manufacturing Asphalt materials.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Australia">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Austria">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#AutomobileIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Automobile"/>
+    <SUMO:subAttribute rdf:resource="#TransportationEquipmentIndustry"/>
+    <rdfs:comment>AutomobileIndustry is an Attribute 
+
+of an Organization whose primary business involves manufacturing 
+
+light duty motor vehicles (including Automobiles, LightTrucks and 
+
+SUVs).</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Azerbaijan">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Bahrain">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Bangladesh">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Barbados">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#BarleyFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#BarleyGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>BarleyFarming is the IndustryAttribute that describes barley farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Belarus">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Belgium">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Belize">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Bermuda">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#BosniaAndHerzegovina">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Bulgaria">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Burundi">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Cambodia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Cameroon">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#CapeVerde">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#CattleRanchingAndFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#Cattle"/>
+    <SUMO:subAttribute rdf:resource="#AnimalProduction"/>
+    <rdfs:comment>CattleRanchingAndFarming is 
+
+the specification of AnimalProduction that describes cattle 
+
+ranching and farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#CementManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Cement"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>CementManufacturing is an 
+
+Attribute of an Organization whose primary business involves 
+
+manufacturing Cement.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#CentralAfricanRepublic">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#CerealGrainFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;CerealGrain"/>
+    <SUMO:subAttribute rdf:resource="#CropProduction"/>
+    <rdfs:comment>CerealGrainFarming is the IndustryAttribute that describes cereal 
+
+grain farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Chad">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#ChemicalManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#ChemicalProduct"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>ChemicalManufacturing is an 
+
+Attribute of an Organization whose primary business involves the 
+
+manufacture of chemicals.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Chile">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#China">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#ClothingIndustry">
+    <SUMO:relatedInternalConcept rdf:resource="#FootwearIndustry"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>ClothingIndustry is the Attribute 
+
+of an Organization whose primary business involves manufacturing 
+
+Clothing.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#CoalIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#Coal"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>CoalIndustry is the Attribute 
+
+of an Organization whose primary business involves producing  
+
+Coal and coal products.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#CoalMining">
+    <Mid-level-ontology:industryProductType rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#Coal"/>
+    <SUMO:subAttribute rdf:resource="#CoalIndustry"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>CoalMining is the Attribute of an 
+
+Organization whose primary business is mining  Coal.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Colombia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="#CommunalLandOwnershipEconomy">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;SocialistEconomy"/>
+    <rdfs:comment>CommunalLandOwnershipEconomy is an Attribute that describes an economy 
+
+in which all or most of the land is communally owned.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="#Comoros">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#ConsumerGoodsIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#ConsumerGood"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>ConsumerGoodsIndustry is the 
+
+Attribute of an Organization whose primary business is the production  
+
+of consumer goods.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:FinancialSectorAttribute rdf:about="#ControlledLaborMarketEconomy">
+    <rdfs:comment>ControlledLaborMarketEconomy 
+
+is the Attribute of an area whose economy has a labor market with wages 
+
+and working conditions controlled by government policies or laws.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#CopperIndustry">
+    <SUMO:subAttribute rdf:resource="#PrimaryMetalManufacturing"/>
+    <rdfs:comment>CopperIndustry is the Attribute of 
+
+an Organization whose primary business involves mining, smelting, 
+
+rolling, drawing, extruding, or alloying Copper.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#CopperOreMining">
+    <Mid-level-ontology:industryProductType rdf:resource="#CopperOre"/>
+    <SUMO:subAttribute rdf:resource="#CopperIndustry"/>
+    <SUMO:subAttribute rdf:resource="#MetalOreMining"/>
+    <rdfs:comment>CopperOreMining is the Attribute of 
+
+an Organization whose primary business involves mining CopperOre.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#CornFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#MaizeGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>CornFarming is the IndustryAttribute that 
+
+describes corn or maize farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#CostaRica">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#CoteDIvoire">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#CottonFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#CottonFiber"/>
+    <SUMO:subAttribute rdf:resource="#CropProduction"/>
+    <rdfs:comment>CottonFarming is the specification of 
+
+CropProductionthat describes cotton farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IMFDevelopmentLevel rdf:about="#CountryInTransition">
+    <SUMO:successorAttribute rdf:resource="#AdvancedEconomy"/>
+    <rdfs:comment>CountryInTransition is a term 
+
+used by the InternationalMonetaryFund (IMF) to describe the middle 
+
+group in its hierarchy of advanced countries, countries in transition, 
+
+and developing countries.  Most of the countries with this attribute 
+
+are former USSR or Eastern European countries.  Generally corresponds 
+
+with FormerSovietOrEasternEuropeanCountry classification used by 
+
+UnitedNations agencies.</rdfs:comment>
+  </Economy:IMFDevelopmentLevel>
+
+  <owl:Thing rdf:about="#Croatia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Cyprus">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#CzechRepublic">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#DemocraticRepublicOfTheCongo">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Denmark">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:UNEconomicDevelopmentLevel rdf:about="#DevelopedCountry">
+    <rdfs:comment>DevelopedCountry (DC) is a term used to describe members of the top 
+
+group in the UNEconomicDevelopmentLevels.  DevelopedCountry includes 
+
+market-oriented economies of mainly democratic nations, including members 
+
+of the OrganizationForEconomicCooperationAndDevelopment (OECD).  DCs 
+
+are also known as First World countries, 'the North', and industrial 
+
+countries.  Developed countries generally have high incomes (high per 
+
+capita GDP or GNI), but there are exceptions to DC membership both above 
+
+and below that standard.  There is significant overlap, but not perfect 
+
+congruence, between the UN category DevelopedCountry and the IMF 
+
+category AdvancedEconomy.</rdfs:comment>
+    <rdfs:label>Developed Country</rdfs:label>
+    <rdfs:label>industrial country</rdfs:label>
+    <rdfs:label>the North</rdfs:label>
+  </Economy:UNEconomicDevelopmentLevel>
+
+  <Economy:IMFDevelopmentLevel rdf:about="#DevelopingCountry">
+    <SUMO:successorAttribute rdf:resource="#CountryInTransition"/>
+    <rdfs:comment>DevelopingCountry is a term 
+
+used by the InternationalMonetaryFund (IMF) for the bottom group 
+
+in its hierarchy of advanced countries, countries in transition, 
+
+and developing countries. Generally corresponds to the attribute 
+
+LessDevelopedCountry used by UnitedNations agencies.  Not to 
+
+be confused with DevelopedCountry.</rdfs:comment>
+  </Economy:IMFDevelopmentLevel>
+
+  <Economy:FinancialSectorAttribute rdf:about="#DiversifiedEconomy">
+    <rdfs:comment>DiversifiedEconomy is the Attribute 
+
+of an area whose economy is based on significant activities in more than 
+
+one economic sector.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <owl:Thing rdf:about="#Djibouti">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Dominica">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#DominicanRepublic">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Ecuador">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Egypt">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#ElSalvador">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#ElectronicsIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;ElectricDevice"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>ElectronicsIndustry is the 
+
+Attribute of an Organization whose primary business involves 
+
+electronics manufacturing (including but not limited to Computers).</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#EquatorialGuinea">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Estonia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Ethiopia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#FaroeIslands">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#FertilizerIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#Fertilizer"/>
+    <SUMO:subAttribute rdf:resource="#ChemicalManufacturing"/>
+    <rdfs:comment>FertilizerIndustry is the 
+
+Attribute of an Organization whose primary business involves 
+
+manufacturing Fertilizer.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Fiji">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Finland">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#FoodManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#FoodProduct"/>
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Food"/>
+    <SUMO:subAttribute rdf:resource="#AgriculturalSector"/>
+    <rdfs:comment>FoodManufacturing is the 
+
+Attribute of an Organization whose primary business involves 
+
+manufacturing Food.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#FootwearIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#Footwear"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>FootwearIndustry is the Attribute 
+
+of an Organization whose primary business involves manufacture of 
+
+Footwear.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#ForestryAndLogging">
+    <Mid-level-ontology:industryProductType rdf:resource="#ForestProduct"/>
+    <Mid-level-ontology:industryProductType rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#Timber"/>
+    <SUMO:subAttribute rdf:resource="#LumberIndustry"/>
+    <rdfs:comment>ForestryAndLogging is the Attribute 
+
+of an Organization whose primary business involves manufacturing 
+
+Timber.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:UNEconomicDevelopmentLevel rdf:about="#FormerSovietOrEasternEuropeanCountry">
+    <SUMO:successorAttribute rdf:resource="#DevelopedCountry"/>
+    <rdfs:comment>FormerSovietOrEasternEuropeanCountry (former USSR-EE) is an  
+
+Attribute that characterizes countries that were part of the former 
+
+Soviet Union or its sphere of influence in Eastern Europe.  This level 
+
+occupies a middle position between DevelopedCountry (DC) and 
+
+LessDevelopedCountry (LDC) in UNEconomicDevelopmentLevels. 
+
+Previously, former USSR-EE countries had a CentrallyPlannedEconomy and 
+
+were Marxist-Leninist states.  Many are now evolving away from command 
+
+economies to market economic systems.  During the 1980's, the group 
+
+included Albania, Bulgaria, Cambodia, China, Cuba, Czechoslovakia, the 
+
+German Democratic Republic (East Germany), Hungary, North Korea, Laos, 
+
+Mongolia, Poland, Romania, the USSR, Vietnam and Yugoslavia.</rdfs:comment>
+    <rdfs:label>Former Eastern European</rdfs:label>
+    <rdfs:label>Former Soviet</rdfs:label>
+    <rdfs:label>Former Soviet or Eastern European Country</rdfs:label>
+  </Economy:UNEconomicDevelopmentLevel>
+
+  <Economy:PowerGeneration rdf:about="#FossilFuelPowerGeneration"/>
+  <Economy:EconomicDevelopmentLevel rdf:about="#FourDragonsEconomy">
+    <rdfs:comment>FourDragonsEconomy describes four 
+
+small Asian countries that achieved rapid economic growth in the 1990s. 
+
+Some systems of EconomicDevelopmentLevel place them as a 
+
+LessDevelopedCountry, but the IMF includes them in AdvancedEconomy.</rdfs:comment>
+    <rdfs:label>Four Dragons</rdfs:label>
+    <rdfs:label>Four Tigers</rdfs:label>
+  </Economy:EconomicDevelopmentLevel>
+
+  <Economy:IndustryAttribute rdf:about="#FruitAndTreeNutFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#PlantAgriculturalProduct"/>
+    <SUMO:subAttribute rdf:resource="#CropProduction"/>
+    <rdfs:comment>FruitAndTreeNutFarming is the IndustryAttribute that describes 
+
+fruit and tree nut farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#FruitFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#Fruit"/>
+    <SUMO:subAttribute rdf:resource="#FruitAndTreeNutFarming"/>
+    <rdfs:comment>FruitFarming is the specification of 
+
+FruitAndTreeNutFarming that describes fruit farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#FurnitureIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Furniture"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>FurnitureIndustry is the Attribute 
+
+of an Organization whose primary business involves manufacture of 
+
+Furniture.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Gabon">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Gambia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Ghana">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#GoatFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Goat"/>
+    <SUMO:subAttribute rdf:resource="#AnimalProduction"/>
+    <rdfs:comment>GoatFarming is the specification of 
+
+AnimalProduction that describes goat farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#GrapeFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#Grape"/>
+    <SUMO:subAttribute rdf:resource="#FruitFarming"/>
+    <rdfs:comment>GrapeFarming is the specification of 
+
+FruitFarming that describes Grape farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Grenada">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Guatemala">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Guinea">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#GuineaBissau">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Guyana">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Haiti">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#HandicraftIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Artifact"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>HandicraftIndustry is the Attribute 
+
+of an Organization whose primary business involves manufacturing items 
+
+by hand.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#HandwovenCarpetManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#HandwovenCarpet"/>
+    <SUMO:subAttribute rdf:resource="#HandicraftIndustry"/>
+    <rdfs:comment>HandwovenCarpetManufacturing 
+
+is the Attribute of an Organization whose primary business involves 
+
+manufacturing HandwovenCarpets.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#HeavyDutyTruckIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Truck"/>
+    <SUMO:subAttribute rdf:resource="#MotorVehicleIndustry"/>
+    <rdfs:comment>HeavyDutyTruckIndustry 
+
+is the Attribute of an Organization whose primary business is 
+
+manufacturing heavy duty trucks.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:WorldBankGNIPerCapitaLevel rdf:about="#HighIncomeCountry">
+    <rdfs:comment>HighIncomeCountry is an Attribute representing the World Bank 
+
+classification for any country where the per capita GNI is 
+
+equal to or greater than 9,266 in UnitedStatesDollars.</rdfs:comment>
+  </Economy:WorldBankGNIPerCapitaLevel>
+
+  <Economy:EconomicDevelopmentLevel rdf:about="#HighTechIndustrialEconomy">
+    <rdfs:comment>HighTechIndustrialEconomy 
+
+is an Attribute used to describe industrialized countries whose 
+
+infrastructure uses the most advanced kinds of technology.</rdfs:comment>
+  </Economy:EconomicDevelopmentLevel>
+
+  <owl:Thing rdf:about="#HogAndPigFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#Pork"/>
+    <SUMO:subAttribute rdf:resource="#AnimalProduction"/>
+    <rdfs:comment>HogAndPigFarming is the specification of 
+
+AnimalProduction that describes hog and pig farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#HolySee">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Honduras">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#HongKong">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#FourDragonsEconomy"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#HouseholdApplianceManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;ElectricDevice"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>HouseholdApplianceManufacturing is the Attribute of an Organization 
+
+whose primary business involves manufacturing electrical household appliances.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Hungary">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Economy:ElectricalPowerGeneration rdf:about="#HydroElectricPowerGeneration"/>
+  <owl:Thing rdf:about="#Iceland">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#India">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Indonesia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#IndustrialSandMining">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Sand"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>IndustrialSandMining is the 
+
+Attribute of an Organization whose primary business is mining 
+
+industrial-quality Sand.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:EconomicSector rdf:about="#IndustrialSector">
+    <rdfs:comment>IndustrialSector is an attribute 
+
+that describes commercial organizations or agents whose business is in 
+
+the industrial sector of the economy.</rdfs:comment>
+  </Economy:EconomicSector>
+
+  <owl:Thing rdf:about="#Iran">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Iraq">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#IronMills">
+    <Mid-level-ontology:industryProductType rdf:resource="#IronMetal"/>
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Iron"/>
+    <SUMO:subAttribute rdf:resource="#PrimaryMetalManufacturing"/>
+    <rdfs:comment>IronMills is the Attribute of 
+
+an Organization whose primary business is manufacturing iron.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#IronOreMining">
+    <Mid-level-ontology:industryProductType rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#IronOre"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>IronOreMining is the Attribute of an 
+
+Organization whose primary business is mining IronOre.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Israel">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Jamaica">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Jordan">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#KaolinAndBallClayMining">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Clay"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>KaolinAndBallClayMining is 
+
+the Attribute of an Organization whose primary business is mining 
+
+Clay.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Kazakhstan">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Kenya">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Kiribati">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Kuwait">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Kyrgyzstan">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Latvia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#LeadIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Lead"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>LeadIndustry is the Attribute of an 
+
+Organization whose primary business involves mining or manufacturing 
+
+lead.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#LeadManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#LeadProduct"/>
+    <SUMO:subAttribute rdf:resource="#LeadIndustry"/>
+    <SUMO:subAttribute rdf:resource="#PrimaryMetalManufacturing"/>
+    <rdfs:comment>LeadManufacturing is the Attribute 
+
+of an Organization whose primary business involves manufacturing 
+
+LeadProducts.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#LeadOreMining">
+    <Mid-level-ontology:industryProductType rdf:resource="#LeadOre"/>
+    <SUMO:subAttribute rdf:resource="#LeadIndustry"/>
+    <SUMO:subAttribute rdf:resource="#MetalOreMining"/>
+    <rdfs:comment>LeadOreMining is the Attribute of an 
+
+Organization whose primary business involves mining LeadOre.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:EconomicDevelopmentLevel rdf:about="#LeastDevelopedCountry">
+    <SUMO:subAttribute rdf:resource="#LessDevelopedCountry"/>
+    <rdfs:comment>LeastDevelopedCountry 
+
+is a sub-classification of LessDevelopedCountry characterizing
+
+those countries that have no significant economic growth, a per 
+
+capita GDP of less than $1,000 UnitedStatesDollars, and low 
+
+literacy.  Also known as 'undeveloped countries'.</rdfs:comment>
+    <rdfs:label>Least Developed Countries</rdfs:label>
+    <rdfs:label>Undeveloped Country</rdfs:label>
+    <rdfs:label>Undeveloped Economy</rdfs:label>
+  </Economy:EconomicDevelopmentLevel>
+
+  <owl:Thing rdf:about="#Lebanon">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Lesotho">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:UNEconomicDevelopmentLevel rdf:about="#LessDevelopedCountry">
+    <SUMO:successorAttribute rdf:resource="#FormerSovietOrEasternEuropeanCountry"/>
+    <rdfs:comment>LessDevelopedCountry (LDC) is 
+
+the Attribute used to describe the bottom group in the hierarchy 
+
+of UNEconomicDevelopmentLevels. Less developed countries are countries 
+
+or dependent areas with low levels of production, living standards, 
+
+and technology.  Per capita GDP (perCapitaGDPInPeriod), or GDI 
+
+(Gross Domestic Income), is generally less than $5,000 and often 
+
+below $1,500.  Subgroups of LDC, however, include countries that have 
+
+higher per capita incomes, as well as advanced technology, and rapid rates 
+
+of growth.  Subgroups of LDC include: advanced developing countries, 
+
+the Four Dragons (also known as Four Tigers), LeastDevelopedCountry 
+
+(LLDCs), low-income countries, middle-income countries, newly 
+
+industrializing economies (NIEs), the South (from the location of 
+
+most LDC countries, relative to Northern developed countries), Third 
+
+World (obsolete), UnderdevelopedCountry, UndevelopedCountry.</rdfs:comment>
+    <rdfs:label>Less Developed Country</rdfs:label>
+    <rdfs:label>the South</rdfs:label>
+  </Economy:UNEconomicDevelopmentLevel>
+
+  <owl:Thing rdf:about="#Liberia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Libya">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Liechtenstein">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Lithuania">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Economy:WorldBankGNIPerCapitaLevel rdf:about="#LowIncomeCountry">
+    <SUMO:successorAttribute rdf:resource="#LowerMiddleIncomeCountry"/>
+    <rdfs:comment>LowIncomeCountry is an 
+
+Attribute representing the World Bank classification for any country 
+
+where the per capita GNI is $755 or below in UnitedStatesDollars.</rdfs:comment>
+  </Economy:WorldBankGNIPerCapitaLevel>
+
+  <Economy:WorldBankGNIPerCapitaLevel rdf:about="#LowerMiddleIncomeCountry">
+    <SUMO:successorAttribute rdf:resource="#UpperMiddleIncomeCountry"/>
+    <rdfs:comment>LowerMiddleIncomeCountry is an Attribute representing the World 
+
+Bank classification for any country where the per capita GNI is 
+
+between $756 and $2,995 (inclusive) in UnitedStatesDollars.</rdfs:comment>
+  </Economy:WorldBankGNIPerCapitaLevel>
+
+  <Economy:IndustryAttribute rdf:about="#LumberIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#ForestProduct"/>
+    <SUMO:subAttribute rdf:resource="#AgriculturalSector"/>
+    <rdfs:comment>LumberIndustry is the Attribute 
+
+of an Organization whose primary business involves logging, 
+
+manufacturing lumber, or making other wood products.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Luxembourg">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Macedonia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#MachineryManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#Machinery"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>MachineryManufacturing is 
+
+the Attribute of an Organization whose primary business involves 
+
+manufacturing Machinery.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Madagascar">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#MajorApplianceManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#MajorAppliance"/>
+    <SUMO:subAttribute rdf:resource="#HouseholdApplianceManufacturing"/>
+    <rdfs:comment>MajorApplianceManufacturing 
+
+is the Attribute of an Organization whose primary business involves 
+
+manufacturing MajorAppliances.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:EconomicDevelopmentLevel rdf:about="#MajorIndustrialEconomy">
+    <rdfs:comment>MajorIndustrialEconomy is an 
+
+Attribute used to describe countries with the largest, industrialized, 
+
+non-communist economies in the world.</rdfs:comment>
+  </Economy:EconomicDevelopmentLevel>
+
+  <owl:Thing rdf:about="#Malawi">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Malaysia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Maldives">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Mali">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Malta">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#ManufacturingBasedEconomy">
+    <rdfs:comment>ManufacturingBasedEconomy is the 
+
+Attribute of an area whose economy is based primarily on activities in 
+
+the manufacturing sector.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="#MarketSocialism">
+    <SUMO:subAttribute rdf:resource="#PartialMarketEconomy"/>
+    <rdfs:comment>MarketSocialism is an Attribute that 
+
+describes an economy that has some socialistic institutions and some 
+
+limited sectors in which markets operate.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="#MarshallIslands">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Mauritania">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Mauritius">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#MetalOreMining">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Metal"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>MetalOreMining is the Attribute of an 
+
+Organization whose primary business is mining metallic ore.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#MetallurgyIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Metal"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#MetalworkingMachineryManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#MachineTool"/>
+    <SUMO:subAttribute rdf:resource="#MachineryManufacturing"/>
+    <rdfs:comment>MetalworkingMachineryManufacturing is the Attribute of an 
+
+Organization whose primary business is manufacturing MachineTools.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#MilletFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#MilletGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>MilletFarming is the IndustryAttribute that describes millet farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#MiningIndustry">
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>MiningIndustry is an Attribute of an 
+
+Organization whose primary business involves mining.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Moldova">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Monaco">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Mongolia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Morocco">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#MotorVehicleIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;RoadVehicle"/>
+    <SUMO:subAttribute rdf:resource="#TransportationEquipmentIndustry"/>
+    <rdfs:comment>MotorVehicleIndustry 
+
+is the Attribute of an Organization whose primary business is 
+
+manufacturing motor vehicles.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Mozambique">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Namibia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#NaturalGasIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="http://reliant.teknowledge.com/DAML/Geography.owl#NaturalGas"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>NaturalGasIndustry is the Attribute 
+
+of an Organization whose primary business is producing NaturalGas.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Nepal">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Netherlands">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#NetherlandsAntilles">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#NewZealand">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:EconomicDevelopmentLevel rdf:about="#NewlyIndustrializingEconomy"
+                                    rdfs:label="Newly Industrializing Economies">
+    <rdfs:comment>NewlyIndustrializingEconomy is an Attribute used to describe a 
+
+LessDevelopedCountry (LDC) that is undergoing rapid industrial 
+
+development.  Also called 'newly industrializing economy' (or 
+
+'country').</rdfs:comment>
+  </Economy:EconomicDevelopmentLevel>
+
+  <owl:Thing rdf:about="#Nicaragua">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#NickelOreMining">
+    <Mid-level-ontology:industryProductType rdf:resource="#NickelOre"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>NickelOreMining is the Attribute of 
+
+an Organization whose primary business involves mining NickelOre.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Niger">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Nigeria">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Norway">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:PowerGeneration rdf:about="#NuclearPowerGeneration"/>
+  <Economy:IndustryAttribute rdf:about="#OatFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#OatGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>OatFarming is the IndustryAttribute that describes oat farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#OffshoreBankingSectorEconomy">
+    <SUMO:subAttribute rdf:resource="#OffshoreFinancialSectorEconomy"/>
+    <rdfs:comment>OffshoreBankingSectorEconomy 
+
+is the sub-type of OffshoreFinancialSectorEconomy, describing an area 
+
+whose economy is based primarily or significantly on its offshore banking 
+
+services.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#OffshoreFinancialSectorEconomy">
+    <rdfs:comment>OffshoreFinancialSectorEconomy is the Attribute of an area whose 
+
+economy is based primarily or significantly on its offshore financial 
+
+services, which attract overseas investments or deposits.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <owl:Thing rdf:about="#Oman">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:PowerGeneration rdf:about="#OtherSourcePowerGeneration">
+    <rdfs:comment>OtherSourcePowerGeneration 
+
+represents all non-fossil fuel, non-hydroelectric, and non-nuclear power 
+
+generation processes, e.g., wind power generation.</rdfs:comment>
+  </Economy:PowerGeneration>
+
+  <owl:Thing rdf:about="#Pakistan">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Panama">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#PapuaNewGuinea">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Paraguay">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="#PartialMarketEconomy">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;MixedEconomy"/>
+    <rdfs:comment>PartialMarketEconomy is the 
+
+Attribute of any MixedEconomy which operates partially with market 
+
+mechanisms.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="#PeanutFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#Peanut"/>
+    <SUMO:subAttribute rdf:resource="#CropProduction"/>
+    <rdfs:comment>PeanutFarming is the specification of 
+
+CropProduction that describes peanut farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Peru">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#PetroleumBasedEconomy">
+    <rdfs:comment>PetroleumBasedEconomy is the 
+
+Attribute of an area whose economy is based primarily on activities in 
+
+the petroleum industry.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#PetroleumIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#PetroleumProduct"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>PetroleumIndustry is the Attribute of 
+
+an Organization whose primary business involves drilling, extracting, or 
+
+further processing of crude petroleum or petroleum products.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#PharmaceuticalPreparationManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#PharmaceuticalProduct"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>PharmaceuticalPreparationManufacturing is the Attribute of an 
+
+Organization whose primary business involves manufacturing drugs.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Philippines">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Portugal">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#PotatoFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#PotatoTuber"/>
+    <SUMO:subAttribute rdf:resource="#VegetableFarming"/>
+    <rdfs:comment>PotatoFarming is the specification of 
+
+VegetableFarming that describes potato farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#PrimaryMetalManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Metal"/>
+    <SUMO:subAttribute rdf:resource="#MetallurgyIndustry"/>
+    <rdfs:comment>PrimaryMetalManufacturing is 
+
+an Attribute of an Organization whose primary business involves the 
+
+smelting or refining of ferrous or non-ferrous metals from ore or scrap 
+
+to produce forgings or castings; in particular iron, aluminum, copper, 
+
+lead, zinc, or nickel manufacturing.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Qatar">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#RefrigeratorAndFreezerIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#Freezer"/>
+    <Mid-level-ontology:industryProductType rdf:resource="#Refrigerator"/>
+    <SUMO:subAttribute rdf:resource="#MajorApplianceManufacturing"/>
+    <rdfs:comment>RefrigeratorAndFreezerIndustry is the Attribute of an Organization 
+
+whose primary business involves manufacturing refrigerators or freezers.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#RepublicOfTheCongo">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#RiceFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#RiceGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>RiceFarming is the IndustryAttribute 
+
+that describes rice farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Romania">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Rwanda">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#RyeFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#RyeGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>RyeFarming is the IndustryAttribute that describes rye farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#SaintKittsAndNevis">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SaintLucia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SaintVincentAndTheGrenadines">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Samoa">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SanMarino">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SaoTomeAndPrincipe">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SaudiArabia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Senegal">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#ServiceBasedEconomy">
+    <rdfs:comment>ServiceBasedEconomy is the 
+
+Attribute of an economy that is based primarily or significantly 
+
+on ServiceSector businesses.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <Economy:EconomicSector rdf:about="#ServiceSector">
+    <rdfs:comment>ServiceSector is an attribute 
+
+that describes commercial organizations or agents whose business is in 
+
+the service sector of the economy.</rdfs:comment>
+  </Economy:EconomicSector>
+
+  <owl:Thing rdf:about="#Seychelles">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SheepFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Sheep"/>
+    <SUMO:subAttribute rdf:resource="#AnimalProduction"/>
+    <rdfs:comment>SheepFarming is the specification of 
+
+AnimalProduction that describes sheep farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SierraLeone">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Singapore">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#FourDragonsEconomy"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Slovakia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Slovenia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SmallElectricalApplianceManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;ElectricDevice"/>
+    <SUMO:subAttribute rdf:resource="#HouseholdApplianceManufacturing"/>
+    <rdfs:comment>SmallElectricalApplianceManufacturing is the Attribute of an 
+
+Organization whose primary business involves manufacturing small 
+
+electrical household appliances.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#SoapIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Detergent"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>SoapIndustry is the Attribute of an 
+
+Organization whose primary business involves manufacturing detergents.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Somalia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#SorghumFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#SorghumGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>SorghumFarming is the IndustryAttribute that describes sorghum farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#SouthAfrica">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SouthKorea">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#FourDragonsEconomy"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Spain">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SriLanka">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#SteelIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Steel"/>
+    <SUMO:subAttribute rdf:resource="#PrimaryMetalManufacturing"/>
+    <rdfs:comment>SteelIndustry is the Attribute of an 
+
+Organization whose primary business involves manufacturing steel or 
+
+steel products.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#SteelMills">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Steel"/>
+    <SUMO:subAttribute rdf:resource="#SteelIndustry"/>
+    <rdfs:comment>SteelMills is the Attribute of 
+
+an Organization whose primary business involves manufacturing steel.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#StoneMiningAndQuarrying">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Rock"/>
+    <SUMO:subAttribute rdf:resource="#MiningIndustry"/>
+    <rdfs:comment>StoneMiningAndQuarrying is the 
+
+Attribute of an Organization whose primary business involves quarrying 
+
+or mining stone.</rdfs:comment>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#SubsistenceAgricultureEconomy">
+    <SUMO:subAttribute rdf:resource="#AgricultureBasedEconomy"/>
+    <rdfs:comment>SubsistenceAgricultureEconomy is the Attribute of an economy that is 
+
+based primarily or significantly on AgriculturalSector activities that 
+
+operate merely at the subsistence level.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <owl:Thing rdf:about="#Sudan">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#SugarBeetFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#SugarBeet"/>
+    <SUMO:subAttribute rdf:resource="#CropProduction"/>
+    <rdfs:comment>SugarBeetFarming is the specification 
+
+of CropProduction that describes sugar beet farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Suriname">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Swaziland">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Syria">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Taiwan">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#FourDragonsEconomy"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Tajikistan">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Tanzania">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#TelecommunicationsIndustry">
+    <Economy:industryServiceType rdf:resource="&SUMO;Communication"/>
+    <SUMO:subAttribute rdf:resource="#ServiceSector"/>
+    <rdfs:comment>TelecommunicationsIndustry 
+
+is the Attribute of an Organization whose primary business involves 
+
+telecommunications.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#TextileIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#TextileProduct"/>
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;Fabric"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>TextileIndustry is the Attribute of 
+
+an Organization whose primary business is making TextileProducts.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Thailand">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Togo">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#TourismBasedEconomy">
+    <rdfs:comment>TourismBasedEconomy is the 
+
+Attribute of an area whose economy is based primarily on activities in 
+
+the tourist industry.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#TourismIndustry">
+    <Economy:industryServiceType rdf:resource="&SUMO;RecreationOrExercise"/>
+    <SUMO:subAttribute rdf:resource="#ServiceSector"/>
+    <rdfs:comment>TourismIndustry is an Attribute that 
+
+describes organizations that provide services or products for travellers 
+
+who stay temporarily in a region to experience local attractions.  There 
+
+is an overlap (but not subsumption) between TourismIndustry and each of 
+
+the following industries: travel services and accommodations, entertainment 
+
+and recreation, and arts and museums or historical sites.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:FinancialSectorAttribute rdf:about="#TradeBasedEconomy">
+    <rdfs:comment>TradeBasedEconomy is the 
+
+Attribute of an area whose economy is based primarily on activities in 
+
+the trade sector.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#TransportationEquipmentIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&SUMO;TransportationDevice"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>TransportationEquipmentIndustry  is an Attribute of an 
+
+Organization whose primary business involves the manufacturing of 
+
+TransportationDevices.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#TreeNutFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#EdibleNut"/>
+    <SUMO:subAttribute rdf:resource="#FruitAndTreeNutFarming"/>
+    <rdfs:comment>TreeNutFarming is the specification of 
+
+FruitAndTreeNutFarming that describes tree nut farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#TrinidadAndTobago">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Tunisia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Turkmenistan">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Economy:FinancialSectorAttribute rdf:about="#TwoTierLaborMarketEconomy">
+    <rdfs:comment>TwoTierLaborMarketEconomy is 
+
+the Attribute of an area whose economy has a labor market characterized 
+
+by a division between highly paid professional workers and low-paid 
+
+unskilled labor.  Such economies may provide cheap labor pools for 
+
+overseas manufacturing.</rdfs:comment>
+  </Economy:FinancialSectorAttribute>
+
+  <owl:Thing rdf:about="#Uganda">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Ukraine">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Economy:EconomicDevelopmentLevel rdf:about="#UnderdevelopedCountry">
+    <SUMO:subAttribute rdf:resource="#LessDevelopedCountry"/>
+    <rdfs:comment>UnderdevelopedCountry is an 
+
+Attribute describing less developed countries that have potential 
+
+for above-average economic growth.  See also LessDevelopedCountry.</rdfs:comment>
+  </Economy:EconomicDevelopmentLevel>
+
+  <owl:Thing rdf:about="#UnitedArabEmirates">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:WorldBankGNIPerCapitaLevel rdf:about="#UpperMiddleIncomeCountry">
+    <SUMO:successorAttribute rdf:resource="#HighIncomeCountry"/>
+    <rdfs:comment>LowerMiddleIncomeCountry is an Attribute representing the World Bank 
+
+classification for any country where the per capita GNI is 
+
+between $2,996 and $9,266 (inclusive) in UnitedStatesDollars.</rdfs:comment>
+  </Economy:WorldBankGNIPerCapitaLevel>
+
+  <owl:Thing rdf:about="#Uruguay">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Uzbekistan">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Vanuatu">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#VegetableAndMelonFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#PlantAgriculturalProduct"/>
+    <SUMO:subAttribute rdf:resource="#CropProduction"/>
+    <rdfs:comment>VegetableAndMelonFarming is the IndustryAttribute that describes 
+
+vegetable and melon farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#VegetableFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#Vegetable"/>
+    <SUMO:subAttribute rdf:resource="#VegetableAndMelonFarming"/>
+    <rdfs:comment>VegetableFarming is the specification of 
+
+VegetableAndMelonFarming that describes vegetable farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#VegetableOilIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="#VegetableOil"/>
+    <SUMO:subAttribute rdf:resource="#AgriculturalSector"/>
+    <rdfs:comment>VegetableOilIndustry is the 
+
+Attribute of an Organization whose primary business is manufacturing  
+
+VegetableOil.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#Venezuela">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Vietnam">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#WheatFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#WheatGrain"/>
+    <SUMO:subAttribute rdf:resource="#CerealGrainFarming"/>
+    <rdfs:comment>WheatFarming is the IndustryAttribute that describes wheat farming operations.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="#WineGrapeFarming">
+    <Mid-level-ontology:industryProductType rdf:resource="#WineGrape"/>
+    <SUMO:subAttribute rdf:resource="#GrapeFarming"/>
+    <rdfs:comment>WineGrapeFarming is the specification 
+
+of GrapeFarming that describes WineGrape farming operations.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#WoodProductManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#WoodProduct"/>
+    <SUMO:subAttribute rdf:resource="#LumberIndustry"/>
+    <rdfs:comment>WoodProductManufacturing is 
+
+the Attribute of an Organization whose primary business involves 
+
+manufacturing WoodProducts.</rdfs:comment>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Yemen">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Zambia">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="#Zimbabwe">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Economy:IndustryAttribute rdf:about="#ZincIndustry">
+    <Mid-level-ontology:industryProductType rdf:resource="&Mid-level-ontology;Zinc"/>
+    <SUMO:subAttribute rdf:resource="#IndustrialSector"/>
+    <rdfs:comment>ZincIndustry is the Attribute of an 
+
+Organization whose primary business is mining or manufacturing Zinc.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#ZincManufacturing">
+    <Mid-level-ontology:industryProductType rdf:resource="#ZincProduct"/>
+    <SUMO:subAttribute rdf:resource="#PrimaryMetalManufacturing"/>
+    <SUMO:subAttribute rdf:resource="#ZincIndustry"/>
+    <rdfs:comment>ZincManufacturing is the Attribute 
+
+of an Organization whose primary business is making ZincProducts.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <Economy:IndustryAttribute rdf:about="#ZincOreMining">
+    <Mid-level-ontology:industryProductType rdf:resource="#ZincOre"/>
+    <SUMO:subAttribute rdf:resource="#MetalOreMining"/>
+    <SUMO:subAttribute rdf:resource="#ZincIndustry"/>
+    <rdfs:comment>ZincOreMining is the Attribute of an 
+
+Organization whose primary business is mining ZincOre.</rdfs:comment>
+  </Economy:IndustryAttribute>
+
+  <owl:Thing rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#Coal"/>
+  <owl:Thing rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#NaturalGas"/>
+  <owl:Thing rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#Potash"/>
+  <owl:Thing rdf:about="http://reliant.teknowledge.com/DAML/Geography.owl#SoutheasternEurope"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Agriculture"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Aircraft"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Canada">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;CapitalistEconomy">
+    <rdfs:comment>CapitalistEconomy is the 
+
+Attribute used to characterize a country whose economy is based 
+
+on private ownership of the means of production and distribution, 
+
+and on private accumulation of capital.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;CentrallyPlannedEconomy">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;GovernmentRegulatedEconomy"/>
+    <rdfs:comment>CentrallyPlannedEconomy 
+
+is a term used mainly to describe communist or formerly communist 
+
+states, many of which are now evolving away from command economies 
+
+towards market-oriented systems.  Also known as a 'command economy'.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Clay"/>
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;DemocraticSocialism">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;SocialistEconomy"/>
+    <rdfs:comment>DemocraticSocialism is an  
+
+Attribute that describes a country in which socialism is promoted 
+
+by a political party or parties within a democratic government. 
+
+Under DemocraticSocialism, the government participates in central 
+
+planning of the economy and may also manage nationalized industries.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;France">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Georgia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Germany">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;GovernmentRegulatedEconomy">
+    <rdfs:comment>GovernmentRegulatedEconomy 
+
+is an Attribute that describes the economy of a country in which the 
+
+government determines prices, production, wages, allocation of resources, 
+
+or other economic factors.  An economy that is wholly government planned 
+
+is a CentrallyPlannedEconomy.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;GovernmentSubsidizedEconomy">
+    <rdfs:comment>GovernmentSubsidizedEconomy 
+
+is an Attribute describing an economy in which the government provides 
+
+subsidies to various industries, workers, or other groups as part of its 
+
+economic policy.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Greece">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Ireland">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Iron"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Italy">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Japan">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Laos">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Lead"/>
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;MarketEconomy">
+    <rdfs:comment>MarketEconomy is an Attribute that 
+
+describes an economy in which market forces, specifically supply and 
+
+demand, provide input for privately managed decisions about pricing 
+
+and production of goods.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Mexico">
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopingCountry"/>
+    <Mid-level-ontology:economyType rdf:resource="#LessDevelopedCountry"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;MixedEconomy">
+    <rdfs:comment>MixedEconomy is the Attribute 
+
+of a country whose economy has elements of more than one pure 
+
+economic system, e.g., a market economy with government welfare 
+
+for unemployed workers.  A mixed-economy country may be a 
+
+CountryInTransition, as from a prior communist economy to 
+
+capitalism, but a mixed economy may also be a stable combination 
+
+of different economic approaches in different areas of a national 
+
+economy, e.g., nationally managed health care and education systems 
+
+in an otherwise private-enterprise economy.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;NationalizedIndustryEconomy">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;GovernmentRegulatedEconomy"/>
+    <rdfs:comment>NationalizedIndustryEconomy 
+
+is an Attribute describing an economy in which the major industries,  
+
+such as energy and transportation, are owned by the national government.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Nitrogen"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Poland">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;PrivateEnterpriseEconomy">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;CapitalistEconomy"/>
+    <rdfs:comment>PrivateEnterpriseEconomy is 
+
+the Attribute used to characterize a country in which private 
+
+enterprise is the main source of economic wealth.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;PrivatizingEconomy">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;MixedEconomy"/>
+    <rdfs:comment>PrivatizingEconomy is an 
+
+Attribute that describes a country in which formerly government-
+
+owned industries are being transferred into private holdings.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;PureCapitalistEconomy">
+    <SUMO:contraryAttribute rdf:resource="&Mid-level-ontology;MixedEconomy"/>
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;CapitalistEconomy"/>
+    <rdfs:comment>PureCapitalistEconomy is an 
+
+Attribute representing a capitalist economy that has no admixture of 
+
+socialism.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;PureSocialistEconomy">
+    <SUMO:contraryAttribute rdf:resource="&Mid-level-ontology;MixedEconomy"/>
+    <SUMO:contraryAttribute rdf:resource="&Mid-level-ontology;PureCapitalistEconomy"/>
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;SocialistEconomy"/>
+    <rdfs:comment>PureSocialistEconomy is an 
+
+Attribute representing a socialist economy that has no admixture of 
+
+capitalism.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;RoadVehicle"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Rock"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;Russia">
+    <Mid-level-ontology:economyType rdf:resource="#CountryInTransition"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Sand"/>
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;SocialistEconomy">
+    <rdfs:comment>SocialistEconomy is the Attribute 
+
+used to characterize a country in which there is government ownership 
+
+or direction of the means of production and distribution.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Sweden">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Switzerland">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Truck"/>
+  <owl:Thing rdf:about="&Mid-level-ontology;UnitedKingdomOfGreatBritainAndNorthernIreland">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;UnitedStates">
+    <Mid-level-ontology:economyType rdf:resource="#AdvancedEconomy"/>
+    <Mid-level-ontology:economyType rdf:resource="#DevelopedCountry"/>
+  </owl:Thing>
+
+  <Mid-level-ontology:EconomicSystemAttribute rdf:about="&Mid-level-ontology;WelfareCapitalism">
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;GovernmentSubsidizedEconomy"/>
+    <SUMO:subAttribute rdf:resource="&Mid-level-ontology;MixedEconomy"/>
+    <rdfs:comment>WelfareCapitalism is an Attribute 
+
+describing an economy in which the government provides economic subsidies 
+
+to unemployed or disabled individuals.</rdfs:comment>
+  </Mid-level-ontology:EconomicSystemAttribute>
+
+  <owl:Thing rdf:about="&Mid-level-ontology;Zinc"/>
+  <owl:Thing rdf:about="&SUMO;Animal"/>
+  <owl:Thing rdf:about="&SUMO;Communication"/>
+  <owl:Thing rdf:about="&SUMO;Food"/>
+  <owl:Thing rdf:about="&SUMO;Metal"/>
+  <owl:Thing rdf:about="&SUMO;RecreationOrExercise"/>
+  <owl:Thing rdf:about="&SUMO;TransportationDevice"/>
+  <owl:Thing rdf:about="http://reliant.teknowledge.com/DAML/elements.owl#Aluminum"/>
+  <owl:Thing rdf:about="http://reliant.teknowledge.com/DAML/elements.owl#Phosphorus"/>
+</rdf:RDF>

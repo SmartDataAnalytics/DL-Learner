@@ -1,0 +1,7 @@
+// english implies british
+"http://dbtune.org/musicbrainz/resource/tag/1391" SUBCLASSOF  "http://dbtune.org/musicbrainz/resource/tag/171".
+// Britain = UK
+"http://dbtune.org/musicbrainz/resource/tag/171" = "http://dbtune.org/musicbrainz/resource/tag/237".
+// progressive rock is rock
+"http://dbtune.org/musicbrainz/resource/tag/29" SUBCLASSOF "http://dbtune.org/musicbrainz/resource/tag/7".
+

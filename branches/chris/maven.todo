@@ -1,0 +1,3 @@
+- create a resource dir and adjust paths, especially for components.ini
+- move tests
+- check http://maven.apache.org/guides/introduction/introduction-to-the-pom.html for more options

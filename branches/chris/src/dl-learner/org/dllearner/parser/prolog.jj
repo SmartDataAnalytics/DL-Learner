@@ -1,0 +1,220 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
+ * @author Sebastian Bader
+ *
+ */
+
+options {
+    LOOKAHEAD = 1;
+    STATIC = false;
+}
+
+PARSER_BEGIN(PrologParser)
+
+package org.dllearner.parser;
+
+public class PrologParser {
+    public PrologParser() {
+        this(new java.io.StringReader(""));
+    }
+    
+    public org.dllearner.prolog.Term parseTerm(String src) throws ParseException {
+        reinitToString(src);
+        return term();
+    }    
+
+    public java.util.ArrayList parseTermList(String src) throws ParseException {
+        reinitToString(src);
+        return termList();
+    }     
+
+    public org.dllearner.prolog.Atom parseAtom(String src) throws ParseException {
+        reinitToString(src);
+        return atom();
+    }    
+    
+    public org.dllearner.prolog.Clause parseClause(String src) throws ParseException {
+        reinitToString(src);
+        return clause();
+    }    
+
+    public org.dllearner.prolog.Program parseProgram(String src) throws ParseException {
+        reinitToString(src);
+        return program();
+    }        
+    
+    private void reinitToString(String src) {
+        ReInit(new java.io.StringReader(src));
+    }    
+}
+
+PARSER_END(PrologParser)
+
+SKIP : { /* WHITE SPACE */ 
+    " " | "\t" | "\n" | "\r" | "\f" 
+}
+
+SPECIAL_TOKEN : { /* COMMENTS */
+    <SINGLE_LINE_COMMENT: "%" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+}
+
+TOKEN : /* RESERVED WORDS AND LITERALS */
+{
+   < NOT: "not" >
+}
+
+TOKEN : /* constants */
+{
+	< DOUBLE:
+		"-" (<DIGIT>)+ "." (<DIGIT>)* | 	
+		(<DIGIT>)+ "." (<DIGIT>)* |	
+		"-" (<DIGIT>)+ |
+		(<DIGIT>)+ >
+    | < NUMBER: (<DIGIT>)+>
+    | < #DIGIT: ["0" - "9"] >
+    | < STRINGCONSTANT:  ("'" (~["'","\\","\n","\r"])* "'" | "\"" (~["'","\\","\n","\r"])* "\"" ) >
+}
+
+TOKEN : /* Function names */
+{
+    < VAR: ((<HICASE> | "_" )  (<ANYCHAR>)* ) >
+    | < IDENTIFIER: (<LOCASE>) (<ANYCHAR>)*  >
+    | < OPERATOR: (<LOCASE> | <SPECIALCHAR>) (<ANYCHAR> | <SPECIALCHAR>)* >
+    | < #ANYCHAR: (<LOCASE> | <HICASE> | <DIGIT> | "_" ) > 
+    | < #LOCASE: ["a"-"z"] > 
+    | < #HICASE: ["A"-"Z"] > 
+    | < #SPECIALCHAR: "-" | "+" | "*" | "<" | ">" | "^" > 
+} 
+    
+//////////////////////////////////////////////////////////////////////////////////////////
+
+org.dllearner.prolog.Program program() : {
+    org.dllearner.prolog.Program p = new org.dllearner.prolog.Program();
+    org.dllearner.prolog.Clause c;
+}{
+    ( c = clause() { p.addClause(c); } )+ <EOF> { return p; }
+}
+
+org.dllearner.prolog.Clause clause() : { 
+    org.dllearner.prolog.Atom head;
+    org.dllearner.prolog.Body body = null;
+}{   
+	head = atom() [ ":-" body = body() ] "." { return new org.dllearner.prolog.Clause(head, body); }
+}
+
+
+org.dllearner.prolog.Body body() : {
+    org.dllearner.prolog.Literal l;
+    org.dllearner.prolog.Body b = new org.dllearner.prolog.Body();
+}{
+    l = literal() { b.addLiteral(l); }
+    ( "," l = literal() { b.addLiteral(l); } )*
+    { return b; }
+}
+
+org.dllearner.prolog.Atom atom() : {
+    Token atom;
+    java.util.ArrayList arguments = new java.util.ArrayList() ;
+}{
+    atom = <IDENTIFIER> [ "(" arguments = termList() ")" ] { return new org.dllearner.prolog.Atom(atom.image, arguments); }
+}
+
+org.dllearner.prolog.Literal literal() : {
+    org.dllearner.prolog.Atom a;
+}{
+    a = atom() { return new org.dllearner.prolog.Literal(a, true); }
+    | <NOT> a = atom() { return new org.dllearner.prolog.Literal(a, false); }
+}
+
+
+org.dllearner.prolog.Term term() : {
+    Token v;
+    String o;
+    Token f;
+    java.util.ArrayList arguments = null;
+    org.dllearner.prolog.Term t1, t2;
+}{
+    LOOKAHEAD(2147483647) o = prefixOp() t2 = simpleTerm() { return new org.dllearner.prolog.Function(o, t2); }
+    | LOOKAHEAD(2147483647) t1 = simpleTerm() o = infixOp() t2 = simpleTerm() { return new org.dllearner.prolog.Function(t1, o, t2); }    
+    | LOOKAHEAD(2147483647) t1 = simpleTerm() o = postfixOp() { return new org.dllearner.prolog.Function(t1, o); }
+    | LOOKAHEAD(2147483647) t1 = simpleTerm() { return t1; }
+}
+
+
+org.dllearner.prolog.Term simpleTerm() : {
+    Token v;
+    String o;
+    Token f;
+    java.util.ArrayList arguments = null;
+    org.dllearner.prolog.Term l;
+    org.dllearner.prolog.Number n;
+}{
+    LOOKAHEAD(2) f = <IDENTIFIER> "(" arguments = termList() ")" { return new org.dllearner.prolog.Function(f.image, arguments); }
+    | LOOKAHEAD(2) f = <IDENTIFIER> { return new org.dllearner.prolog.PrologConstant(f.image); }
+    | v = <VAR> { return new org.dllearner.prolog.Variable(v.image); }
+    | v = <DOUBLE> { return new org.dllearner.prolog.Number(v.image); }
+    | v = <STRINGCONSTANT> { return new org.dllearner.prolog.StringConstant(v.image); }
+    | l = list() { return l; }
+}
+
+String prefixOp() : {
+    Token f;
+}{
+    f = <OPERATOR> { return f.image; } 
+}
+
+
+String infixOp() : {
+    Token f;
+}{
+    f = <OPERATOR> { return f.image; } 
+}
+
+
+String postfixOp() : {
+    Token f;
+}{
+    f = <OPERATOR> { return f.image; } 
+}
+
+
+java.util.ArrayList termList() : {
+    org.dllearner.prolog.Term t;
+    java.util.ArrayList l = new java.util.ArrayList(); 
+}{
+    t = term()       { l.add(t); }
+    ( "," t = term() { l.add(t); } )*
+    { return l; }
+}
+
+org.dllearner.prolog.List list() : {
+    java.util.ArrayList content = null;
+    org.dllearner.prolog.Term head, tmp;
+    org.dllearner.prolog.List l;
+}{
+    "[]" { return new org.dllearner.prolog.List(); }
+    | LOOKAHEAD(3) "[" head = term() "]" { return new org.dllearner.prolog.List(head, null); }
+    | LOOKAHEAD(3) "[" head = term() "|" l = list() "]" { return new org.dllearner.prolog.List(head, l); }
+    | {content = new java.util.ArrayList(); } 
+      "[" ( LOOKAHEAD(2) tmp=term() {content.add(tmp);} ",")* tmp=term() {content.add(tmp);} "]"
+      { return org.dllearner.prolog.List.compose(content); }
+}

@@ -1,0 +1,11 @@
+----------------------------------
+OWLlink API
+Release 1.0.1
+----------------------------------
+
+Documentation can be found at http://owllink-owlapi.sourceforge.net
+
+The OWLlink API 1.0.1 is based on the OWL API 3.
+
+Note that previous version of the OWLlink API are based on a non-stable version of OWL API 3 that is incompatible with
+the official released OWL API 3.

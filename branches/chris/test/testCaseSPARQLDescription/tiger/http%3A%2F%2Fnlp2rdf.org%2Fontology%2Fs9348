@@ -1,0 +1,205 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w1_Variante">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Variante</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w0_Letztere"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w2_hat"/>
+    <j.0:hasLemma>Variante</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w11_-">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>-</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w10_Flugzeuges"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w12_einen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w10_Flugzeuges">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Flugzeuges</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w9_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w11_-"/>
+    <j.0:hasLemma>Flugzeug</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w14_Charme">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Charme</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w13_besonderen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w15_%3A"/>
+    <j.0:hasLemma>Charme</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w15_%3A">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>:</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w14_Charme"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w2_hat">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hat</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w1_Variante"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w3_-"/>
+    <j.0:hasLemma>haben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w8_Qualit%C3%A4ten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Qualitäten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w7_unbestreitbaren"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w9_des"/>
+    <j.0:hasLemma>Qualität</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w0_Letztere">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Letztere</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w1_Variante"/>
+    <j.0:hasLemma>letzter</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w5_von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>von</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w4_abgesehen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w6_den"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w8_Qualit%C3%A4ten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w5_von"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w14_Charme"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w3_-"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w10_Flugzeuges"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w6_den"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s9348w0_Letztere"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w4_abgesehen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w2_hat"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w11_-"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w1_Variante"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w9_des"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w12_einen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w13_besonderen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w0_Letztere"/>
+    <rdfs:label>Letztere Variante hat - abgesehen von den unbestreitbaren Qualitäten des Flugzeuges - einen besonderen Charme :</rdfs:label>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w7_unbestreitbaren"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s9348w15_%3A"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w7_unbestreitbaren">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>unbestreitbaren</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w6_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w8_Qualit%C3%A4ten"/>
+    <j.0:hasLemma>unbestreitbar</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w3_-">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>-</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w2_hat"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w4_abgesehen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w12_einen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w11_-"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w13_besonderen"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w9_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w8_Qualit%C3%A4ten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w10_Flugzeuges"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w6_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w5_von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w7_unbestreitbaren"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w13_besonderen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>besonderen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w12_einen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w14_Charme"/>
+    <j.0:hasLemma>besonderer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s9348w4_abgesehen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>abgesehen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s9348"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s9348w3_-"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s9348w5_von"/>
+    <j.0:hasLemma>absehen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+</rdf:RDF>
