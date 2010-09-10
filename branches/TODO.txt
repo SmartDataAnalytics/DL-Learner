@@ -5,13 +5,11 @@ Todos:
 - remove the configurators
 - use interfaces for everything
 - pom snippets can be found in folder pomsnippets
-- there is a cyclic dependency between ore, evalplugin and protege
-
-
-
+- there is a cyclic dependency between ore, evalplugin and protege and scripts!
+- paths have to be adjusted
 
 Notes:
 - DIG does not work any more
 - class JenaBug was deleted
-
+- the components.ini file is not used any more
 
