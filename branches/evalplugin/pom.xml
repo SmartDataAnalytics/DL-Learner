@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.dllearner</groupId>
-  <artifactId>evalplugin</artifactId>
-  <version>${evalplugin.version}</version>
-  <packaging>jar</packaging>
+    <groupId>org.dllearner</groupId>
+    <artifactId>evalplugin</artifactId>
+    <version>${evalplugin.version}</version>
+    <packaging>jar</packaging>
 
-  <name>evalplugin</name>
-  <url>http://maven.apache.org</url>
-<parent>
+    <name>evalplugin</name>
+    <url>http://maven.apache.org</url>
+    <parent>
         <groupId>org.dllearner</groupId>
         <artifactId>main</artifactId>
         <version>1.0</version>
@@ -27,5 +27,11 @@
             <artifactId>components-ext</artifactId>
             <version>${dllearner.version}</version>
         </dependency>
+
+
+    <dependency> <groupId>dllearnerDependency</groupId> <artifactId>org.protege.editor.core.application.jar</artifactId>  <version>snapshot</version>  </dependency>
+        <dependency> <groupId>dllearnerDependency</groupId> <artifactId>org.protege.editor.owl.jar</artifactId>  <version>snapshot</version>  </dependency>
+        
+
     </dependencies>
 </project>

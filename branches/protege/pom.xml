@@ -34,13 +34,13 @@
          See below for the worst dependency ever !!!!1
          *********************************************
          *********************************************
-         -->
+
         <dependency>
             <groupId>org.dllearner</groupId>
             <artifactId>scripts</artifactId>
             <version>${dllearner.version}</version>
         </dependency>
-          <!--
+
          *********************************************
          See above for the worst dependency ever !!!!1
          *********************************************
