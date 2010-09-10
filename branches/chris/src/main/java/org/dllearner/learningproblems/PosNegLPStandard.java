@@ -51,8 +51,6 @@ import org.dllearner.utilities.Helper;
  */
 public class PosNegLPStandard extends PosNegLP {
 	
-	private PosNegLPStandardConfigurator configurator;
-	
 	// approximation and F-measure
 	// (taken from class learning => super class instances corresponds to negative examples
 	// and class instances to positive examples)
@@ -62,7 +60,7 @@ public class PosNegLPStandard extends PosNegLP {
 	
 	@Override
 	public PosNegLPStandardConfigurator getConfigurator() {
-		return configurator;
+		throw new RuntimeException("Don't use configurator - use dependency injection");
 	}
 
 	public PosNegLPStandard(ReasonerComponent reasoningService) {
@@ -80,15 +78,12 @@ public class PosNegLPStandard extends PosNegLP {
 	@Override
 	public void init() {
 		super.init();
-		useApproximations = configurator.getUseApproximations();
-		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
+		useFMeasure = getAccuracyMethod().equals("fmeasure");
 		
 		if((!useApproximations && useFMeasure) || (useApproximations && !useFMeasure)) {
 			System.err.println("Currently F measure can only be used in combination with approximated reasoning.");
 			System.exit(0);
 		}
-		
-		approx = configurator.getApproxAccuracy();
 	}
 	
 	/*
@@ -492,6 +487,54 @@ public class PosNegLPStandard extends PosNegLP {
 
 	private double getFMeasure(double recall, double precision) {
 		return 2 * precision * recall / (precision + recall);
-	}	
-	
+	}
+
+
+    /** Begin Added CODE */
+
+    private String accuracyMethod;
+
+    /**
+     * Get the approximate accuracy.
+     *
+     * @return the approximate accuracy
+     */
+    public double getApproxAccuracy() {
+        return approx;
+    }
+
+    /**
+     * Set the approximate accuracy.
+     *
+     * @param approx The approximate accuracy.
+     */
+    public void setApproxAccuracy(double approx) {
+        this.approx = approx;
+    }
+
+    /**
+     * Get the flag indicating if we are using approximations.
+     *
+     * @return the flag indicating if we are using approximations.
+     */
+    public boolean isUseApproximations() {
+        return useApproximations;
+    }
+
+    /**
+     * Set the flag indicating if we are using approximations.
+     *
+     * @param useApproximations the flag indicating if we are using approximations.
+     */
+    public void setUseApproximations(boolean useApproximations) {
+        this.useApproximations = useApproximations;
+    }
+
+    public String getAccuracyMethod() {
+        return accuracyMethod;
+    }
+
+    public void setAccuracyMethod(String accuracyMethod) {
+        this.accuracyMethod = accuracyMethod;
+    }
 }

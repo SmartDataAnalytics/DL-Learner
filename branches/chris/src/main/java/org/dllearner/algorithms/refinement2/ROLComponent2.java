@@ -81,11 +81,10 @@ import org.dllearner.utilities.Helper;
  *
  */
 public class ROLComponent2 extends LearningAlgorithm {
-	
-	private ROLComponent2Configurator configurator;
+
 	@Override
 	public ROLComponent2Configurator getConfigurator(){
-		return configurator;
+		throw new UnsupportedOperationException("Should not be using configurator - add dependencies separate from configurators via dependency injection");
 	}
 	
 	// actual algorithm
@@ -332,9 +331,9 @@ public class ROLComponent2 extends LearningAlgorithm {
 		} else {
 			if(learningProblem instanceof PosOnlyLP) {
 //				throw new RuntimeException("does not work with positive examples only yet");
-				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, configurator);
+				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0);
 			} else {
-				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), configurator);
+				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size());
 			}
 		}
 		
@@ -382,7 +381,6 @@ public class ROLComponent2 extends LearningAlgorithm {
 		operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
-				configurator,
 					applyAllFilter,
 					applyExistsFilter,
 					useAllConstructor, 
@@ -393,13 +391,13 @@ public class ROLComponent2 extends LearningAlgorithm {
 					useNegation,
 					useBooleanDatatypes,
 					useDoubleDatatypes,
-					startClass
+					startClass,
+                    5,false,false,true
 			);		
 			
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
-				configurator,
 				learningProblem,
 				reasoner,
 				operator,
@@ -500,4 +498,78 @@ public class ROLComponent2 extends LearningAlgorithm {
 	public RhoDRDown getRefinementOperator() {
 		return operator;
 	}
+
+    /** Begin Added Code */
+
+
+     /**
+     * Get the Max Execution Time In Seconds
+     *
+     * @return The Maximum Execution Time In Seconds
+     */
+    public int getMaxExecutionTimeInSeconds() {
+        return maxExecutionTimeInSeconds;
+    }
+
+    /**
+     * Set the Max Execution Time In Seconds.
+     *
+     * @param maxExecutionTimeInSeconds The max execution time in seconds.
+     */
+    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+        this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+    }
+
+    /**
+     * Get the start class.
+     *
+     * @return The start class.
+     */
+    public String getStartClass() {
+        return startClass.toString();
+    }
+
+    /**
+     * Set the start class string.
+     *
+     * @param startClassString The start class string.
+     */
+    public void setStartClass(String startClassString) {
+        if (startClassString != null) {
+            startClass = new NamedClass(startClassString);
+        }else{
+            startClass = null;
+        }
+    }
+
+    public boolean isWriteSearchTree() {
+        return writeSearchTree;
+    }
+
+    /**
+     * Set whether or not the search tree should be written out.
+     *
+     * @param writeSearchTree Write the search tree out - true/false
+     */
+    public void setWriteSearchTree(boolean writeSearchTree) {
+        this.writeSearchTree = writeSearchTree;
+    }
+
+    /**
+     * Is the use has value constructor flag set?
+     *
+     * @return True if the use has value constructor flag has been set.
+     */
+    public boolean isUseHasValueConstructor() {
+        return useHasValueConstructor;
+    }
+
+    /**
+     * Set the use has value constructor flag.
+     *
+     * @param useHasValueConstructor Set the use has value constructor flag
+     */
+    public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+        this.useHasValueConstructor = useHasValueConstructor;
+    }
 }

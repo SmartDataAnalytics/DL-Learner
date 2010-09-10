@@ -21,7 +21,6 @@ package org.dllearner.algorithms.refinement2;
 
 import java.util.List;
 
-import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
@@ -70,8 +69,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	private ROLComponent2Configurator configurator;
-	
+
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
 	private double gainBonusFactor = 0.5;
@@ -90,15 +88,6 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 //		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
-	}
-	
-	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
-		this.nrOfNegativeExamples = nrOfNegativeExamples;
-		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
-		this.configurator = configurator;
-		negativeWeight = configurator.getNegativeWeight();
-		startNodeBonus = configurator.getStartNodeBonus();
-		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
 	}
 	
 //	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
@@ -144,8 +133,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
-	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
-		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, configurator);
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples);
 		return multi.getNodeScore(node);
 	}
 	
@@ -162,7 +151,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// we put a penalty on negations, because they often overfit
 		// (TODO: make configurable)
 		else if(description instanceof Negation) {
-			bonus = -configurator.getNegationPenalty();
+			bonus = -getNegationPenalty();
 		}
 		
 //		if(description instanceof BooleanValueRestriction)
@@ -180,4 +169,82 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		}
 		return bonus;
 	}
+
+
+    /**
+     * Begin Added code block
+     */
+    private int negationPenalty = 0;
+
+    /**
+     * Get the negative weight.
+     *
+     * @return The negative weight.
+     */
+    public double getNegativeWeight() {
+        return negativeWeight;
+    }
+
+    /**
+     * Set the negative weight.
+     *
+     * @param negativeWeight the negative weight.
+     */
+    public void setNegativeWeight(double negativeWeight) {
+        this.negativeWeight = negativeWeight;
+    }
+
+    /**
+     * Get the start node bonus.
+     *
+     * @return The start node bonus.
+     */
+    public double getStartNodeBonus() {
+        return startNodeBonus;
+    }
+
+    /**
+     * Set the start node bonus.
+     *
+     * @param startNodeBonus The start node bonus.
+     */
+    public void setStartNodeBonus(double startNodeBonus) {
+        this.startNodeBonus = startNodeBonus;
+    }
+
+    /**
+     * Get the expansion penalty factor.
+     *
+     * @return the expansion penalty factor.
+     */
+    public double getExpansionPenaltyFactor() {
+        return expansionPenaltyFactor;
+    }
+
+    /**
+     * The expansion penalty factor.
+     *
+     * @param expansionPenaltyFactor The expansion penalty factor.
+     */
+    public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+        this.expansionPenaltyFactor = expansionPenaltyFactor;
+    }
+
+    /**
+     * Get the negation penalty.
+     *
+     * @return the negation penalty.
+     */
+    public int getNegationPenalty() {
+        return negationPenalty;
+    }
+
+    /**
+     * Set the negation penalty
+     *
+     * @param negationPenalty the negation penalty.
+     */
+    public void setNegationPenalty(int negationPenalty) {
+        this.negationPenalty = negationPenalty;
+    }
 }

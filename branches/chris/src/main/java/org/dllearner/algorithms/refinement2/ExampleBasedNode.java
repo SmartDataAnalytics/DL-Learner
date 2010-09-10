@@ -27,7 +27,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.SearchTreeNode;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -45,8 +44,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class ExampleBasedNode implements SearchTreeNode {
 
 //	public static long exampleMemoryCounter = 0;
-	
-	private ROLComponent2Configurator configurator;
 	
 	private static DecimalFormat df = new DecimalFormat();
 	
@@ -81,8 +78,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
 	
-	public ExampleBasedNode(ROLComponent2Configurator configurator, Description concept) {
-		this.configurator = configurator;
+	public ExampleBasedNode(Description concept) {
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
@@ -181,7 +177,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 			ret += "acc:" + df.format(accuracy) + "% ";			
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, configurator);
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
@@ -204,7 +200,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 			ret += "<b>acc: " + df.format(accuracy) + "% </b>";			
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, configurator);
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
@@ -228,7 +224,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 			ret += "acc:" + df.format(accuracy) + "% ";			
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, configurator);
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
