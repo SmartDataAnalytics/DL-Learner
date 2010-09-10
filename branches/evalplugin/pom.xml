@@ -2,21 +2,30 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>evalplugin</groupId>
+  <groupId>org.dllearner</groupId>
   <artifactId>evalplugin</artifactId>
-  <version>1.0</version>
+  <version>${evalplugin.version}</version>
   <packaging>jar</packaging>
 
   <name>evalplugin</name>
   <url>http://maven.apache.org</url>
-
-     <parent>
+<parent>
         <groupId>org.dllearner</groupId>
         <artifactId>main</artifactId>
         <version>1.0</version>
     </parent>
 
 
-  <dependencies>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+            <version>${dllearner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-ext</artifactId>
+            <version>${dllearner.version}</version>
+        </dependency>
+    </dependencies>
 </project>

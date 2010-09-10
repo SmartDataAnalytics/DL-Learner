@@ -2,24 +2,26 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>components-ext</groupId>
+  <groupId>org.dllearner</groupId>
   <artifactId>components-ext</artifactId>
-  <version>1.0</version>
+  <version>${dllearner.version}</version>
   <packaging>jar</packaging>
 
   <name>components-ext</name>
   <url>http://maven.apache.org</url>
+ <parent>
+        <groupId>org.dllearner</groupId>
+        <artifactId>main</artifactId>
+        <version>1.0</version>
+    </parent>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+            <version>${dllearner.version}</version>
+        </dependency>
+       
+    </dependencies>
 </project>

@@ -1,0 +1,378 @@
+/**
+ * Extracted from the FORTE (First Order Revision of Theories from Examples) 
+ * data set:
+ *
+ * http://www.cs.utexas.edu/users/ml/forte.html
+ *
+ * The goal of this learning problem is to learn the concept of an uncle.
+ *
+ * At the bottom of this file, you can find a graphical representation of the
+ * family tree corresponding to the facts in this file.
+ *
+ * possible solution: (male AND (EXISTS hasSibling.EXISTS hasChild.TOP 
+ *	   OR EXISTS married.EXISTS hasSibling.EXISTS hasChild.TOP))
+ *
+ * Copyright (C) 2007, Jens Lehmann 
+ */
+
+
+/** background knowledge **/
+BOTTOM = (male AND female).
+
+Symmetric(sibling).
+Symmetric(married).
+Functional(married).
+
+male(alfred).
+female(alice).
+female(angela).
+female(ann).
+male(art).
+female(beatrice).
+male(bob).
+female(callie).
+male(calvin).
+male(carl).
+male(carlos).
+female(christy).
+female(cornelia).
+male(david).
+female(deanna).
+female(elisa).
+male(eric).
+female(f12).
+female(f14).
+female(f19).
+female(f2).
+female(f20).
+female(f21).
+female(f22).
+female(f23).
+female(f25).
+female(f26).
+female(f28).
+female(f8).
+female(fannie).
+male(fred).
+male(frederick).
+female(gail).
+male(george).
+male(harry).
+female(helen).
+male(jack).
+male(james).
+female(jane).
+female(janet).
+male(jonas).
+female(kari).
+male(karl).
+male(leon).
+female(lorrie).
+male(m1).
+male(m10).
+male(m11).
+male(m13).
+male(m15).
+male(m16).
+male(m17).
+male(m18).
+male(m24).
+male(m27).
+male(m29).
+male(m3).
+male(m4).
+male(m5).
+male(m6).
+male(m7).
+male(m9).
+female(maria).
+male(mark).
+female(martha).
+male(melvin).
+female(nancy).
+male(neil).
+male(nero).
+female(nonnie).
+female(oma).
+male(owen).
+male(paul).
+female(paula).
+male(peter).
+female(prissie).
+female(rachel).
+male(ray).
+female(regina).
+male(steve).
+female(susan).
+female(terri).
+male(terry).
+male(umo).
+male(walt).
+female(wendy).
+
+sibling(angela,ray).
+sibling(art,umo).
+sibling(art,wendy).
+sibling(calvin,christy).
+sibling(calvin,jack).
+sibling(christy,calvin).
+sibling(christy,jack).
+sibling(cornelia,melvin).
+sibling(cornelia,nancy).
+sibling(david,elisa).
+sibling(elisa,david).
+sibling(eric,fannie).
+sibling(eric,gail).
+sibling(eric,harry).
+sibling(f12,m11).
+sibling(f14,m13).
+sibling(f14,m15).
+sibling(f19,f20).
+sibling(f19,m18).
+sibling(f2,m1).
+sibling(f20,f19).
+sibling(f20,m18).
+sibling(f21,f22).
+sibling(f22,f21).
+sibling(f23,f25).
+sibling(f23,m24).
+sibling(f25,f23).
+sibling(f25,m24).
+sibling(f26,f28).
+sibling(f26,m27).
+sibling(f28,f26).
+sibling(f28,m27).
+sibling(f8,m10).
+sibling(f8,m9).
+sibling(fannie,eric).
+sibling(fannie,gail).
+sibling(fannie,harry).
+sibling(frederick,jane).
+sibling(frederick,prissie).
+sibling(gail,eric).
+sibling(gail,fannie).
+sibling(gail,harry).
+sibling(harry,eric).
+sibling(harry,fannie).
+sibling(harry,gail).
+sibling(jack,calvin).
+sibling(jack,christy).
+sibling(jane,frederick).
+sibling(jane,prissie).
+sibling(janet,nero).
+sibling(jonas,terry).
+sibling(karl,lorrie).
+sibling(karl,mark).
+sibling(lorrie,karl).
+sibling(lorrie,mark).
+sibling(m1,f2).
+sibling(m10,f8).
+sibling(m10,m9).
+sibling(m11,f12).
+sibling(m13,f14).
+sibling(m13,m15).
+sibling(m15,f14).
+sibling(m15,m13).
+sibling(m16,m17).
+sibling(m17,m16).
+sibling(m18,f19).
+sibling(m18,f20).
+sibling(m24,f23).
+sibling(m24,f25).
+sibling(m27,f26).
+sibling(m27,f28).
+sibling(m4,m5).
+sibling(m4,m6).
+sibling(m4,m7).
+sibling(m5,m4).
+sibling(m5,m6).
+sibling(m5,m7).
+sibling(m6,m4).
+sibling(m6,m5).
+sibling(m6,m7).
+sibling(m7,m4).
+sibling(m7,m5).
+sibling(m7,m6).
+sibling(m9,f8).
+sibling(m9,m10).
+sibling(mark,karl).
+sibling(mark,lorrie).
+sibling(melvin,cornelia).
+sibling(melvin,nancy).
+sibling(nancy,cornelia).
+sibling(nancy,melvin).
+sibling(nero,janet).
+sibling(oma,paul).
+sibling(oma,rachel).
+sibling(paul,oma).
+sibling(paul,rachel).
+sibling(prissie,frederick).
+sibling(prissie,jane).
+sibling(rachel,oma).
+sibling(rachel,paul).
+sibling(ray,angela).
+sibling(terry,jonas).
+sibling(umo,art).
+sibling(umo,wendy).
+sibling(wendy,art).
+sibling(wendy,umo).
+
+parent(ann, david).
+parent(ann, elisa).
+parent(beatrice, eric).
+parent(beatrice, fannie).
+parent(beatrice, gail).
+parent(beatrice, harry).
+parent(callie, karl).
+parent(callie, lorrie).
+parent(callie, mark).
+parent(kari, janet).
+parent(kari, nero).
+parent(lorrie, oma).
+parent(lorrie, paul).
+parent(lorrie, rachel).
+parent(martha, susan).
+parent(deanna, jonas).    parent(deanna, terry).    parent(elisa, umo).
+parent(elisa, wendy).     parent(elisa, art).       parent(fannie, cornelia).
+parent(fannie, melvin).   parent(fannie, nancy).    parent(helen, prissie).
+parent(helen, jane).      parent(janet, jack).      parent(janet, calvin).
+parent(janet, christy).   parent(nonnie, angela).   parent(nonnie, ray).
+parent(terri, f8).        parent(terri, m9).        parent(terri, m10).
+parent(wendy, m11).       parent(wendy, f12).       parent(alice, m13).
+parent(alice, f14).       parent(alice, m15).       parent(maria, m16).
+parent(maria, m17).       parent(nancy, m18).       parent(nancy, f19).
+parent(nancy, f20).       parent(prissie, f21).     parent(prissie, f22).
+parent(jane, f23).        parent(jane, m24).        parent(jane, f25).
+parent(christy, f26).     parent(christy, m27).     parent(christy, f28).
+parent(regina, m29).      parent(oma, m1).          parent(oma, f2).
+parent(paula, m3).        parent(susan, m4).        parent(susan, m5).
+parent(susan, m6).        parent(susan, m7).        parent(helen, frederick).
+
+parent(alfred, david).    parent(alfred, elisa).    parent(bob, eric).
+parent(bob, fannie).      parent(bob, gail).        parent(bob, harry).
+parent(carl, karl).       parent(carl, lorrie).     parent(carl, mark).
+parent(karl, janet).      parent(karl, nero).       parent(leon, oma).
+parent(leon, paul).       parent(leon, rachel).     parent(mark, susan).
+parent(david, jonas).     parent(david, terry).     parent(eric, umo).
+parent(eric, wendy).      parent(eric, art).        parent(fred, cornelia).
+parent(fred, melvin).     parent(fred, nancy).      parent(harry, prissie).
+parent(harry, jane).      parent(james, jack).      parent(james, calvin).
+parent(james, christy).   parent(nero, angela).     parent(nero, ray).
+parent(terry, f8).        parent(terry, m9).        parent(terry, m10).
+parent(walt, m11).        parent(walt, f12).        parent(art, m13).
+parent(art, f14).         parent(art, m15).         parent(melvin, m16).
+parent(melvin, m17).      parent(neil, m18).        parent(neil, f19).
+parent(neil, f20).        parent(peter, f21).       parent(peter, f22).
+parent(jack, f23).        parent(jack, m24).        parent(jack, f25).
+parent(carlos, f26).      parent(carlos, m27).      parent(carlos, f28).
+parent(ray, m29).         parent(owen, m1).         parent(owen, f2).
+parent(paul, m3).         parent(steve, m4).        parent(steve, m5).
+parent(steve, m6).        parent(steve, m7).        parent(harry, frederick).
+
+          married(ann, alfred).     married(beatrice, bob).   married(callie, carl).
+          married(deanna, david).   married(elisa, eric).     married(fannie, fred).
+          married(gail, george).    married(helen, harry).    married(janet, james).
+          married(kari, karl).      married(lorrie, leon).    married(martha, mark).
+          married(nonnie, nero).    married(oma, owen).       married(paula, paul).
+          married(susan, steve).    married(terri, terry).    married(wendy, walt).
+          married(alice, art).      married(maria, melvin).   married(nancy, neil).
+          married(prissie, peter).  married(jane, jack).      married(christy, carlos).
+          married(regina, ray).
+
+
+
+
+/*  Here's the family shown graphically:
+
+                               Steve |--- m7
+                Martha |          |  |--- m6
+                    |  |------ Susan |--- m5
+              /-- Mark |             |--- m4
+             / 
+            /             /-- Rachel
+           /             /
+          /             /
+  Callie |             |
+      |  |----- Lorrie |
+    Carl |          |  |------- Paul |
+          \       Leon |          |  |--- m3
+           |           |       Paula |
+           |            \
+           |             \
+           |              \----- Oma |--- f2
+           |                      |  |
+           |                    Owen |--- m1
+           |
+           |                            /----- Ray |
+           |                           /        |  |--- m29
+           |                          /     Regina |
+           |                  Nonnie |
+           |                      |  |
+           |              /---- Nero |----- Angela
+           |             /            
+           |            /            
+            \---- Karl |                    Carlos |--- f28
+                    |  |                        |  |--- m27
+                  Kari |                /- Christy |--- f26
+                        \              /
+                         \            /
+                          \--- Janet |
+                                  |  |----- Calvin
+                               James |
+                                      \
+                                       \
+                                        \---- Jack |--- f25
+                                                |  |--- m24
+                                        /---- Jane |--- f23
+                                       /
+                                      /
+                               Helen | 
+                                  |  |-- Frederick
+                           /-- Harry | 
+                          /           \
+                         |             \
+                         |              \- Prissie |--- f22
+                         |                      |  |
+                         |                   Peter |--- f21
+                         |           
+                         |    George
+                         |        |
+                        /  /--  Gail
+                       |  /                   Neil |--- f20
+                   Bob |-/                      |  |--- f19
+                    |  |                /--- Nancy |--- m18
+              Beatrice |-\             /
+                       |  \           /
+                        \  \- Fannie | 
+                         |        |  |-- Cornelia
+                         |      Fred | 
+                         |            \
+                         |             \
+                         |              \-- Melvin |--- m17
+                         |                      |  |
+                         |                   Maria |--- m16
+                         |
+                         |                   Alice |--- m15
+                         |                      |  |--- f14
+                         |              /----- Art |--- m13
+                         |             /
+                          \           /
+                           \--- Eric | 
+                                  |  |------- Umo
+                           /-- Elisa | 
+                          /           \
+                         /             \
+                    Ann |               \--- Wendy |--- f12
+                     |  |                       |  |
+                 Alfred |                     Walt |--- m11
+                         \ 
+                          \
+                           \-- David | ----- Jonas
+                                  |  |
+                              Deanna | 
+                                      \
+                                       \
+                                        \--- Terry |--- m10
+                                                |  |--- m9
+                                             Terri |--- f8 
+*/

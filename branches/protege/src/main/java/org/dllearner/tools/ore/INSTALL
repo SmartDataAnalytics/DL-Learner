@@ -1,0 +1,20 @@
+Requirements
+============
+Java 6 is required. (All other libraries are included in the release.)
+
+Installation
+============
+No further installation is necessary. Just download and extract ORE.
+
+Running Instructions
+====================
+
+Linux (and other systems)
+
+Make sure the file "ore" is executable. You can run it on the command line either individually or 
+followed by the name of the ontology to process, e.g. "./ore examples/koala.owl".
+
+Windows:
+
+Run "ore.bat" either individually or followed by the name of the ontology to process,
+ e.g. "ore.bat examples/koala.owl".

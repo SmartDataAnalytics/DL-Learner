@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>components-core</groupId>
+    <groupId>org.dllearner</groupId>
     <artifactId>components-core</artifactId>
-    <version>1.0</version>
+    <version>${dllearner.version}</version>
     <packaging>jar</packaging>
 
     <name>components-core</name>
@@ -16,9 +16,6 @@
         <version>1.0</version>
     </parent>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
 
         <!-- THIS IS FROM THE UNIBAS REPO-->
@@ -150,35 +147,7 @@
             <!--<artifactId>org.springframework.core</artifactId>-->
         <!--</dependency>-->
 
-       <dependency>
-      <groupId>org.protege.editor.core.application</groupId>
-      <artifactId>org.protege.editor.core.application</artifactId>
-      <version>1</version>
-    </dependency>
-    <!--<dependency>
-      <groupId>org.protege.editor.owl</groupId>
-      <artifactId>org.protege.editor.owl</artifactId>
-      <version>1</version>
-    </dependency>        -->
-
-        <!--These are the protege dependencies from DL Learner distribution-->
-        <!--
-        <dependency>
-            <groupId>org.protege.editor.core</groupId>
-            <artifactId>org.protege.editor.core.application</artifactId>
-            <version>4.1.0.206</version>
-        </dependency>
-        <dependency>
-            <groupId>org.protege.editor.owl</groupId>
-            <artifactId>org.protege.editor.owl</artifactId>
-            <version>4.1.0.206</version>
-        </dependency>
-        <dependency>
-            <groupId>org.protege.common</groupId>
-            <artifactId>org.protege.common</artifactId>
-            <version>4.1.0.206</version>
-        </dependency>
-            -->
+    
 
         <!--Had to construct this from pellet release files
         <dependency>
