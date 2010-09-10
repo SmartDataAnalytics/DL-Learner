@@ -72,19 +72,14 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	private volatile boolean isPreparing = false;
 	
-	public static synchronized Manager getInstance(OWLEditorKit editorKit){
+	public static synchronized Manager getInstance(){
 		if(instance == null){
-			instance = new Manager(editorKit);
+			instance = new Manager();
 		}
 		return instance;
 	}
 	
-	public static synchronized Manager getInstance(){
-		return instance;
-	}
-	
-	private Manager(OWLEditorKit editorKit){
-		this.editorKit = editorKit;
+	private Manager(){
 		ComponentManager.setComponentClasses(components);
 		cm = ComponentManager.getInstance();
 	}
@@ -360,9 +355,6 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	public void dispose() throws Exception {
 		reasoner.releaseKB();
 		cm.freeAllComponents();
-		editorKit.getOWLModelManager().removeListener(this);
-		editorKit.getOWLWorkspace().getOWLSelectionModel().removeListener(this);
-		
 	}
 
 }

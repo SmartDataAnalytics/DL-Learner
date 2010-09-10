@@ -56,9 +56,9 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	@Override
 	public boolean isValidInput() {
 		if(getAxiomType() == AxiomType.EQUIVALENT_CLASSES) {
-			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.EQUIVALENT);
+			Manager.getInstance().setLearningType(LearningType.EQUIVALENT);
 		} else if(getAxiomType() == AxiomType.SUBCLASS_OF) {
-			Manager.getInstance(getOWLEditorKit()).setLearningType(LearningType.SUPER);
+			Manager.getInstance().setLearningType(LearningType.SUPER);
 		}
 		view.reset();
 		OWLReasoner r = getOWLEditorKit().getModelManager().getReasoner();
@@ -80,7 +80,7 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 
 	@Override
 	public void initialise() throws Exception {
-		Manager.getInstance(getOWLEditorKit());
+		Manager.getInstance().setOWLEditorKit(getOWLEditorKit());
 		view = new DLLearnerView(super.getOWLEditorKit());
 		Manager.getInstance().setProgressMonitor(view.getStatusBar());
 		System.out.println("Initializing DL-Learner plugin...");
@@ -106,12 +106,12 @@ public class ProtegePlugin extends AbstractOWLClassExpressionEditor {
 	}
 	
 	private void addListeners(){
-		getOWLEditorKit().getOWLModelManager().addListener(Manager.getInstance(getOWLEditorKit()));
-		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().addListener(Manager.getInstance(getOWLEditorKit()));
+		getOWLEditorKit().getOWLModelManager().addListener(Manager.getInstance());
+		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().addListener(Manager.getInstance());
 	}
 	
 	private void removeListeners(){
-		getOWLEditorKit().getOWLModelManager().removeListener(Manager.getInstance(getOWLEditorKit()));
-		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().removeListener(Manager.getInstance(getOWLEditorKit()));
+		getOWLEditorKit().getOWLModelManager().removeListener(Manager.getInstance());
+		getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().removeListener(Manager.getInstance());
 	}
 }
