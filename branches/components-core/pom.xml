@@ -270,6 +270,11 @@
     	<url>http://maven.jahia.org/maven2</url>
     </repository>
 
+	<repository>
+		<id>projectlombok.org</id>
+		<url>http://projectlombok.org/mavenrepo</url>
+	</repository> 
+
     </repositories>
 
 </project>
