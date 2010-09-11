@@ -24,7 +24,6 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.owl.model.inference.NoOpReasoner;
 import org.protege.editor.owl.ui.editor.AbstractOWLClassExpressionEditor;

@@ -17,7 +17,6 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.ProtegeReasoner;
-import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.core.Disposable;

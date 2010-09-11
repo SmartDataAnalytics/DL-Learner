@@ -40,7 +40,6 @@ import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.owl.OWLEditorKit;
 /**
  * This class is responsible for the view of the dllearner. It renders the

@@ -24,7 +24,6 @@ import javax.swing.JTextPane;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.tools.ore.LearningManager.LearningType;
 import org.protege.editor.owl.OWLEditorKit;
 
 public class GraphicalCoverageTextField extends JTextPane{
