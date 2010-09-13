@@ -56,7 +56,6 @@ import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.ObjectReplacementRule;
 import org.dllearner.kb.manipulator.PredicateReplacementRule;
 import org.dllearner.kb.manipulator.Rule.Months;
-import org.dllearner.reasoning.JenaOWLDIGConverter;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -259,7 +258,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		//String ont = "";
 		try {
 
-            
 			// the actual extraction is started here
 			Monitor extractionTime = JamonMonitorLogger.getTimeMonitor(SparqlKnowledgeSource.class, "total extraction time").start();
 			List<Node> seedNodes=new ArrayList<Node>();
@@ -347,8 +345,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-			return JenaOWLDIGConverter.getTellsString(ontologyFragmentURL,
-					OntologyFormat.RDF_XML, kbURI);
+            throw new RuntimeException("Inside Dig Converter - this doesn't work in our custom version as we have upgraded to jena 2.6.2 which doesn't support DIG");
+//			return JenaOWLDIGConverter.getTellsString(ontologyFragmentURL,
+//					OntologyFormat.RDF_XML, kbURI);
 	}
 
 	/*

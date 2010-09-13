@@ -2,6 +2,7 @@ package org.dllearner.test;
 
 import java.util.List;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -24,9 +25,9 @@ public class TripleTypeTest {
 		
 		ResultSetRewindable rsw = st.queryAsResultSet(sparqlQueryString);
 		@SuppressWarnings("unchecked")
-		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
+		List<QuerySolution> l = ResultSetFormatter.toList(rsw);
 		
-		for (ResultBinding binding : l) {
+		for (QuerySolution binding : l) {
 			//RDFNode pred = binding.get("predicate");
 			RDFNode obj = binding.get("object");
 			//System.out.println(pred.toString());

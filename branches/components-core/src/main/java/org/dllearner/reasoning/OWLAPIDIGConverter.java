@@ -21,9 +21,9 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.w3c.dom.Document;
 
- @Deprecated
+
 public class OWLAPIDIGConverter {
-    @Deprecated
+
 	public static String getTellsString(URL file, OntologyFormat format, URI kbURI) {
 		
 		String ret = "";
@@ -39,11 +39,9 @@ public class OWLAPIDIGConverter {
 //			dig.translateToDIG(manager.getOntologies(), doc, doc.getDocumentElement());
 //			ret = xml2string(doc);
 
-		} catch (OWLOntologyCreationException e) {
+		}catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}  catch (Exception e) {
 			e.printStackTrace();
 		}
 

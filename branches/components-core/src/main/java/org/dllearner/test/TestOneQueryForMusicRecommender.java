@@ -2,13 +2,13 @@ package org.dllearner.test;
 
 import java.util.List;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class TestOneQueryForMusicRecommender {
 
@@ -54,9 +54,9 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 		
 		ResultSet rs = ResultSetFactory.fromXML(xml);
 		@SuppressWarnings("unchecked")
-		List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		List<QuerySolution> l = ResultSetFormatter.toList(rs);
 		
-		for (ResultBinding binding : l) {
+		for (QuerySolution binding : l) {
 			System.out.println(binding.toString());
 		}
 		

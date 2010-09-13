@@ -434,8 +434,8 @@ public class SPARQLTasks {
 
 		
 		
-		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
-		for (ResultBinding resultBinding : l) {
+		List<QuerySolution> l = ResultSetFormatter.toList(rsw);
+		for (QuerySolution resultBinding : l) {
 			returnSet.add(new RDFNodeTuple(resultBinding.get(var1),resultBinding.get(var2)));
 		}
 		
@@ -563,9 +563,9 @@ public class SPARQLTasks {
 		final SortedSet<String> result = new TreeSet<String>();
 
 		@SuppressWarnings("unchecked")
-		final List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		final List<QuerySolution> l = ResultSetFormatter.toList(rs);
 
-		for (ResultBinding resultBinding : l) {
+		for (QuerySolution resultBinding : l) {
 			result.add(resultBinding.get(variable).toString());
 		}
 		rs.reset();
@@ -578,8 +578,8 @@ public class SPARQLTasks {
 		final SortedSet<StringTuple> returnSet = new TreeSet<StringTuple>();
 		//SimpleClock sc = new SimpleClock();
 		@SuppressWarnings("unchecked")
-		final List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		for (ResultBinding resultBinding : l) {
+		final List<QuerySolution> l = ResultSetFormatter.toList(rs);
+		for (QuerySolution resultBinding : l) {
 			returnSet.add(new StringTuple(resultBinding.get(predicate).toString(),resultBinding.get(object).toString()));
 		}
 		//sc.printAndSet("allTuples");
