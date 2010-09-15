@@ -55,19 +55,41 @@ import org.semanticweb.owlapi.model.IRI;
  */
 public class MonogenicDiseases {
 	
+	private static int algorithmus = 1;  				// 1 = pos/neg Algorithmus    2 = Celoe
+	private static boolean writeAlephFiles = true;		// Add AlephFiles
+	private static boolean writeYYFiles = true;			// Add YinYangFiles
+	private static int posEx = 25;						// Number of pos-Ex.
+	private static int negEx = 25;						// Number of neg-Ex.
+	
 	private static IRI ontologyURI = IRI.create("http://dl-learner.org/mutation");
 	private static File owlFile = new File("examples/mutation/mutation.owl");
 	private static File confFile = new File("examples/mutation/mutation.conf");
+	private static File badFile = new File("examples/mutation/mutation1.n");	// AlephFile
+	private static File posFile = new File("examples/mutation/mutation1.f");	// AlephFile
+	private static File yybadFile = new File("examples/mutation/mutationNegatives.txt"); //YYFile
+	private static File yyposFile = new File("examples/mutation/mutationPositives.txt"); //YYFile
+	
+	
 	
 	// whether to generate a class containing the positive examples
-	private static boolean generatePosExampleClass = true;
+	private static boolean generatePosExampleClass = false;
 	// set to true if accessing PostreSQL and false for MySQL
 	private static boolean pgSQL = true;
 	// generate fragment => limits the number of individuals in the ontology 
 	// to speed up learning
-//	private static boolean onlyFragment = true;
+	private static boolean learnMutation = true; 
+	// private static boolean onlyFragment = true;
 	
 	public static void main(String[] args) throws ClassNotFoundException, BackingStoreException, SQLException {
+
+		if (algorithmus == 1) {							// LearnAlgo-Check					
+			generatePosExampleClass = false;
+		}
+		
+		if (algorithmus == 2) {							// LearnAlgo-Check
+			generatePosExampleClass = true;
+		}
+		
 		
 		// reading values for db connection from ini file
 		String iniFile = "src/dl-learner/org/dllearner/examples/mutation.ini";
@@ -251,11 +273,57 @@ public class MonogenicDiseases {
 			rs = stmt.executeQuery("SELECT * FROM " + table + " WHERE (gain_contact is not null) AND (gain_contact != 0)");
 		}
 		
-		int count = 0;
-		while(rs.next()) {
+int count = 1;
+int pos_count = 0;
+int neg_count = 1;
+
+
+	if (writeAlephFiles){			// Clear AlephFiles
+		Files.clearFile(badFile);
+		Files.clearFile(posFile);
+	}
+
+	if (writeYYFiles) {				// Clear YinYangFiles
+		Files.clearFile(yybadFile);
+		Files.clearFile(yyposFile);
+	}
+	
+	while((rs.next()) && ((pos_count < posEx) || (neg_count < negEx))) {
+			
+
+			
 			// generate an individual for each entry in the table
 			int mutationID = rs.getInt("id");
 			Individual mutationInd = new Individual(getURI("mutation" + mutationID));
+
+			
+			String pt = rs.getString("phenotype");	
+			if ((pt.toLowerCase().contains("polymorphism"))&&( neg_count<=negEx )) { 
+				if (writeAlephFiles) {
+					Files.appendFile(badFile, "deleterious(id"+mutationID+").\n");
+				}
+				if (writeYYFiles) {
+					Files.appendFile(yybadFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
+				}
+				neg_count++;
+				}
+			if ((!pt.toLowerCase().contains("polymorphism"))&& ( pos_count<=posEx)) { 
+				if (writeAlephFiles) {
+					Files.appendFile(posFile, "deleterious(id"+mutationID+").\n");
+				}
+				if (writeYYFiles) {
+				Files.appendFile(yyposFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
+				}
+				pos_count++; 
+			}
+			
+			if ((pt.toLowerCase().contains("polymorphism"))&&( neg_count > negEx )) { 
+				continue;
+				}
+			if ((!pt.toLowerCase().contains("polymorphism"))&& ( pos_count > posEx)) { 
+				continue;	
+			}
+			
 			
 			// size change is represented via 3 classes
 			String modifSize = rs.getString("modif_size");
@@ -340,7 +408,7 @@ public class MonogenicDiseases {
 			double identicalN1Contact = rs.getDouble("identical_n1_contact");
 			kb.addAxiom(new DoubleDatatypePropertyAssertion(identicalN1ContactProp, mutationInd, identicalN1Contact));
 						
-			// TODO Vorsicht bei 0-Werten in den weitern Feldern (klÃ¤ren, ob in dem
+			// TODO Vorsicht bei 0-Werten in den weitern Feldern (klären, ob in dem
 			// Fall gar nichts geschrieben werden soll)
 			
 			// wt_accessibility
@@ -372,10 +440,17 @@ public class MonogenicDiseases {
 			// generate a class with all positive examples (optional)
 			if(generatePosExampleClass) {
 				String phenotype = rs.getString("phenotype");
+
+						
 				if(!phenotype.toLowerCase().contains("polymorphism")) {
 					kb.addAxiom(new ClassAssertionAxiom(deleteriousMutationClass, mutationInd));
 				}
+				
 			}
+
+//			String pt = rs.getString("phenotype");	
+//			if (pt.toLowerCase().contains("polymorphism")) { neg_count++; }
+//			if (!pt.toLowerCase().contains("polymorphism")) { pos_count++; }
 			
 			
 			count++;
@@ -387,6 +462,8 @@ public class MonogenicDiseases {
 		OWLAPIReasoner.exportKBToOWL(owlFile, kb, ontologyURI);
 		long writeDuration = System.nanoTime() - startWriteTime;
 		System.out.println("OK (entities: " + count + "; time: " + Helper.prettyPrintNanoSeconds(writeDuration) + "; file size: " + owlFile.length()/1024 + " KB).");		
+
+
 		
 		// selecting examples
 		// -> only a fraction of examples are selected as positive/negative
@@ -399,51 +476,78 @@ public class MonogenicDiseases {
 		}
 		List<Individual> posExamples = new LinkedList<Individual>();
 		List<Individual> negExamples = new LinkedList<Individual>();
-		while(rs.next()) {
+		
+count = 1;
+pos_count = 0;
+neg_count = 0;
+
+
+
+		while((rs.next()) && (pos_count < posEx) || (neg_count < negEx)) {
 			int mutationID = rs.getInt("id");
 			String phenotype = rs.getString("phenotype");
-			if(phenotype.toLowerCase().contains("polymorphism")) {
-				negExamples.add(new Individual(getURI("mutation" + mutationID)));
-			} else {
-				posExamples.add(new Individual(getURI("mutation" + mutationID)));
+//			if(phenotype.toLowerCase().contains("polymorphism")) {
+//				negExamples.add(new Individual(getURI("mutation" + mutationID))); neg_count++;
+//			} else {
+//				posExamples.add(new Individual(getURI("mutation" + mutationID))); pos_count++;
+//			}
+
+			if((phenotype.toLowerCase().contains("polymorphism")) && (neg_count < negEx)) {
+				negExamples.add(new Individual(getURI("mutation" + mutationID))); neg_count++;
+			} 
+			if((!phenotype.toLowerCase().contains("polymorphism")) && (pos_count < posEx)) {
+				posExamples.add(new Individual(getURI("mutation" + mutationID))); pos_count++;
 			}
+			
+			
+count++;
 		}
 			
 		// writing conf file
 		Files.clearFile(confFile);
 		String confHeader = "import(\"" + owlFile.getName() + "\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
+
+		if (algorithmus == 1) {
+			confHeader += "problem = posNegLPStandard;\n";
+			confHeader += "posNegLPStandard.useApproximations = true;\n";
+			confHeader += "posNegLPStandard.accuracyMethod = \"fmeasure\";\n";	
+			confHeader += "posNegLPStandard.approxAccuracy = 0.03;\n";
+			confHeader += "refexamples.noisePercentage = 15;\n";
+			confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
+			confHeader += "refexamples.writeSearchTree = false;\n";
+			confHeader += "refexamples.searchTreeFile = \"log/mutation/searchTree.log\";\n";
 		
-		confHeader += "problem = classLearning;\n";
-		confHeader += "classLearning.classToDescribe = \"" + deleteriousMutationClass + "\";\n";
-		confHeader += "classLearning.accuracyMethod = \"fmeasure\";\n";	
-		confHeader += "classLearning.approxAccuracy = 0.03;\n";
+			confHeader += "\n";
+		}
 		
-//		confHeader += "problem = posNegLPStandard;\n";
-//		confHeader += "posNegLPStandard.useApproximations = true;\n";
-//		confHeader += "posNegLPStandard.accuracyMethod = \"fmeasure\";\n";	
-//		confHeader += "posNegLPStandard.approxAccuracy = 0.03;\n";
+		if (algorithmus == 2)
+		{
+			confHeader += "problem = classLearning;\n";
+			confHeader += "classLearning.classToDescribe = \"" + deleteriousMutationClass + "\";\n";
+			confHeader += "classLearning.accuracyMethod = \"fmeasure\";\n";	
+			confHeader += "classLearning.approxAccuracy = 0.03;\n";
+			confHeader += "algorithm = celoe;\n";
+			confHeader += "celoe.maxExecutionTimeInSeconds = 10;\n";
+			confHeader += "celoe.noisePercentage = 10;\n";
+			confHeader += "celoe.singleSuggestionMode = true;\n";
+			confHeader += "celoe.useNegation = true;\n";
+
+			confHeader += "\n";
+		}
 		
-		confHeader += "algorithm = celoe;\n";
-		confHeader += "celoe.maxExecutionTimeInSeconds = 10;\n";
-		confHeader += "celoe.noisePercentage = 10;\n";
-		confHeader += "celoe.singleSuggestionMode = true;\n";
-		confHeader += "celoe.useNegation = true;\n";
-		
-//		confHeader += "refexamples.noisePercentage = 15;\n";
-//		confHeader += "refexamples.startClass = \"" + getURI("Mutation") + "\";\n";
-//		confHeader += "refexamples.writeSearchTree = false;\n";
-//		confHeader += "refexamples.searchTreeFile = \"log/mutation/searchTree.log\";\n";
-		confHeader += "\n";
 		Files.appendFile(confFile, confHeader);
 		if(!generatePosExampleClass) {
-			Carcinogenesis.appendPosExamples(confFile, posExamples);
-			Carcinogenesis.appendNegExamples(confFile, negExamples);
+			MonogenicDiseases.appendPosExamples(confFile, posExamples);
+			MonogenicDiseases.appendNegExamples(confFile, negExamples);
 		}	
 		
 		long runTime = System.nanoTime() - startTime;
 		System.out.println("Conf file written with " + posExamples.size() + " positive and " + negExamples.size() + " negative examples.");
 		System.out.println("Database successfully converted in " + Helper.prettyPrintNanoSeconds(runTime) + ".");
+		
+		if (writeAlephFiles) System.out.println("Added Aleph Files.");
+		if (writeYYFiles) System.out.println("Added YinYang Files.");
 		
 	}
 	
@@ -460,5 +564,27 @@ public class MonogenicDiseases {
 	
 	private static String getURI(String name) {
 		return ontologyURI + "#" + name;
+	}
+	
+	public static void appendPosExamples(File file, List<Individual> examples) {
+		StringBuffer content = new StringBuffer();
+		for(Individual example : examples) {
+			if(learnMutation)
+				content.append("+\""+example.toString()+"\"\n");
+			else
+				content.append("-\""+example.toString()+"\"\n");
+		}
+		Files.appendFile(file, content.toString());
+	}
+	
+	public static void appendNegExamples(File file, List<Individual> examples) {
+		StringBuffer content = new StringBuffer();
+		for(Individual example : examples) {
+			if(learnMutation)
+				content.append("-\""+example.toString()+"\"\n");
+			else
+				content.append("+\""+example.toString()+"\"\n");
+		}
+		Files.appendFile(file, content.toString());
 	}	
 }
