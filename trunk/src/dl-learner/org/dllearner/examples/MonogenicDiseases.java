@@ -54,12 +54,16 @@ import org.semanticweb.owlapi.model.IRI;
  *
  */
 public class MonogenicDiseases {
-	
+
+//---> OPTIONS:
 	private static int algorithmus = 1;  				// 1 = pos/neg Algorithmus    2 = Celoe
 	private static boolean writeAlephFiles = true;		// Add AlephFiles
 	private static boolean writeYYFiles = true;			// Add YinYangFiles
 	private static int posEx = 25;						// Number of pos-Ex.
 	private static int negEx = 25;						// Number of neg-Ex.
+	private static boolean cvAleph = true;				// add Files for Aleph 10-Fold Cross Validation
+	
+//<--- OPTIONS end	
 	
 	private static IRI ontologyURI = IRI.create("http://dl-learner.org/mutation");
 	private static File owlFile = new File("examples/mutation/mutation.owl");
@@ -68,7 +72,28 @@ public class MonogenicDiseases {
 	private static File posFile = new File("examples/mutation/mutation1.f");	// AlephFile
 	private static File yybadFile = new File("examples/mutation/mutationNegatives.txt"); //YYFile
 	private static File yyposFile = new File("examples/mutation/mutationPositives.txt"); //YYFile
-	
+
+	private static File split1n = new File("examples/mutation/split1.n");
+	private static File split1f = new File("examples/mutation/split1.f");
+	private static File split2n = new File("examples/mutation/split2.n");
+	private static File split2f = new File("examples/mutation/split2.f");
+	private static File split3n = new File("examples/mutation/split3.n");
+	private static File split3f = new File("examples/mutation/split3.f");
+	private static File split4n = new File("examples/mutation/split4.n");
+	private static File split4f = new File("examples/mutation/split4.f");
+	private static File split5n = new File("examples/mutation/split5.n");
+	private static File split5f = new File("examples/mutation/split5.f");
+	private static File split6n = new File("examples/mutation/split6.n");
+	private static File split6f = new File("examples/mutation/split6.f");
+	private static File split7n = new File("examples/mutation/split7.n");
+	private static File split7f = new File("examples/mutation/split7.f");
+	private static File split8n = new File("examples/mutation/split8.n");
+	private static File split8f = new File("examples/mutation/split8.f");
+	private static File split9n = new File("examples/mutation/split9.n");
+	private static File split9f = new File("examples/mutation/split9.f");
+	private static File split10n = new File("examples/mutation/split10.n");
+	private static File split10f = new File("examples/mutation/split10.f");
+
 	
 	
 	// whether to generate a class containing the positive examples
@@ -288,6 +313,37 @@ int neg_count = 1;
 		Files.clearFile(yyposFile);
 	}
 	
+	if (cvAleph) {					// Clear Aleph CV-Files
+		Files.clearFile(split1n);
+		Files.clearFile(split1f);
+		Files.clearFile(split2n);
+		Files.clearFile(split2f);
+		Files.clearFile(split3n);
+		Files.clearFile(split3f);
+		Files.clearFile(split4n);
+		Files.clearFile(split4f);
+		Files.clearFile(split5n);
+		Files.clearFile(split5f);
+		Files.clearFile(split6n);
+		Files.clearFile(split6f);
+		Files.clearFile(split7n);
+		Files.clearFile(split7f);
+		Files.clearFile(split8n);
+		Files.clearFile(split8f);
+		Files.clearFile(split9n);
+		Files.clearFile(split9f);
+		Files.clearFile(split10n);
+		Files.clearFile(split10f);
+	}
+	
+	int kp = 1;		// k for CV positiv
+	int kn = 1;		// k for CV negativ
+	int peps = posEx/10;	// positiv Examples per Splitfile
+	int neps = negEx/10;   	// negative Examples per Splitfile
+	int aneg = 0;			// aktuell negativ
+	int apos = 0;			// aktuell positiv
+	
+	
 	while((rs.next()) && ((pos_count < posEx) || (neg_count < negEx))) {
 			
 
@@ -305,6 +361,63 @@ int neg_count = 1;
 				if (writeYYFiles) {
 					Files.appendFile(yybadFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
 				}
+				if (cvAleph){
+					switch (kn) {					
+						case 1: 
+							aneg++;
+							Files.appendFile(split1n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 2: 
+							aneg++;
+							Files.appendFile(split2n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 3: 
+							aneg++;
+							Files.appendFile(split3n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 4: 
+							aneg++;
+							Files.appendFile(split4n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 5: 
+							aneg++;
+							Files.appendFile(split5n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 6: 
+							aneg++;
+							Files.appendFile(split6n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 7: 
+							aneg++;
+							Files.appendFile(split7n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 8: 
+							aneg++;
+							Files.appendFile(split8n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 9: 
+							aneg++;
+							Files.appendFile(split9n, "deleterious(id"+mutationID+").\n");
+							if (aneg == neps) {aneg = 0; kn++;}
+							break;
+						case 10: 
+							aneg++;
+							Files.appendFile(split10n, "deleterious(id"+mutationID+").\n");
+//							if (aneg == neps) {aneg = 0; kn++;}
+							break;			
+//						case 11: 						// without comment its round negExamples / 10
+//							break;
+					}
+				}
+				
 				neg_count++;
 				}
 			if ((!pt.toLowerCase().contains("polymorphism"))&& ( pos_count<=posEx)) { 
@@ -314,6 +427,64 @@ int neg_count = 1;
 				if (writeYYFiles) {
 				Files.appendFile(yyposFile, "http://example.com/mutation/mutation#mutation"+mutationID+"\n");
 				}
+				if (cvAleph){
+					switch (kp) {					
+						case 1: 
+							apos++;
+							Files.appendFile(split1f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 2: 
+							apos++;
+							Files.appendFile(split2f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 3: 
+							apos++;
+							Files.appendFile(split3f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 4: 
+							apos++;
+							Files.appendFile(split4f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 5: 
+							apos++;
+							Files.appendFile(split5f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 6: 
+							apos++;
+							Files.appendFile(split6f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 7: 
+							apos++;
+							Files.appendFile(split7f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 8: 
+							apos++;
+							Files.appendFile(split8f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 9: 
+							apos++;
+							Files.appendFile(split9f, "deleterious(id"+mutationID+").\n");
+							if (apos == peps) {apos = 0; kp++;}
+							break;
+						case 10: 
+							apos++;
+							Files.appendFile(split10f, "deleterious(id"+mutationID+").\n");
+//							if (apos == peps) {apos = 0; kp++;}
+							break;
+//						case 11:				// without comments its round to posExamples / 10	
+//							break;			
+					}
+				}
+
+				
 				pos_count++; 
 			}
 			
@@ -548,6 +719,7 @@ count++;
 		
 		if (writeAlephFiles) System.out.println("Added Aleph Files.");
 		if (writeYYFiles) System.out.println("Added YinYang Files.");
+		if (cvAleph) System.out.println("Added Aleph Split Filles for 10-Fold CrossValidation.");
 		
 	}
 	
