@@ -1,0 +1,4186 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/foo"
+    xmlns:a="http://localhost/foo#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about=""/>
+
+<owl:Class rdf:ID="blameworthy">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#responsible"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#severity_harm"/>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#benefit_victim"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#justified"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="cause">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#produce_harm"/>
+                <owl:Class>
+                    <owl:unionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#necessary_for_harm"/>
+                        <owl:Class rdf:about="#sufficient_for_harm"/>
+                    </owl:unionOf>
+                </owl:Class>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="foreseeable">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#high_foreseeability"/>
+                <owl:Class rdf:about="#low_foreseeability"/>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="intend_c">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#strong_intend"/>
+                <owl:Class rdf:about="#weak_intend"/>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="intend_mental_state">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class>
+                    <owl:complementOf>
+                        <owl:Class rdf:about="#reckless_mental_state"/>
+                    </owl:complementOf>
+                </owl:Class>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#negligent_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#neither_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="intervening_cause">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#intervening_contribution"/>
+                <owl:Class>
+                    <owl:complementOf>
+                        <owl:Class rdf:about="#foresee_intervention"/>
+                    </owl:complementOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="justified">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#achieve_goal"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#goal_outweigh_harm"/>
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="negligent_c">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#negligent_mental_state"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#careful"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#strong_intend"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                                <owl:Class rdf:about="#low_foreseeability"/>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="negligent_mental_state">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class>
+                    <owl:complementOf>
+                        <owl:Class rdf:about="#reckless_mental_state"/>
+                    </owl:complementOf>
+                </owl:Class>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#intend_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#neither_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="neither_mental_state">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class>
+                    <owl:complementOf>
+                        <owl:Class rdf:about="#reckless_mental_state"/>
+                    </owl:complementOf>
+                </owl:Class>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#negligent_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#intend_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="notaccident">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#intend_c"/>
+                <owl:Class>
+                    <owl:unionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#reckless_c"/>
+                        <owl:Class rdf:about="#negligent_c"/>
+                    </owl:unionOf>
+                </owl:Class>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="reckless_c">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#reckless_mental_state"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#careful"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class rdf:about="#high_foreseeability"/>
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#strong_intend"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="reckless_mental_state">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class>
+                    <owl:complementOf>
+                        <owl:Class rdf:about="#intend_mental_state"/>
+                    </owl:complementOf>
+                </owl:Class>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#negligent_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#neither_mental_state"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="responsible">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#cause"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#notaccident"/>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class rdf:about="#voluntary"/>
+                                <owl:Class>
+                                    <owl:intersectionOf rdf:parseType="Collection">
+                                        <owl:Class rdf:about="#foreseeable"/>
+                                        <owl:Class>
+                                            <owl:complementOf>
+                                                <owl:Class rdf:about="#intervening_cause"/>
+                                            </owl:complementOf>
+                                        </owl:Class>
+                                    </owl:intersectionOf>
+                                </owl:Class>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="strong_intend">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#intend_mental_state"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#plan_known"/>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class rdf:about="#plan_include_harm"/>
+                                <owl:Class rdf:about="#harm_caused_as_planned"/>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:unionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="vicarious">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#outrank_perpetrator"/>
+                        <owl:Class rdf:about="#control_perpetrator"/>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="vicarious_blame">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#vicarious"/>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#severity_harm"/>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#benefit_victim"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#justified"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="voluntary">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:ID="weak_intend">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class>
+                    <owl:unionOf rdf:parseType="Collection">
+                        <owl:Class rdf:about="#monitor"/>
+                        <owl:Class>
+                            <owl:intersectionOf rdf:parseType="Collection">
+                                <owl:Class rdf:about="#benefit_protagonist"/>
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#external_cause"/>
+                                    </owl:complementOf>
+                                </owl:Class>
+                            </owl:intersectionOf>
+                        </owl:Class>
+                    </owl:unionOf>
+                </owl:Class>
+                <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#negligent_c"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                        <owl:Class>
+                            <owl:complementOf>
+                                <owl:Class rdf:about="#reckless_c"/>
+                            </owl:complementOf>
+                        </owl:Class>
+                    </owl:intersectionOf>
+                </owl:Class>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<a:achieve_goal rdf:ID="n0">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_victim rdf:ID="n1">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_victim>
+
+<a:achieve_goal rdf:ID="n10">
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="n2">
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_victim rdf:ID="n3">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_victim>
+
+<a:benefit_victim rdf:ID="n5">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_victim>
+
+<a:achieve_goal rdf:ID="n6">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="n7">
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:achieve_goal rdf:ID="n8">
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="n9">
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:external_force rdf:ID="n90">
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:external_force>
+
+<a:achieve_goal rdf:ID="n91">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:achieve_goal rdf:ID="n92">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:achieve_goal rdf:ID="n93">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:achieve_goal rdf:ID="n94">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="n95">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="n96">
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:achieve_goal rdf:ID="n97">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_victim rdf:ID="n98">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_victim>
+
+<a:achieve_goal rdf:ID="n99">
+    <rdf:type rdf:resource="#benefit_victim"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="p0">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="p1">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="p10">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:achieve_goal rdf:ID="p100">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#no_foreseeability"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="p101">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="p2">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="p3">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:careful rdf:ID="p4">
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:careful>
+
+<a:careful rdf:ID="p5">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:careful>
+
+<a:benefit_protagonist rdf:ID="p6">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="p7">
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:control_perpetrator rdf:ID="p8">
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:control_perpetrator>
+
+<a:control_perpetrator rdf:ID="p9">
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:control_perpetrator>
+
+<a:control_perpetrator rdf:ID="p90">
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:control_perpetrator>
+
+<a:benefit_protagonist rdf:ID="p91">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:careful rdf:ID="p92">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:careful>
+
+<a:benefit_protagonist rdf:ID="p93">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#neither_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:careful rdf:ID="p94">
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#control_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:careful>
+
+<a:achieve_goal rdf:ID="p95">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#outrank_perpetrator"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#someone_else_cause_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="p96">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#intervening_contribution"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:achieve_goal rdf:ID="p97">
+    <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#foresee_intervention"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#monitor"/>
+    <rdf:type rdf:resource="#necessary_for_harm"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#no_foreseeability"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_force"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_outweigh_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:achieve_goal>
+
+<a:benefit_protagonist rdf:ID="p98">
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#harm_caused_as_planned"/>
+    <rdf:type rdf:resource="#high_foreseeability"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#careful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#external_cause"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<a:benefit_protagonist rdf:ID="p99">
+    <rdf:type rdf:resource="#careful"/>
+    <rdf:type rdf:resource="#control_perpetrator"/>
+    <rdf:type rdf:resource="#external_cause"/>
+    <rdf:type rdf:resource="#external_force"/>
+    <rdf:type rdf:resource="#goal_outweigh_harm"/>
+    <rdf:type rdf:resource="#intervening_contribution"/>
+    <rdf:type rdf:resource="#low_foreseeability"/>
+    <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
+    <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#foresee_intervention"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#goal_achieveable_less_harmful"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#harm_caused_as_planned"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#monitor"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#necessary_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_include_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#plan_known"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#produce_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#sufficient_for_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+</a:benefit_protagonist>
+
+<owl:Class rdf:ID="achieve_goal"/>
+
+<owl:Class rdf:ID="benefit_protagonist"/>
+
+<owl:Class rdf:ID="benefit_victim"/>
+
+<owl:Class rdf:ID="careful"/>
+
+<owl:Class rdf:ID="control_perpetrator"/>
+
+<owl:Class rdf:ID="external_cause"/>
+
+<owl:Class rdf:ID="external_force"/>
+
+<owl:Class rdf:ID="foresee_intervention"/>
+
+<owl:Class rdf:ID="goal_achieveable_less_harmful"/>
+
+<owl:Class rdf:ID="goal_outweigh_harm"/>
+
+<owl:Class rdf:ID="harm_caused_as_planned"/>
+
+<owl:Class rdf:ID="high_foreseeability"/>
+
+<owl:Class rdf:ID="intervening_contribution"/>
+
+<owl:Class rdf:ID="low_foreseeability"/>
+
+<owl:Class rdf:ID="monitor"/>
+
+<owl:Class rdf:ID="necessary_for_harm"/>
+
+<owl:Class rdf:ID="no_foreseeability"/>
+
+<owl:Class rdf:ID="outrank_perpetrator"/>
+
+<owl:Class rdf:ID="plan_include_harm"/>
+
+<owl:Class rdf:ID="plan_known"/>
+
+<owl:Class rdf:ID="produce_harm"/>
+
+<owl:Class rdf:ID="severity_harm"/>
+
+<owl:Class rdf:ID="someone_else_cause_harm"/>
+
+<owl:Class rdf:ID="sufficient_for_harm"/>
+
+</rdf:RDF>

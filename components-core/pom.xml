@@ -1,0 +1,117 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.dllearner</groupId>
+    <artifactId>components-core</artifactId>
+    <version>${dllearner.version}</version>
+    <packaging>jar</packaging>
+
+    <name>DL Learner Core Components</name>
+    <url>http://maven.apache.org</url>
+
+    <parent>
+        <groupId>org.dllearner</groupId>
+        <artifactId>dllearner-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+
+        <!-- THIS IS FROM THE UNIBAS REPO-->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi</artifactId>
+        </dependency>
+
+        <!-- THIS IS FROM THE UNIBAS REPO-->
+        <dependency>
+            <groupId>com.owldl</groupId>
+            <artifactId>pellet</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!--Available via central, we use the latest with minor mods to DL Learner source (IE Dig related code)-->
+        <dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>jena</artifactId>
+        </dependency>
+
+        <!--SwingX is in central-->
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+        </dependency>
+
+
+        <!--JSON is in Central-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+
+
+
+         <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+        </dependency>
+
+
+         <!--Lucene is in Central-->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ini4j</groupId>
+            <artifactId>ini4j</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>xmlbeans</groupId>
+            <artifactId>xbean</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.factplusplus</groupId>
+            <artifactId>factpp-owlapi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.owlapi.owllink</groupId>
+            <artifactId>owllink</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.semanticweb.hermit</groupId>
+            <artifactId>hermit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jamonapi</groupId>
+            <artifactId>jamon</artifactId>
+        </dependency>
+        <!--JENA ARQ is in central - we use the latest-->
+        <dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>arq</artifactId>
+        </dependency>
+
+        <!--This will be removed after upgrade to latest JENA-->
+        <dependency> <groupId>dllearnerDependency</groupId> <artifactId>dig1.1-xmlbeans.jar</artifactId>  <version>snapshot</version>  </dependency>
+
+    </dependencies>
+</project>

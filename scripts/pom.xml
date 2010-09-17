@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.dllearner</groupId>
+    <artifactId>scripts</artifactId>
+    <version>${dllearner.version}</version>
+    <packaging>jar</packaging>
+
+    <name>scripts</name>
+    <url>http://maven.apache.org</url>
+    <parent>
+        <groupId>org.dllearner</groupId>
+        <artifactId>dllearner-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-ext</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.secondstring</groupId>
+            <artifactId>secondstring</artifactId>
+        </dependency>
+    </dependencies>
+</project>

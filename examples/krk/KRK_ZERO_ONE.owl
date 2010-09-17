@@ -1,0 +1,5043 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY test "http://www.test.de/test#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.test.de/test#"
+     xml:base="http://www.test.de/test"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:test="http://www.test.de/test#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.test.de/test#fileDistance0 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance0">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan1"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance1 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance1">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan2"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance2 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance2">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan3"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance3 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance3">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan4"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance4 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance4">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan5"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance5 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance5">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan6"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance6 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance6">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan7"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance7 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance7">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan8"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan0 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan0">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan1 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan1">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan2"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan2 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan2">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan3"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan3 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan3">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan4"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan4 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan4">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan5"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan5 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan5">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan6"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan6 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan6">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan7"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan7 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan7">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan8"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan8 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan8">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#hasLowerFileThan -->
+
+    <owl:ObjectProperty rdf:about="#hasLowerFileThan">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#hasLowerRankThan -->
+
+    <owl:ObjectProperty rdf:about="#hasLowerRankThan">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#hasPiece -->
+
+    <owl:ObjectProperty rdf:about="#hasPiece">
+        <rdfs:domain rdf:resource="#Game"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance0 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance0">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan1"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance1 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance1">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan2"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance2 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance2">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan3"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance3 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance3">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan4"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance4 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance4">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan5"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance5 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance5">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan6"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance6 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance6">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan7"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance7 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance7">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan8"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan0 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan0">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan1 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan1">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan2 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan2">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan3"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan3 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan3">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan4"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan4 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan4">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan5"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan5 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan5">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan6"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan6 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan6">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan7"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan7 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan7">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan8"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan8 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan8">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.test.de/test#BKing -->
+
+    <owl:Class rdf:about="#BKing">
+        <rdfs:subClassOf rdf:resource="#Piece"/>
+        <owl:disjointWith rdf:resource="#WKing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#Game -->
+
+    <owl:Class rdf:about="#Game"/>
+    
+
+
+    <!-- http://www.test.de/test#ONE -->
+
+    <owl:Class rdf:about="#ONE"/>
+    
+
+
+    <!-- http://www.test.de/test#Piece -->
+
+    <owl:Class rdf:about="#Piece">
+        <owl:disjointWith rdf:resource="#Game"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#WKing -->
+
+    <owl:Class rdf:about="#WKing">
+        <rdfs:subClassOf rdf:resource="#Piece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#WRook -->
+
+    <owl:Class rdf:about="#WRook">
+        <rdfs:subClassOf rdf:resource="#Piece"/>
+        <owl:disjointWith rdf:resource="#BKing"/>
+        <owl:disjointWith rdf:resource="#WKing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#ZERO -->
+
+    <owl:Class rdf:about="#ZERO"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_1 -->
+
+    <BKing rdf:about="#bking_a1_1">
+        <hasLowerFileThan rdf:resource="#wking_c1_1"/>
+        <hasLowerRankThan rdf:resource="#wrook_a3_1"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_10 -->
+
+    <BKing rdf:about="#bking_a1_10">
+        <hasLowerRankThan rdf:resource="#wrook_a5_10"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_10"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_10"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_12 -->
+
+    <BKing rdf:about="#bking_a1_12">
+        <hasLowerRankThan rdf:resource="#wrook_a6_12"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_12"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_12"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_14 -->
+
+    <BKing rdf:about="#bking_a1_14">
+        <hasLowerRankThan rdf:resource="#wrook_a7_14"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_14"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_14"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_16 -->
+
+    <BKing rdf:about="#bking_a1_16">
+        <hasLowerRankThan rdf:resource="#wking_c2_16"/>
+        <hasLowerRankThan rdf:resource="#wrook_a8_16"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_16"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_2 -->
+
+    <BKing rdf:about="#bking_a1_2">
+        <hasLowerRankThan rdf:resource="#wrook_a4_2"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_2"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_3 -->
+
+    <BKing rdf:about="#bking_a1_3">
+        <hasLowerRankThan rdf:resource="#wrook_a5_3"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_3"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_35 -->
+
+    <BKing rdf:about="#bking_a1_35">
+        <hasLowerFileThan rdf:resource="#wking_c2_35"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_35"/>
+        <hasLowerFileThan rdf:resource="#wrook_b4_35"/>
+        <hasLowerRankThan rdf:resource="#wrook_b4_35"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_36 -->
+
+    <BKing rdf:about="#bking_a1_36">
+        <hasLowerFileThan rdf:resource="#wrook_b5_36"/>
+        <hasLowerRankThan rdf:resource="#wrook_b5_36"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_36"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_36"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_37 -->
+
+    <BKing rdf:about="#bking_a1_37">
+        <hasLowerFileThan rdf:resource="#wking_c2_37"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_37"/>
+        <hasLowerFileThan rdf:resource="#wrook_b6_37"/>
+        <hasLowerRankThan rdf:resource="#wrook_b6_37"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_38 -->
+
+    <BKing rdf:about="#bking_a1_38">
+        <hasLowerFileThan rdf:resource="#wrook_b7_38"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_38"/>
+        <hasLowerRankThan rdf:resource="#wrook_b7_38"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_38"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_39 -->
+
+    <BKing rdf:about="#bking_a1_39">
+        <hasLowerRankThan rdf:resource="#wrook_b8_39"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_39"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_39"/>
+        <hasLowerFileThan rdf:resource="#wrook_b8_39"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_4 -->
+
+    <BKing rdf:about="#bking_a1_4">
+        <hasLowerFileThan rdf:resource="#wking_c1_4"/>
+        <hasLowerRankThan rdf:resource="#wrook_a6_4"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_41 -->
+
+    <BKing rdf:about="#bking_a1_41">
+        <hasLowerRankThan rdf:resource="#wking_c2_41"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_41"/>
+        <hasLowerFileThan rdf:resource="#wrook_c4_41"/>
+        <hasLowerRankThan rdf:resource="#wrook_c4_41"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_43 -->
+
+    <BKing rdf:about="#bking_a1_43">
+        <hasLowerRankThan rdf:resource="#wking_c2_43"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_43"/>
+        <hasLowerFileThan rdf:resource="#wrook_c5_43"/>
+        <hasLowerRankThan rdf:resource="#wrook_c5_43"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_44 -->
+
+    <BKing rdf:about="#bking_a1_44">
+        <hasLowerFileThan rdf:resource="#wking_c2_44"/>
+        <hasLowerFileThan rdf:resource="#wrook_c6_44"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_44"/>
+        <hasLowerRankThan rdf:resource="#wrook_c6_44"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_45 -->
+
+    <BKing rdf:about="#bking_a1_45">
+        <hasLowerFileThan rdf:resource="#wking_c2_45"/>
+        <hasLowerRankThan rdf:resource="#wrook_c7_45"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_45"/>
+        <hasLowerFileThan rdf:resource="#wrook_c7_45"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_46 -->
+
+    <BKing rdf:about="#bking_a1_46">
+        <hasLowerRankThan rdf:resource="#wrook_c8_46"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_46"/>
+        <hasLowerFileThan rdf:resource="#wrook_c8_46"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_46"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_48 -->
+
+    <BKing rdf:about="#bking_a1_48">
+        <hasLowerFileThan rdf:resource="#wrook_d4_48"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_48"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_48"/>
+        <hasLowerRankThan rdf:resource="#wrook_d4_48"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_5 -->
+
+    <BKing rdf:about="#bking_a1_5">
+        <hasLowerRankThan rdf:resource="#wrook_a7_5"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_5"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_50 -->
+
+    <BKing rdf:about="#bking_a1_50">
+        <hasLowerRankThan rdf:resource="#wking_c2_50"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_50"/>
+        <hasLowerRankThan rdf:resource="#wrook_d5_50"/>
+        <hasLowerFileThan rdf:resource="#wrook_d5_50"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_51 -->
+
+    <BKing rdf:about="#bking_a1_51">
+        <hasLowerRankThan rdf:resource="#wrook_d6_51"/>
+        <hasLowerFileThan rdf:resource="#wrook_d6_51"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_51"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_51"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_52 -->
+
+    <BKing rdf:about="#bking_a1_52">
+        <hasLowerFileThan rdf:resource="#wking_c2_52"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_52"/>
+        <hasLowerFileThan rdf:resource="#wrook_d7_52"/>
+        <hasLowerRankThan rdf:resource="#wrook_d7_52"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_53 -->
+
+    <BKing rdf:about="#bking_a1_53">
+        <hasLowerFileThan rdf:resource="#wrook_d8_53"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_53"/>
+        <hasLowerRankThan rdf:resource="#wrook_d8_53"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_53"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_55 -->
+
+    <BKing rdf:about="#bking_a1_55">
+        <hasLowerRankThan rdf:resource="#wking_c2_55"/>
+        <hasLowerFileThan rdf:resource="#wrook_e4_55"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_55"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_55"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_57 -->
+
+    <BKing rdf:about="#bking_a1_57">
+        <hasLowerRankThan rdf:resource="#wking_c2_57"/>
+        <hasLowerRankThan rdf:resource="#wrook_e5_57"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_57"/>
+        <hasLowerFileThan rdf:resource="#wrook_e5_57"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_58 -->
+
+    <BKing rdf:about="#bking_a1_58">
+        <hasLowerFileThan rdf:resource="#wking_c2_58"/>
+        <hasLowerRankThan rdf:resource="#wrook_e6_58"/>
+        <hasLowerFileThan rdf:resource="#wrook_e6_58"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_58"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_59 -->
+
+    <BKing rdf:about="#bking_a1_59">
+        <hasLowerRankThan rdf:resource="#wking_c2_59"/>
+        <hasLowerFileThan rdf:resource="#wrook_e7_59"/>
+        <hasLowerRankThan rdf:resource="#wrook_e7_59"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_59"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_6 -->
+
+    <BKing rdf:about="#bking_a1_6">
+        <hasLowerFileThan rdf:resource="#wking_c1_6"/>
+        <hasLowerRankThan rdf:resource="#wrook_a8_6"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_60 -->
+
+    <BKing rdf:about="#bking_a1_60">
+        <hasLowerRankThan rdf:resource="#wking_c2_60"/>
+        <hasLowerRankThan rdf:resource="#wrook_e8_60"/>
+        <hasLowerFileThan rdf:resource="#wrook_e8_60"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_60"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_62 -->
+
+    <BKing rdf:about="#bking_a1_62">
+        <hasLowerRankThan rdf:resource="#wking_c2_62"/>
+        <hasLowerRankThan rdf:resource="#wrook_f4_62"/>
+        <hasLowerFileThan rdf:resource="#wrook_f4_62"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_62"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_64 -->
+
+    <BKing rdf:about="#bking_a1_64">
+        <hasLowerRankThan rdf:resource="#wrook_f5_64"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_64"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_64"/>
+        <hasLowerFileThan rdf:resource="#wrook_f5_64"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_65 -->
+
+    <BKing rdf:about="#bking_a1_65">
+        <hasLowerFileThan rdf:resource="#wrook_f6_65"/>
+        <hasLowerRankThan rdf:resource="#wrook_f6_65"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_65"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_65"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_66 -->
+
+    <BKing rdf:about="#bking_a1_66">
+        <hasLowerRankThan rdf:resource="#wrook_f7_66"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_66"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_66"/>
+        <hasLowerFileThan rdf:resource="#wrook_f7_66"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_67 -->
+
+    <BKing rdf:about="#bking_a1_67">
+        <hasLowerRankThan rdf:resource="#wking_c2_67"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_67"/>
+        <hasLowerFileThan rdf:resource="#wrook_f8_67"/>
+        <hasLowerRankThan rdf:resource="#wrook_f8_67"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_69 -->
+
+    <BKing rdf:about="#bking_a1_69">
+        <hasLowerFileThan rdf:resource="#wrook_g4_69"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_69"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_69"/>
+        <hasLowerRankThan rdf:resource="#wrook_g4_69"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_7 -->
+
+    <BKing rdf:about="#bking_a1_7">
+        <hasLowerRankThan rdf:resource="#wrook_a3_7"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_7"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_7"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_71 -->
+
+    <BKing rdf:about="#bking_a1_71">
+        <hasLowerFileThan rdf:resource="#wking_c2_71"/>
+        <hasLowerRankThan rdf:resource="#wrook_g5_71"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_71"/>
+        <hasLowerFileThan rdf:resource="#wrook_g5_71"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_72 -->
+
+    <BKing rdf:about="#bking_a1_72">
+        <hasLowerRankThan rdf:resource="#wrook_g6_72"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_72"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_72"/>
+        <hasLowerFileThan rdf:resource="#wrook_g6_72"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_73 -->
+
+    <BKing rdf:about="#bking_a1_73">
+        <hasLowerRankThan rdf:resource="#wking_c2_73"/>
+        <hasLowerRankThan rdf:resource="#wrook_g7_73"/>
+        <hasLowerFileThan rdf:resource="#wrook_g7_73"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_73"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_74 -->
+
+    <BKing rdf:about="#bking_a1_74">
+        <hasLowerRankThan rdf:resource="#wrook_g8_74"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_74"/>
+        <hasLowerFileThan rdf:resource="#wrook_g8_74"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_74"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_76 -->
+
+    <BKing rdf:about="#bking_a1_76">
+        <hasLowerRankThan rdf:resource="#wrook_h4_76"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_76"/>
+        <hasLowerFileThan rdf:resource="#wrook_h4_76"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_76"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_78 -->
+
+    <BKing rdf:about="#bking_a1_78">
+        <hasLowerFileThan rdf:resource="#wrook_h5_78"/>
+        <hasLowerRankThan rdf:resource="#wrook_h5_78"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_78"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_78"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_79 -->
+
+    <BKing rdf:about="#bking_a1_79">
+        <hasLowerFileThan rdf:resource="#wking_c2_79"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_79"/>
+        <hasLowerRankThan rdf:resource="#wrook_h6_79"/>
+        <hasLowerFileThan rdf:resource="#wrook_h6_79"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_8 -->
+
+    <BKing rdf:about="#bking_a1_8">
+        <hasLowerFileThan rdf:resource="#wking_c2_8"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_8"/>
+        <hasLowerRankThan rdf:resource="#wrook_a4_8"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_80 -->
+
+    <BKing rdf:about="#bking_a1_80">
+        <hasLowerFileThan rdf:resource="#wrook_h7_80"/>
+        <hasLowerRankThan rdf:resource="#wking_c2_80"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_80"/>
+        <hasLowerRankThan rdf:resource="#wrook_h7_80"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a1_81 -->
+
+    <BKing rdf:about="#bking_a1_81">
+        <hasLowerRankThan rdf:resource="#wking_c2_81"/>
+        <hasLowerRankThan rdf:resource="#wrook_h8_81"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_81"/>
+        <hasLowerFileThan rdf:resource="#wrook_h8_81"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_11 -->
+
+    <BKing rdf:about="#bking_a2_11">
+        <hasLowerRankThan rdf:resource="#wrook_a5_11"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_11"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_13 -->
+
+    <BKing rdf:about="#bking_a2_13">
+        <hasLowerFileThan rdf:resource="#wking_c2_13"/>
+        <hasLowerRankThan rdf:resource="#wrook_a6_13"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_15 -->
+
+    <BKing rdf:about="#bking_a2_15">
+        <hasLowerRankThan rdf:resource="#wrook_a7_15"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_15"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_17 -->
+
+    <BKing rdf:about="#bking_a2_17">
+        <hasLowerRankThan rdf:resource="#wrook_a8_17"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_17"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_28 -->
+
+    <BKing rdf:about="#bking_a2_28">
+        <hasLowerFileThan rdf:resource="#wking_c1_28"/>
+        <hasLowerFileThan rdf:resource="#wrook_c3_28"/>
+        <hasLowerRankThan rdf:resource="#wrook_c3_28"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_29 -->
+
+    <BKing rdf:about="#bking_a2_29">
+        <hasLowerFileThan rdf:resource="#wking_c1_29"/>
+        <hasLowerRankThan rdf:resource="#wrook_d3_29"/>
+        <hasLowerFileThan rdf:resource="#wrook_d3_29"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_30 -->
+
+    <BKing rdf:about="#bking_a2_30">
+        <hasLowerRankThan rdf:resource="#wrook_e3_30"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_30"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_30"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_31 -->
+
+    <BKing rdf:about="#bking_a2_31">
+        <hasLowerFileThan rdf:resource="#wking_c1_31"/>
+        <hasLowerRankThan rdf:resource="#wrook_f3_31"/>
+        <hasLowerFileThan rdf:resource="#wrook_f3_31"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_32 -->
+
+    <BKing rdf:about="#bking_a2_32">
+        <hasLowerRankThan rdf:resource="#wrook_g3_32"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_32"/>
+        <hasLowerFileThan rdf:resource="#wrook_g3_32"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_33 -->
+
+    <BKing rdf:about="#bking_a2_33">
+        <hasLowerFileThan rdf:resource="#wrook_h3_33"/>
+        <hasLowerRankThan rdf:resource="#wrook_h3_33"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_33"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_34 -->
+
+    <BKing rdf:about="#bking_a2_34">
+        <hasLowerFileThan rdf:resource="#wking_c2_34"/>
+        <hasLowerFileThan rdf:resource="#wrook_b3_34"/>
+        <hasLowerRankThan rdf:resource="#wrook_b3_34"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_40 -->
+
+    <BKing rdf:about="#bking_a2_40">
+        <hasLowerFileThan rdf:resource="#wking_c2_40"/>
+        <hasLowerRankThan rdf:resource="#wrook_c3_40"/>
+        <hasLowerFileThan rdf:resource="#wrook_c3_40"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_47 -->
+
+    <BKing rdf:about="#bking_a2_47">
+        <hasLowerRankThan rdf:resource="#wrook_d3_47"/>
+        <hasLowerFileThan rdf:resource="#wrook_d3_47"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_47"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_54 -->
+
+    <BKing rdf:about="#bking_a2_54">
+        <hasLowerFileThan rdf:resource="#wrook_e3_54"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_54"/>
+        <hasLowerRankThan rdf:resource="#wrook_e3_54"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_61 -->
+
+    <BKing rdf:about="#bking_a2_61">
+        <hasLowerRankThan rdf:resource="#wrook_f3_61"/>
+        <hasLowerFileThan rdf:resource="#wrook_f3_61"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_61"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_68 -->
+
+    <BKing rdf:about="#bking_a2_68">
+        <hasLowerFileThan rdf:resource="#wrook_g3_68"/>
+        <hasLowerRankThan rdf:resource="#wrook_g3_68"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_68"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_75 -->
+
+    <BKing rdf:about="#bking_a2_75">
+        <hasLowerRankThan rdf:resource="#wrook_h3_75"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_75"/>
+        <hasLowerFileThan rdf:resource="#wrook_h3_75"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_9 -->
+
+    <BKing rdf:about="#bking_a2_9">
+        <hasLowerFileThan rdf:resource="#wking_c2_9"/>
+        <hasLowerRankThan rdf:resource="#wrook_a4_9"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a3_42 -->
+
+    <BKing rdf:about="#bking_a3_42">
+        <hasLowerFileThan rdf:resource="#wking_c2_42"/>
+        <hasLowerRankThan rdf:resource="#wrook_c4_42"/>
+        <hasLowerFileThan rdf:resource="#wrook_c4_42"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a3_49 -->
+
+    <BKing rdf:about="#bking_a3_49">
+        <hasLowerFileThan rdf:resource="#wrook_d4_49"/>
+        <hasLowerRankThan rdf:resource="#wrook_d4_49"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_49"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a3_56 -->
+
+    <BKing rdf:about="#bking_a3_56">
+        <hasLowerRankThan rdf:resource="#wrook_e4_56"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_56"/>
+        <hasLowerFileThan rdf:resource="#wrook_e4_56"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a3_63 -->
+
+    <BKing rdf:about="#bking_a3_63">
+        <hasLowerFileThan rdf:resource="#wking_c2_63"/>
+        <hasLowerFileThan rdf:resource="#wrook_f4_63"/>
+        <hasLowerRankThan rdf:resource="#wrook_f4_63"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a3_70 -->
+
+    <BKing rdf:about="#bking_a3_70">
+        <hasLowerFileThan rdf:resource="#wrook_g4_70"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_70"/>
+        <hasLowerRankThan rdf:resource="#wrook_g4_70"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a3_77 -->
+
+    <BKing rdf:about="#bking_a3_77">
+        <hasLowerRankThan rdf:resource="#wrook_h4_77"/>
+        <hasLowerFileThan rdf:resource="#wrook_h4_77"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_77"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_b1_82 -->
+
+    <BKing rdf:about="#bking_b1_82">
+        <hasLowerRankThan rdf:resource="#wking_c3_82"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_82"/>
+        <hasLowerRankThan rdf:resource="#wrook_a3_82"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_b1_83 -->
+
+    <BKing rdf:about="#bking_b1_83">
+        <hasLowerRankThan rdf:resource="#wking_c3_83"/>
+        <hasLowerRankThan rdf:resource="#wrook_a4_83"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_83"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_b1_84 -->
+
+    <BKing rdf:about="#bking_b1_84">
+        <hasLowerRankThan rdf:resource="#wrook_a5_84"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_84"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_84"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_b1_85 -->
+
+    <BKing rdf:about="#bking_b1_85">
+        <hasLowerRankThan rdf:resource="#wking_c3_85"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_85"/>
+        <hasLowerRankThan rdf:resource="#wrook_a6_85"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_b1_86 -->
+
+    <BKing rdf:about="#bking_b1_86">
+        <hasLowerRankThan rdf:resource="#wking_c3_86"/>
+        <hasLowerRankThan rdf:resource="#wrook_a7_86"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_86"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_b1_87 -->
+
+    <BKing rdf:about="#bking_b1_87">
+        <hasLowerRankThan rdf:resource="#wking_c3_87"/>
+        <hasLowerRankThan rdf:resource="#wrook_a8_87"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_87"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_18 -->
+
+    <BKing rdf:about="#bking_c1_18">
+        <hasLowerRankThan rdf:resource="#wking_c3_18"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_19 -->
+
+    <BKing rdf:about="#bking_c1_19">
+        <hasLowerFileThan rdf:resource="#wrook_e1_19"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_19"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_20 -->
+
+    <BKing rdf:about="#bking_c1_20">
+        <hasLowerRankThan rdf:resource="#wking_c3_20"/>
+        <hasLowerFileThan rdf:resource="#wrook_f1_20"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_21 -->
+
+    <BKing rdf:about="#bking_c1_21">
+        <hasLowerFileThan rdf:resource="#wrook_g1_21"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_21"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_22 -->
+
+    <BKing rdf:about="#bking_c1_22">
+        <hasLowerFileThan rdf:resource="#wrook_h1_22"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_22"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_94 -->
+
+    <BKing rdf:about="#bking_c1_94">
+        <hasLowerFileThan rdf:resource="#wking_d3_94"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_94"/>
+        <hasLowerRankThan rdf:resource="#wrook_b3_94"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_95 -->
+
+    <BKing rdf:about="#bking_c1_95">
+        <hasLowerFileThan rdf:resource="#wking_d3_95"/>
+        <hasLowerRankThan rdf:resource="#wrook_b4_95"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_95"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_96 -->
+
+    <BKing rdf:about="#bking_c1_96">
+        <hasLowerRankThan rdf:resource="#wking_d3_96"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_96"/>
+        <hasLowerRankThan rdf:resource="#wrook_b5_96"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_97 -->
+
+    <BKing rdf:about="#bking_c1_97">
+        <hasLowerRankThan rdf:resource="#wrook_b6_97"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_97"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_97"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_98 -->
+
+    <BKing rdf:about="#bking_c1_98">
+        <hasLowerRankThan rdf:resource="#wrook_b7_98"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_98"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_98"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_c1_99 -->
+
+    <BKing rdf:about="#bking_c1_99">
+        <hasLowerRankThan rdf:resource="#wrook_b8_99"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_99"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_99"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_23 -->
+
+    <BKing rdf:about="#bking_d1_23">
+        <hasLowerRankThan rdf:resource="#wking_d3_23"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_24 -->
+
+    <BKing rdf:about="#bking_d1_24">
+        <hasLowerRankThan rdf:resource="#wking_d3_24"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_25 -->
+
+    <BKing rdf:about="#bking_d1_25">
+        <hasLowerFileThan rdf:resource="#wrook_f1_25"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_25"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_26 -->
+
+    <BKing rdf:about="#bking_d1_26">
+        <hasLowerFileThan rdf:resource="#wrook_g1_26"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_26"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_27 -->
+
+    <BKing rdf:about="#bking_d1_27">
+        <hasLowerFileThan rdf:resource="#wrook_h1_27"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_27"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_88 -->
+
+    <BKing rdf:about="#bking_d1_88">
+        <hasLowerRankThan rdf:resource="#wrook_e3_88"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_88"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_88"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_89 -->
+
+    <BKing rdf:about="#bking_d1_89">
+        <hasLowerRankThan rdf:resource="#wking_c3_89"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_89"/>
+        <hasLowerFileThan rdf:resource="#wrook_e4_89"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_90 -->
+
+    <BKing rdf:about="#bking_d1_90">
+        <hasLowerFileThan rdf:resource="#wrook_e5_90"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_90"/>
+        <hasLowerRankThan rdf:resource="#wrook_e5_90"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_91 -->
+
+    <BKing rdf:about="#bking_d1_91">
+        <hasLowerRankThan rdf:resource="#wrook_e6_91"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_91"/>
+        <hasLowerFileThan rdf:resource="#wrook_e6_91"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_92 -->
+
+    <BKing rdf:about="#bking_d1_92">
+        <hasLowerRankThan rdf:resource="#wrook_e7_92"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_92"/>
+        <hasLowerFileThan rdf:resource="#wrook_e7_92"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_93 -->
+
+    <BKing rdf:about="#bking_d1_93">
+        <hasLowerRankThan rdf:resource="#wking_c3_93"/>
+        <hasLowerRankThan rdf:resource="#wrook_e8_93"/>
+        <hasLowerFileThan rdf:resource="#wrook_e8_93"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_e1_100 -->
+
+    <BKing rdf:about="#bking_e1_100">
+        <hasLowerRankThan rdf:resource="#wking_d3_100"/>
+        <hasLowerRankThan rdf:resource="#wrook_f3_100"/>
+        <hasLowerFileThan rdf:resource="#wrook_f3_100"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_e1_101 -->
+
+    <BKing rdf:about="#bking_e1_101">
+        <hasLowerRankThan rdf:resource="#wking_d3_101"/>
+        <hasLowerFileThan rdf:resource="#wrook_f4_101"/>
+        <hasLowerRankThan rdf:resource="#wrook_f4_101"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_e1_102 -->
+
+    <BKing rdf:about="#bking_e1_102">
+        <hasLowerFileThan rdf:resource="#wrook_f5_102"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_102"/>
+        <hasLowerRankThan rdf:resource="#wrook_f5_102"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_e1_103 -->
+
+    <BKing rdf:about="#bking_e1_103">
+        <hasLowerRankThan rdf:resource="#wking_d3_103"/>
+        <hasLowerFileThan rdf:resource="#wrook_f6_103"/>
+        <hasLowerRankThan rdf:resource="#wrook_f6_103"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_e1_104 -->
+
+    <BKing rdf:about="#bking_e1_104">
+        <hasLowerRankThan rdf:resource="#wrook_f7_104"/>
+        <hasLowerFileThan rdf:resource="#wrook_f7_104"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_104"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_e1_105 -->
+
+    <BKing rdf:about="#bking_e1_105">
+        <hasLowerRankThan rdf:resource="#wking_d3_105"/>
+        <hasLowerRankThan rdf:resource="#wrook_f8_105"/>
+        <hasLowerFileThan rdf:resource="#wrook_f8_105"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#game1 -->
+
+    <ZERO rdf:about="#game1">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c1_1"/>
+        <hasPiece rdf:resource="#wrook_a3_1"/>
+        <hasPiece rdf:resource="#bking_a1_1"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game10 -->
+
+    <ZERO rdf:about="#game10">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_a5_10"/>
+        <hasPiece rdf:resource="#bking_a1_10"/>
+        <hasPiece rdf:resource="#wking_c2_10"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game100 -->
+
+    <Game rdf:about="#game100">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_d3_100"/>
+        <hasPiece rdf:resource="#wrook_f3_100"/>
+        <hasPiece rdf:resource="#bking_e1_100"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game101 -->
+
+    <Game rdf:about="#game101">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_f4_101"/>
+        <hasPiece rdf:resource="#bking_e1_101"/>
+        <hasPiece rdf:resource="#wking_d3_101"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game102 -->
+
+    <Game rdf:about="#game102">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_d3_102"/>
+        <hasPiece rdf:resource="#bking_e1_102"/>
+        <hasPiece rdf:resource="#wrook_f5_102"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game103 -->
+
+    <Game rdf:about="#game103">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_e1_103"/>
+        <hasPiece rdf:resource="#wking_d3_103"/>
+        <hasPiece rdf:resource="#wrook_f6_103"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game104 -->
+
+    <ONE rdf:about="#game104">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_f7_104"/>
+        <hasPiece rdf:resource="#wking_d3_104"/>
+        <hasPiece rdf:resource="#bking_e1_104"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game105 -->
+
+    <Game rdf:about="#game105">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_d3_105"/>
+        <hasPiece rdf:resource="#bking_e1_105"/>
+        <hasPiece rdf:resource="#wrook_f8_105"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game11 -->
+
+    <ZERO rdf:about="#game11">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a2_11"/>
+        <hasPiece rdf:resource="#wking_c2_11"/>
+        <hasPiece rdf:resource="#wrook_a5_11"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game12 -->
+
+    <Game rdf:about="#game12">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#bking_a1_12"/>
+        <hasPiece rdf:resource="#wking_c2_12"/>
+        <hasPiece rdf:resource="#wrook_a6_12"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game13 -->
+
+    <ZERO rdf:about="#game13">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a2_13"/>
+        <hasPiece rdf:resource="#wrook_a6_13"/>
+        <hasPiece rdf:resource="#wking_c2_13"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game14 -->
+
+    <ZERO rdf:about="#game14">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a1_14"/>
+        <hasPiece rdf:resource="#wrook_a7_14"/>
+        <hasPiece rdf:resource="#wking_c2_14"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game15 -->
+
+    <ZERO rdf:about="#game15">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a2_15"/>
+        <hasPiece rdf:resource="#wrook_a7_15"/>
+        <hasPiece rdf:resource="#wking_c2_15"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game16 -->
+
+    <ZERO rdf:about="#game16">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_16"/>
+        <hasPiece rdf:resource="#bking_a1_16"/>
+        <hasPiece rdf:resource="#wrook_a8_16"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game17 -->
+
+    <Game rdf:about="#game17">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wking_c2_17"/>
+        <hasPiece rdf:resource="#bking_a2_17"/>
+        <hasPiece rdf:resource="#wrook_a8_17"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game18 -->
+
+    <Game rdf:about="#game18">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#bking_c1_18"/>
+        <hasPiece rdf:resource="#wking_c3_18"/>
+        <hasPiece rdf:resource="#wrook_a1_18"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game19 -->
+
+    <Game rdf:about="#game19">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wking_c3_19"/>
+        <hasPiece rdf:resource="#bking_c1_19"/>
+        <hasPiece rdf:resource="#wrook_e1_19"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game2 -->
+
+    <Game rdf:about="#game2">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wking_c1_2"/>
+        <hasPiece rdf:resource="#bking_a1_2"/>
+        <hasPiece rdf:resource="#wrook_a4_2"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game20 -->
+
+    <Game rdf:about="#game20">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wrook_f1_20"/>
+        <hasPiece rdf:resource="#wking_c3_20"/>
+        <hasPiece rdf:resource="#bking_c1_20"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game21 -->
+
+    <Game rdf:about="#game21">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wking_c3_21"/>
+        <hasPiece rdf:resource="#bking_c1_21"/>
+        <hasPiece rdf:resource="#wrook_g1_21"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game22 -->
+
+    <Game rdf:about="#game22">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wking_c3_22"/>
+        <hasPiece rdf:resource="#wrook_h1_22"/>
+        <hasPiece rdf:resource="#bking_c1_22"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game23 -->
+
+    <Game rdf:about="#game23">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#bking_d1_23"/>
+        <hasPiece rdf:resource="#wking_d3_23"/>
+        <hasPiece rdf:resource="#wrook_a1_23"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game24 -->
+
+    <ZERO rdf:about="#game24">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_b1_24"/>
+        <hasPiece rdf:resource="#bking_d1_24"/>
+        <hasPiece rdf:resource="#wking_d3_24"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game25 -->
+
+    <ZERO rdf:about="#game25">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_d1_25"/>
+        <hasPiece rdf:resource="#wrook_f1_25"/>
+        <hasPiece rdf:resource="#wking_d3_25"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game26 -->
+
+    <Game rdf:about="#game26">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#bking_d1_26"/>
+        <hasPiece rdf:resource="#wking_d3_26"/>
+        <hasPiece rdf:resource="#wrook_g1_26"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game27 -->
+
+    <ZERO rdf:about="#game27">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_h1_27"/>
+        <hasPiece rdf:resource="#bking_d1_27"/>
+        <hasPiece rdf:resource="#wking_d3_27"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game28 -->
+
+    <ONE rdf:about="#game28">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c1_28"/>
+        <hasPiece rdf:resource="#wrook_c3_28"/>
+        <hasPiece rdf:resource="#bking_a2_28"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game29 -->
+
+    <Game rdf:about="#game29">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c1_29"/>
+        <hasPiece rdf:resource="#wrook_d3_29"/>
+        <hasPiece rdf:resource="#bking_a2_29"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game3 -->
+
+    <Game rdf:about="#game3">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wrook_a5_3"/>
+        <hasPiece rdf:resource="#bking_a1_3"/>
+        <hasPiece rdf:resource="#wking_c1_3"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game30 -->
+
+    <Game rdf:about="#game30">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a2_30"/>
+        <hasPiece rdf:resource="#wrook_e3_30"/>
+        <hasPiece rdf:resource="#wking_c1_30"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game31 -->
+
+    <Game rdf:about="#game31">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c1_31"/>
+        <hasPiece rdf:resource="#bking_a2_31"/>
+        <hasPiece rdf:resource="#wrook_f3_31"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game32 -->
+
+    <Game rdf:about="#game32">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c1_32"/>
+        <hasPiece rdf:resource="#wrook_g3_32"/>
+        <hasPiece rdf:resource="#bking_a2_32"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game33 -->
+
+    <ONE rdf:about="#game33">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c1_33"/>
+        <hasPiece rdf:resource="#bking_a2_33"/>
+        <hasPiece rdf:resource="#wrook_h3_33"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game34 -->
+
+    <ONE rdf:about="#game34">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_34"/>
+        <hasPiece rdf:resource="#wrook_b3_34"/>
+        <hasPiece rdf:resource="#bking_a2_34"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game35 -->
+
+    <Game rdf:about="#game35">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_35"/>
+        <hasPiece rdf:resource="#wrook_b4_35"/>
+        <hasPiece rdf:resource="#bking_a1_35"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game36 -->
+
+    <ONE rdf:about="#game36">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_b5_36"/>
+        <hasPiece rdf:resource="#bking_a1_36"/>
+        <hasPiece rdf:resource="#wking_c2_36"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game37 -->
+
+    <ONE rdf:about="#game37">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_37"/>
+        <hasPiece rdf:resource="#wrook_b6_37"/>
+        <hasPiece rdf:resource="#bking_a1_37"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game38 -->
+
+    <Game rdf:about="#game38">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_38"/>
+        <hasPiece rdf:resource="#wrook_b7_38"/>
+        <hasPiece rdf:resource="#wking_c2_38"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game39 -->
+
+    <ONE rdf:about="#game39">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_39"/>
+        <hasPiece rdf:resource="#wrook_b8_39"/>
+        <hasPiece rdf:resource="#bking_a1_39"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game4 -->
+
+    <Game rdf:about="#game4">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wking_c1_4"/>
+        <hasPiece rdf:resource="#bking_a1_4"/>
+        <hasPiece rdf:resource="#wrook_a6_4"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game40 -->
+
+    <Game rdf:about="#game40">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a2_40"/>
+        <hasPiece rdf:resource="#wking_c2_40"/>
+        <hasPiece rdf:resource="#wrook_c3_40"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game41 -->
+
+    <Game rdf:about="#game41">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_c4_41"/>
+        <hasPiece rdf:resource="#bking_a1_41"/>
+        <hasPiece rdf:resource="#wking_c2_41"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game42 -->
+
+    <Game rdf:about="#game42">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_42"/>
+        <hasPiece rdf:resource="#wrook_c4_42"/>
+        <hasPiece rdf:resource="#bking_a3_42"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game43 -->
+
+    <ONE rdf:about="#game43">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a1_43"/>
+        <hasPiece rdf:resource="#wking_c2_43"/>
+        <hasPiece rdf:resource="#wrook_c5_43"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game44 -->
+
+    <Game rdf:about="#game44">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_44"/>
+        <hasPiece rdf:resource="#wking_c2_44"/>
+        <hasPiece rdf:resource="#wrook_c6_44"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game45 -->
+
+    <Game rdf:about="#game45">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_45"/>
+        <hasPiece rdf:resource="#bking_a1_45"/>
+        <hasPiece rdf:resource="#wrook_c7_45"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game46 -->
+
+    <ONE rdf:about="#game46">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_c8_46"/>
+        <hasPiece rdf:resource="#bking_a1_46"/>
+        <hasPiece rdf:resource="#wking_c2_46"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game47 -->
+
+    <Game rdf:about="#game47">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_47"/>
+        <hasPiece rdf:resource="#bking_a2_47"/>
+        <hasPiece rdf:resource="#wrook_d3_47"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game48 -->
+
+    <Game rdf:about="#game48">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_48"/>
+        <hasPiece rdf:resource="#wrook_d4_48"/>
+        <hasPiece rdf:resource="#bking_a1_48"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game49 -->
+
+    <Game rdf:about="#game49">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_d4_49"/>
+        <hasPiece rdf:resource="#bking_a3_49"/>
+        <hasPiece rdf:resource="#wking_c2_49"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game5 -->
+
+    <ZERO rdf:about="#game5">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_a7_5"/>
+        <hasPiece rdf:resource="#bking_a1_5"/>
+        <hasPiece rdf:resource="#wking_c1_5"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game50 -->
+
+    <ONE rdf:about="#game50">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_d5_50"/>
+        <hasPiece rdf:resource="#wking_c2_50"/>
+        <hasPiece rdf:resource="#bking_a1_50"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game51 -->
+
+    <ONE rdf:about="#game51">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a1_51"/>
+        <hasPiece rdf:resource="#wking_c2_51"/>
+        <hasPiece rdf:resource="#wrook_d6_51"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game52 -->
+
+    <Game rdf:about="#game52">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_52"/>
+        <hasPiece rdf:resource="#bking_a1_52"/>
+        <hasPiece rdf:resource="#wrook_d7_52"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game53 -->
+
+    <ONE rdf:about="#game53">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_53"/>
+        <hasPiece rdf:resource="#wrook_d8_53"/>
+        <hasPiece rdf:resource="#bking_a1_53"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game54 -->
+
+    <ONE rdf:about="#game54">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_e3_54"/>
+        <hasPiece rdf:resource="#bking_a2_54"/>
+        <hasPiece rdf:resource="#wking_c2_54"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game55 -->
+
+    <Game rdf:about="#game55">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_55"/>
+        <hasPiece rdf:resource="#wrook_e4_55"/>
+        <hasPiece rdf:resource="#bking_a1_55"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game56 -->
+
+    <Game rdf:about="#game56">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_56"/>
+        <hasPiece rdf:resource="#bking_a3_56"/>
+        <hasPiece rdf:resource="#wrook_e4_56"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game57 -->
+
+    <ONE rdf:about="#game57">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_e5_57"/>
+        <hasPiece rdf:resource="#wking_c2_57"/>
+        <hasPiece rdf:resource="#bking_a1_57"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game58 -->
+
+    <ONE rdf:about="#game58">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a1_58"/>
+        <hasPiece rdf:resource="#wking_c2_58"/>
+        <hasPiece rdf:resource="#wrook_e6_58"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game59 -->
+
+    <Game rdf:about="#game59">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_59"/>
+        <hasPiece rdf:resource="#wrook_e7_59"/>
+        <hasPiece rdf:resource="#bking_a1_59"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game6 -->
+
+    <ZERO rdf:about="#game6">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c1_6"/>
+        <hasPiece rdf:resource="#bking_a1_6"/>
+        <hasPiece rdf:resource="#wrook_a8_6"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game60 -->
+
+    <ONE rdf:about="#game60">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_e8_60"/>
+        <hasPiece rdf:resource="#wking_c2_60"/>
+        <hasPiece rdf:resource="#bking_a1_60"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game61 -->
+
+    <ONE rdf:about="#game61">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a2_61"/>
+        <hasPiece rdf:resource="#wrook_f3_61"/>
+        <hasPiece rdf:resource="#wking_c2_61"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game62 -->
+
+    <ONE rdf:about="#game62">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a1_62"/>
+        <hasPiece rdf:resource="#wking_c2_62"/>
+        <hasPiece rdf:resource="#wrook_f4_62"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game63 -->
+
+    <ONE rdf:about="#game63">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a3_63"/>
+        <hasPiece rdf:resource="#wrook_f4_63"/>
+        <hasPiece rdf:resource="#wking_c2_63"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game64 -->
+
+    <Game rdf:about="#game64">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_f5_64"/>
+        <hasPiece rdf:resource="#wking_c2_64"/>
+        <hasPiece rdf:resource="#bking_a1_64"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game65 -->
+
+    <Game rdf:about="#game65">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_65"/>
+        <hasPiece rdf:resource="#wrook_f6_65"/>
+        <hasPiece rdf:resource="#wking_c2_65"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game66 -->
+
+    <Game rdf:about="#game66">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_66"/>
+        <hasPiece rdf:resource="#wrook_f7_66"/>
+        <hasPiece rdf:resource="#wking_c2_66"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game67 -->
+
+    <ONE rdf:about="#game67">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_f8_67"/>
+        <hasPiece rdf:resource="#wking_c2_67"/>
+        <hasPiece rdf:resource="#bking_a1_67"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game68 -->
+
+    <Game rdf:about="#game68">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_68"/>
+        <hasPiece rdf:resource="#wrook_g3_68"/>
+        <hasPiece rdf:resource="#bking_a2_68"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game69 -->
+
+    <Game rdf:about="#game69">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_69"/>
+        <hasPiece rdf:resource="#wrook_g4_69"/>
+        <hasPiece rdf:resource="#wking_c2_69"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game7 -->
+
+    <ZERO rdf:about="#game7">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_7"/>
+        <hasPiece rdf:resource="#wrook_a3_7"/>
+        <hasPiece rdf:resource="#bking_a1_7"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game70 -->
+
+    <ONE rdf:about="#game70">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a3_70"/>
+        <hasPiece rdf:resource="#wrook_g4_70"/>
+        <hasPiece rdf:resource="#wking_c2_70"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game71 -->
+
+    <ONE rdf:about="#game71">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_g5_71"/>
+        <hasPiece rdf:resource="#bking_a1_71"/>
+        <hasPiece rdf:resource="#wking_c2_71"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game72 -->
+
+    <Game rdf:about="#game72">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_72"/>
+        <hasPiece rdf:resource="#wrook_g6_72"/>
+        <hasPiece rdf:resource="#wking_c2_72"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game73 -->
+
+    <Game rdf:about="#game73">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c2_73"/>
+        <hasPiece rdf:resource="#bking_a1_73"/>
+        <hasPiece rdf:resource="#wrook_g7_73"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game74 -->
+
+    <ONE rdf:about="#game74">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_a1_74"/>
+        <hasPiece rdf:resource="#wking_c2_74"/>
+        <hasPiece rdf:resource="#wrook_g8_74"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game75 -->
+
+    <Game rdf:about="#game75">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_h3_75"/>
+        <hasPiece rdf:resource="#wking_c2_75"/>
+        <hasPiece rdf:resource="#bking_a2_75"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game76 -->
+
+    <Game rdf:about="#game76">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_h4_76"/>
+        <hasPiece rdf:resource="#bking_a1_76"/>
+        <hasPiece rdf:resource="#wking_c2_76"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game77 -->
+
+    <ONE rdf:about="#game77">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_h4_77"/>
+        <hasPiece rdf:resource="#wking_c2_77"/>
+        <hasPiece rdf:resource="#bking_a3_77"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game78 -->
+
+    <Game rdf:about="#game78">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_a1_78"/>
+        <hasPiece rdf:resource="#wking_c2_78"/>
+        <hasPiece rdf:resource="#wrook_h5_78"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game79 -->
+
+    <Game rdf:about="#game79">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_h6_79"/>
+        <hasPiece rdf:resource="#bking_a1_79"/>
+        <hasPiece rdf:resource="#wking_c2_79"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game8 -->
+
+    <ZERO rdf:about="#game8">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c2_8"/>
+        <hasPiece rdf:resource="#bking_a1_8"/>
+        <hasPiece rdf:resource="#wrook_a4_8"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game80 -->
+
+    <Game rdf:about="#game80">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_h7_80"/>
+        <hasPiece rdf:resource="#wking_c2_80"/>
+        <hasPiece rdf:resource="#bking_a1_80"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game81 -->
+
+    <ONE rdf:about="#game81">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_h8_81"/>
+        <hasPiece rdf:resource="#wking_c2_81"/>
+        <hasPiece rdf:resource="#bking_a1_81"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game82 -->
+
+    <Game rdf:about="#game82">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_b1_82"/>
+        <hasPiece rdf:resource="#wrook_a3_82"/>
+        <hasPiece rdf:resource="#wking_c3_82"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game83 -->
+
+    <Game rdf:about="#game83">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_a4_83"/>
+        <hasPiece rdf:resource="#bking_b1_83"/>
+        <hasPiece rdf:resource="#wking_c3_83"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game84 -->
+
+    <Game rdf:about="#game84">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c3_84"/>
+        <hasPiece rdf:resource="#wrook_a5_84"/>
+        <hasPiece rdf:resource="#bking_b1_84"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game85 -->
+
+    <ONE rdf:about="#game85">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_a6_85"/>
+        <hasPiece rdf:resource="#bking_b1_85"/>
+        <hasPiece rdf:resource="#wking_c3_85"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game86 -->
+
+    <ONE rdf:about="#game86">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_b1_86"/>
+        <hasPiece rdf:resource="#wrook_a7_86"/>
+        <hasPiece rdf:resource="#wking_c3_86"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game87 -->
+
+    <ONE rdf:about="#game87">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_a8_87"/>
+        <hasPiece rdf:resource="#bking_b1_87"/>
+        <hasPiece rdf:resource="#wking_c3_87"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game88 -->
+
+    <ONE rdf:about="#game88">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_d1_88"/>
+        <hasPiece rdf:resource="#wking_c3_88"/>
+        <hasPiece rdf:resource="#wrook_e3_88"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game89 -->
+
+    <Game rdf:about="#game89">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_e4_89"/>
+        <hasPiece rdf:resource="#bking_d1_89"/>
+        <hasPiece rdf:resource="#wking_c3_89"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game9 -->
+
+    <Game rdf:about="#game9">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#bking_a2_9"/>
+        <hasPiece rdf:resource="#wrook_a4_9"/>
+        <hasPiece rdf:resource="#wking_c2_9"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game90 -->
+
+    <Game rdf:about="#game90">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_d1_90"/>
+        <hasPiece rdf:resource="#wrook_e5_90"/>
+        <hasPiece rdf:resource="#wking_c3_90"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game91 -->
+
+    <Game rdf:about="#game91">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_d1_91"/>
+        <hasPiece rdf:resource="#wrook_e6_91"/>
+        <hasPiece rdf:resource="#wking_c3_91"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game92 -->
+
+    <ONE rdf:about="#game92">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c3_92"/>
+        <hasPiece rdf:resource="#wrook_e7_92"/>
+        <hasPiece rdf:resource="#bking_d1_92"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game93 -->
+
+    <Game rdf:about="#game93">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_d1_93"/>
+        <hasPiece rdf:resource="#wking_c3_93"/>
+        <hasPiece rdf:resource="#wrook_e8_93"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game94 -->
+
+    <Game rdf:about="#game94">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_d3_94"/>
+        <hasPiece rdf:resource="#bking_c1_94"/>
+        <hasPiece rdf:resource="#wrook_b3_94"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game95 -->
+
+    <Game rdf:about="#game95">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#bking_c1_95"/>
+        <hasPiece rdf:resource="#wrook_b4_95"/>
+        <hasPiece rdf:resource="#wking_d3_95"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game96 -->
+
+    <Game rdf:about="#game96">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wrook_b5_96"/>
+        <hasPiece rdf:resource="#wking_d3_96"/>
+        <hasPiece rdf:resource="#bking_c1_96"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game97 -->
+
+    <ONE rdf:about="#game97">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_b6_97"/>
+        <hasPiece rdf:resource="#wking_d3_97"/>
+        <hasPiece rdf:resource="#bking_c1_97"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game98 -->
+
+    <Game rdf:about="#game98">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_d3_98"/>
+        <hasPiece rdf:resource="#wrook_b7_98"/>
+        <hasPiece rdf:resource="#bking_c1_98"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game99 -->
+
+    <ONE rdf:about="#game99">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#bking_c1_99"/>
+        <hasPiece rdf:resource="#wrook_b8_99"/>
+        <hasPiece rdf:resource="#wking_d3_99"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_1 -->
+
+    <WKing rdf:about="#wking_c1_1">
+        <fileDistance2 rdf:resource="#bking_a1_1"/>
+        <hasLowerRankThan rdf:resource="#wrook_a3_1"/>
+        <fileDistance2 rdf:resource="#wrook_a3_1"/>
+        <rankDistance0 rdf:resource="#bking_a1_1"/>
+        <rankDistance2 rdf:resource="#wrook_a3_1"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_2 -->
+
+    <WKing rdf:about="#wking_c1_2">
+        <hasLowerRankThan rdf:resource="#wrook_a4_2"/>
+        <rankDistance3 rdf:resource="#wrook_a4_2"/>
+        <fileDistance2 rdf:resource="#wrook_a4_2"/>
+        <rankDistance0 rdf:resource="#bking_a1_2"/>
+        <fileDistance2 rdf:resource="#bking_a1_2"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_28 -->
+
+    <WKing rdf:about="#wking_c1_28">
+        <rankDistance1 rdf:resource="#bking_a2_28"/>
+        <hasLowerRankThan rdf:resource="#wrook_c3_28"/>
+        <fileDistance2 rdf:resource="#bking_a2_28"/>
+        <rankDistance2 rdf:resource="#wrook_c3_28"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_28"/>
+        <fileDistance0 rdf:resource="#wrook_c3_28"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_29 -->
+
+    <WKing rdf:about="#wking_c1_29">
+        <rankDistance1 rdf:resource="#bking_a2_29"/>
+        <fileDistance2 rdf:resource="#bking_a2_29"/>
+        <fileDistance1 rdf:resource="#wrook_d3_29"/>
+        <hasLowerRankThan rdf:resource="#wrook_d3_29"/>
+        <rankDistance2 rdf:resource="#wrook_d3_29"/>
+        <hasLowerFileThan rdf:resource="#wrook_d3_29"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_29"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_3 -->
+
+    <WKing rdf:about="#wking_c1_3">
+        <rankDistance0 rdf:resource="#bking_a1_3"/>
+        <rankDistance4 rdf:resource="#wrook_a5_3"/>
+        <fileDistance2 rdf:resource="#bking_a1_3"/>
+        <hasLowerRankThan rdf:resource="#wrook_a5_3"/>
+        <fileDistance2 rdf:resource="#wrook_a5_3"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_30 -->
+
+    <WKing rdf:about="#wking_c1_30">
+        <rankDistance2 rdf:resource="#wrook_e3_30"/>
+        <fileDistance2 rdf:resource="#bking_a2_30"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_30"/>
+        <hasLowerRankThan rdf:resource="#wrook_e3_30"/>
+        <rankDistance1 rdf:resource="#bking_a2_30"/>
+        <fileDistance2 rdf:resource="#wrook_e3_30"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_30"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_31 -->
+
+    <WKing rdf:about="#wking_c1_31">
+        <rankDistance2 rdf:resource="#wrook_f3_31"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_31"/>
+        <rankDistance1 rdf:resource="#bking_a2_31"/>
+        <hasLowerFileThan rdf:resource="#wrook_f3_31"/>
+        <hasLowerRankThan rdf:resource="#wrook_f3_31"/>
+        <fileDistance3 rdf:resource="#wrook_f3_31"/>
+        <fileDistance2 rdf:resource="#bking_a2_31"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_32 -->
+
+    <WKing rdf:about="#wking_c1_32">
+        <rankDistance1 rdf:resource="#bking_a2_32"/>
+        <hasLowerFileThan rdf:resource="#wrook_g3_32"/>
+        <hasLowerRankThan rdf:resource="#wrook_g3_32"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_32"/>
+        <fileDistance4 rdf:resource="#wrook_g3_32"/>
+        <rankDistance2 rdf:resource="#wrook_g3_32"/>
+        <fileDistance2 rdf:resource="#bking_a2_32"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_33 -->
+
+    <WKing rdf:about="#wking_c1_33">
+        <hasLowerRankThan rdf:resource="#wrook_h3_33"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_33"/>
+        <fileDistance2 rdf:resource="#bking_a2_33"/>
+        <fileDistance5 rdf:resource="#wrook_h3_33"/>
+        <hasLowerFileThan rdf:resource="#wrook_h3_33"/>
+        <rankDistance2 rdf:resource="#wrook_h3_33"/>
+        <rankDistance1 rdf:resource="#bking_a2_33"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_4 -->
+
+    <WKing rdf:about="#wking_c1_4">
+        <rankDistance0 rdf:resource="#bking_a1_4"/>
+        <hasLowerRankThan rdf:resource="#wrook_a6_4"/>
+        <fileDistance2 rdf:resource="#wrook_a6_4"/>
+        <fileDistance2 rdf:resource="#bking_a1_4"/>
+        <rankDistance5 rdf:resource="#wrook_a6_4"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_5 -->
+
+    <WKing rdf:about="#wking_c1_5">
+        <rankDistance0 rdf:resource="#bking_a1_5"/>
+        <fileDistance2 rdf:resource="#wrook_a7_5"/>
+        <rankDistance6 rdf:resource="#wrook_a7_5"/>
+        <hasLowerRankThan rdf:resource="#wrook_a7_5"/>
+        <fileDistance2 rdf:resource="#bking_a1_5"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_6 -->
+
+    <WKing rdf:about="#wking_c1_6">
+        <hasLowerRankThan rdf:resource="#wrook_a8_6"/>
+        <fileDistance2 rdf:resource="#wrook_a8_6"/>
+        <rankDistance0 rdf:resource="#bking_a1_6"/>
+        <fileDistance2 rdf:resource="#bking_a1_6"/>
+        <rankDistance7 rdf:resource="#wrook_a8_6"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_10 -->
+
+    <WKing rdf:about="#wking_c2_10">
+        <fileDistance2 rdf:resource="#wrook_a5_10"/>
+        <rankDistance1 rdf:resource="#bking_a1_10"/>
+        <rankDistance3 rdf:resource="#wrook_a5_10"/>
+        <hasLowerRankThan rdf:resource="#wrook_a5_10"/>
+        <fileDistance2 rdf:resource="#bking_a1_10"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_11 -->
+
+    <WKing rdf:about="#wking_c2_11">
+        <hasLowerRankThan rdf:resource="#wrook_a5_11"/>
+        <fileDistance2 rdf:resource="#wrook_a5_11"/>
+        <rankDistance3 rdf:resource="#wrook_a5_11"/>
+        <rankDistance0 rdf:resource="#bking_a2_11"/>
+        <fileDistance2 rdf:resource="#bking_a2_11"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_12 -->
+
+    <WKing rdf:about="#wking_c2_12">
+        <hasLowerRankThan rdf:resource="#wrook_a6_12"/>
+        <fileDistance2 rdf:resource="#wrook_a6_12"/>
+        <rankDistance1 rdf:resource="#bking_a1_12"/>
+        <rankDistance4 rdf:resource="#wrook_a6_12"/>
+        <fileDistance2 rdf:resource="#bking_a1_12"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_13 -->
+
+    <WKing rdf:about="#wking_c2_13">
+        <fileDistance2 rdf:resource="#bking_a2_13"/>
+        <rankDistance0 rdf:resource="#bking_a2_13"/>
+        <rankDistance4 rdf:resource="#wrook_a6_13"/>
+        <fileDistance2 rdf:resource="#wrook_a6_13"/>
+        <hasLowerRankThan rdf:resource="#wrook_a6_13"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_14 -->
+
+    <WKing rdf:about="#wking_c2_14">
+        <rankDistance1 rdf:resource="#bking_a1_14"/>
+        <rankDistance5 rdf:resource="#wrook_a7_14"/>
+        <fileDistance2 rdf:resource="#bking_a1_14"/>
+        <fileDistance2 rdf:resource="#wrook_a7_14"/>
+        <hasLowerRankThan rdf:resource="#wrook_a7_14"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_15 -->
+
+    <WKing rdf:about="#wking_c2_15">
+        <rankDistance5 rdf:resource="#wrook_a7_15"/>
+        <fileDistance2 rdf:resource="#wrook_a7_15"/>
+        <hasLowerRankThan rdf:resource="#wrook_a7_15"/>
+        <rankDistance0 rdf:resource="#bking_a2_15"/>
+        <fileDistance2 rdf:resource="#bking_a2_15"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_16 -->
+
+    <WKing rdf:about="#wking_c2_16">
+        <rankDistance1 rdf:resource="#bking_a1_16"/>
+        <rankDistance6 rdf:resource="#wrook_a8_16"/>
+        <fileDistance2 rdf:resource="#bking_a1_16"/>
+        <fileDistance2 rdf:resource="#wrook_a8_16"/>
+        <hasLowerRankThan rdf:resource="#wrook_a8_16"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_17 -->
+
+    <WKing rdf:about="#wking_c2_17">
+        <fileDistance2 rdf:resource="#wrook_a8_17"/>
+        <hasLowerRankThan rdf:resource="#wrook_a8_17"/>
+        <fileDistance2 rdf:resource="#bking_a2_17"/>
+        <rankDistance6 rdf:resource="#wrook_a8_17"/>
+        <rankDistance0 rdf:resource="#bking_a2_17"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_34 -->
+
+    <WKing rdf:about="#wking_c2_34">
+        <fileDistance2 rdf:resource="#bking_a2_34"/>
+        <rankDistance1 rdf:resource="#wrook_b3_34"/>
+        <hasLowerRankThan rdf:resource="#wrook_b3_34"/>
+        <rankDistance0 rdf:resource="#bking_a2_34"/>
+        <fileDistance1 rdf:resource="#wrook_b3_34"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_35 -->
+
+    <WKing rdf:about="#wking_c2_35">
+        <fileDistance1 rdf:resource="#wrook_b4_35"/>
+        <fileDistance2 rdf:resource="#bking_a1_35"/>
+        <hasLowerRankThan rdf:resource="#wrook_b4_35"/>
+        <rankDistance2 rdf:resource="#wrook_b4_35"/>
+        <rankDistance1 rdf:resource="#bking_a1_35"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_36 -->
+
+    <WKing rdf:about="#wking_c2_36">
+        <fileDistance2 rdf:resource="#bking_a1_36"/>
+        <fileDistance1 rdf:resource="#wrook_b5_36"/>
+        <hasLowerRankThan rdf:resource="#wrook_b5_36"/>
+        <rankDistance1 rdf:resource="#bking_a1_36"/>
+        <rankDistance3 rdf:resource="#wrook_b5_36"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_37 -->
+
+    <WKing rdf:about="#wking_c2_37">
+        <hasLowerRankThan rdf:resource="#wrook_b6_37"/>
+        <fileDistance1 rdf:resource="#wrook_b6_37"/>
+        <rankDistance1 rdf:resource="#bking_a1_37"/>
+        <fileDistance2 rdf:resource="#bking_a1_37"/>
+        <rankDistance4 rdf:resource="#wrook_b6_37"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_38 -->
+
+    <WKing rdf:about="#wking_c2_38">
+        <fileDistance2 rdf:resource="#bking_a1_38"/>
+        <rankDistance5 rdf:resource="#wrook_b7_38"/>
+        <fileDistance1 rdf:resource="#wrook_b7_38"/>
+        <hasLowerRankThan rdf:resource="#wrook_b7_38"/>
+        <rankDistance1 rdf:resource="#bking_a1_38"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_39 -->
+
+    <WKing rdf:about="#wking_c2_39">
+        <hasLowerRankThan rdf:resource="#wrook_b8_39"/>
+        <rankDistance1 rdf:resource="#bking_a1_39"/>
+        <fileDistance1 rdf:resource="#wrook_b8_39"/>
+        <fileDistance2 rdf:resource="#bking_a1_39"/>
+        <rankDistance6 rdf:resource="#wrook_b8_39"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_40 -->
+
+    <WKing rdf:about="#wking_c2_40">
+        <fileDistance0 rdf:resource="#wrook_c3_40"/>
+        <rankDistance1 rdf:resource="#wrook_c3_40"/>
+        <rankDistance0 rdf:resource="#bking_a2_40"/>
+        <fileDistance2 rdf:resource="#bking_a2_40"/>
+        <hasLowerRankThan rdf:resource="#wrook_c3_40"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_41 -->
+
+    <WKing rdf:about="#wking_c2_41">
+        <hasLowerRankThan rdf:resource="#wrook_c4_41"/>
+        <rankDistance1 rdf:resource="#bking_a1_41"/>
+        <fileDistance0 rdf:resource="#wrook_c4_41"/>
+        <fileDistance2 rdf:resource="#bking_a1_41"/>
+        <rankDistance2 rdf:resource="#wrook_c4_41"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_42 -->
+
+    <WKing rdf:about="#wking_c2_42">
+        <rankDistance2 rdf:resource="#wrook_c4_42"/>
+        <fileDistance2 rdf:resource="#bking_a3_42"/>
+        <rankDistance1 rdf:resource="#bking_a3_42"/>
+        <hasLowerRankThan rdf:resource="#bking_a3_42"/>
+        <hasLowerRankThan rdf:resource="#wrook_c4_42"/>
+        <fileDistance0 rdf:resource="#wrook_c4_42"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_43 -->
+
+    <WKing rdf:about="#wking_c2_43">
+        <rankDistance1 rdf:resource="#bking_a1_43"/>
+        <hasLowerRankThan rdf:resource="#wrook_c5_43"/>
+        <fileDistance0 rdf:resource="#wrook_c5_43"/>
+        <fileDistance2 rdf:resource="#bking_a1_43"/>
+        <rankDistance3 rdf:resource="#wrook_c5_43"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_44 -->
+
+    <WKing rdf:about="#wking_c2_44">
+        <hasLowerRankThan rdf:resource="#wrook_c6_44"/>
+        <rankDistance1 rdf:resource="#bking_a1_44"/>
+        <fileDistance0 rdf:resource="#wrook_c6_44"/>
+        <fileDistance2 rdf:resource="#bking_a1_44"/>
+        <rankDistance4 rdf:resource="#wrook_c6_44"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_45 -->
+
+    <WKing rdf:about="#wking_c2_45">
+        <rankDistance1 rdf:resource="#bking_a1_45"/>
+        <fileDistance0 rdf:resource="#wrook_c7_45"/>
+        <rankDistance5 rdf:resource="#wrook_c7_45"/>
+        <hasLowerRankThan rdf:resource="#wrook_c7_45"/>
+        <fileDistance2 rdf:resource="#bking_a1_45"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_46 -->
+
+    <WKing rdf:about="#wking_c2_46">
+        <rankDistance6 rdf:resource="#wrook_c8_46"/>
+        <fileDistance2 rdf:resource="#bking_a1_46"/>
+        <fileDistance0 rdf:resource="#wrook_c8_46"/>
+        <rankDistance1 rdf:resource="#bking_a1_46"/>
+        <hasLowerRankThan rdf:resource="#wrook_c8_46"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_47 -->
+
+    <WKing rdf:about="#wking_c2_47">
+        <rankDistance1 rdf:resource="#wrook_d3_47"/>
+        <hasLowerFileThan rdf:resource="#wrook_d3_47"/>
+        <fileDistance2 rdf:resource="#bking_a2_47"/>
+        <hasLowerRankThan rdf:resource="#wrook_d3_47"/>
+        <rankDistance0 rdf:resource="#bking_a2_47"/>
+        <fileDistance1 rdf:resource="#wrook_d3_47"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_48 -->
+
+    <WKing rdf:about="#wking_c2_48">
+        <rankDistance2 rdf:resource="#wrook_d4_48"/>
+        <hasLowerRankThan rdf:resource="#wrook_d4_48"/>
+        <fileDistance1 rdf:resource="#wrook_d4_48"/>
+        <rankDistance1 rdf:resource="#bking_a1_48"/>
+        <fileDistance2 rdf:resource="#bking_a1_48"/>
+        <hasLowerFileThan rdf:resource="#wrook_d4_48"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_49 -->
+
+    <WKing rdf:about="#wking_c2_49">
+        <hasLowerRankThan rdf:resource="#wrook_d4_49"/>
+        <fileDistance2 rdf:resource="#bking_a3_49"/>
+        <fileDistance1 rdf:resource="#wrook_d4_49"/>
+        <hasLowerFileThan rdf:resource="#wrook_d4_49"/>
+        <rankDistance2 rdf:resource="#wrook_d4_49"/>
+        <hasLowerRankThan rdf:resource="#bking_a3_49"/>
+        <rankDistance1 rdf:resource="#bking_a3_49"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_50 -->
+
+    <WKing rdf:about="#wking_c2_50">
+        <hasLowerFileThan rdf:resource="#wrook_d5_50"/>
+        <fileDistance2 rdf:resource="#bking_a1_50"/>
+        <fileDistance1 rdf:resource="#wrook_d5_50"/>
+        <rankDistance1 rdf:resource="#bking_a1_50"/>
+        <hasLowerRankThan rdf:resource="#wrook_d5_50"/>
+        <rankDistance3 rdf:resource="#wrook_d5_50"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_51 -->
+
+    <WKing rdf:about="#wking_c2_51">
+        <hasLowerRankThan rdf:resource="#wrook_d6_51"/>
+        <fileDistance1 rdf:resource="#wrook_d6_51"/>
+        <fileDistance2 rdf:resource="#bking_a1_51"/>
+        <hasLowerFileThan rdf:resource="#wrook_d6_51"/>
+        <rankDistance4 rdf:resource="#wrook_d6_51"/>
+        <rankDistance1 rdf:resource="#bking_a1_51"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_52 -->
+
+    <WKing rdf:about="#wking_c2_52">
+        <hasLowerRankThan rdf:resource="#wrook_d7_52"/>
+        <hasLowerFileThan rdf:resource="#wrook_d7_52"/>
+        <rankDistance5 rdf:resource="#wrook_d7_52"/>
+        <fileDistance1 rdf:resource="#wrook_d7_52"/>
+        <rankDistance1 rdf:resource="#bking_a1_52"/>
+        <fileDistance2 rdf:resource="#bking_a1_52"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_53 -->
+
+    <WKing rdf:about="#wking_c2_53">
+        <rankDistance6 rdf:resource="#wrook_d8_53"/>
+        <hasLowerRankThan rdf:resource="#wrook_d8_53"/>
+        <fileDistance2 rdf:resource="#bking_a1_53"/>
+        <fileDistance1 rdf:resource="#wrook_d8_53"/>
+        <hasLowerFileThan rdf:resource="#wrook_d8_53"/>
+        <rankDistance1 rdf:resource="#bking_a1_53"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_54 -->
+
+    <WKing rdf:about="#wking_c2_54">
+        <fileDistance2 rdf:resource="#wrook_e3_54"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_54"/>
+        <rankDistance1 rdf:resource="#wrook_e3_54"/>
+        <rankDistance0 rdf:resource="#bking_a2_54"/>
+        <fileDistance2 rdf:resource="#bking_a2_54"/>
+        <hasLowerRankThan rdf:resource="#wrook_e3_54"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_55 -->
+
+    <WKing rdf:about="#wking_c2_55">
+        <rankDistance1 rdf:resource="#bking_a1_55"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_55"/>
+        <hasLowerFileThan rdf:resource="#wrook_e4_55"/>
+        <rankDistance2 rdf:resource="#wrook_e4_55"/>
+        <fileDistance2 rdf:resource="#wrook_e4_55"/>
+        <fileDistance2 rdf:resource="#bking_a1_55"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_56 -->
+
+    <WKing rdf:about="#wking_c2_56">
+        <fileDistance2 rdf:resource="#bking_a3_56"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_56"/>
+        <hasLowerRankThan rdf:resource="#bking_a3_56"/>
+        <rankDistance1 rdf:resource="#bking_a3_56"/>
+        <hasLowerFileThan rdf:resource="#wrook_e4_56"/>
+        <rankDistance2 rdf:resource="#wrook_e4_56"/>
+        <fileDistance2 rdf:resource="#wrook_e4_56"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_57 -->
+
+    <WKing rdf:about="#wking_c2_57">
+        <hasLowerRankThan rdf:resource="#wrook_e5_57"/>
+        <hasLowerFileThan rdf:resource="#wrook_e5_57"/>
+        <rankDistance1 rdf:resource="#bking_a1_57"/>
+        <rankDistance3 rdf:resource="#wrook_e5_57"/>
+        <fileDistance2 rdf:resource="#wrook_e5_57"/>
+        <fileDistance2 rdf:resource="#bking_a1_57"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_58 -->
+
+    <WKing rdf:about="#wking_c2_58">
+        <hasLowerFileThan rdf:resource="#wrook_e6_58"/>
+        <rankDistance1 rdf:resource="#bking_a1_58"/>
+        <fileDistance2 rdf:resource="#bking_a1_58"/>
+        <fileDistance2 rdf:resource="#wrook_e6_58"/>
+        <hasLowerRankThan rdf:resource="#wrook_e6_58"/>
+        <rankDistance4 rdf:resource="#wrook_e6_58"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_59 -->
+
+    <WKing rdf:about="#wking_c2_59">
+        <rankDistance5 rdf:resource="#wrook_e7_59"/>
+        <hasLowerFileThan rdf:resource="#wrook_e7_59"/>
+        <rankDistance1 rdf:resource="#bking_a1_59"/>
+        <fileDistance2 rdf:resource="#bking_a1_59"/>
+        <hasLowerRankThan rdf:resource="#wrook_e7_59"/>
+        <fileDistance2 rdf:resource="#wrook_e7_59"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_60 -->
+
+    <WKing rdf:about="#wking_c2_60">
+        <fileDistance2 rdf:resource="#wrook_e8_60"/>
+        <rankDistance6 rdf:resource="#wrook_e8_60"/>
+        <fileDistance2 rdf:resource="#bking_a1_60"/>
+        <rankDistance1 rdf:resource="#bking_a1_60"/>
+        <hasLowerRankThan rdf:resource="#wrook_e8_60"/>
+        <hasLowerFileThan rdf:resource="#wrook_e8_60"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_61 -->
+
+    <WKing rdf:about="#wking_c2_61">
+        <rankDistance1 rdf:resource="#wrook_f3_61"/>
+        <hasLowerFileThan rdf:resource="#wrook_f3_61"/>
+        <fileDistance3 rdf:resource="#wrook_f3_61"/>
+        <fileDistance2 rdf:resource="#bking_a2_61"/>
+        <rankDistance0 rdf:resource="#bking_a2_61"/>
+        <hasLowerRankThan rdf:resource="#wrook_f3_61"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_62 -->
+
+    <WKing rdf:about="#wking_c2_62">
+        <hasLowerRankThan rdf:resource="#wrook_f4_62"/>
+        <rankDistance1 rdf:resource="#bking_a1_62"/>
+        <fileDistance2 rdf:resource="#bking_a1_62"/>
+        <fileDistance3 rdf:resource="#wrook_f4_62"/>
+        <hasLowerFileThan rdf:resource="#wrook_f4_62"/>
+        <rankDistance2 rdf:resource="#wrook_f4_62"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_63 -->
+
+    <WKing rdf:about="#wking_c2_63">
+        <fileDistance2 rdf:resource="#bking_a3_63"/>
+        <rankDistance1 rdf:resource="#bking_a3_63"/>
+        <hasLowerRankThan rdf:resource="#bking_a3_63"/>
+        <fileDistance3 rdf:resource="#wrook_f4_63"/>
+        <hasLowerFileThan rdf:resource="#wrook_f4_63"/>
+        <rankDistance2 rdf:resource="#wrook_f4_63"/>
+        <hasLowerRankThan rdf:resource="#wrook_f4_63"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_64 -->
+
+    <WKing rdf:about="#wking_c2_64">
+        <rankDistance1 rdf:resource="#bking_a1_64"/>
+        <hasLowerFileThan rdf:resource="#wrook_f5_64"/>
+        <fileDistance3 rdf:resource="#wrook_f5_64"/>
+        <hasLowerRankThan rdf:resource="#wrook_f5_64"/>
+        <fileDistance2 rdf:resource="#bking_a1_64"/>
+        <rankDistance3 rdf:resource="#wrook_f5_64"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_65 -->
+
+    <WKing rdf:about="#wking_c2_65">
+        <hasLowerFileThan rdf:resource="#wrook_f6_65"/>
+        <hasLowerRankThan rdf:resource="#wrook_f6_65"/>
+        <rankDistance1 rdf:resource="#bking_a1_65"/>
+        <fileDistance2 rdf:resource="#bking_a1_65"/>
+        <fileDistance3 rdf:resource="#wrook_f6_65"/>
+        <rankDistance4 rdf:resource="#wrook_f6_65"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_66 -->
+
+    <WKing rdf:about="#wking_c2_66">
+        <rankDistance1 rdf:resource="#bking_a1_66"/>
+        <rankDistance5 rdf:resource="#wrook_f7_66"/>
+        <hasLowerRankThan rdf:resource="#wrook_f7_66"/>
+        <hasLowerFileThan rdf:resource="#wrook_f7_66"/>
+        <fileDistance3 rdf:resource="#wrook_f7_66"/>
+        <fileDistance2 rdf:resource="#bking_a1_66"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_67 -->
+
+    <WKing rdf:about="#wking_c2_67">
+        <rankDistance6 rdf:resource="#wrook_f8_67"/>
+        <fileDistance3 rdf:resource="#wrook_f8_67"/>
+        <fileDistance2 rdf:resource="#bking_a1_67"/>
+        <rankDistance1 rdf:resource="#bking_a1_67"/>
+        <hasLowerRankThan rdf:resource="#wrook_f8_67"/>
+        <hasLowerFileThan rdf:resource="#wrook_f8_67"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_68 -->
+
+    <WKing rdf:about="#wking_c2_68">
+        <hasLowerFileThan rdf:resource="#wrook_g3_68"/>
+        <rankDistance0 rdf:resource="#bking_a2_68"/>
+        <fileDistance4 rdf:resource="#wrook_g3_68"/>
+        <hasLowerRankThan rdf:resource="#wrook_g3_68"/>
+        <rankDistance1 rdf:resource="#wrook_g3_68"/>
+        <fileDistance2 rdf:resource="#bking_a2_68"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_69 -->
+
+    <WKing rdf:about="#wking_c2_69">
+        <hasLowerFileThan rdf:resource="#wrook_g4_69"/>
+        <fileDistance4 rdf:resource="#wrook_g4_69"/>
+        <rankDistance2 rdf:resource="#wrook_g4_69"/>
+        <hasLowerRankThan rdf:resource="#wrook_g4_69"/>
+        <rankDistance1 rdf:resource="#bking_a1_69"/>
+        <fileDistance2 rdf:resource="#bking_a1_69"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_7 -->
+
+    <WKing rdf:about="#wking_c2_7">
+        <fileDistance2 rdf:resource="#wrook_a3_7"/>
+        <hasLowerRankThan rdf:resource="#wrook_a3_7"/>
+        <rankDistance1 rdf:resource="#wrook_a3_7"/>
+        <rankDistance1 rdf:resource="#bking_a1_7"/>
+        <fileDistance2 rdf:resource="#bking_a1_7"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_70 -->
+
+    <WKing rdf:about="#wking_c2_70">
+        <hasLowerRankThan rdf:resource="#bking_a3_70"/>
+        <fileDistance2 rdf:resource="#bking_a3_70"/>
+        <hasLowerFileThan rdf:resource="#wrook_g4_70"/>
+        <hasLowerRankThan rdf:resource="#wrook_g4_70"/>
+        <rankDistance1 rdf:resource="#bking_a3_70"/>
+        <rankDistance2 rdf:resource="#wrook_g4_70"/>
+        <fileDistance4 rdf:resource="#wrook_g4_70"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_71 -->
+
+    <WKing rdf:about="#wking_c2_71">
+        <fileDistance2 rdf:resource="#bking_a1_71"/>
+        <fileDistance4 rdf:resource="#wrook_g5_71"/>
+        <rankDistance1 rdf:resource="#bking_a1_71"/>
+        <hasLowerRankThan rdf:resource="#wrook_g5_71"/>
+        <rankDistance3 rdf:resource="#wrook_g5_71"/>
+        <hasLowerFileThan rdf:resource="#wrook_g5_71"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_72 -->
+
+    <WKing rdf:about="#wking_c2_72">
+        <fileDistance4 rdf:resource="#wrook_g6_72"/>
+        <hasLowerRankThan rdf:resource="#wrook_g6_72"/>
+        <rankDistance4 rdf:resource="#wrook_g6_72"/>
+        <fileDistance2 rdf:resource="#bking_a1_72"/>
+        <hasLowerFileThan rdf:resource="#wrook_g6_72"/>
+        <rankDistance1 rdf:resource="#bking_a1_72"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_73 -->
+
+    <WKing rdf:about="#wking_c2_73">
+        <hasLowerFileThan rdf:resource="#wrook_g7_73"/>
+        <rankDistance5 rdf:resource="#wrook_g7_73"/>
+        <hasLowerRankThan rdf:resource="#wrook_g7_73"/>
+        <fileDistance2 rdf:resource="#bking_a1_73"/>
+        <fileDistance4 rdf:resource="#wrook_g7_73"/>
+        <rankDistance1 rdf:resource="#bking_a1_73"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_74 -->
+
+    <WKing rdf:about="#wking_c2_74">
+        <hasLowerFileThan rdf:resource="#wrook_g8_74"/>
+        <hasLowerRankThan rdf:resource="#wrook_g8_74"/>
+        <fileDistance4 rdf:resource="#wrook_g8_74"/>
+        <fileDistance2 rdf:resource="#bking_a1_74"/>
+        <rankDistance1 rdf:resource="#bking_a1_74"/>
+        <rankDistance6 rdf:resource="#wrook_g8_74"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_75 -->
+
+    <WKing rdf:about="#wking_c2_75">
+        <fileDistance2 rdf:resource="#bking_a2_75"/>
+        <rankDistance0 rdf:resource="#bking_a2_75"/>
+        <rankDistance1 rdf:resource="#wrook_h3_75"/>
+        <fileDistance5 rdf:resource="#wrook_h3_75"/>
+        <hasLowerRankThan rdf:resource="#wrook_h3_75"/>
+        <hasLowerFileThan rdf:resource="#wrook_h3_75"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_76 -->
+
+    <WKing rdf:about="#wking_c2_76">
+        <hasLowerRankThan rdf:resource="#wrook_h4_76"/>
+        <rankDistance1 rdf:resource="#bking_a1_76"/>
+        <rankDistance2 rdf:resource="#wrook_h4_76"/>
+        <fileDistance5 rdf:resource="#wrook_h4_76"/>
+        <fileDistance2 rdf:resource="#bking_a1_76"/>
+        <hasLowerFileThan rdf:resource="#wrook_h4_76"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_77 -->
+
+    <WKing rdf:about="#wking_c2_77">
+        <hasLowerFileThan rdf:resource="#wrook_h4_77"/>
+        <hasLowerRankThan rdf:resource="#bking_a3_77"/>
+        <rankDistance2 rdf:resource="#wrook_h4_77"/>
+        <rankDistance1 rdf:resource="#bking_a3_77"/>
+        <hasLowerRankThan rdf:resource="#wrook_h4_77"/>
+        <fileDistance2 rdf:resource="#bking_a3_77"/>
+        <fileDistance5 rdf:resource="#wrook_h4_77"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_78 -->
+
+    <WKing rdf:about="#wking_c2_78">
+        <rankDistance3 rdf:resource="#wrook_h5_78"/>
+        <rankDistance1 rdf:resource="#bking_a1_78"/>
+        <fileDistance2 rdf:resource="#bking_a1_78"/>
+        <hasLowerRankThan rdf:resource="#wrook_h5_78"/>
+        <fileDistance5 rdf:resource="#wrook_h5_78"/>
+        <hasLowerFileThan rdf:resource="#wrook_h5_78"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_79 -->
+
+    <WKing rdf:about="#wking_c2_79">
+        <hasLowerFileThan rdf:resource="#wrook_h6_79"/>
+        <rankDistance1 rdf:resource="#bking_a1_79"/>
+        <fileDistance5 rdf:resource="#wrook_h6_79"/>
+        <hasLowerRankThan rdf:resource="#wrook_h6_79"/>
+        <rankDistance4 rdf:resource="#wrook_h6_79"/>
+        <fileDistance2 rdf:resource="#bking_a1_79"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_8 -->
+
+    <WKing rdf:about="#wking_c2_8">
+        <hasLowerRankThan rdf:resource="#wrook_a4_8"/>
+        <rankDistance2 rdf:resource="#wrook_a4_8"/>
+        <fileDistance2 rdf:resource="#bking_a1_8"/>
+        <rankDistance1 rdf:resource="#bking_a1_8"/>
+        <fileDistance2 rdf:resource="#wrook_a4_8"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_80 -->
+
+    <WKing rdf:about="#wking_c2_80">
+        <hasLowerRankThan rdf:resource="#wrook_h7_80"/>
+        <rankDistance5 rdf:resource="#wrook_h7_80"/>
+        <hasLowerFileThan rdf:resource="#wrook_h7_80"/>
+        <fileDistance5 rdf:resource="#wrook_h7_80"/>
+        <rankDistance1 rdf:resource="#bking_a1_80"/>
+        <fileDistance2 rdf:resource="#bking_a1_80"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_81 -->
+
+    <WKing rdf:about="#wking_c2_81">
+        <rankDistance6 rdf:resource="#wrook_h8_81"/>
+        <hasLowerFileThan rdf:resource="#wrook_h8_81"/>
+        <fileDistance5 rdf:resource="#wrook_h8_81"/>
+        <rankDistance1 rdf:resource="#bking_a1_81"/>
+        <fileDistance2 rdf:resource="#bking_a1_81"/>
+        <hasLowerRankThan rdf:resource="#wrook_h8_81"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c2_9 -->
+
+    <WKing rdf:about="#wking_c2_9">
+        <rankDistance2 rdf:resource="#wrook_a4_9"/>
+        <fileDistance2 rdf:resource="#wrook_a4_9"/>
+        <fileDistance2 rdf:resource="#bking_a2_9"/>
+        <hasLowerRankThan rdf:resource="#wrook_a4_9"/>
+        <rankDistance0 rdf:resource="#bking_a2_9"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_18 -->
+
+    <WKing rdf:about="#wking_c3_18">
+        <fileDistance0 rdf:resource="#bking_c1_18"/>
+        <rankDistance2 rdf:resource="#bking_c1_18"/>
+        <rankDistance2 rdf:resource="#wrook_a1_18"/>
+        <fileDistance2 rdf:resource="#wrook_a1_18"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_19 -->
+
+    <WKing rdf:about="#wking_c3_19">
+        <hasLowerFileThan rdf:resource="#wrook_e1_19"/>
+        <fileDistance2 rdf:resource="#wrook_e1_19"/>
+        <rankDistance2 rdf:resource="#bking_c1_19"/>
+        <rankDistance2 rdf:resource="#wrook_e1_19"/>
+        <fileDistance0 rdf:resource="#bking_c1_19"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_20 -->
+
+    <WKing rdf:about="#wking_c3_20">
+        <fileDistance0 rdf:resource="#bking_c1_20"/>
+        <rankDistance2 rdf:resource="#wrook_f1_20"/>
+        <hasLowerFileThan rdf:resource="#wrook_f1_20"/>
+        <rankDistance2 rdf:resource="#bking_c1_20"/>
+        <fileDistance3 rdf:resource="#wrook_f1_20"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_21 -->
+
+    <WKing rdf:about="#wking_c3_21">
+        <rankDistance2 rdf:resource="#wrook_g1_21"/>
+        <rankDistance2 rdf:resource="#bking_c1_21"/>
+        <fileDistance4 rdf:resource="#wrook_g1_21"/>
+        <fileDistance0 rdf:resource="#bking_c1_21"/>
+        <hasLowerFileThan rdf:resource="#wrook_g1_21"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_22 -->
+
+    <WKing rdf:about="#wking_c3_22">
+        <fileDistance0 rdf:resource="#bking_c1_22"/>
+        <rankDistance2 rdf:resource="#bking_c1_22"/>
+        <rankDistance2 rdf:resource="#wrook_h1_22"/>
+        <hasLowerFileThan rdf:resource="#wrook_h1_22"/>
+        <fileDistance5 rdf:resource="#wrook_h1_22"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_82 -->
+
+    <WKing rdf:about="#wking_c3_82">
+        <fileDistance1 rdf:resource="#bking_b1_82"/>
+        <rankDistance0 rdf:resource="#wrook_a3_82"/>
+        <fileDistance2 rdf:resource="#wrook_a3_82"/>
+        <rankDistance2 rdf:resource="#bking_b1_82"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_83 -->
+
+    <WKing rdf:about="#wking_c3_83">
+        <rankDistance2 rdf:resource="#bking_b1_83"/>
+        <fileDistance1 rdf:resource="#bking_b1_83"/>
+        <fileDistance2 rdf:resource="#wrook_a4_83"/>
+        <rankDistance1 rdf:resource="#wrook_a4_83"/>
+        <hasLowerRankThan rdf:resource="#wrook_a4_83"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_84 -->
+
+    <WKing rdf:about="#wking_c3_84">
+        <rankDistance2 rdf:resource="#bking_b1_84"/>
+        <fileDistance2 rdf:resource="#wrook_a5_84"/>
+        <rankDistance2 rdf:resource="#wrook_a5_84"/>
+        <hasLowerRankThan rdf:resource="#wrook_a5_84"/>
+        <fileDistance1 rdf:resource="#bking_b1_84"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_85 -->
+
+    <WKing rdf:about="#wking_c3_85">
+        <fileDistance2 rdf:resource="#wrook_a6_85"/>
+        <hasLowerRankThan rdf:resource="#wrook_a6_85"/>
+        <rankDistance3 rdf:resource="#wrook_a6_85"/>
+        <rankDistance2 rdf:resource="#bking_b1_85"/>
+        <fileDistance1 rdf:resource="#bking_b1_85"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_86 -->
+
+    <WKing rdf:about="#wking_c3_86">
+        <rankDistance4 rdf:resource="#wrook_a7_86"/>
+        <rankDistance2 rdf:resource="#bking_b1_86"/>
+        <fileDistance1 rdf:resource="#bking_b1_86"/>
+        <hasLowerRankThan rdf:resource="#wrook_a7_86"/>
+        <fileDistance2 rdf:resource="#wrook_a7_86"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_87 -->
+
+    <WKing rdf:about="#wking_c3_87">
+        <rankDistance5 rdf:resource="#wrook_a8_87"/>
+        <fileDistance1 rdf:resource="#bking_b1_87"/>
+        <rankDistance2 rdf:resource="#bking_b1_87"/>
+        <hasLowerRankThan rdf:resource="#wrook_a8_87"/>
+        <fileDistance2 rdf:resource="#wrook_a8_87"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_88 -->
+
+    <WKing rdf:about="#wking_c3_88">
+        <rankDistance2 rdf:resource="#bking_d1_88"/>
+        <rankDistance0 rdf:resource="#wrook_e3_88"/>
+        <fileDistance2 rdf:resource="#wrook_e3_88"/>
+        <hasLowerFileThan rdf:resource="#bking_d1_88"/>
+        <fileDistance1 rdf:resource="#bking_d1_88"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_88"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_89 -->
+
+    <WKing rdf:about="#wking_c3_89">
+        <hasLowerFileThan rdf:resource="#bking_d1_89"/>
+        <fileDistance1 rdf:resource="#bking_d1_89"/>
+        <rankDistance1 rdf:resource="#wrook_e4_89"/>
+        <hasLowerFileThan rdf:resource="#wrook_e4_89"/>
+        <fileDistance2 rdf:resource="#wrook_e4_89"/>
+        <rankDistance2 rdf:resource="#bking_d1_89"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_89"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_90 -->
+
+    <WKing rdf:about="#wking_c3_90">
+        <fileDistance2 rdf:resource="#wrook_e5_90"/>
+        <rankDistance2 rdf:resource="#wrook_e5_90"/>
+        <fileDistance1 rdf:resource="#bking_d1_90"/>
+        <rankDistance2 rdf:resource="#bking_d1_90"/>
+        <hasLowerFileThan rdf:resource="#bking_d1_90"/>
+        <hasLowerFileThan rdf:resource="#wrook_e5_90"/>
+        <hasLowerRankThan rdf:resource="#wrook_e5_90"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_91 -->
+
+    <WKing rdf:about="#wking_c3_91">
+        <hasLowerRankThan rdf:resource="#wrook_e6_91"/>
+        <hasLowerFileThan rdf:resource="#wrook_e6_91"/>
+        <fileDistance2 rdf:resource="#wrook_e6_91"/>
+        <fileDistance1 rdf:resource="#bking_d1_91"/>
+        <rankDistance3 rdf:resource="#wrook_e6_91"/>
+        <rankDistance2 rdf:resource="#bking_d1_91"/>
+        <hasLowerFileThan rdf:resource="#bking_d1_91"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_92 -->
+
+    <WKing rdf:about="#wking_c3_92">
+        <hasLowerRankThan rdf:resource="#wrook_e7_92"/>
+        <fileDistance1 rdf:resource="#bking_d1_92"/>
+        <rankDistance4 rdf:resource="#wrook_e7_92"/>
+        <hasLowerFileThan rdf:resource="#wrook_e7_92"/>
+        <fileDistance2 rdf:resource="#wrook_e7_92"/>
+        <rankDistance2 rdf:resource="#bking_d1_92"/>
+        <hasLowerFileThan rdf:resource="#bking_d1_92"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c3_93 -->
+
+    <WKing rdf:about="#wking_c3_93">
+        <hasLowerFileThan rdf:resource="#bking_d1_93"/>
+        <rankDistance5 rdf:resource="#wrook_e8_93"/>
+        <rankDistance2 rdf:resource="#bking_d1_93"/>
+        <fileDistance2 rdf:resource="#wrook_e8_93"/>
+        <fileDistance1 rdf:resource="#bking_d1_93"/>
+        <hasLowerFileThan rdf:resource="#wrook_e8_93"/>
+        <hasLowerRankThan rdf:resource="#wrook_e8_93"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_100 -->
+
+    <WKing rdf:about="#wking_d3_100">
+        <fileDistance1 rdf:resource="#bking_e1_100"/>
+        <rankDistance2 rdf:resource="#bking_e1_100"/>
+        <fileDistance2 rdf:resource="#wrook_f3_100"/>
+        <rankDistance0 rdf:resource="#wrook_f3_100"/>
+        <hasLowerFileThan rdf:resource="#wrook_f3_100"/>
+        <hasLowerFileThan rdf:resource="#bking_e1_100"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_101 -->
+
+    <WKing rdf:about="#wking_d3_101">
+        <rankDistance1 rdf:resource="#wrook_f4_101"/>
+        <rankDistance2 rdf:resource="#bking_e1_101"/>
+        <hasLowerFileThan rdf:resource="#wrook_f4_101"/>
+        <hasLowerRankThan rdf:resource="#wrook_f4_101"/>
+        <hasLowerFileThan rdf:resource="#bking_e1_101"/>
+        <fileDistance2 rdf:resource="#wrook_f4_101"/>
+        <fileDistance1 rdf:resource="#bking_e1_101"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_102 -->
+
+    <WKing rdf:about="#wking_d3_102">
+        <rankDistance2 rdf:resource="#bking_e1_102"/>
+        <hasLowerFileThan rdf:resource="#bking_e1_102"/>
+        <hasLowerFileThan rdf:resource="#wrook_f5_102"/>
+        <fileDistance1 rdf:resource="#bking_e1_102"/>
+        <rankDistance2 rdf:resource="#wrook_f5_102"/>
+        <hasLowerRankThan rdf:resource="#wrook_f5_102"/>
+        <fileDistance2 rdf:resource="#wrook_f5_102"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_103 -->
+
+    <WKing rdf:about="#wking_d3_103">
+        <rankDistance3 rdf:resource="#wrook_f6_103"/>
+        <hasLowerFileThan rdf:resource="#wrook_f6_103"/>
+        <hasLowerRankThan rdf:resource="#wrook_f6_103"/>
+        <rankDistance2 rdf:resource="#bking_e1_103"/>
+        <hasLowerFileThan rdf:resource="#bking_e1_103"/>
+        <fileDistance2 rdf:resource="#wrook_f6_103"/>
+        <fileDistance1 rdf:resource="#bking_e1_103"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_104 -->
+
+    <WKing rdf:about="#wking_d3_104">
+        <fileDistance2 rdf:resource="#wrook_f7_104"/>
+        <fileDistance1 rdf:resource="#bking_e1_104"/>
+        <hasLowerRankThan rdf:resource="#wrook_f7_104"/>
+        <hasLowerFileThan rdf:resource="#bking_e1_104"/>
+        <rankDistance4 rdf:resource="#wrook_f7_104"/>
+        <hasLowerFileThan rdf:resource="#wrook_f7_104"/>
+        <rankDistance2 rdf:resource="#bking_e1_104"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_105 -->
+
+    <WKing rdf:about="#wking_d3_105">
+        <hasLowerFileThan rdf:resource="#wrook_f8_105"/>
+        <rankDistance2 rdf:resource="#bking_e1_105"/>
+        <hasLowerFileThan rdf:resource="#bking_e1_105"/>
+        <hasLowerRankThan rdf:resource="#wrook_f8_105"/>
+        <fileDistance1 rdf:resource="#bking_e1_105"/>
+        <fileDistance2 rdf:resource="#wrook_f8_105"/>
+        <rankDistance5 rdf:resource="#wrook_f8_105"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_23 -->
+
+    <WKing rdf:about="#wking_d3_23">
+        <rankDistance2 rdf:resource="#bking_d1_23"/>
+        <fileDistance0 rdf:resource="#bking_d1_23"/>
+        <rankDistance2 rdf:resource="#wrook_a1_23"/>
+        <fileDistance3 rdf:resource="#wrook_a1_23"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_24 -->
+
+    <WKing rdf:about="#wking_d3_24">
+        <rankDistance2 rdf:resource="#bking_d1_24"/>
+        <rankDistance2 rdf:resource="#wrook_b1_24"/>
+        <fileDistance2 rdf:resource="#wrook_b1_24"/>
+        <fileDistance0 rdf:resource="#bking_d1_24"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_25 -->
+
+    <WKing rdf:about="#wking_d3_25">
+        <hasLowerFileThan rdf:resource="#wrook_f1_25"/>
+        <fileDistance2 rdf:resource="#wrook_f1_25"/>
+        <rankDistance2 rdf:resource="#wrook_f1_25"/>
+        <fileDistance0 rdf:resource="#bking_d1_25"/>
+        <rankDistance2 rdf:resource="#bking_d1_25"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_26 -->
+
+    <WKing rdf:about="#wking_d3_26">
+        <rankDistance2 rdf:resource="#wrook_g1_26"/>
+        <fileDistance0 rdf:resource="#bking_d1_26"/>
+        <hasLowerFileThan rdf:resource="#wrook_g1_26"/>
+        <fileDistance3 rdf:resource="#wrook_g1_26"/>
+        <rankDistance2 rdf:resource="#bking_d1_26"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_27 -->
+
+    <WKing rdf:about="#wking_d3_27">
+        <hasLowerFileThan rdf:resource="#wrook_h1_27"/>
+        <rankDistance2 rdf:resource="#bking_d1_27"/>
+        <fileDistance4 rdf:resource="#wrook_h1_27"/>
+        <rankDistance2 rdf:resource="#wrook_h1_27"/>
+        <fileDistance0 rdf:resource="#bking_d1_27"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_94 -->
+
+    <WKing rdf:about="#wking_d3_94">
+        <fileDistance1 rdf:resource="#bking_c1_94"/>
+        <fileDistance2 rdf:resource="#wrook_b3_94"/>
+        <rankDistance0 rdf:resource="#wrook_b3_94"/>
+        <rankDistance2 rdf:resource="#bking_c1_94"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_95 -->
+
+    <WKing rdf:about="#wking_d3_95">
+        <rankDistance1 rdf:resource="#wrook_b4_95"/>
+        <hasLowerRankThan rdf:resource="#wrook_b4_95"/>
+        <fileDistance2 rdf:resource="#wrook_b4_95"/>
+        <fileDistance1 rdf:resource="#bking_c1_95"/>
+        <rankDistance2 rdf:resource="#bking_c1_95"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_96 -->
+
+    <WKing rdf:about="#wking_d3_96">
+        <rankDistance2 rdf:resource="#bking_c1_96"/>
+        <hasLowerRankThan rdf:resource="#wrook_b5_96"/>
+        <rankDistance2 rdf:resource="#wrook_b5_96"/>
+        <fileDistance1 rdf:resource="#bking_c1_96"/>
+        <fileDistance2 rdf:resource="#wrook_b5_96"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_97 -->
+
+    <WKing rdf:about="#wking_d3_97">
+        <fileDistance2 rdf:resource="#wrook_b6_97"/>
+        <rankDistance2 rdf:resource="#bking_c1_97"/>
+        <fileDistance1 rdf:resource="#bking_c1_97"/>
+        <rankDistance3 rdf:resource="#wrook_b6_97"/>
+        <hasLowerRankThan rdf:resource="#wrook_b6_97"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_98 -->
+
+    <WKing rdf:about="#wking_d3_98">
+        <fileDistance1 rdf:resource="#bking_c1_98"/>
+        <hasLowerRankThan rdf:resource="#wrook_b7_98"/>
+        <rankDistance4 rdf:resource="#wrook_b7_98"/>
+        <fileDistance2 rdf:resource="#wrook_b7_98"/>
+        <rankDistance2 rdf:resource="#bking_c1_98"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_99 -->
+
+    <WKing rdf:about="#wking_d3_99">
+        <rankDistance5 rdf:resource="#wrook_b8_99"/>
+        <rankDistance2 rdf:resource="#bking_c1_99"/>
+        <fileDistance2 rdf:resource="#wrook_b8_99"/>
+        <fileDistance1 rdf:resource="#bking_c1_99"/>
+        <hasLowerRankThan rdf:resource="#wrook_b8_99"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a1_18 -->
+
+    <WRook rdf:about="#wrook_a1_18">
+        <hasLowerFileThan rdf:resource="#wking_c3_18"/>
+        <hasLowerFileThan rdf:resource="#bking_c1_18"/>
+        <fileDistance2 rdf:resource="#bking_c1_18"/>
+        <rankDistance0 rdf:resource="#bking_c1_18"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_18"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a1_23 -->
+
+    <WRook rdf:about="#wrook_a1_23">
+        <hasLowerFileThan rdf:resource="#bking_d1_23"/>
+        <fileDistance3 rdf:resource="#bking_d1_23"/>
+        <rankDistance0 rdf:resource="#bking_d1_23"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_23"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_23"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a3_1 -->
+
+    <WRook rdf:about="#wrook_a3_1">
+        <fileDistance0 rdf:resource="#bking_a1_1"/>
+        <rankDistance2 rdf:resource="#bking_a1_1"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_1"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a3_7 -->
+
+    <WRook rdf:about="#wrook_a3_7">
+        <rankDistance2 rdf:resource="#bking_a1_7"/>
+        <fileDistance0 rdf:resource="#bking_a1_7"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_7"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a3_82 -->
+
+    <WRook rdf:about="#wrook_a3_82">
+        <rankDistance2 rdf:resource="#bking_b1_82"/>
+        <fileDistance1 rdf:resource="#bking_b1_82"/>
+        <hasLowerFileThan rdf:resource="#bking_b1_82"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_82"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a4_2 -->
+
+    <WRook rdf:about="#wrook_a4_2">
+        <hasLowerFileThan rdf:resource="#wking_c1_2"/>
+        <fileDistance0 rdf:resource="#bking_a1_2"/>
+        <rankDistance3 rdf:resource="#bking_a1_2"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a4_8 -->
+
+    <WRook rdf:about="#wrook_a4_8">
+        <fileDistance0 rdf:resource="#bking_a1_8"/>
+        <rankDistance3 rdf:resource="#bking_a1_8"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_8"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a4_83 -->
+
+    <WRook rdf:about="#wrook_a4_83">
+        <hasLowerFileThan rdf:resource="#bking_b1_83"/>
+        <fileDistance1 rdf:resource="#bking_b1_83"/>
+        <rankDistance3 rdf:resource="#bking_b1_83"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_83"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a4_9 -->
+
+    <WRook rdf:about="#wrook_a4_9">
+        <fileDistance0 rdf:resource="#bking_a2_9"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_9"/>
+        <rankDistance2 rdf:resource="#bking_a2_9"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a5_10 -->
+
+    <WRook rdf:about="#wrook_a5_10">
+        <hasLowerFileThan rdf:resource="#wking_c2_10"/>
+        <rankDistance4 rdf:resource="#bking_a1_10"/>
+        <fileDistance0 rdf:resource="#bking_a1_10"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a5_11 -->
+
+    <WRook rdf:about="#wrook_a5_11">
+        <hasLowerFileThan rdf:resource="#wking_c2_11"/>
+        <fileDistance0 rdf:resource="#bking_a2_11"/>
+        <rankDistance3 rdf:resource="#bking_a2_11"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a5_3 -->
+
+    <WRook rdf:about="#wrook_a5_3">
+        <fileDistance0 rdf:resource="#bking_a1_3"/>
+        <rankDistance4 rdf:resource="#bking_a1_3"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_3"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a5_84 -->
+
+    <WRook rdf:about="#wrook_a5_84">
+        <fileDistance1 rdf:resource="#bking_b1_84"/>
+        <rankDistance4 rdf:resource="#bking_b1_84"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_84"/>
+        <hasLowerFileThan rdf:resource="#bking_b1_84"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a6_12 -->
+
+    <WRook rdf:about="#wrook_a6_12">
+        <rankDistance5 rdf:resource="#bking_a1_12"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_12"/>
+        <fileDistance0 rdf:resource="#bking_a1_12"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a6_13 -->
+
+    <WRook rdf:about="#wrook_a6_13">
+        <rankDistance4 rdf:resource="#bking_a2_13"/>
+        <fileDistance0 rdf:resource="#bking_a2_13"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_13"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a6_4 -->
+
+    <WRook rdf:about="#wrook_a6_4">
+        <fileDistance0 rdf:resource="#bking_a1_4"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_4"/>
+        <rankDistance5 rdf:resource="#bking_a1_4"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a6_85 -->
+
+    <WRook rdf:about="#wrook_a6_85">
+        <hasLowerFileThan rdf:resource="#wking_c3_85"/>
+        <rankDistance5 rdf:resource="#bking_b1_85"/>
+        <fileDistance1 rdf:resource="#bking_b1_85"/>
+        <hasLowerFileThan rdf:resource="#bking_b1_85"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a7_14 -->
+
+    <WRook rdf:about="#wrook_a7_14">
+        <rankDistance6 rdf:resource="#bking_a1_14"/>
+        <fileDistance0 rdf:resource="#bking_a1_14"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_14"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a7_15 -->
+
+    <WRook rdf:about="#wrook_a7_15">
+        <fileDistance0 rdf:resource="#bking_a2_15"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_15"/>
+        <rankDistance5 rdf:resource="#bking_a2_15"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a7_5 -->
+
+    <WRook rdf:about="#wrook_a7_5">
+        <hasLowerFileThan rdf:resource="#wking_c1_5"/>
+        <fileDistance0 rdf:resource="#bking_a1_5"/>
+        <rankDistance6 rdf:resource="#bking_a1_5"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a7_86 -->
+
+    <WRook rdf:about="#wrook_a7_86">
+        <hasLowerFileThan rdf:resource="#wking_c3_86"/>
+        <hasLowerFileThan rdf:resource="#bking_b1_86"/>
+        <rankDistance6 rdf:resource="#bking_b1_86"/>
+        <fileDistance1 rdf:resource="#bking_b1_86"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a8_16 -->
+
+    <WRook rdf:about="#wrook_a8_16">
+        <fileDistance0 rdf:resource="#bking_a1_16"/>
+        <rankDistance7 rdf:resource="#bking_a1_16"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_16"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a8_17 -->
+
+    <WRook rdf:about="#wrook_a8_17">
+        <rankDistance6 rdf:resource="#bking_a2_17"/>
+        <fileDistance0 rdf:resource="#bking_a2_17"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_17"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a8_6 -->
+
+    <WRook rdf:about="#wrook_a8_6">
+        <hasLowerFileThan rdf:resource="#wking_c1_6"/>
+        <rankDistance7 rdf:resource="#bking_a1_6"/>
+        <fileDistance0 rdf:resource="#bking_a1_6"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_a8_87 -->
+
+    <WRook rdf:about="#wrook_a8_87">
+        <rankDistance7 rdf:resource="#bking_b1_87"/>
+        <hasLowerFileThan rdf:resource="#wking_c3_87"/>
+        <hasLowerFileThan rdf:resource="#bking_b1_87"/>
+        <fileDistance1 rdf:resource="#bking_b1_87"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b1_24 -->
+
+    <WRook rdf:about="#wrook_b1_24">
+        <rankDistance0 rdf:resource="#bking_d1_24"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_24"/>
+        <fileDistance2 rdf:resource="#bking_d1_24"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_24"/>
+        <hasLowerFileThan rdf:resource="#bking_d1_24"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b3_34 -->
+
+    <WRook rdf:about="#wrook_b3_34">
+        <rankDistance1 rdf:resource="#bking_a2_34"/>
+        <fileDistance1 rdf:resource="#bking_a2_34"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_34"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b3_94 -->
+
+    <WRook rdf:about="#wrook_b3_94">
+        <hasLowerFileThan rdf:resource="#wking_d3_94"/>
+        <rankDistance2 rdf:resource="#bking_c1_94"/>
+        <fileDistance1 rdf:resource="#bking_c1_94"/>
+        <hasLowerFileThan rdf:resource="#bking_c1_94"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b4_35 -->
+
+    <WRook rdf:about="#wrook_b4_35">
+        <hasLowerFileThan rdf:resource="#wking_c2_35"/>
+        <rankDistance3 rdf:resource="#bking_a1_35"/>
+        <fileDistance1 rdf:resource="#bking_a1_35"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b4_95 -->
+
+    <WRook rdf:about="#wrook_b4_95">
+        <hasLowerFileThan rdf:resource="#bking_c1_95"/>
+        <rankDistance3 rdf:resource="#bking_c1_95"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_95"/>
+        <fileDistance1 rdf:resource="#bking_c1_95"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b5_36 -->
+
+    <WRook rdf:about="#wrook_b5_36">
+        <rankDistance4 rdf:resource="#bking_a1_36"/>
+        <fileDistance1 rdf:resource="#bking_a1_36"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_36"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b5_96 -->
+
+    <WRook rdf:about="#wrook_b5_96">
+        <hasLowerFileThan rdf:resource="#wking_d3_96"/>
+        <fileDistance1 rdf:resource="#bking_c1_96"/>
+        <hasLowerFileThan rdf:resource="#bking_c1_96"/>
+        <rankDistance4 rdf:resource="#bking_c1_96"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b6_37 -->
+
+    <WRook rdf:about="#wrook_b6_37">
+        <fileDistance1 rdf:resource="#bking_a1_37"/>
+        <rankDistance5 rdf:resource="#bking_a1_37"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_37"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b6_97 -->
+
+    <WRook rdf:about="#wrook_b6_97">
+        <fileDistance1 rdf:resource="#bking_c1_97"/>
+        <hasLowerFileThan rdf:resource="#bking_c1_97"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_97"/>
+        <rankDistance5 rdf:resource="#bking_c1_97"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b7_38 -->
+
+    <WRook rdf:about="#wrook_b7_38">
+        <rankDistance6 rdf:resource="#bking_a1_38"/>
+        <fileDistance1 rdf:resource="#bking_a1_38"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_38"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b7_98 -->
+
+    <WRook rdf:about="#wrook_b7_98">
+        <hasLowerFileThan rdf:resource="#bking_c1_98"/>
+        <fileDistance1 rdf:resource="#bking_c1_98"/>
+        <rankDistance6 rdf:resource="#bking_c1_98"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_98"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b8_39 -->
+
+    <WRook rdf:about="#wrook_b8_39">
+        <rankDistance7 rdf:resource="#bking_a1_39"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_39"/>
+        <fileDistance1 rdf:resource="#bking_a1_39"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_b8_99 -->
+
+    <WRook rdf:about="#wrook_b8_99">
+        <fileDistance1 rdf:resource="#bking_c1_99"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_99"/>
+        <rankDistance7 rdf:resource="#bking_c1_99"/>
+        <hasLowerFileThan rdf:resource="#bking_c1_99"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c3_28 -->
+
+    <WRook rdf:about="#wrook_c3_28">
+        <fileDistance2 rdf:resource="#bking_a2_28"/>
+        <rankDistance1 rdf:resource="#bking_a2_28"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c3_40 -->
+
+    <WRook rdf:about="#wrook_c3_40">
+        <rankDistance1 rdf:resource="#bking_a2_40"/>
+        <fileDistance2 rdf:resource="#bking_a2_40"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c4_41 -->
+
+    <WRook rdf:about="#wrook_c4_41">
+        <fileDistance2 rdf:resource="#bking_a1_41"/>
+        <rankDistance3 rdf:resource="#bking_a1_41"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c4_42 -->
+
+    <WRook rdf:about="#wrook_c4_42">
+        <fileDistance2 rdf:resource="#bking_a3_42"/>
+        <rankDistance1 rdf:resource="#bking_a3_42"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c5_43 -->
+
+    <WRook rdf:about="#wrook_c5_43">
+        <fileDistance2 rdf:resource="#bking_a1_43"/>
+        <rankDistance4 rdf:resource="#bking_a1_43"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c6_44 -->
+
+    <WRook rdf:about="#wrook_c6_44">
+        <fileDistance2 rdf:resource="#bking_a1_44"/>
+        <rankDistance5 rdf:resource="#bking_a1_44"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c7_45 -->
+
+    <WRook rdf:about="#wrook_c7_45">
+        <rankDistance6 rdf:resource="#bking_a1_45"/>
+        <fileDistance2 rdf:resource="#bking_a1_45"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c8_46 -->
+
+    <WRook rdf:about="#wrook_c8_46">
+        <fileDistance2 rdf:resource="#bking_a1_46"/>
+        <rankDistance7 rdf:resource="#bking_a1_46"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d3_29 -->
+
+    <WRook rdf:about="#wrook_d3_29">
+        <fileDistance3 rdf:resource="#bking_a2_29"/>
+        <rankDistance1 rdf:resource="#bking_a2_29"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d3_47 -->
+
+    <WRook rdf:about="#wrook_d3_47">
+        <rankDistance1 rdf:resource="#bking_a2_47"/>
+        <fileDistance3 rdf:resource="#bking_a2_47"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d4_48 -->
+
+    <WRook rdf:about="#wrook_d4_48">
+        <rankDistance3 rdf:resource="#bking_a1_48"/>
+        <fileDistance3 rdf:resource="#bking_a1_48"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d4_49 -->
+
+    <WRook rdf:about="#wrook_d4_49">
+        <rankDistance1 rdf:resource="#bking_a3_49"/>
+        <fileDistance3 rdf:resource="#bking_a3_49"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d5_50 -->
+
+    <WRook rdf:about="#wrook_d5_50">
+        <rankDistance4 rdf:resource="#bking_a1_50"/>
+        <fileDistance3 rdf:resource="#bking_a1_50"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d6_51 -->
+
+    <WRook rdf:about="#wrook_d6_51">
+        <fileDistance3 rdf:resource="#bking_a1_51"/>
+        <rankDistance5 rdf:resource="#bking_a1_51"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d7_52 -->
+
+    <WRook rdf:about="#wrook_d7_52">
+        <rankDistance6 rdf:resource="#bking_a1_52"/>
+        <fileDistance3 rdf:resource="#bking_a1_52"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d8_53 -->
+
+    <WRook rdf:about="#wrook_d8_53">
+        <rankDistance7 rdf:resource="#bking_a1_53"/>
+        <fileDistance3 rdf:resource="#bking_a1_53"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e1_19 -->
+
+    <WRook rdf:about="#wrook_e1_19">
+        <hasLowerRankThan rdf:resource="#wking_c3_19"/>
+        <rankDistance0 rdf:resource="#bking_c1_19"/>
+        <fileDistance2 rdf:resource="#bking_c1_19"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e3_30 -->
+
+    <WRook rdf:about="#wrook_e3_30">
+        <rankDistance1 rdf:resource="#bking_a2_30"/>
+        <fileDistance4 rdf:resource="#bking_a2_30"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e3_54 -->
+
+    <WRook rdf:about="#wrook_e3_54">
+        <rankDistance1 rdf:resource="#bking_a2_54"/>
+        <fileDistance4 rdf:resource="#bking_a2_54"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e3_88 -->
+
+    <WRook rdf:about="#wrook_e3_88">
+        <fileDistance1 rdf:resource="#bking_d1_88"/>
+        <rankDistance2 rdf:resource="#bking_d1_88"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e4_55 -->
+
+    <WRook rdf:about="#wrook_e4_55">
+        <fileDistance4 rdf:resource="#bking_a1_55"/>
+        <rankDistance3 rdf:resource="#bking_a1_55"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e4_56 -->
+
+    <WRook rdf:about="#wrook_e4_56">
+        <rankDistance1 rdf:resource="#bking_a3_56"/>
+        <fileDistance4 rdf:resource="#bking_a3_56"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e4_89 -->
+
+    <WRook rdf:about="#wrook_e4_89">
+        <fileDistance1 rdf:resource="#bking_d1_89"/>
+        <rankDistance3 rdf:resource="#bking_d1_89"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e5_57 -->
+
+    <WRook rdf:about="#wrook_e5_57">
+        <fileDistance4 rdf:resource="#bking_a1_57"/>
+        <rankDistance4 rdf:resource="#bking_a1_57"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e5_90 -->
+
+    <WRook rdf:about="#wrook_e5_90">
+        <fileDistance1 rdf:resource="#bking_d1_90"/>
+        <rankDistance4 rdf:resource="#bking_d1_90"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e6_58 -->
+
+    <WRook rdf:about="#wrook_e6_58">
+        <fileDistance4 rdf:resource="#bking_a1_58"/>
+        <rankDistance5 rdf:resource="#bking_a1_58"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e6_91 -->
+
+    <WRook rdf:about="#wrook_e6_91">
+        <rankDistance5 rdf:resource="#bking_d1_91"/>
+        <fileDistance1 rdf:resource="#bking_d1_91"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e7_59 -->
+
+    <WRook rdf:about="#wrook_e7_59">
+        <rankDistance6 rdf:resource="#bking_a1_59"/>
+        <fileDistance4 rdf:resource="#bking_a1_59"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e7_92 -->
+
+    <WRook rdf:about="#wrook_e7_92">
+        <rankDistance6 rdf:resource="#bking_d1_92"/>
+        <fileDistance1 rdf:resource="#bking_d1_92"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e8_60 -->
+
+    <WRook rdf:about="#wrook_e8_60">
+        <fileDistance4 rdf:resource="#bking_a1_60"/>
+        <rankDistance7 rdf:resource="#bking_a1_60"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e8_93 -->
+
+    <WRook rdf:about="#wrook_e8_93">
+        <fileDistance1 rdf:resource="#bking_d1_93"/>
+        <rankDistance7 rdf:resource="#bking_d1_93"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f1_20 -->
+
+    <WRook rdf:about="#wrook_f1_20">
+        <fileDistance3 rdf:resource="#bking_c1_20"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_20"/>
+        <rankDistance0 rdf:resource="#bking_c1_20"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f1_25 -->
+
+    <WRook rdf:about="#wrook_f1_25">
+        <hasLowerRankThan rdf:resource="#wking_d3_25"/>
+        <rankDistance0 rdf:resource="#bking_d1_25"/>
+        <fileDistance2 rdf:resource="#bking_d1_25"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f3_100 -->
+
+    <WRook rdf:about="#wrook_f3_100">
+        <rankDistance2 rdf:resource="#bking_e1_100"/>
+        <fileDistance1 rdf:resource="#bking_e1_100"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f3_31 -->
+
+    <WRook rdf:about="#wrook_f3_31">
+        <rankDistance1 rdf:resource="#bking_a2_31"/>
+        <fileDistance5 rdf:resource="#bking_a2_31"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f3_61 -->
+
+    <WRook rdf:about="#wrook_f3_61">
+        <rankDistance1 rdf:resource="#bking_a2_61"/>
+        <fileDistance5 rdf:resource="#bking_a2_61"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f4_101 -->
+
+    <WRook rdf:about="#wrook_f4_101">
+        <rankDistance3 rdf:resource="#bking_e1_101"/>
+        <fileDistance1 rdf:resource="#bking_e1_101"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f4_62 -->
+
+    <WRook rdf:about="#wrook_f4_62">
+        <rankDistance3 rdf:resource="#bking_a1_62"/>
+        <fileDistance5 rdf:resource="#bking_a1_62"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f4_63 -->
+
+    <WRook rdf:about="#wrook_f4_63">
+        <fileDistance5 rdf:resource="#bking_a3_63"/>
+        <rankDistance1 rdf:resource="#bking_a3_63"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f5_102 -->
+
+    <WRook rdf:about="#wrook_f5_102">
+        <fileDistance1 rdf:resource="#bking_e1_102"/>
+        <rankDistance4 rdf:resource="#bking_e1_102"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f5_64 -->
+
+    <WRook rdf:about="#wrook_f5_64">
+        <rankDistance4 rdf:resource="#bking_a1_64"/>
+        <fileDistance5 rdf:resource="#bking_a1_64"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f6_103 -->
+
+    <WRook rdf:about="#wrook_f6_103">
+        <rankDistance5 rdf:resource="#bking_e1_103"/>
+        <fileDistance1 rdf:resource="#bking_e1_103"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f6_65 -->
+
+    <WRook rdf:about="#wrook_f6_65">
+        <fileDistance5 rdf:resource="#bking_a1_65"/>
+        <rankDistance5 rdf:resource="#bking_a1_65"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f7_104 -->
+
+    <WRook rdf:about="#wrook_f7_104">
+        <rankDistance6 rdf:resource="#bking_e1_104"/>
+        <fileDistance1 rdf:resource="#bking_e1_104"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f7_66 -->
+
+    <WRook rdf:about="#wrook_f7_66">
+        <fileDistance5 rdf:resource="#bking_a1_66"/>
+        <rankDistance6 rdf:resource="#bking_a1_66"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f8_105 -->
+
+    <WRook rdf:about="#wrook_f8_105">
+        <rankDistance7 rdf:resource="#bking_e1_105"/>
+        <fileDistance1 rdf:resource="#bking_e1_105"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f8_67 -->
+
+    <WRook rdf:about="#wrook_f8_67">
+        <fileDistance5 rdf:resource="#bking_a1_67"/>
+        <rankDistance7 rdf:resource="#bking_a1_67"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g1_21 -->
+
+    <WRook rdf:about="#wrook_g1_21">
+        <hasLowerRankThan rdf:resource="#wking_c3_21"/>
+        <rankDistance0 rdf:resource="#bking_c1_21"/>
+        <fileDistance4 rdf:resource="#bking_c1_21"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g1_26 -->
+
+    <WRook rdf:about="#wrook_g1_26">
+        <fileDistance3 rdf:resource="#bking_d1_26"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_26"/>
+        <rankDistance0 rdf:resource="#bking_d1_26"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g3_32 -->
+
+    <WRook rdf:about="#wrook_g3_32">
+        <rankDistance1 rdf:resource="#bking_a2_32"/>
+        <fileDistance6 rdf:resource="#bking_a2_32"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g3_68 -->
+
+    <WRook rdf:about="#wrook_g3_68">
+        <rankDistance1 rdf:resource="#bking_a2_68"/>
+        <fileDistance6 rdf:resource="#bking_a2_68"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g4_69 -->
+
+    <WRook rdf:about="#wrook_g4_69">
+        <fileDistance6 rdf:resource="#bking_a1_69"/>
+        <rankDistance3 rdf:resource="#bking_a1_69"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g4_70 -->
+
+    <WRook rdf:about="#wrook_g4_70">
+        <rankDistance1 rdf:resource="#bking_a3_70"/>
+        <fileDistance6 rdf:resource="#bking_a3_70"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g5_71 -->
+
+    <WRook rdf:about="#wrook_g5_71">
+        <fileDistance6 rdf:resource="#bking_a1_71"/>
+        <rankDistance4 rdf:resource="#bking_a1_71"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g6_72 -->
+
+    <WRook rdf:about="#wrook_g6_72">
+        <fileDistance6 rdf:resource="#bking_a1_72"/>
+        <rankDistance5 rdf:resource="#bking_a1_72"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g7_73 -->
+
+    <WRook rdf:about="#wrook_g7_73">
+        <rankDistance6 rdf:resource="#bking_a1_73"/>
+        <fileDistance6 rdf:resource="#bking_a1_73"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g8_74 -->
+
+    <WRook rdf:about="#wrook_g8_74">
+        <rankDistance7 rdf:resource="#bking_a1_74"/>
+        <fileDistance6 rdf:resource="#bking_a1_74"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h1_22 -->
+
+    <WRook rdf:about="#wrook_h1_22">
+        <rankDistance0 rdf:resource="#bking_c1_22"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_22"/>
+        <fileDistance5 rdf:resource="#bking_c1_22"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h1_27 -->
+
+    <WRook rdf:about="#wrook_h1_27">
+        <fileDistance4 rdf:resource="#bking_d1_27"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_27"/>
+        <rankDistance0 rdf:resource="#bking_d1_27"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h3_33 -->
+
+    <WRook rdf:about="#wrook_h3_33">
+        <rankDistance1 rdf:resource="#bking_a2_33"/>
+        <fileDistance7 rdf:resource="#bking_a2_33"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h3_75 -->
+
+    <WRook rdf:about="#wrook_h3_75">
+        <fileDistance7 rdf:resource="#bking_a2_75"/>
+        <rankDistance1 rdf:resource="#bking_a2_75"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h4_76 -->
+
+    <WRook rdf:about="#wrook_h4_76">
+        <fileDistance7 rdf:resource="#bking_a1_76"/>
+        <rankDistance3 rdf:resource="#bking_a1_76"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h4_77 -->
+
+    <WRook rdf:about="#wrook_h4_77">
+        <rankDistance1 rdf:resource="#bking_a3_77"/>
+        <fileDistance7 rdf:resource="#bking_a3_77"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h5_78 -->
+
+    <WRook rdf:about="#wrook_h5_78">
+        <rankDistance4 rdf:resource="#bking_a1_78"/>
+        <fileDistance7 rdf:resource="#bking_a1_78"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h6_79 -->
+
+    <WRook rdf:about="#wrook_h6_79">
+        <rankDistance5 rdf:resource="#bking_a1_79"/>
+        <fileDistance7 rdf:resource="#bking_a1_79"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h7_80 -->
+
+    <WRook rdf:about="#wrook_h7_80">
+        <rankDistance6 rdf:resource="#bking_a1_80"/>
+        <fileDistance7 rdf:resource="#bking_a1_80"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h8_81 -->
+
+    <WRook rdf:about="#wrook_h8_81">
+        <rankDistance7 rdf:resource="#bking_a1_81"/>
+        <fileDistance7 rdf:resource="#bking_a1_81"/>
+    </WRook>
+</rdf:RDF>

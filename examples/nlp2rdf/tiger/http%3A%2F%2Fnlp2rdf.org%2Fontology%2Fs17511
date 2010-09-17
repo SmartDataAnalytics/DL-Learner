@@ -1,0 +1,394 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.1="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w22_Mark">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Mark</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w21_Milliarden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w23_aus"/>
+    <j.0:hasLemma>Mark</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w8_Reiseb%C3%BCros">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Reisebüros</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w7_1900"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w9_befragt"/>
+    <j.0:hasLemma>Reisebüro</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w4_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w3_Untersuchung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w5_bei"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax502">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w10_worden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>worden</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w9_befragt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w11_waren"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAPP"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w5_bei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bei</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w4_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w6_der"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w18_1994">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>1994</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w17_f%C3%BCr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w19_von"/>
+    <j.0:hasLemma>1994</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w24_%3B">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>;</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w23_aus"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax506">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/verbPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax509">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/verbPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VerbalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w17_f%C3%BCr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>für</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w16_Umsatzvolumen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w18_1994"/>
+    <j.0:hasLemma>für</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w12_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w11_waren"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w13_von"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w20_39%2C6">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>39,6</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w19_von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w21_Milliarden"/>
+    <j.0:hasLemma>39,6</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax510">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w7_1900">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>1900</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w6_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w8_Reiseb%C3%BCros"/>
+    <j.0:hasLemma>1900</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w6_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w5_bei"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w7_1900"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRELS"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w9_befragt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>befragt</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w8_Reiseb%C3%BCros"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w10_worden"/>
+    <j.0:hasLemma>befragen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax505">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/complexNumeral">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w15_branchenweiten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>branchenweiten</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w14_einem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w16_Umsatzvolumen"/>
+    <j.0:hasLemma>branchenweit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax508">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKVZ">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w2_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w1_geht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w3_Untersuchung"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax504">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/verbPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w16_Umsatzvolumen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Umsatzvolumen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w15_branchenweiten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w17_f%C3%BCr"/>
+    <j.0:hasLemma>Umsatzvolumen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRELS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w11_waren"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w12_%2C"/>
+    <rdfs:label>Insgesamt geht die Untersuchung , bei der 1900 Reisebüros befragt worden waren , von einem branchenweiten Umsatzvolumen für 1994 von 39,6 Milliarden Mark aus ;</rdfs:label>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s17511w0_Insgesamt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w0_Insgesamt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w8_Reiseb%C3%BCros"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w5_bei"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w22_Mark"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w21_Milliarden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w3_Untersuchung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w23_aus"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w10_worden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w2_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w18_1994"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w16_Umsatzvolumen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w14_einem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w13_von"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w7_1900"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w9_befragt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w4_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w20_39%2C6"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w6_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w15_branchenweiten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w19_von"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w1_geht"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w17_f%C3%BCr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s17511w24_%3B"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax507">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511syntax503">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/complexNumeral"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w1_geht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>geht</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w0_Insgesamt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w2_die"/>
+    <j.0:hasLemma>gehen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w11_waren">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>waren</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w10_worden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w12_%2C"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w13_von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>von</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w12_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w14_einem"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w0_Insgesamt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Insgesamt</rdfs:label>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w1_geht"/>
+    <j.0:hasLemma>insgesamt</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w14_einem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einem</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w13_von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w15_branchenweiten"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w19_von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>von</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w18_1994"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w20_39%2C6"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w23_aus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aus</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w22_Mark"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w24_%3B"/>
+    <j.0:hasLemma>aus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKVZ"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w21_Milliarden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Milliarden</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w20_39%2C6"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w22_Mark"/>
+    <j.0:hasLemma>Milliarde</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s17511w3_Untersuchung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Untersuchung</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s17511w2_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s17511w4_%2C"/>
+    <j.0:hasLemma>Untersuchung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s17511syntax509"/>
+  </rdf:Description>
+</rdf:RDF>
