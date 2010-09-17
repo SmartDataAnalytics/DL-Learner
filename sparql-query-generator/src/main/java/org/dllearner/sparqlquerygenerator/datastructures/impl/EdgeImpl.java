@@ -35,6 +35,30 @@ public class EdgeImpl implements Edge {
 	public Node getTargetNode() {
 		return targetNode;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this)
+			return true;
+		if(!(obj instanceof EdgeImpl))
+			return false;
+		EdgeImpl other = (EdgeImpl)obj;
+		return other.getLabel().equals(label) && other.getSourceNode().equals(sourceNode) && other.targetNode.equals(targetNode);
+	}
+	
+	@Override
+	public int hashCode() {
+		return sourceNode.hashCode() + targetNode.hashCode() + label.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Source node: ").append(sourceNode).append("\n");
+		sb.append("Target node: ").append(targetNode).append("\n");
+		sb.append("Label: ").append(label).append("\n");
+		return sb.toString();
+	}
 
 
 }

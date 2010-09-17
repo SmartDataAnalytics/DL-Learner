@@ -10,6 +10,10 @@ public interface QueryGraph {
 	
 	Node getRootNode();
 	
+	Node createNode(String id);
+	
+	Edge createEdge(Node sourceNode, Node targetNode, String label);
+	
 	boolean addNode(Node node);
 	
 	boolean addEdge(Edge edge);
