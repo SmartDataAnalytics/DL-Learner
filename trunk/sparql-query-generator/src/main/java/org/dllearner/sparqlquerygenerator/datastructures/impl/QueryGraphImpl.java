@@ -1,4 +1,24 @@
+/**
+ * Copyright (C) 2007-2010, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.sparqlquerygenerator.datastructures.impl;
+
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -8,7 +28,13 @@ import java.util.Set;
 import org.dllearner.sparqlquerygenerator.datastructures.Edge;
 import org.dllearner.sparqlquerygenerator.datastructures.Node;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryGraph;
+import org.dllearner.sparqlquerygenerator.impl.QueryGraphFactoryImpl;
 
+/**
+ * 
+ * @author Lorenz Bühmann
+ *
+ */
 public class QueryGraphImpl implements QueryGraph {
 	
 	private Set<Node> nodes;
@@ -98,5 +124,21 @@ public class QueryGraphImpl implements QueryGraph {
 		}
 		return sb.toString();
 	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		QueryGraph graph = new QueryGraphFactoryImpl().getQueryGraph();
+		Node rootNodeCopy= graph.createNode(rootNode.getLabel());
+		graph.setRootNode(rootNodeCopy);
+		Node sourceNode;
+		Node targetNode;
+		for(Edge edge : edges){
+			sourceNode = graph.createNode(edge.getSourceNode().getLabel());
+			targetNode = graph.createNode(edge.getTargetNode().getLabel());
+			graph.createEdge(sourceNode, targetNode, edge.getLabel());
+		}
+		return graph;
+	}
+	
 
 }
