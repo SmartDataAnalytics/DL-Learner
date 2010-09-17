@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY father "http://example.com/father#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl2 "http://www.w3.org/2006/12/owl2#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://example.com/father#"
+     xml:base="http://example.com/father"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl2="http://www.w3.org/2006/12/owl2#"
+     xmlns:father="http://example.com/father#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.com/father#hasChild -->
+
+    <owl:ObjectProperty rdf:about="#hasChild"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.com/father#father -->
+
+    <owl:Class rdf:about="#father"/>
+    
+
+
+    <!-- http://example.com/father#female -->
+
+    <owl:Class rdf:about="#female"/>
+    
+
+
+    <!-- http://example.com/father#male -->
+
+    <owl:Class rdf:about="#male">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:complementOf rdf:resource="#female"/>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.com/father#anna -->
+
+    <female rdf:about="#anna">
+        <hasChild rdf:resource="#heinz"/>
+    </female>
+    
+
+
+    <!-- http://example.com/father#anton -->
+
+    <male rdf:about="#anton"/>
+    
+
+
+    <!-- http://example.com/father#heinz -->
+
+    <male rdf:about="#heinz">
+        <hasChild rdf:resource="#anna"/>
+        <hasChild rdf:resource="#michelle"/>
+        <hasChild rdf:resource="#patrick"/>
+    </male>
+    
+
+
+    <!-- http://example.com/father#katja -->
+
+    <female rdf:about="#katja"/>
+    
+
+
+    <!-- http://example.com/father#katrin -->
+
+    <female rdf:about="#katrin"/>
+    
+
+
+    <!-- http://example.com/father#maria -->
+
+    <female rdf:about="#maria"/>
+    
+
+
+    <!-- http://example.com/father#markus -->
+
+    <male rdf:about="#markus">
+        <rdf:type rdf:resource="#father"/>
+        <hasChild rdf:resource="#anna"/>
+        <hasChild rdf:resource="#anton"/>
+        <hasChild rdf:resource="#michelle"/>
+        <hasChild rdf:resource="#tina"/>
+    </male>
+    
+
+
+    <!-- http://example.com/father#martin -->
+
+    <male rdf:about="#martin">
+        <rdf:type rdf:resource="#father"/>
+        <hasChild rdf:resource="#maria"/>
+        <hasChild rdf:resource="#steffi"/>
+        <hasChild rdf:resource="#tim"/>
+    </male>
+    
+
+
+    <!-- http://example.com/father#michelle -->
+
+    <female rdf:about="#michelle"/>
+    
+
+
+    <!-- http://example.com/father#nicole -->
+
+    <female rdf:about="#nicole"/>
+    
+
+
+    <!-- http://example.com/father#patrick -->
+
+    <male rdf:about="#patrick"/>
+    
+
+
+    <!-- http://example.com/father#sarah -->
+
+    <female rdf:about="#sarah"/>
+    
+
+
+    <!-- http://example.com/father#stefan -->
+
+    <father rdf:about="#stefan">
+        <rdf:type rdf:resource="#male"/>
+        <hasChild rdf:resource="#sarah"/>
+        <hasChild rdf:resource="#tina"/>
+    </father>
+    
+
+
+    <!-- http://example.com/father#steffi -->
+
+    <female rdf:about="#steffi"/>
+    
+
+
+    <!-- http://example.com/father#thomas -->
+
+    <father rdf:about="#thomas">
+        <rdf:type rdf:resource="#male"/>
+        <hasChild rdf:resource="#katrin"/>
+        <hasChild rdf:resource="#nicole"/>
+    </father>
+    
+
+
+    <!-- http://example.com/father#tim -->
+
+    <male rdf:about="#tim">
+        <rdf:type rdf:resource="#father"/>
+    </male>
+    
+
+
+    <!-- http://example.com/father#tina -->
+
+    <female rdf:about="#tina"/>
+</rdf:RDF>

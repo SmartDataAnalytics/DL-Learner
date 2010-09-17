@@ -1,0 +1,47 @@
+General Notes:
+==============
+
+DBpedia Navigator is an application written in PHP using Javascript, HTML, and
+CSS. It connects to the DL-Learner web service for getting navigation suggestions
+and posing SPARQL queries against a triple strore containing DBpedia. Furthermore,
+a temporary MySQL database is used to allow for efficient search and traversal of
+the class hierarchy. Ideally, DBpedia Navigator, DL-Learner, the SPARQL endpoint,
+and the MySQL database should all be on the same machine for performance reasons.
+
+Installation of DBpedia Navigator:
+==================================
+
+Prerequisites:
+- Apache
+- PHP
+- DL-Learner Web Service
+- DBpedia SPARQL endpoint
+- MySQL 
+
+Installation Steps:
+
+1. Get DBpedia Navigator 
+Checkout from SVN:
+co http://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk/src/dbpedia-navigator/
+Place it under the web server root.
+
+2. Configure DBpedia Navigator
+Change settings.ini.dist and Settings.php.dist (the latter will be removed at some point of time)
+according to your system, i.e. set the database connection.
+
+3. Create DBpedia Navigator database
+- create an empty database
+- import database.sql (contains structure)
+- create directory "data" under $datasetDir (see settings.ini) and download the
+  following DBpedia data sets "pagelinks_en.nt", "articles_label_en.nt", 
+  "dbpedia-ontology-schema.nt", "dbpedia-ontology-types.nt"
+- execute org.dllearner.scripts.CalculatePageRank
+
+4. Install PHP PEAR classes
+- install PHP PEAR
+- install package SOAP
+
+Now you can use DBpedia Navigator by starting the DL-Learner web service and the calling the
+DBpedia Navigator in your browser.
+
+Send questions to lehmann@informatik.uni-leipzig.de.

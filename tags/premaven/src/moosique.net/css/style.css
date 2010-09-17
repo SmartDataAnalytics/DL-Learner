@@ -1,0 +1,152 @@
+/* moosique.net by Steffen Becker
+
+Colors are: 
+
+Green:              1fd611
+Background-Grey:    3a3a3a
+Button-BG-Grey      4a4a4a
+Highlight-Grey:     5a5a5a
+Dark-Grey:          292929
+White (Text):       f1f7e4
+
+*/
+
+@media screen, projection {
+/*=============== Default Styling ===============*/
+body                          { font: normal 14px/20px Verdana, Arial, sans-serif; color: #f1f7e4;
+                                background: url('../img/bg.png') top left repeat #3a3a3a; }
+input, select                 { background: #292929; border: 1px solid #5a5a5a; outline: none; padding: 5px; }
+input[type=submit]            { padding: 5px 10px; }
+input:focus, select:focus     { border: 1px solid #1fd611; }
+a:hover                       { color: #1fd611; }
+a.button                      { background: #4a4a4a; color: #f1f7e4; padding: 5px 10px; text-decoration: none; }
+a.button:hover                { border: 1px solid #1fd611; padding: 4px 9px; }
+h1                            { font: 36px/42px Georgia, Times, serif; }
+h2                            { font: 30px/36px Georgia, Times, serif; }
+h3                            { font: 24px/28px Georgia, Times, serif; }
+h4                            { font: 18px/20px Georgia, Times, serif; }
+h5                            { font: 14px/16px Verdana, Arial, sans-serif; }
+h6                            { font: 12px/14px Verdana, Arial, sans-serif; }
+pre                           { font: normal 10px/14px Monaco, Courier, monospace; }
+p, h1, h2, h3, h4, h5, h6, 
+ul, ol, pre, form             { margin-bottom: 20px; }
+
+/* Initial hiding */
+#recommendations, #info,
+#header h1, #player, #help    { display: none; }
+
+/* Rounded Corners and drop shadows, CSS3 */
+input, select, a.button       { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
+#content, #status, #playing, 
+#playerControls, .results li, 
+iframe                        { -moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px; }
+#nav a                        { -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px; 
+                                -webkit-border-bottom-left-radius: 10px; -webkit-border-bottom-right-radius: 10px; 
+                                border-bottom-left-radius: 10px; border-bottom-left-radius: 10px; }
+#info .externalLinks li       { -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; 
+                                -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 10px; 
+                                border-top-left-radius: 10px; border-top-left-radius: 10px; }
+#content, #status, #playing, 
+#playerControls, #topBorder,   
+#searchValue, #searchType,
+#searchSubmit, #nav a,
+#info .externalLinks li       { -moz-box-shadow: 2px 2px 3px #191919; -webkit-box-shadow: 2px 2px 3px #191919; 
+                                box-shadow: 2px 2px 3px #191919; }                          
+#nav .active a, .results img,
+a.button, #info .image img    { -moz-box-shadow: 3px 3px 3px #191919; -webkit-box-shadow: 3px 3px 3px #191919; 
+                                box-shadow: 3px 3px 3px #191919; }                          
+                                 
+                                
+/*=============== Default Containers ===============*/
+#container, #header, 
+#content, #playlist li        { position: relative; }
+#topBorder                    { position: relative; height: 6px; background: #1fd611; z-index: 5; }
+#container                    { width: 900px; margin: 0 auto; }
+#header                       { height: 175px; padding-top: 25px; }
+#content                      { background: #292929; padding: 25px; }
+#footer                       { font: normal 11px/14px Verdana, Arial, sans-serif; padding-top: 40px; height: 54px; text-align: center; }
+
+
+/*=============== Player Controls, Status, Playing ===============*/
+#status, #playing             { position: absolute; top: 85px; left: 0; width: 590px; height: 70px; 
+                                background: #292929; padding: 10px 20px; }
+#playerControls               { position: absolute; top: 85px; right: 0; width: 210px; height: 70px; 
+                                padding: 10px 20px; background: #292929; }
+#playerControls a:active      { position: relative; top: 2px; }
+#status                       { background: #3a3a3a; line-height: 70px; text-align: center;
+                                font-weight: bold; border: 1px solid #1fd611; z-index: 1000; }
+#playing span                 { display: block; margin-bottom: 0; font-size: 10px; }
+#playing .track               { font: bold 14px/32px Verdana, Arial, sans-serif; }
+#playing .time                { position: absolute; bottom: 10px; right: 20px; }
+#playing .download            { position: absolute; top: 10px; right: 20px; }
+#prev, #next, #stop, 
+#playPause, #mute             { display: block; width: 30px; height: 40px; text-indent: -10000px; 
+                                float: left; margin: 15px 0 0 10px; }
+#prev                         { background: url(../img/controls.png) 0px -160px no-repeat; }
+#next                         { background: url(../img/controls.png) 0px -120px no-repeat; }
+#stop                         { background: url(../img/controls.png) 0px -80px no-repeat; }
+#mute                         { background: url(../img/controls.png) 0px -280px no-repeat; margin-right: 0; }
+#playPause                    { background: url(../img/controls.png) 0px 0px no-repeat; width: 37px; }
+
+
+/*=============== Search Form ===============*/
+#searchValue                  { margin: 0 5px; width: 150px; }
+.spinner                      { position: absolute; z-index: 10; background: url('../img/bg.png') top left repeat #3a3a3a; }
+.spinner-img                  { background: url('../img/spinner.gif') top left no-repeat; width: 24px; height: 24px; margin: 0 auto; }
+
+
+/*=============== Content & General ===============*/
+#addRandom                    { text-decoration: underline; }
+#autoAdd                      { float: right; }
+#footer a                     { padding: 0 12px; color: #5a5a5a; }
+#footer a:hover               { color: #f1f7e4; }
+#help ul                      { list-style: disc; margin-left: 40px; }
+
+/*=============== Menu ===============*/
+#nav ul                       { position: absolute; top: 0; right: 0; }
+#nav li                       { float: left; }
+#nav a                        { position: relative; display: block; margin-left: 12px; height: 40px; padding: 10px 12px; color: #f1f7e4; 
+                                background: #4a4a4a; font: normal 12px/50px Verdana, Arial, sans-serif; }
+#nav .active a                { z-index: 10; }
+#nav .active a,
+#nav .active a:hover          { background: #1fd611; }
+#nav a:hover                  { text-decoration: none; background: #5a5a5a; }
+
+
+/*=============== Search Results & Recommendations ===============*/
+.results h3 a                 { font-weight: normal; }
+.results img                  { max-width: 373px; max-height: 373px;}
+.results ul > li              { float: left; width: 373px; border: 1px solid #5a5a5a; padding: 20px; margin-bottom: 20px; }
+.results li.odd               { margin-right: 20px; clear: both; }
+.results ul ul, #log          { clear: both; list-style: disc; margin-bottom: 0; }
+.results li li, #log li       { border: none; display: list-item; padding: 0; margin: 0 0 0 20px; width: auto;  }
+.results .image               { text-align: center; }
+.results .tagList             { margin-top: 20px; }
+
+/*=============== Recently & Playlist ===============*/
+#playlist, #recently          { margin-left: 36px; list-style: decimal; }
+#playlist li, #recently li    { line-height: 24px; }
+#playlist .currentlyPlaying a { font-weight: bold; color: #1fd611; }
+#playlist .delete, 
+#playlist .moveUp, 
+#playlist .moveDown           { position: absolute; display: block; top: 5px; right: 20px; width: 14px; height: 14px;
+                                line-height: 14px; text-indent: -10000px; 
+                                background: url(../img/controls.png) 0px -200px no-repeat;}
+#playlist .moveUp             { background: url(../img/controls.png) 0px -360px no-repeat; right: 40px; }
+#playlist .moveDown           { background: url(../img/controls.png) 0px -320px no-repeat; right: 60px; }
+#playlist .delete:active, 
+#playlist .moveUp:active, 
+#playlist .moveDown:active    { top: 6px; }
+
+
+/*=============== Information & Help ===============*/
+#info .image                  { float: left; margin: 0 20px 20px 0; }
+#info .tagList                { margin-bottom: 20px; }
+#info h3                      { clear: both; }
+#info iframe                  { border: 1px solid #5a5a5a; width: 100%; height: 600px; }
+#info .externalLinks          { overflow: hidden; margin: 0 0 0 20px; }
+#info .externalLinks li       { float: left; padding: 10px; margin-right: 10px; background: #4a4a4a; }
+#info .externalLinks li.active { background: #1fd611; }
+
+
+} /* end @media screen */
