@@ -117,8 +117,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!--This will be removed after upgrade to latest JENA-->
-        <dependency> <groupId>dllearnerDependency</groupId> <artifactId>dig1.1-xmlbeans.jar</artifactId>  <version>snapshot</version>  </dependency>
+        <dependency>
+            <groupId>net.sourceforge.dig</groupId>
+            <artifactId>dig-xmlbeans</artifactId>
+        </dependency>
 
     </dependencies>
 </project>
