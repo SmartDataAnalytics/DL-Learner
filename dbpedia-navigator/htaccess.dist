@@ -1,0 +1,15 @@
+RewriteEngine On
+Options +FollowSymlinks
+RewriteBase /dbpedia-navigator/
+
+# Rule Fuer die Module
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/([^/]+)$ index.php?$1=$2&%{QUERY_STRING}
+RewriteRule ^[^/]+/images/([^/]+)$ images/$1
+RewriteRule ^[^/]+/css/([^/]+)$ css/$1
+RewriteRule ^[^/]+/js/([^/]+)$ js/$1
+RewriteRule ^[^/]+/pear/([^/]+)$ pear/$1
+RewriteRule ^[^/]+/temp/([^/]+)$ temp/$1
+RewriteRule ^[^/]+/([^/]+\.php)$ $1
+RewriteRule !\.(js|ico|gif|jpg|png|css|php)$ index.php
