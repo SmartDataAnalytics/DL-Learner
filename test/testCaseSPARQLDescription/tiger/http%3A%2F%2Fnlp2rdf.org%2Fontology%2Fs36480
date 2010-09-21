@@ -1,0 +1,296 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w12_vorn">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vorn</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w11_ebenfalls"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w13_gelegen"/>
+    <j.0:hasLemma>vorn</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w16_aber">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aber</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w15_war"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w17_sp%C3%A4ter"/>
+    <j.0:hasLemma>aber</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w22_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w21_worden"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w7_Walesa">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Walesa</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w6_hatte"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w8_bei"/>
+    <j.0:hasLemma>Walesa</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w14_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w13_gelegen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w15_war"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w6_hatte">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hatte</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w5_Wochen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w7_Walesa"/>
+    <j.0:hasLemma>haben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w13_gelegen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gelegen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w12_vorn"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w14_%2C"/>
+    <j.0:hasLemma>liegen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w20_%C3%BCberholt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>überholt</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w19_Kwasniewski"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w21_worden"/>
+    <j.0:hasLemma>überholen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w3_vor">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vor</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w2_Durchgang"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w4_zwei"/>
+    <j.0:hasLemma>vor</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w11_ebenfalls">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ebenfalls</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w10_Prognosen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w12_vorn"/>
+    <j.0:hasLemma>ebenfalls</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w17_sp%C3%A4ter">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>später</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w16_aber"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w18_von"/>
+    <j.0:hasLemma>spät</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w14_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w22_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w19_Kwasniewski"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w7_Walesa"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w13_gelegen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w9_ersten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w11_ebenfalls"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w1_ersten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w3_vor"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w16_aber"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s36480w0_Beim"/>
+    <rdfs:label>Beim ersten Durchgang vor zwei Wochen hatte Walesa bei ersten Prognosen ebenfalls vorn gelegen , war aber später von Kwasniewski überholt worden .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w0_Beim"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w10_Prognosen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w17_sp%C3%A4ter"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w4_zwei"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w8_bei"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w21_worden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w15_war"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w20_%C3%BCberholt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w18_von"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w6_hatte"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w5_Wochen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w12_vorn"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36480w2_Durchgang"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w4_zwei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zwei</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w3_vor"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w5_Wochen"/>
+    <j.0:hasLemma>zwei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w2_Durchgang">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Durchgang</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w1_ersten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w3_vor"/>
+    <j.0:hasLemma>Durchgang</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w18_von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>von</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w17_sp%C3%A4ter"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w19_Kwasniewski"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w9_ersten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ersten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w8_bei"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w10_Prognosen"/>
+    <j.0:hasLemma>erster</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w15_war">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>war</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w14_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w16_aber"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w10_Prognosen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Prognosen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w9_ersten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w11_ebenfalls"/>
+    <j.0:hasLemma>Prognose</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w5_Wochen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Wochen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w4_zwei"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w6_hatte"/>
+    <j.0:hasLemma>Woche</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w8_bei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bei</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w7_Walesa"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w9_ersten"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w21_worden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>worden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w20_%C3%BCberholt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w22_."/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w1_ersten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ersten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w0_Beim"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w2_Durchgang"/>
+    <j.0:hasLemma>erster</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w19_Kwasniewski">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kwasniewski</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36480w18_von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w20_%C3%BCberholt"/>
+    <j.0:hasLemma>Kwasniewski</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36480w0_Beim">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Beim</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36480"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36480w1_ersten"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+</rdf:RDF>
