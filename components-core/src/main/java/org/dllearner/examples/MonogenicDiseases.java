@@ -579,7 +579,7 @@ int neg_count = 1;
 			double identicalN1Contact = rs.getDouble("identical_n1_contact");
 			kb.addAxiom(new DoubleDatatypePropertyAssertion(identicalN1ContactProp, mutationInd, identicalN1Contact));
 						
-			// TODO Vorsicht bei 0-Werten in den weitern Feldern (klären, ob in dem
+			// TODO Vorsicht bei 0-Werten in den weitern Feldern (klaeren, ob in dem
 			// Fall gar nichts geschrieben werden soll)
 			
 			// wt_accessibility
