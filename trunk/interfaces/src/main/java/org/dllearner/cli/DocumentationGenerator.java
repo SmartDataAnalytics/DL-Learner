@@ -22,7 +22,8 @@ package org.dllearner.cli;
 import java.io.File;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.ConfMapper;
+import org.dllearner.cli.ConfMapper;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -39,6 +40,12 @@ import org.dllearner.utilities.Files;
 public class DocumentationGenerator {
 
 	private ConfMapper confMapper = new ConfMapper();	
+	
+	private ComponentManager cm;
+	
+	public DocumentationGenerator() {
+		cm = ComponentManager.getInstance();
+	}
 	
 	/**
 	 * Writes documentation for all components available in this
@@ -59,7 +66,7 @@ public class DocumentationGenerator {
 		doc += "*********************\n\n";
 		doc += "BEGIN MANUAL PART\n";
 		doc += "END MANUAL PART\n\n";
-		for(Class<? extends Component> component : knowledgeSources) {
+		for(Class<? extends Component> component : cm.getKnowledgeSources()) {
 			if(component != SparqlKnowledgeSource.class){continue;}
 			doc += getComponentConfigString(component, KnowledgeSource.class);
 		}
@@ -67,21 +74,21 @@ public class DocumentationGenerator {
 		doc += "*************\n";
 		doc += "* Reasoners *\n";
 		doc += "*************\n\n";
-		for(Class<? extends Component> component : reasonerComponents) {
+		for(Class<? extends Component> component : cm.getReasonerComponents()) {
 			doc += getComponentConfigString(component, ReasonerComponent.class);
 		}
 		
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
-		for(Class<? extends Component> component : learningProblems) {
+		for(Class<? extends Component> component : cm.getLearningProblems()) {
 			doc += getComponentConfigString(component, LearningProblem.class);
 		}
 		
 		doc += "***********************\n";
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
-		for(Class<? extends Component> component : learningAlgorithms) {
+		for(Class<? extends Component> component : cm.getLearningAlgorithms()) {
 			doc += getComponentConfigString(component, LearningAlgorithm.class);
 		}
 		
@@ -89,7 +96,8 @@ public class DocumentationGenerator {
 	}	
 	
 	private String getComponentConfigString(Class<? extends Component> component, Class<? extends Component> componentType) {
-		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
+//		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
+		String componentDescription =  "component: " + cm.getComponentName(component);
 		String str = componentDescription + "\n";
 		String cli = confMapper.getComponentTypeString(componentType);
 		String usage = confMapper.getComponentString(component);
@@ -104,13 +112,23 @@ public class DocumentationGenerator {
 			str += "conf file usage: "+cli+" = "+usage+";\n\n";
 		}
 		
-		for(ConfigOption<?> option : componentOptions.get(component)) {
+		for(ConfigOption<?> option : ComponentManager.getConfigOptions(component)) {
 			String val = (option.getDefaultValue()==null)?"":option.getDefaultValue()+"";
 			str += option.toString() + 	
 				"conf file usage: "+usage+"."
 				+ option.getName()+" = "+val+";\n\n";
 		}		
 		return str+"\n";
+	}	
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		File file = new File("doc/configOptions.txt");
+		DocumentationGenerator dg = new DocumentationGenerator();
+		dg.writeConfigDocumentation(file);
+		System.out.println("Done");
 	}	
 	
 }

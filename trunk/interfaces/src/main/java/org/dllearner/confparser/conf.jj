@@ -28,7 +28,7 @@ options {
 }
 
 PARSER_BEGIN(ConfParser)
-package org.dllearner.parser; 
+package org.dllearner.confparser; 
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +47,7 @@ import java.io.IOException;
 import org.dllearner.Info;
 
 import org.dllearner.cli.*;
+import org.dllearner.parser.KBParser;
 import org.dllearner.utilities.datastructures.*;
 
 public class ConfParser {

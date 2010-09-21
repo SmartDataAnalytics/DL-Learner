@@ -345,7 +345,7 @@ public class ReasonerTests {
 	}
 	
 	@Test
-	public void compareReasoners() throws FileNotFoundException, ComponentInitException, ParseException{
+	public void compareReasoners() throws FileNotFoundException, ComponentInitException, ParseException, org.dllearner.confparser.ParseException{
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		Start start;
