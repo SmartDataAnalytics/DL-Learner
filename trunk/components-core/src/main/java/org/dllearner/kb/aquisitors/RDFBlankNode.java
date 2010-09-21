@@ -20,9 +20,7 @@
 package org.dllearner.kb.aquisitors;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.RDFVisitor;
+import com.hp.hpl.jena.rdf.model.*;
 
 /**
  * This class is used to save disambiguated information for a blankNode in an RDF
@@ -102,6 +100,27 @@ public class RDFBlankNode implements RDFNode {
 		return blankNode.asNode();
 	}
 
-	
-	
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public Model getModel() {
+        return blankNode.getModel();
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public Resource asResource() {
+        return blankNode.asResource();
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public Literal asLiteral() {
+        return blankNode.asLiteral();
+    }
 }

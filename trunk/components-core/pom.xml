@@ -111,6 +111,12 @@
             <artifactId>arq</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!--This will be removed after upgrade to latest JENA-->
         <dependency> <groupId>dllearnerDependency</groupId> <artifactId>dig1.1-xmlbeans.jar</artifactId>  <version>snapshot</version>  </dependency>
 
