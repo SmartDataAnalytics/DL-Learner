@@ -102,8 +102,9 @@ public class NestedCrossValidation {
 	 * @throws IOException
 	 * @throws ParseException 
 	 * @throws ComponentInitException 
+	 * @throws org.dllearner.confparser.ParseException 
 	 */
-	public static void main(String[] args) throws IOException, ComponentInitException, ParseException {
+	public static void main(String[] args) throws IOException, ComponentInitException, ParseException, org.dllearner.confparser.ParseException {
 
 		OptionParser parser = new OptionParser();
 		parser.acceptsAll(asList("h", "?", "help"), "Show help.");
@@ -162,7 +163,7 @@ public class NestedCrossValidation {
 
 	}
 
-	public NestedCrossValidation(File confFile, int outerFolds, int innerFolds, String parameter, int startValue, int endValue, boolean verbose) throws FileNotFoundException, ComponentInitException, ParseException {
+	public NestedCrossValidation(File confFile, int outerFolds, int innerFolds, String parameter, int startValue, int endValue, boolean verbose) throws FileNotFoundException, ComponentInitException, ParseException, org.dllearner.confparser.ParseException {
 		
 		DecimalFormat df = new DecimalFormat();	
 		ComponentManager cm = ComponentManager.getInstance();

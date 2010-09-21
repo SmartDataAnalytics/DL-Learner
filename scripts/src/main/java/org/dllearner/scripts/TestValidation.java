@@ -44,7 +44,7 @@ public class TestValidation {
  
 	private static Logger logger = Logger.getRootLogger();
 	
-	public static void main(String args[]) throws ComponentInitException, FileNotFoundException, ParseException {
+	public static void main(String args[]) throws ComponentInitException, FileNotFoundException, ParseException, org.dllearner.confparser.ParseException {
 		
 		// create logger (a simple logger which outputs
 		// its messages to the console)
