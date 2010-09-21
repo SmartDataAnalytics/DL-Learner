@@ -19,7 +19,10 @@
  */
 package org.dllearner.test.junit;
 
+import static org.junit.Assert.*;
+
 import org.dllearner.core.owl.Description;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.junit.Test;
@@ -41,6 +44,33 @@ public class ParserTests {
 		System.out.println(d.toKBSyntaxString("http://localhost/foo#", null));
 		Description d2 = KBParser.parseConcept(d.toKBSyntaxString());
 		System.out.println(d2.toKBSyntaxString("http://localhost/foo#", null));	
+	}
+	
+	@Test
+	public void ParseAndSPARQLConvertTest() throws ParseException {
+		// add your test strings here (do not use prefixes)
+		String[] kbArray = new String[] { 
+				"(a AND b)", 
+				"(someproperty HASVALUE someindividual)" 
+		};
+		
+		for(String kbString : kbArray) {
+			// convert to description and back
+			Description description = KBParser.parseConcept(kbString);
+			String tmp = description.toKBSyntaxString(KBParser.internalNamespace, null);
+			String kbString2 = tmp.replace("\"", "");
+//			System.out.println(kbString);
+//			System.out.println(kbString2);
+			
+			// convert to SPARQL
+			String query1 = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, 10, true, true);
+			String query2 = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(kbString, 10, true, true);
+//			System.out.println(query1);
+//			System.out.println(query2);
+			
+			assertTrue(kbString.equals(kbString2));
+			assertTrue(query1.equals(query2));
+		}
 	}
 	
 }
