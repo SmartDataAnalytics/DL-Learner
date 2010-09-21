@@ -1,0 +1,281 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w10_knapp">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>knapp</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w9_mit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w11_183"/>
+    <j.0:hasLemma>knapp</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/TRUNC">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Truncated"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w3_Bedarfs">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Bedarfs</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w2_wachsenden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w4_der"/>
+    <j.0:hasLemma>Bedarf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w15_F%C3%BCnftel">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Fünftel</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w14_ein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w16_mehr"/>
+    <j.0:hasLemma>Fünftel</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w7_Elektroindustrie">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Elektroindustrie</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w6_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w8_soll"/>
+    <j.0:hasLemma>Elektroindustrie</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PIAT">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w20_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w19_werden"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w13_gar">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gar</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w12_Tonnen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w14_ein"/>
+    <j.0:hasLemma>gar</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w1_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w0_Wegen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w2_wachsenden"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w0_Wegen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Wegen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w1_des"/>
+    <j.0:hasLemma>wegen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w14_ein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w13_gar"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w15_F%C3%BCnftel"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w18_verkauft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>verkauft</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w17_Palladium"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w19_werden"/>
+    <j.0:hasLemma>verkaufen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w19_werden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w18_verkauft"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w20_."/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w6_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w5_Auto-"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w7_Elektroindustrie"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w12_Tonnen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Tonnen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w11_183"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w13_gar"/>
+    <j.0:hasLemma>Tonne</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w4_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w3_Bedarfs"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w5_Auto-"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w9_mit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w8_soll"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w10_knapp"/>
+    <j.0:hasLemma>mit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w17_Palladium">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Palladium</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w16_mehr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w18_verkauft"/>
+    <j.0:hasLemma>Palladium</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w8_soll">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>soll</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w7_Elektroindustrie"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w9_mit"/>
+    <j.0:hasLemma>sollen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w2_wachsenden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wachsenden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w1_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w3_Bedarfs"/>
+    <j.0:hasLemma>wachsend</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w5_Auto-">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Auto-</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w4_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w6_und"/>
+    <j.0:hasLemma>Auto</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/TRUNC"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w16_mehr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mehr</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w15_F%C3%BCnftel"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w17_Palladium"/>
+    <j.0:hasLemma>mehr</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PIAT"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w3_Bedarfs"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w18_verkauft"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w12_Tonnen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w11_183"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w15_F%C3%BCnftel"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w2_wachsenden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w4_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w10_knapp"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w6_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w7_Elektroindustrie"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w0_Wegen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w20_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w14_ein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w19_werden"/>
+    <rdfs:label>Wegen des wachsenden Bedarfs der Auto- und Elektroindustrie soll mit knapp 183 Tonnen gar ein Fünftel mehr Palladium verkauft werden .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w9_mit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w16_mehr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w1_des"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w5_Auto-"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w8_soll"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w17_Palladium"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s29778w13_gar"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s29778w0_Wegen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s29778w11_183">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>183</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s29778"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s29778w10_knapp"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s29778w12_Tonnen"/>
+    <j.0:hasLemma>183</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+</rdf:RDF>
