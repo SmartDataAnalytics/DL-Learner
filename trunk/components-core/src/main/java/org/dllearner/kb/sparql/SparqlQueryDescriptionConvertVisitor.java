@@ -59,7 +59,6 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.test.SparqlQueryConverter;
 
 /**
  * Converter from DL-Learner descriptions to a corresponding SPARQL query to get
@@ -346,7 +345,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
 		testHasValue();
 		
 		
-		SparqlQueryConverter.test();
+		//SparqlQueryConverter.test();
 		
 			SortedSet<String> s = new TreeSet<String>();
 			HashMap<String, String> result = new HashMap<String, String>();
