@@ -27,7 +27,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.refinement2.ROLComponent2;
-import org.dllearner.cli.Start;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.TypeFilterRule;
@@ -119,8 +118,9 @@ public class JamonMonitorLogger {
 			retval= "Extraction:";
 		} else if (clazz == Manipulator.class) {
 			retval= "Extraction:";
-		} else if (clazz == Start.class) {
-			retval= "Init:";
+//		Jens: temporarily commented out, because "core" does not depend on "interfaces" 	
+//		} else if (clazz == Start.class) {
+//			retval= "Init:";
 		} else if (clazz == TypeFilterRule.class) {
 			retval= "Extraction:";
 		} else if (clazz == SparqlQuery.class) {

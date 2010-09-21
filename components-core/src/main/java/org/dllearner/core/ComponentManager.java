@@ -21,7 +21,6 @@ package org.dllearner.core;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,12 +42,9 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.Maps;
 
 /**
@@ -117,8 +113,6 @@ public final class ComponentManager {
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
 	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
 	private static Map<Class<? extends LearningProblem>, Collection<Class<? extends LearningAlgorithm>>> problemAlgorithmsMapping;
-	
-	private ConfMapper confMapper = new ConfMapper();
 	
 	// list of default values of config options
 //	private static Map<ConfigOption<?>,Object> configOptionDefaults;
@@ -538,79 +532,6 @@ public final class ComponentManager {
 		ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
 				component.getClass()).get(optionName);
 		return getConfigOptionValue(component, option);
-	}
-	
-	/**
-	 * Writes documentation for all components available in this
-	 * <code>ComponentManager</code> instance. It goes through
-	 * all components (sorted by their type) and all the configuration
-	 * options of the components. Explanations, default values, allowed
-	 * values for the options are collected and the obtained string is
-	 * written in a file. 
-	 * @param file The documentation file.
-	 */
-	public void writeConfigDocumentation(File file) {
-		String doc = "";
-		doc += "This file contains an automatically generated files of all components and their config options.\n\n";
-		
-		// go through all types of components and write down their documentation
-		doc += "*********************\n";
-		doc += "* Knowledge Sources *\n";
-		doc += "*********************\n\n";
-		doc += "BEGIN MANUAL PART\n";
-		doc += "END MANUAL PART\n\n";
-		for(Class<? extends Component> component : knowledgeSources) {
-			if(component != SparqlKnowledgeSource.class){continue;}
-			doc += getComponentConfigString(component, KnowledgeSource.class);
-		}
-		
-		doc += "*************\n";
-		doc += "* Reasoners *\n";
-		doc += "*************\n\n";
-		for(Class<? extends Component> component : reasonerComponents) {
-			doc += getComponentConfigString(component, ReasonerComponent.class);
-		}
-		
-		doc += "*********************\n";
-		doc += "* Learning Problems *\n";
-		doc += "*********************\n\n";
-		for(Class<? extends Component> component : learningProblems) {
-			doc += getComponentConfigString(component, LearningProblem.class);
-		}
-		
-		doc += "***********************\n";
-		doc += "* Learning Algorithms *\n";
-		doc += "***********************\n\n";
-		for(Class<? extends Component> component : learningAlgorithms) {
-			doc += getComponentConfigString(component, LearningAlgorithm.class);
-		}
-		
-		Files.createFile(file, doc);
-	}
-	
-	private String getComponentConfigString(Class<? extends Component> component, Class<? extends Component> componentType) {
-		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
-		String str = componentDescription + "\n";
-		String cli = confMapper.getComponentTypeString(componentType);
-		String usage = confMapper.getComponentString(component);
-	
-		for(int i=0; i<componentDescription.length(); i++) {
-			str += "=";
-		}
-		str += "\n\n";
-		if (componentType.equals(KnowledgeSource.class)){
-			str += "conf file usage: "+cli+" (\"$url\",  \""+usage.toUpperCase()+"\");\n\n";
-		}else{
-			str += "conf file usage: "+cli+" = "+usage+";\n\n";
-		}
-		
-		for(ConfigOption<?> option : componentOptions.get(component)) {
-			String val = (option.getDefaultValue()==null)?"":option.getDefaultValue()+"";
-			str += option.toString() + 	
-				"conf file usage: "+usage+"."
-				+ option.getName()+" = "+val+";\n\n";
-		}		
-		return str+"\n";
 	}
 	
 	// convenience method for invoking a static method;
