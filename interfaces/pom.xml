@@ -26,5 +26,9 @@
             <groupId>org.dllearner</groupId>
             <artifactId>components-ext</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.jamonapi</groupId>
+            <artifactId>jamon</artifactId>
+        </dependency>
     </dependencies>
 </project>

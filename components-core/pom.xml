@@ -100,11 +100,10 @@
             <artifactId>hermit</artifactId>
         </dependency>
 
-		<dependency>
-			<groupId>dllearnerDependency</groupId>
-			<artifactId>jamon-2.7.jar</artifactId>
-			<version>snapshot</version>
-		</dependency>
+        <dependency>
+            <groupId>com.jamonapi</groupId>
+            <artifactId>jamon</artifactId>
+        </dependency>
 
         <!--JENA ARQ is in central - we use the latest-->
         <dependency>
