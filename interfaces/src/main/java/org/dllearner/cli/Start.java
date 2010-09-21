@@ -73,9 +73,9 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.parser.ConfParser;
+import org.dllearner.confparser.ConfParser;
 import org.dllearner.parser.KBParser;
-import org.dllearner.parser.ParseException;
+import org.dllearner.confparser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -222,6 +222,7 @@ public class Start {
 	 * @throws ComponentInitException
 	 * @throws ParseException 
 	 * @throws FileNotFoundException 
+	 * @throws  
 	 * @throws IOException 
 	 */
 	public Start(File file) throws ComponentInitException, ParseException, FileNotFoundException {
@@ -777,16 +778,16 @@ public class Start {
 
 				try {
 					concept = KBParser.parseConcept(queryStr);
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-					System.err
-							.println("The concept you entered could not be parsed. Please try again.");
-					parsedCorrectly = false;
 				} catch (TokenMgrError e) {
 					e.printStackTrace();
 					System.err
 							.println("An error occured during parsing. Please enter a syntactically valid concept.");
 					parsedCorrectly = false;
+				} catch (org.dllearner.parser.ParseException e) {
+					e.printStackTrace();
+					System.err
+							.println("The concept you entered could not be parsed. Please try again.");
+					parsedCorrectly = false;					
 				}
 
 				if (parsedCorrectly) {

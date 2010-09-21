@@ -138,7 +138,7 @@ public class Config {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (ParseException e) {
+			} catch (org.dllearner.confparser.ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
