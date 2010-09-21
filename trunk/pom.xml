@@ -223,6 +223,12 @@
 
             <dependency>
                 <groupId>org.dllearner</groupId>
+                <artifactId>interfaces</artifactId>
+                <version>${dllearner.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.dllearner</groupId>
                 <artifactId>protege</artifactId>
                 <version>${protege.version}</version>
             </dependency>
