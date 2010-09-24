@@ -41,9 +41,9 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.statistics.Stat;
@@ -64,6 +64,8 @@ public class CrossValidation {
 	private Stat accuracy = new Stat();
 	private Stat length = new Stat();
 	private Stat accuracyTraining = new Stat();
+	private Stat fMeasure = new Stat();
+	private Stat fMeasureTraining = new Stat();
 	
 	public static void main(String[] args) {
 		File file = new File(args[0]);
@@ -261,6 +263,17 @@ public class CrossValidation {
 			double currAccuracy = 100*((double)correctExamples/(testSetsPos.get(currFold).size()+
 					testSetsNeg.get(currFold).size()));
 			accuracy.addNumber(currAccuracy);
+			// calculate training F-Score
+			int negAsPosTraining = rs.hasType(concept, trainingSetsNeg.get(currFold)).size();
+			double precisionTraining = trainingCorrectPosClassified + negAsPosTraining == 0 ? 0 : trainingCorrectPosClassified / (double) (trainingCorrectPosClassified + negAsPosTraining);
+			double recallTraining = trainingCorrectPosClassified / (double) trainingSetsPos.get(currFold).size();
+			fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining));
+			// calculate test F-Score
+			int negAsPos = rs.hasType(concept, testSetsNeg.get(currFold)).size();
+			double precision = correctPosClassified + negAsPos == 0 ? 0 : correctPosClassified / (double) (correctPosClassified + negAsPos);
+			double recall = correctPosClassified / (double) testSetsPos.get(currFold).size();
+//			System.out.println(precision);System.out.println(recall);
+			fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
 			
 			length.addNumber(concept.getLength());
 			
@@ -282,8 +295,11 @@ public class CrossValidation {
 		System.out.println("Finished " + folds + "-folds cross-validation on " + file + ".");
 		System.out.println("runtime: " + statOutput(df, runtime, "s"));
 		System.out.println("length: " + statOutput(df, length, ""));
-		System.out.println("accuracy: " + statOutput(df, accuracy, "%"));
-		System.out.println("accuracy on training set: " + statOutput(df, accuracyTraining, "%"));
+		System.out.println("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
+		System.out.println("F-Measure: " + statOutput(df, fMeasure, "%"));
+		System.out.println("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));		
+		System.out.println("predictive accuracy: " + statOutput(df, accuracy, "%"));
+
 		
 	}
 	

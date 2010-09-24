@@ -21,6 +21,7 @@ package org.dllearner.learningproblems;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -463,6 +464,62 @@ public class ClassLearningProblem extends LearningProblem {
 			
 			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : Heuristics.getAScore(recall, precision, coverageFactor);
 						
+		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
+			
+			int notCoveredPos = 0;
+//			int notCoveredNeg = 0;
+			
+			int posClassifiedAsPos = 0;
+			int negClassifiedAsNeg = 0;
+			
+			int nrOfPosChecks = 0;
+			int nrOfNegChecks = 0;
+			
+			// special case: we test positive and negative examples in turn
+			Iterator<Individual> itPos = classInstances.iterator();
+			Iterator<Individual> itNeg = superClassInstances.iterator();
+			
+			do {
+				// in each loop we pick 0 or 1 positives and 0 or 1 negative
+				// and classify it
+				
+				if(itPos.hasNext()) {
+					Individual posExample = itPos.next();
+//					System.out.println(posExample);
+					
+					if(reasoner.hasType(description, posExample)) {
+						posClassifiedAsPos++;
+					} else {
+						notCoveredPos++;
+					}
+					nrOfPosChecks++;
+					
+					// take noise into account
+					if(notCoveredPos > maxNotCovered) {
+						return -1;
+					}
+				}
+				
+				if(itNeg.hasNext()) {
+					Individual negExample = itNeg.next();
+					if(!reasoner.hasType(description, negExample)) {
+						negClassifiedAsNeg++;
+					}
+					nrOfNegChecks++;
+				}
+			
+				// compute how accurate our current approximation is and return if it is sufficiently accurate
+				double approx[] = Heuristics.getPredAccApproximation(classInstances.size(), superClassInstances.size(), 1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
+				if(approx[1]<approxDelta) {
+//					System.out.println(approx[0]);
+					return approx[0];
+				}
+				
+			} while(itPos.hasNext() || itNeg.hasNext());
+			
+			double ret = Heuristics.getPredictiveAccuracy(classInstances.size(), superClassInstances.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
+			return ret;			
 		} else {
 			throw new Error("Approximation for " + heuristic + " not implemented.");
 		}
