@@ -43,7 +43,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.dllearner.Info;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -316,7 +316,7 @@ public class Start {
 				handleError("Invalid value \"" + algorithmOption.getStringValue() + "\" in " + algorithmOption + ". Valid values are " + confMapper.getLearningAlgorithms() + ".");
 			}			
 		} else {
-			laClass = ROLComponent2.class;
+			laClass = OCEL.class;
 		}		
 		try {
 			la = cm.learningAlgorithm(laClass, lp, rc);

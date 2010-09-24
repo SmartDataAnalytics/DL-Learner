@@ -17,8 +17,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
-import org.dllearner.algorithms.refinement2.ROLearner2;
+import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.algorithms.ocel.ROLearner2;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.EvaluatedDescription;
@@ -637,7 +637,7 @@ public class TestIterativeLearning {
 			// Math.floor(0.8d*((double)ex.getPosTrain().size()));
 		}
 
-		ROLComponent2 la = ComponentFactory.getROLComponent2(lp, rc);
+		OCEL la = ComponentFactory.getROLComponent2(lp, rc);
 //		CELOE la = ComponentFactory.getCELOE(lp, rc);
 		la.getConfigurator().setUseExistsConstructor(true);
 

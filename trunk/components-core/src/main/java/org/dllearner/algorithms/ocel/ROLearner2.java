@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.algorithms.refinement2;
+package org.dllearner.algorithms.ocel;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -290,7 +290,7 @@ public class ROLearner2 {
 		evaluateSetCreationTimeNs = 0;
 		improperConceptsRemovalTimeNs = 0;
 		
-		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(ROLComponent2.class, "totalLearningTime")
+		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(OCEL.class, "totalLearningTime")
 				.start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite
 		// loops because

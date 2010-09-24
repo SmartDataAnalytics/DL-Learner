@@ -29,7 +29,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
@@ -132,7 +132,7 @@ public class Sample {
 		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
 		// learning algorithm
-		LearningAlgorithm la = cm.learningAlgorithm(ROLComponent2.class, lp, r);
+		LearningAlgorithm la = cm.learningAlgorithm(OCEL.class, lp, r);
 		cm.applyConfigEntry(la, "useAllConstructor", false);
 		cm.applyConfigEntry(la, "useExistsConstructor", true);
 		cm.applyConfigEntry(la, "useCardinalityRestrictions", false);

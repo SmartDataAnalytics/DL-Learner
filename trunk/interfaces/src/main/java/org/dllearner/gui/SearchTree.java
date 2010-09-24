@@ -22,7 +22,7 @@ package org.dllearner.gui;
 import javax.swing.JTree;
 
 import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.algorithms.refinement2.ExampleBasedNode;
+import org.dllearner.algorithms.ocel.ExampleBasedNode;
 
 /**
  * Own JTree implemenation with improved formatting.

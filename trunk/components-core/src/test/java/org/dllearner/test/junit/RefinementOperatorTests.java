@@ -28,7 +28,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -137,7 +137,7 @@ public class RefinementOperatorTests {
 		// within a learning algorithm
 		ComponentManager cm = ComponentManager.getInstance();
 		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		ROLComponent2 la = cm.learningAlgorithm(ROLComponent2.class, lp, reasoner);
+		OCEL la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
 		
 		Set<NamedClass> ignoredConcepts = new TreeSet<NamedClass>();
 		ignoredConcepts.add(new NamedClass("http://www.test.de/test#ZERO"));

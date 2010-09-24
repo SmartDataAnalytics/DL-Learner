@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -80,7 +80,7 @@ public class ComponentTest {
 		// create the learning algorithm
 		LearningAlgorithm la = null;
 		try {
-			la = cm.learningAlgorithm(ROLComponent2.class, lp, reasoner);
+			la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
 			la.init();
 		} catch (LearningProblemUnsupportedException e) {
 			e.printStackTrace();

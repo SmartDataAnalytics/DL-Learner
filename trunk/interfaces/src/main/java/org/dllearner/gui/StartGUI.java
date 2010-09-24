@@ -47,7 +47,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -138,7 +138,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		panels[2] = new ComponentPanel(config, this, LearningProblem.class, PosNegLPStandard.class, ignoredLearningProblems);
 		List<Class<? extends Component>> ignoredAlgorithms = new LinkedList<Class<? extends Component>>();
 		ignoredAlgorithms.add(ELLearningAlgorithm.class);
-		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ROLComponent2.class, ignoredAlgorithms);
+		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, OCEL.class, ignoredAlgorithms);
 		runPanel = new RunPanel(config, this);		
 		
 		// add tabs for panels

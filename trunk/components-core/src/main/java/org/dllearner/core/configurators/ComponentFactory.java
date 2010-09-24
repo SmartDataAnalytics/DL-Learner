@@ -29,8 +29,8 @@ import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.isle.ISLE;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -261,7 +261,7 @@ return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ROLComponent2
 **/
-public static ROLComponent2 getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+public static OCEL getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ROLComponent2Configurator.getROLComponent2(learningProblem, reasoningService);
 }
 

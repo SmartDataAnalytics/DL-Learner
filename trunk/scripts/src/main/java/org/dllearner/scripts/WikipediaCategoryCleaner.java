@@ -33,7 +33,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -160,7 +160,7 @@ public class WikipediaCategoryCleaner {
 				SPARQL_RESULTSET_LIMIT_NEGATIVES, DEVELOPSTABLESETS);
 		currentPOSITIVEex.addAll(wikiTasks.getPosExamples());
 		currentNEGATIVEex.addAll(wikiTasks.getNegExamples());
-		ROLComponent2 la = learn(currentPOSITIVEex, currentNEGATIVEex);
+		OCEL la = learn(currentPOSITIVEex, currentNEGATIVEex);
 		la.start();
 		// get wrong individuals and reevaluate concepts
 		conceptresults = (List<EvaluatedDescriptionPosNeg>) la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.5, true);
@@ -273,10 +273,10 @@ public class WikipediaCategoryCleaner {
 	}
 
 	
-	private static ROLComponent2 learn( SortedSet<String> posExamples, SortedSet<String> negExamples) {
+	private static OCEL learn( SortedSet<String> posExamples, SortedSet<String> negExamples) {
 		
 		
-		ROLComponent2 la = null;
+		OCEL la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(SetManipulation.stringToInd(posExamples));
@@ -440,7 +440,7 @@ public class WikipediaCategoryCleaner {
 				lwarn);
 		Logger.getLogger(AutomaticPositiveExampleFinderSPARQL.class).setLevel(
 				lwarn);
-		Logger.getLogger(ROLComponent2.class).setLevel(lwarn);
+		Logger.getLogger(OCEL.class).setLevel(lwarn);
 		Logger.getLogger(SparqlQuery.class).setLevel(lwarn);
 		Logger.getLogger(Cache.class).setLevel(lwarn);
 

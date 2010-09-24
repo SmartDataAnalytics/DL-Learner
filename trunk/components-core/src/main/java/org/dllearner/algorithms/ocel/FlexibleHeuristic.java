@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.algorithms.refinement2;
+package org.dllearner.algorithms.ocel;
 
 import org.dllearner.utilities.owl.ConceptComparator;
 

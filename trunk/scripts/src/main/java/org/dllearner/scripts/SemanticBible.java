@@ -28,7 +28,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Individual;
@@ -267,7 +267,7 @@ public class SemanticBible {
 				lwarn);
 		Logger.getLogger(AutomaticPositiveExampleFinderSPARQL.class).setLevel(
 				lwarn);
-		Logger.getLogger(ROLComponent2.class).setLevel(lwarn);
+		Logger.getLogger(OCEL.class).setLevel(lwarn);
 		Logger.getLogger(SparqlQuery.class).setLevel(lwarn);
 		Logger.getLogger(Cache.class).setLevel(lwarn);
 		Logger.getLogger(AutomaticPositiveExampleFinderOWL.class).setLevel(

@@ -53,7 +53,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.PosNegLPStandard;
 
@@ -420,7 +420,7 @@ public class RunPanel extends JPanel implements ActionListener {
 //		System.out.println("TEST");
 		
 		// enable tree button
-		if(((config.getLearningAlgorithm() instanceof ROLComponent2)
+		if(((config.getLearningAlgorithm() instanceof OCEL)
 				&& (config.getLearningProblem() instanceof PosNegLPStandard))
 			|| (config.getLearningAlgorithm() instanceof CELOE )) {
 			treeButton.setEnabled(true);
