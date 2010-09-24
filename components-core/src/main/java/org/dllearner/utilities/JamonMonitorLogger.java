@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.TypeFilterRule;
@@ -127,7 +127,7 @@ public class JamonMonitorLogger {
 			retval= "sparql:";
 		} else if (clazz == SparqlQuery.class) {
 			retval= "sparql:";
-		} else if (clazz == ROLComponent2.class) {
+		} else if (clazz == OCEL.class) {
 			retval= "Learning:";
 		} else if (clazz == SparqlQuery.class) {
 			retval= "sparql:";

@@ -32,8 +32,8 @@ import javax.swing.tree.ExpandVetoException;
 import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
-import org.dllearner.algorithms.refinement2.NodeComparatorStable;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.NodeComparatorStable;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.learningproblems.PosNegLPStandard;
 
 /**
@@ -69,8 +69,8 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 
 		// tree model
 		Comparator<SearchTreeNode> cmp = null;
-		if (config.getLearningAlgorithm() instanceof ROLComponent2) {
-			ROLComponent2 ebrol = (ROLComponent2) config.getLearningAlgorithm();
+		if (config.getLearningAlgorithm() instanceof OCEL) {
+			OCEL ebrol = (OCEL) config.getLearningAlgorithm();
 			this.rootNode = ebrol.getStartNode();
 			cmp = new SearchTreeNodeCmpWrapper(new NodeComparatorStable());
 		} else {
@@ -89,7 +89,7 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 		// ebNodeModel.getChildren((ExampleBasedNode) first));
 
 		String baseURI = config.getReasoner().getBaseURI();
-		if (config.getLearningAlgorithm() instanceof ROLComponent2) {
+		if (config.getLearningAlgorithm() instanceof OCEL) {
 			// collect some helper values for display and accuracy calculations
 			PosNegLPStandard lp = (PosNegLPStandard) config.getLearningProblem();
 			Set<String> posExamples = lp.getConfigurator().getPositiveExamples();

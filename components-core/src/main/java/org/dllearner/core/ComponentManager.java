@@ -97,7 +97,7 @@ public final class ComponentManager {
             "org.dllearner.algorithms.RandomGuesser",
             "org.dllearner.algorithms.BruteForceLearner",
             "org.dllearner.algorithms.refinement.ROLearner",
-            "org.dllearner.algorithms.refinement2.ROLComponent2",
+            "org.dllearner.algorithms.ocel.OCEL",
             "org.dllearner.algorithms.gp.GP",
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",

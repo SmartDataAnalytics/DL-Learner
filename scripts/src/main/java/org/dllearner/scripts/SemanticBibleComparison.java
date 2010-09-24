@@ -40,7 +40,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -269,7 +269,7 @@ public class SemanticBibleComparison {
 				SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
 				SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
 				
-				ROLComponent2 la = experimentalSetup(exp,posEx,negEx);
+				OCEL la = experimentalSetup(exp,posEx,negEx);
 				
 				//SimpleClock init = new SimpleClock();
 				initAllComponents();
@@ -379,8 +379,8 @@ public class SemanticBibleComparison {
 		
 	}
 	
-	public static ROLComponent2 experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
-		ROLComponent2 la = null;
+	public static OCEL experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
+		OCEL la = null;
 		if(exp.toString().contains("SPARQL"))
 			la = prepareSparqlExperiment(exp, posExamples, negExamples);
 		else if(exp.toString().contains("NORMAL")){
@@ -431,10 +431,10 @@ public class SemanticBibleComparison {
 	}
 	
 	
-	public static ROLComponent2 prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+	public static OCEL prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
 		
 
-		ROLComponent2 la = null;
+		OCEL la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(posExamples);
@@ -492,8 +492,8 @@ public class SemanticBibleComparison {
 		return la;
 	}
 	
-	public static ROLComponent2 prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
-		ROLComponent2 la = null;
+	public static OCEL prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+		OCEL la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(posExamples);

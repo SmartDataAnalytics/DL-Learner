@@ -31,7 +31,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
@@ -210,7 +210,7 @@ public class DumbLPFinder {
 	private static EvaluatedDescriptionPosNeg learnSPARQL(
 			SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
 
-		ROLComponent2 la = null;
+		OCEL la = null;
 
 		try {
 

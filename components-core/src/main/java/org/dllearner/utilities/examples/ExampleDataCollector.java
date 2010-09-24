@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
@@ -85,7 +85,7 @@ public class ExampleDataCollector {
 			
 			FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
 			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(rc, pos, neg);
-			ROLComponent2 la = ComponentFactory.getROLComponent2(lp, rc);
+			OCEL la = ComponentFactory.getROLComponent2(lp, rc);
 //			la.getConfigurator().setUseNegation(false);
 //			la.getConfigurator().setUseAllConstructor(false);
 //			la.getConfigurator().setUseExistsConstructor(false);

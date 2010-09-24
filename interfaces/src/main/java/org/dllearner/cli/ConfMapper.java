@@ -32,8 +32,8 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -100,7 +100,7 @@ public class ConfMapper {
 		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
 		learningAlgorithmMapping.put("gp", GP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
-		learningAlgorithmMapping.put("refexamples", ROLComponent2.class);
+		learningAlgorithmMapping.put("refexamples", OCEL.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
 		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);

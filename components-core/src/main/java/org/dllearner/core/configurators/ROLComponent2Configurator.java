@@ -21,7 +21,8 @@
 package org.dllearner.core.configurators;
 
 import java.util.Set;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -36,12 +37,12 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 public  class ROLComponent2Configurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
-private ROLComponent2 rOLComponent2;
+private OCEL rOLComponent2;
 
 /**
 * @param rOLComponent2 see ROLComponent2
 **/
-public ROLComponent2Configurator(ROLComponent2 rOLComponent2){
+public ROLComponent2Configurator(OCEL rOLComponent2){
 this.rOLComponent2 = rOLComponent2;
 }
 
@@ -51,8 +52,8 @@ this.rOLComponent2 = rOLComponent2;
 * @throws LearningProblemUnsupportedException see 
 * @return ROLComponent2
 **/
-public static ROLComponent2 getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
-ROLComponent2 component = ComponentManager.getInstance().learningAlgorithm(ROLComponent2.class, learningProblem, reasoningService);
+public static OCEL getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+OCEL component = ComponentManager.getInstance().learningAlgorithm(OCEL.class, learningProblem, reasoningService);
 return component;
 }
 

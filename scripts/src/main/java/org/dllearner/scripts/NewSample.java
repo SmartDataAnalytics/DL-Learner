@@ -33,7 +33,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -131,7 +131,7 @@ public class NewSample {
 		PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard( f, posExamples, negExamples);
 		
 		// learning algorithm
-		ROLComponent2 la = ComponentFactory.getROLComponent2( lp, f);
+		OCEL la = ComponentFactory.getROLComponent2( lp, f);
 		//OPTIONAL PARAMETERS
 		la.getConfigurator().setUseAllConstructor( false);
 		la.getConfigurator().setUseExistsConstructor(true);

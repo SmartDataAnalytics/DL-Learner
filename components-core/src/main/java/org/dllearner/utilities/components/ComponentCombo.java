@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dllearner.algorithms.refinement2.ROLComponent2;
+import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -101,7 +101,7 @@ public class ComponentCombo {
 		cm.applyConfigEntry(problem, "positiveExamples", posExamples);
 		cm.applyConfigEntry(problem, "negativeExamples", negExamples);
 		try {
-			algorithm = cm.learningAlgorithm(ROLComponent2.class, problem, reasoner);
+			algorithm = cm.learningAlgorithm(OCEL.class, problem, reasoner);
 		} catch (LearningProblemUnsupportedException e) {
 			e.printStackTrace();
 		}

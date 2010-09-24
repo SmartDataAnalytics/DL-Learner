@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.algorithms.refinement2;
+package org.dllearner.algorithms.ocel;
 
 import java.io.File;
 import java.util.Collection;
@@ -80,7 +80,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ROLComponent2 extends LearningAlgorithm {
+public class OCEL extends LearningAlgorithm {
 	
 	private ROLComponent2Configurator configurator;
 	@Override
@@ -91,7 +91,7 @@ public class ROLComponent2 extends LearningAlgorithm {
 	// actual algorithm
 	private ROLearner2 algorithm;
 	private static Logger logger = Logger
-		.getLogger(ROLComponent2.class);
+		.getLogger(OCEL.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
 	RhoDRDown operator;	
 
@@ -151,12 +151,12 @@ public class ROLComponent2 extends LearningAlgorithm {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ROLComponent2(PosNegLP learningProblem, ReasonerComponent reasoningService) {
+	public OCEL(PosNegLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 		this.configurator = new ROLComponent2Configurator(this);
 	}
 	
-	public ROLComponent2(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
+	public OCEL(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 		this.configurator = new ROLComponent2Configurator(this);
 	}
