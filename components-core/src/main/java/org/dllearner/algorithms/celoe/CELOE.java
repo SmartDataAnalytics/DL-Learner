@@ -215,6 +215,7 @@ public class CELOE extends LearningAlgorithm {
 		
 		// we put important parameters in class variables
 		noise = configurator.getNoisePercentage()/100d;
+//		System.out.println("noise " + noise);
 		maxDepth = configurator.getMaxDepth();
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
@@ -343,6 +344,7 @@ public class CELOE extends LearningAlgorithm {
 		
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
+//			System.out.println("loop " + loop);
 			
 			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();

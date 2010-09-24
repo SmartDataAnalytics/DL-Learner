@@ -49,6 +49,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.reasoning.ReasonerType;
@@ -335,6 +336,16 @@ public class OCEL extends LearningAlgorithm {
 				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, configurator);
 			} else {
 				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), configurator);
+			}
+		}
+		
+		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored
+		if(learningProblem instanceof PosNegLPStandard) {
+			if(((PosNegLPStandard)learningProblem).getConfigurator().getUseApproximations()) {
+				System.err.println("You actived approximations for the considered learning problem, but OCEL does not support it. Option will be ignored. (Recommendation: Use CELOE instead.)");
+			}
+			if(!((PosNegLPStandard)learningProblem).getConfigurator().getAccuracyMethod().equals("predacc")) {
+				System.err.println("You have chosen a non-standard (predictive accuracy) heuristic in your learning problem, but OCEL does not support it. Option will be ignored. (Recommendation: Use CELOE instead.)");
 			}
 		}
 		
