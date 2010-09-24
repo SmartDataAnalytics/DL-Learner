@@ -141,7 +141,11 @@ public class ClassLearningProblem extends LearningProblem {
 			heuristic = HeuristicType.PRED_ACC;
 		}
 		
-		if(useApproximations && !(heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE))) {
+		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
+			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
+		}		
+		
+		if(useApproximations && !(heuristic.equals(HeuristicType.PRED_ACC) || heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE))) {
 			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + accM + ".\"");
 		}
 		

@@ -101,6 +101,7 @@ public class ConfMapper {
 		learningAlgorithmMapping.put("gp", GP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
 		learningAlgorithmMapping.put("refexamples", OCEL.class);
+		learningAlgorithmMapping.put("ocel", OCEL.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
 		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);

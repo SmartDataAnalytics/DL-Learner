@@ -93,23 +93,21 @@ public class Heuristics {
 		return elementsIntersection / (double) elementsUnion;
 	}
 	
-	public double getPredictiveAccuracy(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives) {
+	public static double getPredictiveAccuracy(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives) {
 		return (nrOfPosClassifiedPositives + nrOfNegClassifiedNegatives) / (double) nrOfExamples;
 	}	
 
-	public double getPredictiveAccuracy(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives, double beta) {
-//		return (nrOfPosClassifiedPositives + nrOfNegClassifiedNegatives) / (double) nrOfExamples;
-		return 0;
+	public static double getPredictiveAccuracy(int nrOfPosExamples, int nrOfNegExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives, double beta) {
+		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (double) (nrOfPosExamples + beta * nrOfNegExamples);
 	}		
 	
-	public double getPredictiveAccuracy2(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfPosClassifiedNegatives) {
+	public static double getPredictiveAccuracy2(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfPosClassifiedNegatives) {
 		return (nrOfPosClassifiedPositives + nrOfExamples - nrOfPosClassifiedNegatives) / (double) nrOfExamples;
 	}
 	
-	public double getPredictiveAccuracy2(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives, double beta) {
-//		return (nrOfPosClassifiedPositives + nrOfNegClassifiedNegatives) / (double) nrOfExamples;
-		return 0;
-	}	
+	public static double getPredictiveAccuracy2(int nrOfPosExamples, int nrOfNegExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives, double beta) {
+		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (double) (nrOfPosExamples + beta * nrOfNegExamples);
+	}
 	
 	/**
 	 * Computes the 95% confidence interval of an experiment with boolean outcomes,
@@ -176,7 +174,7 @@ public class Heuristics {
 	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
 	 * than precision.
 	 * @param nrOfRelevantInstances Number of relevant instances, i.e. number of instances, which
-	 * would have been tested without approximations.
+	 * would have been tested without approximations. TODO: relevant = pos + neg examples?
 	 * @param nrOfInstanceChecks Performed instance checks for the approximation.
 	 * @param nrOfSuccessfulInstanceChecks Number of successful performed instance checks.
 	 * @return A two element array, where the first element is the computed F-beta score and the
@@ -258,6 +256,27 @@ public class Heuristics {
 		double diff = upperBorder - lowerBorder;
 		double ret[] = new double[2];
 		ret[0] = lowerBorder + 0.5*diff;
+		ret[1] = diff;
+		return ret;
+	}
+	
+	// WARNING: unstable/untested
+	// uses the following formula: (|R(C) \cap E^+| + beta * |E^- \ R(C)|) / (|E^+|+|E^-|)
+	// approximates |R(C) \cap E^+| and beta * |E^- \ R(C)| separately; and adds their lower and upper borders (pessimistic estimate)
+	// TODO: only works well if there are many negatives at the moment, so speedup is not great
+	public static double[] getPredAccApproximation(int nrOfPositiveExamples, int nrOfNegativeExamples, double beta, int nrOfPosExampleInstanceChecks, int nrOfSuccessfulPosExampleChecks, int nrOfNegExampleInstanceChecks, int nrOfNegativeNegExampleChecks) {
+		// compute both 95% confidence intervals
+		double[] intervalPos = Heuristics.getConfidenceInterval95Wald(nrOfPosExampleInstanceChecks, nrOfSuccessfulPosExampleChecks);
+		double[] intervalNeg = Heuristics.getConfidenceInterval95Wald(nrOfNegExampleInstanceChecks, nrOfNegativeNegExampleChecks);
+		// multiply by number of instances from which the random samples are drawn
+		double lowerBorder = intervalPos[0] * nrOfPositiveExamples + beta * intervalNeg[0] * nrOfNegativeExamples;
+		double upperBorder = intervalNeg[1] * nrOfPositiveExamples + beta * intervalNeg[1] * nrOfNegativeExamples;
+		double predAccLow = lowerBorder / (double) (nrOfPositiveExamples + beta * nrOfNegativeExamples);
+		double predAccHigh = upperBorder / (double) (nrOfPositiveExamples + beta * nrOfNegativeExamples);
+		double diff = predAccHigh - predAccLow;
+		// return interval length and center
+		double[] ret = new double[2];
+		ret[0] = predAccLow + 0.5 * diff;
 		ret[1] = diff;
 		return ret;
 	}
