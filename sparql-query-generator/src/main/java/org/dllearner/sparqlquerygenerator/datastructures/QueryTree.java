@@ -64,6 +64,8 @@ public interface QueryTree<N> {
     boolean isTagged();
 
     QueryTree<N> getRoot();
+    
+    List<QueryTree<N>> getLeafs();
 
     List<QueryTree<N>> getPathToRoot();
 
