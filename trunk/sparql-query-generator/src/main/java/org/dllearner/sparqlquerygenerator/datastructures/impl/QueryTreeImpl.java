@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -202,9 +203,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		}
     		if(!isSubsumed){
     			child.tag();
-    			for(QueryTree<N> p : child.getPathToRoot()){
-            		p.tag();
-            	}
 				return false;
 			}
     	}
@@ -226,6 +224,18 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
         return parent.getRoot();
     }
+    
+    public List<QueryTree<N>> getLeafs(){
+    	List<QueryTree<N>> leafs = new LinkedList<QueryTree<N>>();
+    	if(isLeaf()){
+    		leafs.add(this);
+    	} else {
+    		for(QueryTree<N> child : children){
+        		leafs.addAll(child.getLeafs());
+        	}
+    	}
+    	return leafs;
+    }
 
 
     public List<QueryTree<N>> getPathToRoot() {
@@ -238,6 +248,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
         return path;
     }
+    
+   
 
 
     public List<N> getUserObjectPathToRoot() {
