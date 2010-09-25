@@ -17,19 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.sparqlquerygenerator.datastructures;
+package org.dllearner.sparqlquerygenerator;
+
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public interface Edge {
+public interface QueryTreeFactory<N> {
 	
-	String getLabel();
+	QueryTreeImpl<N> getQueryTree(String example, Model model);
 	
-	Node getSourceNode();
-	
-	Node getTargetNode();
+	QueryTreeImpl<N> getQueryTree(Resource example, Model model);
 
 }

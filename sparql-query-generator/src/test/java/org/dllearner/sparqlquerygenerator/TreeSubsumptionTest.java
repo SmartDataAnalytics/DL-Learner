@@ -19,23 +19,36 @@
  */
 package org.dllearner.sparqlquerygenerator;
 
-import java.util.Set;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.junit.Assert;
+import org.junit.Test;
 
-import org.dllearner.sparqlquerygenerator.datastructures.Edge;
-import org.dllearner.sparqlquerygenerator.datastructures.Node;
-import org.dllearner.sparqlquerygenerator.datastructures.QueryGraph;
+
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public interface QueryGraphFactory {
+public class TreeSubsumptionTest{
 	
-	QueryGraph getQueryGraph(Set<Node> nodes, Set<Edge> edges, Node rootNode);
+	@Test
+	public void test1(){
+		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A");
+		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?");
+		Assert.assertTrue(tree1.isSubsumedBy(tree2));
+	}
 	
-	QueryGraph getQueryGraph(Node rootNode);
-	
-	QueryGraph getQueryGraph();
+	@Test
+	public void test2(){
+		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A");
+		tree1.addChild(new QueryTreeImpl<String>("B"), "r");
+		
+		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> child = new QueryTreeImpl<String>("A");
+		child.addChild(new QueryTreeImpl<String>("B"), "r");
+		tree2.addChild(child, "r");
+		Assert.assertFalse(tree1.isSubsumedBy(tree2));
+	}
 
 }

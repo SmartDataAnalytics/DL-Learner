@@ -19,24 +19,25 @@
  */
 package org.dllearner.sparqlquerygenerator.impl;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
-import org.dllearner.sparqlquerygenerator.datastructures.Edge;
-import org.dllearner.sparqlquerygenerator.datastructures.Node;
-import org.dllearner.sparqlquerygenerator.datastructures.QueryGraph;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.operations.LGG;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -55,10 +56,12 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	private Set<String> posExamples;
 	private Set<String> negExamples;
 	
-	private int recursionDepth = 3;
+	private int recursionDepth = 1;
 	
-	private Set<QueryGraph> posQueryGraphs;
-	private Set<QueryGraph> negQueryGraphs;
+	private Set<QueryTree<String>> posQueryTrees;
+	private Set<QueryTree<String>> negQueryTrees;
+	
+	private QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
 	
 	
 	public SPARQLQueryGeneratorImpl(String endpointURL){
@@ -72,6 +75,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		negExamples = new HashSet<String>();
 		
 		init();
+		learn();
 		
 		return null;
 	}
@@ -83,6 +87,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		this.negExamples = negExamples;
 		
 		init();
+		learn();
 		
 		return null;
 	}
@@ -91,19 +96,19 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	 * Here we build the initial Query graphs for the positive and negative examples.
 	 */
 	private void init(){
-		posQueryGraphs = new HashSet<QueryGraph>();
-		negQueryGraphs = new HashSet<QueryGraph>();
+		posQueryTrees = new HashSet<QueryTree<String>>();
+		negQueryTrees = new HashSet<QueryTree<String>>();
 		
-		QueryGraph graph;
+		QueryTree<String> tree;
 		//build the query graphs for the positive examples
 		for(String example : posExamples){
-			graph = getQueryGraphForExample(example);
-			posQueryGraphs.add(graph);
+			tree = getQueryTreeForExample(example);
+			posQueryTrees.add(tree);
 		}
 		//build the query graphs for the negative examples
 		for(String example : negExamples){
-			graph = getQueryGraphForExample(example);
-			negQueryGraphs.add(graph);
+			tree = getQueryTreeForExample(example);
+			negQueryTrees.add(tree);
 		}
 		
 		logger.debug("Overall query time: " + queryMonitor.getTotal());
@@ -115,15 +120,24 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	
 	private void learn(){
 		logger.debug("Start learning ...");
+		Monitor monitor = MonitorFactory.getTimeMonitor("LGG monitor");
+		
+		monitor.start();
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>(posQueryTrees);
+		QueryTree<String> lgg = LGG.computeLGG((QueryTreeImpl<String>)trees.get(0), (QueryTreeImpl<String>)trees.get(1));;
+		monitor.stop();
+		lgg.dump(new PrintWriter(System.out));
+		System.out.println(monitor.getTotal());
 		
 	}
+	
 	
 	/**
 	 * Creating the Query graph for the given example.
 	 * @param example The example for which a Query graph is created.
 	 * @return The resulting Query graph.
 	 */
-	private QueryGraph getQueryGraphForExample(String example){
+	private QueryTree<String> getQueryTreeForExample(String example){
 		Query query = makeConstructQuery(example);
 		logger.debug("Sending SPARQL query ...");
 		queryMonitor.start();
@@ -132,28 +146,15 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		queryMonitor.stop();
 		qexec.close();
 		
-		QueryGraph graph = new QueryGraphFactoryImpl().getQueryGraph();
-		Node rootNode = graph.createNode(example);
-		graph.setRootNode(rootNode);
-		Node sourceNode;
-		Node targetNode;
-		Edge edge;
-		for(Iterator<Statement> it = model.listStatements(); it.hasNext();){
-			Statement s = it.next();
-			if(!s.getObject().isLiteral()){
-				sourceNode = graph.createNode(s.getSubject().toString());
-				targetNode = graph.createNode(s.getObject().toString());
-				edge = graph.createEdge(sourceNode, targetNode, s.getPredicate().toString());
-			}
-		}
-
-		return graph;
-		
+		QueryTree<String> tree = factory.getQueryTree(example, model);
+//		tree.dump(new PrintWriter(System.out));
+		return tree;
 	}
+	
 	
 	/**
 	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
-	 * @param example The example resource for which a CONTRCUT query is created.
+	 * @param example The example resource for which a CONSTRUCT query is created.
 	 * @return The JENA ARQ Query object.
 	 */
 	private Query makeConstructQuery(String example){
@@ -173,7 +174,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		for(int i = 1; i < recursionDepth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
 		}
-//		sb.append("FILTER (!regex (?p0, \"http://dbpedia.org/property/\"))");
+		sb.append("FILTER (regex (?p0, \"http://dbpedia.org/property/wikiPageU\"))");
 		sb.append("}");
 		logger.debug("Query: \n" + sb.toString());
 		Query query = QueryFactory.create(sb.toString());
@@ -189,10 +190,12 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		Set<String> posExamples = new HashSet<String>();
 		
-		posExamples.add("http://dbpedia.org/resource/Leipzig");
-		posExamples.add("http://dbpedia.org/resource/Dresden");
-		posExamples.add("http://dbpedia.org/resource/Chemnitz");
+//		posExamples.add("http://dbpedia.org/resource/Leipzig");
+//		posExamples.add("http://dbpedia.org/resource/Dresden");
+//		posExamples.add("http://dbpedia.org/resource/Chemnitz");
 		
+		posExamples.add("http://dbpedia.org/resource/Gottfried_Leibniz");
+		posExamples.add("http://dbpedia.org/resource/Max_Immelmann");
 //		posExamples.add("http://dbpedia.org/resource/Berlin");
 //		posExamples.add("http://dbpedia.org/resource/Hamburg");
 //		posExamples.add("http://dbpedia.org/resource/Bremen");

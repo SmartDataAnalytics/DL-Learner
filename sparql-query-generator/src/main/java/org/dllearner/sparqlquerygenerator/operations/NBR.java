@@ -21,7 +21,8 @@ package org.dllearner.sparqlquerygenerator.operations;
 
 import java.util.Set;
 
-import org.dllearner.sparqlquerygenerator.datastructures.QueryGraph;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
 /**
  * 
@@ -30,8 +31,30 @@ import org.dllearner.sparqlquerygenerator.datastructures.QueryGraph;
  */
 public class NBR {
 	
-	public static void computeNBR(QueryGraph posGraph, Set<QueryGraph> negGraphs){
+	
+	public static <N> QueryTree<N> computeNBR(QueryTreeImpl<N> posExampleTree, Set<QueryTreeImpl<N>> negExampleTrees){
+		QueryTreeImpl<N> nbr = new QueryTreeImpl<N>(posExampleTree.getUserObject());
 		
+		return nbr;
+	}
+	
+	public static <N> QueryTree<N> computeNBR(QueryTreeImpl<N> posTree, QueryTreeImpl<N> negTree){
+		negTree.isSubsumedBy(posTree, true);
+		QueryTreeImpl<N> nbr = buildNBR(posTree);
+		
+		return nbr;
+	}
+	
+	private static <N> QueryTreeImpl<N> buildNBR(QueryTree<N> tree){
+		QueryTreeImpl<N> nbr = new QueryTreeImpl<N>(tree.getUserObject());
+		
+		for(QueryTree<N> child : tree.getChildren()){
+			if(child.isTagged()){
+				nbr.addChild(buildNBR(child), tree.getEdge(child));
+			}
+		}
+		
+		return nbr;
 	}
 
 }

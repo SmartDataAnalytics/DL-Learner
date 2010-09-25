@@ -19,25 +19,13 @@
  */
 package org.dllearner.sparqlquerygenerator.datastructures;
 
-import java.util.Set;
-
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public interface Node {
+public interface NodeRenderer<N> {
 	
-	String getLabel();
-	
-	Set<Edge> getInEdges();
-	
-	Set<Edge> getOutEdges();
-	
-	boolean addInEdge(Edge edge);
-	
-	boolean addOutEdge(Edge edge);
-	
-	
+	String render(QueryTree<N> node);
 
 }
