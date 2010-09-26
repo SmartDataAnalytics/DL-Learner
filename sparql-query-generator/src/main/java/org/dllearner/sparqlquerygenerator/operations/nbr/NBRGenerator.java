@@ -17,24 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.sparqlquerygenerator;
+package org.dllearner.sparqlquerygenerator.operations.nbr;
 
-import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public interface QueryTreeFactory<N> {
+public interface NBRGenerator<N> {
 	
-	QueryTreeImpl<N> getQueryTree(String example, Model model);
+	QueryTree<N> getNBR(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree);
 	
-	QueryTreeImpl<N> getQueryTree(Resource example, Model model);
+	QueryTree<N> getNBR(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees);
 	
-	QueryTreeImpl<N> getQueryTree(String example);
+	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree);
+	
+	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees);
+	
+	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree, int limit);
+	
+	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees, int limit);
+	
 
 }

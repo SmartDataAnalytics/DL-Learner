@@ -64,6 +64,13 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             }
         };
     }
+    
+    public QueryTreeImpl(QueryTree<N> tree){
+    	this.userObject = tree.getUserObject();
+    	for(QueryTree<N> child : tree.getChildren()){
+    		addChild(new QueryTreeImpl<N>(child), tree.getEdge(child));
+    	}
+    }
 
     public N getUserObject() {
         return userObject;
@@ -187,7 +194,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     @Override
     public boolean isSubsumedBy(QueryTree<N> tree, boolean stopAfterError) {
     	if(!(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject))){
-    		tree.tag();
     		return false;
     	}
     	
@@ -388,24 +394,45 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return copy;
     }
     
-    @Override
-    public boolean equals(Object obj) {
-    	if(obj == this){
-    		return true;
-    	}
-    	if(!(obj instanceof QueryTreeImpl<?>)){
-    		return false;
-    	}
-    	QueryTreeImpl<N> other = (QueryTreeImpl<N>)obj;
-    	if(!this.userObject.equals(other.getUserObject())){
+//    @Override
+//    public boolean equals(Object obj) {
+//    	if(obj == this){
+//    		return true;
+//    	}
+//    	if(!(obj instanceof QueryTreeImpl<?>)){
+//    		return false;
+//    	}
+//    	QueryTreeImpl<N> other = (QueryTreeImpl<N>)obj;
+//    	if(!this.userObject.equals(other.getUserObject())){
+//    		return false;
+//    	}
+//    	Object edge;
+//    	for(QueryTreeImpl<N> child : this.children){
+//    		boolean existsEqualChild = false;
+//    		edge = child2EdgeMap.get(child);
+//    		for(QueryTree<N> child2 : other.getChildren(edge)){
+//    			if(child.equals(child2)){
+//    				existsEqualChild = true;
+//    				break;
+//    			}
+//    		}
+//    		if(!existsEqualChild){
+//    			return false;
+//    		}
+//    	}
+//    	return true;
+//    }
+    
+    public boolean isSameTreeAs(QueryTree<N> tree){
+    	if(!this.userObject.equals(tree.getUserObject())){
     		return false;
     	}
     	Object edge;
     	for(QueryTreeImpl<N> child : this.children){
     		boolean existsEqualChild = false;
     		edge = child2EdgeMap.get(child);
-    		for(QueryTree<N> child2 : other.getChildren(edge)){
-    			if(child.equals(child2)){
+    		for(QueryTree<N> child2 : tree.getChildren(edge)){
+    			if(child.isSameTreeAs(child2)){
     				existsEqualChild = true;
     				break;
     			}
@@ -416,6 +443,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	}
     	return true;
     }
+    
     
     @Override
     public String toSPARQLQueryString() {

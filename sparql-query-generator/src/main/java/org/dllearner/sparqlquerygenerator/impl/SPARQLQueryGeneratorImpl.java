@@ -20,7 +20,6 @@
 package org.dllearner.sparqlquerygenerator.impl;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,8 +29,8 @@ import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
-import org.dllearner.sparqlquerygenerator.operations.LGG;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -123,11 +122,15 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		Monitor monitor = MonitorFactory.getTimeMonitor("LGG monitor");
 		
 		monitor.start();
-		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>(posQueryTrees);
-		QueryTree<String> lgg = LGG.computeLGG((QueryTreeImpl<String>)trees.get(0), (QueryTreeImpl<String>)trees.get(1));;
+		
+		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+		QueryTree<String> lgg = lggGenerator.getLGG(posQueryTrees);
+		
 		monitor.stop();
+		
 		lgg.dump(new PrintWriter(System.out));
-		System.out.println(monitor.getTotal());
+		
+		System.out.println("LGG COMPUTATION TIME: " + monitor.getTotal() + " ms");
 		
 	}
 	

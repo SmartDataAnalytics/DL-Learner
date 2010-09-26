@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+
 /**
  * 
  * @author Lorenz Bühmann
@@ -36,6 +38,8 @@ public interface QueryTree<N> {
      * @return The user content of this node.
      */
     N getUserObject();
+    
+    void setUserObject(N userObject);
 
     QueryTree<N> getParent();
     
@@ -44,6 +48,12 @@ public interface QueryTree<N> {
     List<QueryTree<N>> getChildren(Object edge);
 
     Object getEdge(QueryTree<N> child);
+    
+    void addChild(QueryTreeImpl<N> child);
+    
+    void addChild(QueryTreeImpl<N> child, Object edge);
+    
+    void removeChild(QueryTreeImpl<N> child);
     
     Set<Object> getEdges();
     
@@ -58,6 +68,8 @@ public interface QueryTree<N> {
     boolean isSubsumedBy(QueryTree<N> tree);
     
     boolean isSubsumedBy(QueryTree<N> tree, boolean stopAfterError);
+    
+    boolean isSameTreeAs(QueryTree<N> tree);
     
     void tag();
     
