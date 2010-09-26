@@ -35,7 +35,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees) {
-		QueryTree<N> nbr = posExampleTree;//new QueryTreeImpl<N>(posExampleTree);
+		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
 		
 		Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
 		Object edge;
@@ -59,15 +59,72 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 				
 			}
 		}
-		
+		System.out.println(nbr.getLeafs());
 		return nbr;
 	}
 
 	@Override
 	public Set<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Set<QueryTree<N>> nbrs = new HashSet<QueryTree<N>>();
+		compute(posExampleTree, negExampleTrees, nbrs);
+		return nbrs;
+	}
+	
+	private void compute(QueryTree<N> posExampleTree,
+			Set<QueryTree<N>> negExampleTrees, Set<QueryTree<N>> nbrs) {
+		
+		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		for(QueryTree<N> n : nbrs){
+			for(QueryTree<N> leaf1 : nbr.getLeafs()){
+				for(QueryTree<N> leaf2 : n.getLeafs()){
+					if(leaf1.getUserObject().equals(leaf2.getUserObject())){
+						leaf1.getParent().removeChild((QueryTreeImpl<N>) leaf1);
+					}
+				}
+			}
+		}
+		if(!subsumesTrees(nbr, negExampleTrees)){
+			Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
+			Object edge;
+			QueryTree<N> parent;
+			while(!(tested.size() == nbr.getLeafs().size()) ){
+				for(QueryTree<N> leaf : nbr.getLeafs()){
+					parent = leaf.getParent();
+					edge = parent.getEdge(leaf);
+					parent.removeChild((QueryTreeImpl<N>)leaf);
+					boolean isSubsumedBy = false;
+					for(QueryTree<N> negTree : negExampleTrees){
+						isSubsumedBy = negTree.isSubsumedBy(nbr);
+						if(isSubsumedBy){
+							break;
+						}
+					}
+					if(isSubsumedBy){
+						tested.add(leaf);
+						parent.addChild((QueryTreeImpl<N>)leaf, edge);
+					}
+					
+				}
+			}
+			nbrs.add(nbr);
+			compute(posExampleTree, negExampleTrees, nbrs);
+			
+		}
+		
+	}
+	
+	private boolean subsumesTrees(QueryTree<N> posExampleTree,
+			Set<QueryTree<N>> negExampleTrees){
+		boolean subsumesTree = false;
+		for(QueryTree<N> negTree : negExampleTrees){
+			subsumesTree = negTree.isSubsumedBy(posExampleTree);
+			if(subsumesTree){
+				break;
+			}
+		}
+		return subsumesTree;
 	}
 	
 

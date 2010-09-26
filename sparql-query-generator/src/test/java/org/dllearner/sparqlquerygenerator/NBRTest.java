@@ -39,7 +39,7 @@ import org.junit.Test;
 public class NBRTest {
 	
 	@Test
-	public void test1(){
+	public void computeSingleNBRBruteForce(){
 		
 		Set<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
 		Set<QueryTree<String>> negExampleTrees = DBpediaExample.getNegExampleTrees();
@@ -78,8 +78,44 @@ public class NBRTest {
 	}
 	
 	@Test
-	public void test2(){
+	public void computeAllNBRsBruteForce(){
+		Set<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
+		Set<QueryTree<String>> negExampleTrees = DBpediaExample.getNegExampleTrees();
 		
+		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>(new BruteForceNBRStrategy<String>());
+		
+		int cnt = 1;
+		for(QueryTree<String> tree : posExampleTrees){
+			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
+			tree.dump(new PrintWriter(System.out));
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
+		
+		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
+		
+		System.out.println("LGG");
+		lgg.dump(new PrintWriter(System.out));
+		
+		System.out.println("-----------------------------------------------");
+		
+		cnt = 1;
+		for(QueryTree<String> tree : negExampleTrees){
+			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
+			tree.dump(new PrintWriter(System.out));
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
+		
+		Set<QueryTree<String>> nbrs = nbrGenerator.getNBRs(lgg, negExampleTrees);
+		cnt = 1;
+		for(QueryTree<String> tree : nbrs){
+			System.out.println("NBR " + cnt);
+			tree.dump(new PrintWriter(System.out));
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
 	}
 	
 	@Test

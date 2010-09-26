@@ -34,8 +34,12 @@ public class TagUncriticalPartsNBRStrategy<N> implements NBRStrategy<N>{
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
-		// TODO Auto-generated method stub
-		return null;
+		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		for(QueryTree<N> negExampleTree : negExampleTrees){
+			nbr.isSubsumedBy(negExampleTree, true);
+			nbr = buildNBR(posExampleTree);
+		}
+		return nbr;
 	}
 
 	@Override

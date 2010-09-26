@@ -66,7 +66,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     public QueryTreeImpl(QueryTree<N> tree){
-    	this.userObject = tree.getUserObject();
+    	this(tree.getUserObject());
     	for(QueryTree<N> child : tree.getChildren()){
     		addChild(new QueryTreeImpl<N>(child), tree.getEdge(child));
     	}
