@@ -19,7 +19,6 @@
  */
 package org.dllearner.sparqlquerygenerator;
 
-import java.io.PrintWriter;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -50,7 +49,7 @@ public class NBRTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
-			tree.dump(new PrintWriter(System.out));
+			tree.dump();
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -58,22 +57,22 @@ public class NBRTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump(new PrintWriter(System.out));
+		lgg.dump();
 		
 		System.out.println("-----------------------------------------------");
 		
 		cnt = 1;
 		for(QueryTree<String> tree : negExampleTrees){
 			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
-			tree.dump(new PrintWriter(System.out));
+			tree.dump();
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
 		
-		System.out.println("NBR");
 		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negExampleTrees);
 		
-		nbr.dump(new PrintWriter(System.out));
+		System.out.println("NBR");
+		nbr.dump();
 		
 	}
 	
@@ -88,7 +87,7 @@ public class NBRTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
-			tree.dump(new PrintWriter(System.out));
+			tree.dump();
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -96,14 +95,14 @@ public class NBRTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump(new PrintWriter(System.out));
+		lgg.dump();
 		
 		System.out.println("-----------------------------------------------");
 		
 		cnt = 1;
 		for(QueryTree<String> tree : negExampleTrees){
 			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
-			tree.dump(new PrintWriter(System.out));
+			tree.dump();
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -112,7 +111,7 @@ public class NBRTest {
 		cnt = 1;
 		for(QueryTree<String> tree : nbrs){
 			System.out.println("NBR " + cnt);
-			tree.dump(new PrintWriter(System.out));
+			tree.dump();
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}

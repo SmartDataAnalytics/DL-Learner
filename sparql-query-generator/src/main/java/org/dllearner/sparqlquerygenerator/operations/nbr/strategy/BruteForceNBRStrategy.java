@@ -19,7 +19,6 @@
  */
 package org.dllearner.sparqlquerygenerator.operations.nbr.strategy;
 
-import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +35,9 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees) {
 		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		if(subsumesTrees(posExampleTree, negExampleTrees)){
+			return nbr;
+		}
 		
 		Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
 		Object edge;
@@ -59,7 +61,6 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 				
 			}
 		}
-		System.out.println(nbr.getLeafs());
 		return nbr;
 	}
 
@@ -68,7 +69,9 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 			Set<QueryTree<N>> negExampleTrees) {
 		
 		Set<QueryTree<N>> nbrs = new HashSet<QueryTree<N>>();
+		
 		compute(posExampleTree, negExampleTrees, nbrs);
+		
 		return nbrs;
 	}
 	
@@ -76,14 +79,13 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 			Set<QueryTree<N>> negExampleTrees, Set<QueryTree<N>> nbrs) {
 		
 		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		if(subsumesTrees(posExampleTree, negExampleTrees)){
+//			nbrs.add(posExampleTree);
+			return;
+		}
+		
 		for(QueryTree<N> n : nbrs){
-			for(QueryTree<N> leaf1 : nbr.getLeafs()){
-				for(QueryTree<N> leaf2 : n.getLeafs()){
-					if(leaf1.getUserObject().equals(leaf2.getUserObject())){
-						leaf1.getParent().removeChild((QueryTreeImpl<N>) leaf1);
-					}
-				}
-			}
+			removeTree(nbr, n);
 		}
 		if(!subsumesTrees(nbr, negExampleTrees)){
 			Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
@@ -127,5 +129,18 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 		return subsumesTree;
 	}
 	
+	private void removeTree(QueryTree<N> tree, QueryTree<N> node){
+		Object edge;
+		for(QueryTree<N> child1 : node.getChildren()){
+			edge = node.getEdge(child1);
+			for(QueryTree<N> child2 : tree.getChildren(edge)){
+				if(child1.isLeaf() && child1.getUserObject().equals(child2.getUserObject())){
+					child2.getParent().removeChild((QueryTreeImpl<N>) child2);
+				} else {
+					removeTree(child2, child1);
+				}
+			}
+		}
+	}
 
 }

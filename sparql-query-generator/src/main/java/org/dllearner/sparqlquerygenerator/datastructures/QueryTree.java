@@ -82,6 +82,8 @@ public interface QueryTree<N> {
     List<QueryTree<N>> getPathToRoot();
 
     List<N> getUserObjectPathToRoot();
+    
+    void dump();
 
     void dump(PrintWriter writer);
 
