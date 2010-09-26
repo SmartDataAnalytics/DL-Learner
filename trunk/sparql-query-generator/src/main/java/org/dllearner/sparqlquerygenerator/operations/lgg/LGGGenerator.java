@@ -17,24 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.sparqlquerygenerator;
+package org.dllearner.sparqlquerygenerator.operations.lgg;
 
-import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public interface QueryTreeFactory<N> {
+public interface LGGGenerator<N> {
 	
-	QueryTreeImpl<N> getQueryTree(String example, Model model);
+	QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2);
 	
-	QueryTreeImpl<N> getQueryTree(Resource example, Model model);
-	
-	QueryTreeImpl<N> getQueryTree(String example);
+	QueryTree<N> getLGG(Set<QueryTree<N>> trees);
 
 }

@@ -17,44 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.sparqlquerygenerator.operations;
+package org.dllearner.sparqlquerygenerator.operations.nbr.strategy;
 
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public class NBR {
-	
-	
-	public static <N> QueryTree<N> computeNBR(QueryTreeImpl<N> posExampleTree, Set<QueryTreeImpl<N>> negExampleTrees){
-		QueryTreeImpl<N> nbr = new QueryTreeImpl<N>(posExampleTree.getUserObject());
-		
-		return nbr;
+public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
+
+	@Override
+	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
+			Set<QueryTree<N>> negExampleTrees) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
-	public static <N> QueryTree<N> computeNBR(QueryTreeImpl<N> posTree, QueryTreeImpl<N> negTree){
-		negTree.isSubsumedBy(posTree, true);
-		QueryTreeImpl<N> nbr = buildNBR(posTree);
-		
-		return nbr;
-	}
-	
-	private static <N> QueryTreeImpl<N> buildNBR(QueryTree<N> tree){
-		QueryTreeImpl<N> nbr = new QueryTreeImpl<N>(tree.getUserObject());
-		
-		for(QueryTree<N> child : tree.getChildren()){
-			if(child.isTagged()){
-				nbr.addChild(buildNBR(child), tree.getEdge(child));
-			}
-		}
-		
-		return nbr;
+
+	@Override
+	public Set<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
+			Set<QueryTree<N>> negExampleTrees) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

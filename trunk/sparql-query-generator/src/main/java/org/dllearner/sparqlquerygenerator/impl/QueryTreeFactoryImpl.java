@@ -41,48 +41,20 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	@Override
 	public QueryTreeImpl<String> getQueryTree(String example, Model model) {
-		return createTree2(model.getResource(example), model);
+		return createTree(model.getResource(example), model);
 	}
 
 	@Override
 	public QueryTreeImpl<String> getQueryTree(Resource example, Model model) {
-		return createTree2(example, model);
+		return createTree(example, model);
+	}
+	
+	@Override
+	public QueryTreeImpl<String> getQueryTree(String example) {
+		return new QueryTreeImpl<String>(example);
 	}
 	
 	private QueryTreeImpl<String> createTree(Resource s, Model model){
-		Map<Resource, Set<Statement>> resource2Statements = new HashMap<Resource, Set<Statement>>();
-		Statement st;
-		Set<Statement> statements;
-		for(Iterator<Statement> it = model.listStatements(); it.hasNext();){
-			st = it.next();
-			statements = resource2Statements.get(st.getSubject());
-			if(statements == null){
-				statements = new HashSet<Statement>();
-				resource2Statements.put(st.getSubject(), statements);
-			}
-			statements.add(st);
-		}
-				
-		return createTree(s, resource2Statements);
-	}
-	
-	private QueryTreeImpl<String> createTree(Resource s, Map<Resource, Set<Statement>> resource2Statements){
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
-		if(resource2Statements.containsKey(s)){
-			for(Statement st : resource2Statements.get(s)){
-				if(st.getObject().isLiteral()){
-					tree.addChild(new QueryTreeImpl<String>(st.getObject().toString()), st.getPredicate().toString());
-				} else {
-					if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-						tree.addChild(createTree(st.getObject().asResource(), resource2Statements), st.getPredicate().toString());
-					}
-				}
-			}
-		}
-		return tree;
-	}
-	
-	private QueryTreeImpl<String> createTree2(Resource s, Model model){
 		Map<String, Set<Statement>> resource2Statements = new HashMap<String, Set<Statement>>();
 		Statement st;
 		Set<Statement> statements;
