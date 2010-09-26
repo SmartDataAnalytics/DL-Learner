@@ -54,15 +54,13 @@ public class NBRGeneratorImpl<N> implements NBRGenerator<N>{
 	@Override
 	public Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
 			QueryTree<N> negExampleTree) {
-		// TODO Auto-generated method stub
-		return null;
+		return strategy.computeNBRs(posExampleTree, Collections.singleton(negExampleTree));
 	}
 
 	@Override
 	public Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
-		// TODO Auto-generated method stub
-		return null;
+		return strategy.computeNBRs(posExampleTree, negExampleTrees);
 	}
 
 	@Override
