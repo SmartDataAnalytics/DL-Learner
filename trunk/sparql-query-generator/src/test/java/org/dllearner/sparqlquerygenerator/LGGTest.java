@@ -19,7 +19,6 @@
  */
 package org.dllearner.sparqlquerygenerator;
 
-import java.io.PrintWriter;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -51,7 +50,7 @@ public class LGGTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("TREE " + cnt);
-			tree.dump(new PrintWriter(System.out));
+			tree.dump();
 			System.out.println("-----------------------------");
 			cnt++;
 		}
@@ -60,7 +59,7 @@ public class LGGTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump(new PrintWriter(System.out));
+		lgg.dump();
 		
 		QueryTreeImpl<String> tree = factory.getQueryTree("?");
 		QueryTreeImpl<String> subTree1 = new QueryTreeImpl<String>("?");

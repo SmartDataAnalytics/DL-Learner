@@ -282,7 +282,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             getUserObjectClosure(child, bin);
         }
     }
-
+    
+    
+    public void dump() {
+        dump(new PrintWriter(System.out), 0);
+    }
 
     public void dump(PrintWriter writer) {
         dump(writer, 0);
