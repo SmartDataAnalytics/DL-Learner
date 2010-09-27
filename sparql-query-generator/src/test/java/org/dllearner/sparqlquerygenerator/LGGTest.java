@@ -63,7 +63,7 @@ public class LGGTest {
 		
 		QueryTreeImpl<String> tree = factory.getQueryTree("?");
 		QueryTreeImpl<String> subTree1 = new QueryTreeImpl<String>("?");
-		subTree1.addChild(new QueryTreeImpl<String>("SPD"), "leaderParty");
+		subTree1.addChild(new QueryTreeImpl<String>("?"), "leaderParty");
 		subTree1.addChild(new QueryTreeImpl<String>("?"), "population");
 		subTree1.addChild(new QueryTreeImpl<String>("Germany"), "locatedIn");
 		tree.addChild(subTree1, "birthPlace");
@@ -78,6 +78,8 @@ public class LGGTest {
 		tree.addChild(subTree3, RDF.type.toString());
 		
 		Assert.assertTrue(lgg.isSameTreeAs(tree));
+		
+		System.out.println(tree.toSPARQLQueryString());
 		
 	}
 	
