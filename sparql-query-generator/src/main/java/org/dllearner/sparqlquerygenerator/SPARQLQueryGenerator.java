@@ -31,6 +31,10 @@ public interface SPARQLQueryGenerator {
 	
 	List<String> getSPARQLQueries(Set<String> posExamples);
 	
+	List<String> getSPARQLQueries(Set<String> posExamples, boolean learnFilters);
+	
 	List<String> getSPARQLQueries(Set<String> posExamples, Set<String> negExamples);
+	
+	List<String> getSPARQLQueries(Set<String> posExamples, Set<String> negExamples, boolean learnFilters);
 
 }
