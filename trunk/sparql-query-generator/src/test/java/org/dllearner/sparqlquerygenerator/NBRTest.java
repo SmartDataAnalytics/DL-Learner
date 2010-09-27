@@ -28,6 +28,8 @@ import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGenerator;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.BruteForceNBRStrategy;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.TagNonSubsumingPartsNBRStrategy;
 import org.junit.Test;
 
 /**
@@ -118,8 +120,77 @@ public class NBRTest {
 	}
 	
 	@Test
-	public void test3(){
+	public void computeSingleNBRWithTaggingNonSubsumingParts(){
+		Set<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
+		Set<QueryTree<String>> negExampleTrees = DBpediaExample.getNegExampleTrees();
 		
+		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>(new TagNonSubsumingPartsNBRStrategy<String>());
+		
+		int cnt = 1;
+		for(QueryTree<String> tree : posExampleTrees){
+			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
+			tree.dump();
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
+		
+		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
+		
+		System.out.println("LGG");
+		lgg.dump();
+		
+		System.out.println("-----------------------------------------------");
+		
+		cnt = 1;
+		for(QueryTree<String> tree : negExampleTrees){
+			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
+			tree.dump();
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
+		
+		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negExampleTrees);
+		
+		System.out.println("NBR");
+		nbr.dump();
+	}
+	
+	@Test
+	public void computeSingleNBRGreedy(){
+		Set<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
+		Set<QueryTree<String>> negExampleTrees = DBpediaExample.getNegExampleTrees();
+		
+		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>(new GreedyNBRStrategy<String>());
+		
+		int cnt = 1;
+		for(QueryTree<String> tree : posExampleTrees){
+			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
+			tree.dump();
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
+		
+		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
+		
+		System.out.println("LGG");
+		lgg.dump();
+		
+		System.out.println("-----------------------------------------------");
+		
+		cnt = 1;
+		for(QueryTree<String> tree : negExampleTrees){
+			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
+			tree.dump();
+			System.out.println("-----------------------------------------------");
+			cnt++;
+		}
+		
+		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negExampleTrees);
+		
+		System.out.println("NBR");
+//		nbr.dump();
 	}
 
 }

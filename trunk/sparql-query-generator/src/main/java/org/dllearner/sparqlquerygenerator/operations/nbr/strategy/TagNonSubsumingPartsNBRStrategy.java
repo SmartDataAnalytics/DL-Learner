@@ -29,16 +29,18 @@ import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
  * @author Lorenz Bühmann
  *
  */
-public class TagUncriticalPartsNBRStrategy<N> implements NBRStrategy<N>{
+public class TagNonSubsumingPartsNBRStrategy<N> implements NBRStrategy<N>{
 
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
-		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		
 		for(QueryTree<N> negExampleTree : negExampleTrees){
-			nbr.isSubsumedBy(negExampleTree, true);
-			nbr = buildNBR(posExampleTree);
+			negExampleTree.isSubsumedBy(posExampleTree, true);
 		}
+		
+		QueryTree<N> nbr = buildNBR(posExampleTree);
+		
 		return nbr;
 	}
 
