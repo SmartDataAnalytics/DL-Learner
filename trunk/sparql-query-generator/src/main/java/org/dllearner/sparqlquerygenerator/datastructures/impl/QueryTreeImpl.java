@@ -53,6 +53,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private boolean tagged = false;
     
+    private int cnt;
+    
 
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
@@ -451,29 +453,35 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public String toSPARQLQueryString() {
-    	return toSPARQLQueryString(0);
+    	cnt = 0;
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("SELECT ?x0 WHERE {\n");
+    	buildSPARQLQueryString(this, sb);
+    	sb.append("}");
+    	return sb.toString();
     }
     
-    public String toSPARQLQueryString(int cnt) {
-    	if(!userObject.equals("?")){
-    		return "";
+    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb){
+    	Object subject = tree.getUserObject();
+    	if(subject.equals("?")){
+    		subject = "x" + cnt++;
     	} 
-    	StringBuilder sb = new StringBuilder();
-    	Object subject = "x" + cnt++;
     	Object predicate;
     	Object object;
-    	for(QueryTree<N> child : children){
-    		predicate = getEdge(child);
-    		object = child.getUserObject();
-    		if(object.equals("?")){
-    			object = "x" + cnt++;
-    		} 
-    		sb.append(subject).append(" ").append(predicate).append(" ").append(object).append(".\n");
-    		if(!child.isLeaf()){
-    			sb.append(child.toSPARQLQueryString(cnt));
-    		}
-    	}
-    	return sb.toString();
+    	if(!tree.isLeaf()){
+    		for(QueryTree<N> child : tree.getChildren()){
+        		predicate = tree.getEdge(child);
+        		object = child.getUserObject();
+        		boolean objectIsResource = !object.equals("?");
+        		if(!objectIsResource){
+        			object = "x" + cnt;
+        		} 
+        		sb.append(subject).append(" ").append(predicate).append(" ").append(object).append(".\n");
+        		if(!objectIsResource){
+        			buildSPARQLQueryString(child, sb);
+        		}
+        	}
+    	} 
     }
     
 
