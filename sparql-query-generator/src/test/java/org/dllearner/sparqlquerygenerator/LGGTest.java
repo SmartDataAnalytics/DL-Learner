@@ -24,6 +24,7 @@ import java.util.Set;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.examples.DBpediaExample;
+import org.dllearner.sparqlquerygenerator.examples.LinkedGeoDataExample;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
@@ -42,7 +43,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class LGGTest {
 	
 	@Test
-	public void testLGGWithTrees(){
+	public void testLGGWithDBpediaExample(){
 		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
 		
 		Set<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
@@ -83,5 +84,40 @@ public class LGGTest {
 		
 	}
 	
+	@Test
+	public void testLGGWithLinkedGeoDataExample(){
+		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
+		
+		Set<QueryTree<String>> posExampleTrees = LinkedGeoDataExample.getPosExampleTrees();
+		
+		int cnt = 1;
+		for(QueryTree<String> tree : posExampleTrees){
+			System.out.println("TREE " + cnt);
+			tree.dump();
+			System.out.println("-----------------------------");
+			cnt++;
+		}
+		
+		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
+		
+		System.out.println("LGG");
+		lgg.dump();
+		
+		QueryTreeImpl<String> tree = factory.getQueryTree("?");
+		QueryTreeImpl<String> subTree = new QueryTreeImpl<String>("lgdo:Aerodome");
+		subTree.addChild(new QueryTreeImpl<String>("lgdo:Aeroway"), RDFS.subClassOf.toString());
+		tree.addChild(subTree, RDF.type.toString());
+		tree.addChild(new QueryTreeImpl<String>("?"), RDFS.label.toString());
+		tree.addChild(new QueryTreeImpl<String>("?"), "geo:long");
+		tree.addChild(new QueryTreeImpl<String>("?"), "geo:lat");
+		tree.addChild(new QueryTreeImpl<String>("?"), "georss:point");
+		tree.addChild(new QueryTreeImpl<String>("?"), "lgdp:icao");
+		
+		Assert.assertTrue(lgg.isSameTreeAs(tree));
+		
+		System.out.println(tree.toSPARQLQueryString());
+		
+	}
 
 }
