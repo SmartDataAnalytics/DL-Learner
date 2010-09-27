@@ -32,6 +32,10 @@ public interface LGGGenerator<N> {
 	
 	QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2);
 	
+	QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters);
+	
 	QueryTree<N> getLGG(Set<QueryTree<N>> trees);
+	
+	QueryTree<N> getLGG(Set<QueryTree<N>> trees, boolean learnFilters);
 
 }

@@ -78,6 +78,13 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		return null;
 	}
+	
+	@Override
+	public List<String> getSPARQLQueries(Set<String> posExamples,
+			boolean learnFilters) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public List<String> getSPARQLQueries(Set<String> posExamples,
@@ -88,6 +95,13 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		init();
 		learn();
 		
+		return null;
+	}
+	
+	@Override
+	public List<String> getSPARQLQueries(Set<String> posExamples,
+			Set<String> negExamples, boolean learnFilters) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -212,6 +226,5 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		List<String> result = gen.getSPARQLQueries(posExamples);
 		
 	}
-	
 
 }

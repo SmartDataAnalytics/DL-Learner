@@ -36,30 +36,60 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2) {
-		return computeLGG(tree1, tree2);
+		return getLGG(tree1, tree2, false);
+	}
+	
+	@Override
+	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2,
+			boolean learnFilters) {
+		return computeLGG(tree1, tree2, learnFilters);
 	}
 
 	@Override
 	public QueryTree<N> getLGG(Set<QueryTree<N>> trees) {
+		return getLGG(trees, false);
+	}
+	
+	@Override
+	public QueryTree<N> getLGG(Set<QueryTree<N>> trees, boolean learnFilters) {
 		if(trees.size() == 1){
 			return trees.iterator().next();
 		}
 		
 		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
-		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1));
+		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
 		for(int i = 2; i < treeList.size(); i++){
-			lgg = computeLGG(lgg, treeList.get(i));
+			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
 		}
 		
 		return lgg;
 	}
 	
-	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2){
+	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
 		
 		if(!lgg.getUserObject().equals(tree2.getUserObject())){
 			lgg.setUserObject((N)"?");
+			if(learnFilters){
+				try {
+					int value1 = Integer.parseInt(((String)tree1.getUserObject()));
+					int value2 = Integer.parseInt(((String)tree2.getUserObject()));
+					if(value1 < value2){
+						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value1)), ">=-FILTER");
+						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value2)), "<=-FILTER");
+					} else {
+						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value2)), ">=-FILTER");
+						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value1)), "<=-FILTER");
+					}
+					
+				} catch (NumberFormatException e) {
+					
+				}
+			}
 		}
+//		if(!lgg.getUserObject().equals(tree2.getUserObject())){
+//			lgg.setUserObject((N)"?");
+//		}
 		
 		Set<QueryTreeImpl<N>> addedChildren;
 		QueryTreeImpl<N> lggChild;
@@ -67,7 +97,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			addedChildren = new HashSet<QueryTreeImpl<N>>();
 			for(QueryTree<N> child1 : tree1.getChildren(edge)){
 				for(QueryTree<N> child2 : tree2.getChildren(edge)){
-					lggChild = (QueryTreeImpl<N>) computeLGG(child1, child2);
+					lggChild = (QueryTreeImpl<N>) computeLGG(child1, child2, learnFilters);
 					boolean add = true;
 					for(QueryTreeImpl<N> addedChild : addedChildren){
 						if(addedChild.isSubsumedBy(lggChild)){
@@ -86,6 +116,5 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		}
 		return lgg;
 	}
-	
 
 }
