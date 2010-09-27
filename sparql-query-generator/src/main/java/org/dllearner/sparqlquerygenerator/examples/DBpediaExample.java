@@ -106,7 +106,7 @@ public class DBpediaExample {
 		
 		Resource maxImmelmann = model.createResource("MaxImmelmann");
 		Resource dresden = model.createResource("Dresden");
-		Resource cdu = model.createResource("SPD");
+		Resource cdu = model.createResource("CDU");
 		Resource germany = model.createResource("Germany");
 		Resource militaryPerson = model.createResource("MilitaryPerson");
 		Resource person = model.createResource("Person");
