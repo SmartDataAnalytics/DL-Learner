@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.BruteForceNBRStrategy;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.NBRStrategy;
 
 /**
@@ -34,6 +35,10 @@ import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.NBRStrategy;
 public class NBRGeneratorImpl<N> implements NBRGenerator<N>{
 	
 	NBRStrategy<N> strategy;
+	
+	public NBRGeneratorImpl(){
+		this.strategy = new BruteForceNBRStrategy<N>();
+	}
 	
 	public NBRGeneratorImpl(NBRStrategy<N> strategy){
 		this.strategy = strategy;

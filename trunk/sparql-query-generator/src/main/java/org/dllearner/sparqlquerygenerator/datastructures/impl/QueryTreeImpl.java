@@ -462,10 +462,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb){
-    	Object subject = tree.getUserObject();
-    	if(subject.equals("?")){
-    		subject = "x" + cnt++;
-    	} 
+    	Object subject = null;
+    	if(tree.getUserObject().equals("?")){
+    		subject = "?x" + cnt++;
+    	} else {
+    		subject = "<" + subject + ">";
+    	}
     	Object predicate;
     	Object object;
     	if(!tree.isLeaf()){
@@ -474,9 +476,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         		object = child.getUserObject();
         		boolean objectIsResource = !object.equals("?");
         		if(!objectIsResource){
-        			object = "x" + cnt;
-        		} 
-        		sb.append(subject).append(" ").append(predicate).append(" ").append(object).append(".\n");
+        			object = "?x" + cnt;
+        		} else if(((String)object).startsWith("http://")){
+        			object = "<" + object + ">";
+        		}
+        		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		if(!objectIsResource){
         			buildSPARQLQueryString(child, sb);
         		}
