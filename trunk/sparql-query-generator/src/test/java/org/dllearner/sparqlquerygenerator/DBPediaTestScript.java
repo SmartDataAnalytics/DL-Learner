@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 
 /**
  * 
@@ -39,17 +41,21 @@ import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
  */
 public class DBPediaTestScript {
 	
+//	private static final String DBPEDIA_ENDPOINT_URL = "http://dbpedia.org/sparql/";
 	private static final String DBPEDIA_ENDPOINT_URL = "http://dbpedia-live.openlinksw.com/sparql/";
 	
 	public static void main(String[] args) throws IOException{
 		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		FileAppender fileAppender = new FileAppender( layout, "log/dbpedia_test.log", false );
 		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
+		logger.addAppender(fileAppender);
 		logger.setLevel(Level.INFO);		
 		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.DEBUG);
+		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		
 		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(DBPEDIA_ENDPOINT_URL);
 		

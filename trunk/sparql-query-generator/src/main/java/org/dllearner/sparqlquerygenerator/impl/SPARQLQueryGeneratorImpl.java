@@ -19,13 +19,12 @@
  */
 package org.dllearner.sparqlquerygenerator.impl;
 
-import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
@@ -40,6 +39,8 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -58,7 +59,12 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	private Set<String> posExamples;
 	private Set<String> negExamples;
 	
-	private int recursionDepth = 2;
+	private int recursionDepth = 3;
+	
+	private int maxModelSizePerExample = 3000;
+	
+	private final static int LIMIT = 1000;
+	private final static int OFFSET = 1000;
 	
 	private Set<QueryTree<String>> posQueryTrees;
 	private Set<QueryTree<String>> negQueryTrees;
@@ -66,6 +72,8 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	private List<String> result = new LinkedList<String>();
 	
 	private QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
+	
+	
 	
 	
 	public SPARQLQueryGeneratorImpl(String endpointURL){
@@ -118,12 +126,12 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		QueryTree<String> tree;
 		//build the query graphs for the positive examples
 		for(String example : posExamples){
-			tree = getQueryTreeForExample(example);tree.dump();
+			tree = getQueryTreeForExample(example);
 			posQueryTrees.add(tree);
 		}
 		//build the query graphs for the negative examples
 		for(String example : negExamples){
-			tree = getQueryTreeForExample(example);tree.dump();
+			tree = getQueryTreeForExample(example);
 			negQueryTrees.add(tree);
 		}
 		
@@ -145,7 +153,8 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		monitor.stop();
 		
-		lgg.dump();
+		logger.debug("LGG");
+		logger.debug(lgg.getStringRepresentation());
 		
 		logger.debug("LGG computation time: " + monitor.getTotal() + " ms");
 		
@@ -164,7 +173,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		lggMonitor.stop();
 		
 		logger.debug("LGG");
-		lgg.dump();
+		logger.debug(lgg.getStringRepresentation());
 		
 		logger.debug("LGG computation time: " + lggMonitor.getTotal() + " ms");
 		
@@ -178,7 +187,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		nbrMonitor.stop();
 		
 		logger.debug("NBR");
-		nbr.dump();
+		logger.debug(nbr.getStringRepresentation());
 		
 		logger.debug("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
 		
@@ -186,19 +195,32 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	}
 	
 	
+//	/**
+//	 * Creating the Query graph for the given example.
+//	 * @param example The example for which a Query graph is created.
+//	 * @return The resulting Query graph.
+//	 */
+//	private QueryTree<String> getQueryTreeForExample(String example){
+//		Query query = makeConstructQuery(example);
+//		logger.debug("Sending SPARQL query ...");
+//		queryMonitor.start();
+//		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
+//		Model model = qexec.execConstruct();
+//		queryMonitor.stop();
+//		qexec.close();
+//		logger.debug("Returned " + model.size() + " triple");
+//		QueryTree<String> tree = factory.getQueryTree(example, model);
+//		return tree;
+//	}
+	
 	/**
-	 * Creating the Query graph for the given example.
-	 * @param example The example for which a Query graph is created.
-	 * @return The resulting Query graph.
+	 * Creates the Query tree for the given example.
+	 * @param example The example for which a Query tree is created.
+	 * @return The resulting Query tree.
 	 */
 	private QueryTree<String> getQueryTreeForExample(String example){
-		Query query = makeConstructQuery(example);
-		logger.debug("Sending SPARQL query ...");
-		queryMonitor.start();
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
-		Model model = qexec.execConstruct();
-		queryMonitor.stop();
-		qexec.close();
+		Model model = getModelForExample(example, maxModelSizePerExample);
+//		Model model = getModelForExampleIncremantally(example);
 		logger.debug("Returned " + model.size() + " triple");
 		QueryTree<String> tree = factory.getQueryTree(example, model);
 		return tree;
@@ -210,58 +232,94 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	 * @param example The example resource for which a CONSTRUCT query is created.
 	 * @return The JENA ARQ Query object.
 	 */
-	private Query makeConstructQuery(String example){
+	private Query makeConstructQuery(String example, int limit, int offset){
 		logger.debug("Building SPARQL CONSTRUCT query for example " + example);
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("CONSTRUCT ");
-		sb.append("{\n");
+		sb.append("CONSTRUCT {\n");
 		sb.append("<").append(example).append("> ").append("?p0 ").append("?o0").append(".\n");
 		for(int i = 1; i < recursionDepth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
 		}
 		sb.append("}\n");
-		sb.append("WHERE ");
-		sb.append("{\n");
+		sb.append("WHERE {\n");
 		sb.append("<").append(example).append("> ").append("?p0 ").append("?o0").append(".\n");
 		for(int i = 1; i < recursionDepth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
 		}
 		
-		sb.append("FILTER (!regex (?p0, \"http://dbpedia.org/meta\") && !regex(?p0, \"http://dbpedia.org/property/wikiPageUsesTemplate\"))");
-		sb.append("}");
+		sb.append("FILTER (regex (?p0, \"http://dbpedia.org/property\") && !regex(?p1, \"http://dbpedia.org/property/wikiPageUsesTemplate\"))");
+		sb.append("}\n");
+		sb.append("ORDER BY ");
+		for(int i = 0; i < recursionDepth; i++){
+			sb.append("?p").append(i).append(" ").append("?o").append(i).append(" ");
+		}
+		sb.append("\n");
+		sb.append("LIMIT ").append(limit).append("\n");
+		sb.append("OFFSET ").append(offset);
 		logger.debug("Query: \n" + sb.toString());
 		Query query = QueryFactory.create(sb.toString());
 		
 		return query;
 	}
 	
-	public static void main(String[] args){
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+	/**
+	 * A SPARQL DESCRIBE query is created, to get a RDF graph for the given resource
+	 * @param example The resource for which a DESCRIBE query is created.
+	 * @return The JENA ARQ Query object.
+	 */
+	private Query makeDescribeQuery(String resource){
+		logger.debug("Building SPARQL DESCRIBE query for resource " + resource);
 		
-		String endpointURL = "http://dbpedia-live.openlinksw.com/sparql/";
-		String defaultGraphURI = "http://dbpedia.org";
+		StringBuilder sb = new StringBuilder();
+		sb.append("DESCRIBE ").append("<").append(resource).append(">");
+		logger.debug("Query: \n" + sb.toString());
+		Query query = QueryFactory.create(sb.toString());
 		
-		Set<String> posExamples = new HashSet<String>();
-		
-//		posExamples.add("http://dbpedia.org/resource/Leipzig");
-//		posExamples.add("http://dbpedia.org/resource/Dresden");
-//		posExamples.add("http://dbpedia.org/resource/Chemnitz");
-		
-		posExamples.add("http://dbpedia.org/resource/Gottfried_Leibniz");
-		posExamples.add("http://dbpedia.org/resource/Max_Immelmann");
-//		posExamples.add("http://dbpedia.org/resource/Berlin");
-//		posExamples.add("http://dbpedia.org/resource/Hamburg");
-//		posExamples.add("http://dbpedia.org/resource/Bremen");
-		
-//		posExamples.add("http://dbpedia.org/resource/Angela_Merkel");
-//		posExamples.add("http://dbpedia.org/resource/Helmut_Kohl");
-//		posExamples.add("http://dbpedia.org/resource/Konrad_Adenauer");
-		
-		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpointURL);
-		
-		List<String> result = gen.getSPARQLQueries(posExamples);
-		
+		return query;
 	}
-
+	
+	private Model getModelForExample(String example, int maxSize){
+		Query query = makeConstructQuery(example, LIMIT, 0);
+		logger.debug("Sending SPARQL query ...");
+		queryMonitor.start();
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
+		Model all = ModelFactory.createDefaultModel();
+		Model model = qexec.execConstruct();
+		all.add(model);
+		queryMonitor.stop();
+		qexec.close();
+		int i = 1;
+		while(model.size() != 0 && all.size() < maxSize){
+			query = makeConstructQuery(example, LIMIT, i * OFFSET);
+			logger.debug("Sending SPARQL query ...");
+			queryMonitor.start();
+			qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
+			model = qexec.execConstruct();
+			all.add(model);
+			queryMonitor.stop();
+			qexec.close();
+			i++;
+		}
+		return all;
+	}
+	
+	private Model getModelForExampleIncremantally(String example){
+		Query query = makeDescribeQuery(example);
+		logger.debug("Sending SPARQL query ...");
+		queryMonitor.start();
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
+		Model model = qexec.execDescribe();
+		Statement st;
+		for(Iterator<Statement> i = model.listStatements(); i.hasNext();){
+			st = i.next();
+			if(st.getObject().isURIResource()){
+				query = makeDescribeQuery(st.getObject().toString());
+				qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
+				qexec.execDescribe(model);
+			}
+		}
+		return model;
+	}
+	
 }

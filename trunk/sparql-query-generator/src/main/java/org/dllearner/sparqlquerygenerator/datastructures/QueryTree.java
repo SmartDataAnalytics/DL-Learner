@@ -84,6 +84,8 @@ public interface QueryTree<N> {
     List<N> getUserObjectPathToRoot();
     
     void dump();
+    
+    public String getStringRepresentation();
 
     void dump(PrintWriter writer);
 
