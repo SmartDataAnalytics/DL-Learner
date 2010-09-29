@@ -285,6 +285,52 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
     
+    public String getStringRepresentation(){
+    	int depth = getPathToRoot().size();
+        StringBuilder sb = new StringBuilder();
+        if(isRoot()){
+        	sb.append("TREE\n\n");
+        }
+        String ren = toStringRenderer.render(this);
+        ren = ren.replace("\n", "\n" + sb);
+        sb.append(ren);
+        sb.append("\n");
+        for (QueryTree<N> child : getChildren()) {
+            for (int i = 0; i < depth; i++) {
+                sb.append("\t");
+            }
+            Object edge = getEdge(child);
+            if (edge != null) {
+            	sb.append("  ");
+            	sb.append(edge);
+            	sb.append(" ---> ");
+            }
+            sb.append(((QueryTreeImpl<N>)child).getStringRepresentation());
+        }
+        return sb.toString();
+    }
+    
+    public String getStringRepresentation(int indent){
+    	int depth = getPathToRoot().size();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < depth + indent; i++) {
+            sb.append("\t");
+        }
+        String ren = toStringRenderer.render(this);
+        ren = ren.replace("\n", "\n" + sb);
+        sb.append(ren);
+        sb.append("\n");
+        for (QueryTree<N> child : getChildren()) {
+            Object edge = getEdge(child);
+            if (edge != null) {
+            	sb.append("--- ");
+            	sb.append(edge);
+            	sb.append(" ---\n");
+            }
+            sb.append(((QueryTreeImpl<N>)child).getStringRepresentation(indent));
+        }
+        return sb.toString();
+    }
     
     public void dump() {
         dump(new PrintWriter(System.out), 0);

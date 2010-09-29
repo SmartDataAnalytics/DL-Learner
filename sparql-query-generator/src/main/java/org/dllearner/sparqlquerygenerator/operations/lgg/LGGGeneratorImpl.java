@@ -24,8 +24,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 
 /**
  * 
@@ -33,6 +35,8 @@ import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
  *
  */
 public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
+	
+	private Logger logger = Logger.getLogger(LGGGeneratorImpl.class);
 
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2) {
@@ -66,54 +70,74 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	}
 	
 	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){
+		logger.debug("Computing LGG for");
+		logger.debug(tree1.getStringRepresentation());
+		logger.debug("and");
+		logger.debug(tree2.getStringRepresentation());
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
 		
-		if(!lgg.getUserObject().equals(tree2.getUserObject())){
-			lgg.setUserObject((N)"?");
-			if(learnFilters){
-				try {
-					int value1 = Integer.parseInt(((String)tree1.getUserObject()));
-					int value2 = Integer.parseInt(((String)tree2.getUserObject()));
-					if(value1 < value2){
-						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value1)), ">=-FILTER");
-						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value2)), "<=-FILTER");
-					} else {
-						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value2)), ">=-FILTER");
-						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value1)), "<=-FILTER");
-					}
-					
-				} catch (NumberFormatException e) {
-					
-				}
-			}
-		}
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
 //			lgg.setUserObject((N)"?");
+//			if(learnFilters){
+//				try {
+//					int value1 = Integer.parseInt(((String)tree1.getUserObject()));
+//					int value2 = Integer.parseInt(((String)tree2.getUserObject()));
+//					if(value1 < value2){
+//						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value1)), ">=-FILTER");
+//						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value2)), "<=-FILTER");
+//					} else {
+//						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value2)), ">=-FILTER");
+//						lgg.addChild(new QueryTreeImpl<N>((N)String.valueOf(value1)), "<=-FILTER");
+//					}
+//					
+//				} catch (NumberFormatException e) {
+//					
+//				}
+//			}
 //		}
+		if(!lgg.getUserObject().equals(tree2.getUserObject())){
+			lgg.setUserObject((N)"?");
+		}
 		
 		Set<QueryTreeImpl<N>> addedChildren;
 		QueryTreeImpl<N> lggChild;
 		for(Object edge : tree1.getEdges()){
+			logger.debug("Regarding egde: " + edge);
 			addedChildren = new HashSet<QueryTreeImpl<N>>();
 			for(QueryTree<N> child1 : tree1.getChildren(edge)){
 				for(QueryTree<N> child2 : tree2.getChildren(edge)){
 					lggChild = (QueryTreeImpl<N>) computeLGG(child1, child2, learnFilters);
 					boolean add = true;
 					for(QueryTreeImpl<N> addedChild : addedChildren){
+						logger.debug("Subsumption test");
 						if(addedChild.isSubsumedBy(lggChild)){
+							logger.debug("Previously added child");
+							logger.debug(addedChild.getStringRepresentation());
+							logger.debug("is subsumed by");
+							logger.debug(lggChild.getStringRepresentation());
+							logger.debug("so we can skip adding the LGG");
 							add = false;
 							break;
 						} else if(lggChild.isSubsumedBy(addedChild)){
+							logger.debug("Computed LGG");
+							logger.debug(lggChild.getStringRepresentation());
+							logger.debug("is subsumed by previously added child");
+							logger.debug(addedChild.getStringRepresentation());
+							logger.debug("so we can remove it");
 							lgg.removeChild(addedChild);
 						} 
 					}
 					if(add){
 						lgg.addChild(lggChild, edge);
 						addedChildren.add(lggChild);
-					}
+						logger.debug("Adding child");
+						logger.debug(lggChild.getStringRepresentation());
+					} 
 				}
 			}
 		}
+		logger.debug("Computed LGG:");
+		logger.debug(lgg.getStringRepresentation());
 		return lgg;
 	}
 

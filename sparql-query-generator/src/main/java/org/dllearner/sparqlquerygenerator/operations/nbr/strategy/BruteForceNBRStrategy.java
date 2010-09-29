@@ -44,6 +44,9 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 		QueryTree<N> parent;
 		while(!(tested.size() == nbr.getLeafs().size()) ){
 			for(QueryTree<N> leaf : nbr.getLeafs()){
+				if(leaf.isRoot()){
+					return nbr;
+				}
 				parent = leaf.getParent();
 				edge = parent.getEdge(leaf);
 				parent.removeChild((QueryTreeImpl<N>)leaf);
