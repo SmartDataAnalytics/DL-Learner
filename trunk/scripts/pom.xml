@@ -34,5 +34,10 @@
             <groupId>net.sourceforge.secondstring</groupId>
             <artifactId>secondstring</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>postgresql</groupId>
+        	<artifactId>postgresql</artifactId>
+        	<version>8.4-701.jdbc4</version>
+        </dependency>
     </dependencies>
 </project>
