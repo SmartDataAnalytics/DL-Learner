@@ -1,0 +1,117 @@
+package org.dllearner.autosparql.server;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
+
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.RDFS;
+
+public class SPARQLSearch {
+	
+	private static final String CACHE_DIR = "cache";
+	
+	private ExtractionDBCache cache;
+	private SparqlEndpoint endpoint;
+	
+	public SPARQLSearch(SparqlEndpoint endpoint){
+		this.endpoint = endpoint;
+		
+		cache = new ExtractionDBCache(CACHE_DIR);
+	}
+	
+	public SPARQLSearch(){
+		cache = new ExtractionDBCache(CACHE_DIR);
+	}
+	
+	public List<Example> searchFor(String searchTerm, SparqlEndpoint endpoint, int limit, int offset){
+		List<Example> searchResult = new ArrayList<Example>();
+		
+		String query = buildSearchQuery(searchTerm, limit, offset);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		
+		String uri;
+		String label;
+		String imageURL;
+		String comment;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("object").getURI();
+			label = qs.getLiteral("label").getLexicalForm();
+			imageURL = qs.getResource("image").getURI();
+			comment = qs.getLiteral("comment").getLexicalForm();
+			searchResult.add(new Example(uri, label, imageURL, comment));
+		}
+		
+		return searchResult;
+	}
+	
+	public int count(String searchTerm){
+		String query = buildCountQuery(searchTerm);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		int cnt = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		
+		return cnt;
+	}
+	
+	public List<Example> searchFor(String searchTerm, int limit, int offset){
+		List<Example> searchResult = new ArrayList<Example>();
+		
+		String query = buildSearchQuery(searchTerm, limit, offset);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		
+		String uri;
+		String label;
+		String imageURL;
+		String comment;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("object").getURI();
+			label = qs.getLiteral("label").getLexicalForm();
+			imageURL = qs.getResource("image").getURI();
+			comment = qs.getLiteral("comment").getLexicalForm();
+			searchResult.add(new Example(uri, label, imageURL, comment));
+		}
+		
+		return searchResult;
+	}
+	
+	private String buildSearchQuery(String searchTerm, int limit, int offset){
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT ?object ?label ?imageURL ?comment WHERE {\n");
+		sb.append("?object a ?class.\n");
+		sb.append("?object ").append(RDFS.label).append(" ?label.\n");
+		sb.append("?object ").append(FOAF.depiction).append(" ?label.\n");
+		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
+		sb.append("?object ").append(RDFS.comment).append(" ?comment.\n");
+		sb.append("FILTER()");
+		sb.append("}\n");
+		sb.append("LIMIT ").append(limit);
+		sb.append("OFFSET").append(offset);
+		
+		return sb.toString();
+	}
+	
+	private String buildCountQuery(String searchTerm){
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT COUNT(distinct ?object) WHERE {\n");
+		sb.append("?object a ?class.\n");
+		sb.append("?object ").append(RDFS.label).append(" ?label.\n");
+		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
+		sb.append("}\n");
+		
+		return sb.toString();
+	}
+
+}
