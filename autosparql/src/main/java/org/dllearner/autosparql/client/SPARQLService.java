@@ -4,6 +4,7 @@ import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -12,6 +13,26 @@ public interface SPARQLService extends RemoteService{
 	
 	PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config);
 	
-	
+	/**
+     * Utility class to get the RPC Async interface from client-side code
+     */
+    public static final class Util 
+    { 
+        private static SPARQLServiceAsync instance;
+
+        public static final SPARQLServiceAsync getInstance()
+        {
+            if ( instance == null )
+            {
+                instance = (SPARQLServiceAsync) GWT.create( SPARQLService.class );
+            }
+            return instance;
+        }
+
+        private Util()
+        {
+            // Utility class should not be instanciated
+        }
+    }
 
 }

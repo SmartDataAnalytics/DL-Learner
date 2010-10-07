@@ -6,8 +6,6 @@ import javax.servlet.http.HttpSession;
 
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -28,17 +26,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public SPARQLServiceImpl(){
 		search = new SPARQLSearch();
-		
-		setEndpoint(SparqlEndpoint.getEndpointDBpedia());
 	}
 
 	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) {
-		
 		int limit = config.getLimit();
 		int offset = config.getOffset();
 		
-		List<Example> searchResult = search.searchFor(searchTerm, limit, offset);
-		int totalLength = search.count(searchTerm);
+		List<Example> searchResult = search.searchFor(searchTerm, getEndpoint(), limit, offset);
+		int totalLength = search.count(searchTerm, getEndpoint());
 		
 		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
 		result.setOffset(offset);
@@ -52,7 +47,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private SparqlEndpoint getEndpoint(){
-		SparqlEndpoint endpoint = (SparqlEndpoint) getSession().getAttribute(ENDPOINT);
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();//(SparqlEndpoint) getSession().getAttribute(ENDPOINT);
 		return endpoint;
 	}
 	
