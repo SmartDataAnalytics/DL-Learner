@@ -54,9 +54,7 @@ public class SPARQLSearch {
 	public int count(String searchTerm, SparqlEndpoint endpoint){
 		String query = buildCountQuery(searchTerm);
 		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		System.out.println(rs.hasNext());
 		int cnt = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
-		System.out.println(cnt);
 		return cnt;
 	}
 	

@@ -14,6 +14,8 @@ public class ApplicationController extends Controller {
 	public ApplicationController(){
 		registerEventTypes(AppEvents.Init);
 		registerEventTypes(AppEvents.Error);
+		registerEventTypes(AppEvents.AddPosExample);
+		registerEventTypes(AppEvents.AddNegExample);
 	}
 
 	@Override
@@ -24,6 +26,12 @@ public class ApplicationController extends Controller {
 			onInit(event);
 		} else if (type == AppEvents.Error) {
 			onError(event);
+		} else if(type == AppEvents.AddPosExample){
+			forwardToView(appView, event);
+		} else if(type == AppEvents.AddNegExample){
+			forwardToView(appView, event);
+		} else if(type == AppEvents.RemoveExample){
+			forwardToView(appView, event);
 		}
 	}
 	

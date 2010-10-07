@@ -10,16 +10,9 @@ public class AppEvents {
 
 	public static final EventType Error = new EventType();
 
-	public static final EventType NavMail = new EventType();
+	public static final EventType AddPosExample = new EventType();
 
-	public static final EventType NavTasks = new EventType();
+	public static final EventType AddNegExample = new EventType();
 
-	public static final EventType NavContacts = new EventType();
-
-	public static final EventType ViewMailFolders = new EventType();
-
-	public static final EventType ViewMailItems = new EventType();
-
-	public static final EventType ViewMailItem = new EventType();
-
+	public static final EventType RemoveExample = new EventType();
 }

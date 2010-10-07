@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client.widget;
 
 import java.util.ArrayList;
 
+import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
 
@@ -16,9 +17,12 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.KeyListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.mvc.AppEvent;
+import com.extjs.gxt.ui.client.mvc.Dispatcher;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -149,11 +153,31 @@ public class SearchPanel extends ContentPanel {
 		GridCellRenderer<Example> buttonRender = new GridCellRenderer<Example>() {
 
 			@Override
-			public Object render(Example model, String property,
+			public Object render(final Example model, String property,
 					ColumnData config, int rowIndex, int colIndex,
 					ListStore<Example> store, Grid<Example> grid) {
-				
-				return null;
+				VerticalPanel p = new VerticalPanel();
+				Button addPosButton = new Button("+");
+				addPosButton.setSize(20, 20);
+				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+					@Override
+					public void componentSelected(ButtonEvent ce) {
+						AppEvent event = new AppEvent(AppEvents.AddPosExample, model);
+						Dispatcher.forwardEvent(event);
+					}
+				});
+				Button addNegButton = new Button("-");
+				addNegButton.setSize(20, 20);
+				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+					@Override
+					public void componentSelected(ButtonEvent ce) {
+						AppEvent event = new AppEvent(AppEvents.AddNegExample, model);
+						Dispatcher.forwardEvent(event);
+					}
+				});
+				p.add(addPosButton);
+				p.add(addNegButton);
+				return p;
 			}
 		
 		};
@@ -161,6 +185,7 @@ public class SearchPanel extends ContentPanel {
 		c = new ColumnConfig();
 		c.setId("");
 		c.setWidth(50);
+		c.setRenderer(buttonRender);
 		columns.add(c);
 		
 		ColumnModel cm = new ColumnModel(columns);
@@ -190,5 +215,6 @@ public class SearchPanel extends ContentPanel {
 	private void onSearch(){
 		loader.load();
 	}
+	
 
 }
