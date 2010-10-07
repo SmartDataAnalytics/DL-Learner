@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 import org.dllearner.autosparql.client.model.Example;
 
+import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.core.XTemplate;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -23,14 +26,14 @@ import com.google.gwt.user.client.ui.Image;
 
 public class ExamplesPanel extends ContentPanel {
 	
-	private static final int WIDTH = 400;
+	private static final int WIDTH = 600;
 	private static final int HEIGHT = 600;
 	
 	private ListStore<Example> posExamplesStore;
 	private ListStore<Example> negExamplesStore;
 	
 	public ExamplesPanel(){
-		setLayout(new RowLayout());
+		setLayout(new RowLayout(Orientation.HORIZONTAL));
 		setHeading("Examples");
 		setCollapsible(true);
 		setAnimCollapse(false);
@@ -41,6 +44,8 @@ public class ExamplesPanel extends ContentPanel {
 	}
 	
 	private void createPosExamplesGrid(){
+		LayoutContainer container = new LayoutContainer(new RowLayout());
+		container.add(new Text("Should belong to query result:"), new RowData(1, -1));
 		posExamplesStore = new ListStore<Example>();
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
@@ -118,11 +123,92 @@ public class ExamplesPanel extends ContentPanel {
 			}
 		});
 		
-		add(grid, new RowData(0.5, 1));
+		container.add(grid, new RowData(1, 1));
+		add(container, new RowData(0.5, 1));
 	}
 	
 	private void createNegExamplesGrid(){
+		LayoutContainer container = new LayoutContainer(new RowLayout());
+		container.add(new Text("Should not belong to query result:"), new RowData(1, -1));
+		negExamplesStore = new ListStore<Example>();
 		
+		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+		
+		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p>");
+		RowExpander expander = new RowExpander();
+		expander.setTemplate(tpl);
+		columns.add(expander);
+		
+		GridCellRenderer<Example> imageRender = new GridCellRenderer<Example>() {
+
+			@Override
+			public Object render(Example model, String property,
+					ColumnData config, int rowIndex, int colIndex,
+					ListStore<Example> store, Grid<Example> grid) {
+				final Image image = new Image(model.getImageURL());
+				image.addErrorHandler(new ErrorHandler() {
+					
+					@Override
+					public void onError(ErrorEvent event) {
+						image.setUrl("no_images.jpeg");
+						
+					}
+				});
+				image.setPixelSize(40, 40);
+				return image;
+			}
+		
+		};
+		
+		ColumnConfig c = new ColumnConfig();
+		c.setId("imageURL");
+		columns.add(c);
+		c.setWidth(50);
+		c.setRenderer(imageRender);
+		
+		c = new ColumnConfig();
+		c.setId("label");
+		columns.add(c);
+		
+		GridCellRenderer<Example> buttonRender = new GridCellRenderer<Example>() {
+
+			@Override
+			public Object render(Example model, String property,
+					ColumnData config, int rowIndex, int colIndex,
+					ListStore<Example> store, Grid<Example> grid) {
+				
+				return null;
+			}
+		
+		};
+		
+		c = new ColumnConfig();
+		c.setId("");
+		c.setWidth(50);
+		columns.add(c);
+		
+		ColumnModel cm = new ColumnModel(columns);
+		
+		Grid<Example> grid = new Grid<Example>(negExamplesStore, cm);
+		grid.setHideHeaders(true);
+		grid.setAutoExpandColumn("label");
+		grid.setLoadMask(true);
+		grid.addPlugin(expander);
+		grid.getView().setViewConfig(new GridViewConfig(){
+			@Override
+			public String getRowStyle(ModelData model, int rowIndex,
+					ListStore<ModelData> ds) {
+				// TODO Auto-generated method stub
+				if(rowIndex % 2 == 0){
+					return "row-Style-Odd";
+				} else {
+					return "row-Style-Even";
+				}
+			}
+		});
+		
+		container.add(grid, new RowData(1, 1));
+		add(container, new RowData(0.5, 1));
 	}
 	
 	public void addPositiveExample(Example example){

@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.view;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.SearchPanel;
 
@@ -60,6 +61,12 @@ public class ApplicationView extends View {
 	protected void handleEvent(AppEvent event) {
 		if (event.getType() == AppEvents.Init) {
 			initUI();
+		} else if(event.getType() == AppEvents.AddPosExample){
+			examplesPanel.addPositiveExample((Example) event.getData());
+		} else if(event.getType() == AppEvents.AddNegExample){
+			examplesPanel.addNegativeExample((Example) event.getData());
+		} else if(event.getType() == AppEvents.RemoveExample){
+			
 		}
 	}
 
