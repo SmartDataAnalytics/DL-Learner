@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.view;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.SearchPanel;
 
 import com.extjs.gxt.ui.client.Registry;
@@ -19,6 +20,7 @@ public class ApplicationView extends View {
 	
 	private Viewport viewport;
 	private SearchPanel searchPanel;
+	private ExamplesPanel examplesPanel;
 	
 	public ApplicationView(Controller controller) {
 		super(controller);
@@ -50,7 +52,8 @@ public class ApplicationView extends View {
 	}
 	
 	private void createExamplesPanel(){
-		
+		examplesPanel = new ExamplesPanel();
+		viewport.add(examplesPanel);
 	}
 	
 	@Override
