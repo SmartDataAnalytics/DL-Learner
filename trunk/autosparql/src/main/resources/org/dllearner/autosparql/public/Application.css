@@ -1,2 +1,14 @@
 /** Add css rules here for your application. */
 
+	.row-Style-Odd{
+		background-color: #eaeaea;
+	}
+	
+	.row-Style-Even{
+	
+	}
+	
+	.x-grid3-row td.x-grid3-cell{
+		vertical-align: middle;
+	}
+

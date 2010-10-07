@@ -13,8 +13,7 @@
 	<entry-point class='org.dllearner.autosparql.client.Application' />
 
 	<!-- Specify the application specific style sheet. -->
-	<stylesheet src='Application.css' />
-
 	<stylesheet src='gxt/css/gxt-all.css' />
+	<stylesheet src='Application.css' />
 
 </module>
