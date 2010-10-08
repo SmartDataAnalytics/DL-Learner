@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.examples.flags;
+package org.dllearner.examples;
 
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
@@ -34,7 +34,7 @@ import java.util.HashMap;
  * @author flo
  *
  */
-public class Script {
+public class Flags {
 
 	private static final String flagDataPath = "C:/temp/Uni/Semantic Web Praktikum 10/flag.data";
 	//private static final String flagNamesPath = "D:/Dokumente/Uni/Semantic Web Praktikum 10/flag.names";
@@ -735,5 +735,9 @@ public class Script {
 	private static String getIRI(String name) {		
 		return /*ontoIri*/"http://www.semanticweb.org/owlapi/ontologies/uniLpz/semWeb" + iriSeperator + name;
 	}
+	
+	public static void main(String[] args) {
+		Flags.createKB();
+	}	
 
 }
