@@ -1,5 +1,7 @@
 package org.dllearner.autosparql.client;
 
+import java.util.List;
+
 import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -12,6 +14,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface SPARQLService extends RemoteService{
 	
 	PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config);
+	
+	Example getSimilarExample(List<String> posExamples, List<String> negExamples);
 	
 	/**
      * Utility class to get the RPC Async interface from client-side code

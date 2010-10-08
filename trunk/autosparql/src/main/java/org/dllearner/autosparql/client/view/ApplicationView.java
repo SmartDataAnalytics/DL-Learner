@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.view;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.InteractivePanel;
@@ -17,6 +18,7 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class ApplicationView extends View {
@@ -77,6 +79,21 @@ public class ApplicationView extends View {
 			examplesPanel.addPositiveExample((Example) event.getData());
 			if(examplesPanel.getPositiveExamples().size() == 1 && examplesPanel.getNegativeExamples().isEmpty()){
 				askForSwitchingToInteractiveMode();
+				SPARQLService.Util.getInstance().getSimilarExample(
+						examplesPanel.getPositiveExamplesURIs(),
+						examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Example>() {
+							
+							@Override
+							public void onSuccess(Example result) {
+								System.out.println("SUCESS");
+							}
+							
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+								
+							}
+						});
 			}
 		} else if(event.getType() == AppEvents.AddNegExample){
 			examplesPanel.addNegativeExample((Example) event.getData());

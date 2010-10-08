@@ -6,6 +6,8 @@ import javax.servlet.http.HttpSession;
 
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.operations.Generalisation;
 
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -22,10 +24,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private static final String ENDPOINT = "endpoint";
 	
 	private SPARQLSearch search;
-	private ExtractionDBCache cache;
+	private ExtractionDBCache constructCache;
+	private ExtractionDBCache selectCache;
 	
 	public SPARQLServiceImpl(){
-		search = new SPARQLSearch();
+		constructCache = new ExtractionDBCache("construct-cache");
+		selectCache = new ExtractionDBCache("select-cache");
+		
+		search = new SPARQLSearch(selectCache);
 	}
 
 	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) {
@@ -55,4 +61,22 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		return getThreadLocalRequest().getSession();
 	}
 
+	@Override
+	public Example getSimilarExample(List<String> posExamples,
+			List<String> negExamples) {
+		String query = null;
+		if(posExamples.size() == 1 && negExamples.isEmpty()){
+			QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, getEndpoint(), 3000);
+			QueryTree<String> tree = treeGen.getQueryTree(posExamples.get(0));
+			System.out.println(tree.toSPARQLQueryString());
+			Generalisation<String> generalisation = new Generalisation<String>();
+			QueryTree<String> genTree = generalisation.generalise(tree);
+			query = genTree.toSPARQLQueryString();
+		}
+		query = query + " LIMIT 1";
+		String result = selectCache.executeSelectQuery(getEndpoint(), query);
+		System.out.println(result);
+		return null;
+	}
+	
 }
