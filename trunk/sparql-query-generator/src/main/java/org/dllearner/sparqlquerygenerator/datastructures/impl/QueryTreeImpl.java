@@ -512,7 +512,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + cnt++;
     	} else {
-    		subject = "<" + subject + ">";
+    		subject = "<" + tree.getUserObject() + ">";
     	}
     	Object predicate;
     	Object object;

@@ -78,7 +78,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 			QueryTreeImpl<String> subTree;
 			for(Statement st : resource2Statements.get(tree.getUserObject())){
 				if(st.getObject().isLiteral()){
-					tree.addChild(new QueryTreeImpl<String>(st.getObject().toString()), st.getPredicate().toString());
+					tree.addChild(new QueryTreeImpl<String>(st.getObject().asLiteral().getLexicalForm()), st.getPredicate().toString());
 				} else {
 					if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 						subTree = new QueryTreeImpl<String>(st.getObject().toString());
