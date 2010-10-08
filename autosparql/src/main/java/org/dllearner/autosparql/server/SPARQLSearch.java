@@ -28,6 +28,10 @@ public class SPARQLSearch {
 		cache = new ExtractionDBCache(CACHE_DIR);
 	}
 	
+	public SPARQLSearch(ExtractionDBCache cache){
+		this.cache = cache;
+	}
+	
 	public List<Example> searchFor(String searchTerm, SparqlEndpoint endpoint, int limit, int offset){
 		List<Example> searchResult = new ArrayList<Example>();
 		

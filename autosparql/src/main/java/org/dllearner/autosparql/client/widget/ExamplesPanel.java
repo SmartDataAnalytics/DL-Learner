@@ -229,5 +229,21 @@ public class ExamplesPanel extends ContentPanel {
 	public List<Example> getNegativeExamples(){
 		return negExamplesStore.getModels();
 	}
+	
+	public List<String> getPositiveExamplesURIs(){
+		ArrayList<String> examples = new ArrayList<String>();
+		for(Example e : posExamplesStore.getModels()){
+			examples.add(e.getURI());
+		}
+		return examples;
+	}
+	
+	public List<String> getNegativeExamplesUris(){
+		ArrayList<String> examples = new ArrayList<String>();
+		for(Example e : negExamplesStore.getModels()){
+			examples.add(e.getURI());
+		}
+		return examples;
+	}
 
 }
