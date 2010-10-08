@@ -121,6 +121,11 @@
             <groupId>net.sourceforge.dig</groupId>
             <artifactId>dig-xmlbeans</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
 
     </dependencies>
 </project>
