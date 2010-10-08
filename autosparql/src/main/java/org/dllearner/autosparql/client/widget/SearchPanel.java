@@ -157,6 +157,7 @@ public class SearchPanel extends ContentPanel {
 					ColumnData config, int rowIndex, int colIndex,
 					ListStore<Example> store, Grid<Example> grid) {
 				VerticalPanel p = new VerticalPanel();
+				p.setSize(25, 50);
 				Button addPosButton = new Button("+");
 				addPosButton.setSize(20, 20);
 				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -195,6 +196,7 @@ public class SearchPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
+		grid.getView().setEmptyText("DUMMY TEXT");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,
@@ -214,6 +216,10 @@ public class SearchPanel extends ContentPanel {
 	
 	private void onSearch(){
 		loader.load();
+	}
+	
+	public void setFocus(){
+		inputField.focus();
 	}
 	
 

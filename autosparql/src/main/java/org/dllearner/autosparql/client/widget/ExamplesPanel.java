@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.widget;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.dllearner.autosparql.client.model.Example;
 
@@ -110,11 +111,12 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
+		grid.getView().setEmptyText("DUMMY TEXT");
+//		grid.getView().setShowDirtyCells(showDirtyCells)
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,
 					ListStore<ModelData> ds) {
-				// TODO Auto-generated method stub
 				if(rowIndex % 2 == 0){
 					return "row-Style-Odd";
 				} else {
@@ -194,6 +196,7 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
+		grid.getView().setEmptyText("DUMMY TEXT");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,
@@ -217,6 +220,14 @@ public class ExamplesPanel extends ContentPanel {
 	
 	public void addNegativeExample(Example example){
 		negExamplesStore.add(example);
+	}
+	
+	public List<Example> getPositiveExamples(){
+		return posExamplesStore.getModels();
+	}
+	
+	public List<Example> getNegativeExamples(){
+		return negExamplesStore.getModels();
 	}
 
 }

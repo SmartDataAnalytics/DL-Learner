@@ -3,14 +3,19 @@ package org.dllearner.autosparql.client.view;
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
+import org.dllearner.autosparql.client.widget.InteractivePanel;
 import org.dllearner.autosparql.client.widget.SearchPanel;
 
 import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.Style.Orientation;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Viewport;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -22,6 +27,7 @@ public class ApplicationView extends View {
 	private Viewport viewport;
 	private SearchPanel searchPanel;
 	private ExamplesPanel examplesPanel;
+	private InteractivePanel interactivePanel;
 	
 	public ApplicationView(Controller controller) {
 		super(controller);
@@ -39,6 +45,7 @@ public class ApplicationView extends View {
 
 	    createSearchPanel();
 	    createExamplesPanel();
+	    createInteractivePanel();
 
 	    // registry serves as a global context
 	    Registry.register(VIEWPORT, viewport);
@@ -57,17 +64,43 @@ public class ApplicationView extends View {
 		viewport.add(examplesPanel);
 	}
 	
+	private void createInteractivePanel(){
+		interactivePanel = new InteractivePanel();
+		viewport.add(interactivePanel);
+	}
+	
 	@Override
 	protected void handleEvent(AppEvent event) {
 		if (event.getType() == AppEvents.Init) {
 			initUI();
 		} else if(event.getType() == AppEvents.AddPosExample){
 			examplesPanel.addPositiveExample((Example) event.getData());
+			if(examplesPanel.getPositiveExamples().size() == 1 && examplesPanel.getNegativeExamples().isEmpty()){
+				askForSwitchingToInteractiveMode();
+			}
 		} else if(event.getType() == AppEvents.AddNegExample){
 			examplesPanel.addNegativeExample((Example) event.getData());
 		} else if(event.getType() == AppEvents.RemoveExample){
 			
 		}
+	}
+	
+	private void askForSwitchingToInteractiveMode(){
+		MessageBox.confirm("Switch to interactive mode?", 
+				"You have added one example which should belong to the query result. Do you want to switch to the interactive" +
+				"learning mode now?", new Listener<MessageBoxEvent>() {
+					
+					@Override
+					public void handleEvent(MessageBoxEvent be) {
+						Button b = be.getButtonClicked();
+						if(b.getText().equals("Yes")){
+							interactivePanel.expand();
+							interactivePanel.focus();
+						} else {
+							searchPanel.setFocus();
+						}
+					}
+				});
 	}
 
 }
