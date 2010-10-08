@@ -59,7 +59,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	private Set<String> posExamples;
 	private Set<String> negExamples;
 	
-	private int recursionDepth = 3;
+	private int recursionDepth = 2;
 	
 	private int maxModelSizePerExample = 3000;
 	
@@ -184,6 +184,10 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>();
 		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negQueryTrees);
 		
+		for(QueryTree<String> n : nbrGenerator.getNBRs(lgg, negQueryTrees)){
+			n.dump();
+		}
+		
 		nbrMonitor.stop();
 		
 		logger.debug("NBR");
@@ -304,7 +308,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		return all;
 	}
 	
-	private Model getModelForExampleIncremantally(String example){
+	private Model getModelForExampleIncrementally(String example){
 		Query query = makeDescribeQuery(example);
 		logger.debug("Sending SPARQL query ...");
 		queryMonitor.start();
