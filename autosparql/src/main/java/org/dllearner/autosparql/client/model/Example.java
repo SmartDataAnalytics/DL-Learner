@@ -9,6 +9,11 @@ public class Example extends BaseModel {
 	 */
 	private static final long serialVersionUID = 6955538657940009581L;
 	
+	public static enum Type{
+		POSITIVE,
+		NEGATIVE
+	}
+	
 	public Example(){
 	}
 	
@@ -33,6 +38,11 @@ public class Example extends BaseModel {
 	
 	public String getComment(){
 		return get("comment");
+	}
+	
+	@Override
+	public String toString() {
+		return getURI();
 	}
 
 }
