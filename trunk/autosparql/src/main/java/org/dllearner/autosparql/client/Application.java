@@ -29,5 +29,7 @@ public class Application
 	  
 	  Dispatcher.forwardEvent(AppEvents.Init);
 	  
+	  GXT.hideLoadingPanel("loading");
+	  
   }
 }

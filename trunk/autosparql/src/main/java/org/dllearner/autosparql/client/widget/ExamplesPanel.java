@@ -3,15 +3,22 @@ package org.dllearner.autosparql.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.core.XTemplate;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.mvc.AppEvent;
+import com.extjs.gxt.ui.client.mvc.Dispatcher;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.VerticalPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -90,11 +97,31 @@ public class ExamplesPanel extends ContentPanel {
 		GridCellRenderer<Example> buttonRender = new GridCellRenderer<Example>() {
 
 			@Override
-			public Object render(Example model, String property,
+			public Object render(final Example model, String property,
 					ColumnData config, int rowIndex, int colIndex,
 					ListStore<Example> store, Grid<Example> grid) {
-				
-				return null;
+				VerticalPanel p = new VerticalPanel();
+				p.setSize(25, 50);
+				Button addPosButton = new Button("-");
+				addPosButton.setSize(20, 20);
+				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+					@Override
+					public void componentSelected(ButtonEvent ce) {
+						posExamplesStore.remove(model);
+						negExamplesStore.add(model);
+					}
+				});
+				Button addNegButton = new Button("x");
+				addNegButton.setSize(20, 20);
+				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+					@Override
+					public void componentSelected(ButtonEvent ce) {
+						posExamplesStore.remove(model);
+					}
+				});
+				p.add(addPosButton);
+				p.add(addNegButton);
+				return p;
 			}
 		
 		};
@@ -102,6 +129,7 @@ public class ExamplesPanel extends ContentPanel {
 		c = new ColumnConfig();
 		c.setId("");
 		c.setWidth(50);
+		c.setRenderer(buttonRender);
 		columns.add(c);
 		
 		ColumnModel cm = new ColumnModel(columns);
@@ -175,11 +203,31 @@ public class ExamplesPanel extends ContentPanel {
 		GridCellRenderer<Example> buttonRender = new GridCellRenderer<Example>() {
 
 			@Override
-			public Object render(Example model, String property,
+			public Object render(final Example model, String property,
 					ColumnData config, int rowIndex, int colIndex,
 					ListStore<Example> store, Grid<Example> grid) {
-				
-				return null;
+				VerticalPanel p = new VerticalPanel();
+				p.setSize(25, 50);
+				Button addPosButton = new Button("+");
+				addPosButton.setSize(20, 20);
+				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+					@Override
+					public void componentSelected(ButtonEvent ce) {
+						negExamplesStore.remove(model);
+						posExamplesStore.add(model);
+					}
+				});
+				Button addNegButton = new Button("x");
+				addNegButton.setSize(20, 20);
+				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+					@Override
+					public void componentSelected(ButtonEvent ce) {
+						negExamplesStore.remove(model);
+					}
+				});
+				p.add(addPosButton);
+				p.add(addNegButton);
+				return p;
 			}
 		
 		};
@@ -187,6 +235,7 @@ public class ExamplesPanel extends ContentPanel {
 		c = new ColumnConfig();
 		c.setId("");
 		c.setWidth(50);
+		c.setRenderer(buttonRender);
 		columns.add(c);
 		
 		ColumnModel cm = new ColumnModel(columns);

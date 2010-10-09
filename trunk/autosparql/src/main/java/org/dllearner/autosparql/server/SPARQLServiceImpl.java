@@ -73,7 +73,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			QueryTree<String> genTree = generalisation.generalise(tree);
 			query = genTree.toSPARQLQueryString();
 		}
-		query = query + " LIMIT 1";
+		query = query + " LIMIT 2";
 		String result = selectCache.executeSelectQuery(getEndpoint(), query);
 		System.out.println(result);
 		return null;
