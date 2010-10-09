@@ -13,6 +13,8 @@ public class AppEvents {
 	public static final EventType AddPosExample = new EventType();
 
 	public static final EventType AddNegExample = new EventType();
+	
+	public static final EventType AddExample = new EventType();
 
 	public static final EventType RemoveExample = new EventType();
 }

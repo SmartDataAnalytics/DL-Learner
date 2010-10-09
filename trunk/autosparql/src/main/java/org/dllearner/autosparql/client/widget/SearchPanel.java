@@ -163,7 +163,9 @@ public class SearchPanel extends ContentPanel {
 				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
 					public void componentSelected(ButtonEvent ce) {
-						AppEvent event = new AppEvent(AppEvents.AddPosExample, model);
+						AppEvent event = new AppEvent(AppEvents.AddExample);
+						event.setData("example", model);
+						event.setData("type", Example.Type.POSITIVE);
 						Dispatcher.forwardEvent(event);
 					}
 				});
@@ -172,7 +174,9 @@ public class SearchPanel extends ContentPanel {
 				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
 					public void componentSelected(ButtonEvent ce) {
-						AppEvent event = new AppEvent(AppEvents.AddNegExample, model);
+						AppEvent event = new AppEvent(AppEvents.AddExample);
+						event.setData("example", model);
+						event.setData("type", Example.Type.NEGATIVE);
 						Dispatcher.forwardEvent(event);
 					}
 				});

@@ -85,7 +85,7 @@ public class ApplicationView extends View {
 							
 							@Override
 							public void onSuccess(Example result) {
-								System.out.println("SUCESS");
+								interactivePanel.setExample(result);
 							}
 							
 							@Override
@@ -95,7 +95,29 @@ public class ApplicationView extends View {
 							}
 						});
 			}
-		} else if(event.getType() == AppEvents.AddNegExample){
+		} else if(event.getType() == AppEvents.AddExample){
+			Example example = event.getData("example");
+			if(event.getData("type") == Example.Type.POSITIVE){
+				examplesPanel.addPositiveExample(example);
+			} else {
+				examplesPanel.addNegativeExample(example);
+			}
+			SPARQLService.Util.getInstance().getSimilarExample(
+					examplesPanel.getPositiveExamplesURIs(),
+					examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Example>() {
+						
+						@Override
+						public void onSuccess(Example result) {
+							interactivePanel.setExample(result);
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
+		}else if(event.getType() == AppEvents.AddNegExample){
 			examplesPanel.addNegativeExample((Example) event.getData());
 		} else if(event.getType() == AppEvents.RemoveExample){
 			
