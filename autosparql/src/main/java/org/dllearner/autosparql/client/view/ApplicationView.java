@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client.view;
 
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
+import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.InteractivePanel;
@@ -19,6 +20,7 @@ import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class ApplicationView extends View {
@@ -113,11 +115,17 @@ public class ApplicationView extends View {
 						
 						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
+							String details = caught.getMessage();
+							if(caught instanceof SPARQLQueryException){
+								details = "An error occured while sending the following query:\n"
+									+ ((SPARQLQueryException)caught).getQuery();
+							}
+							System.out.println(details);
+							MessageBox.alert("Error", details, null);
 							
 						}
 					});
-		}else if(event.getType() == AppEvents.AddNegExample){
+		} else if(event.getType() == AppEvents.AddNegExample){
 			examplesPanel.addNegativeExample((Example) event.getData());
 		} else if(event.getType() == AppEvents.RemoveExample){
 			

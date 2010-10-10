@@ -100,8 +100,11 @@ public class InteractivePanel extends ContentPanel {
 				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
 					public void componentSelected(ButtonEvent ce) {
-						AppEvent event = new AppEvent(AppEvents.AddPosExample, model);
+						AppEvent event = new AppEvent(AppEvents.AddExample, model);
+						event.setData("type", Example.Type.POSITIVE);
+						event.setData("example", model);
 						Dispatcher.forwardEvent(event);
+						examplesStore.remove(model);
 					}
 				});
 				Button addNegButton = new Button("-");
@@ -109,8 +112,11 @@ public class InteractivePanel extends ContentPanel {
 				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
 					public void componentSelected(ButtonEvent ce) {
-						AppEvent event = new AppEvent(AppEvents.AddNegExample, model);
+						AppEvent event = new AppEvent(AppEvents.AddExample, model);
+						event.setData("type", Example.Type.NEGATIVE);
+						event.setData("example", model);
 						Dispatcher.forwardEvent(event);
+						examplesStore.remove(model);
 					}
 				});
 				p.add(addPosButton);

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.dllearner.autosparql.client.SPARQLService;
+import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -69,7 +70,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public Example getSimilarExample(List<String> posExamples,
-			List<String> negExamples) {
+			List<String> negExamples) throws SPARQLQueryException{
 		System.out.println("RETRIEVING NEXT SIMILIAR EXAMPLE");
 		System.out.println("POS EXAMPLES: " + posExamples);
 		System.out.println("NEG EXAMPLES: " + negExamples);
@@ -87,9 +88,16 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(getEndpoint().getURL().toString());
 			List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
 			query = queries.get(0);
+			System.out.println("QUERY:\n" + query);
 		}
 		query = query + " LIMIT 2";
-		String result = selectCache.executeSelectQuery(getEndpoint(), query);
+		String result = "";
+		try {
+			result = selectCache.executeSelectQuery(getEndpoint(), query);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SPARQLQueryException(e, encodeHTML(query));
+		}
 		
 		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
 		String uri;
@@ -118,6 +126,24 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		String imageURL = qs.getResource("imageURL").getURI();
 		String comment = qs.getLiteral("comment").getLexicalForm();
 		return new Example(uri, label, imageURL, comment);
+	}
+	
+	public String encodeHTML(String s)
+	{
+	    StringBuffer out = new StringBuffer();
+	    for(int i=0; i<s.length(); i++)
+	    {
+	        char c = s.charAt(i);
+	        if(c > 127 || c=='"' || c=='<' || c=='>')
+	        {
+	           out.append("&#"+(int)c+";");
+	        }
+	        else
+	        {
+	            out.append(c);
+	        }
+	    }
+	    return out.toString();
 	}
 	
 }
