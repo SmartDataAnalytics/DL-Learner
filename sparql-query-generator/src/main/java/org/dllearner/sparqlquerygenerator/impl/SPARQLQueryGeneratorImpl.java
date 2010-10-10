@@ -182,20 +182,20 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		nbrMonitor.start();
 		
 		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>();
-		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negQueryTrees);
+//		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negQueryTrees);
 		
-		for(QueryTree<String> n : nbrGenerator.getNBRs(lgg, negQueryTrees)){
-			n.dump();
+		
+		int i = 1;
+		for(QueryTree<String> nbr : nbrGenerator.getNBRs(lgg, negQueryTrees)){
+			logger.debug("NBR " + i++);
+			logger.debug(nbr.getStringRepresentation());
+			result.add(nbr.toSPARQLQueryString());
 		}
 		
 		nbrMonitor.stop();
 		
-		logger.debug("NBR");
-		logger.debug(nbr.getStringRepresentation());
-		
 		logger.debug("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
 		
-		result.add(nbr.toSPARQLQueryString());
 	}
 	
 	

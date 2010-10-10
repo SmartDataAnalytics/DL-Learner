@@ -1,2 +1,2 @@
-+http://dbpedia.org/resource/Leipzig
-+http://dbpedia.org/resource/Dresden
++http://dbpedia.org/resource/Harley_Race
+-http://dbpedia.org/resource/Barack_Obama

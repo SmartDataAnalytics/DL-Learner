@@ -90,6 +90,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 		for(QueryTree<N> n : nbrs){
 			removeTree(nbr, n);
 		}
+		
 		if(!subsumesTrees(nbr, negExampleTrees)){
 			Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
 			Object edge;
