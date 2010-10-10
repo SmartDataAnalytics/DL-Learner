@@ -120,7 +120,6 @@ public class ApplicationView extends View {
 								details = "An error occured while sending the following query:\n"
 									+ ((SPARQLQueryException)caught).getQuery();
 							}
-							System.out.println(details);
 							MessageBox.alert("Error", details, null);
 							
 						}
