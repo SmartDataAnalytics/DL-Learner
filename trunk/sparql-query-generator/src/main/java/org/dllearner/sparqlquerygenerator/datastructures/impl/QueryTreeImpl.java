@@ -499,6 +499,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public String toSPARQLQueryString() {
+    	if(children.isEmpty()){
+    		return "SELECT ?x WHERE {?x ?y ?z.}";
+    	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT ?x0 WHERE {\n");
