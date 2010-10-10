@@ -34,6 +34,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -63,6 +65,8 @@ public class ExtractionDBCache {
 	private Connection conn;
 	
 	MessageDigest md5;
+	
+	private Logger logger = Logger.getLogger(ExtractionDBCache.class);
 	
 	public ExtractionDBCache(String cacheDir) {
 		databaseDirectory = cacheDir;
@@ -120,6 +124,8 @@ public class ExtractionDBCache {
 //			System.out.println(Helper.prettyPrintNanoSeconds(runTime, true, true));			
 			return readModel;
 		} else {
+			logger.info("Sending CONTRUCT query...");
+			logger.info("Query:\n" + query);
 //			System.out.println("Posing new query");
 			
 //			String endpoint = "http://139.18.2.37:8890/sparql";
@@ -129,7 +135,8 @@ public class ExtractionDBCache {
 			}
 			for (String ngu : endpoint.getNamedGraphURIs()) {
 				queryExecution.addNamedGraph(ngu);
-			}			
+			}
+			logger.info("Link:\n" + queryExecution);
 			Model m2 = queryExecution.execConstruct();	
 			
 			// convert model to N-Triples
@@ -163,6 +170,8 @@ public class ExtractionDBCache {
 			Clob clob = rs.getClob("TRIPLES");
 			return clob.getSubString(1, (int) clob.length());
 		} else {
+			logger.info("Sending SELECT query...");
+			logger.info("Query:\n" + query);
 //			System.out.println("no-cache");
 			QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
 			for (String dgu : endpoint.getDefaultGraphURIs()) {
@@ -170,7 +179,8 @@ public class ExtractionDBCache {
 			}
 			for (String ngu : endpoint.getNamedGraphURIs()) {
 				queryExecution.addNamedGraph(ngu);
-			}			
+			}
+			logger.info("Link:\n" + queryExecution);
 			com.hp.hpl.jena.query.ResultSet tmp = queryExecution.execSelect();
 			ResultSetRewindable rs2 = ResultSetFactory.makeRewindable(tmp);
 			String json = convertResultSetToJSON(rs2);

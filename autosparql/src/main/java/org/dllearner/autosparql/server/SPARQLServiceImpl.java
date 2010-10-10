@@ -60,7 +60,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private SparqlEndpoint getEndpoint(){
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();//(SparqlEndpoint) getSession().getAttribute(ENDPOINT);
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaAKSW();//(SparqlEndpoint) getSession().getAttribute(ENDPOINT);
 		return endpoint;
 	}
 	
@@ -88,9 +88,10 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(getEndpoint().getURL().toString());
 			List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
 			query = queries.get(0);
-			System.out.println("QUERY:\n" + query);
+			
 		}
-		query = query + " LIMIT 2";
+		query = query + " LIMIT 10";
+		System.out.println("SENDING QUERY:\n" + query);
 		String result = "";
 		try {
 			result = selectCache.executeSelectQuery(getEndpoint(), query);

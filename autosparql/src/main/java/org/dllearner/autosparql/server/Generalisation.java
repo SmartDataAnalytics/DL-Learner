@@ -13,7 +13,7 @@ public class Generalisation<N> {
 		copy.setUserObject((N)"?");
 		
 		
-		retainTypeEdges(copy);
+//		retainTypeEdges(copy);
 		pruneTree(copy, 0.5);
 		
 		return copy;
