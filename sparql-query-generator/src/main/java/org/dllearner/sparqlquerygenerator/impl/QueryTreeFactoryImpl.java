@@ -70,6 +70,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
 		fillTree(tree, resource2Statements);
 				
+		tree.setUserObject("?");
 		return tree;
 	}
 	
