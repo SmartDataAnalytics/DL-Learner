@@ -252,7 +252,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
 		}
 		
-		sb.append("FILTER (regex (?p0, \"http://dbpedia.org/property\") && !regex(?p1, \"http://dbpedia.org/property/wikiPageUsesTemplate\"))");
+		sb.append("FILTER (!regex (?p0, \"http://dbpedia.org/property\"))");
 		sb.append("}\n");
 		sb.append("ORDER BY ");
 		for(int i = 0; i < recursionDepth; i++){

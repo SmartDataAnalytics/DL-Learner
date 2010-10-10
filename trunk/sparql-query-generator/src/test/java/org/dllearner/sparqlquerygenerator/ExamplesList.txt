@@ -1,2 +1,2 @@
-+http://dbpedia.org/resource/Gottfried_Leibniz
-+http://dbpedia.org/resource/Max_Immelmann
++http://dbpedia.org/resource/Leipzig
++http://dbpedia.org/resource/Dresden

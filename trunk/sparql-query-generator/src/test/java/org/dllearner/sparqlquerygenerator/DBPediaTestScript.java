@@ -41,8 +41,8 @@ import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
  */
 public class DBPediaTestScript {
 	
-//	private static final String DBPEDIA_ENDPOINT_URL = "http://dbpedia.org/sparql/";
-	private static final String DBPEDIA_ENDPOINT_URL = "http://dbpedia-live.openlinksw.com/sparql/";
+	private static final String DBPEDIA_ENDPOINT_URL = "http://dbpedia.org/sparql/";
+//	private static final String DBPEDIA_ENDPOINT_URL = "http://dbpedia-live.openlinksw.com/sparql/";
 	
 	public static void main(String[] args) throws IOException{
 		
