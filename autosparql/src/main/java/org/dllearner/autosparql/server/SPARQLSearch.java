@@ -3,6 +3,9 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.ws.http.HTTPException;
+
+import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 
 import com.google.gwt.core.client.GWT;
@@ -57,30 +60,39 @@ public class SPARQLSearch {
 	
 	public int count(String searchTerm, SparqlEndpoint endpoint){
 		String query = buildCountQuery(searchTerm);
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		int cnt = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		int cnt = 0;
+		try {
+			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+			cnt = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return cnt;
 	}
 	
-	public List<Example> searchFor(String searchTerm, int limit, int offset){
+	public List<Example> searchFor(String searchTerm, int limit, int offset) throws SPARQLQueryException{
 		List<Example> searchResult = new ArrayList<Example>();
 		
 		String query = buildSearchQuery(searchTerm, limit, offset);
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		
-		
-		String uri;
-		String label;
-		String imageURL;
-		String comment;
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			uri = qs.getResource("object").getURI();
-			label = qs.getLiteral("label").getLexicalForm();
-			imageURL = qs.getResource("image").getURI();
-			comment = qs.getLiteral("comment").getLexicalForm();
-			searchResult.add(new Example(uri, label, imageURL, comment));
+		try {
+			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+			
+			
+			String uri;
+			String label;
+			String imageURL;
+			String comment;
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				uri = qs.getResource("object").getURI();
+				label = qs.getLiteral("label").getLexicalForm();
+				imageURL = qs.getResource("image").getURI();
+				comment = qs.getLiteral("comment").getLexicalForm();
+				searchResult.add(new Example(uri, label, imageURL, comment));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return searchResult;

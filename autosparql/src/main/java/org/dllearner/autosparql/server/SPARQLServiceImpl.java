@@ -118,6 +118,8 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		sb.append("<").append(uri).append("> <").append(RDFS.label.getURI()).append("> ").append("?label.");
 		sb.append("<").append(uri).append("> <").append(FOAF.depiction.getURI()).append("> ").append("?imageURL.");
 		sb.append("<").append(uri).append("> <").append(RDFS.comment.getURI()).append("> ").append("?comment.");
+		sb.append("FILTER(LANGMATCHES(LANG(?label),'en'))");
+		sb.append("FILTER(LANGMATCHES(LANG(?comment),'en'))");
 		sb.append("}");
 		
 		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), sb.toString()));
