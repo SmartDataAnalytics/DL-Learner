@@ -35,5 +35,9 @@
           <artifactId>jamon</artifactId>
       </dependency>
 
+      <dependency>
+      	<groupId>org.dllearner</groupId>
+      	<artifactId>components-core</artifactId>
+      </dependency>
   </dependencies>
 </project>
