@@ -268,20 +268,27 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	}
 	
 	/**
-	 * A SPARQL DESCRIBE query is created, to get a RDF graph for the given resource
-	 * @param example The resource for which a DESCRIBE query is created.
+	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example.
+	 * @param example The example resource for which a CONSTRUCT query is created.
 	 * @return The JENA ARQ Query object.
 	 */
-	private Query makeDescribeQuery(String resource){
-		logger.debug("Building SPARQL DESCRIBE query for resource " + resource);
+	private Query makeConstructQuery(String example){
+		logger.debug("Building SPARQL CONSTRUCT query for example " + example);
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("DESCRIBE ").append("<").append(resource).append(">");
+		sb.append("CONSTRUCT {\n");
+		sb.append("<").append(example).append("> ").append("?p ").append("?o").append(".\n");
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		sb.append("<").append(example).append("> ").append("?p ").append("?o").append(".\n");
+		sb.append("FILTER (!regex (?p0, \"http://dbpedia.org/property\"))");
+		sb.append("}\n");
 		logger.debug("Query: \n" + sb.toString());
 		Query query = QueryFactory.create(sb.toString());
 		
 		return query;
 	}
+	
 	
 	private Model getModelForExample(String example, int maxSize){
 		Query query = makeConstructQuery(example, LIMIT, 0);
@@ -309,7 +316,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	}
 	
 	private Model getModelForExampleIncrementally(String example){
-		Query query = makeDescribeQuery(example);
+		Query query = makeConstructQuery(example);
 		logger.debug("Sending SPARQL query ...");
 		queryMonitor.start();
 		QueryExecution qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
@@ -318,7 +325,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		for(Iterator<Statement> i = model.listStatements(); i.hasNext();){
 			st = i.next();
 			if(st.getObject().isURIResource()){
-				query = makeDescribeQuery(st.getObject().toString());
+				query = makeConstructQuery(st.getObject().toString());
 				qexec = QueryExecutionFactory.sparqlService(endpointURL, query);
 				qexec.execDescribe(model);
 			}
