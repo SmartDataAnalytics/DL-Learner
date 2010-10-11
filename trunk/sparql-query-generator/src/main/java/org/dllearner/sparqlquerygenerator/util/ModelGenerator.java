@@ -37,7 +37,7 @@ public class ModelGenerator {
 	public Model createModel(String resource, Strategy strategy, int recursionDepth){
 		this.recursionDepth = recursionDepth;
 		if(strategy == Strategy.INCREMENTALLY){
-			return getModelIncrementally(resource);
+			return getModelIncrementallyRec(resource, 0);
 		} else if(strategy == Strategy.CHUNKS){
 			return getModel(resource);
 		}
@@ -149,8 +149,11 @@ public class ModelGenerator {
 				endpoint.getDefaultGraphURIs(),
 				endpoint.getNamedGraphURIs());
 		Model all = qexec.execConstruct();
-		logger.debug("Got " + all.size() + " new triple");
-		Statement st;
+		logger.debug("Got " + all.size() + " new triples:");
+		Statement st = null;
+		for(Iterator<Statement> i = all.listStatements();i.hasNext(); st = i.next()){
+			logger.debug(st);
+		}
 		Model tmp = ModelFactory.createDefaultModel();
 		Model model;
 		for(Iterator<Statement> i = all.listStatements(); i.hasNext();){
@@ -167,11 +170,46 @@ public class ModelGenerator {
 						endpoint.getNamedGraphURIs());
 				model = qexec.execConstruct();
 				logger.debug("Got " + model.size() + " new triple");
+				Statement s = null;
+				for(Iterator<Statement> it = model.listStatements();it.hasNext(); s = it.next()){
+					logger.debug(st);
+				}
 				tmp.add(model);
 			}
 		}
 		all.add(tmp);
 		return all;
+	}
+	
+	private Model getModelIncrementallyRec(String resource, int depth){
+		logger.debug("Resource: " + resource);
+		Query query = makeConstructQuery(resource);
+		logger.debug("Sending SPARQL query ...");
+		logger.debug("Query:\n" + query.toString());
+		queryMonitor.start();
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(
+				endpoint.getURL().toString(),
+				query,
+				endpoint.getDefaultGraphURIs(),
+				endpoint.getNamedGraphURIs());
+		Model model = qexec.execConstruct();
+		logger.debug("Got " + model.size() + " new triples:");
+		Statement st = null;
+		for(Iterator<Statement> i = model.listStatements();i.hasNext(); st = i.next()){
+			logger.debug(st);
+		}
+		if(depth < recursionDepth){
+			Model tmp = ModelFactory.createDefaultModel();
+			for(Iterator<Statement> i = model.listStatements(); i.hasNext();){
+				st = i.next();
+				if(st.getObject().isURIResource()){
+					tmp.add(getModelIncrementallyRec(st.getObject().toString(), depth++));
+				}
+			}
+			model.add(tmp);
+		}
+		
+		return model;
 	}
 
 }
