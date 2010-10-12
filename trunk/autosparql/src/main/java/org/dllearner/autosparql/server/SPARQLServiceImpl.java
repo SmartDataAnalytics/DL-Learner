@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
@@ -33,6 +34,8 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private SPARQLSearch search;
 	private ExtractionDBCache constructCache;
 	private ExtractionDBCache selectCache;
+	
+	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
 	
 	public SPARQLServiceImpl(){
 		constructCache = new ExtractionDBCache("construct-cache");
@@ -71,82 +74,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	@Override
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException{
-		System.out.println("RETRIEVING NEXT SIMILIAR EXAMPLE");
-		System.out.println("POS EXAMPLES: " + posExamples);
-		System.out.println("NEG EXAMPLES: " + negExamples);
-		String query = null;
-		if(posExamples.size() == 1 && negExamples.isEmpty()){
-			System.out.println("USING GENERALISATION");
-			QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, getEndpoint(), 3000);
-			QueryTree<String> tree = treeGen.getQueryTree(posExamples.get(0));
-			System.out.println(tree.toSPARQLQueryString());
-			Generalisation<String> generalisation = new Generalisation<String>();
-			QueryTree<String> genTree = generalisation.generalise(tree);
-			query = genTree.toSPARQLQueryString();
-			System.out.println("GENERALISED QUERY: \n" + query);
-		} else {
-			SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(getEndpoint().getURL().toString());
-			List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
-			query = queries.get(0);
-			
-		}
-		query = query + " LIMIT 10";
-		System.out.println("SENDING QUERY:\n" + query);
-		String result = "";
-		try {
-			result = selectCache.executeSelectQuery(getEndpoint(), query);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SPARQLQueryException(e, encodeHTML(query));
-		}
+		logger.info("RETRIEVING NEXT SIMILIAR EXAMPLE");
+		logger.info("POS EXAMPLES: " + posExamples);
+		logger.info("NEG EXAMPLES: " + negExamples);
 		
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
-		String uri;
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			uri = qs.getResource("x0").getURI();
-			if(!posExamples.contains(uri) && !negExamples.contains(uri)){
-				return getExample(uri);
-			}
-		}
-		return null;
-	}
-	
-	private Example getExample(String uri){
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT ?label ?imageURL ?comment WHERE{");
-		sb.append("<").append(uri).append("> <").append(RDFS.label.getURI()).append("> ").append("?label.");
-		sb.append("<").append(uri).append("> <").append(FOAF.depiction.getURI()).append("> ").append("?imageURL.");
-		sb.append("<").append(uri).append("> <").append(RDFS.comment.getURI()).append("> ").append("?comment.");
-		sb.append("FILTER(LANGMATCHES(LANG(?label),'en'))");
-		sb.append("FILTER(LANGMATCHES(LANG(?comment),'en'))");
-		sb.append("}");
+		ExampleFinder exFinder = new ExampleFinder(getEndpoint(), selectCache, constructCache);
+		Example example = exFinder.findSimilarExample(posExamples, negExamples);
 		
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), sb.toString()));
-		QuerySolution qs = rs.next();
-		String label = qs.getLiteral("label").getLexicalForm();
-		String imageURL = qs.getResource("imageURL").getURI();
-		String comment = qs.getLiteral("comment").getLexicalForm();
-		return new Example(uri, label, imageURL, comment);
-	}
-	
-	public String encodeHTML(String s)
-	{
-	    StringBuffer out = new StringBuffer();
-	    for(int i=0; i<s.length(); i++)
-	    {
-	        char c = s.charAt(i);
-	        if(c > 127 || c=='"' || c=='<' || c=='>')
-	        {
-	           out.append("&#"+(int)c+";");
-	        }
-	        else
-	        {
-	            out.append(c);
-	        }
-	    }
-	    return out.toString();
+		return example;
 	}
 	
 }

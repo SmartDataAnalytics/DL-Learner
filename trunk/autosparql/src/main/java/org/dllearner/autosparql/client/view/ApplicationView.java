@@ -6,6 +6,7 @@ import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.InteractivePanel;
+import org.dllearner.autosparql.client.widget.ResultPanel;
 import org.dllearner.autosparql.client.widget.SearchPanel;
 
 import com.extjs.gxt.ui.client.Registry;
@@ -15,6 +16,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -32,6 +34,7 @@ public class ApplicationView extends View {
 	private SearchPanel searchPanel;
 	private ExamplesPanel examplesPanel;
 	private InteractivePanel interactivePanel;
+	private ResultPanel resultPanel;
 	
 	public ApplicationView(Controller controller) {
 		super(controller);
@@ -49,7 +52,7 @@ public class ApplicationView extends View {
 
 	    createSearchPanel();
 	    createExamplesPanel();
-	    createInteractivePanel();
+	    createInteractiveAndResultPanel();
 
 	    // registry serves as a global context
 	    Registry.register(VIEWPORT, viewport);
@@ -68,9 +71,20 @@ public class ApplicationView extends View {
 		viewport.add(examplesPanel);
 	}
 	
-	private void createInteractivePanel(){
+	private void createInteractiveAndResultPanel(){
+		LayoutContainer c = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 		interactivePanel = new InteractivePanel();
-		viewport.add(interactivePanel);
+		c.add(interactivePanel);
+		
+		resultPanel = new ResultPanel();
+		c.add(resultPanel);
+		
+		viewport.add(c);
+	}
+	
+	private void  createResultPanel(){
+		resultPanel = new ResultPanel();
+		viewport.add(resultPanel);
 	}
 	
 	@Override

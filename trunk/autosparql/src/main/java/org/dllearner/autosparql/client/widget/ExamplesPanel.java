@@ -3,7 +3,6 @@ package org.dllearner.autosparql.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -11,8 +10,6 @@ import com.extjs.gxt.ui.client.core.XTemplate;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
-import com.extjs.gxt.ui.client.mvc.Dispatcher;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;

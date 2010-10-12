@@ -1,13 +1,17 @@
 package org.dllearner.autosparql.client.widget;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.core.XTemplate;
+import com.extjs.gxt.ui.client.data.BasePagingLoader;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.PagingLoadResult;
+import com.extjs.gxt.ui.client.data.PagingLoader;
+import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
@@ -21,33 +25,49 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
+import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.grid.RowExpander;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 
-public class InteractivePanel extends ContentPanel {
+public class ResultPanel extends ContentPanel {
 	
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 300;
 	
-	private ListStore<Example> examplesStore;
-	
-	public InteractivePanel(){
+	private PagingLoader<PagingLoadResult<ModelData>> loader;
+ 
+	public ResultPanel(){
 		setLayout(new RowLayout(Orientation.HORIZONTAL));
-		setHeading("Interactive");
+		setHeading("Result");
 		setCollapsible(true);
 		setAnimCollapse(false);
 		setSize(WIDTH, HEIGHT);
-//		collapse();
 		
-		createExampleGrid();
+		createResultGrid();
 	}
 	
-	private void createExampleGrid(){
-		examplesStore = new ListStore<Example>();
+	private void createResultGrid(){
+		RpcProxy<PagingLoadResult<Example>> proxy = new RpcProxy<PagingLoadResult<Example>>() {
+
+			@Override
+			protected void load(Object loadConfig,
+					AsyncCallback<PagingLoadResult<Example>> callback) {
+			}
+		};
+		
+		loader = new BasePagingLoader<PagingLoadResult<ModelData>>(proxy);
+		
+		final PagingToolBar toolbar = new PagingToolBar(10);
+		toolbar.bind(loader);
+		
+		
+		ListStore<Example> store = new ListStore<Example>(loader);
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 		
@@ -78,13 +98,15 @@ public class InteractivePanel extends ContentPanel {
 		};
 		
 		ColumnConfig c = new ColumnConfig();
-		c.setId("imageURL");
-		columns.add(c);
-		c.setWidth(50);
-		c.setRenderer(imageRender);
+//		c.setId("imageURL");
+//		c.setWidth(50);
+//		c.setRenderer(imageRender);
+//		columns.add(c);
 		
 		c = new ColumnConfig();
 		c.setId("label");
+		c.setHeader("Label");
+		c.setSortable(true);
 		columns.add(c);
 		
 		GridCellRenderer<Example> buttonRender = new GridCellRenderer<Example>() {
@@ -100,11 +122,10 @@ public class InteractivePanel extends ContentPanel {
 				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
 					public void componentSelected(ButtonEvent ce) {
-						AppEvent event = new AppEvent(AppEvents.AddExample, model);
-						event.setData("type", Example.Type.POSITIVE);
+						AppEvent event = new AppEvent(AppEvents.AddExample);
 						event.setData("example", model);
+						event.setData("type", Example.Type.POSITIVE);
 						Dispatcher.forwardEvent(event);
-						examplesStore.remove(model);
 					}
 				});
 				Button addNegButton = new Button("-");
@@ -112,11 +133,10 @@ public class InteractivePanel extends ContentPanel {
 				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
 					public void componentSelected(ButtonEvent ce) {
-						AppEvent event = new AppEvent(AppEvents.AddExample, model);
-						event.setData("type", Example.Type.NEGATIVE);
+						AppEvent event = new AppEvent(AppEvents.AddExample);
 						event.setData("example", model);
+						event.setData("type", Example.Type.NEGATIVE);
 						Dispatcher.forwardEvent(event);
-						examplesStore.remove(model);
 					}
 				});
 				p.add(addPosButton);
@@ -134,24 +154,26 @@ public class InteractivePanel extends ContentPanel {
 		
 		ColumnModel cm = new ColumnModel(columns);
 		
-		Grid<Example> grid = new Grid<Example>(examplesStore, cm);
-		grid.setHideHeaders(true);
+		Grid<Example> grid = new Grid<Example>(store, cm);
+//		grid.setHideHeaders(true);
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
 		grid.getView().setEmptyText("DUMMY TEXT");
-//		grid.getView().setShowDirtyCells(showDirtyCells)
+		grid.getView().setViewConfig(new GridViewConfig(){
+			@Override
+			public String getRowStyle(ModelData model, int rowIndex,
+					ListStore<ModelData> ds) {
+				// TODO Auto-generated method stub
+				if(rowIndex % 2 == 0){
+					return "row-Style-Odd";
+				} else {
+					return "row-Style-Even";
+				}
+			}
+		});
 		
 		add(grid, new RowData(1, 1));
+		add(toolbar, new RowData(1, -1));
 	}
-	
-	public void setExample(Example example){
-		examplesStore.add(example);
-	}
-	
-	public void load(List<String> posExamples, List<String> negExamples){
-		
-	}
-	
-
 }

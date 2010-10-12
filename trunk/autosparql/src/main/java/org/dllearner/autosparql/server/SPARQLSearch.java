@@ -111,8 +111,6 @@ public class SPARQLSearch {
 		sb.append("}\n");
 		sb.append("LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
-		System.out.println(sb.toString());
-		GWT.log(sb.toString());
 		return sb.toString();
 	}
 	
@@ -123,8 +121,6 @@ public class SPARQLSearch {
 		sb.append("?object <").append(RDFS.label).append("> ?label.\n");
 		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
 		sb.append("}\n");
-		System.out.println(sb.toString());
-		GWT.log(sb.toString());
 		return sb.toString();
 	}
 
