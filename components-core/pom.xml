@@ -22,7 +22,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.3</version>
                 <configuration>
                     <excludes>
                         <exclude>org/dllearner/test/*</exclude>
@@ -31,6 +30,18 @@
                         <exclude>**/*$*</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <!--Jar the tests up into a separate jar so other components tests' can leverage them-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

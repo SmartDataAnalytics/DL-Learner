@@ -15,13 +15,36 @@
         <artifactId>dllearner-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
+    
+    <build>
+        <plugins>
+            <!--Surefire - for JUnits-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
             <groupId>org.dllearner</groupId>
             <artifactId>components-core</artifactId>
         </dependency>
+
+        <!--Added the dependency of the core tests so that they will be accessible from the tests in this component-->
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.dllearner</groupId>
             <artifactId>components-ext</artifactId>
