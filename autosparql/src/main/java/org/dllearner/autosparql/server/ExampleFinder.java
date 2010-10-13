@@ -83,13 +83,13 @@ public class ExampleFinder {
 	
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
 		logger.info("USING GENERALISATION");
-		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString());
+		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString(true));
 		Generalisation<String> generalisation = new Generalisation<String>();
 		QueryTree<String> genTree = generalisation.generalise(tree);
-		String query = genTree.toSPARQLQueryString();
+		String query = genTree.toSPARQLQueryString(true);
 		logger.info("QUERY AFTER GENERALISATION: \n\n" + query);
 		
-		query = query + " LIMIT 10";
+		query = query + " ORDER BY ?x0 LIMIT 10";
 		String result = "";
 		try {
 			result = selectCache.executeSelectQuery(endpoint, query);
@@ -116,6 +116,7 @@ public class ExampleFinder {
 		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpoint.getURL().toString());
 		List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
 		for(String query : queries){
+			
 			query = query + " LIMIT 10";
 			String result = "";
 			try {
@@ -136,8 +137,7 @@ public class ExampleFinder {
 				}
 			}
 		}
-		
-		return null;
+		return findExampleByGeneralisation(gen.getLastLGG());
 	}
 	
 	private Example getExample(String uri){

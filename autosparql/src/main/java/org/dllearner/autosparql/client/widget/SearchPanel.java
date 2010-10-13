@@ -52,6 +52,8 @@ public class SearchPanel extends ContentPanel {
 	
 	private PagingLoader<PagingLoadResult<ModelData>> loader;
 	
+	private boolean firstSearch = true;
+	
 	public SearchPanel(){
 		setLayout(new RowLayout());
 		setHeading("Search");
@@ -114,7 +116,7 @@ public class SearchPanel extends ContentPanel {
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 		
-		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p>");
+		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p><p><a href = \"{uri}\"/>Link to resource page</a> ");
 		RowExpander expander = new RowExpander();
 		expander.setTemplate(tpl);
 		columns.add(expander);
@@ -220,6 +222,10 @@ public class SearchPanel extends ContentPanel {
 	
 	private void onSearch(){
 		loader.load();
+		if(firstSearch){
+			firstSearch = false;
+			Dispatcher.forwardEvent(AppEvents.ShowInteractiveMode);
+		}
 	}
 	
 	public void setFocus(){
