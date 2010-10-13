@@ -27,7 +27,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
-import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 
 /**
  * 
@@ -56,15 +55,26 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	
 	@Override
 	public QueryTree<N> getLGG(Set<QueryTree<N>> trees, boolean learnFilters) {
+		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
+		
+		logger.info("Computing LGG for");
+		for(int i = 0; i < treeList.size(); i++){
+			logger.info(treeList.get(i).getStringRepresentation());
+			if(i != treeList.size() - 1){
+				logger.info("and");
+			}
+		}
+		
 		if(trees.size() == 1){
 			return trees.iterator().next();
 		}
-		
-		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
 		for(int i = 2; i < treeList.size(); i++){
 			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
 		}
+		
+		logger.info("LGG = ");
+		logger.info(lgg.getStringRepresentation());
 		
 		return lgg;
 	}
