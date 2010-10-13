@@ -31,6 +31,11 @@
     </modules>
 
     <build>
+        <!--
+          - Plugin Management defines the plugins that the child components can use
+          - It's good practice to do this as we can ensure all children use common versions
+          - of the plugins, and we can look in one place to see all plugin dependencies.
+          -->
         <pluginManagement>
             <plugins>
                 <!--Surefire - for JUnits-->
@@ -39,47 +44,55 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.4.3</version>
                 </plugin>
+                <!--Maven Compiler Plugin-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.0.2</version>
+                    <configuration>
+                        <!--We use 1.6-->
+                        <source>${compiler.version}</source>
+                        <target>${compiler.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+
+                <!--
+                  - Maven Jar Plugin - if you want to create and/or sign jars.
+                  - I'm putting this in so we can create a jar for the test classes
+                  - in components core so that other components' tests can leverage them
+                  -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.1</version>
+                </plugin>
+                <!--JAR the Sources-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!--JAR the Java docs-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-
-            <!--Maven Compiler Plugin-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <!--We use 1.6-->
-                    <source>${compiler.version}</source>
-                    <target>${compiler.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <!--JAR the Sources-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--JAR the Java docs-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
 
     <dependencyManagement>
@@ -219,6 +232,14 @@
                 <groupId>org.dllearner</groupId>
                 <artifactId>components-core</artifactId>
                 <version>${dllearner.version}</version>
+            </dependency>
+
+            <!--This is the jar of the tests from components-core-->
+            <dependency>
+                <groupId>org.dllearner</groupId>
+                <artifactId>components-core</artifactId>
+                <version>${dllearner.version}</version>
+                <classifier>tests</classifier>
             </dependency>
 
             <dependency>
