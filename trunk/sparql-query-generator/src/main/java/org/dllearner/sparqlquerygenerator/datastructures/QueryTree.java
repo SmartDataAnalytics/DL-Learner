@@ -97,4 +97,6 @@ public interface QueryTree<N> {
     
     String toSPARQLQueryString();
     
+    String toSPARQLQueryString(boolean filtered);
+    
 }

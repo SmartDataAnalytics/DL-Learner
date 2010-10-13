@@ -22,6 +22,8 @@ package org.dllearner.sparqlquerygenerator;
 import java.util.List;
 import java.util.Set;
 
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+
 /**
  * 
  * @author Lorenz Bühmann
@@ -36,5 +38,7 @@ public interface SPARQLQueryGenerator {
 	List<String> getSPARQLQueries(Set<String> posExamples, Set<String> negExamples);
 	
 	List<String> getSPARQLQueries(Set<String> posExamples, Set<String> negExamples, boolean learnFilters);
+	
+	QueryTree<String> getLastLGG();
 
 }
