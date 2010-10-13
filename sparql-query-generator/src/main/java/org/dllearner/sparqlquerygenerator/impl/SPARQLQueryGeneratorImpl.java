@@ -55,19 +55,14 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	private Set<String> posExamples;
 	private Set<String> negExamples;
 	
-	private int recursionDepth = 2;
-	
-	private int maxModelSizePerExample = 3000;
-	
-	private final static int LIMIT = 1000;
-	private final static int OFFSET = 1000;
-	
 	private Set<QueryTree<String>> posQueryTrees;
 	private Set<QueryTree<String>> negQueryTrees;
 	
 	private List<String> result = new LinkedList<String>();
 	
 	private QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
+	
+	private QueryTree<String> lgg;
 	
 	
 	
@@ -113,6 +108,11 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		return result;
 	}
 	
+	@Override
+	public QueryTree<String> getLastLGG(){
+		return lgg;
+	}
+	
 	/**
 	 * Here we build the initial Query graphs for the positive and negative examples.
 	 */
@@ -146,7 +146,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		monitor.start();
 		
 		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
-		QueryTree<String> lgg = lggGenerator.getLGG(posQueryTrees);
+		lgg = lggGenerator.getLGG(posQueryTrees);
 		
 		monitor.stop();
 		
@@ -155,7 +155,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		logger.debug("LGG computation time: " + monitor.getTotal() + " ms");
 		
-		result.add(lgg.toSPARQLQueryString());
+		result.add(lgg.toSPARQLQueryString(true));
 	}
 	
 	private void learnPosNeg(){
@@ -186,7 +186,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		for(QueryTree<String> nbr : nbrGenerator.getNBRs(lgg, negQueryTrees)){
 			logger.debug("NBR " + i++);
 			logger.debug(nbr.getStringRepresentation());
-			result.add(nbr.toSPARQLQueryString());
+			result.add(nbr.toSPARQLQueryString(true));
 		}
 		
 		nbrMonitor.stop();

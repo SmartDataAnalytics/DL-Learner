@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.NodeRenderer;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.util.Filter;
 
 /**
  * 
@@ -505,12 +506,25 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT ?x0 WHERE {\n");
-    	buildSPARQLQueryString(this, sb);
+    	buildSPARQLQueryString(this, sb, false);
     	sb.append("}");
     	return sb.toString();
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb){
+    @Override
+    public String toSPARQLQueryString(boolean filtered) {
+    	if(children.isEmpty()){
+    		return "SELECT ?x WHERE {?x ?y ?z.}";
+    	}
+    	cnt = 0;
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("SELECT ?x0 WHERE {\n");
+    	buildSPARQLQueryString(this, sb, filtered);
+    	sb.append("}");
+    	return sb.toString();
+    }
+    
+    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + cnt++;
@@ -522,6 +536,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	if(!tree.isLeaf()){
     		for(QueryTree<N> child : tree.getChildren()){
         		predicate = tree.getEdge(child);
+        		if(filtered){
+        			if(Filter.getAllFilterProperties().contains(predicate.toString())){
+        				continue;
+        			}
+        		}
         		object = child.getUserObject();
         		boolean objectIsResource = !object.equals("?");
         		if(!objectIsResource){
@@ -531,7 +550,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         		}
         		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, sb);
+        			buildSPARQLQueryString(child, sb, filtered);
         		}
         	}
     	} 
