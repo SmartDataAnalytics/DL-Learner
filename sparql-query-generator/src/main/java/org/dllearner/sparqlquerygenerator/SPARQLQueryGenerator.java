@@ -39,6 +39,14 @@ public interface SPARQLQueryGenerator {
 	
 	List<String> getSPARQLQueries(Set<String> posExamples, Set<String> negExamples, boolean learnFilters);
 	
+	List<QueryTree<String>> getSPARQLQueryTrees(Set<String> posExamples);
+	
+	List<QueryTree<String>> getSPARQLQueryTrees(Set<String> posExamples, boolean learnFilters);
+	
+	List<QueryTree<String>> getSPARQLQueryTrees(Set<String> posExamples, Set<String> negExamples);
+	
+	List<QueryTree<String>> getSPARQLQueryTrees(Set<String> posExamples, Set<String> negExamples, boolean learnFilters);
+	
 	QueryTree<String> getLastLGG();
 
 }
