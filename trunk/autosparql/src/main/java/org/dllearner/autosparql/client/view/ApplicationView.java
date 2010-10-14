@@ -65,16 +65,46 @@ public class ApplicationView extends View {
 	    
 	    createHeaderPanel();
 	    
+//	    Portal mainPanel = new Portal(2);
+//	    mainPanel.setColumnWidth(0, 0.33);
+//	    mainPanel.setColumnWidth(1, 0.67);
+//	    BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
+//	    data.setMargins(new Margins(5, 5, 5, 0));
+//	    viewport.add(mainPanel, data);
+//	    
+//	    dummyPanel = new Portlet(new FitLayout());
+//	    dummyPanel.setHeaderVisible(false);
+//	    dummyPanel.setBorders(false);
+//	    dummyPanel.setHeight(150);
+//	    mainPanel.add(dummyPanel, 0);
+//	    
+//	    infoPanel = new InfoPanel();
+//	    dummyPanel.add(infoPanel);
+//	    
+//	    interactivePanel = new InteractivePanel();
+//	    
+//	    searchPanel = new SearchPanel();
+//	    searchPanel.setHeight(550);
+//	    mainPanel.add(searchPanel, 0);
+//	   
+//	    examplesPanel = new ExamplesPanel();
+//	    examplesPanel.setHeight(350);
+//	    mainPanel.add(examplesPanel, 1);
+//		
+//		resultPanel = new ResultPanel();
+//		resultPanel.setHeight(350);
+//		mainPanel.add(resultPanel, 1);
+	    
 	    LayoutContainer mainPanel = new LayoutContainer(new RowLayout(Orientation.HORIZONTAL));
 	    BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
 	    data.setMargins(new Margins(5, 5, 5, 0));
 	    viewport.add(mainPanel, data);
 	    
 	    LayoutContainer vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
-	    mainPanel.add(vPanel, new RowData(0.3, 1));
+	    mainPanel.add(vPanel, new RowData(0.3, 1, new Margins(0, 5, 0, 0)));
 	    
 	    dummyPanel = new LayoutContainer(new FitLayout());
-	    vPanel.add(dummyPanel, new RowData(1, 0.3));
+	    vPanel.add(dummyPanel, new RowData(1, 0.3, new Margins(0, 0, 10, 0)));
 	    
 	    infoPanel = new InfoPanel();
 	    dummyPanel.add(infoPanel);
@@ -82,21 +112,17 @@ public class ApplicationView extends View {
 	    interactivePanel = new InteractivePanel();
 	    
 	    searchPanel = new SearchPanel();
-	    vPanel.add(searchPanel, new RowData(1, 0.7));
+	    vPanel.add(searchPanel, new RowData(1, 0.7, new Margins(5, 0, 0, 0)));
 	   
 	    vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
-	    mainPanel.add(vPanel, new RowData(0.7, 1));
+	    mainPanel.add(vPanel, new RowData(0.7, 1, new Margins(0, 0, 0, 5)));
 	    
 	    examplesPanel = new ExamplesPanel();
-	    vPanel.add(examplesPanel, new RowData(1, 0.5));
+	    vPanel.add(examplesPanel, new RowData(1, 0.5, new Margins(0, 0, 5, 0)));
 		
 		resultPanel = new ResultPanel();
-		vPanel.add(resultPanel, new RowData(1, 0.5));
-
-//	    createSearchPanel();
-//	    createExamplesPanel();
-//	    createInteractiveAndResultPanel();
-
+		vPanel.add(resultPanel, new RowData(1, 0.5, new Margins(10, 0, 0, 0)));
+//
 	    // registry serves as a global context
 	    Registry.register(VIEWPORT, viewport);
 	    Registry.register(SEARCH_PANEL, searchPanel);

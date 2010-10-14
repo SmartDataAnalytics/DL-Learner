@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 import com.extjs.gxt.ui.client.core.XTemplate;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
@@ -16,6 +18,7 @@ import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.KeyListener;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Dispatcher;
@@ -50,6 +53,8 @@ public class SearchPanel extends ContentPanel {
 	private TextField<String> inputField;
 	private Button searchButton;
 	
+	private Grid<Example> grid;
+	
 	private PagingLoader<PagingLoadResult<ModelData>> loader;
 	
 	private boolean firstSearch = true;
@@ -59,7 +64,7 @@ public class SearchPanel extends ContentPanel {
 		setHeading("Search");
 		setCollapsible(true);
 		setAnimCollapse(false);
-		setSize(WIDTH, HEIGHT);
+//		setSize(WIDTH, HEIGHT);
 		
 		createInputPanel();
 		createSearchResultGrid();
@@ -107,6 +112,13 @@ public class SearchPanel extends ContentPanel {
 		};
 		
 		loader = new BasePagingLoader<PagingLoadResult<ModelData>>(proxy);
+		loader.addLoadListener(new LoadListener(){
+			@Override
+			public void loaderLoad(LoadEvent le) {
+				showLoadingMessage(false);
+				super.loaderLoad(le);
+			}
+		});
 		
 		final PagingToolBar toolbar = new PagingToolBar(10);
 		toolbar.bind(loader);
@@ -198,17 +210,16 @@ public class SearchPanel extends ContentPanel {
 		
 		ColumnModel cm = new ColumnModel(columns);
 		
-		Grid<Example> grid = new Grid<Example>(store, cm);
+		grid = new Grid<Example>(store, cm);
 		grid.setHideHeaders(true);
 		grid.setAutoExpandColumn("label");
-		grid.setLoadMask(true);
+//		grid.setLoadMask(true);
 		grid.addPlugin(expander);
 		grid.getView().setEmptyText("DUMMY TEXT");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,
 					ListStore<ModelData> ds) {
-				// TODO Auto-generated method stub
 				if(rowIndex % 2 == 0){
 					return "row-Style-Odd";
 				} else {
@@ -222,10 +233,19 @@ public class SearchPanel extends ContentPanel {
 	}
 	
 	private void onSearch(){
+		showLoadingMessage(true);
 		loader.load();
 		if(firstSearch){
 			firstSearch = false;
 			Dispatcher.forwardEvent(AppEvents.ShowInteractiveMode);
+		}
+	}
+	
+	private void showLoadingMessage(boolean show){
+		if(show){
+			grid.mask("Searching...");
+		} else {
+			grid.unmask();
 		}
 	}
 	
