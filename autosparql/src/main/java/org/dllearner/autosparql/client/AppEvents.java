@@ -17,4 +17,6 @@ public class AppEvents {
 	public static final EventType AddExample = new EventType();
 
 	public static final EventType RemoveExample = new EventType();
+	
+	public static final EventType UpdateResultTable = new EventType();
 }
