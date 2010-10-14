@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
-import org.dllearner.utilities.datastructures.SetManipulation;
 
 import com.extjs.gxt.ui.client.core.XTemplate;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
