@@ -180,33 +180,42 @@ public class ApplicationView extends View {
 			} else {
 				examplesPanel.addNegativeExample(example);
 			}
-			SPARQLService.Util.getInstance().getSimilarExample(
-					examplesPanel.getPositiveExamplesURIs(),
-					examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Example>() {
-						
-						@Override
-						public void onSuccess(Example result) {
-							interactivePanel.setExample(result);
-							resultPanel.updateTable();
-						}
-						
-						@Override
-						public void onFailure(Throwable caught) {
-							String details = caught.getMessage();
-							if(caught instanceof SPARQLQueryException){
-								details = "An error occured while sending the following query:\n"
-									+ ((SPARQLQueryException)caught).getQuery();
+			if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
+				interactivePanel.mask("Searching...");
+				SPARQLService.Util.getInstance().getSimilarExample(
+						examplesPanel.getPositiveExamplesURIs(),
+						examplesPanel.getNegativeExamplesUris(),
+						new AsyncCallback<Example>() {
+
+							@Override
+							public void onSuccess(Example result) {
+								interactivePanel.unmask();
+								interactivePanel.setExample(result);
+								resultPanel.updateTable();
 							}
-							MessageBox.alert("Error", details, null);
-							
-						}
-					});
+
+							@Override
+							public void onFailure(Throwable caught) {
+								String details = caught.getMessage();
+								if (caught instanceof SPARQLQueryException) {
+									details = "An error occured while sending the following query:\n"
+											+ ((SPARQLQueryException) caught)
+													.getQuery();
+								}
+								MessageBox.alert("Error", details, null);
+
+							}
+						});
+			}
+			
 		} else if(event.getType() == AppEvents.AddNegExample){
 			examplesPanel.addNegativeExample((Example) event.getData());
 		} else if(event.getType() == AppEvents.RemoveExample){
 			
 		} else if(event.getType() == AppEvents.ShowInteractiveMode){
 			showInteractivePanel();
+		} else if(event.getType() == AppEvents.UpdateResultTable){
+			resultPanel.updateTable();
 		}
 	}
 	

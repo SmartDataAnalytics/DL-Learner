@@ -127,7 +127,8 @@ public class SearchPanel extends ContentPanel {
 			public Object render(Example model, String property,
 					ColumnData config, int rowIndex, int colIndex,
 					ListStore<Example> store, Grid<Example> grid) {
-				final Image image = new Image(model.getImageURL());
+				String imageURL = model.getImageURL().isEmpty() ? "no_images.jpeg" : model.getImageURL();
+				final Image image = new Image(imageURL);
 				image.addErrorHandler(new ErrorHandler() {
 					
 					@Override

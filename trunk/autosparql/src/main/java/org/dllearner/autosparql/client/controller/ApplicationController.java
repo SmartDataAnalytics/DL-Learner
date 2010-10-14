@@ -18,6 +18,7 @@ public class ApplicationController extends Controller {
 		registerEventTypes(AppEvents.AddNegExample);
 		registerEventTypes(AppEvents.AddExample);
 		registerEventTypes(AppEvents.ShowInteractiveMode);
+		registerEventTypes(AppEvents.UpdateResultTable);
 	}
 
 	@Override
@@ -37,6 +38,8 @@ public class ApplicationController extends Controller {
 		} else if(type == AppEvents.RemoveExample){
 			forwardToView(appView, event);
 		} else if(type == AppEvents.ShowInteractiveMode){
+			forwardToView(appView, event);
+		} else if(type == AppEvents.UpdateResultTable){
 			forwardToView(appView, event);
 		}
 	}
