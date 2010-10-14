@@ -19,14 +19,16 @@
  */
 package org.dllearner.sparqlquerygenerator.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -55,14 +57,17 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	}
 	
 	private QueryTreeImpl<String> createTree(Resource s, Model model){
-		Map<String, Set<Statement>> resource2Statements = new HashMap<String, Set<Statement>>();
+		Comparator<Statement> comparator = new StatementComparator();
+		
+		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
+		
 		Statement st;
-		Set<Statement> statements;
+		SortedSet<Statement> statements;
 		for(Iterator<Statement> it = model.listStatements(); it.hasNext();){
 			st = it.next();
 			statements = resource2Statements.get(st.getSubject().toString());
 			if(statements == null){
-				statements = new HashSet<Statement>();
+				statements = new TreeSet<Statement>(comparator);
 				resource2Statements.put(st.getSubject().toString(), statements);
 			}
 			statements.add(st);
@@ -74,10 +79,13 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		return tree;
 	}
 	
-	private void fillTree(QueryTreeImpl<String> tree, Map<String, Set<Statement>> resource2Statements){
+	private void fillTree(QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements){
 		if(resource2Statements.containsKey(tree.getUserObject())){
 			QueryTreeImpl<String> subTree;
 			for(Statement st : resource2Statements.get(tree.getUserObject())){
+				if(Filter.getAllFilterProperties().contains(st.getPredicate().toString())){
+					continue;
+				}
 				if(st.getObject().isLiteral()){
 					tree.addChild(new QueryTreeImpl<String>(st.getObject().asLiteral().getLexicalForm()), st.getPredicate().toString());
 				} else {
@@ -89,6 +97,21 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 				}
 			}
 		}
+	}
+	
+	class StatementComparator implements Comparator<Statement>{
+
+		@Override
+		public int compare(Statement s1, Statement s2) {
+			if(s1.getPredicate() == null && s2.getPredicate() == null){
+				return 0;
+			}
+			return s1.getPredicate().toString().compareTo(s2.getPredicate().toString())
+			+ s1.getObject().toString().compareTo(s2.getObject().toString());
+		}
+
+		
+		
 	}
 
 }

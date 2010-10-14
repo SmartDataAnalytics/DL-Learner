@@ -47,6 +47,9 @@ public class Filter {
 		List<String> filters = new ArrayList<String>();
 		
 		filters.add(FOAF.page.toString());
+		filters.add(FOAF.homepage.toString());
+		filters.add(FOAF.depiction.toString());
+		filters.add(FOAF.Image.toString());
 		
 		return filters;
 	}

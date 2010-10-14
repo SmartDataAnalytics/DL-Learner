@@ -199,7 +199,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	}
 	
 	private void learnPosNeg(){
-		logger.debug("Computing LGG ...");
+		logger.info("Computing LGG ...");
 		Monitor lggMonitor = MonitorFactory.getTimeMonitor("LGG monitor");
 		
 		lggMonitor.start();
@@ -209,10 +209,10 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		lggMonitor.stop();
 		
-		logger.debug("LGG");
-		logger.debug(lgg.getStringRepresentation());
+		logger.info("LGG");
+		logger.info(lgg.getStringRepresentation());
 		
-		logger.debug("LGG computation time: " + lggMonitor.getTotal() + " ms");
+		logger.info("LGG computation time: " + lggMonitor.getTotal() + " ms");
 		
 		Monitor nbrMonitor = MonitorFactory.getTimeMonitor("NBR monitor");
 		
@@ -224,15 +224,15 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		int i = 1;
 		for(QueryTree<String> nbr : nbrGenerator.getNBRs(lgg, negQueryTrees)){
-			logger.debug("NBR " + i++);
-			logger.debug(nbr.getStringRepresentation());
+			logger.info("NBR " + i++);
+			logger.info(nbr.getStringRepresentation());
 			resultQueries.add(nbr.toSPARQLQueryString(true));
 			resultTrees.add(nbr);
 		}
 		
 		nbrMonitor.stop();
 		
-		logger.debug("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
+		logger.info("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
 		
 	}
 	
