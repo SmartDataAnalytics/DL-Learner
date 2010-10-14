@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.sparqlquerygenerator.datastructures.NodeRenderer;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -122,7 +123,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     public Set<Object> getEdges(){
-    	return new HashSet<Object>(child2EdgeMap.values());
+    	return new TreeSet<Object>(child2EdgeMap.values());
     }
 
 
