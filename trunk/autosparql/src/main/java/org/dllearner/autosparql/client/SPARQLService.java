@@ -18,6 +18,8 @@ public interface SPARQLService extends RemoteService{
 	
 	Example getSimilarExample(List<String> posExamples, List<String> negExamples) throws SPARQLQueryException;
 	
+	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;
+	
 	/**
      * Utility class to get the RPC Async interface from client-side code
      */

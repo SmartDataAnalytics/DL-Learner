@@ -1,6 +1,6 @@
 package org.dllearner.autosparql.server;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -9,9 +9,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
-import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
-import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -19,7 +16,6 @@ import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLService{
@@ -30,6 +26,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private static final long serialVersionUID = 1448196614767491966L;
 	
 	private static final String ENDPOINT = "endpoint";
+	private static final String EXAMPLE_FINDER = "examplefinder";
 	
 	private SPARQLSearch search;
 	private ExtractionDBCache constructCache;
@@ -67,6 +64,15 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		return endpoint;
 	}
 	
+	private ExampleFinder getExampleFinder(){
+		ExampleFinder exFinder = (ExampleFinder) getSession().getAttribute(EXAMPLE_FINDER);
+		if(exFinder == null){
+			exFinder = new ExampleFinder(getEndpoint(), selectCache, constructCache);
+			getSession().setAttribute(EXAMPLE_FINDER, exFinder);
+		}
+		return exFinder;
+	}
+	
 	private HttpSession getSession(){
 		return getThreadLocalRequest().getSession();
 	}
@@ -78,10 +84,70 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		logger.info("POS EXAMPLES: " + posExamples);
 		logger.info("NEG EXAMPLES: " + negExamples);
 		
-		ExampleFinder exFinder = new ExampleFinder(getEndpoint(), selectCache, constructCache);
+		ExampleFinder exFinder = getExampleFinder();
 		Example example = exFinder.findSimilarExample(posExamples, negExamples);
 		
 		return example;
+	}
+
+	@Override
+	public PagingLoadResult<Example> getCurrentQueryResult(
+			PagingLoadConfig config) throws SPARQLQueryException {
+		List<Example> queryResult = new ArrayList<Example>();
+		
+		String currentQuery = getExampleFinder().getCurrentQuery();
+		
+		int limit = config.getLimit();
+		int offset = config.getOffset();
+		int totalLength = 10;
+		
+		try {
+			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), getCountQuery(currentQuery)));
+			totalLength = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), modifyQuery(currentQuery + " OFFSET " + offset)));
+			
+			String uri;
+			String label = "";
+			String imageURL = "";
+			String comment = "";
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				uri = qs.getResource("x0").getURI();
+				label = qs.getLiteral("label").getLexicalForm();
+				queryResult.add(new Example(uri, label, imageURL, comment));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
+		result.setOffset(offset);
+		result.setTotalLength(totalLength);
+		
+		return result;
+	}
+	
+	private String modifyQuery(String query){
+		String newQuery = query.replace("SELECT ?x0 WHERE {", 
+				"SELECT ?x0 ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.");
+	
+		
+		return newQuery;
+	}
+	
+	private String getCountQuery(String query){
+		String newQuery = query.replace("SELECT ?x0", 
+				"SELECT COUNT(DISTINCT ?x0)");
+		newQuery = newQuery.substring(0, newQuery.indexOf('}') + 1);
+		System.out.println("COUNT query: " + newQuery);
+		
+		return newQuery;
 	}
 	
 }
