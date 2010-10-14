@@ -187,6 +187,7 @@ public class ApplicationView extends View {
 						@Override
 						public void onSuccess(Example result) {
 							interactivePanel.setExample(result);
+							resultPanel.updateTable();
 						}
 						
 						@Override

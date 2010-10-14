@@ -26,6 +26,8 @@ public class ExampleFinder {
 	
 	private static final Logger logger = Logger.getLogger(ExampleFinder.class);
 	
+	private String currentQuery;
+	
 	public ExampleFinder(SparqlEndpoint endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
@@ -86,16 +88,16 @@ public class ExampleFinder {
 		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString(true));
 		Generalisation<String> generalisation = new Generalisation<String>();
 		QueryTree<String> genTree = generalisation.generalise(tree);
-		String query = genTree.toSPARQLQueryString(true);
-		logger.info("QUERY AFTER GENERALISATION: \n\n" + query);
+		currentQuery = genTree.toSPARQLQueryString(true);
+		logger.info("QUERY AFTER GENERALISATION: \n\n" + currentQuery);
 		
-		query = query + " ORDER BY ?x0 LIMIT 10";
+		currentQuery = currentQuery + " ORDER BY ?x0 LIMIT 10";
 		String result = "";
 		try {
-			result = selectCache.executeSelectQuery(endpoint, query);
+			result = selectCache.executeSelectQuery(endpoint, currentQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new SPARQLQueryException(e, encodeHTML(query));
+			throw new SPARQLQueryException(e, encodeHTML(currentQuery));
 		}
 		
 		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
@@ -105,6 +107,7 @@ public class ExampleFinder {
 			qs = rs.next();
 			uri = qs.getResource("x0").getURI();
 			if(!posExamples.contains(uri) && !negExamples.contains(uri)){
+				logger.info("Found new example: " + uri);
 				return getExample(uri);
 			}
 		}
@@ -116,11 +119,12 @@ public class ExampleFinder {
 		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpoint.getURL().toString());
 		List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
 		for(String query : queries){
-			
-			query = query + " LIMIT 10";
+			logger.info("Trying query");
+			currentQuery = query + " LIMIT 10";
+			logger.info(query);
 			String result = "";
 			try {
-				result = selectCache.executeSelectQuery(endpoint, query);
+				result = selectCache.executeSelectQuery(endpoint, currentQuery);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new SPARQLQueryException(e, encodeHTML(query));
@@ -136,11 +140,15 @@ public class ExampleFinder {
 					return getExample(uri);
 				}
 			}
+			logger.info("Query result contains no new examples. Trying another query...");
 		}
+		logger.info("None of the queries contained a new example.");
+		logger.info("Changing to Generalisation...");
 		return findExampleByGeneralisation(gen.getLastLGG());
 	}
 	
 	private Example getExample(String uri){
+		logger.info("Retrieving data for resouce " + uri);
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ?label ?imageURL ?comment WHERE{\n");
 		sb.append("<").append(uri).append("> <").append(RDFS.label.getURI()).append("> ").append("?label.\n");
@@ -156,13 +164,19 @@ public class ExampleFinder {
 		
 		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, sb.toString()));
 		QuerySolution qs = rs.next();
+		
 		String label = qs.getLiteral("label").getLexicalForm();
+		
 		String imageURL = "";
 		if(qs.getResource("imageURL") != null){
 			imageURL = qs.getResource("imageURL").getURI();
 		}
 		
-		String comment = qs.getLiteral("comment").getLexicalForm();
+		String comment = "";
+		if(qs.getLiteral("comment") != null){
+			comment = qs.getLiteral("comment").getLexicalForm();
+		}
+		
 		return new Example(uri, label, imageURL, comment);
 	}
 	
@@ -177,5 +191,9 @@ public class ExampleFinder {
 			}
 		}
 		return out.toString();
+	}
+	
+	public String getCurrentQuery(){
+		return currentQuery;
 	}
 }

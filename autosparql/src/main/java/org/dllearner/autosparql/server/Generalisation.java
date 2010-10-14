@@ -27,9 +27,14 @@ public class Generalisation<N> {
 	}
 	
 	private void pruneTree(QueryTree<N> tree, double limit){
+		System.out.println(tree.getStringRepresentation());
 		int childCountBefore = tree.getChildCount();
+		System.out.println("CHILD COUNT BEFORE: " + childCountBefore);
 		for(QueryTree<N> child : tree.getChildren()){
+			System.out.println("REMOVING CHILD: " + child);
 			tree.removeChild((QueryTreeImpl<N>) child);
+			System.out.println("CHILD COUNT: " + tree.getChildCount());
+			System.out.println((double)tree.getChildCount()/childCountBefore);
 			if((double)tree.getChildCount()/childCountBefore <= 0.5){
 				break;
 			}

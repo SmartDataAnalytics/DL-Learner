@@ -55,7 +55,7 @@ public class ExamplesPanel extends ContentPanel {
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 		
-		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p>");
+		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p><p><a href = \"{uri}\" target=\"_blank\"/>Link to resource page</a>");
 		RowExpander expander = new RowExpander();
 		expander.setTemplate(tpl);
 		columns.add(expander);
@@ -161,7 +161,7 @@ public class ExamplesPanel extends ContentPanel {
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 		
-		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p>");
+		XTemplate tpl = XTemplate.create("<p><b>Comment:</b><br>{comment}</p><p><a href = \"{uri}\" target=\"_blank\"/>Link to resource page</a>");
 		RowExpander expander = new RowExpander();
 		expander.setTemplate(tpl);
 		columns.add(expander);

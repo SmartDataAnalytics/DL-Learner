@@ -21,16 +21,6 @@ public class SPARQLSearch {
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	
-	public SPARQLSearch(SparqlEndpoint endpoint){
-		this.endpoint = endpoint;
-		
-		cache = new ExtractionDBCache(CACHE_DIR);
-	}
-	
-	public SPARQLSearch(){
-		cache = new ExtractionDBCache(CACHE_DIR);
-	}
-	
 	public SPARQLSearch(ExtractionDBCache cache){
 		this.cache = cache;
 	}
