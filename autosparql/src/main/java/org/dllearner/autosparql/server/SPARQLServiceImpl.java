@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
+import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
@@ -60,7 +61,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private SparqlEndpoint getEndpoint(){
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaAKSW();//(SparqlEndpoint) getSession().getAttribute(ENDPOINT);
+		SparqlEndpoint endpoint = (SparqlEndpoint) getSession().getAttribute(ENDPOINT);
 		return endpoint;
 	}
 	
@@ -148,6 +149,31 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		System.out.println("COUNT query: " + newQuery);
 		
 		return newQuery;
+	}
+
+	@Override
+	public void setEndpoint(Endpoint endpoint) {
+		switch(endpoint.getID()){
+			case 0:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
+			case 1:setEndpoint(SparqlEndpoint.getEndpointDBpediaLive());break;
+			case 2:setEndpoint(SparqlEndpoint.getEndpointDBpediaAKSW());break;
+			case 3:setEndpoint(SparqlEndpoint.getEndpointDBpediaHanne());break;
+			case 4:setEndpoint(SparqlEndpoint.getEndpointLinkedGeoData());break;
+			default:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
+		}
+	}
+
+	@Override
+	public List<Endpoint> getEndpoints() {
+		List<Endpoint> endpoints = new ArrayList<Endpoint>();
+		
+		endpoints.add(new Endpoint(0, "DBpedia"));
+		endpoints.add(new Endpoint(1, "DBpedia_Live"));
+		endpoints.add(new Endpoint(2, "DBpedia@AKSW"));
+		endpoints.add(new Endpoint(3, "DBpedia@Hanne"));
+		endpoints.add(new Endpoint(4, "LinkedGeoData"));
+		
+		return endpoints;
 	}
 	
 }

@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.BruteForceNBRStrategy;
 
 /**
  * 
@@ -55,8 +56,9 @@ public class DBPediaTestScript {
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.INFO);		
-		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.DEBUG);
-		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
+		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.INFO);
+		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.INFO);
+		Logger.getLogger(BruteForceNBRStrategy.class).setLevel(Level.INFO);
 		
 		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(DBPEDIA_ENDPOINT_URL);
 		
