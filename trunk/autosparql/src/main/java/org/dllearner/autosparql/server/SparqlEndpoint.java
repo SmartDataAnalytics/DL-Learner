@@ -173,6 +173,42 @@ public class SparqlEndpoint {
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
+	
+	public static SparqlEndpoint getEndpointDBpediaHanne() {
+		URL u = null;
+		try { 
+			u = new URL("http://hanne.aksw.org:8892/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://dbpedia.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint getEndpointDBpediaLive() {
+		URL u = null;
+		try { 
+			u = new URL("http://dbpedia-live.openlinksw.com/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://dbpedia.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint getEndpointLinkedGeoData() {
+		URL u = null;
+		try { 
+			u = new URL("http://linkedgeodata.org/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		//TODO defaultGraphURIs.add("http://geonames.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}	
 
 	public static SparqlEndpoint getEndpointLOCALGeonames() {
 		URL u = null;

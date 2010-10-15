@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client;
 
 import java.util.List;
 
+import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -20,5 +21,9 @@ public interface SPARQLServiceAsync
     void getSimilarExample(List<String> posExamples, List<String> negExamples, AsyncCallback<Example> callback);
     
     void getCurrentQueryResult(PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);
+    
+    void setEndpoint(Endpoint endpoint, AsyncCallback<Void> callback);
+	
+	void getEndpoints(AsyncCallback<List<Endpoint>> callback);
     
 }

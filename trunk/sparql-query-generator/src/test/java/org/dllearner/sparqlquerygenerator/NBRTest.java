@@ -51,7 +51,7 @@ public class NBRTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -59,14 +59,14 @@ public class NBRTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump();
+		System.out.println(lgg.getStringRepresentation());
 		
 		System.out.println("-----------------------------------------------");
 		
 		cnt = 1;
 		for(QueryTree<String> tree : negExampleTrees){
 			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -74,7 +74,7 @@ public class NBRTest {
 		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negExampleTrees);
 		
 		System.out.println("NBR");
-		nbr.dump();
+		System.out.println(nbr.getStringRepresentation());
 		
 	}
 	
@@ -89,7 +89,7 @@ public class NBRTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -97,14 +97,14 @@ public class NBRTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump();
+		System.out.println(lgg.getStringRepresentation());
 		
 		System.out.println("-----------------------------------------------");
 		
 		cnt = 1;
 		for(QueryTree<String> tree : negExampleTrees){
 			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -113,7 +113,7 @@ public class NBRTest {
 		cnt = 1;
 		for(QueryTree<String> tree : nbrs){
 			System.out.println("NBR " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -130,7 +130,7 @@ public class NBRTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -138,14 +138,14 @@ public class NBRTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump();
+		System.out.println(lgg.getStringRepresentation());
 		
 		System.out.println("-----------------------------------------------");
 		
 		cnt = 1;
 		for(QueryTree<String> tree : negExampleTrees){
 			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -153,7 +153,7 @@ public class NBRTest {
 		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negExampleTrees);
 		
 		System.out.println("NBR");
-		nbr.dump();
+		System.out.println(nbr.getStringRepresentation());
 	}
 	
 	@Test
@@ -167,7 +167,7 @@ public class NBRTest {
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
 			System.out.println("POSITIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -175,14 +175,14 @@ public class NBRTest {
 		QueryTree<String> lgg = lggGenerator.getLGG(posExampleTrees);
 		
 		System.out.println("LGG");
-		lgg.dump();
+		System.out.println(lgg.getStringRepresentation());
 		
 		System.out.println("-----------------------------------------------");
 		
 		cnt = 1;
 		for(QueryTree<String> tree : negExampleTrees){
 			System.out.println("NEGATIVE EXAMPLE TREE " + cnt);
-			tree.dump();
+			System.out.println(tree.getStringRepresentation());
 			System.out.println("-----------------------------------------------");
 			cnt++;
 		}
@@ -190,7 +190,7 @@ public class NBRTest {
 		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negExampleTrees);
 		
 		System.out.println("NBR");
-//		nbr.dump();
+		System.out.println(nbr.getStringRepresentation());
 	}
 
 }

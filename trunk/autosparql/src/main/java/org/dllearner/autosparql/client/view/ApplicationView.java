@@ -1,8 +1,11 @@
 package org.dllearner.autosparql.client.view;
 
+import java.util.List;
+
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
+import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.InfoPanel;
@@ -15,15 +18,19 @@ import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.HtmlContainer;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -103,8 +110,10 @@ public class ApplicationView extends View {
 	    LayoutContainer vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 	    mainPanel.add(vPanel, new RowData(0.3, 1, new Margins(0, 5, 0, 0)));
 	    
+	    vPanel.add(createEndpointSelector(), new RowData(-1, -1, new Margins(0, 0, 10, 0)));
+	    
 	    dummyPanel = new LayoutContainer(new FitLayout());
-	    vPanel.add(dummyPanel, new RowData(1, 0.3, new Margins(0, 0, 10, 0)));
+	    vPanel.add(dummyPanel, new RowData(1, 0.2, new Margins(0, 0, 10, 0)));
 	    
 	    infoPanel = new InfoPanel();
 	    dummyPanel.add(infoPanel);
@@ -112,7 +121,7 @@ public class ApplicationView extends View {
 	    interactivePanel = new InteractivePanel();
 	    
 	    searchPanel = new SearchPanel();
-	    vPanel.add(searchPanel, new RowData(1, 0.7, new Margins(5, 0, 0, 0)));
+	    vPanel.add(searchPanel, new RowData(1, 0.8, new Margins(5, 0, 0, 0)));
 	   
 	    vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 	    mainPanel.add(vPanel, new RowData(0.7, 1, new Margins(0, 0, 0, 5)));
@@ -152,6 +161,7 @@ public class ApplicationView extends View {
 	}
 	
 	private void createHeaderPanel(){
+		LayoutContainer c = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 		StringBuffer sb = new StringBuffer();
 	    sb.append("<div id='demo-theme'></div><div id=demo-title>AutoSPARQL</div>");
 
@@ -163,11 +173,56 @@ public class ApplicationView extends View {
 	    final Image logo = new Image("dl-learner_logo.gif");
 	    logo.setHeight("30px");
 	    headerPanel.add(logo, "#demo-theme");
+	    
+	    c.add(headerPanel);
+	    c.add(createEndpointSelector());
 
 	    BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 33);
 	    data.setMargins(new Margins());
-	    viewport.add(headerPanel, data);
+	    viewport.add(c, data);
+	    
 	    Registry.register(HEADER_PANEL, headerPanel);
+	}
+	
+	private ComboBox<Endpoint> createEndpointSelector(){
+		final ListStore<Endpoint> endpoints = new ListStore<Endpoint>();  
+		SPARQLService.Util.getInstance().getEndpoints(new AsyncCallback<List<Endpoint>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				
+			}
+
+			@Override
+			public void onSuccess(List<Endpoint> result) {
+				endpoints.add(result);
+				
+			}
+			
+		});
+	  
+	    ComboBox<Endpoint> combo = new ComboBox<Endpoint>();  
+	    combo.setEditable(false);
+	    combo.setEmptyText("Select an endpoint...");  
+	    combo.setDisplayField("label");  
+	    combo.setWidth(150);  
+	    combo.setStore(endpoints);  
+	    combo.setTypeAhead(true);
+	    combo.addSelectionChangedListener(new SelectionChangedListener<Endpoint>() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent<Endpoint> se) {
+				SPARQLService.Util.getInstance().setEndpoint(se.getSelectedItem(), new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+					@Override
+					public void onSuccess(Void result) {
+					}
+				});
+			}
+		});
+	    
+	   return combo;
 	}
 	
 	private void  createResultPanel(){
