@@ -83,6 +83,7 @@
 				</executions>
 				<configuration>
 					<runTarget>org.dllearner.autosparql.Application/Application.html</runTarget>
+                    <localWorkers>1</localWorkers>
 				</configuration>
 			</plugin>
 			<!-- If you want to use the target/web.xml file mergewebxml produces, 
