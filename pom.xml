@@ -359,7 +359,7 @@
         <repository>
             <id>maven.codehaus.snapshots</id>
             <name>Codehaus repository Repository</name>
-            <url>https://nexus.codehaus.org/content/repositories/public</url>
+            <url>https://nexus.codehaus.org/content/groups/snapshots-group</url>
         </repository>
     </repositories>
 
@@ -367,7 +367,7 @@
         <pluginRepository>
             <id>maven.codehaus.plugin.snapshots</id>
             <name>Codehaus plugin Repository</name>
-            <url>https://nexus.codehaus.org/content/repositories/public</url>
+            <url>https://nexus.codehaus.org/content/groups/snapshots-group</url>
             <snapshots><enabled>true</enabled></snapshots>
             <releases><enabled>true</enabled></releases>
         </pluginRepository>
