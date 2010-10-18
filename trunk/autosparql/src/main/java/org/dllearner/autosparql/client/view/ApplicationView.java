@@ -273,7 +273,8 @@ public class ApplicationView extends View {
 							public void onSuccess(Example result) {
 								interactivePanel.unmask();
 								interactivePanel.setExample(result);
-								resultPanel.updateTable();
+								resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+										examplesPanel.getNegativeExamplesUris());
 							}
 
 							@Override
@@ -297,7 +298,7 @@ public class ApplicationView extends View {
 		} else if(event.getType() == AppEvents.ShowInteractiveMode){
 			showInteractivePanel();
 		} else if(event.getType() == AppEvents.UpdateResultTable){
-			resultPanel.updateTable();
+			resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), examplesPanel.getNegativeExamplesUris());
 		}
 	}
 	

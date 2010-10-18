@@ -8,6 +8,14 @@
 	
 	}
 	
+	.row-Style-Positive{
+		background-color: green;
+	}
+	
+	.row-Style-Negative{ 
+		background-color: red;
+	}
+	
 	.x-grid3-row td.x-grid3-cell{
 		vertical-align: middle;
 	}
