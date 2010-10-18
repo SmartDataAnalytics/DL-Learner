@@ -73,6 +73,9 @@
 				<artifactId>gwt-maven-plugin</artifactId>
 				<executions>
 					<execution>
+                        <configuration>
+                            <module>org.dllearner.autosparql.Application</module>
+                        </configuration>
 						<goals>
 							<goal>compile</goal>
 <!--							<goal>generateAsync</goal>-->
@@ -80,9 +83,7 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<module>org.dllearner.autosparql.Application</module>
-				</configuration>
+
 			</plugin>
 			<!-- If you want to use the target/web.xml file mergewebxml produces, 
 				tell the war plugin to use it. Also, exclude what you want from the final 
