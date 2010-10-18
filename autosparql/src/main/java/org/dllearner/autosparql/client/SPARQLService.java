@@ -21,6 +21,8 @@ public interface SPARQLService extends RemoteService{
 	
 	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;
 	
+	String getCurrentQuery() throws SPARQLQueryException;
+	
 	void setEndpoint(Endpoint endpoint);
 	
 	List<Endpoint> getEndpoints();

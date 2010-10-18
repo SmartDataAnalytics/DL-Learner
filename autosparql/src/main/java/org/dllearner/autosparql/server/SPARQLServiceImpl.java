@@ -61,24 +61,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 //		getExampleFinder().setEndpoint(endpoint);
 	}
 	
-	private SparqlEndpoint getEndpoint(){
-		SparqlEndpoint endpoint = (SparqlEndpoint) getSession().getAttribute(ENDPOINT);
-		return endpoint;
-	}
-	
-	private ExampleFinder getExampleFinder(){
-		ExampleFinder exFinder = (ExampleFinder) getSession().getAttribute(EXAMPLE_FINDER);
-		if(exFinder == null){
-			exFinder = new ExampleFinder(getEndpoint(), selectCache, constructCache);
-			getSession().setAttribute(EXAMPLE_FINDER, exFinder);
-		}
-		return exFinder;
-	}
-	
-	private HttpSession getSession(){
-		return getThreadLocalRequest().getSession();
-	}
-
 	@Override
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException{
@@ -135,23 +117,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		return result;
 	}
 	
-	private String modifyQuery(String query){
-		String newQuery = query.replace("SELECT ?x0 WHERE {", 
-				"SELECT DISTINCT ?x0 ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.");
-	
-		
-		return newQuery;
-	}
-	
-	private String getCountQuery(String query){
-		String newQuery = query.replace("SELECT ?x0", 
-				"SELECT COUNT(DISTINCT ?x0)");
-		newQuery = newQuery.substring(0, newQuery.indexOf('}') + 1);
-		System.out.println("COUNT query: " + newQuery);
-		
-		return newQuery;
-	}
-
 	@Override
 	public void setEndpoint(Endpoint endpoint) {
 		switch(endpoint.getID()){
@@ -176,5 +141,43 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		
 		return endpoints;
 	}
+
+	@Override
+	public String getCurrentQuery() throws SPARQLQueryException {
+		return getExampleFinder().getCurrentQueryHTML();
+	}
 	
+	private String modifyQuery(String query){
+		String newQuery = query.replace("SELECT ?x0 WHERE {", 
+				"SELECT DISTINCT ?x0 ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.");
+		
+		return newQuery;
+	}
+	
+	private SparqlEndpoint getEndpoint(){
+		SparqlEndpoint endpoint = (SparqlEndpoint) getSession().getAttribute(ENDPOINT);
+		return endpoint;
+	}
+	
+	private ExampleFinder getExampleFinder(){
+		ExampleFinder exFinder = (ExampleFinder) getSession().getAttribute(EXAMPLE_FINDER);
+		if(exFinder == null){
+			exFinder = new ExampleFinder(getEndpoint(), selectCache, constructCache);
+			getSession().setAttribute(EXAMPLE_FINDER, exFinder);
+		}
+		return exFinder;
+	}
+	
+	private HttpSession getSession(){
+		return getThreadLocalRequest().getSession();
+	}
+	
+	private String getCountQuery(String query){
+		String newQuery = query.replace("SELECT ?x0", 
+				"SELECT COUNT(DISTINCT ?x0)");
+		newQuery = newQuery.substring(0, newQuery.indexOf('}') + 1);
+		
+		return newQuery;
+	}
+
 }

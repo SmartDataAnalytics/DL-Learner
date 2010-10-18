@@ -28,6 +28,8 @@ public class ExampleFinder {
 	
 	private String currentQuery;
 	
+	private QueryTree<String> currentQueryTree;
+	
 	public ExampleFinder(SparqlEndpoint endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
@@ -87,8 +89,11 @@ public class ExampleFinder {
 		logger.info("USING GENERALISATION");
 		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString(true));
 		Generalisation<String> generalisation = new Generalisation<String>();
+		
 		QueryTree<String> genTree = generalisation.generalise(tree);
+		
 		currentQuery = genTree.toSPARQLQueryString(true);
+		currentQueryTree = genTree;
 		logger.info("QUERY AFTER GENERALISATION: \n\n" + currentQuery);
 		
 		currentQuery = currentQuery + " ORDER BY ?x0 LIMIT 10";
@@ -199,5 +204,9 @@ public class ExampleFinder {
 	
 	public String getCurrentQuery(){
 		return currentQuery;
+	}
+	
+	public String getCurrentQueryHTML(){
+		return encodeHTML(currentQuery);
 	}
 }

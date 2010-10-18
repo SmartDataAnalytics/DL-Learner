@@ -39,6 +39,8 @@ public class Filter {
 		filters.add("http://dbpedia.org/property/pageId");
 		filters.add("http://dbpedia.org/property/revisionId");
 		filters.add("http://dbpedia.org/ontology/abstract");
+		filters.add("http://dbpedia.org/ontology/thumbnail");
+		filters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		
 		return filters;
 	}
@@ -58,7 +60,8 @@ public class Filter {
 		List<String> filters = new ArrayList<String>();
 		
 		filters.add("http://purl.org/dc/elements/1.1/language");
-		
+		filters.add("http://purl.org/dc/elements/1.1/rights");
+			
 		return filters;
 	}
 	

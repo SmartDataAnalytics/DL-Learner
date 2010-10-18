@@ -22,6 +22,8 @@ public interface SPARQLServiceAsync
     
     void getCurrentQueryResult(PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);
     
+    void getCurrentQuery(AsyncCallback<String> callback);
+    
     void setEndpoint(Endpoint endpoint, AsyncCallback<Void> callback);
 	
 	void getEndpoints(AsyncCallback<List<Endpoint>> callback);
