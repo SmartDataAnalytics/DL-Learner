@@ -20,6 +20,7 @@
 package org.dllearner.sparqlquerygenerator.operations.nbr;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -57,26 +58,26 @@ public class NBRGeneratorImpl<N> implements NBRGenerator<N>{
 	}
 
 	@Override
-	public Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
 			QueryTree<N> negExampleTree) {
 		return strategy.computeNBRs(posExampleTree, Collections.singleton(negExampleTree));
 	}
 
 	@Override
-	public Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
 		return strategy.computeNBRs(posExampleTree, negExampleTrees);
 	}
 
 	@Override
-	public Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
 			QueryTree<N> negExampleTree, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees, int limit) {
 		// TODO Auto-generated method stub
 		return null;
