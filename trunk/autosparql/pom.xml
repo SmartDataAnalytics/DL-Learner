@@ -14,30 +14,17 @@
 	<name>AutoSPARQL</name>
 	<version>${dllearner.version}</version>
 
-	<properties>
-
-		<!-- convenience to define GWT version in one place -->
-		<gwt.version>2.0.4</gwt.version>
-
-		<!-- tell the compiler we can use 1.6 -->
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
-
-	</properties>
-
 	<dependencies>
 
 		<!-- GWT dependencies (from central repo) -->
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
-			<version>${gwt.version}</version>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -45,7 +32,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -69,7 +55,6 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -89,7 +74,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>1.2</version>
 				<executions>
 					<execution>
 						<goals>
@@ -101,7 +85,6 @@
 				</executions>
 				<configuration>
 					<runTarget>org.dllearner.autosparql.Application/Application.html</runTarget>
-                    <localWorkers/>
 				</configuration>
 			</plugin>
 			<!-- If you want to use the target/web.xml file mergewebxml produces, 

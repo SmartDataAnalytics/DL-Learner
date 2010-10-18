@@ -17,6 +17,8 @@
         <dllearner.version>1.0-SNAPSHOT</dllearner.version>
         <protege.version>1.0-SNAPSHOT</protege.version>
         <evalplugin.version>1.0-SNAPSHOT</evalplugin.version>
+        <!-- convenience to define GWT version in one place -->
+        <gwt.version>2.0.4</gwt.version>
     </properties>
 
     <modules>
@@ -90,6 +92,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>gwt-maven-plugin</artifactId>
+                    <version>1.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -290,6 +297,17 @@
                  <version>1.2.143</version>
             </dependency>
 
+            <!--GWT Dependencies-->
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-servlet</artifactId>
+                <version>${gwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-user</artifactId>
+                <version>${gwt.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
