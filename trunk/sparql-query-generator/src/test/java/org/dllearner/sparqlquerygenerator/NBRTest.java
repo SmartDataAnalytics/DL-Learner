@@ -19,6 +19,7 @@
  */
 package org.dllearner.sparqlquerygenerator;
 
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -109,7 +110,7 @@ public class NBRTest {
 			cnt++;
 		}
 		
-		Set<QueryTree<String>> nbrs = nbrGenerator.getNBRs(lgg, negExampleTrees);
+		List<QueryTree<String>> nbrs = nbrGenerator.getNBRs(lgg, negExampleTrees);
 		cnt = 1;
 		for(QueryTree<String> tree : nbrs){
 			System.out.println("NBR " + cnt);

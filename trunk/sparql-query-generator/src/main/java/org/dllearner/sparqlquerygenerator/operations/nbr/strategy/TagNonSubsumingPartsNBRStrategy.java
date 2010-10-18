@@ -19,6 +19,7 @@
  */
 package org.dllearner.sparqlquerygenerator.operations.nbr.strategy;
 
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -45,7 +46,7 @@ public class TagNonSubsumingPartsNBRStrategy<N> implements NBRStrategy<N>{
 	}
 
 	@Override
-	public Set<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
 		// TODO Auto-generated method stub
 		return null;

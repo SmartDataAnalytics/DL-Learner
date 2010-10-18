@@ -21,7 +21,7 @@ public class Endpoint extends BaseModel{
 	}
 	
 	public int getID(){
-		return get("id");
+		return (Integer)get("id");
 	}
 
 }

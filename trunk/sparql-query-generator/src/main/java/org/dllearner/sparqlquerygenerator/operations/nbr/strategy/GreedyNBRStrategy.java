@@ -52,7 +52,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	}
 
 	@Override
-	public Set<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
 		// TODO Auto-generated method stub
 		return null;

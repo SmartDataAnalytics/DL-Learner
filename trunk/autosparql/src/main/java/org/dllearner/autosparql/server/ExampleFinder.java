@@ -193,6 +193,10 @@ public class ExampleFinder {
 		return out.toString();
 	}
 	
+	public void setEndpoint(SparqlEndpoint endpoint){
+		this.endpoint = endpoint;
+	}
+	
 	public String getCurrentQuery(){
 		return currentQuery;
 	}

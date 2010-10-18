@@ -58,6 +58,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public void setEndpoint(SparqlEndpoint endpoint){
 		getSession().setAttribute(ENDPOINT, endpoint);
+//		getExampleFinder().setEndpoint(endpoint);
 	}
 	
 	private SparqlEndpoint getEndpoint(){
@@ -136,7 +137,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private String modifyQuery(String query){
 		String newQuery = query.replace("SELECT ?x0 WHERE {", 
-				"SELECT ?x0 ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.");
+				"SELECT DISTINCT ?x0 ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.");
 	
 		
 		return newQuery;

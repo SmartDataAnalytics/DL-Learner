@@ -19,8 +19,10 @@
  */
 package org.dllearner.sparqlquerygenerator.operations.nbr.strategy;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -80,7 +82,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	}
 
 	@Override
-	public Set<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
+	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
 			Set<QueryTree<N>> negExampleTrees) {
 		logger.info("Making NBR on");
 		logger.info(posExampleTree.getStringRepresentation());
@@ -91,10 +93,10 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 		
 		if(subsumesTrees(posExampleTree, negExampleTrees)){
 			logger.info("Warning: Positive example already covers all negative examples. Skipping NBR computation...");
-			return Collections.singleton(posExampleTree);
+			return Collections.singletonList(posExampleTree);
 		}
 		
-		Set<QueryTree<N>> nbrs = new HashSet<QueryTree<N>>();
+		List<QueryTree<N>> nbrs = new ArrayList<QueryTree<N>>();
 		
 		compute(posExampleTree, negExampleTrees, nbrs);
 		
@@ -102,7 +104,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	}
 	
 	private void compute(QueryTree<N> posExampleTree,
-			Set<QueryTree<N>> negExampleTrees, Set<QueryTree<N>> nbrs) {
+			Set<QueryTree<N>> negExampleTrees, List<QueryTree<N>> nbrs) {
 		
 		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
 		if(subsumesTrees(posExampleTree, negExampleTrees)){

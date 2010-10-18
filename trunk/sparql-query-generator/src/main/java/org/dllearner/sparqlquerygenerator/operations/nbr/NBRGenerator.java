@@ -19,6 +19,7 @@
  */
 package org.dllearner.sparqlquerygenerator.operations.nbr;
 
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -34,13 +35,13 @@ public interface NBRGenerator<N> {
 	
 	QueryTree<N> getNBR(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees);
 	
-	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree);
+	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree);
 	
-	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees);
+	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees);
 	
-	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree, int limit);
+	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree, int limit);
 	
-	Set<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees, int limit);
+	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees, int limit);
 	
 
 }
