@@ -67,7 +67,6 @@
 	</dependencies>
 
 	<build>
-		<outputDirectory>war/WEB-INF/classes</outputDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -82,8 +81,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<runTarget>org.dllearner.autosparql.Application/Application.html</runTarget>
-                    <localWorkers>1</localWorkers>
+					<module>org.dllearner.autosparql.Application</module>
 				</configuration>
 			</plugin>
 			<!-- If you want to use the target/web.xml file mergewebxml produces, 
