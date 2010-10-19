@@ -20,10 +20,12 @@
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
+            <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
+            <scope>provided</scope>
 		</dependency>
 
 		<!-- test -->
@@ -79,7 +81,7 @@
 						<goals>
 							<goal>compile</goal>
 <!--							<goal>generateAsync</goal>-->
-							<goal>test</goal>
+							<!--<goal>test</goal>-->
 						</goals>
 					</execution>
 				</executions>
