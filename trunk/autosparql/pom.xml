@@ -85,6 +85,10 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+                            <runTarget>org.dllearner.autosparql.Application/Application.html</runTarget>
+                            <webXml>org.dllearner.autosparql.Application/WEB-INF/web.xml</webXml>
+                        </configuration>
 
 			</plugin>
 			<!-- If you want to use the target/web.xml file mergewebxml produces, 
