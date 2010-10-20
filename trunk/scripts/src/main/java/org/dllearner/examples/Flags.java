@@ -36,10 +36,12 @@ import java.util.HashMap;
  */
 public class Flags {
 
-	private static final String flagDataPath = "C:/temp/Uni/Semantic Web Praktikum 10/flag.data";
+	private static final String flagDataPath = "E:/temp/flag.data";
 	//private static final String flagNamesPath = "D:/Dokumente/Uni/Semantic Web Praktikum 10/flag.names";
-	private static final String kbOutputPath = "D:/Dokumente/develop/java/eclipseWorkspace/DL-Learner/examples/flags/flag.owl";
+	private static final String kbOutputPath = "E:/temp/flag.owl";
 	private static final String dataSeparator = ",";
+	private static final String dbPediaIri = "http://DBpedia.org/resource";
+	private static final String dbPediaOntoIri = "http://DBpedia.org/ontology";
 	//private static String ontoIri = "http://www.semanticweb.org/owlapi/ontologies/uniLpz/semWeb";
 	
 	/*private static final String ontoFlagClassName = "Flag";
@@ -82,15 +84,15 @@ public class Flags {
 	private static NamedClass Religion 						= new NamedClass(getIRI(ontoReligionClassName));
 	private static NamedClass ReligionGroup 				= new NamedClass(getIRI(ontoReligionGroupClassName));
 	private static NamedClass Color 						= new NamedClass(getIRI(ontoColorClassName));*/
-	private static NamedClass Flag 							= new NamedClass(getIRI("Flag"));		
-	private static NamedClass Country 						= new NamedClass(getIRI("Country"));
-	private static NamedClass Landmass 						= new NamedClass(getIRI("Landmass"));
+	private static NamedClass Flag 							= new NamedClass(getIRI("Flag",dbPediaIri,"/"));		
+	private static NamedClass Country 						= new NamedClass(getIRI("Country",dbPediaIri,"/"));
+	private static NamedClass Landmass 						= new NamedClass(getIRI("Continent",dbPediaOntoIri,"/"));
 	private static NamedClass Hemisphere 					= new NamedClass(getIRI("Hemisphere"));
-	private static NamedClass Language 						= new NamedClass(getIRI("Language"));
+	private static NamedClass Language 						= new NamedClass(getIRI("Language",dbPediaIri,"/"));
 	private static NamedClass LanguageGroup 				= new NamedClass(getIRI("LanguageGroup"));
-	private static NamedClass Religion 						= new NamedClass(getIRI("Religion"));
+	private static NamedClass Religion 						= new NamedClass(getIRI("Religion",dbPediaIri,"/"));
 	private static NamedClass ReligionGroup 				= new NamedClass(getIRI("ReligionGroup"));
-	private static NamedClass Color 						= new NamedClass(getIRI("Color"));
+	private static NamedClass Color 						= new NamedClass(getIRI("Color",dbPediaIri,"/"));
 	
 	// Objektbeziehungen
 	private static ObjectProperty isFlagOf 					= new ObjectProperty(getIRI("isFlagOf"));
@@ -131,12 +133,12 @@ public class Flags {
 	private static DatatypeProperty hasImageAnimate 		= new DatatypeProperty(getIRI("hasImageAnimate"));
 	private static DatatypeProperty hasText 				= new DatatypeProperty(getIRI("hasText"));
 
-	private static Individual landmassNorthAmerica 			= new Individual(getIRI(ontoLandmassClassName + "NorthAmerica"));
-	private static Individual landmassSouthAmerica 			= new Individual(getIRI(ontoLandmassClassName + "SouthAmerica"));
-	private static Individual landmassEurope 				= new Individual(getIRI(ontoLandmassClassName + "Europe"));
-	private static Individual landmassAfrica 				= new Individual(getIRI(ontoLandmassClassName + "Africa"));
-	private static Individual landmassAsia					= new Individual(getIRI(ontoLandmassClassName + "Asia"));
-	private static Individual landmassOceania 				= new Individual(getIRI(ontoLandmassClassName + "Oceania"));
+	private static Individual landmassNorthAmerica 			= new Individual(getIRI(ontoLandmassClassName + "North_America",dbPediaIri,"/"));
+	private static Individual landmassSouthAmerica 			= new Individual(getIRI(ontoLandmassClassName + "South_America",dbPediaIri,"/"));
+	private static Individual landmassEurope 				= new Individual(getIRI(ontoLandmassClassName + "Europe",dbPediaIri,"/"));
+	private static Individual landmassAfrica 				= new Individual(getIRI(ontoLandmassClassName + "Africa",dbPediaIri,"/"));
+	private static Individual landmassAsia					= new Individual(getIRI(ontoLandmassClassName + "Asia",dbPediaIri,"/"));
+	private static Individual landmassOceania 				= new Individual(getIRI(ontoLandmassClassName + "Australia_(continent)",dbPediaIri,"/"));
 	
 	private static Individual hemisphereNorthEast			= new Individual(getIRI(ontoHemisphereClassName + "NorthEast"));
 	private static Individual hemisphereSouthEast			= new Individual(getIRI(ontoHemisphereClassName + "SouthEast"));
@@ -356,19 +358,19 @@ public class Flags {
 		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassNorthAmerica, "North America"));
 //		Individual landmassSouthAmerica 		= new Individual(getIRI(ontoLandmassClassName + "SouthAmerica"));
 		kb.addAxiom(new ClassAssertionAxiom(Landmass,landmassSouthAmerica));
-		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassNorthAmerica, "South America"));
+		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassSouthAmerica, "South America"));
 //		Individual landmassEurope 				= new Individual(getIRI(ontoLandmassClassName + "Europe"));
 		kb.addAxiom(new ClassAssertionAxiom(Landmass,landmassEurope));
-		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassNorthAmerica, "Europe"));
+		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassEurope, "Europe"));
 //		Individual landmassAfrica 				= new Individual(getIRI(ontoLandmassClassName + "Africa"));
 		kb.addAxiom(new ClassAssertionAxiom(Landmass,landmassAfrica));
-		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassNorthAmerica, "Africa"));
+		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassAfrica, "Africa"));
 //		Individual landmassAsia					= new Individual(getIRI(ontoLandmassClassName + "Asia"));
 		kb.addAxiom(new ClassAssertionAxiom(Landmass,landmassAsia));
-		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassNorthAmerica, "Asia"));
+		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassAsia, "Asia"));
 //		Individual landmassOceania 				= new Individual(getIRI(ontoLandmassClassName + "Oceania"));
 		kb.addAxiom(new ClassAssertionAxiom(Landmass,landmassOceania));
-		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassNorthAmerica, "Oceania"));
+		kb.addAxiom(new StringDatatypePropertyAssertion(hasName, landmassOceania, "Oceania"));
 		
 		
 //		Individual hemisphereNorthEast			= new Individual(getIRI(ontoHemisphereClassName + "NorthEast"));
@@ -736,8 +738,17 @@ public class Flags {
 		return /*ontoIri*/"http://www.semanticweb.org/owlapi/ontologies/uniLpz/semWeb" + iriSeperator + name;
 	}
 	
+	private static String getIRI(String name, String prefix) {		
+		return prefix + iriSeperator + name;
+	}
+	
+	private static String getIRI(String name, String prefix, String seperator) {		
+		return prefix + seperator + name;
+	}
+	
 	public static void main(String[] args) {
 		Flags.createKB();
+		System.out.println("done.");
 	}	
 
 }
