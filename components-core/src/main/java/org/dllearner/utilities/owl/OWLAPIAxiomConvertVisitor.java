@@ -351,7 +351,14 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 */
 	@Override
 	public void visit(StringDatatypePropertyAssertion axiom) {
-		throw new UnsupportedOperationException("String datatype conversion not implemented");
+		//throw new UnsupportedOperationException("String datatype conversion not implemented");
+		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(axiom.getIndividual().getName()));
+		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getDatatypeProperty().getName()));
+		String value = axiom.getValue();
+		OWLDatatype stringType = factory.getOWLDatatype(IRI.create("http://www.w3.org/2001/XMLSchema#string"));
+		OWLTypedLiteral valueConstant = factory.getOWLTypedLiteral(value.toString(), stringType);
+		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
+		addAxiom(axiomOWLAPI);
 	}
 
 }
