@@ -30,6 +30,7 @@ import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.util.Filter;
 
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -87,7 +88,16 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					continue;
 				}
 				if(st.getObject().isLiteral()){
-					tree.addChild(new QueryTreeImpl<String>(st.getObject().asLiteral().getLexicalForm()), st.getPredicate().toString());
+					Literal lit = st.getLiteral();
+					StringBuilder sb = new StringBuilder();
+					sb.append("\"").append(lit.getLexicalForm()).append("\"");
+					if(lit.getDatatypeURI() != null){
+						sb.append("^^<").append(lit.getDatatypeURI()).append(">");
+					}
+					if(!lit.getLanguage().isEmpty()){
+						sb.append("@").append(lit.getLanguage());
+					}
+					tree.addChild(new QueryTreeImpl<String>(sb.toString()), st.getPredicate().toString());
 				} else {
 					if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 						subTree = new QueryTreeImpl<String>(st.getObject().toString());

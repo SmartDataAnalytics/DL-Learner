@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
@@ -27,6 +28,8 @@ public class ModelGenerator {
 	
 	private static final int CHUNK_SIZE = 1000;
 	
+	private ExtractionDBCache cache;
+	
 	public enum Strategy{
 		INCREMENTALLY,
 		CHUNKS
@@ -34,6 +37,11 @@ public class ModelGenerator {
 	
 	public ModelGenerator(SparqlEndpoint endpoint){
 		this.endpoint = endpoint;
+	}
+	
+	public ModelGenerator(SparqlEndpoint endpoint, ExtractionDBCache cache){
+		this.endpoint = endpoint;
+		this.cache = cache;
 	}
 	
 	public ModelGenerator(String endpointURL){
