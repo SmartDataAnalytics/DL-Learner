@@ -19,6 +19,10 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
+
 public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLService{
 
 	/**
@@ -86,14 +90,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		int totalLength = 10;
 		
 		try {
-			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), getCountQuery(currentQuery)));
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), getCountQuery(currentQuery)));
 			totalLength = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), modifyQuery(currentQuery + " OFFSET " + offset)));
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), modifyQuery(currentQuery + " OFFSET " + offset)));
 			
 			String uri;
 			String label = "";

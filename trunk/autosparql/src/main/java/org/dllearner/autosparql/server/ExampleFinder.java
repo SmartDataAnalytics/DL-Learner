@@ -1,6 +1,6 @@
 package org.dllearner.autosparql.server;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,22 +9,30 @@ import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 
 public class ExampleFinder {
 	
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache selectCache;
-	private ExtractionDBCache constructCache;
+	private org.dllearner.kb.sparql.ExtractionDBCache constructCache;
 	
 	private List<String> posExamples;
 	private List<String> negExamples;
 	
 	private static final Logger logger = Logger.getLogger(ExampleFinder.class);
+	
+	private static final int RECURSION_DEPTH = 2;
 	
 	private String currentQuery;
 	
@@ -41,49 +49,63 @@ public class ExampleFinder {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
+		ModelGenerator modelGen = new ModelGenerator(endpoint, constructCache);
+		QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, endpoint, 5000);
+		
+		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
+		List<QueryTree<String>> negExampleTrees = new ArrayList<QueryTree<String>>();
+		
+		Model model;
+		for(String resource : posExamples){
+			model = modelGen.createModel(resource, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
+			posExampleTrees.add(treeGen.getQueryTree(resource, model));
+		}
+		for(String resource : negExamples){
+			model = modelGen.createModel(resource, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
+			negExampleTrees.add(treeGen.getQueryTree(resource, model));
+		}
+		
 		if(posExamples.size() == 1 && negExamples.isEmpty()){
-			QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, endpoint, 5000);
-			QueryTree<String> tree = treeGen.getQueryTree(posExamples.get(0));
-			return findExampleByGeneralisation(tree);
+			return findExampleByGeneralisation(posExampleTrees.get(0));
 		} else {
-			return findExampleByLGG(posExamples, negExamples);
+			return findExampleByLGG(posExampleTrees, negExampleTrees);
 		}
 		
 	}
 	
-	private Example findExampleByGeneralisation(List<String> posExamples,
-			List<String> negExamples) throws SPARQLQueryException{
-		logger.info("USING GENERALISATION");
-		
-		QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, endpoint, 5000);
-		QueryTree<String> tree = treeGen.getQueryTree(posExamples.get(0));
-		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString());
-		Generalisation<String> generalisation = new Generalisation<String>();
-		QueryTree<String> genTree = generalisation.generalise(tree);
-		String query = genTree.toSPARQLQueryString();
-		logger.info("QUERY AFTER GENERALISATION: \n\n" + query);
-		
-		query = query + " LIMIT 10";
-		String result = "";
-		try {
-			result = selectCache.executeSelectQuery(endpoint, query);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SPARQLQueryException(e, encodeHTML(query));
-		}
-		
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
-		String uri;
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			uri = qs.getResource("x0").getURI();
-			if(!posExamples.contains(uri) && !negExamples.contains(uri)){
-				return getExample(uri);
-			}
-		}
-		return null;
-	}
+//	private Example findExampleByGeneralisation(List<String> posExamples,
+//			List<String> negExamples) throws SPARQLQueryException{
+//		logger.info("USING GENERALISATION");
+//		
+//		QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, endpoint, 5000);
+//		QueryTree<String> tree = treeGen.getQueryTree(posExamples.get(0));
+//		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString());
+//		Generalisation<String> generalisation = new Generalisation<String>();
+//		QueryTree<String> genTree = generalisation.generalise(tree);
+//		String query = genTree.toSPARQLQueryString();
+//		logger.info("QUERY AFTER GENERALISATION: \n\n" + query);
+//		
+//		query = query + " LIMIT 10";
+//		String result = "";
+//		try {
+//			result = selectCache.executeSelectQuery(endpoint, query);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			throw new SPARQLQueryException(e, encodeHTML(query));
+//		}
+//		
+//		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
+//		String uri;
+//		QuerySolution qs;
+//		while(rs.hasNext()){
+//			qs = rs.next();
+//			uri = qs.getResource("x0").getURI();
+//			if(!posExamples.contains(uri) && !negExamples.contains(uri)){
+//				return getExample(uri);
+//			}
+//		}
+//		return null;
+//	}
 	
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
 		logger.info("USING GENERALISATION");
@@ -105,7 +127,7 @@ public class ExampleFinder {
 			throw new SPARQLQueryException(e, encodeHTML(currentQuery));
 		}
 		
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -119,10 +141,57 @@ public class ExampleFinder {
 		return findExampleByGeneralisation(genTree);
 	}
 
-	private Example findExampleByLGG(List<String> posExamples,
-			List<String> negExamples) throws SPARQLQueryException{
+//	private Example findExampleByLGG(List<String> posExamples,
+//			List<String> negExamples) throws SPARQLQueryException{
+//		logger.info("USING LGG");
+//		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpoint.getURL().toString());
+//		if(negExamples.isEmpty()){
+//			logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
+//			List<QueryTree<String>> trees = gen.getSPARQLQueryTrees(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
+//			return findExampleByGeneralisation(trees.get(0));
+//		}
+//		
+//		List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
+//		for(String query : queries){
+//			logger.info("Trying query");
+//			currentQuery = query + " LIMIT 10";
+//			logger.info(query);
+//			String result = "";
+//			try {
+//				result = selectCache.executeSelectQuery(endpoint, currentQuery);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				throw new SPARQLQueryException(e, encodeHTML(query));
+//			}
+//			
+//			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
+//			String uri;
+//			QuerySolution qs;
+//			while(rs.hasNext()){
+//				qs = rs.next();
+//				uri = qs.getResource("x0").getURI();
+//				if(!posExamples.contains(uri) && !negExamples.contains(uri)){
+//					return getExample(uri);
+//				}
+//			}
+//			logger.info("Query result contains no new examples. Trying another query...");
+//		}
+//		logger.info("None of the queries contained a new example.");
+//		logger.info("Changing to Generalisation...");
+//		return findExampleByGeneralisation(gen.getLastLGG());
+//	}
+	
+	private Example findExampleByLGG(List<QueryTree<String>> posExamples,
+			List<QueryTree<String>> negExamples) throws SPARQLQueryException{
+		logger.info("USING LGG");
 		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpoint.getURL().toString());
-		List<String> queries = gen.getSPARQLQueries(new HashSet<String>(posExamples), new HashSet<String>(negExamples));
+		if(negExamples.isEmpty()){
+			logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
+			List<QueryTree<String>> trees = gen.getSPARQLQueryTrees(posExamples, negExamples);
+			return findExampleByGeneralisation(trees.get(0));
+		}
+		
+		List<String> queries = gen.getSPARQLQueries(posExamples, negExamples);
 		for(String query : queries){
 			logger.info("Trying query");
 			currentQuery = query + " LIMIT 10";
@@ -135,7 +204,7 @@ public class ExampleFinder {
 				throw new SPARQLQueryException(e, encodeHTML(query));
 			}
 			
-			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(result);
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 			String uri;
 			QuerySolution qs;
 			while(rs.hasNext()){
@@ -167,7 +236,7 @@ public class ExampleFinder {
 		sb.append("FILTER(LANGMATCHES(LANG(?label),'en'))\n");
 		sb.append("}");
 		
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, sb.toString()));
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, sb.toString()));
 		QuerySolution qs = rs.next();
 		
 		String label = qs.getLiteral("label").getLexicalForm();

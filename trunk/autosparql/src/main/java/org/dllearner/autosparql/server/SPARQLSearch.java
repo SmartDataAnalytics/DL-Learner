@@ -3,16 +3,17 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.ws.http.HTTPException;
-
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 
-import com.google.gwt.core.client.GWT;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 
 public class SPARQLSearch {
 	
@@ -29,7 +30,7 @@ public class SPARQLSearch {
 		List<Example> searchResult = new ArrayList<Example>();
 		
 		String query = buildSearchQuery(searchTerm, limit, offset);
-		ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		
 		
 		String uri;
@@ -52,7 +53,7 @@ public class SPARQLSearch {
 		String query = buildCountQuery(searchTerm);
 		int cnt = 0;
 		try {
-			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 			cnt = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,7 +66,7 @@ public class SPARQLSearch {
 		
 		String query = buildSearchQuery(searchTerm, limit, offset);
 		try {
-			ResultSetRewindable rs = ExtractionDBCache.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 			
 			
 			String uri;
