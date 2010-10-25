@@ -9,6 +9,9 @@ import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+
 public class QueryTreeGenerator {
 	
 	private ExtractionDBCache cache;
@@ -26,6 +29,12 @@ public class QueryTreeGenerator {
 		this.maxTreeSize = maxTreeSize;
 		
 		factory = new QueryTreeFactoryImpl();
+	}
+	
+	public QueryTree<String> getQueryTree(String uri, Model model){
+		QueryTree<String> tree = factory.getQueryTree(uri, model);
+		
+		return tree;
 	}
 	
 	public QueryTree<String> getQueryTree(String uri){
