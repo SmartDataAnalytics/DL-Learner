@@ -116,7 +116,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>org/dllearner/sparqlquerygenerator/NBRTest.java</exclude>
+						<exclude>org/dllearner/autosparql/server/CacheTest.java</exclude>
+						<exclude>org/dllearner/autosparql/server/ExampleFinderTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
