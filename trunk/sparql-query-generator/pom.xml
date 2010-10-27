@@ -20,6 +20,9 @@
                 <configuration>
                     <excludes>
                         <exclude>org/dllearner/sparqlquerygenerator/NBRTest.java</exclude>
+                        <exclude>org/dllearner/sparqlquerygenerator/ModelCreationTest.java</exclude>
+                        <exclude>org/dllearner/sparqlquerygenerator/GeneralisationTest.java</exclude>
+                        <exclude>org/dllearner/sparqlquerygenerator/DBPediaTestScript.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
