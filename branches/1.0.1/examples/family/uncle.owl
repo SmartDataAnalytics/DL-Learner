@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/foo"
+    xmlns:a="http://localhost/foo#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about=""/>
+
+<owl:Class rdf:about="&owl;Nothing">
+    <owl:equivalentClass>
+        <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+                <owl:Class rdf:about="#male"/>
+                <owl:Class rdf:about="#female"/>
+            </owl:intersectionOf>
+        </owl:Class>
+    </owl:equivalentClass>
+</owl:Class>
+
+<owl:ObjectProperty rdf:ID="hasSibling">
+    <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="married">
+    <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+    <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+</owl:ObjectProperty>
+
+<a:male rdf:ID="alex"/>
+
+<a:male rdf:ID="alfred">
+    <a:hasChild rdf:resource="#hans"/>
+    <a:hasSibling rdf:resource="#heinz"/>
+    <a:hasSibling rdf:resource="#maria"/>
+    <a:married rdf:resource="#katrin"/>
+</a:male>
+
+<a:female rdf:ID="anna">
+    <a:hasChild rdf:resource="#alfred"/>
+    <a:hasChild rdf:resource="#heinz"/>
+    <a:hasChild rdf:resource="#maria"/>
+    <a:married rdf:resource="#jan"/>
+</a:female>
+
+<a:female rdf:ID="hanna">
+    <a:hasChild rdf:resource="#jan"/>
+    <a:hasSibling rdf:resource="#alex"/>
+</a:female>
+
+<a:male rdf:ID="hans">
+    <a:married rdf:resource="#johanna"/>
+</a:male>
+
+<a:male rdf:ID="heinrich">
+    <a:married rdf:resource="#susi"/>
+</a:male>
+
+<a:male rdf:ID="heinz">
+    <a:hasSibling rdf:resource="#maria"/>
+</a:male>
+
+<a:male rdf:ID="jan">
+    <a:hasChild rdf:resource="#alfred"/>
+    <a:hasChild rdf:resource="#heinz"/>
+    <a:hasChild rdf:resource="#maria"/>
+</a:male>
+
+<a:female rdf:ID="johanna">
+    <a:hasSibling rdf:resource="#mandy"/>
+</a:female>
+
+<a:female rdf:ID="katrin">
+    <a:hasChild rdf:resource="#hans"/>
+</a:female>
+
+<a:female rdf:ID="mandy">
+    <a:hasChild rdf:resource="#miriam"/>
+</a:female>
+
+<a:female rdf:ID="maria">
+    <a:hasChild rdf:resource="#markus"/>
+</a:female>
+
+<a:male rdf:ID="markus"/>
+
+<a:female rdf:ID="miriam"/>
+
+<a:female rdf:ID="susi">
+    <a:hasSibling rdf:resource="#anna"/>
+</a:female>
+
+<owl:Class rdf:ID="female"/>
+
+<owl:Class rdf:ID="male"/>
+
+<owl:ObjectProperty rdf:ID="hasChild"/>
+
+</rdf:RDF>

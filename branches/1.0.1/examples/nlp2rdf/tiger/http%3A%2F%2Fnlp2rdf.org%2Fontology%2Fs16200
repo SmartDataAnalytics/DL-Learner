@@ -1,0 +1,503 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.1="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w3_stimmte">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>stimmte</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w2_Repr%C3%A4sentantenhaus"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w4_auch"/>
+    <j.0:hasLemma>stimmen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax505">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/complexNumeral"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w27_f%C3%BCnf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>fünf</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w26_knapp"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w28_Billionen"/>
+    <j.0:hasLemma>fünf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w25_auf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>auf</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w24_Milliarden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w26_knapp"/>
+    <j.0:hasLemma>auf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax515">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w7_einer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einer</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w6_Senat"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w8_von"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w23_67">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>67</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w22_um"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w24_Milliarden"/>
+    <j.0:hasLemma>67</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w0_Nach">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Nach</rdfs:label>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w1_dem"/>
+    <j.0:hasLemma>nach</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w28_Billionen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Billionen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w27_f%C3%BCnf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w29_Dollar"/>
+    <j.0:hasLemma>Billion</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax511">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w10_Regierung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Regierung</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w9_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w11_geforderten"/>
+    <j.0:hasLemma>Regierung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w16_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w15_mit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w17_die"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRELS"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w24_Milliarden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Milliarden</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w23_67"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w25_auf"/>
+    <j.0:hasLemma>Milliarde</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w19_f%C3%BCr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>für</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w18_Obergrenze"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w20_die"/>
+    <j.0:hasLemma>für</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w13_zu">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zu</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w12_%C3%9Cbergangsregelung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w14_%2C"/>
+    <j.0:hasLemma>zu</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKVZ"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w26_knapp">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>knapp</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w25_auf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w27_f%C3%BCnf"/>
+    <j.0:hasLemma>knapp</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax506">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/complexNumeral"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/verbPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#VerbalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w4_auch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>auch</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w3_stimmte"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w5_der"/>
+    <j.0:hasLemma>auch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w9_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w8_von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w10_Regierung"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w5_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w4_auch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w6_Senat"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w17_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w16_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w18_Obergrenze"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax502">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w2_Repr%C3%A4sentantenhaus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Repräsentantenhaus</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w1_dem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w3_stimmte"/>
+    <j.0:hasLemma>Repräsentantenhaus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w30_erh%C3%B6ht">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>erhöht</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w29_Dollar"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w31_wird"/>
+    <j.0:hasLemma>erhöhen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w21_Staatsverschuldung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Staatsverschuldung</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w20_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w22_um"/>
+    <j.0:hasLemma>Staatsverschuldung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w11_geforderten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>geforderten</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w10_Regierung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w12_%C3%9Cbergangsregelung"/>
+    <j.0:hasLemma>gefordert</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w29_Dollar">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Dollar</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w28_Billionen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w30_erh%C3%B6ht"/>
+    <j.0:hasLemma>Dollar</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax512">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/verbPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax513"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w1_dem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>dem</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w0_Nach"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w2_Repr%C3%A4sentantenhaus"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w18_Obergrenze">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Obergrenze</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w17_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w19_f%C3%BCr"/>
+    <j.0:hasLemma>Obergrenze</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/complexNumeral">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w12_%C3%9Cbergangsregelung">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Übergangsregelung</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w11_geforderten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w13_zu"/>
+    <j.0:hasLemma>Übergangsregelung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax507">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/adjectivePhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax503">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKVZ">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/adjectivePhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w14_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w13_zu"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w15_mit"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w31_wird">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wird</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w30_erh%C3%B6ht"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w32_."/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax513"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax513">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRELS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w15_mit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>mit</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w14_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w16_der"/>
+    <j.0:hasLemma>mit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w32_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w31_wird"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w20_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w19_f%C3%BCr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w21_Staatsverschuldung"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax509">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax508">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax513"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w6_Senat">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Senat</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w5_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w7_einer"/>
+    <j.0:hasLemma>Senat</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w32_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w3_stimmte"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w0_Nach"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w7_einer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w16_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w14_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w4_auch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w12_%C3%9Cbergangsregelung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w27_f%C3%BCnf"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w21_Staatsverschuldung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w30_erh%C3%B6ht"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w31_wird"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w1_dem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w24_Milliarden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w19_f%C3%BCr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w17_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w11_geforderten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w13_zu"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w2_Repr%C3%A4sentantenhaus"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w25_auf"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w18_Obergrenze"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w26_knapp"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w9_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w20_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w5_der"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s16200w0_Nach"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w29_Dollar"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w23_67"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w22_um"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w10_Regierung"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w6_Senat"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w8_von"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w15_mit"/>
+    <rdfs:label>Nach dem Repräsentantenhaus stimmte auch der Senat einer von der Regierung geforderten Übergangsregelung zu , mit der die Obergrenze für die Staatsverschuldung um 67 Milliarden auf knapp fünf Billionen Dollar erhöht wird .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s16200w28_Billionen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax504">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w22_um">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>um</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w21_Staatsverschuldung"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w23_67"/>
+    <j.0:hasLemma>um</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax510">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/adjectivePhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200syntax514">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s16200w8_von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>von</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s16200w7_einer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s16200w9_der"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s16200syntax502"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,297 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w14_bei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bei</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w13_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w15_Docter"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w6_Zulieferer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w21_ins"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w4_etwa"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w7_Leibfried"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w1_Pleiten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w9_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w13_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w5_beim"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w12_Dehler"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w15_Docter"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w0_Die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w3_Portfolio"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w18_Roth"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w11_Jachtbauer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w16_Optic"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w20_schwer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w23_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w8_Mahle"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w14_bei"/>
+    <rdfs:label>Die Pleiten im Portfolio etwa beim Zulieferer Leibfried Mahle , dem Jachtbauer Dehler , bei Docter Optic und Roth schlugen schwer ins Kontor .</rdfs:label>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w10_dem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w22_Kontor"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w2_im"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w17_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s41799w19_schlugen"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s41799w0_Die"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w19_schlugen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schlugen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w18_Roth"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w20_schwer"/>
+    <j.0:hasLemma>schlagen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w15_Docter">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Docter</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w14_bei"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w16_Optic"/>
+    <j.0:hasLemma>Docter</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w11_Jachtbauer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Jachtbauer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w10_dem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w12_Dehler"/>
+    <j.0:hasLemma>Jachtbauer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w23_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w22_Kontor"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w0_Die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w1_Pleiten"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w21_ins">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ins</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w20_schwer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w22_Kontor"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w4_etwa">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>etwa</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w3_Portfolio"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w5_beim"/>
+    <j.0:hasLemma>etwa</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w9_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w8_Mahle"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w10_dem"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w1_Pleiten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Pleiten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w0_Die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w2_im"/>
+    <j.0:hasLemma>Pleite</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w18_Roth">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Roth</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w17_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w19_schlugen"/>
+    <j.0:hasLemma>Roth</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w10_dem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>dem</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w9_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w11_Jachtbauer"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w2_im">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>im</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w1_Pleiten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w3_Portfolio"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w13_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w12_Dehler"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w14_bei"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w17_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w16_Optic"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w18_Roth"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w22_Kontor">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kontor</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w21_ins"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w23_."/>
+    <j.0:hasLemma>Kontor</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w20_schwer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schwer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w19_schlugen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w21_ins"/>
+    <j.0:hasLemma>schwer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w5_beim">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>beim</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w4_etwa"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w6_Zulieferer"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w12_Dehler">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Dehler</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w11_Jachtbauer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w13_%2C"/>
+    <j.0:hasLemma>Dehler</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w7_Leibfried">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Leibfried</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w6_Zulieferer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w8_Mahle"/>
+    <j.0:hasLemma>Leibfried</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w8_Mahle">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Mahle</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w7_Leibfried"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w9_%2C"/>
+    <j.0:hasLemma>Mahle</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w6_Zulieferer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Zulieferer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w5_beim"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w7_Leibfried"/>
+    <j.0:hasLemma>Zulieferer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w16_Optic">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Optic</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w15_Docter"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w17_und"/>
+    <j.0:hasLemma>Optic</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s41799w3_Portfolio">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Portfolio</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s41799"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s41799w2_im"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s41799w4_etwa"/>
+    <j.0:hasLemma>Portfolio</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+</rdf:RDF>

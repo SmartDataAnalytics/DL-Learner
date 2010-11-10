@@ -1,0 +1,42 @@
+/** Add css rules here for your application. */
+
+	.row-Style-Odd{
+		background-color: #eaeaea;
+	}
+	
+	.row-Style-Even{
+	
+	}
+	
+	.row-Style-Positive{
+		background-color: green;
+	}
+	
+	.row-Style-Negative{ 
+		background-color: red;
+	}
+	
+	.x-grid3-row td.x-grid3-cell{
+		vertical-align: middle;
+	}
+	
+	#demo-theme {
+  float: right;
+  padding-top: 5px;
+  padding-right: 8px;
+  position: relative;
+}
+
+#demo-title {
+  color: black;
+  font-family: tahoma, arial, sans-serif;
+  font-size: 16px;
+  font-size-adjust: none;
+  font-stretch: normal;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: normal;
+  padding: 6px 0 8px 6px;
+}
+	

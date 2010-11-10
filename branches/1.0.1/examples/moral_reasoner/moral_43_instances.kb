@@ -1,0 +1,1154 @@
+ /***********************
+kb containing all concepts except guilty 
+and only 43 instances
+ 
+ ***********************/
+ 
+
+ 
+/** background knowledge **/
+
+//TARGET concept
+//guilty = (blameworthy OR vicarious_blame ).
+
+
+intend_mental_state = (NOT reckless_mental_state AND (NOT negligent_mental_state AND NOT neither_mental_state)).
+reckless_mental_state = (NOT intend_mental_state AND (NOT negligent_mental_state AND NOT neither_mental_state)).
+negligent_mental_state = (NOT reckless_mental_state AND (NOT intend_mental_state AND NOT neither_mental_state)).
+neither_mental_state = (NOT reckless_mental_state AND (NOT negligent_mental_state AND NOT intend_mental_state)).
+
+
+
+cause = (produce_harm  OR (necessary_for_harm OR sufficient_for_harm)).
+
+
+responsible =  ( cause AND
+		( notaccident AND 
+		(voluntary AND
+  		(foreseeable AND
+  		 NOT intervening_cause)))). 
+
+
+notaccident = (intend_c OR (reckless_c OR negligent_c)).
+
+
+foreseeable = (high_foreseeability OR  low_foreseeability ).
+
+
+reckless_c =    ( reckless_mental_state OR
+
+		( NOT careful		AND
+ 		( high_foreseeability	AND
+		  NOT strong_intend  
+ 		))) .
+
+
+
+negligent_c =   ( negligent_mental_state OR 
+		( NOT  careful	 	AND
+       		( NOT strong_intend  	AND  
+       		  low_foreseeability
+       		))).
+       		
+  		
+
+intend_c = (strong_intend OR weak_intend). 
+
+
+strong_intend = (	intend_mental_state 	 OR
+
+			(  plan_known	 	 AND  
+			(  plan_include_harm 	AND  
+			   harm_caused_as_planned))
+			).
+			
+
+  		
+ weak_intend = 	(	( monitor 		OR 
+  			(benefit_protagonist 	AND 
+  			NOT external_cause  	))
+ 				
+ 				AND 
+		( NOT negligent_c AND 
+		 NOT reckless_c) ). 
+
+
+
+
+voluntary = NOT external_force.
+
+intervening_cause = (    intervening_contribution	 AND
+   			NOT foresee_intervention ).
+
+
+
+vicarious = (   someone_else_cause_harm AND
+		 (  outrank_perpetrator AND
+ 		  control_perpetrator )).
+
+
+blameworthy = 	( responsible   AND   
+		( severity_harm AND 
+		( NOT benefit_victim AND
+		  NOT justified ))). 
+
+
+vicarious_blame = ( vicarious AND 
+		(   severity_harm AND 
+		(   NOT benefit_victim AND
+		   NOT justified ))).
+
+justified=
+  ( achieve_goal	 AND
+  (  goal_outweigh_harm  AND
+  NOT  goal_achieveable_less_harmful)).
+
+
+
+/********************
+  	
+
+  	
+
+
+/**Example**/
+
+NOT sufficient_for_harm(p0).
+produce_harm(p0).
+plan_known(p0).
+plan_include_harm(p0).
+NOT someone_else_cause_harm(p0).
+NOT outrank_perpetrator(p0).
+monitor(p0).
+harm_caused_as_planned(p0).
+goal_outweigh_harm(p0).
+NOT goal_achieveable_less_harmful(p0).
+foresee_intervention(p0).
+NOT external_cause(p0).
+control_perpetrator(p0).
+benefit_protagonist(p0).
+careful(p0).
+NOT benefit_victim(p0).
+severity_harm(p0).
+NOT achieve_goal(p0).
+NOT intervening_contribution(p0).
+high_foreseeability(p0).
+NOT external_force(p0).
+negligent_mental_state(p0).
+necessary_for_harm(p0).
+
+NOT produce_harm(p1).
+NOT plan_known(p1).
+NOT plan_include_harm(p1).
+NOT someone_else_cause_harm(p1).
+outrank_perpetrator(p1).
+NOT necessary_for_harm(p1).
+monitor(p1).
+NOT intervening_contribution(p1).
+harm_caused_as_planned(p1).
+NOT goal_outweigh_harm(p1).
+goal_achieveable_less_harmful(p1).
+NOT external_cause(p1).
+control_perpetrator(p1).
+benefit_protagonist(p1).
+NOT careful(p1).
+NOT benefit_victim(p1).
+severity_harm(p1).
+NOT achieve_goal(p1).
+foresee_intervention(p1).
+high_foreseeability(p1).
+NOT external_force(p1).
+negligent_mental_state(p1).
+sufficient_for_harm(p1).
+
+sufficient_for_harm(p2).
+NOT plan_known(p2).
+NOT plan_include_harm(p2).
+NOT someone_else_cause_harm(p2).
+outrank_perpetrator(p2).
+necessary_for_harm(p2).
+monitor(p2).
+harm_caused_as_planned(p2).
+goal_outweigh_harm(p2).
+NOT goal_achieveable_less_harmful(p2).
+NOT foresee_intervention(p2).
+external_cause(p2).
+control_perpetrator(p2).
+benefit_protagonist(p2).
+NOT careful(p2).
+NOT benefit_victim(p2).
+severity_harm(p2).
+NOT achieve_goal(p2).
+NOT intervening_contribution(p2).
+high_foreseeability(p2).
+NOT external_force(p2).
+negligent_mental_state(p2).
+produce_harm(p2).
+
+sufficient_for_harm(p3).
+produce_harm(p3).
+plan_known(p3).
+plan_include_harm(p3).
+NOT someone_else_cause_harm(p3).
+outrank_perpetrator(p3).
+monitor(p3).
+NOT intervening_contribution(p3).
+harm_caused_as_planned(p3).
+goal_outweigh_harm(p3).
+NOT external_cause(p3).
+control_perpetrator(p3).
+benefit_protagonist(p3).
+NOT achieve_goal(p3).
+NOT careful(p3).
+NOT benefit_victim(p3).
+severity_harm(p3).
+goal_achieveable_less_harmful(p3).
+foresee_intervention(p3).
+high_foreseeability(p3).
+NOT external_force(p3).
+negligent_mental_state(p3).
+necessary_for_harm(p3).
+
+sufficient_for_harm(p4).
+plan_known(p4).
+NOT plan_include_harm(p4).
+NOT someone_else_cause_harm(p4).
+outrank_perpetrator(p4).
+NOT necessary_for_harm(p4).
+monitor(p4).
+NOT intervening_contribution(p4).
+NOT harm_caused_as_planned(p4).
+NOT goal_achieveable_less_harmful(p4).
+external_cause(p4).
+NOT control_perpetrator(p4).
+NOT benefit_protagonist(p4).
+NOT achieve_goal(p4).
+careful(p4).
+NOT benefit_victim(p4).
+severity_harm(p4).
+NOT goal_outweigh_harm(p4).
+foresee_intervention(p4).
+high_foreseeability(p4).
+NOT external_force(p4).
+negligent_mental_state(p4).
+produce_harm(p4).
+
+NOT produce_harm(p5).
+plan_known(p5).
+NOT plan_include_harm(p5).
+someone_else_cause_harm(p5).
+NOT outrank_perpetrator(p5).
+necessary_for_harm(p5).
+monitor(p5).
+harm_caused_as_planned(p5).
+goal_outweigh_harm(p5).
+foresee_intervention(p5).
+NOT external_cause(p5).
+control_perpetrator(p5).
+NOT benefit_protagonist(p5).
+NOT achieve_goal(p5).
+careful(p5).
+NOT benefit_victim(p5).
+severity_harm(p5).
+goal_achieveable_less_harmful(p5).
+NOT intervening_contribution(p5).
+high_foreseeability(p5).
+NOT external_force(p5).
+negligent_mental_state(p5).
+sufficient_for_harm(p5).
+
+sufficient_for_harm(p6).
+plan_known(p6).
+NOT plan_include_harm(p6).
+NOT someone_else_cause_harm(p6).
+NOT outrank_perpetrator(p6).
+NOT necessary_for_harm(p6).
+NOT monitor(p6).
+NOT intervening_contribution(p6).
+NOT harm_caused_as_planned(p6).
+goal_outweigh_harm(p6).
+external_cause(p6).
+NOT control_perpetrator(p6).
+benefit_protagonist(p6).
+NOT achieve_goal(p6).
+careful(p6).
+NOT benefit_victim(p6).
+severity_harm(p6).
+goal_achieveable_less_harmful(p6).
+foresee_intervention(p6).
+low_foreseeability(p6).
+NOT external_force(p6).
+negligent_mental_state(p6).
+produce_harm(p6).
+
+produce_harm(p7).
+plan_known(p7).
+plan_include_harm(p7).
+someone_else_cause_harm(p7).
+NOT outrank_perpetrator(p7).
+necessary_for_harm(p7).
+monitor(p7).
+intervening_contribution(p7).
+harm_caused_as_planned(p7).
+goal_outweigh_harm(p7).
+goal_achieveable_less_harmful(p7).
+NOT external_cause(p7).
+NOT control_perpetrator(p7).
+benefit_protagonist(p7).
+NOT careful(p7).
+NOT benefit_victim(p7).
+severity_harm(p7).
+NOT achieve_goal(p7).
+foresee_intervention(p7).
+low_foreseeability(p7).
+NOT external_force(p7).
+negligent_mental_state(p7).
+sufficient_for_harm(p7).
+
+NOT sufficient_for_harm(p8).
+NOT produce_harm(p8).
+NOT plan_known(p8).
+NOT plan_include_harm(p8).
+NOT someone_else_cause_harm(p8).
+outrank_perpetrator(p8).
+monitor(p8).
+NOT harm_caused_as_planned(p8).
+NOT goal_outweigh_harm(p8).
+NOT goal_achieveable_less_harmful(p8).
+foresee_intervention(p8).
+external_cause(p8).
+control_perpetrator(p8).
+NOT benefit_protagonist(p8).
+NOT careful(p8).
+NOT benefit_victim(p8).
+severity_harm(p8).
+NOT achieve_goal(p8).
+NOT intervening_contribution(p8).
+low_foreseeability(p8).
+NOT external_force(p8).
+negligent_mental_state(p8).
+necessary_for_harm(p8).
+
+NOT sufficient_for_harm(p9).
+produce_harm(p9).
+NOT plan_known(p9).
+plan_include_harm(p9).
+someone_else_cause_harm(p9).
+outrank_perpetrator(p9).
+NOT monitor(p9).
+NOT harm_caused_as_planned(p9).
+NOT goal_outweigh_harm(p9).
+NOT goal_achieveable_less_harmful(p9).
+foresee_intervention(p9).
+external_cause(p9).
+control_perpetrator(p9).
+NOT benefit_protagonist(p9).
+NOT careful(p9).
+NOT benefit_victim(p9).
+severity_harm(p9).
+NOT achieve_goal(p9).
+NOT intervening_contribution(p9).
+low_foreseeability(p9).
+NOT external_force(p9).
+negligent_mental_state(p9).
+necessary_for_harm(p9).
+
+sufficient_for_harm(p10).
+NOT plan_known(p10).
+plan_include_harm(p10).
+NOT someone_else_cause_harm(p10).
+outrank_perpetrator(p10).
+necessary_for_harm(p10).
+NOT monitor(p10).
+NOT intervening_contribution(p10).
+harm_caused_as_planned(p10).
+NOT goal_achieveable_less_harmful(p10).
+NOT external_cause(p10).
+NOT control_perpetrator(p10).
+benefit_protagonist(p10).
+NOT achieve_goal(p10).
+careful(p10).
+NOT benefit_victim(p10).
+severity_harm(p10).
+NOT goal_outweigh_harm(p10).
+foresee_intervention(p10).
+low_foreseeability(p10).
+NOT external_force(p10).
+negligent_mental_state(p10).
+produce_harm(p10).
+
+
+
+
+sufficient_for_harm(p90).
+NOT produce_harm(p90).
+plan_known(p90).
+plan_include_harm(p90).
+someone_else_cause_harm(p90).
+outrank_perpetrator(p90).
+monitor(p90).
+harm_caused_as_planned(p90).
+goal_outweigh_harm(p90).
+NOT foresee_intervention(p90).
+control_perpetrator(p90).
+NOT benefit_protagonist(p90).
+NOT achieve_goal(p90).
+NOT careful(p90).
+neither_mental_state(p90).
+NOT benefit_victim(p90).
+severity_harm(p90).
+goal_achieveable_less_harmful(p90).
+NOT intervening_contribution(p90).
+low_foreseeability(p90).
+NOT external_force(p90).
+NOT external_cause(p90).
+necessary_for_harm(p90).
+
+NOT produce_harm(p91).
+NOT plan_known(p91).
+plan_include_harm(p91).
+NOT someone_else_cause_harm(p91).
+outrank_perpetrator(p91).
+NOT necessary_for_harm(p91).
+NOT monitor(p91).
+intervening_contribution(p91).
+NOT harm_caused_as_planned(p91).
+NOT goal_outweigh_harm(p91).
+goal_achieveable_less_harmful(p91).
+NOT control_perpetrator(p91).
+benefit_protagonist(p91).
+careful(p91).
+negligent_mental_state(p91).
+NOT benefit_victim(p91).
+severity_harm(p91).
+NOT achieve_goal(p91).
+foresee_intervention(p91).
+low_foreseeability(p91).
+NOT external_force(p91).
+NOT external_cause(p91).
+sufficient_for_harm(p91).
+
+NOT produce_harm(p92).
+NOT plan_known(p92).
+NOT plan_include_harm(p92).
+someone_else_cause_harm(p92).
+outrank_perpetrator(p92).
+necessary_for_harm(p92).
+monitor(p92).
+NOT intervening_contribution(p92).
+NOT harm_caused_as_planned(p92).
+goal_outweigh_harm(p92).
+NOT goal_achieveable_less_harmful(p92).
+control_perpetrator(p92).
+NOT benefit_protagonist(p92).
+careful(p92).
+neither_mental_state(p92).
+NOT benefit_victim(p92).
+severity_harm(p92).
+NOT achieve_goal(p92).
+foresee_intervention(p92).
+low_foreseeability(p92).
+NOT external_force(p92).
+NOT external_cause(p92).
+sufficient_for_harm(p92).
+
+sufficient_for_harm(p93).
+NOT plan_known(p93).
+plan_include_harm(p93).
+NOT someone_else_cause_harm(p93).
+outrank_perpetrator(p93).
+necessary_for_harm(p93).
+monitor(p93).
+harm_caused_as_planned(p93).
+NOT goal_outweigh_harm(p93).
+NOT goal_achieveable_less_harmful(p93).
+foresee_intervention(p93).
+control_perpetrator(p93).
+benefit_protagonist(p93).
+NOT careful(p93).
+neither_mental_state(p93).
+NOT benefit_victim(p93).
+severity_harm(p93).
+NOT achieve_goal(p93).
+NOT intervening_contribution(p93).
+low_foreseeability(p93).
+NOT external_force(p93).
+NOT external_cause(p93).
+produce_harm(p93).
+
+NOT produce_harm(p94).
+plan_known(p94).
+NOT plan_include_harm(p94).
+NOT someone_else_cause_harm(p94).
+NOT outrank_perpetrator(p94).
+necessary_for_harm(p94).
+NOT monitor(p94).
+NOT intervening_contribution(p94).
+NOT harm_caused_as_planned(p94).
+NOT goal_outweigh_harm(p94).
+goal_achieveable_less_harmful(p94).
+NOT control_perpetrator(p94).
+NOT benefit_protagonist(p94).
+careful(p94).
+negligent_mental_state(p94).
+NOT benefit_victim(p94).
+severity_harm(p94).
+NOT achieve_goal(p94).
+foresee_intervention(p94).
+low_foreseeability(p94).
+NOT external_force(p94).
+NOT external_cause(p94).
+sufficient_for_harm(p94).
+
+NOT sufficient_for_harm(p95).
+produce_harm(p95).
+plan_known(p95).
+NOT plan_include_harm(p95).
+NOT someone_else_cause_harm(p95).
+NOT outrank_perpetrator(p95).
+monitor(p95).
+intervening_contribution(p95).
+NOT harm_caused_as_planned(p95).
+NOT goal_outweigh_harm(p95).
+control_perpetrator(p95).
+NOT benefit_protagonist(p95).
+achieve_goal(p95).
+NOT careful(p95).
+reckless_mental_state(p95).
+NOT benefit_victim(p95).
+severity_harm(p95).
+goal_achieveable_less_harmful(p95).
+foresee_intervention(p95).
+low_foreseeability(p95).
+NOT external_force(p95).
+NOT external_cause(p95).
+necessary_for_harm(p95).
+
+NOT sufficient_for_harm(p96).
+NOT produce_harm(p96).
+plan_known(p96).
+NOT plan_include_harm(p96).
+NOT necessary_for_harm(p96).
+monitor(p96).
+NOT intervening_contribution(p96).
+NOT harm_caused_as_planned(p96).
+goal_outweigh_harm(p96).
+NOT foresee_intervention(p96).
+external_force(p96).
+NOT external_cause(p96).
+benefit_protagonist(p96).
+NOT achieve_goal(p96).
+careful(p96).
+reckless_mental_state(p96).
+low_foreseeability(p96).
+NOT benefit_victim(p96).
+severity_harm(p96).
+goal_achieveable_less_harmful(p96).
+control_perpetrator(p96).
+outrank_perpetrator(p96).
+someone_else_cause_harm(p96).
+
+NOT sufficient_for_harm(p97).
+NOT produce_harm(p97).
+plan_known(p97).
+plan_include_harm(p97).
+necessary_for_harm(p97).
+monitor(p97).
+intervening_contribution(p97).
+harm_caused_as_planned(p97).
+NOT goal_outweigh_harm(p97).
+foresee_intervention(p97).
+NOT external_force(p97).
+external_cause(p97).
+benefit_protagonist(p97).
+achieve_goal(p97).
+careful(p97).
+negligent_mental_state(p97).
+no_foreseeability(p97).
+NOT benefit_victim(p97).
+severity_harm(p97).
+goal_achieveable_less_harmful(p97).
+control_perpetrator(p97).
+outrank_perpetrator(p97).
+someone_else_cause_harm(p97).
+
+sufficient_for_harm(p98).
+produce_harm(p98).
+NOT plan_known(p98).
+plan_include_harm(p98).
+NOT necessary_for_harm(p98).
+NOT monitor(p98).
+intervening_contribution(p98).
+harm_caused_as_planned(p98).
+goal_outweigh_harm(p98).
+NOT foresee_intervention(p98).
+external_force(p98).
+NOT external_cause(p98).
+benefit_protagonist(p98).
+NOT achieve_goal(p98).
+NOT careful(p98).
+negligent_mental_state(p98).
+high_foreseeability(p98).
+NOT benefit_victim(p98).
+severity_harm(p98).
+goal_achieveable_less_harmful(p98).
+control_perpetrator(p98).
+outrank_perpetrator(p98).
+someone_else_cause_harm(p98).
+
+NOT sufficient_for_harm(p99).
+NOT produce_harm(p99).
+NOT plan_known(p99).
+NOT plan_include_harm(p99).
+NOT necessary_for_harm(p99).
+NOT monitor(p99).
+intervening_contribution(p99).
+NOT harm_caused_as_planned(p99).
+goal_outweigh_harm(p99).
+NOT goal_achieveable_less_harmful(p99).
+NOT foresee_intervention(p99).
+external_force(p99).
+external_cause(p99).
+benefit_protagonist(p99).
+careful(p99).
+reckless_mental_state(p99).
+low_foreseeability(p99).
+NOT benefit_victim(p99).
+severity_harm(p99).
+NOT achieve_goal(p99).
+control_perpetrator(p99).
+outrank_perpetrator(p99).
+someone_else_cause_harm(p99).
+
+NOT sufficient_for_harm(p100).
+produce_harm(p100).
+NOT plan_known(p100).
+plan_include_harm(p100).
+necessary_for_harm(p100).
+monitor(p100).
+intervening_contribution(p100).
+NOT harm_caused_as_planned(p100).
+NOT goal_outweigh_harm(p100).
+foresee_intervention(p100).
+NOT external_force(p100).
+external_cause(p100).
+NOT benefit_protagonist(p100).
+achieve_goal(p100).
+NOT careful(p100).
+reckless_mental_state(p100).
+no_foreseeability(p100).
+NOT benefit_victim(p100).
+severity_harm(p100).
+goal_achieveable_less_harmful(p100).
+control_perpetrator(p100).
+outrank_perpetrator(p100).
+someone_else_cause_harm(p100).
+
+sufficient_for_harm(p101).
+NOT produce_harm(p101).
+plan_known(p101).
+NOT plan_include_harm(p101).
+necessary_for_harm(p101).
+NOT monitor(p101).
+NOT intervening_contribution(p101).
+NOT harm_caused_as_planned(p101).
+NOT goal_outweigh_harm(p101).
+NOT foresee_intervention(p101).
+external_force(p101).
+external_cause(p101).
+benefit_protagonist(p101).
+NOT achieve_goal(p101).
+NOT careful(p101).
+negligent_mental_state(p101).
+low_foreseeability(p101).
+NOT benefit_victim(p101).
+severity_harm(p101).
+goal_achieveable_less_harmful(p101).
+control_perpetrator(p101).
+outrank_perpetrator(p101).
+someone_else_cause_harm(p101).
+
+achieve_goal(n0).
+NOT benefit_protagonist(n0).
+NOT careful(n0).
+control_perpetrator(n0).
+external_cause(n0).
+NOT external_force(n0).
+foresee_intervention(n0).
+high_foreseeability(n0).
+NOT goal_achieveable_less_harmful(n0).
+goal_outweigh_harm(n0).
+harm_caused_as_planned(n0).
+NOT intervening_contribution(n0).
+NOT monitor(n0).
+necessary_for_harm(n0).
+NOT outrank_perpetrator(n0).
+NOT someone_else_cause_harm(n0).
+plan_include_harm(n0).
+plan_known(n0).
+produce_harm(n0).
+NOT sufficient_for_harm(n0).
+NOT severity_harm(n0).
+NOT benefit_victim(n0).
+reckless_mental_state(n0).
+
+NOT achieve_goal(n1).
+NOT benefit_protagonist(n1).
+NOT careful(n1).
+control_perpetrator(n1).
+NOT external_cause(n1).
+NOT external_force(n1).
+NOT foresee_intervention(n1).
+low_foreseeability(n1).
+goal_achieveable_less_harmful(n1).
+goal_outweigh_harm(n1).
+NOT harm_caused_as_planned(n1).
+intervening_contribution(n1).
+monitor(n1).
+necessary_for_harm(n1).
+NOT outrank_perpetrator(n1).
+NOT someone_else_cause_harm(n1).
+NOT plan_include_harm(n1).
+plan_known(n1).
+NOT produce_harm(n1).
+NOT sufficient_for_harm(n1).
+NOT severity_harm(n1).
+benefit_victim(n1).
+neither_mental_state(n1).
+
+NOT achieve_goal(n2).
+benefit_protagonist(n2).
+careful(n2).
+NOT control_perpetrator(n2).
+external_cause(n2).
+NOT external_force(n2).
+NOT foresee_intervention(n2).
+low_foreseeability(n2).
+goal_achieveable_less_harmful(n2).
+goal_outweigh_harm(n2).
+harm_caused_as_planned(n2).
+intervening_contribution(n2).
+monitor(n2).
+necessary_for_harm(n2).
+outrank_perpetrator(n2).
+NOT someone_else_cause_harm(n2).
+plan_include_harm(n2).
+plan_known(n2).
+produce_harm(n2).
+NOT sufficient_for_harm(n2).
+severity_harm(n2).
+benefit_victim(n2).
+neither_mental_state(n2).
+
+NOT achieve_goal(n3).
+NOT benefit_protagonist(n3).
+careful(n3).
+NOT control_perpetrator(n3).
+external_cause(n3).
+NOT external_force(n3).
+foresee_intervention(n3).
+low_foreseeability(n3).
+NOT goal_achieveable_less_harmful(n3).
+NOT goal_outweigh_harm(n3).
+NOT harm_caused_as_planned(n3).
+intervening_contribution(n3).
+NOT monitor(n3).
+NOT necessary_for_harm(n3).
+outrank_perpetrator(n3).
+NOT someone_else_cause_harm(n3).
+NOT plan_include_harm(n3).
+plan_known(n3).
+NOT produce_harm(n3).
+NOT sufficient_for_harm(n3).
+NOT severity_harm(n3).
+benefit_victim(n3).
+neither_mental_state(n3).
+
+
+NOT achieve_goal(n5).
+NOT benefit_protagonist(n5).
+careful(n5).
+NOT control_perpetrator(n5).
+NOT external_cause(n5).
+external_force(n5).
+foresee_intervention(n5).
+low_foreseeability(n5).
+NOT goal_achieveable_less_harmful(n5).
+NOT goal_outweigh_harm(n5).
+harm_caused_as_planned(n5).
+intervening_contribution(n5).
+monitor(n5).
+NOT necessary_for_harm(n5).
+outrank_perpetrator(n5).
+someone_else_cause_harm(n5).
+plan_include_harm(n5).
+plan_known(n5).
+produce_harm(n5).
+sufficient_for_harm(n5).
+severity_harm(n5).
+benefit_victim(n5).
+neither_mental_state(n5).
+
+achieve_goal(n6).
+benefit_protagonist(n6).
+careful(n6).
+control_perpetrator(n6).
+NOT external_cause(n6).
+external_force(n6).
+foresee_intervention(n6).
+high_foreseeability(n6).
+goal_achieveable_less_harmful(n6).
+goal_outweigh_harm(n6).
+NOT harm_caused_as_planned(n6).
+intervening_contribution(n6).
+monitor(n6).
+necessary_for_harm(n6).
+outrank_perpetrator(n6).
+NOT someone_else_cause_harm(n6).
+NOT plan_include_harm(n6).
+plan_known(n6).
+produce_harm(n6).
+sufficient_for_harm(n6).
+severity_harm(n6).
+NOT benefit_victim(n6).
+neither_mental_state(n6).
+
+NOT achieve_goal(n7).
+benefit_protagonist(n7).
+NOT careful(n7).
+control_perpetrator(n7).
+external_cause(n7).
+NOT external_force(n7).
+NOT foresee_intervention(n7).
+high_foreseeability(n7).
+goal_achieveable_less_harmful(n7).
+goal_outweigh_harm(n7).
+NOT harm_caused_as_planned(n7).
+intervening_contribution(n7).
+monitor(n7).
+necessary_for_harm(n7).
+NOT outrank_perpetrator(n7).
+NOT someone_else_cause_harm(n7).
+NOT plan_include_harm(n7).
+plan_known(n7).
+produce_harm(n7).
+sufficient_for_harm(n7).
+severity_harm(n7).
+benefit_victim(n7).
+reckless_mental_state(n7).
+
+achieve_goal(n8).
+NOT benefit_protagonist(n8).
+NOT careful(n8).
+control_perpetrator(n8).
+external_cause(n8).
+external_force(n8).
+NOT foresee_intervention(n8).
+low_foreseeability(n8).
+NOT goal_achieveable_less_harmful(n8).
+goal_outweigh_harm(n8).
+harm_caused_as_planned(n8).
+intervening_contribution(n8).
+NOT monitor(n8).
+NOT necessary_for_harm(n8).
+outrank_perpetrator(n8).
+someone_else_cause_harm(n8).
+plan_include_harm(n8).
+NOT plan_known(n8).
+NOT produce_harm(n8).
+sufficient_for_harm(n8).
+severity_harm(n8).
+benefit_victim(n8).
+reckless_mental_state(n8).
+
+NOT achieve_goal(n9).
+benefit_protagonist(n9).
+NOT careful(n9).
+NOT control_perpetrator(n9).
+NOT external_cause(n9).
+NOT external_force(n9).
+foresee_intervention(n9).
+low_foreseeability(n9).
+goal_achieveable_less_harmful(n9).
+goal_outweigh_harm(n9).
+NOT harm_caused_as_planned(n9).
+NOT intervening_contribution(n9).
+monitor(n9).
+NOT necessary_for_harm(n9).
+outrank_perpetrator(n9).
+someone_else_cause_harm(n9).
+NOT plan_include_harm(n9).
+plan_known(n9).
+NOT produce_harm(n9).
+NOT sufficient_for_harm(n9).
+NOT severity_harm(n9).
+NOT benefit_victim(n9).
+negligent_mental_state(n9).
+
+achieve_goal(n10).
+NOT benefit_protagonist(n10).
+NOT careful(n10).
+NOT control_perpetrator(n10).
+NOT external_cause(n10).
+NOT external_force(n10).
+foresee_intervention(n10).
+high_foreseeability(n10).
+NOT goal_achieveable_less_harmful(n10).
+goal_outweigh_harm(n10).
+harm_caused_as_planned(n10).
+NOT intervening_contribution(n10).
+monitor(n10).
+necessary_for_harm(n10).
+NOT outrank_perpetrator(n10).
+someone_else_cause_harm(n10).
+NOT plan_include_harm(n10).
+plan_known(n10).
+NOT produce_harm(n10).
+sufficient_for_harm(n10).
+NOT severity_harm(n10).
+NOT benefit_victim(n10).
+negligent_mental_state(n10).
+
+
+
+NOT achieve_goal(n90).
+NOT benefit_protagonist(n90).
+NOT careful(n90).
+NOT control_perpetrator(n90).
+NOT external_cause(n90).
+external_force(n90).
+NOT foresee_intervention(n90).
+high_foreseeability(n90).
+goal_achieveable_less_harmful(n90).
+NOT goal_outweigh_harm(n90).
+NOT harm_caused_as_planned(n90).
+intervening_contribution(n90).
+NOT monitor(n90).
+necessary_for_harm(n90).
+NOT outrank_perpetrator(n90).
+someone_else_cause_harm(n90).
+NOT plan_include_harm(n90).
+plan_known(n90).
+produce_harm(n90).
+NOT sufficient_for_harm(n90).
+severity_harm(n90).
+NOT benefit_victim(n90).
+neither_mental_state(n90).
+
+achieve_goal(n91).
+benefit_protagonist(n91).
+careful(n91).
+NOT control_perpetrator(n91).
+NOT external_cause(n91).
+external_force(n91).
+NOT foresee_intervention(n91).
+high_foreseeability(n91).
+goal_achieveable_less_harmful(n91).
+NOT goal_outweigh_harm(n91).
+NOT harm_caused_as_planned(n91).
+NOT intervening_contribution(n91).
+monitor(n91).
+NOT necessary_for_harm(n91).
+outrank_perpetrator(n91).
+NOT someone_else_cause_harm(n91).
+plan_include_harm(n91).
+plan_known(n91).
+NOT produce_harm(n91).
+sufficient_for_harm(n91).
+severity_harm(n91).
+benefit_victim(n91).
+negligent_mental_state(n91).
+
+achieve_goal(n92).
+benefit_protagonist(n92).
+careful(n92).
+control_perpetrator(n92).
+external_cause(n92).
+external_force(n92).
+NOT foresee_intervention(n92).
+high_foreseeability(n92).
+goal_achieveable_less_harmful(n92).
+goal_outweigh_harm(n92).
+NOT harm_caused_as_planned(n92).
+NOT intervening_contribution(n92).
+monitor(n92).
+necessary_for_harm(n92).
+outrank_perpetrator(n92).
+NOT someone_else_cause_harm(n92).
+NOT plan_include_harm(n92).
+plan_known(n92).
+NOT produce_harm(n92).
+NOT sufficient_for_harm(n92).
+NOT severity_harm(n92).
+NOT benefit_victim(n92).
+neither_mental_state(n92).
+
+achieve_goal(n93).
+benefit_protagonist(n93).
+careful(n93).
+NOT control_perpetrator(n93).
+external_cause(n93).
+external_force(n93).
+NOT foresee_intervention(n93).
+low_foreseeability(n93).
+NOT goal_achieveable_less_harmful(n93).
+NOT goal_outweigh_harm(n93).
+NOT harm_caused_as_planned(n93).
+NOT intervening_contribution(n93).
+NOT monitor(n93).
+NOT necessary_for_harm(n93).
+NOT outrank_perpetrator(n93).
+NOT someone_else_cause_harm(n93).
+NOT plan_include_harm(n93).
+NOT plan_known(n93).
+NOT produce_harm(n93).
+sufficient_for_harm(n93).
+NOT severity_harm(n93).
+NOT benefit_victim(n93).
+negligent_mental_state(n93).
+
+achieve_goal(n94).
+benefit_protagonist(n94).
+careful(n94).
+NOT control_perpetrator(n94).
+external_cause(n94).
+NOT external_force(n94).
+foresee_intervention(n94).
+low_foreseeability(n94).
+NOT goal_achieveable_less_harmful(n94).
+NOT goal_outweigh_harm(n94).
+harm_caused_as_planned(n94).
+NOT intervening_contribution(n94).
+NOT monitor(n94).
+necessary_for_harm(n94).
+outrank_perpetrator(n94).
+NOT someone_else_cause_harm(n94).
+NOT plan_include_harm(n94).
+NOT plan_known(n94).
+produce_harm(n94).
+sufficient_for_harm(n94).
+severity_harm(n94).
+benefit_victim(n94).
+neither_mental_state(n94).
+
+NOT achieve_goal(n95).
+benefit_protagonist(n95).
+careful(n95).
+control_perpetrator(n95).
+NOT external_cause(n95).
+NOT external_force(n95).
+foresee_intervention(n95).
+low_foreseeability(n95).
+NOT goal_achieveable_less_harmful(n95).
+goal_outweigh_harm(n95).
+harm_caused_as_planned(n95).
+intervening_contribution(n95).
+monitor(n95).
+necessary_for_harm(n95).
+NOT outrank_perpetrator(n95).
+NOT someone_else_cause_harm(n95).
+NOT plan_include_harm(n95).
+plan_known(n95).
+NOT produce_harm(n95).
+sufficient_for_harm(n95).
+NOT severity_harm(n95).
+NOT benefit_victim(n95).
+neither_mental_state(n95).
+
+NOT achieve_goal(n96).
+benefit_protagonist(n96).
+NOT careful(n96).
+NOT control_perpetrator(n96).
+external_cause(n96).
+external_force(n96).
+NOT foresee_intervention(n96).
+low_foreseeability(n96).
+NOT goal_achieveable_less_harmful(n96).
+NOT goal_outweigh_harm(n96).
+NOT harm_caused_as_planned(n96).
+intervening_contribution(n96).
+NOT monitor(n96).
+necessary_for_harm(n96).
+outrank_perpetrator(n96).
+NOT someone_else_cause_harm(n96).
+NOT plan_include_harm(n96).
+plan_known(n96).
+produce_harm(n96).
+NOT sufficient_for_harm(n96).
+severity_harm(n96).
+NOT benefit_victim(n96).
+reckless_mental_state(n96).
+
+achieve_goal(n97).
+benefit_protagonist(n97).
+NOT careful(n97).
+control_perpetrator(n97).
+external_cause(n97).
+external_force(n97).
+foresee_intervention(n97).
+high_foreseeability(n97).
+goal_achieveable_less_harmful(n97).
+goal_outweigh_harm(n97).
+harm_caused_as_planned(n97).
+intervening_contribution(n97).
+NOT monitor(n97).
+NOT necessary_for_harm(n97).
+NOT outrank_perpetrator(n97).
+someone_else_cause_harm(n97).
+plan_include_harm(n97).
+NOT plan_known(n97).
+produce_harm(n97).
+sufficient_for_harm(n97).
+severity_harm(n97).
+benefit_victim(n97).
+neither_mental_state(n97).
+
+NOT achieve_goal(n98).
+NOT benefit_protagonist(n98).
+careful(n98).
+NOT control_perpetrator(n98).
+NOT external_cause(n98).
+external_force(n98).
+NOT foresee_intervention(n98).
+high_foreseeability(n98).
+NOT goal_achieveable_less_harmful(n98).
+NOT goal_outweigh_harm(n98).
+NOT harm_caused_as_planned(n98).
+intervening_contribution(n98).
+NOT monitor(n98).
+NOT necessary_for_harm(n98).
+NOT outrank_perpetrator(n98).
+someone_else_cause_harm(n98).
+NOT plan_include_harm(n98).
+NOT plan_known(n98).
+NOT produce_harm(n98).
+sufficient_for_harm(n98).
+severity_harm(n98).
+benefit_victim(n98).
+negligent_mental_state(n98).
+
+achieve_goal(n99).
+NOT benefit_protagonist(n99).
+NOT careful(n99).
+NOT control_perpetrator(n99).
+NOT external_cause(n99).
+NOT external_force(n99).
+foresee_intervention(n99).
+high_foreseeability(n99).
+NOT goal_achieveable_less_harmful(n99).
+NOT goal_outweigh_harm(n99).
+NOT harm_caused_as_planned(n99).
+intervening_contribution(n99).
+monitor(n99).
+necessary_for_harm(n99).
+outrank_perpetrator(n99).
+someone_else_cause_harm(n99).
+NOT plan_include_harm(n99).
+plan_known(n99).
+produce_harm(n99).
+sufficient_for_harm(n99).
+NOT severity_harm(n99).
+benefit_victim(n99).
+reckless_mental_state(n99).
+
+

@@ -1,0 +1,427 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
+ * Conf file parser. 
+ */
+
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false; 
+}
+
+PARSER_BEGIN(ConfParser)
+package org.dllearner.confparser; 
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.dllearner.Info;
+
+import org.dllearner.cli.*;
+import org.dllearner.parser.KBParser;
+import org.dllearner.utilities.datastructures.*;
+
+public class ConfParser {
+	
+	// examples
+	private SortedSet<String> positiveExamples = new TreeSet<String>();
+	private SortedSet<String> negativeExamples = new TreeSet<String>();
+	
+	// conf file options
+	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
+	private Map<String,ConfFileOption> confOptionsByName = new HashMap<String,ConfFileOption>();
+	private Map<String,List<ConfFileOption>> confOptionsByPrefix = new HashMap<String,List<ConfFileOption>>();
+	
+	// Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
+	// Argumenten aufgerufen werden)
+	// private static Map<String,Set<String>> functionCallsAlt = new TreeMap<String,Set<String>>();
+	// jeder Funktionsaufruf hat eine Liste von n Argumenten; alle Funktionsaufrufe
+	// werden in einer Liste gespeichert
+	// private List<List<String>> functionCalls = new LinkedList<List<String>>();
+	// => irgendwie Funktionsname + Argumente speichern
+	// => d.h. man bräuchte für jede Funktion so eine Liste oder das erste Element
+	// der Liste ist der Funktionsname <= ist noch die praktikabelste Variante
+	
+	private Map<String,List<List<String>>> functionCalls = new HashMap<String,List<List<String>>>();
+	
+	private void addFunctionCall(String name, List<String> arguments) {
+		if(functionCalls.containsKey(name))
+			functionCalls.get(name).add(arguments);
+		else {
+			List<List<String>> calls = new LinkedList<List<String>>();
+			calls.add(arguments);
+			functionCalls.put(name,calls);
+		}
+	}
+	
+	private void addConfOption(ConfFileOption confOption) {
+		confOptions.add(confOption);
+		confOptionsByName.put(confOption.getFullName(), confOption);
+		String prefix = confOption.getOption();
+		if(confOptionsByPrefix.containsKey(prefix))
+			confOptionsByPrefix.get(prefix).add(confOption);
+		else {
+			LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
+			optionList.add(confOption);
+			confOptionsByPrefix.put(prefix,optionList);
+		}
+	}
+	
+	public SortedSet<String> getPositiveExamples() {
+		return positiveExamples;
+	}
+	
+	public SortedSet<String> getNegativeExamples() {
+		return negativeExamples;
+	} 
+	
+	public List<ConfFileOption> getConfOptions() {
+		return confOptions;
+	}
+	
+	public Map<String,ConfFileOption> getConfOptionsByName() {
+		return confOptionsByName;
+	}
+
+	public ConfFileOption getConfOptionsByName(String name) {
+		return confOptionsByName.get(name);
+	}
+	
+	public Map<String,List<ConfFileOption>> getConfOptionsByPrefix() {
+		return confOptionsByPrefix;
+	}
+	
+	public List<ConfFileOption> getConfOptionsByPrefix(String prefix) {
+		return confOptionsByPrefix.get(prefix);
+	}
+	
+	public Map<String,List<List<String>>> getFunctionCalls() {
+		return functionCalls;
+	}
+	
+	/*
+	private static void addFunctionCall(String functionName, String argument) {
+		if(functionCalls.containsKey(functionName)) {
+			functionCalls.get(functionName).add(argument);
+		} else {
+			Set<String> newFunction = new TreeSet<String>();
+			newFunction.add(argument);
+			functionCalls.put(functionName,newFunction);
+		}		
+	}
+	*/	
+	
+
+	/*
+	public static SimpleNode parseString(String str) throws ParseException {
+		StringReader sr = new StringReader(str);
+		DLLearner learner = new DLLearner(sr);
+		SimpleNode n = learner.Start();
+		return n;
+	}
+	*/
+	
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException {
+		ConfParser learner = null;
+//		try {
+			learner = new ConfParser(new FileInputStream(filename));
+			learner.Start();
+//		} catch(FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch(ParseException e) {
+//			e.printStackTrace();
+//		}
+		return learner;
+	}
+	
+  public static void main(String args[]) {
+
+    if(args.length==0) {
+        System.out.println("Please specify an input file.");
+        System.exit(0);
+    }
+
+    System.out.println("Starting DL-Learner (Build " + Info.build + ")");
+	// System.out.println(args);
+ 
+	// System.out.println(args[0]);
+	// System.out.println(args[1]);
+	// System.out.println(args.length);
+
+    File f = new File(args[args.length-1]);
+//    String baseDir = "";
+
+	System.out.print("Parsing " + f.getName() + " ... ");
+    long parseStartTime = System.currentTimeMillis();
+
+    // SimpleNode n = null;
+    ConfParser learner = null;
+    try {
+        learner = new ConfParser(new FileInputStream(args[args.length-1]));
+//        baseDir = f.getParentFile().getPath();    	
+    } catch(IOException e) {
+        System.err.println(e);
+        System.exit(0);
+    }
+    try {
+      learner.Start();  
+      // n.dump("");
+      // System.out.println("Thank you.");
+    } catch (Exception e) {
+      System.out.println("\nParse exception occurred. Please follow the advise given below.");
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+      System.exit(0);
+    }
+
+    long parseDuration = System.currentTimeMillis() - parseStartTime;
+    System.out.println("OK (" + parseDuration + " ms)");
+
+//    boolean queryMode = false;
+    // solution test mode wird nicht unbedingt gebraucht, da man die covers
+    // gleich standardmäßig beim query mit anzeigen kann
+    // boolean solutionTestMode = false;
+    
+//    if(args.length>1 && args[0].equals("-q"))
+//    	queryMode = true;
+    
+    //if(args.length>1 && args[0].equals("-qt")) {
+    //	queryMode = true;
+    //	solutionTestMode = true;
+    //}
+    
+    // new Main(n, baseDir, queryMode);
+    // Parser erstmal Standalone testen
+    // n.dump("");
+    
+    // neuer Aufruf des Hauptprogramms
+    // TODO: remove (in the future, the parser will be called from whatever method
+    // needs it, instead of starting the learning process itself)
+    // new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
+  }
+}
+PARSER_END(ConfParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+} 
+
+TOKEN :
+{
+    < COMMAND_END: "." >
+  | < CONF_END: ";" >
+  | < POS_EX: "+" >
+  | < NEG_EX: "-" >
+  | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
+  | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
+  | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
+  | <TOP: "TOP" >
+  | <BOTTOM: "BOTTOM" >
+  | <AND: "AND" >
+  | <OR: "OR" >
+  | <EXISTS: "EXISTS" | "SOME" >
+  | <ALL: "ALL" | "FORALL" >
+  | <NOT: "NEG" | "NOT" >
+  | <GE: ">=" >
+  | <LE: "<=" >
+  | <STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
+}
+
+void Start() : 
+{
+	ConfFileOption confOption;
+}
+{
+  (		// bei Konfigurationsoption geht der Parser bis zum Semikolon durch, da das das einzige
+  		// sichere Unterscheidungsmerkmal ist
+  		// LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
+  		//  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" | "[" ) <CONF_END>)  confOption=ConfOption()
+  		LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
+  		  | "{" | "[" ))  confOption=ConfOption()  		  
+  		  { addConfOption(confOption); }
+  	|	LOOKAHEAD(Id() "(" String() ("," String())* ")" <CONF_END>) FunctionCall()
+  		// positive bzw. negative Beispiele sind an "+" bzw. "-" erkennbar
+  	|	LOOKAHEAD(<POS_EX>) PosExample()
+  	|	LOOKAHEAD(<NEG_EX>) NegExample()
+  )*
+  <EOF>
+}
+
+ConfFileOption ConfOption() : 
+{
+	boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false, isList=false;
+	String option="", subOption="", value="", tmp="", tmp2=""; 
+	int number = 0;
+	double numberDouble = 0;
+	ConfFileOption confOption;
+	Set<String> values = new HashSet<String>();
+	List<StringTuple> tuples = new LinkedList<StringTuple>();
+}
+{
+  option=Id() [ "." subOption=Id() {containsSubOption=true;} ] 
+  "="  (   value=Id() 
+         | value=String()
+         | number=Integer() {isNumeric=true;} 
+         | numberDouble=Double() {isNumeric=true; isDouble=true;} 
+         | LOOKAHEAD("{" "}") "{" "}" {isSet=true;} // leere Menge 
+         | "{" ( LOOKAHEAD(2) ( tmp=String() | tmp=Id() ) {values.add(tmp);} "," )* 
+           (tmp=String() | tmp=Id()) {values.add(tmp);} "}" {isSet=true;}
+           // eine Liste von ein oder mehr Elementen in Mengenschreibweise
+         | LOOKAHEAD("[" "]") "[" "]" {isList=true;} // empty list
+         | "[" 
+           ( LOOKAHEAD(6) "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
+           {tuples.add(new StringTuple(tmp,tmp2));} "," )*
+           "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
+           {tuples.add(new StringTuple(tmp,tmp2));} 
+           "]" {isList=true;}         
+         ) <CONF_END>
+  {
+  	if(containsSubOption) {
+  		if(isNumeric)
+  			if(isDouble)
+	  			confOption = new ConfFileOption(option,subOption,numberDouble);
+	  		else
+		  		confOption = new ConfFileOption(option,subOption,number);
+  		else
+  			if(isSet)
+  				confOption = new ConfFileOption(option,subOption,values);
+  			else if(isList)
+  				confOption = new ConfFileOption(option,subOption,tuples);
+  			else
+  				confOption = new ConfFileOption(option,subOption,value);
+  	} else {
+  		if(isNumeric)
+  			if(isDouble)
+	  			confOption = new ConfFileOption(option,numberDouble);
+	  		else
+	  			confOption = new ConfFileOption(option,number);
+  		else
+  			if(isSet)
+	  			confOption = new ConfFileOption(option,values);
+  			else if(isList)
+  				confOption = new ConfFileOption(option,tuples);	  			
+	  		else
+	  			confOption = new ConfFileOption(option,value);
+  	}
+  	return confOption;
+  	// confOptions.add(confOption);
+  }
+}
+
+void FunctionCall() : 
+{
+	String s, s1, s2;
+	List<String> list = new LinkedList<String>();
+}
+{
+  	s1=Id() "(" s2=String() { list.add(s2); }
+  	("," s=String() { list.add(s); } )* ")" <CONF_END>
+  	{ addFunctionCall(s1,list); }
+}
+
+void PosExample() : { String i; }
+{
+  	<POS_EX> i=Individual()
+  	{ positiveExamples.add(i); }
+}
+
+void NegExample() : { String i; }
+{
+  	<NEG_EX> i=Individual()
+  	{ negativeExamples.add(i); }
+}
+
+String Individual() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return KBParser.getInternalURI(name);
+	}
+}
+
+String Id() : 
+{
+  Token t;
+}
+{
+  t=<ID>
+  {
+    return t.image;
+  }
+}
+
+double Double() : 
+{
+  Token t;
+}
+{
+  t=<DOUBLE>
+  {
+    return new Double(t.image);
+  }
+}
+
+int Integer() : 
+{
+  Token t;
+}
+{
+  t=<NUMBER>
+  {
+    return new Integer(t.image);
+  }
+}
+
+String String() : 
+{
+  Token t;
+  String s;
+}
+{
+  t=<STRING>
+  {
+    // enclosing "" are removed
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+}
