@@ -12,8 +12,8 @@
         <!--  tell the compiler we can use 1.6 -->
         <compiler.version>1.6</compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dllearner.version>1.0.1</dllearner.version>
-        <protege.version>1.0.1</protege.version>
+        <dllearner.version>1.0-SNAPSHOT</dllearner.version>
+        <protege.version>1.0-SNAPSHOT</protege.version>
         <evalplugin.version>1.0-SNAPSHOT</evalplugin.version>
         <!-- convenience to define GWT version in one place -->
         <gwt.version>2.1-SNAPSHOT</gwt.version>
