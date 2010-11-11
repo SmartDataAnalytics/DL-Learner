@@ -8,9 +8,9 @@
     
     <groupId>org.dllearner</groupId>
     <artifactId>sparql-query-generator</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-
+    <name>SPARQL Query Generator</name>
+    <url>http://aksw.org/Projects/DLLearner</url>
+    
     <build>
         <plugins>
             <!--Surefire - for JUnits-->

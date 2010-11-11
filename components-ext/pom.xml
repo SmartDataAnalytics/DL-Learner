@@ -3,11 +3,11 @@
 
     <groupId>org.dllearner</groupId>
     <artifactId>components-ext</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>components-ext</name>
-    <url>http://maven.apache.org</url>
+    <url>http://aksw.org/Projects/DLLearner</url>
+    
     <parent>
         <groupId>org.dllearner</groupId>
         <artifactId>dllearner-parent</artifactId>

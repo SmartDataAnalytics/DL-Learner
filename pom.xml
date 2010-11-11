@@ -7,14 +7,11 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>DL Learner Parent Pom</name>
-
+    <url>http://aksw.org/Projects/DLLearner</url>
     <properties>
         <!--  tell the compiler we can use 1.6 -->
         <compiler.version>1.6</compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dllearner.version>1.0-SNAPSHOT</dllearner.version>
-        <protege.version>1.0-SNAPSHOT</protege.version>
-        <evalplugin.version>1.0-SNAPSHOT</evalplugin.version>
         <!-- convenience to define GWT version in one place -->
         <gwt.version>2.1-SNAPSHOT</gwt.version>
     </properties>
@@ -79,25 +76,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <!--JAR the Java docs-->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>2.1.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -244,33 +223,33 @@
             <dependency>
                 <groupId>org.dllearner</groupId>
                 <artifactId>components-core</artifactId>
-                <version>${dllearner.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!--This is the jar of the tests from components-core-->
             <dependency>
                 <groupId>org.dllearner</groupId>
                 <artifactId>components-core</artifactId>
-                <version>${dllearner.version}</version>
+                <version>${project.version}</version>
                 <classifier>tests</classifier>
             </dependency>
 
             <dependency>
                 <groupId>org.dllearner</groupId>
                 <artifactId>components-ext</artifactId>
-                <version>${dllearner.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.dllearner</groupId>
                 <artifactId>interfaces</artifactId>
-                <version>${dllearner.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.dllearner</groupId>
                 <artifactId>protege</artifactId>
-                <version>${protege.version}</version>
+                <version>${project.version}</version>
             </dependency>
             
             <dependency>
@@ -403,4 +382,26 @@
         </snapshotRepository>
     </distributionManagement>
 
+
+    <profiles>
+        <profile>
+            <id>hudson_build</id>
+            <build>
+                <plugins>
+                    <!--JAR the Sources-->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
