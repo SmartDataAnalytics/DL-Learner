@@ -3,11 +3,10 @@
 
     <groupId>org.dllearner</groupId>
     <artifactId>components-core</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>DL Learner Core Components</name>
-    <url>http://maven.apache.org</url>
+    <url>http://aksw.org/Projects/DLLearner</url>
 
     <parent>
         <groupId>org.dllearner</groupId>
