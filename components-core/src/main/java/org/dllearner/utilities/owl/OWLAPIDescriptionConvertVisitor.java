@@ -64,7 +64,6 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLTypedLiteral;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
@@ -314,10 +313,10 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		DatatypeProperty dp = (DatatypeProperty) description.getRestrictedPropertyExpression();
 		// currently only double restrictions implemented
 		SimpleDoubleDataRange dr = (SimpleDoubleDataRange) description.getDataRange();
-		Double value = dr.getValue();
+		double value = dr.getValue();
 		
 		OWLDatatype doubleDataType = factory.getOWLDatatype(XSDVocabulary.DOUBLE.getIRI());
-        OWLTypedLiteral constant = factory.getOWLTypedLiteral(value.toString(), doubleDataType);
+        OWLLiteral constant = factory.getOWLLiteral(value);
 
         OWLFacet facet;
         if(dr instanceof DoubleMinValue)
@@ -350,13 +349,13 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		if(constant instanceof TypedConstant) {
 			Datatype dt = ((TypedConstant)constant).getDatatype();
 			OWLDatatype odt = convertDatatype(dt);
-			owlConstant = factory.getOWLTypedLiteral(constant.getLiteral(), odt);
+			owlConstant = factory.getOWLLiteral(constant.getLiteral(), odt);
 		} else {
 			UntypedConstant uc = (UntypedConstant) constant;
 			if(uc.hasLang()) {
-				owlConstant = factory.getOWLStringLiteral(uc.getLiteral(), uc.getLang());
+				owlConstant = factory.getOWLLiteral(uc.getLiteral(), uc.getLang());
 			} else {
-				owlConstant = factory.getOWLStringLiteral(uc.getLiteral());
+				owlConstant = factory.getOWLLiteral(uc.getLiteral(), "");
 			}
 		}
 		return owlConstant;

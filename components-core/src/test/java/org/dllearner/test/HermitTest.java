@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
@@ -28,7 +29,7 @@ public class HermitTest {
 		
 		System.out.println("Using Pellet reasoner");
 		OWLReasoner pellet = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
-		pellet.prepareReasoner();
+		pellet.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 		
 		for(OWLIndividual ind : ontology.getIndividualsInSignature(true)){
 			System.out.println("Individual: " + ind);
@@ -40,7 +41,7 @@ public class HermitTest {
 		
 		System.out.println("Using HermiT reasoner");
 		OWLReasoner hermit = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
-		hermit.prepareReasoner();
+		hermit.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 		
 		for(OWLIndividual ind : ontology.getIndividualsInSignature(true)){
 			System.out.println("Individual: " + ind);
