@@ -21,7 +21,6 @@ package org.dllearner.algorithms.ocel;
 
 import java.util.List;
 
-import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
@@ -70,8 +69,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	private ROLComponent2Configurator configurator;
-	
+
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
 	private double gainBonusFactor = 0.5;
@@ -90,15 +88,6 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 //		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
-	}
-	
-	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
-		this.nrOfNegativeExamples = nrOfNegativeExamples;
-		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
-		this.configurator = configurator;
-		negativeWeight = configurator.getNegativeWeight();
-		startNodeBonus = configurator.getStartNodeBonus();
-		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
 	}
 	
 //	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
@@ -144,8 +133,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
-	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
-		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, configurator);
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples);
 		return multi.getNodeScore(node);
 	}
 	
@@ -162,7 +151,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// we put a penalty on negations, because they often overfit
 		// (TODO: make configurable)
 		else if(description instanceof Negation) {
-			bonus = -configurator.getNegationPenalty();
+			bonus = -getNegationPenalty();
 		}
 		
 //		if(description instanceof BooleanValueRestriction)
@@ -180,4 +169,44 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		}
 		return bonus;
 	}
+
+
+    /**
+     * Begin ISS Code
+     */
+
+
+    private int negationPenalty = 0;
+
+    public double getNegativeWeight() {
+        return negativeWeight;
+    }
+
+    public void setNegativeWeight(double negativeWeight) {
+        this.negativeWeight = negativeWeight;
+    }
+
+    public double getStartNodeBonus() {
+        return startNodeBonus;
+    }
+
+    public void setStartNodeBonus(double startNodeBonus) {
+        this.startNodeBonus = startNodeBonus;
+    }
+
+    public double getExpansionPenaltyFactor() {
+        return expansionPenaltyFactor;
+    }
+
+    public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+        this.expansionPenaltyFactor = expansionPenaltyFactor;
+    }
+
+    public int getNegationPenalty() {
+        return negationPenalty;
+    }
+
+    public void setNegationPenalty(int negationPenalty) {
+        this.negationPenalty = negationPenalty;
+    }
 }

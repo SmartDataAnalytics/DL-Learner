@@ -47,11 +47,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
@@ -83,10 +79,9 @@ import org.dllearner.utilities.Helper;
  */
 public class OCEL extends LearningAlgorithm {
 	
-	private ROLComponent2Configurator configurator;
 	@Override
 	public ROLComponent2Configurator getConfigurator(){
-		return configurator;
+        throw new RuntimeException("Use Dependency Injection, not Configuration");
 	}
 	
 	// actual algorithm
@@ -139,7 +134,11 @@ public class OCEL extends LearningAlgorithm {
 	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
 	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
 	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
-	
+
+    private int cardinalityLimit = 5;
+    private boolean useStringDatatypes = false;
+    private boolean useInstanceBasedDisjoints = false;
+
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
 	boolean showBenchmarkInformation = false;
@@ -229,7 +228,7 @@ public class OCEL extends LearningAlgorithm {
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		String name = entry.getOptionName();
 		if(name.equals("writeSearchTree"))
-			writeSearchTree = (Boolean) entry.getValue();
+			setWriteSearchTree((Boolean) entry.getValue());
 		else if(name.equals("searchTreeFile"))
 			searchTreeFile = new File((String)entry.getValue());
 		else if(name.equals("replaceSearchTree"))
@@ -265,7 +264,7 @@ public class OCEL extends LearningAlgorithm {
 		} else if(name.equals("useExistsConstructor")) {
 			useExistsConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useHasValueConstructor")) {
-			useHasValueConstructor = (Boolean) entry.getValue();
+			setUseHasValueConstructor((Boolean) entry.getValue());
 		} else if(name.equals("valueFrequencyThreshold")) {
 			valueFrequencyThreshold = (Integer) entry.getValue();
 		} else if(name.equals("useCardinalityRestrictions")) {
@@ -285,15 +284,15 @@ public class OCEL extends LearningAlgorithm {
 		} else if(name.equals("startClass")) {
 			startClass = new NamedClass((String)entry.getValue());
 		}else if(name.equals("maxExecutionTimeInSeconds")) {
-			maxExecutionTimeInSeconds = (Integer) entry.getValue();
+			setMaxExecutionTimeInSeconds((Integer) entry.getValue());
 		}else if(name.equals("minExecutionTimeInSeconds")) {
-			minExecutionTimeInSeconds = (Integer) entry.getValue();
+			setMinExecutionTimeInSeconds((Integer) entry.getValue());
 		}else if(name.equals("guaranteeXgoodDescriptions")) {
 			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
 		} else if(name.equals("maxClassDescriptionTests")) {
 			maxClassDescriptionTests =  (Integer) entry.getValue();
 		} else if(name.equals("logLevel")) {
-			logLevel = ((String)entry.getValue()).toUpperCase();
+			setLogLevel(((String)entry.getValue()).toUpperCase());
 		} else if(name.equals("forceRefinementLengthIncrease")) {
 			forceRefinementLengthIncrease = (Boolean) entry.getValue();
 		}
@@ -311,13 +310,13 @@ public class OCEL extends LearningAlgorithm {
 		}
 		
 		// set log level if the option has been set
-		if(!logLevel.equals(CommonConfigOptions.logLevelDefault))
-			logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
+		if(!getLogLevel().equals(CommonConfigOptions.logLevelDefault))
+			logger.setLevel(Level.toLevel(getLogLevel(),Level.toLevel(CommonConfigOptions.logLevelDefault)));
 		
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
-		if(writeSearchTree)
+		if(isWriteSearchTree())
 			Files.clearFile(searchTreeFile);
 
 		// adjust heuristic
@@ -333,18 +332,18 @@ public class OCEL extends LearningAlgorithm {
 		} else {
 			if(learningProblem instanceof PosOnlyLP) {
 //				throw new RuntimeException("does not work with positive examples only yet");
-				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, configurator);
+				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0);
 			} else {
-				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), configurator);
+				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size());
 			}
 		}
 		
 		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored
 		if(learningProblem instanceof PosNegLPStandard) {
-			if(((PosNegLPStandard)learningProblem).getConfigurator().getUseApproximations()) {
+			if(((PosNegLPStandard)learningProblem).isUseApproximations()) {
 				System.err.println("You actived approximations for the considered learning problem, but OCEL does not support it. Option will be ignored. (Recommendation: Use CELOE instead.)");
 			}
-			if(!((PosNegLPStandard)learningProblem).getConfigurator().getAccuracyMethod().equals("predacc")) {
+			if(!(((PosNegLPStandard)learningProblem).getHeuristic() == Heuristics.HeuristicType.PRED_ACC)) {
 				System.err.println("You have chosen a non-standard (predictive accuracy) heuristic in your learning problem, but OCEL does not support it. Option will be ignored. (Recommendation: Use CELOE instead.)");
 			}
 		}
@@ -393,24 +392,25 @@ public class OCEL extends LearningAlgorithm {
 		operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
-				configurator,
 					applyAllFilter,
 					applyExistsFilter,
 					useAllConstructor, 
 					useExistsConstructor,
-					useHasValueConstructor,
+                isUseHasValueConstructor(),
 					valueFrequencyThreshold,
 					useCardinalityRestrictions,
 					useNegation,
 					useBooleanDatatypes,
 					useDoubleDatatypes,
-					startClass
-			);		
-			
+					startClass,
+                    getCardinalityLimit(),
+                    isUseHasValueConstructor(),
+                    isUseStringDatatypes(),
+                    isUseInstanceBasedDisjoints());
+
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
-				configurator,
 				learningProblem,
 				reasoner,
 				operator,
@@ -419,7 +419,7 @@ public class OCEL extends LearningAlgorithm {
 				// usedConcepts,
 				// usedRoles,
 				noisePercentage/(double)100,
-				writeSearchTree,
+                isWriteSearchTree(),
 				replaceSearchTree,
 				searchTreeFile,
 				useTooWeakList,
@@ -427,8 +427,8 @@ public class OCEL extends LearningAlgorithm {
 				useShortConceptConstruction,
 				usePropernessChecks,
 				maxPosOnlyExpansion,
-				maxExecutionTimeInSeconds,
-				minExecutionTimeInSeconds,
+                getMaxExecutionTimeInSeconds(),
+                getMinExecutionTimeInSeconds(),
 				guaranteeXgoodDescriptions,
 				maxClassDescriptionTests,
 				forceRefinementLengthIncrease
@@ -511,4 +511,80 @@ public class OCEL extends LearningAlgorithm {
 	public RhoDRDown getRefinementOperator() {
 		return operator;
 	}
+
+    public int getCardinalityLimit() {
+        return cardinalityLimit;
+    }
+
+    public void setCardinalityLimit(int cardinalityLimit) {
+        this.cardinalityLimit = cardinalityLimit;
+    }
+
+    public boolean isUseHasValueConstructor() {
+        return useHasValueConstructor;
+    }
+
+    public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+        this.useHasValueConstructor = useHasValueConstructor;
+    }
+
+    public boolean isUseStringDatatypes() {
+        return useStringDatatypes;
+    }
+
+    public void setUseStringDatatypes(boolean useStringDatatypes) {
+        this.useStringDatatypes = useStringDatatypes;
+    }
+
+    public boolean isUseInstanceBasedDisjoints() {
+        return useInstanceBasedDisjoints;
+    }
+
+    public void setUseInstanceBasedDisjoints(boolean useInstanceBasedDisjoints) {
+        this.useInstanceBasedDisjoints = useInstanceBasedDisjoints;
+    }
+
+    public int getMaxExecutionTimeInSeconds() {
+        return maxExecutionTimeInSeconds;
+    }
+
+    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+        this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+    }
+
+    public int getMinExecutionTimeInSeconds() {
+        return minExecutionTimeInSeconds;
+    }
+
+    public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
+        this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
+    }
+
+    public String getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(String logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public String getStartClass() {
+        return startClass.toString();
+    }
+
+    public void setStartClass(String startClassString) {
+        if (startClassString != null) {
+            startClass = new NamedClass(startClassString);
+        } else {
+            startClass = null;
+        }
+    }
+
+    public boolean isWriteSearchTree() {
+        return writeSearchTree;
+    }
+
+    public void setWriteSearchTree(boolean writeSearchTree) {
+        this.writeSearchTree = writeSearchTree;
+    }
 }

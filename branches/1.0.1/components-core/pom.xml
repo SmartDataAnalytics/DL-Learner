@@ -46,6 +46,13 @@
 
     <dependencies>
 
+
+        <!--Spring Dependencies-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.core</artifactId>
+        </dependency>
+
         <!-- THIS IS FROM THE UNIBAS REPO-->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>

@@ -14,6 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- convenience to define GWT version in one place -->
         <gwt.version>2.1-SNAPSHOT</gwt.version>
+        <!--Spring Version -->
+        <org.springframework.version>3.0.3.RELEASE</org.springframework.version>
     </properties>
 
     <modules>
@@ -294,6 +296,11 @@
                 <version>${gwt.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.core</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
