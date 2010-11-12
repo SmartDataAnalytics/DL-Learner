@@ -33,11 +33,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -98,13 +98,13 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLTypedLiteral;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.NullReasonerProgressMonitor;
@@ -116,7 +116,6 @@ import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
-import uk.ac.manchester.cs.owl.owlapi.OWLStringLiteralImpl;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
@@ -375,7 +374,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		boolean inconsistentOntology = !reasoner.isConsistent();
 		
 		if(!inconsistentOntology) {
-			reasoner.prepareReasoner();
+			reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 		} else {
 			throw new ComponentInitException("Inconsistent ontologies.");
 		}
@@ -569,7 +568,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
-		NodeSet<OWLObjectProperty> properties = null;
+		NodeSet<OWLObjectPropertyExpression> properties = null;
 		
 		properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
 		 	
@@ -578,7 +577,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
-		NodeSet<OWLObjectProperty> properties = null;
+		NodeSet<OWLObjectPropertyExpression> properties = null;
 		
 		properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
 			
@@ -814,20 +813,19 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			
 			// convert data back to DL-Learner structures
 			SortedSet<Constant> is = new TreeSet<Constant>();
-			for(OWLLiteral oi : constants) {
+			for(OWLLiteral literal : constants) {
 				// for typed constants we have to figure out the correct
 				// data type and value
-				if(oi instanceof OWLTypedLiteral) {
-					Datatype dt = OWLAPIConverter.convertDatatype(((OWLTypedLiteral)oi).getDatatype());
-					is.add(new TypedConstant(oi.getLiteral(),dt));
+				if(!literal.isRDFPlainLiteral()) {
+					Datatype dt = OWLAPIConverter.convertDatatype(literal.getDatatype());
+					is.add(new TypedConstant(literal.getLiteral(), dt));
 				// for untyped constants we have to figure out the value
 				// and language tag (if any)
 				} else {
-					OWLStringLiteralImpl ouc = (OWLStringLiteralImpl) oi;
-					if(ouc.hasLang())
-						is.add(new UntypedConstant(ouc.getLiteral(), ouc.getLang()));
+					if(literal.hasLang())
+						is.add(new UntypedConstant(literal.getLiteral(), literal.getLang()));
 					else
-						is.add(new UntypedConstant(ouc.getLiteral()));
+						is.add(new UntypedConstant(literal.getLiteral()));
 				}
 			}	
 			// only add individuals using the datatype property
@@ -869,16 +867,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return concepts;			
 	}
 	
-	private TreeSet<ObjectProperty> getFirstObjectProperties(NodeSet<OWLObjectProperty> nodeSet) {
+	private TreeSet<ObjectProperty> getFirstObjectProperties(NodeSet<OWLObjectPropertyExpression> nodeSet) {
 		TreeSet<ObjectProperty> roles = new TreeSet<ObjectProperty>(roleComparator);
-		for(Node<OWLObjectProperty> node : nodeSet) {
+		for(Node<OWLObjectPropertyExpression> node : nodeSet) {
 			if(node.isBottomNode() || node.isTopNode()){
 				continue;
 			}
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
-			OWLObjectProperty property = node.getRepresentativeElement();
-			roles.add(new ObjectProperty(property.toStringID()));
+			OWLObjectPropertyExpression property = node.getRepresentativeElement();
+			roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
 		}
 		roles.remove(new ObjectProperty(factory.getOWLTopObjectProperty().toStringID()));
 		roles.remove(new ObjectProperty(factory.getOWLBottomObjectProperty().toStringID()));

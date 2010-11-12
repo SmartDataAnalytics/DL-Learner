@@ -58,12 +58,12 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLTypedLiteral;
 
 /**
  * A converter from DL-Learner axioms to OWL API axioms based on the visitor
@@ -168,9 +168,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	public void visit(DoubleDatatypePropertyAssertion axiom) {
 		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(axiom.getIndividual().getName()));
 		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getDatatypeProperty().getName()));
-		Double value = axiom.getValue();
-		OWLDatatype doubleType = factory.getDoubleOWLDatatype();
-		OWLTypedLiteral valueConstant = factory.getOWLTypedLiteral(value.toString(), doubleType);
+		double value = axiom.getValue();
+		OWLLiteral valueConstant = factory.getOWLLiteral(value);
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);
 	}
@@ -181,9 +180,8 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	public void visit(BooleanDatatypePropertyAssertion axiom) {
 		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(axiom.getIndividual().getName()));
 		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getDatatypeProperty().getName()));
-		Boolean value = axiom.getValue();
-		OWLDatatype booleanType = factory.getBooleanOWLDatatype();
-		OWLTypedLiteral valueConstant = factory.getOWLTypedLiteral(value.toString(), booleanType);
+		boolean value = axiom.getValue();
+		OWLLiteral valueConstant = factory.getOWLLiteral(value);
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);		
 	}	
@@ -355,8 +353,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(axiom.getIndividual().getName()));
 		OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(axiom.getDatatypeProperty().getName()));
 		String value = axiom.getValue();
-		OWLDatatype stringType = factory.getOWLDatatype(IRI.create("http://www.w3.org/2001/XMLSchema#string"));
-		OWLTypedLiteral valueConstant = factory.getOWLTypedLiteral(value.toString(), stringType);
+		OWLLiteral valueConstant = factory.getOWLLiteral(value);
 		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(dp, i, valueConstant);
 		addAxiom(axiomOWLAPI);
 	}
