@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
@@ -49,7 +50,7 @@ public class PelletPerformanceProblem {
         OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology, new SimpleConfiguration());
         System.out.println("ontology loaded");
         
-        reasoner.prepareReasoner();
+        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 	}
 	
 }
