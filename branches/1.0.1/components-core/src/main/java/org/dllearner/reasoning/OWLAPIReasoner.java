@@ -228,13 +228,15 @@ public class OWLAPIReasoner extends ReasonerComponent {
 
          /** BEGIN ISS CODE */
         /** Create the URI->Resource Mappings for items that are disconnected */
-        try {
-            for (String ontologyKey : ontologyResources.keySet()) {
-                SimpleIRIMapper mapper = new SimpleIRIMapper(IRI.create(ontologyKey),IRI.create(ontologyResources.get(ontologyKey).getURI()));
-                manager.addIRIMapper(mapper);
+        if (ontologyResources != null) {
+            try {
+                for (String ontologyKey : ontologyResources.keySet()) {
+                    SimpleIRIMapper mapper = new SimpleIRIMapper(IRI.create(ontologyKey),IRI.create(ontologyResources.get(ontologyKey).getURI()));
+                    manager.addIRIMapper(mapper);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
         /** END ISS CODE */
