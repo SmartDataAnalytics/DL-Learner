@@ -52,14 +52,12 @@ public class KBFile extends KnowledgeSource {
 	private static Logger logger = Logger.getLogger(KBFile.class);
 	
 	private KB kb;
-	
-	private KBFileConfigurator configurator;
 
+    private URL url;
 	/**
 	 * Default constructor (needed for reflection in ComponentManager).
 	 */
 	public KBFile() {
-		configurator = new KBFileConfigurator(this);
 	}
 	
 	/**
@@ -77,7 +75,7 @@ public class KBFile extends KnowledgeSource {
 	
 	@Override
 	public KBFileConfigurator getConfigurator(){
-		return configurator;
+		throw new RuntimeException("Use Dependency Injection, not embedded configurator.");
 	}	
 	
 	public static String getName() {
@@ -113,18 +111,18 @@ public class KBFile extends KnowledgeSource {
 			// via component manager) or the kb object has been
 			// passed directly (via constructor)
 			if(kb == null) {
-				if(configurator.getUrl() != null) {
-					kb = KBParser.parseKBFile(configurator.getUrl());
-					logger.trace("KB File " + configurator.getUrl() + " parsed successfully.");
+				if(getURL() != null) {
+					kb = KBParser.parseKBFile(getURL());
+					logger.trace("KB File " + getURL() + " parsed successfully.");
 				} else {
 					throw new ComponentInitException("No URL option or kb object given. Cannot initialise KBFile component.");
 				}
 			}
 						
 		} catch (IOException e) {
-			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be read.", e);
+			throw new ComponentInitException("KB file " +  getURL() + " could not be read.", e);
 		} catch (ParseException e) {
-			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be parsed correctly.", e);
+			throw new ComponentInitException("KB file " +  getURL() + " could not be parsed correctly.", e);
 		}
 		
 	}
@@ -171,12 +169,16 @@ public class KBFile extends KnowledgeSource {
 	}
 	
 	public URL getURL() {
-		return configurator.getUrl();
+		return url;
 	}
 
 	@Override
 	public KB toKB() {
 		return kb;
 	}
-	
+
+
+    public void setURL(URL url) {
+        this.url = url;
+    }
 }
