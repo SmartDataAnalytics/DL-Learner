@@ -51,6 +51,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
@@ -127,7 +128,7 @@ public class OntologyChecker {
 //						reasoner = new Reasoner(ontology);
 						if (reasoner.isConsistent()) {
 							long startTime = System.currentTimeMillis();
-							reasoner.prepareReasoner();
+							reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 							sb.append("classification time in ms: " + (System.currentTimeMillis() - startTime) + "\n");
 							int unsatCount = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom().size();
 							sb.append("#unsatisfiable classes: " + unsatCount + "\n");

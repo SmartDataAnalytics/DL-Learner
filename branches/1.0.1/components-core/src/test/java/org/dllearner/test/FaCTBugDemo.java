@@ -16,6 +16,7 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
@@ -36,7 +37,7 @@ public class FaCTBugDemo {
             OWLReasoner reasoner = new FaCTPlusPlusReasonerFactory().createReasoner(ont);
             // OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ont);:
 
-           reasoner.prepareReasoner();
+           reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
             
             OWLDataFactory factory = manager.getOWLDataFactory();
             
