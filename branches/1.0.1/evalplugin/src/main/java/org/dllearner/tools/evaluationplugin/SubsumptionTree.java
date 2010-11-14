@@ -17,7 +17,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class SubsumptionTree {
 	private static final Logger logger = Logger.getLogger(SubsumptionTree.class);
@@ -41,16 +40,8 @@ public class SubsumptionTree {
 
 		// by accuracy
 		public SortedSet<Node> subClasses = new TreeSet<Node>();
-        private OWLAPIDescriptionConvertVisitor descriptionConvertVisitor;
-
-        public Node() {
-            OWLDataFactory dataFactory = new OWLDataFactoryImpl();
-
-            descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
-            descriptionConvertVisitor.setFactory(dataFactory);
-        }
+		
 		public Node(EvaluatedDescription ed, boolean root) {
-            this();
 			this.root = root;
 			if (this.root) {
 				accuracy = 0.0d;
@@ -76,8 +67,8 @@ public class SubsumptionTree {
 					logger.warn("Testing relation between: " + n.getEvalDesc() + "\n\t and "
 							+ sub.getEvalDesc());
 					
-					OWLClassExpression desc1 = descriptionConvertVisitor.getOWLClassExpression(sub.getDesc());
-					OWLClassExpression desc2 = descriptionConvertVisitor.getOWLClassExpression(n.getDesc());
+					OWLClassExpression desc1 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(sub.getDesc());
+					OWLClassExpression desc2 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(n.getDesc());
 					boolean passOn = false;
 					boolean superClass = false;
 					passOn = rc.isEntailed(factory.getOWLSubClassOfAxiom(desc2, desc1));

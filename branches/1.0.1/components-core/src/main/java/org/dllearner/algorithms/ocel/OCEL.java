@@ -128,6 +128,12 @@ public class OCEL extends LearningAlgorithm {
 	private static int maxPosOnlyExpansionDefault = 4;
 	private int maxPosOnlyExpansion = maxPosOnlyExpansionDefault;
 	private boolean forceRefinementLengthIncrease = true;
+	//extended Options
+	//in seconds
+	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
+	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
+	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
+	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
 
     private int cardinalityLimit = 5;
     private boolean useStringDatatypes = false;
@@ -277,6 +283,14 @@ public class OCEL extends LearningAlgorithm {
 			maxPosOnlyExpansion = (Integer) entry.getValue();
 		} else if(name.equals("startClass")) {
 			startClass = new NamedClass((String)entry.getValue());
+		}else if(name.equals("maxExecutionTimeInSeconds")) {
+			setMaxExecutionTimeInSeconds((Integer) entry.getValue());
+		}else if(name.equals("minExecutionTimeInSeconds")) {
+			setMinExecutionTimeInSeconds((Integer) entry.getValue());
+		}else if(name.equals("guaranteeXgoodDescriptions")) {
+			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
+		} else if(name.equals("maxClassDescriptionTests")) {
+			maxClassDescriptionTests =  (Integer) entry.getValue();
 		} else if(name.equals("logLevel")) {
 			setLogLevel(((String)entry.getValue()).toUpperCase());
 		} else if(name.equals("forceRefinementLengthIncrease")) {
@@ -394,8 +408,6 @@ public class OCEL extends LearningAlgorithm {
                     isUseStringDatatypes(),
                     isUseInstanceBasedDisjoints());
 
-
-
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
@@ -415,13 +427,13 @@ public class OCEL extends LearningAlgorithm {
 				useShortConceptConstruction,
 				usePropernessChecks,
 				maxPosOnlyExpansion,
+                getMaxExecutionTimeInSeconds(),
+                getMinExecutionTimeInSeconds(),
+				guaranteeXgoodDescriptions,
+				maxClassDescriptionTests,
 				forceRefinementLengthIncrease
 		);
-
-        /** Put this into spring or an external configurator */
-        algorithm.setTerminationDeterminator(new ROLearner2TerminationDeterminator());
-        
-        // note: used concepts and roles do not need to be passed
+		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly
 	}
@@ -530,6 +542,22 @@ public class OCEL extends LearningAlgorithm {
 
     public void setUseInstanceBasedDisjoints(boolean useInstanceBasedDisjoints) {
         this.useInstanceBasedDisjoints = useInstanceBasedDisjoints;
+    }
+
+    public int getMaxExecutionTimeInSeconds() {
+        return maxExecutionTimeInSeconds;
+    }
+
+    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+        this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+    }
+
+    public int getMinExecutionTimeInSeconds() {
+        return minExecutionTimeInSeconds;
+    }
+
+    public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
+        this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
     }
 
     public String getLogLevel() {

@@ -50,9 +50,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVisitor{
 	
 	private Stack<Description> stack = new Stack<Description>();
-    private OWLAPIConverter owlAPIConverter;
-
-    public Description getDLLearnerDescription() {
+	
+	public Description getDLLearnerDescription() {
 		return stack.pop();
 	}
 
@@ -165,14 +164,14 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectOneOf description) {
-		stack.push(new ObjectOneOf(getOWLAPIConverter().convertIndividuals(description.getIndividuals())));
+		stack.push(new ObjectOneOf(OWLAPIConverter.convertIndividuals(description.getIndividuals())));
 	}
 
 	@Override
 	public void visit(OWLDataSomeValuesFrom description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = getOWLAPIConverter().convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
 		stack.push(new DatatypeSomeRestriction(property, dataRange));
 	}
 
@@ -200,7 +199,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 	public void visit(OWLDataMinCardinality description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = getOWLAPIConverter().convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
 		int min = description.getCardinality();
 		stack.push(new DatatypeMinCardinalityRestriction(property, dataRange,min));
 		
@@ -210,7 +209,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 	public void visit(OWLDataExactCardinality description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = getOWLAPIConverter().convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
 		int minmax = description.getCardinality();
 		stack.push(new DatatypeExactCardinalityRestriction(property, dataRange, minmax));
 		
@@ -220,18 +219,10 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 	public void visit(OWLDataMaxCardinality description) {
 		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = getOWLAPIConverter().convertDatatype(description.getFiller().asOWLDatatype());
+		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDatatype());
 		int max = description.getCardinality();
 		stack.push(new DatatypeMaxCardinalityRestriction(property, dataRange, max));
 		
 	}
-
-    public OWLAPIConverter getOWLAPIConverter() {
-        return owlAPIConverter;
-    }
-
-    public void setOWLAPIConverter(OWLAPIConverter owlAPIConverter) {
-        this.owlAPIConverter = owlAPIConverter;
-    }
 
 }

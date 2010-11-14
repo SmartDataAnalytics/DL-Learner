@@ -56,6 +56,6 @@ public class MultiThreadedDLLearnerTest extends SingleThreadedDLLearnerTest {
 
     protected DLLearnerCallable getCallable(){
         return new DLLearnerCallable();
-    }
+}
 
 }

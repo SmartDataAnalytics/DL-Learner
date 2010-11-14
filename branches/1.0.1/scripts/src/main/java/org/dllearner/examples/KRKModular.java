@@ -34,8 +34,6 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.owl.DefaultOWLUtilities;
-import org.dllearner.utilities.owl.IOWLUtilities;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.model.IRI;
 
@@ -765,8 +763,7 @@ public class KRKModular {
 
 		System.out.println("Writing owl");
 		File owlfile = new File(workingDir+"/" + filename);
-        IOWLUtilities utils = new DefaultOWLUtilities();
-		utils.exportKBToOWL(owlfile, this.kb, ontologyURI);
+		OWLAPIReasoner.exportKBToOWL(owlfile, this.kb, ontologyURI);
 
 	}
 

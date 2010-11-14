@@ -10,8 +10,6 @@ import javax.swing.table.AbstractTableModel;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class SuggestionsTableModel extends AbstractTableModel {
 	
@@ -55,10 +53,9 @@ public class SuggestionsTableModel extends AbstractTableModel {
 				return followsIcon;
 			}break;
 		case 2:
-            OWLDataFactory dataFactory = new OWLDataFactoryImpl();
-            OWLAPIDescriptionConvertVisitor descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
-            descriptionConvertVisitor.setFactory(dataFactory);
-            return descriptionConvertVisitor.getOWLClassExpression(suggestionList.get(rowIndex).getDescription());
+			return OWLAPIDescriptionConvertVisitor
+					.getOWLClassExpression(suggestionList.get(rowIndex)
+							.getDescription());
 		}
 		return null;
 

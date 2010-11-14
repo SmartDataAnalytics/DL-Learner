@@ -37,6 +37,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -61,37 +62,35 @@ import org.semanticweb.owlapi.model.OWLTypedLiteral;
  */
 public final class OWLAPIConverter {
 
-	private OWLDataFactory dataFactory;
-    private OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor;
-    private OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor;
-
-    /**
+	private static OWLDataFactory staticFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+	
+	/**
 	 * Converts a DL-Learner axiom into an OWL API axiom.
 	 * 
 	 * @see OWLAPIAxiomConvertVisitor#convertAxiom(Axiom)
 	 * @param axiom The axiom to convert.
 	 * @return An OWL API axiom.
 	 */
-	public OWLAxiom getOWLAPIAxiom(Axiom axiom) {
-		return getOwlAPIAxiomConvertVisitor().convertAxiom(axiom);
+	public static OWLAxiom getOWLAPIAxiom(Axiom axiom) {
+		return OWLAPIAxiomConvertVisitor.convertAxiom(axiom);
 	}	
 	
 	/**
 	 * Converts a DL-Learner description into an OWL API description.
 	 * 
-	 * @see OWLAPIDescriptionConvertVisitor#getOWLClassExpression(org.dllearner.core.owl.Description)
+	 * @see OWLAPIDescriptionConvertVisitor#getOWLDescription(Description)
 	 * @param description DL-Learner description.
 	 * @return Corresponding OWL API description.
 	 */
-	public OWLClassExpression getOWLAPIDescription(Description description) {
-		return getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(description);
+	public static OWLClassExpression getOWLAPIDescription(Description description) {
+		return OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
 	}
 	
-	public OWLIndividual getOWLAPIIndividual(Individual individual) {
-		return getDataFactory().getOWLNamedIndividual(IRI.create(individual.getName()));
+	public static OWLIndividual getOWLAPIIndividual(Individual individual) {
+		return staticFactory.getOWLNamedIndividual(IRI.create(individual.getName()));
 	}	
 	
-	public Set<OWLIndividual> getOWLAPIIndividuals(Set<Individual> individuals) {
+	public static Set<OWLIndividual> getOWLAPIIndividuals(Set<Individual> individuals) {
 		Set<OWLIndividual> inds = new TreeSet<OWLIndividual>();
 		for(Individual individual : individuals) {
 			inds.add(getOWLAPIIndividual(individual));
@@ -99,33 +98,33 @@ public final class OWLAPIConverter {
 		return inds;
 	}	
 	
-	public OWLObjectProperty getOWLAPIObjectProperty(ObjectProperty role) {
-		return getDataFactory().getOWLObjectProperty(IRI.create(role.getName()));
+	public static OWLObjectProperty getOWLAPIObjectProperty(ObjectProperty role) {
+		return staticFactory.getOWLObjectProperty(IRI.create(role.getName()));
 	}
 	
-	public OWLDataProperty getOWLAPIDataProperty(DatatypeProperty datatypeProperty) {
-		return getDataFactory().getOWLDataProperty(IRI.create(datatypeProperty.getName()));
+	public static OWLDataProperty getOWLAPIDataProperty(DatatypeProperty datatypeProperty) {
+		return staticFactory.getOWLDataProperty(IRI.create(datatypeProperty.getName()));
 	}
 	
-	public OWLEntity getOWLAPIEntity(Entity entity) {
+	public static OWLEntity getOWLAPIEntity(Entity entity) {
 		if(entity instanceof ObjectProperty) {
-			return getDataFactory().getOWLObjectProperty(IRI.create(entity.getName()));
+			return staticFactory.getOWLObjectProperty(IRI.create(entity.getName()));
 		} else if(entity instanceof DatatypeProperty) {
-			return getDataFactory().getOWLDataProperty(IRI.create(entity.getName()));
+			return staticFactory.getOWLDataProperty(IRI.create(entity.getName()));	
 		} else if(entity instanceof NamedClass) {
-			return getDataFactory().getOWLClass(IRI.create(entity.getName()));
+			return staticFactory.getOWLClass(IRI.create(entity.getName()));			
 		} else if(entity instanceof Individual) {
-			return getDataFactory().getOWLNamedIndividual(IRI.create(entity.getName()));
+			return staticFactory.getOWLNamedIndividual(IRI.create(entity.getName()));						
 		}
 		// should never happen
 		throw new Error("OWL API entity conversion for " + entity + " not supported.");
 	}
 	
-	public Individual convertIndividual(OWLNamedIndividual individual) {
+	public static Individual convertIndividual(OWLNamedIndividual individual) {
 		return new Individual(individual.getIRI().toString());
 	}
 	
-	public Set<Individual> convertIndividuals(Set<? extends OWLIndividual> individuals) {
+	public static Set<Individual> convertIndividuals(Set<? extends OWLIndividual> individuals) {
 		Set<Individual> inds = new TreeSet<Individual>();
 		for(OWLIndividual individual : individuals) {
 			inds.add(convertIndividual(individual.asOWLNamedIndividual()));
@@ -133,15 +132,15 @@ public final class OWLAPIConverter {
 		return inds;
 	}	
 	
-	public ObjectProperty convertObjectProperty(OWLObjectProperty property) {
+	public static ObjectProperty convertObjectProperty(OWLObjectProperty property) {
 		return new ObjectProperty(property.getIRI().toString());
 	}
 	
-	public DatatypeProperty convertIndividual(OWLDataProperty property) {
+	public static DatatypeProperty convertIndividual(OWLDataProperty property) {
 		return new DatatypeProperty(property.getIRI().toString());
 	}	
 	
-	public Description convertClass(OWLClass owlClass) {
+	public static Description convertClass(OWLClass owlClass) {
 		if(owlClass.isOWLThing()) {
 			return Thing.instance;
 		} else if(owlClass.isOWLNothing()) {
@@ -151,12 +150,12 @@ public final class OWLAPIConverter {
 		}
 	}	
 	
-	public Constant convertConstant(OWLLiteral constant) {
+	public static Constant convertConstant(OWLLiteral constant) {
 		Constant c;
 		// for typed constants we have to figure out the correct
 		// data type and value
 		if(constant instanceof OWLTypedLiteral) {
-			Datatype dt = convertDatatype(((OWLTypedLiteral)constant).getDatatype());
+			Datatype dt = OWLAPIConverter.convertDatatype(((OWLTypedLiteral)constant).getDatatype());
 			c = new TypedConstant(constant.getLiteral(),dt);
 		// for untyped constants we have to figure out the value
 		// and language tag (if any)
@@ -170,7 +169,7 @@ public final class OWLAPIConverter {
 		return c;
 	}
 
-	public Set<Constant> convertConstants(Set<OWLLiteral> constants) {
+	public static Set<Constant> convertConstants(Set<OWLLiteral> constants) {
 		SortedSet<Constant> is = new TreeSet<Constant>();
 		for(OWLLiteral oi : constants) {
 			is.add(convertConstant(oi));
@@ -178,7 +177,7 @@ public final class OWLAPIConverter {
 		return is;			
 	}		
 	
-	public Datatype convertDatatype(OWLDatatype dataType) {
+	public static Datatype convertDatatype(OWLDatatype dataType) {
 		URI uri = dataType.getIRI().toURI();
 		if(uri.equals(Datatype.BOOLEAN.getURI()))
 			return Datatype.BOOLEAN;
@@ -197,28 +196,4 @@ public final class OWLAPIConverter {
 		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
 	}
 
-    public OWLDataFactory getDataFactory() {
-        return dataFactory;
-    }
-
-    public void setDataFactory(OWLDataFactory dataFactory) {
-        this.dataFactory = dataFactory;
-    }
-
-    public OWLAPIDescriptionConvertVisitor getOwlAPIDescriptionConvertVisitor() {
-        return owlAPIDescriptionConvertVisitor;
-    }
-
-    public void setOwlAPIDescriptionConvertVisitor(OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor) {
-        this.owlAPIDescriptionConvertVisitor = owlAPIDescriptionConvertVisitor;
-    }
-
-    
-    public OWLAPIAxiomConvertVisitor getOwlAPIAxiomConvertVisitor() {
-        return owlAPIAxiomConvertVisitor;
-    }
-
-    public void setOwlAPIAxiomConvertVisitor(OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor) {
-        this.owlAPIAxiomConvertVisitor = owlAPIAxiomConvertVisitor;
-    }
 }

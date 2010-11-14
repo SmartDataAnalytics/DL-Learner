@@ -47,9 +47,8 @@ public class EvaluatedDescription implements Serializable{
 	protected Score score;
 	
 	protected static DecimalFormat dfPercent = new DecimalFormat("0.00%");
-    private OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor;
-
-    /**
+	
+	/**
 	 * Constructs an evaluated description using its score.
 	 * @param description The description, which was evaluated.
 	 * @param score The score of the description.
@@ -93,7 +92,7 @@ public class EvaluatedDescription implements Serializable{
 	}
 	
 	/**
-	 * @see Score#getAccuracy()
+	 * @see org.dllearner.core.Score#getScoreValue()
 	 * @return Value in this score system.
 	 */
 	public double getAccuracy() {
@@ -124,7 +123,7 @@ public class EvaluatedDescription implements Serializable{
 		JSONObject object = new JSONObject();
 		try {
 			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLClassExpression c = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(description);
+			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
 			object.put("scoreValue", score.getAccuracy());		
@@ -140,12 +139,4 @@ public class EvaluatedDescription implements Serializable{
 		return description.toString() + " " + dfPercent.format(getAccuracy());
 	}
 
-
-    public OWLAPIDescriptionConvertVisitor getOwlAPIDescriptionConvertVisitor() {
-        return owlAPIDescriptionConvertVisitor;
-    }
-
-    public void setOwlAPIDescriptionConvertVisitor(OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor) {
-        this.owlAPIDescriptionConvertVisitor = owlAPIDescriptionConvertVisitor;
-    }
 }

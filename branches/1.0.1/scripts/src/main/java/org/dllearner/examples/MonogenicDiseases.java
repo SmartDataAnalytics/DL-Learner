@@ -43,8 +43,6 @@ import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.DefaultOWLUtilities;
-import org.dllearner.utilities.owl.IOWLUtilities;
 import org.ini4j.IniFile;
 import org.semanticweb.owlapi.model.IRI;
 
@@ -632,8 +630,7 @@ int neg_count = 1;
 		// writing generated knowledge base
 		System.out.print("Writing OWL file ... ");
 		long startWriteTime = System.nanoTime();
-        IOWLUtilities utils = new DefaultOWLUtilities();
-		utils.exportKBToOWL(owlFile, kb, ontologyURI);
+		OWLAPIReasoner.exportKBToOWL(owlFile, kb, ontologyURI);
 		long writeDuration = System.nanoTime() - startWriteTime;
 		System.out.println("OK (entities: " + count + "; time: " + Helper.prettyPrintNanoSeconds(writeDuration) + "; file size: " + owlFile.length()/1024 + " KB).");		
 
