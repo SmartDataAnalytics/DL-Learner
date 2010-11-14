@@ -46,10 +46,13 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
  *
  */
 public class OntologyClassRewriter {
+    private OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor;
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
+
+        OntologyClassRewriter rewriter = new OntologyClassRewriter();
 		String rewrittenOntology =
-		rewriteOntology(
+		rewriter.rewriteOntology(
 				// Ontologie
 				"http://localhost/jl/dllearnerws/v2/ontologies/father.owl",
 				// Klasse, die umgeschrieben wird
@@ -61,7 +64,7 @@ public class OntologyClassRewriter {
 	}
 
 	@SuppressWarnings({"unused"})
-	public static String rewriteOntology(String urlString, String className, String newConceptString) {
+	public String rewriteOntology(String urlString, String className, String newConceptString) {
 		
 		try {
 			// neue Definition in DL-Learner internes Format parsen
@@ -71,7 +74,7 @@ public class OntologyClassRewriter {
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
 			// Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
 			// OWLDescription newConceptOWLAPI = OWLAPIReasoner.getOWLAPIDescription(newConceptInternal);
-			OWLClassExpression newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newConceptInternal);
+			OWLClassExpression newConceptOWLAPI = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(newConceptInternal);
 			
 			// Umwandlung Klassenname in atomate KAON2-Klasse
 			// OWLClass classKAON2 = KAON2Manager.factory().owlClass(className);
@@ -134,5 +137,13 @@ public class OntologyClassRewriter {
 	
 		throw new Error("Ontology could not be rewritten. Exiting.");
 	}
+
+    public OWLAPIDescriptionConvertVisitor getOwlAPIDescriptionConvertVisitor() {
+        return owlAPIDescriptionConvertVisitor;
+    }
+
+    public void setOwlAPIDescriptionConvertVisitor(OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor) {
+        this.owlAPIDescriptionConvertVisitor = owlAPIDescriptionConvertVisitor;
+    }
 	
 }

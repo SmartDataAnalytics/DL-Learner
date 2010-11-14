@@ -45,8 +45,9 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	 */
 	private static final long serialVersionUID = -5907640793141522431L;
 	private ClassScore classScore;
-	
-	/**
+    private OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor;
+
+    /**
 	 * Constructs an evaluated description for learning classes in ontologies.
 	 * @param description Description.
 	 * @param score Score of description.
@@ -133,7 +134,7 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 		JSONObject object = new JSONObject();
 		try {
 			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
+			OWLClassExpression c = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(description);
 			object.put("signature", new JSONArray(c.getSignature()));
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
@@ -148,5 +149,14 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 			e.printStackTrace();
 			return null;
 		}
-	}		
+	}
+
+
+    public OWLAPIDescriptionConvertVisitor getOwlAPIDescriptionConvertVisitor() {
+        return owlAPIDescriptionConvertVisitor;
+    }
+
+    public void setOwlAPIDescriptionConvertVisitor(OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor) {
+        this.owlAPIDescriptionConvertVisitor = owlAPIDescriptionConvertVisitor;
+    }
 }

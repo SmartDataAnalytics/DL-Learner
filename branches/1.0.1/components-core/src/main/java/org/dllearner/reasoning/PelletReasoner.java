@@ -158,8 +158,11 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
+    private OWLAPIConverter owlAPIConverter;
+    private OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor;
+    private OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor;
 
-	public PelletReasoner(Set<KnowledgeSource> sources) {
+    public PelletReasoner(Set<KnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new PelletReasonerConfigurator(this);
 	}
@@ -279,7 +282,7 @@ public class PelletReasoner extends ReasonerComponent {
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
 				}
-				OWLAPIAxiomConvertVisitor
+				getOwlAPIAxiomConvertVisitor()
 						.fillOWLOntology(manager, ontology, kb);
 				owlAPIOntologies.add(ontology);
 				allImports.add(ontology);
@@ -306,17 +309,17 @@ public class PelletReasoner extends ReasonerComponent {
 		for(OWLOntologyChange change : changes){
 			OWLAxiom axiom = change.getAxiom();
 			if(axiom instanceof OWLClassAssertionAxiom){
-				Individual ind = OWLAPIConverter.convertIndividual(((OWLClassAssertionAxiom)axiom).getIndividual().asOWLNamedIndividual());
-				Description desc = OWLAPIConverter.convertClass(((OWLClassAssertionAxiom)axiom).getClassExpression().asOWLClass());
+				Individual ind = getOWLAPIConverter().convertIndividual(((OWLClassAssertionAxiom)axiom).getIndividual().asOWLNamedIndividual());
+				Description desc = getOWLAPIConverter().convertClass(((OWLClassAssertionAxiom)axiom).getClassExpression().asOWLClass());
 				if(change instanceof RemoveAxiom){
 					classInstancesPos.get(desc).remove(ind);
 				} else if(change instanceof AddAxiom){
 					classInstancesPos.get(desc).add(ind);
 				}
 			} else if(axiom instanceof OWLObjectPropertyAssertionAxiom){
-				Individual obj = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getObject().asOWLNamedIndividual());
-				Individual sub = OWLAPIConverter.convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getSubject().asOWLNamedIndividual());
-				ObjectProperty prop = OWLAPIConverter.convertObjectProperty(((OWLObjectPropertyAssertionAxiom)axiom).getProperty().asOWLObjectProperty());
+				Individual obj = getOWLAPIConverter().convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getObject().asOWLNamedIndividual());
+				Individual sub = getOWLAPIConverter().convertIndividual(((OWLObjectPropertyAssertionAxiom)axiom).getSubject().asOWLNamedIndividual());
+				ObjectProperty prop = getOWLAPIConverter().convertObjectProperty(((OWLObjectPropertyAssertionAxiom)axiom).getProperty().asOWLObjectProperty());
 				if(change instanceof RemoveAxiom){
 					SortedSet<Individual> fillers = opPos.get(prop).get(sub);
 					if(fillers != null){
@@ -561,7 +564,7 @@ public class PelletReasoner extends ReasonerComponent {
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
 				}
-				OWLAPIAxiomConvertVisitor
+				getOwlAPIAxiomConvertVisitor()
 						.fillOWLOntology(manager, ontology, kb);
 				owlAPIOntologies.add(ontology);
 				allImports.add(ontology);
@@ -630,10 +633,10 @@ public class PelletReasoner extends ReasonerComponent {
 	}
 	
 	public Set<Description> getComplementClasses(Description desc){
-		OWLClassExpression owlDesc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc);
+		OWLClassExpression owlDesc = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(desc);
 		Set<Description> complements = new HashSet<Description>();
 		for(OWLClass comp : reasoner.getDisjointClasses(owlDesc).getFlattened()){
-			complements.add(OWLAPIConverter.convertClass(comp));
+			complements.add(getOWLAPIConverter().convertClass(comp));
 		}
 		return complements;
 		
@@ -646,21 +649,21 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	@Override
 	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
-		return reasoner.isEntailed(factory.getOWLSubClassOfAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(subConcept),
-				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(superConcept)));			
+		return reasoner.isEntailed(factory.getOWLSubClassOfAxiom(getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(subConcept),
+				getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(superConcept)));
 	}
 	
 	@Override
 	protected boolean isEquivalentClassImpl(Description class1, Description class2) {
-		return reasoner.isEntailed(factory.getOWLEquivalentClassesAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class1),
-				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class2)));		
+		return reasoner.isEntailed(factory.getOWLEquivalentClassesAxiom(getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(class1),
+				getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(class2)));
 	}
 
 	@Override
 	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
 		NodeSet<OWLClass> classes = null;
 		
-		classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
+		classes = reasoner.getSuperClasses(getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(concept), true);
 		
 		return getFirstClasses(classes);
 	}
@@ -669,7 +672,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<Description> getSubClassesImpl(Description concept) {
 		NodeSet<OWLClass> classes = null;
 		
-		classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
+		classes = reasoner.getSubClasses(getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(concept), true);
 		
 		return getFirstClasses(classes);
 	}
@@ -678,7 +681,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
 		NodeSet<OWLObjectPropertyExpression> properties = null;
 		
-		properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
+		properties = reasoner.getSuperObjectProperties(getOWLAPIConverter().getOWLAPIObjectProperty(role), true);
 		 	
 		return getFirstObjectProperties(properties);
 	}
@@ -687,7 +690,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
 		NodeSet<OWLObjectPropertyExpression> properties = null;
 		
-		properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
+		properties = reasoner.getSubObjectProperties(getOWLAPIConverter().getOWLAPIObjectProperty(role), true);
 			
 		return getFirstObjectProperties(properties);		
 	}
@@ -696,7 +699,7 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
-		properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
+		properties = reasoner.getSuperDataProperties(getOWLAPIConverter().getOWLAPIDataProperty(role), true);
 		 
 		return getFirstDatatypeProperties(properties);
 	}
@@ -705,14 +708,14 @@ public class PelletReasoner extends ReasonerComponent {
 	protected TreeSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
-		properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
+		properties = reasoner.getSubDataProperties(getOWLAPIConverter().getOWLAPIDataProperty(role), true);
 			
 		return getFirstDatatypeProperties(properties);		
 	}	
 	
 	@Override
 	public boolean hasTypeImpl(Description description, Individual individual) throws ReasoningMethodUnsupportedException {
-//		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
+//		OWLClassExpression d = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(concept);
 //		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
 //		try {
 //			return reasoner.hasType(i,d,false);
@@ -951,7 +954,7 @@ public class PelletReasoner extends ReasonerComponent {
 	
 	private SortedSet<Individual> getIndividualsWithPellet(Description concept){
 
-		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
+		OWLClassExpression d = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(concept);
 		Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
 		SortedSet<Individual> inds = new TreeSet<Individual>();
 		for(OWLNamedIndividual ind : individuals)
@@ -962,7 +965,7 @@ public class PelletReasoner extends ReasonerComponent {
 	@Override
 	public SortedSet<Individual> getIndividualsImpl(Description concept)  throws ReasoningMethodUnsupportedException{
 //
-//		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
+//		OWLClassExpression d = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(concept);
 //		Set<OWLIndividual> individuals = null;
 //		
 //		individuals = reasoner.getIndividuals(d, false);
@@ -1254,7 +1257,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	@Override
 	public Description getDomainImpl(ObjectProperty objectProperty) {
-		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
+		OWLObjectProperty prop = getOWLAPIConverter().getOWLAPIObjectProperty(objectProperty);
 
 		// Pellet returns a set of sets of named class, which are more
 		// general than the actual domain/range
@@ -1265,7 +1268,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	@Override
 	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
-		OWLDataProperty prop = OWLAPIConverter
+		OWLDataProperty prop = getOWLAPIConverter()
 				.getOWLAPIDataProperty(datatypeProperty);
 
 		NodeSet<OWLClass> set = reasoner.getDataPropertyDomains(prop, true);
@@ -1275,7 +1278,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	@Override
 	public Description getRangeImpl(ObjectProperty objectProperty) {
-		OWLObjectProperty prop = OWLAPIConverter
+		OWLObjectProperty prop = getOWLAPIConverter()
 				.getOWLAPIObjectProperty(objectProperty);
 
 		NodeSet<OWLClass> set = reasoner.getObjectPropertyRanges(prop, true);
@@ -1299,8 +1302,8 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		}
 		for(OWLClassExpression desc : union){
 			boolean isSuperClass = false;
-			for(Description d : getClassHierarchy().getSubClasses(OWLAPIConverter.convertClass(desc.asOWLClass()))){
-				if(union.contains(OWLAPIConverter.getOWLAPIDescription(d))){
+			for(Description d : getClassHierarchy().getSubClasses(getOWLAPIConverter().convertClass(desc.asOWLClass()))){
+				if(union.contains(getOWLAPIConverter().getOWLAPIDescription(d))){
 					isSuperClass = true;
 					break;
 				}
@@ -1320,7 +1323,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	@Override
 	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
-		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(atomicRole);
+		OWLObjectProperty prop = getOWLAPIConverter().getOWLAPIObjectProperty(atomicRole);
 		Map<Individual, SortedSet<Individual>> map = new TreeMap<Individual, SortedSet<Individual>>();
 		for(Individual i : individuals) {
 			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
@@ -1351,8 +1354,8 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		
 		Map<ObjectProperty,Set<Individual>> map = new TreeMap<ObjectProperty, Set<Individual>>();
 		for(Entry<OWLObjectPropertyExpression,Set<OWLNamedIndividual>> entry : mapAPI.entrySet()) {
-			ObjectProperty prop = OWLAPIConverter.convertObjectProperty(entry.getKey().asOWLObjectProperty());
-			Set<Individual> inds = OWLAPIConverter.convertIndividuals(entry.getValue());
+			ObjectProperty prop = getOWLAPIConverter().convertObjectProperty(entry.getKey().asOWLObjectProperty());
+			Set<Individual> inds = getOWLAPIConverter().convertIndividuals(entry.getValue());
 			map.put(prop, inds);
 		}
 		return map;
@@ -1361,7 +1364,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	@Override
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) {
 		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
+		OWLObjectProperty prop = getOWLAPIConverter().getOWLAPIObjectProperty(objectProperty);
 		Set<OWLNamedIndividual> inds = null;
 		
 		inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
@@ -1377,17 +1380,17 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	@Override
 	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) {
 		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
+		OWLDataProperty prop = getOWLAPIConverter().getOWLAPIDataProperty(datatypeProperty);
 		Set<OWLLiteral> constants = null;
 	
 		constants = reasoner.getDataPropertyValues(ind, prop);
 		
-		return OWLAPIConverter.convertConstants(constants);	
+		return getOWLAPIConverter().convertConstants(constants);
 	}	
 	
 	public Map<Individual, SortedSet<Double>> getDoubleValues(
 			DatatypeProperty datatypeProperty) {
-		OWLDataProperty prop = OWLAPIConverter
+		OWLDataProperty prop = getOWLAPIConverter()
 				.getOWLAPIDataProperty(datatypeProperty);
 		Map<Individual, SortedSet<Double>> map = new TreeMap<Individual, SortedSet<Double>>();
 		for (Individual i : individuals) {
@@ -1412,7 +1415,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	@Override
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
-		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
+		OWLDataProperty prop = getOWLAPIConverter().getOWLAPIDataProperty(datatypeProperty);
 		Map<Individual, SortedSet<Constant>> map = new TreeMap<Individual, SortedSet<Constant>>();
 		for(Individual i : individuals) {
 			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
@@ -1429,7 +1432,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 				// for typed constants we have to figure out the correct
 				// data type and value
 				if(!literal.isRDFPlainLiteral()) {
-					Datatype dt = OWLAPIConverter.convertDatatype(literal.getDatatype());
+					Datatype dt = getOWLAPIConverter().convertDatatype(literal.getDatatype());
 					is.add(new TypedConstant(literal.getLiteral(), dt));
 				// for untyped constants we have to figure out the value
 				// and language tag (if any)
@@ -1508,11 +1511,11 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	private Set<Description> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
 		Set<Description> concepts = new HashSet<Description>();
 		for(OWLClass owlClass : owlClasses)
-			concepts.add(OWLAPIConverter.convertClass(owlClass));
+			concepts.add(getOWLAPIConverter().convertClass(owlClass));
 		return concepts;
 	}
 	
-	public static void exportKBToOWL(File owlOutputFile, KB kb, IRI ontologyIRI) {
+	public void exportKBToOWL(File owlOutputFile, KB kb, IRI ontologyIRI) {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		//URI ontologyURI = URI.create("http://example.com");
 		IRI physicalIRI = IRI.create(owlOutputFile.toURI());
@@ -1522,7 +1525,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 		try {
 			ontology = manager.createOntology(ontologyIRI);
 			// OWLAPIReasoner.fillOWLAPIOntology(manager, ontology, kb);
-			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
+			getOwlAPIAxiomConvertVisitor().fillOWLOntology(manager, ontology, kb);
 			manager.saveOntology(ontology);
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
@@ -1599,13 +1602,13 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 
 	@Override
 	public Set<Constant> getLabelImpl(Entity entity) {
-		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
+		OWLEntity owlEntity = getOWLAPIConverter().getOWLAPIEntity(entity);
 		Set<OWLAnnotation> labelAnnotations = owlEntity.getAnnotations(owlAPIOntologies.get(0),
 				factory.getRDFSLabel());
 		Set<Constant> annotations = new HashSet<Constant>();
 		for(OWLAnnotation label : labelAnnotations) {
 			OWLLiteral c =  (OWLLiteral)label.getValue();
-			annotations.add(OWLAPIConverter.convertConstant(c));
+			annotations.add(getOWLAPIConverter().convertConstant(c));
 		}
 		return annotations;
 	}
@@ -1616,7 +1619,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	@Override
 	public boolean remainsSatisfiableImpl(Axiom axiom) {
 		boolean consistent = true;
-		OWLAxiom axiomOWLAPI = OWLAPIAxiomConvertVisitor.convertAxiom(axiom);
+		OWLAxiom axiomOWLAPI = getOwlAPIAxiomConvertVisitor().convertAxiom(axiom);
 		
 		try {
 			manager.applyChange(new AddAxiom(ontology, axiomOWLAPI));
@@ -1663,7 +1666,7 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	 */
 	@Override
 	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
-		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass();
+		OWLClass owlClass = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(nc).asOWLClass();
 		Set<OWLClassExpression> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies));
 		Set<Description> definitions = new HashSet<Description>();
 		for(OWLClassExpression owlAPIDescription : owlAPIDescriptions) {
@@ -1674,6 +1677,30 @@ public SortedSet<Individual> getIndividualsImplFast(Description description)
 	
 	public static String getName() {
 		return "Pellet reasoner";
-	}	
+	}
+
+    public OWLAPIConverter getOWLAPIConverter() {
+        return owlAPIConverter;
+    }
+
+    public void setOWLAPIConverter(OWLAPIConverter owlAPIConverter) {
+        this.owlAPIConverter = owlAPIConverter;
+    }
+
+    public OWLAPIDescriptionConvertVisitor getOwlAPIDescriptionConvertVisitor() {
+        return owlAPIDescriptionConvertVisitor;
+    }
+
+    public void setOwlAPIDescriptionConvertVisitor(OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor) {
+        this.owlAPIDescriptionConvertVisitor = owlAPIDescriptionConvertVisitor;
+    }
+
+    public OWLAPIAxiomConvertVisitor getOwlAPIAxiomConvertVisitor() {
+        return owlAPIAxiomConvertVisitor;
+    }
+
+    public void setOwlAPIAxiomConvertVisitor(OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor) {
+        this.owlAPIAxiomConvertVisitor = owlAPIAxiomConvertVisitor;
+    }
 
 }

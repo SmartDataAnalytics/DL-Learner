@@ -46,8 +46,9 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	
 	private static final long serialVersionUID = -6962185910615506968L;
 	private ScorePosNeg score2;
-	
-	/**
+    private OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor;
+
+    /**
 	 * Constructs an evaluated description using its score.
 	 * @param description The description, which was evaluated.
 	 * @param score The score of the description.
@@ -133,7 +134,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 		JSONObject object = new JSONObject();
 		try {
 			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
+			OWLClassExpression c = getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(description);
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
 			object.put("accuracy", score2.getAccuracy());
@@ -164,4 +165,11 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 		return j;
 	}
 
+    public OWLAPIDescriptionConvertVisitor getOwlAPIDescriptionConvertVisitor() {
+        return owlAPIDescriptionConvertVisitor;
+    }
+
+    public void setOwlAPIDescriptionConvertVisitor(OWLAPIDescriptionConvertVisitor owlAPIDescriptionConvertVisitor) {
+        this.owlAPIDescriptionConvertVisitor = owlAPIDescriptionConvertVisitor;
+    }
 }

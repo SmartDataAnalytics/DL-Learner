@@ -54,7 +54,6 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -79,7 +78,8 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	// private OWLDescription description;
 	private Stack<OWLClassExpression> stack = new Stack<OWLClassExpression>();
 	
-	private OWLDataFactory factory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+	private OWLDataFactory factory;
+    private OWLAPIConverter owlAPIConverter;
 	
 	public OWLClassExpression getOWLClassExpression() {
 		return stack.pop();
@@ -90,8 +90,9 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 * @param description DL-Learner description.
 	 * @return Corresponding OWL API description.
 	 */
-	public static OWLClassExpression getOWLClassExpression(Description description) {
+	public OWLClassExpression getOWLClassExpression(Description description) {
 		OWLAPIDescriptionConvertVisitor converter = new OWLAPIDescriptionConvertVisitor();
+        converter.setFactory(getFactory());
 		description.accept(converter);
 		return converter.getOWLClassExpression();
 	}
@@ -104,7 +105,8 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	public static void main(String[] args) {
 		try {
 			Description d = KBParser.parseConcept("(male AND (rich OR NOT stupid))");
-			OWLClassExpression od = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d);
+            OWLAPIDescriptionConvertVisitor visitor = new OWLAPIDescriptionConvertVisitor();
+			OWLClassExpression od = visitor.getOWLClassExpression(d);
 			System.out.println(d);
 			System.out.println(od);
 		} catch (ParseException e) {
@@ -119,43 +121,43 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	public void visit(Negation description) {
 		description.getChild(0).accept(this);
 		OWLClassExpression d = stack.pop();
-		stack.push(factory.getOWLObjectComplementOf(d));		
+		stack.push(getFactory().getOWLObjectComplementOf(d));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectAllRestriction)
 	 */
 	public void visit(ObjectAllRestriction description) {
-		OWLObjectProperty role = factory.getOWLObjectProperty(
+		OWLObjectProperty role = getFactory().getOWLObjectProperty(
 				IRI.create(description.getRole().getName()));
 		description.getChild(0).accept(this);
 		OWLClassExpression d = stack.pop();
-		stack.push(factory.getOWLObjectAllValuesFrom(role, d));		
+		stack.push(getFactory().getOWLObjectAllValuesFrom(role, d));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectSomeRestriction)
 	 */
 	public void visit(ObjectSomeRestriction description) {
-		OWLObjectProperty role = factory.getOWLObjectProperty(
+		OWLObjectProperty role = getFactory().getOWLObjectProperty(
 				IRI.create(description.getRole().getName()));
 		description.getChild(0).accept(this);
 		OWLClassExpression d = stack.pop();
-		stack.push(factory.getOWLObjectSomeValuesFrom(role, d));
+		stack.push(getFactory().getOWLObjectSomeValuesFrom(role, d));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Nothing)
 	 */
 	public void visit(Nothing description) {
-		stack.push(factory.getOWLNothing());
+		stack.push(getFactory().getOWLNothing());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Thing)
 	 */
 	public void visit(Thing description) {
-		stack.push(factory.getOWLThing());
+		stack.push(getFactory().getOWLThing());
 	}
 
 	/* (non-Javadoc)
@@ -167,7 +169,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 			child.accept(this);
 			descriptions.add(stack.pop());
 		}
-		stack.push(factory.getOWLObjectIntersectionOf(descriptions));
+		stack.push(getFactory().getOWLObjectIntersectionOf(descriptions));
 	}
 
 	/* (non-Javadoc)
@@ -179,7 +181,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 			child.accept(this);
 			descriptions.add(stack.pop());
 		}
-		stack.push(factory.getOWLObjectUnionOf(descriptions));
+		stack.push(getFactory().getOWLObjectUnionOf(descriptions));
 	}
 
 	/* (non-Javadoc)
@@ -188,12 +190,12 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	public void visit(ObjectMinCardinalityRestriction description) {
 		// TODO Taken from ObjectSomeRestriction above, hope its correct
 		//throw new Error("OWLAPIDescriptionConverter: not implemented");
-		OWLObjectProperty role = factory.getOWLObjectProperty(
+		OWLObjectProperty role = getFactory().getOWLObjectProperty(
 				IRI.create(description.getRole().getName()));
 		description.getChild(0).accept(this);
 		OWLClassExpression d = stack.pop();
 		int minmax = description.getCardinality();
-		stack.push(factory.getOWLObjectMinCardinality(minmax, role, d));
+		stack.push(getFactory().getOWLObjectMinCardinality(minmax, role, d));
 	}
 
 	/* (non-Javadoc)
@@ -202,12 +204,12 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	public void visit(ObjectExactCardinalityRestriction description) {
 		// TODO Taken from ObjectSomeRestriction above, hope its correct
 		//throw new Error("OWLAPIDescriptionConverter: not implemented");
-		OWLObjectProperty role = factory.getOWLObjectProperty(
+		OWLObjectProperty role = getFactory().getOWLObjectProperty(
 				IRI.create(description.getRole().getName()));
 		description.getChild(0).accept(this);
 		OWLClassExpression d = stack.pop();
 		int minmax = description.getCardinality();
-		stack.push(factory.getOWLObjectExactCardinality(minmax, role, d));
+		stack.push(getFactory().getOWLObjectExactCardinality(minmax, role, d));
 		
 	}
 
@@ -217,22 +219,22 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	public void visit(ObjectMaxCardinalityRestriction description) {
 		// TODO Taken from ObjectSomeRestriction above, hope its correct
 		//throw new Error("OWLAPIDescriptionConverter: not implemented");
-		OWLObjectProperty role = factory.getOWLObjectProperty(
+		OWLObjectProperty role = getFactory().getOWLObjectProperty(
 				IRI.create(description.getRole().getName()));
 		description.getChild(0).accept(this);
 		OWLClassExpression d = stack.pop();
 		int minmax = description.getCardinality();
-		stack.push(factory.getOWLObjectMaxCardinality(minmax, role, d));
+		stack.push(getFactory().getOWLObjectMaxCardinality(minmax, role, d));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		OWLObjectProperty role = factory.getOWLObjectProperty(
+		OWLObjectProperty role = getFactory().getOWLObjectProperty(
 				IRI.create(((ObjectProperty)description.getRestrictedPropertyExpression()).getName()));
-		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(description.getIndividual().getName()));
-		stack.push(factory.getOWLObjectHasValue(role, i));
+		OWLIndividual i = getFactory().getOWLNamedIndividual(IRI.create(description.getIndividual().getName()));
+		stack.push(getFactory().getOWLObjectHasValue(role, i));
 	}
 
 	/* (non-Javadoc)
@@ -259,16 +261,16 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 				
 		// get datatype property
 		DatatypeProperty dtp = description.getRestrictedPropertyExpression();
-		OWLDataProperty prop = factory.getOWLDataProperty(IRI.create(dtp.getName()));
+		OWLDataProperty prop = getFactory().getOWLDataProperty(IRI.create(dtp.getName()));
 		
-		stack.push(factory.getOWLDataHasValue(prop, constant));	
+		stack.push(getFactory().getOWLDataHasValue(prop, constant));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.NamedClass)
 	 */
 	public void visit(NamedClass description) {
-		stack.push(factory.getOWLClass(IRI.create(description.getName())));
+		stack.push(getFactory().getOWLClass(IRI.create(description.getName())));
 	}
 
 	/* (non-Javadoc)
@@ -315,8 +317,8 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		SimpleDoubleDataRange dr = (SimpleDoubleDataRange) description.getDataRange();
 		double value = dr.getValue();
 		
-		OWLDatatype doubleDataType = factory.getOWLDatatype(XSDVocabulary.DOUBLE.getIRI());
-        OWLLiteral constant = factory.getOWLLiteral(value);
+		OWLDatatype doubleDataType = getFactory().getOWLDatatype(XSDVocabulary.DOUBLE.getIRI());
+        OWLLiteral constant = getFactory().getOWLLiteral(value);
 
         OWLFacet facet;
         if(dr instanceof DoubleMinValue)
@@ -324,20 +326,20 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
         else 
         	facet = OWLFacet.MAX_INCLUSIVE;
         
-        OWLDataRange owlDataRange = factory.getOWLDatatypeRestriction(doubleDataType, facet, constant);
-        OWLDataProperty odp = factory.getOWLDataProperty(IRI.create(dp.getName()));
-        OWLClassExpression d = factory.getOWLDataSomeValuesFrom(odp, owlDataRange);
+        OWLDataRange owlDataRange = getFactory().getOWLDatatypeRestriction(doubleDataType, facet, constant);
+        OWLDataProperty odp = getFactory().getOWLDataProperty(IRI.create(dp.getName()));
+        OWLClassExpression d = getFactory().getOWLDataSomeValuesFrom(odp, owlDataRange);
 
 		stack.push(d);	
 	}
 
 	public OWLDatatype convertDatatype(Datatype datatype) {
 		if(datatype.equals(Datatype.BOOLEAN))
-			return factory.getBooleanOWLDatatype();
+			return getFactory().getBooleanOWLDatatype();
 		else if(datatype.equals(Datatype.INT))
-			return factory.getIntegerOWLDatatype();
+			return getFactory().getIntegerOWLDatatype();
 		else if(datatype.equals(Datatype.DOUBLE))
-			return factory.getDoubleOWLDatatype();		
+			return getFactory().getDoubleOWLDatatype();
 //		else if(datatype.equals(Datatype.STRING))
 //			return factory.getOWLDataType(Datatype.STRING.getURI());		
 		
@@ -349,13 +351,13 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		if(constant instanceof TypedConstant) {
 			Datatype dt = ((TypedConstant)constant).getDatatype();
 			OWLDatatype odt = convertDatatype(dt);
-			owlConstant = factory.getOWLLiteral(constant.getLiteral(), odt);
+			owlConstant = getFactory().getOWLLiteral(constant.getLiteral(), odt);
 		} else {
 			UntypedConstant uc = (UntypedConstant) constant;
 			if(uc.hasLang()) {
-				owlConstant = factory.getOWLLiteral(uc.getLiteral(), uc.getLang());
+				owlConstant = getFactory().getOWLLiteral(uc.getLiteral(), uc.getLang());
 			} else {
-				owlConstant = factory.getOWLLiteral(uc.getLiteral(), "");
+				owlConstant = getFactory().getOWLLiteral(uc.getLiteral(), "");
 			}
 		}
 		return owlConstant;
@@ -363,7 +365,23 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 
 	@Override
 	public void visit(ObjectOneOf description) {
-		stack.push(factory.getOWLObjectOneOf(OWLAPIConverter.getOWLAPIIndividuals(description.getIndividuals())));
+		stack.push(getFactory().getOWLObjectOneOf(getOwlAPIConverter().getOWLAPIIndividuals(description.getIndividuals())));
 		
 	}
+
+    public OWLDataFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(OWLDataFactory factory) {
+        this.factory = factory;
+    }
+
+    public OWLAPIConverter getOwlAPIConverter() {
+        return owlAPIConverter;
+    }
+
+    public void setOwlAPIConverter(OWLAPIConverter owlAPIConverter) {
+        this.owlAPIConverter = owlAPIConverter;
+    }
 }

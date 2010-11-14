@@ -60,17 +60,23 @@ public class ROLearner2 {
 
 	private static Logger logger = Logger.getLogger(ROLearner2.class);
 
-	// basic setup: learning problem and reasoning service
-	private ReasonerComponent rs;
-	// often the learning problems needn't be accessed directly; instead
-	// use the example sets below and the posonly variable
-	private PosNegLP learningProblem;
+    private ITerminationDeterminator terminationDeterminator;
+
+
+    /** Things that change each time */
 	private Description startDescription;
 	private int nrOfExamples;
 	private int nrOfPositiveExamples;
 	private Set<Individual> positiveExamples;
 	private int nrOfNegativeExamples;
 	private Set<Individual> negativeExamples;
+
+    /** Things that are consistent for the system */
+	// basic setup: learning problem and reasoning service
+	private ReasonerComponent rs;
+	// often the learning problems needn't be accessed directly; instead
+	// use the example sets below and the posonly variable
+	private PosNegLP learningProblem;
 
 	// noise regulates how many positives can be misclassified and when the
 	// algorithm terminates
@@ -86,15 +92,6 @@ public class ROLearner2 {
 	private boolean useTooWeakList = true;
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
-
-	// extended Options
-	private long maxExecutionTimeInSeconds;
-	private boolean maxExecutionTimeAlreadyReached = false;
-	private long minExecutionTimeInSeconds = 0;
-	private boolean minExecutionTimeAlreadyReached = false;
-	private int guaranteeXgoodDescriptions = 1;
-	private boolean guaranteeXgoodAlreadyReached = false;
-	private int maxClassDescriptionTests;
 
 	// if set to false we do not test properness; this may seem wrong
 	// but the disadvantage of properness testing are additional reasoner
@@ -216,8 +213,7 @@ public class ROLearner2 {
 			double noise, boolean writeSearchTree, boolean replaceSearchTree, File searchTreeFile,
 			boolean useTooWeakList, boolean useOverlyGeneralList,
 			boolean useShortConceptConstruction, boolean usePropernessChecks,
-			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
-			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease) {
+			int maxPosOnlyExpansion, boolean forceRefinementLengthIncrease) {
 
 		
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -247,10 +243,6 @@ public class ROLearner2 {
 		this.usePropernessChecks = usePropernessChecks;
 		baseURI = rs.getBaseURI();
 		prefixes = rs.getPrefixes();
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
-		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
-		this.maxClassDescriptionTests = maxClassDescriptionTests;
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
 
 		// logger.setLevel(Level.DEBUG);
@@ -266,9 +258,6 @@ public class ROLearner2 {
 		candidatesStable.clear();
 		newCandidates.clear();
 		solutions.clear();
-		maxExecutionTimeAlreadyReached = false;
-		minExecutionTimeAlreadyReached = false;
-		guaranteeXgoodAlreadyReached = false;		
 		propernessTestsReasoner = 0;
 		propernessTestsAvoidedByShortConceptConstruction = 0;
 		propernessTestsAvoidedByTooWeakList = 0;
@@ -372,8 +361,8 @@ public class ROLearner2 {
 		long traversalInterval = 300l * 1000000000l;
 		long reductionInterval = 300l * 1000000000l;
 		long currentTime;
-		
-		while (!isTerminationCriteriaReached()) {
+		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
+		while (!getTerminationDeterminator().isTerminationCriteriaReached(this.runtime,conceptTests, solutions.size())) {
 		//while ((!solutionFound || !configurator.getTerminateOnNoiseReached() ) && !stop) {
 
 			// print statistics at most once a second
@@ -455,6 +444,7 @@ public class ROLearner2 {
 
 			// Anzahl Schleifendurchläufe
 			loop++;
+            conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
 		}// end while
 
 		if (solutions.size()>0) {
@@ -488,7 +478,7 @@ public class ROLearner2 {
 
 		printStatistics(true);
 
-		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
+		conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
 		if (stop) {
 			logger.info("Algorithm stopped ("+conceptTests+" descriptions tested).\n");
 		} else {
@@ -1260,109 +1250,10 @@ public class ROLearner2 {
 		return startNode;
 	}
 	
-	/**
-	 * In this function it is calculated whether the algorithm should stop.
-	 * This is not always depends whether an actual solution was found
-	 * The algorithm stops if:
-	 * 1. the object attribute stop is set to true (possibly by an outside source)
-	 * 2. the maximimum execution time is reached
-	 * 3. the maximum number of class description tests is reached
-	 *
-	 * Continuation criteria and result improvement
-	 * The algorithm continues (although it would normally stop) if
-	 * 1. Minimum execution time is not reached (default 0)
-	 * 2. not enough good solutions are found (default 1)
-	 * otherwise it stops
-	 * 
-	 * @return true if the algorithm should stop, this is mostly indepent of the question if a solution was found
-	 */
-	private boolean isTerminationCriteriaReached(){
-		if(this.stop){
-			return true;
-		}
-//		System.out.println("ssssss");
-		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
-		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
-		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
-		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
-		boolean result = false;
-		
-		//ignore default
-		if (maxExecutionTimeInSeconds == 0)
-			result = false;
-		//alreadyReached
-		else if (maxExecutionTimeAlreadyReached)
-			return true;
-		//test
-		else if (maxMilliSeconds < totalTimeNeeded) {
-			this.stop();
-			logger.info("Maximum time (" + maxExecutionTimeInSeconds
-					+ " seconds) reached, stopping now...");
-			maxExecutionTimeAlreadyReached = true;
-			return true;
-		}
-		
-		//ignore default
-		if(maxClassDescriptionTests == 0) 
-			result = false;
-		//test
-		else if(conceptTests >= maxClassDescriptionTests){
-			logger.info("Maximum Class Description tests (" + maxClassDescriptionTests
-					+ " tests [actual: "+conceptTests+"]) reached, stopping now...");
-			return true;
-		}
-		
-		
-		if (guaranteeXgoodAlreadyReached){
-			result = true;
-		} else if(solutions.size() >= guaranteeXgoodDescriptions) {
-				if(guaranteeXgoodDescriptions != 1) {
-				logger.info("Minimum number (" + guaranteeXgoodDescriptions
-						+ ") of good descriptions reached.");
-				}
-				guaranteeXgoodAlreadyReached = true;
-				result = true;
-		}
-		
-				
-		if (minExecutionTimeAlreadyReached){
-			result = result && true;
-		}else if(minMilliSeconds < totalTimeNeeded) {
-			if(minExecutionTimeInSeconds != 0) {
-				logger.info("Minimum time (" + minExecutionTimeInSeconds
-						+ " seconds) reached.");
-			}
-			minExecutionTimeAlreadyReached = true;
-			result = result && true;
-		}else {
-			result = false;
-		} 
-		
-		return result;
-	
-	}
-	
 	public boolean isRunning() {
 		return isRunning;
 	}
 
-     /**
-     * Get the Max Execution Time In Seconds
-     *
-     * @return The Maximum Execution Time In Seconds
-     */
-    public long getMaxExecutionTimeInSeconds() {
-        return maxExecutionTimeInSeconds;
-    }
-
-    /**
-     * Set the Max Execution Time In Seconds.
-     *
-     * @param maxExecutionTimeInSeconds The max execution time in seconds.
-     */
-    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-        this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-    }
 
     public String getStartDescription() {
         return startDescription.toString();
@@ -1382,5 +1273,14 @@ public class ROLearner2 {
 
     public void setWriteSearchTree(boolean writeSearchTree) {
         this.writeSearchTree = writeSearchTree;
+    }
+
+    /** Breaking some of the bigger portions of this code into modules */
+    public ITerminationDeterminator getTerminationDeterminator() {
+        return terminationDeterminator;
+    }
+
+    public void setTerminationDeterminator(ITerminationDeterminator terminationDeterminator) {
+        this.terminationDeterminator = terminationDeterminator;
     }
 }

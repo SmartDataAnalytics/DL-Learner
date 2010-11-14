@@ -51,8 +51,9 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjec
  *
  */
 public class OWLAPIRenderers {
+    private OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor;
 
-	/**
+    /**
 	 * Converts an OWL API axiom to a Manchester OWL syntax string.
 	 * 
 	 * @param description Input OWLAxiom.
@@ -98,8 +99,8 @@ public class OWLAPIRenderers {
 		return sw.toString();
 	}	
 	
-	public static String toOWLXMLSyntax(Axiom axiom) {
-		return toOWLXMLSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom));
+	public String toOWLXMLSyntax(Axiom axiom) {
+		return toOWLXMLSyntax(getOwlAPIAxiomConvertVisitor().convertAxiom(axiom));
 	}		
 	
 	public static String toOWLXMLSyntax(OWLAxiom axiom) {
@@ -114,8 +115,8 @@ public class OWLAPIRenderers {
 		return sw.toString();
 	}		
 	
-	public static String toRDFXMLSyntax(Axiom axiom) {
-		return toRDFXMLSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom));
+	public String toRDFXMLSyntax(Axiom axiom) {
+		return toRDFXMLSyntax(getOwlAPIAxiomConvertVisitor().convertAxiom(axiom));
 	}		
 	
 	public static String toRDFXMLSyntax(OWLAxiom axiom) {
@@ -137,13 +138,13 @@ public class OWLAPIRenderers {
 		return str;
 	}		
 	
-	public static String toTurtleSyntax(Axiom axiom) {
-		return toTurtleSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom), false);
+	public String toTurtleSyntax(Axiom axiom) {
+		return toTurtleSyntax(getOwlAPIAxiomConvertVisitor().convertAxiom(axiom), false);
 	}		
 	
 	// short version = a lot of stuff thrown out (not a standalone Turtle file anymore)
-	public static String toTurtleSyntax(Axiom axiom, boolean shortVersion) {
-		return toTurtleSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom), shortVersion);
+	public String toTurtleSyntax(Axiom axiom, boolean shortVersion) {
+		return toTurtleSyntax(getOwlAPIAxiomConvertVisitor().convertAxiom(axiom), shortVersion);
 	}		
 	
 	public static String toTurtleSyntax(OWLAxiom axiom, boolean shortVersion) {
@@ -178,6 +179,15 @@ public class OWLAPIRenderers {
 		}
 		
 		return str;
-	}	
+	}
+
+
+    public OWLAPIAxiomConvertVisitor getOwlAPIAxiomConvertVisitor() {
+        return owlAPIAxiomConvertVisitor;
+    }
+
+    public void setOwlAPIAxiomConvertVisitor(OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor) {
+        this.owlAPIAxiomConvertVisitor = owlAPIAxiomConvertVisitor;
+    }
 	
 }

@@ -11,13 +11,19 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -33,7 +39,7 @@ import java.util.concurrent.Callable;
 public class DLLearnerCallable implements Callable<EvaluatedDescription> {
 
 
-    private static Logger logger = Logger.getLogger(DLLearnerCallable.class);
+    protected static Logger logger = Logger.getLogger(DLLearnerCallable.class);
 
     @Override
     public EvaluatedDescription call() throws Exception {
@@ -67,7 +73,7 @@ public class DLLearnerCallable implements Callable<EvaluatedDescription> {
      * @throws java.net.MalformedURLException
      * @throws ComponentInitException
      */
-    private Set<KnowledgeSource> createKnowledgeSources() throws MalformedURLException, ComponentInitException {
+    protected Set<KnowledgeSource> createKnowledgeSources() throws MalformedURLException, ComponentInitException {
 //        String baseDir = "examples/family";
         Resource kbResource = new ClassPathResource("/org/dllearner/integration/father.kb");
         /** Knowledge Base File Name*/
@@ -88,14 +94,14 @@ public class DLLearnerCallable implements Callable<EvaluatedDescription> {
         return sources;
     }
 
-    private LearningAlgorithm createLearningAlgorithm(ReasonerComponent reasonerComponent, LearningProblem learningProblem) throws LearningProblemUnsupportedException, ComponentInitException {
+    protected LearningAlgorithm createLearningAlgorithm(ReasonerComponent reasonerComponent, LearningProblem learningProblem) throws LearningProblemUnsupportedException, ComponentInitException {
         OCEL learningAlgorithm = new OCEL((PosNegLP) learningProblem, reasonerComponent);
         learningAlgorithm.setLogLevel("DEBUG");
         learningAlgorithm.init();
         return learningAlgorithm;
     }
 
-    private LearningProblem createLearningProblem(ReasonerComponent reasonerComponent) throws ComponentInitException {
+    protected LearningProblem createLearningProblem(ReasonerComponent reasonerComponent) throws ComponentInitException {
         PosNegLPStandard learningProblem = new PosNegLPStandard(reasonerComponent, createPositiveExamples(), createNegativeExamples());
         learningProblem.setUseApproximations(false);
         learningProblem.setAccuracyMethod("predacc");
@@ -111,11 +117,34 @@ public class DLLearnerCallable implements Callable<EvaluatedDescription> {
      * @return
      * @throws ComponentInitException
      */
-    private ReasonerComponent createReasoner(Set<KnowledgeSource> sources) throws ComponentInitException {
+    protected ReasonerComponent createReasoner(Set<KnowledgeSource> sources) throws ComponentInitException {
+
+        /** Create the OWL Data Factory */
+        OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+        /** Create the OWL Ontology Manager */
+        OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager(dataFactory);
+
+        OWLAPIDescriptionConvertVisitor descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
+        descriptionConvertVisitor.setFactory(dataFactory);
+
+        OWLAPIAxiomConvertVisitor axiomConvertVisitor = new OWLAPIAxiomConvertVisitor();
+        axiomConvertVisitor.setOwlAPIDescriptionConvertVisitor(descriptionConvertVisitor);
+
+        OWLAPIConverter converter = new OWLAPIConverter();
+        converter.setDataFactory(dataFactory);
+        converter.setOwlAPIAxiomConvertVisitor(axiomConvertVisitor);
+        converter.setOwlAPIDescriptionConvertVisitor(descriptionConvertVisitor);
+
         OWLAPIReasoner coreReasoner = new OWLAPIReasoner(sources);
+        coreReasoner.setManager(ontologyManager);
+        coreReasoner.setOwlAPIAxiomConvertVisitor(axiomConvertVisitor);
+        coreReasoner.setOwlAPIDescriptionConvertVisitor(descriptionConvertVisitor);
+        coreReasoner.setOWLAPIConverter(converter);
+
         coreReasoner.setConfigReasonerType("pellet");
 //        coreReasoner.setOntologyResources(getOntologyResources());
         coreReasoner.init();
+
         FastInstanceChecker reasonerComponent = new FastInstanceChecker(sources);
         /** This is the underlying reasoner */
         reasonerComponent.setReasonerComponent(coreReasoner);
@@ -129,7 +158,7 @@ public class DLLearnerCallable implements Callable<EvaluatedDescription> {
      *
      * @return The Positive Examples.
      */
-    private SortedSet<Individual> createPositiveExamples() {
+    protected SortedSet<Individual> createPositiveExamples() {
         SortedSet<Individual> result = new TreeSet<Individual>();
         result.add(new Individual("http://localhost/foo#stefan"));
         result.add(new Individual("http://localhost/foo#markus"));
@@ -142,7 +171,7 @@ public class DLLearnerCallable implements Callable<EvaluatedDescription> {
      *
      * @return The Negative Examples.
      */
-    private SortedSet<Individual> createNegativeExamples() {
+    protected SortedSet<Individual> createNegativeExamples() {
         SortedSet<Individual> result = new TreeSet<Individual>();
         result.add(new Individual("http://localhost/foo#heinz"));
         result.add(new Individual("http://localhost/foo#anna"));
@@ -157,7 +186,7 @@ public class DLLearnerCallable implements Callable<EvaluatedDescription> {
      * @param rs
      * @param algorithmDuration
      */
-    private static void printConclusions(ReasonerComponent rs, long algorithmDuration) {
+    protected static void printConclusions(ReasonerComponent rs, long algorithmDuration) {
         if (rs.getNrOfRetrievals() > 0) {
             logger.info("number of retrievals: " + rs.getNrOfRetrievals());
             logger.info("retrieval reasoning time: "

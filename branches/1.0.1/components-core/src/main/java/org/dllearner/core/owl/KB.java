@@ -27,8 +27,9 @@ public class KB implements KBElement {
 	private Set<AssertionalAxiom> abox = new HashSet<AssertionalAxiom>();
 	private Set<TerminologicalAxiom> tbox = new HashSet<TerminologicalAxiom>();
 	private Set<PropertyAxiom> rbox = new HashSet<PropertyAxiom>();
-	
-	public SortedSet<Individual> findAllIndividuals() {
+    private OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor;
+
+    public SortedSet<Individual> findAllIndividuals() {
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
 		
 		for(Axiom axiom : abox) {
@@ -298,7 +299,7 @@ public class KB implements KBElement {
 		try {
 			ontology = manager.createOntology(ontologyIRI);
 			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
-			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, this);
+			getOwlAPIAxiomConvertVisitor().fillOWLOntology(manager, ontology, this);
 			manager.saveOntology(ontology);			
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
@@ -317,4 +318,13 @@ public class KB implements KBElement {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public OWLAPIAxiomConvertVisitor getOwlAPIAxiomConvertVisitor() {
+        return owlAPIAxiomConvertVisitor;
+    }
+
+    public void setOwlAPIAxiomConvertVisitor(OWLAPIAxiomConvertVisitor owlAPIAxiomConvertVisitor) {
+        this.owlAPIAxiomConvertVisitor = owlAPIAxiomConvertVisitor;
+    }
+
 }

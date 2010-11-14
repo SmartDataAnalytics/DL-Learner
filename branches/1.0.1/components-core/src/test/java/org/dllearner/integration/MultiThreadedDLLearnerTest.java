@@ -25,7 +25,7 @@ public class MultiThreadedDLLearnerTest extends SingleThreadedDLLearnerTest {
     @Override
     @Test
     public void runTest() throws Exception {
-        DLLearnerCallable callable = new DLLearnerCallable();
+        DLLearnerCallable callable = getCallable();
 
         ExecutorService executor = new ThreadPoolExecutor(4, 8, 500, TimeUnit.MILLISECONDS, new LinkedBlockingDeque());
 
@@ -52,6 +52,10 @@ public class MultiThreadedDLLearnerTest extends SingleThreadedDLLearnerTest {
             validateResults(eDPN);
         }
 
+    }
+
+    protected DLLearnerCallable getCallable(){
+        return new DLLearnerCallable();
     }
 
 }
