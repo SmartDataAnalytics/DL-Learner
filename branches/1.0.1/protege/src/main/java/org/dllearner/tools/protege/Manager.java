@@ -17,6 +17,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.ProtegeReasoner;
+import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.core.Disposable;
@@ -25,14 +26,10 @@ import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.selection.OWLSelectionModelListener;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class Manager implements OWLModelManagerListener, OWLSelectionModelListener, Disposable{
 	
@@ -70,8 +67,10 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	private int cardinalityLimit;
 	
 	private volatile boolean isPreparing = false;
-	
-	public static synchronized Manager getInstance(OWLEditorKit editorKit){
+    private OWLAPIDescriptionConvertVisitor descriptionConvertVisitor;
+    private OWLAPIConverter converter;
+
+    public static synchronized Manager getInstance(OWLEditorKit editorKit){
 		if(instance == null){
 			instance = new Manager(editorKit);
 		}
@@ -86,6 +85,23 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		this.editorKit = editorKit;
 		ComponentManager.setComponentClasses(components);
 		cm = ComponentManager.getInstance();
+
+        OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+        /** Create the OWL Ontology Manager */
+        OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager(dataFactory);
+
+        descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
+        descriptionConvertVisitor.setFactory(dataFactory);
+
+        OWLAPIAxiomConvertVisitor axiomConvertVisitor = new OWLAPIAxiomConvertVisitor();
+        axiomConvertVisitor.setOwlAPIDescriptionConvertVisitor(descriptionConvertVisitor);
+
+        converter = new OWLAPIConverter();
+        converter.setDataFactory(dataFactory);
+        converter.setOwlAPIAxiomConvertVisitor(axiomConvertVisitor);
+        converter.setOwlAPIDescriptionConvertVisitor(descriptionConvertVisitor);
+
+
 	}
 	
 	public void setOWLEditorKit(OWLEditorKit editorKit){
@@ -172,7 +188,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	public void addAxiom(EvaluatedDescription description){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		OWLClassExpression exp = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description.getDescription());
+		OWLClassExpression exp = descriptionConvertVisitor.getOWLClassExpression(description.getDescription());
 		if(learningType == LearningType.EQUIVALENT){
 			addEquivalentClassesAxiom(selectedClass, exp);
 		} else {
@@ -294,18 +310,18 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	public SortedSet<Individual> getIndividuals(){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		return reasoner.getIndividuals(OWLAPIConverter.convertClass(selectedClass));
+		return reasoner.getIndividuals(converter.convertClass(selectedClass));
 	}
 	
 	public boolean canLearn(){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		boolean canLearn = reasoner.getIndividuals(OWLAPIConverter.convertClass(selectedClass)).size() > 0;
+		boolean canLearn = reasoner.getIndividuals(converter.convertClass(selectedClass)).size() > 0;
 		return canLearn;
 	}
 	
 	public String getRendering(Description desc){
 		String rendering = editorKit.getModelManager().getRendering(
-				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc));
+				descriptionConvertVisitor.getOWLClassExpression(desc));
 		return rendering;
 	}
 	
@@ -316,7 +332,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	public String getRendering(Individual ind){
 		String rendering = editorKit.getModelManager().getRendering(
-				OWLAPIConverter.getOWLAPIIndividual(ind));
+				converter.getOWLAPIIndividual(ind));
 		return rendering;
 	}
 	

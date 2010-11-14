@@ -41,6 +41,8 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.tools.protege.IndividualPoint;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 
 /**
@@ -95,9 +97,10 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 	
 	private String coverageString = "";
 	private String coversAdditionalString = "";
+    private OWLAPIDescriptionConvertVisitor descriptionConvertVisitor;
 
 
-	/**
+    /**
 	 * 
 	 * This is the constructor for the GraphicalCoveragePanel.
 	 * 
@@ -129,6 +132,12 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 		newConcept = new Ellipse2D.Double(0, 0, 0, 0);
 		addMouseMotionListener(this);
 //		this.computeIndividualPoints();
+
+        OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+
+        /** Create the OWL Ontology Manager */
+        descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
+        descriptionConvertVisitor.setFactory(dataFactory);
 	
 	}
 	
@@ -144,11 +153,11 @@ public class GraphicalCoveragePanel extends JPanel implements MouseMotionListene
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.BLACK);
 			if(concept != null){
-				String rendering = editorKit.getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept));
+				String rendering = editorKit.getOWLModelManager().getRendering(descriptionConvertVisitor.getOWLClassExpression(concept));
 				g2D.drawString(rendering, 320, 10);
 			}
 			if(eval != null){
-				String rendering = editorKit.getOWLModelManager().getRendering(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(eval.getDescription()));
+				String rendering = editorKit.getOWLModelManager().getRendering(descriptionConvertVisitor.getOWLClassExpression(eval.getDescription()));
 				g2D.drawString(rendering, 320, 30);
 			}
 			

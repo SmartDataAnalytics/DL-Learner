@@ -10,6 +10,8 @@ import javax.swing.table.AbstractTableModel;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class EvaluationTableModel extends AbstractTableModel {
 	
@@ -29,7 +31,15 @@ public class EvaluationTableModel extends AbstractTableModel {
 		"Inferior",
 		"Not acceptable",
 		"Error"		};
+    private OWLAPIDescriptionConvertVisitor descriptionConvertVisitor;
 
+
+    public EvaluationTableModel() {
+        OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+
+        descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
+        descriptionConvertVisitor.setFactory(dataFactory);
+    }
 	@Override
 	public int getColumnCount() {
 		return 7;
@@ -52,7 +62,7 @@ public class EvaluationTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0){
-			return OWLAPIDescriptionConvertVisitor.getOWLClassExpression(descriptions.get(rowIndex).getDescription());
+			return descriptionConvertVisitor.getOWLClassExpression(descriptions.get(rowIndex).getDescription());
 		} else {
 			return Boolean.valueOf(selected.get(rowIndex) == columnIndex);
 		}

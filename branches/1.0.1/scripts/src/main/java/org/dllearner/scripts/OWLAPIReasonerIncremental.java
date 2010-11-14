@@ -36,8 +36,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -140,11 +138,11 @@ public class OWLAPIReasonerIncremental {
 		OWLOntologyManager manager = reasoner.getManager();
 		OWLOntology ontology = reasoner.getOntology();
 		OWLReasoner internalReasoner = reasoner.getReasoner();
-		OWLAxiom axiomOWLAPI = OWLAPIAxiomConvertVisitor.convertAxiom(eq);
+		OWLAxiom axiomOWLAPI = reasoner.getOwlAPIAxiomConvertVisitor().convertAxiom(eq);
 		manager.applyChange(new AddAxiom(ontology, axiomOWLAPI));
 		// perform reasoning using OWL API
 		boolean consistent = internalReasoner.isConsistent();
-		OWLClassExpression newNCO = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newNC);
+		OWLClassExpression newNCO = reasoner.getOwlAPIDescriptionConvertVisitor().getOWLClassExpression(newNC);
 		Set<OWLClass> superClasses = internalReasoner.getSuperClasses(newNCO, true).getFlattened();
 		Set<OWLClass> subClasses = internalReasoner.getSubClasses(newNCO, true).getFlattened();
 		Set<OWLClass> parallelClasses = new TreeSet<OWLClass>(); 

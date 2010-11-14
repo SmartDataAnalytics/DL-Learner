@@ -39,13 +39,13 @@ import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSelectionListener {
+    private OWLAPIDescriptionConvertVisitor descriptionConvertVisitor;
 
-	enum CompareMode{
+    enum CompareMode{
 		CompareWithTF,
 		CompareWithFT,
 		CompareWithTT
@@ -111,6 +111,13 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapComp;
 	
 	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap = new Hashtable<NamedClass, Map<EvaluatedDescriptionClass,Integer>>();
+
+    public EvaluationPlugin() {
+        OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+
+        descriptionConvertVisitor = new OWLAPIDescriptionConvertVisitor();
+        descriptionConvertVisitor.setFactory(dataFactory);
+    }
 
 	@Override
 	protected void initialiseOWLView() throws Exception {
@@ -217,15 +224,15 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	
 	private void showClassExpressions(NamedClass nc){
 		showInconsistencyWarning(false);
-		evaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
+		evaluationTable.setAllColumnsEnabled(descriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology().getImportsClosure()).size() > 0);
 		if(in_compare_mode){
-			compareEvaluationTable.setAllColumnsEnabled(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
+			compareEvaluationTable.setAllColumnsEnabled(descriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass().
 					getEquivalentClasses(getOWLModelManager().getActiveOntology().getImportsClosure()).size() > 0);
 		}
 		// show the name for the current class in manchester syntax
 		String renderedClass = getOWLModelManager().getRendering(
-				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc));
+				descriptionConvertVisitor.getOWLClassExpression(nc));
 		currentClassLabel.setText(CURRENT_CLASS_MESSAGE + "<b>" + renderedClass + "</b></html>");
 		System.out.println("Showing evaluated descriptions for class " + nc.toString());
 
@@ -242,7 +249,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 		lastSelectedRowIndex = -1;
 
 		// necessary to set the current class to evaluate as activated entity
-		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc);
+		OWLClassExpression desc = descriptionConvertVisitor.getOWLClassExpression(nc);
 		OWLEntity curEntity = desc.asOWLClass();
 		getOWLEditorKit().getWorkspace().getOWLSelectionModel().setSelectedEntity(curEntity);
 		

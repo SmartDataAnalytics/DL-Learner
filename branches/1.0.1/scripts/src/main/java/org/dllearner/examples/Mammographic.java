@@ -25,6 +25,8 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.DefaultOWLUtilities;
+import org.dllearner.utilities.owl.IOWLUtilities;
 import org.semanticweb.owlapi.model.IRI;
 
 public class Mammographic {
@@ -118,7 +120,8 @@ public class Mammographic {
 		// writing generated knowledge base
 		System.out.print("Writing OWL file ... ");
 		startTime = System.nanoTime();
-		OWLAPIReasoner.exportKBToOWL(owlFile, kb, ontologyIRI);
+        IOWLUtilities utils = new DefaultOWLUtilities();
+		utils.exportKBToOWL(owlFile, kb, ontologyIRI);
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");

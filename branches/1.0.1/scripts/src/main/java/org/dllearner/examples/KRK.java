@@ -30,6 +30,8 @@ import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.owl.DefaultOWLUtilities;
+import org.dllearner.utilities.owl.IOWLUtilities;
 import org.dllearner.utilities.owl.OntologyCloser;
 import org.semanticweb.owlapi.model.IRI;
 
@@ -682,7 +684,8 @@ public class KRK {
 		File owlfile = new File(workingDir+"/" + filename);
 		// System.out.println(kb.toString("http://www.test.de/test", new
 		// HashMap<String, String>()));
-		OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyIRI);
+        IOWLUtilities utils = new DefaultOWLUtilities();
+		utils.exportKBToOWL(owlfile, kb, ontologyIRI);
 
 	}
 	

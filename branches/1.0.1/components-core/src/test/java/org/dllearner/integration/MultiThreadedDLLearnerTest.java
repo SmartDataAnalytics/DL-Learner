@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 public class MultiThreadedDLLearnerTest extends SingleThreadedDLLearnerTest {
 
 
-    private final int threadCount = 2000;
+    private final int threadCount = 20;
 
     @Override
     @Test
