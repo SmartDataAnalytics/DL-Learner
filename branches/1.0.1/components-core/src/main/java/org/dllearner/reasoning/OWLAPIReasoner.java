@@ -121,6 +121,7 @@ import org.springframework.core.io.Resource;
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently 
@@ -223,7 +224,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		individuals = new TreeSet<Individual>();	
 				
 		// create OWL API ontology manager
-		manager = OWLManager.createOWLOntologyManager();
+        /** This line is very important - if we don't use a new Data Factory for each instance, we get weird behavior especially in Multi Threaded mode */
+        factory = new OWLDataFactoryImpl();
+		manager = OWLManager.createOWLOntologyManager(factory);
 
          /** BEGIN ISS CODE */
         /** Create the URI->Resource Mappings for items that are disconnected */
@@ -400,7 +403,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			throw new ComponentInitException("Inconsistent ontologies.");
 		}
 			
-		factory = manager.getOWLDataFactory();
+
 		
 //		try {
 //			if(reasoner.isDefined(factory.getOWLIndividual(URI.create("http://example.com/father#female"))))
