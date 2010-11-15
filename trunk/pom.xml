@@ -13,7 +13,7 @@
         <compiler.version>1.6</compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- convenience to define GWT version in one place -->
-        <gwt.version>2.1-SNAPSHOT</gwt.version>
+        <gwt.version>2.1.0</gwt.version>
     </properties>
 
     <modules>
@@ -81,7 +81,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>gwt-maven-plugin</artifactId>
-                    <version>2.1-SNAPSHOT</version>
+                    <version>${gwt.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
