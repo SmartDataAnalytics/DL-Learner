@@ -17,14 +17,13 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class PelletBug {
 
 	public static void main(String[] args) throws OWLOntologyCreationException,
-			OWLReasonerException, UnknownOWLOntologyException, OWLOntologyStorageException {
+			 UnknownOWLOntologyException, OWLOntologyStorageException {
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		File f = new File("examples/family/father_oe.owl");

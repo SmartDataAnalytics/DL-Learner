@@ -36,7 +36,6 @@ import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
-import org.dllearner.core.owl.UntypedConstant;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -50,8 +49,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLStringLiteral;
-import org.semanticweb.owlapi.model.OWLTypedLiteral;
 
 /**
  * A collection of methods for exchanging objects between OWL API and
@@ -78,7 +75,7 @@ public final class OWLAPIConverter {
 	/**
 	 * Converts a DL-Learner description into an OWL API description.
 	 * 
-	 * @see OWLAPIDescriptionConvertVisitor#getOWLDescription(Description)
+	 * @see OWLAPIDescriptionConvertVisitor#getOWLClassExpression(org.dllearner.core.owl.Description)
 	 * @param description DL-Learner description.
 	 * @return Corresponding OWL API description.
 	 */
@@ -154,18 +151,10 @@ public final class OWLAPIConverter {
 		Constant c;
 		// for typed constants we have to figure out the correct
 		// data type and value
-		if(constant instanceof OWLTypedLiteral) {
-			Datatype dt = OWLAPIConverter.convertDatatype(((OWLTypedLiteral)constant).getDatatype());
-			c = new TypedConstant(constant.getLiteral(),dt);
-		// for untyped constants we have to figure out the value
-		// and language tag (if any)
-		} else {
-			OWLStringLiteral ouc = (OWLStringLiteral) constant;
-			if(ouc.getLang() != null && !ouc.getLang().isEmpty())
-				c = new UntypedConstant(ouc.getLiteral(), ouc.getLang());
-			else
-				c = new UntypedConstant(ouc.getLiteral());
-		}		
+
+        /** New OWL API only has the OWLLiteral */
+        Datatype dt = OWLAPIConverter.convertDatatype(constant.getDatatype());
+        c = new TypedConstant(constant.getLiteral(),dt);
 		return c;
 	}
 

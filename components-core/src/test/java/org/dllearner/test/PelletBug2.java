@@ -17,15 +17,13 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 public class PelletBug2 {
 	
-	public static void main(String[] args) throws OWLOntologyCreationException,
-			OWLReasonerException, UnknownOWLOntologyException,
+	public static void main(String[] args) throws OWLOntologyCreationException, UnknownOWLOntologyException,
 			OWLOntologyStorageException {
 
 		// Set flags for incremental consistency
