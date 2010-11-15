@@ -107,7 +107,7 @@
             <dependency>
                 <groupId>org.semanticweb.hermit</groupId>
                 <artifactId>hermit</artifactId>
-                <version>1.2.3</version>
+                <version>1.3.1</version>
             </dependency>
 
             <dependency>
@@ -211,13 +211,13 @@
             <dependency>
                 <groupId>org.protege.editor.core</groupId>
                 <artifactId>org.protege.editor.core.application</artifactId>
-                <version>4.1.0.206</version>
+                <version>4.1</version>
             </dependency>
 
             <dependency>
                 <groupId>org.protege.editor.owl</groupId>
                 <artifactId>org.protege.editor.owl</artifactId>
-                <version>4.1.0.206</version>
+                <version>4.1</version>
             </dependency>
 
             <dependency>

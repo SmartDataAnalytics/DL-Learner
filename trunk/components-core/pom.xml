@@ -21,6 +21,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!--Uncomment this when the junits are independent of a runtime directory-->
+                    <!--<includes>-->
+                        <!--<include>org/dllearner/test/junit/*</include>-->
+                    <!--</includes>-->
                     <excludes>
                         <exclude>org/dllearner/test/*</exclude>
                         <exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
