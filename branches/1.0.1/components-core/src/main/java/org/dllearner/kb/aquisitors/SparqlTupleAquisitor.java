@@ -50,24 +50,29 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 	protected static final String PREDICATE = "predicate";
 	protected static final String OBJECT = "object";
 	
-	protected SparqlQueryMaker sparqlQueryMaker;
-	protected SPARQLTasks sparqlTasks;
-	
-	
-	
+	private SparqlQueryMaker sparqlQueryMaker;
+	private SPARQLTasks sparqlTasks;
+
+
+    /**
+     * No arg constructor - doesn't do anything but is preferred usage for spring usage.
+     */
+	public SparqlTupleAquisitor(){
+
+    }
 	
 
 	public SparqlTupleAquisitor(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks) {
 		
-		this.sparqlQueryMaker = sparqlQueryMaker;
-		this.sparqlTasks = sparqlTasks;
+		this.setSparqlQueryMaker(sparqlQueryMaker);
+		this.setSparqlTasks(sparqlTasks);
 	}
 	
 	@Override
 	public SortedSet<RDFNodeTuple> retrieveTupel(String uri){
 		// getQuery
-		String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
-		SortedSet<RDFNodeTuple> ret = sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
+		String sparqlQueryString = getSparqlQueryMaker().makeSubjectQueryUsingFilters(uri);
+		SortedSet<RDFNodeTuple> ret = getSparqlTasks().queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
 		disambiguateBlankNodes(uri, ret);
 		
 		return ret;
@@ -75,8 +80,8 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 	@Override
 	public SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri){
 		// getQuery
-		String sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri);
-		SortedSet<RDFNodeTuple> ret = sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
+		String sparqlQueryString = getSparqlQueryMaker().makeClassQueryUsingFilters(uri);
+		SortedSet<RDFNodeTuple> ret = getSparqlTasks().queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
 		disambiguateBlankNodes(uri, ret);
 		return ret;
 		
@@ -147,7 +152,7 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 			}
 			String q = BlankNodeCollector.makeQuery(uri, p, currentDepth);
 //			System.out.println(q);
-			rsw = sparqlTasks.queryAsResultSet(q);
+			rsw = getSparqlTasks().queryAsResultSet(q);
 			rsw.reset();
 			lastDepth = currentDepth;
 			}while (!BlankNodeCollector.testResultSet(rsw, currentDepth++));
@@ -221,17 +226,21 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 		
 		
 	}
-	
-	
-	
 
 
-	
-	
-	
-	
-	
-	
+    public SparqlQueryMaker getSparqlQueryMaker() {
+        return sparqlQueryMaker;
+    }
 
+    public void setSparqlQueryMaker(SparqlQueryMaker sparqlQueryMaker) {
+        this.sparqlQueryMaker = sparqlQueryMaker;
+    }
 
+    public SPARQLTasks getSparqlTasks() {
+        return sparqlTasks;
+    }
+
+    public void setSparqlTasks(SPARQLTasks sparqlTasks) {
+        this.sparqlTasks = sparqlTasks;
+    }
 }

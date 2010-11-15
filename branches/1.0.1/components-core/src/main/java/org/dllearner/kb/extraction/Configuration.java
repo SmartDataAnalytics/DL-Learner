@@ -40,8 +40,6 @@ public class Configuration {
 	// class extraction algorithm or manipulator
 	private boolean optimizeForDLLearner = true;
 
-	private int recursiondepth;
-
 	private boolean getAllSuperClasses = true;
 
 	private boolean closeAfterRecursion = true;
@@ -53,13 +51,12 @@ public class Configuration {
 	private int breakSuperClassesAfter = 200;
 
 	public Configuration(TupleAquisitor tupelAquisitor,
-			Manipulator manipulator, int recursiondepth,
+			Manipulator manipulator,
 			boolean getAllSuperClasses, boolean closeAfterRecursion,
 			boolean getPropertyInformation, int breakSuperClassesAfter, boolean dissolveBlankNodes) {
 
 		this.tupelAquisitor = tupelAquisitor;
 		this.manipulator = manipulator;
-		this.recursiondepth = recursiondepth;
 		this.getAllSuperClasses = getAllSuperClasses;
 		this.closeAfterRecursion = closeAfterRecursion;
 		this.getPropertyInformation = getPropertyInformation;
@@ -73,11 +70,10 @@ public class Configuration {
 	}
 
 	public Configuration(TupleAquisitor tupelAquisitor,
-			Manipulator manipulator, int recursiondepth,
-			boolean getAllSuperClasses, boolean closeAfterRecursion,
+			Manipulator manipulator, boolean getAllSuperClasses, boolean closeAfterRecursion,
 			boolean getPropertyInformation, int breakSuperClassesAfter, boolean dissolveBlankNodes,
 			OWLAPIOntologyCollector owlAPIOntologyCollector) {
-		this(tupelAquisitor, manipulator, recursiondepth, getAllSuperClasses,
+		this(tupelAquisitor, manipulator, getAllSuperClasses,
 				closeAfterRecursion, getAllSuperClasses, breakSuperClassesAfter,dissolveBlankNodes);
 		this.owlAPIOntologyCollector = owlAPIOntologyCollector;
 	}
@@ -96,10 +92,6 @@ public class Configuration {
 
 	public Manipulator getManipulator() {
 		return manipulator;
-	}
-
-	public int getRecursiondepth() {
-		return recursiondepth;
 	}
 
 	public TupleAquisitor getTupelAquisitor() {

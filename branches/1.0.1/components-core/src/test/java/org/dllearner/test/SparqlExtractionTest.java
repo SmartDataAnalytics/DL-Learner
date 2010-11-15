@@ -31,10 +31,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
-import org.dllearner.kb.extraction.Configuration;
-import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.extraction.Node;
-import org.dllearner.kb.extraction.OWLAPIOntologyCollector;
+import org.dllearner.kb.extraction.*;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -85,23 +82,23 @@ public class SparqlExtractionTest {
 			String physicalURI= "fragmentOntology.owl";
 			OWLAPIOntologyCollector collector= new OWLAPIOntologyCollector( ontologyURI,  physicalURI);
 		
-			
-			Configuration conf = new Configuration (
-					tupleAquisitor,
-					manipulator, 
-					recursionDepth,
-					getAllSuperClasses,
-					closeAfterRecursion,
-					getPropertyInformation,
-					breakSuperClassesAfter,
-					dissolveBlankNodes,
-					collector
-					);
-			
 
-			
-			m.useConfiguration(conf);
-		
+            /** Init the Extraction Algorithm Here for now - so that we can initialize from the configurator */
+            ExtractionAlgorithm extractionAlgorithm = new ExtractionAlgorithm();
+            extractionAlgorithm.setRecursionDepth(recursionDepth);
+            extractionAlgorithm.setManipulator(manipulator);
+            extractionAlgorithm.setCloseAfterRecursion(closeAfterRecursion);
+            extractionAlgorithm.setGetAllSuperClasses(getAllSuperClasses);
+            extractionAlgorithm.setGetPropertyInformation(getPropertyInformation);
+            extractionAlgorithm.setBreakSuperClassesAfter(breakSuperClassesAfter);
+            extractionAlgorithm.setDissolveBlankNodes(dissolveBlankNodes);
+
+            m.setExtractionAlgorithm(extractionAlgorithm);
+            m.setOntologyCollector(collector);
+            m.setTupleAquisitor(tupleAquisitor);
+
+
+
 			String example = "http://dbpedia.org/resource/Angela_Merkel";
 			
 			Set<String> startingInstances = new TreeSet<String>();

@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
+import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.statistics.SimpleClock;
 
@@ -39,16 +40,28 @@ import com.jamonapi.Monitor;
  */
 public class ExtractionAlgorithm {
 
-	private Configuration configuration;
 	private SortedSet<String> alreadyQueriedSuperClasses = new TreeSet<String>();
 	private boolean stop = false;
 
-	
+    /**
+     * Fields that used to be pulled from a Configuration object, but now we inject them from any source
+     * This supports dependency injection and programmatic use of this component.
+     */
+    private int recursionDepth;
+    private boolean closeAfterRecursion = true;
+    private boolean getAllSuperClasses = true;
+    private boolean getPropertyInformation = false;
+    private boolean dissolveBlankNodes = false;
+    private boolean optimizeForDLLearner = true;
+    private int breakSuperClassesAfter = 200;
+
+
+    private Manipulator manipulator;
+
 	private static Logger logger = Logger
 		.getLogger(ExtractionAlgorithm.class);
 
-	public ExtractionAlgorithm(Configuration configuration) {
-		this.configuration = configuration;
+	public ExtractionAlgorithm() {
 	}
 
 	
@@ -101,7 +114,7 @@ public class ExtractionAlgorithm {
 		
 
 		Monitor basic = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBasicExtraction").start();
-		for (int x = 1; x <= configuration.getRecursiondepth(); x++) {
+		for (int x = 1; x <= getRecursionDepth(); x++) {
 			
 			sc.reset();
 			while (!newNodes.isEmpty() && !stopCondition()) {
@@ -111,8 +124,7 @@ public class ExtractionAlgorithm {
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
 				tupleAquisitor.setNextTaskToNormal();
-				tmp.addAll(nextNode.expand(tupleAquisitor,
-						configuration.getManipulator()));
+				tmp.addAll(nextNode.expand(tupleAquisitor, getManipulator()));
 				//.out.println(tmpVec);
 				
 			}
@@ -125,7 +137,7 @@ public class ExtractionAlgorithm {
 		}
 		basic.stop();
 		
-		if(configuration.isCloseAfterRecursion()&& !stopCondition()){
+		if(isCloseAfterRecursion()&& !stopCondition()){
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").start();
 			List<InstanceNode> l = getInstanceNodes(newNodes);
 			logger.info("Getting classes for remaining instances: "+l.size() + " instances");
@@ -134,7 +146,7 @@ public class ExtractionAlgorithm {
 			m.stop();
 		}
 		// gets All Class Nodes and expands them further
-		if (configuration.isGetAllSuperClasses()&& !stopCondition()) {
+		if (isGetAllSuperClasses()&& !stopCondition()) {
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").start();
 			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
 			tupleAquisitor.setNextTaskToClassInformation();
@@ -144,7 +156,7 @@ public class ExtractionAlgorithm {
 		}
 			
 		
-		if(configuration.isGetPropertyInformation()&& !stopCondition() ){
+		if(isGetPropertyInformation()&& !stopCondition() ){
 			collectNodes.add(seedNode);
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
 			List<ObjectPropertyNode> objectProperties = getObjectPropertyNodes(collectNodes);
@@ -153,7 +165,7 @@ public class ExtractionAlgorithm {
 				if(stopCondition()){
 					break;
 				}
-				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, getManipulator(), isDissolveBlankNodes()));
 			}
 			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
 			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
@@ -161,13 +173,13 @@ public class ExtractionAlgorithm {
 				if(stopCondition()){
 					break;
 				}
-				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, getManipulator(), isDissolveBlankNodes()));
 			}
 			m.stop();
 		}
 		
 		Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBlankNode").start();
-		if( configuration.isDissolveBlankNodes() && !stopCondition()){
+		if( isDissolveBlankNodes() && !stopCondition()){
 			expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
 		}
 		m.stop();
@@ -181,7 +193,7 @@ public class ExtractionAlgorithm {
 		List<Node> newNodes = new ArrayList<Node>();
 		while (!blankNodes.isEmpty()&& !stopCondition()) {
 			Node next = blankNodes.remove(0);
-			List<Node> l = next.expand(tupelAquisitor, configuration.getManipulator());
+			List<Node> l = next.expand(tupelAquisitor, getManipulator());
 			for (Node node : l) {
 				blankNodes.add((BlankNode) node);
 			}
@@ -204,8 +216,8 @@ public class ExtractionAlgorithm {
 				continue;
 			}
 			logger.trace("Getting classes for: " + next);
-			newNodes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
-			if (newNodes.size() >= configuration.getBreakSuperClassesAfter()) {
+			newNodes.addAll(next.expand(tupelAquisitor, getManipulator()));
+			if (newNodes.size() >= getBreakSuperClassesAfter()) {
 				break;
 			}//endif
 		}//endwhile
@@ -233,11 +245,11 @@ public class ExtractionAlgorithm {
 				alreadyQueriedSuperClasses.add(next.getURIString().toString());
 				tupelAquisitor.setNextTaskToClassInformation();
 				
-				newClasses.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
+				newClasses.addAll(next.expand(tupelAquisitor, getManipulator()));
 				
 				
 				
-				if (i > configuration.getBreakSuperClassesAfter()) {
+				if (i > getBreakSuperClassesAfter()) {
 					break;
 				}//endinnerif
 				i++;
@@ -247,7 +259,7 @@ public class ExtractionAlgorithm {
 			}
 
 		}//endwhile
-		if(!configuration.isOptimizeForDLLearner()){
+		if(!isOptimizeForDLLearner()){
 			alreadyQueriedSuperClasses.clear();
 		}
 
@@ -313,4 +325,86 @@ public class ExtractionAlgorithm {
 		return properties;
 	}
 
+    /**
+     * Get the level of recursion this algorithm with perform.
+     *
+     * @return The level of recursion this algorithm with perform.
+     */
+    public int getRecursionDepth() {
+        return recursionDepth;
+    }
+
+    /**
+     * Set the level of recursion this algorithm with perform.
+     * @param recursionDepth the level of recursion this algorithm with perform.
+     */
+    public void setRecursionDepth(int recursionDepth) {
+        this.recursionDepth = recursionDepth;
+    }
+
+    /**
+     * Get the manipulator that this algorithm will use.
+     *
+     * @return the manipulator that this algorithm will use.
+     */
+    public Manipulator getManipulator() {
+        return manipulator;
+    }
+
+    /**
+     * Set the manipulator that this algorithm will use.
+     *
+     * @param manipulator the manipulator that this algorithm will use.
+     */
+    public void setManipulator(Manipulator manipulator) {
+        this.manipulator = manipulator;
+    }
+
+    public boolean isCloseAfterRecursion() {
+        return closeAfterRecursion;
+    }
+
+    public void setCloseAfterRecursion(boolean closeAfterRecursion) {
+        this.closeAfterRecursion = closeAfterRecursion;
+    }
+
+    public boolean isGetAllSuperClasses() {
+        return getAllSuperClasses;
+    }
+
+    public void setGetAllSuperClasses(boolean getAllSuperClasses) {
+        this.getAllSuperClasses = getAllSuperClasses;
+    }
+
+    public boolean isGetPropertyInformation() {
+        return getPropertyInformation;
+    }
+
+    public void setGetPropertyInformation(boolean getPropertyInformation) {
+        this.getPropertyInformation = getPropertyInformation;
+    }
+
+    public boolean isDissolveBlankNodes() {
+        return dissolveBlankNodes;
+    }
+
+    public void setDissolveBlankNodes(boolean dissolveBlankNodes) {
+        this.dissolveBlankNodes = dissolveBlankNodes;
+    }
+
+    public boolean isOptimizeForDLLearner() {
+        return optimizeForDLLearner;
+    }
+
+    public void setOptimizeForDLLearner(boolean optimizeForDLLearner) {
+        this.optimizeForDLLearner = optimizeForDLLearner;
+    }
+
+    public int getBreakSuperClassesAfter() {
+        return breakSuperClassesAfter;
+    }
+
+    public void setBreakSuperClassesAfter(int breakSuperClassesAfter) {
+        this.breakSuperClassesAfter = breakSuperClassesAfter;
+    }
 }

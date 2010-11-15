@@ -19,10 +19,7 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
@@ -54,7 +51,7 @@ public class SparqlQueryMaker {
 
 	private Set<String> predicateFilterList;
 	
-	private Set<StringTuple> predicateobjectFilterList;
+	private Set<StringTuple> predicateObjectFilterList;
 
 	private boolean literals = false;
 
@@ -62,12 +59,21 @@ public class SparqlQueryMaker {
 		this.literals = literals;
 	}
 
+    /**
+     * No arg constructor
+     */
+    public SparqlQueryMaker(){
+        setObjectFilterList(new HashSet<String>());
+        setPredicateFilterList(new HashSet<String>());
+        setPredicateObjectFilterList(new TreeSet<StringTuple>());
+    }
+
 	public SparqlQueryMaker(Set<String> objectFilterList,
 			Set<String> predicateFilterList, boolean literals) {
 		super();
-		this.objectFilterList = objectFilterList;
-		this.predicateFilterList = predicateFilterList;
-		this.predicateobjectFilterList = new TreeSet<StringTuple>();
+		this.setObjectFilterList(objectFilterList);
+		this.setPredicateFilterList(predicateFilterList);
+		this.setPredicateObjectFilterList(new TreeSet<StringTuple>());
 		this.literals = literals;
 	}
 
@@ -253,26 +259,38 @@ public class SparqlQueryMaker {
 		return predicateFilterList;
 	}
 	public Set<StringTuple> getPredicateObjectFilterList() {
-		return predicateobjectFilterList;
+		return predicateObjectFilterList;
 	}
 
+    public void setObjectFilterList(Set<String> objectFilterList) {
+        this.objectFilterList = objectFilterList;
+    }
+
+    public void setPredicateFilterList(Set<String> predicateFilterList) {
+        this.predicateFilterList = predicateFilterList;
+    }
+
+    public void setPredicateObjectFilterList(Set<StringTuple> predicateObjectFilterList) {
+        this.predicateObjectFilterList = predicateObjectFilterList;
+    }
+    
 	public void addPredicateFilter(String newFilter) {
 		assembled = false;
-		predicateFilterList.add(newFilter);
+		getPredicateFilterList().add(newFilter);
 	}
 	
 	public void addObjectFilter(String newFilter) {
 		assembled = false;
-		objectFilterList.add(newFilter);
+		getObjectFilterList().add(newFilter);
 	}
 	public void addPredicateObjectFilter(String pred, String object) {
 		assembled = false;
-		predicateobjectFilterList.add(new StringTuple(pred, object));
+		getPredicateObjectFilterList().add(new StringTuple(pred, object));
 	}
 	
 	public void combineWith(SparqlQueryMaker sqm){
-		predicateFilterList.addAll(sqm.predicateFilterList);
-		objectFilterList.addAll(sqm.objectFilterList);
+		getPredicateFilterList().addAll(sqm.getPredicateFilterList());
+		getObjectFilterList().addAll(sqm.getObjectFilterList());
 	}
 
 	public static SparqlQueryMaker getSparqlQueryMakerByName(String name) {

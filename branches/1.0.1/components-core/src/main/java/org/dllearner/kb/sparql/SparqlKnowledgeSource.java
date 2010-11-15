@@ -49,9 +49,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
-import org.dllearner.kb.extraction.Configuration;
-import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.extraction.Node;
+import org.dllearner.kb.extraction.*;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.ObjectReplacementRule;
 import org.dllearner.kb.manipulator.PredicateReplacementRule;
@@ -237,24 +235,35 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		logger.trace(getSparqlEndpoint());
 		logger.trace(configurator.getInstances());
 		Manager m = new Manager();
-		m.addProgressMonitor(mon);
+
 
 		// get Options for Manipulator
 		Manipulator manipulator = getManipulator();
 
 		TupleAquisitor tupleAquisitor = getTupleAquisitor();
+        tupleAquisitor.dissolveBlankNodes = configurator.getDissolveBlankNodes();
 
-		Configuration configuration = new Configuration(tupleAquisitor,
-				manipulator, configurator.getRecursionDepth(), configurator
-						.getGetAllSuperClasses(), configurator
-						.getCloseAfterRecursion(), configurator
-						.getGetPropertyInformation(), configurator
-						.getBreakSuperClassRetrievalAfter(),
-						configurator.getDissolveBlankNodes());
+
+        /** Init the Extraction Algorithm Here for now - so that we can initialize from the configurator */
+        ExtractionAlgorithm extractionAlgorithm = new ExtractionAlgorithm();
+        extractionAlgorithm.setRecursionDepth(configurator.getRecursionDepth());
+        extractionAlgorithm.setManipulator(manipulator);
+        extractionAlgorithm.setCloseAfterRecursion(configurator.getCloseAfterRecursion());
+        extractionAlgorithm.setGetAllSuperClasses(configurator.getGetAllSuperClasses());
+        extractionAlgorithm.setGetPropertyInformation(configurator.getGetPropertyInformation());
+        extractionAlgorithm.setBreakSuperClassesAfter(configurator.getBreakSuperClassRetrievalAfter());
+        extractionAlgorithm.setDissolveBlankNodes(configurator.getDissolveBlankNodes());
+
+        OWLAPIOntologyCollector ontologyCollector = new OWLAPIOntologyCollector();
+
+        /** Configure the manager here */
+        m.setExtractionAlgorithm(extractionAlgorithm);
+        m.setOntologyCollector(ontologyCollector);
+        m.setTupleAquisitor(tupleAquisitor);
+        m.addProgressMonitor(mon);
+
 
 		// give everything to the manager
-		m.useConfiguration(configuration);
-
 		//String ont = "";
 		try {
 
@@ -263,6 +272,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			List<Node> seedNodes=new ArrayList<Node>();
 			
 			//if(!threaded){
+
+                /** Extracts the nodes and the connections around them */
 				seedNodes = m.extract(configurator.getInstances());
 			/*}else{
 				int maxPoolSize = configurator.getInstances().size();
@@ -297,7 +308,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 			ontologyFragmentURL = m.getPhysicalOntologyURL();
 			
-			nrOfExtractedAxioms = configuration.getOwlAPIOntologyCollector().getNrOfExtractedAxioms();
+			nrOfExtractedAxioms = m.getOntologyCollector().getNrOfExtractedAxioms();
 			
 		
 		} catch (Exception e) {

@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import javax.swing.ProgressMonitor;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -43,8 +44,11 @@ import com.jamonapi.Monitor;
  */
 public class Manager {
 
-	private Configuration configuration;
 	private ExtractionAlgorithm extractionAlgorithm;
+    private OWLAPIOntologyCollector ontologyCollector;
+    private TupleAquisitor tupleAquisitor;
+
+
 	private int nrOfExtractedTriples = 0;
 	private List<Node> seedNodes = new ArrayList<Node>();
 	private boolean stop = false;
@@ -55,11 +59,6 @@ public class Manager {
 		.getLogger(Manager.class);
 	
 	
-	public void useConfiguration(Configuration configuration) {
-		this.configuration = configuration;
-		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
-	}
-
 //	public Node extractOneURI(String uri) {
 //		
 //		//logger.info("Start extracting: "+uri);
@@ -75,7 +74,7 @@ public class Manager {
 	 */
 	public void stop(){
 		stop = true;
-		extractionAlgorithm.stop();
+		getExtractionAlgorithm().stop();
 	}
 	
 	private boolean stopCondition(){
@@ -84,7 +83,7 @@ public class Manager {
 	
 	private void reset(){
 		stop = false;
-		extractionAlgorithm.reset();
+		getExtractionAlgorithm().reset();
 	}
 	
 	
@@ -108,7 +107,7 @@ public class Manager {
 			}
 			
 			try {
-				Node n = extractionAlgorithm.expandNode(one, configuration.getTupelAquisitor());
+				Node n = getExtractionAlgorithm().expandNode(one, getTupleAquisitor());
 				seedNodes.add(n);
 				allExtractedNodes.add(n);
 			} catch (Exception e) {
@@ -128,21 +127,21 @@ public class Manager {
 	public OWLOntology getOWLAPIOntologyForNodes(List<Node> nodes, boolean saveOntology){
 		Monitor m1 = JamonMonitorLogger.getTimeMonitor(Manager.class, "Time conversion to OWL Ontology").start();
 		for (Node n : nodes) {
-			n.toOWLOntology(configuration.getOwlAPIOntologyCollector());
+			n.toOWLOntology(getOntologyCollector());
 		}
 		m1.stop();
 		
 		if(saveOntology){
 			Monitor m2 = JamonMonitorLogger.getTimeMonitor(Manager.class, "Time saving Ontology").start();
-			configuration.getOwlAPIOntologyCollector().saveOntology();
+			getOntologyCollector().saveOntology();
 			m2.stop();
 		}
-		return configuration.getOwlAPIOntologyCollector().getCurrentOntology();
+		return getOntologyCollector().getCurrentOntology();
 		
 	}
 	
 	public URL getPhysicalOntologyURL()throws MalformedURLException{
-		return configuration.getOwlAPIOntologyCollector().getPhysicalIRI().toURI().toURL();
+		return getOntologyCollector().getPhysicalIRI().toURI().toURL();
 		
 	}
 	
@@ -170,10 +169,6 @@ public class Manager {
 	}
 
 
-	public Configuration getConfiguration() {
-		return configuration;
-	}
-
 	@Deprecated
 	public int getNrOfExtractedTriples() {
 		return nrOfExtractedTriples;
@@ -182,4 +177,37 @@ public class Manager {
 	public void addProgressMonitor(ProgressMonitor mon){
 		this.mon = mon;
 	}
+
+    /**
+     * Get the extraction algorithm that this manager will use.
+     *
+     * @return The extraction algorithm that this manager will use.
+     */
+    public ExtractionAlgorithm getExtractionAlgorithm() {
+        return extractionAlgorithm;
+    }
+
+    /**
+     * Set the extraction algorithm that this manager will use.
+     * @param extractionAlgorithm the extraction algorithm that this manager will use.
+     */
+    public void setExtractionAlgorithm(ExtractionAlgorithm extractionAlgorithm) {
+        this.extractionAlgorithm = extractionAlgorithm;
+    }
+
+    public OWLAPIOntologyCollector getOntologyCollector() {
+        return ontologyCollector;
+    }
+
+    public void setOntologyCollector(OWLAPIOntologyCollector ontologyCollector) {
+        this.ontologyCollector = ontologyCollector;
+    }
+
+    public TupleAquisitor getTupleAquisitor() {
+        return tupleAquisitor;
+    }
+
+    public void setTupleAquisitor(TupleAquisitor tupleAquisitor) {
+        this.tupleAquisitor = tupleAquisitor;
+    }
 }
