@@ -36,6 +36,7 @@ import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
+import org.dllearner.core.owl.UntypedConstant;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -152,9 +153,17 @@ public final class OWLAPIConverter {
 		// for typed constants we have to figure out the correct
 		// data type and value
 
-        /** New OWL API only has the OWLLiteral */
-        Datatype dt = OWLAPIConverter.convertDatatype(constant.getDatatype());
-        c = new TypedConstant(constant.getLiteral(),dt);
+		if(constant.isRDFPlainLiteral()){
+			if(constant.hasLang()){
+				c = new UntypedConstant(constant.getLiteral(), constant.getLang());
+			} else {
+				c = new UntypedConstant(constant.getLiteral());
+			}
+		} else {
+			Datatype dt = OWLAPIConverter.convertDatatype(constant.getDatatype());
+	        c = new TypedConstant(constant.getLiteral(),dt);
+		}
+       
 		return c;
 	}
 
