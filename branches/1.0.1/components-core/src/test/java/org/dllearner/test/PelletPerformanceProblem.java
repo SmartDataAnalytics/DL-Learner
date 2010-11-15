@@ -29,7 +29,6 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
@@ -40,7 +39,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  */
 public class PelletPerformanceProblem {
 
-	public static void main(String[] args) throws OWLOntologyCreationException, OWLReasonerException {
+	public static void main(String[] args) throws OWLOntologyCreationException {
 		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 		pelletLogger.setLevel(Level.WARN);		
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
