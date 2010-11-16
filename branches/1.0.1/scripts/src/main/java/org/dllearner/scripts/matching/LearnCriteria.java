@@ -9,6 +9,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.CSVFileToArray;
@@ -47,7 +48,7 @@ public class LearnCriteria {
 		}
 		
 		Mcollect m = new Mcollect();
-		SPARQLTasks dbpedia = new SPARQLTasks(new Cache("matching"), SparqlEndpoint.getEndpointLOCALDBpedia());
+		SPARQLTasks dbpedia = new EndpointBasedSPARQLTasks(new Cache("matching"), SparqlEndpoint.getEndpointLOCALDBpedia());
 		int countzerold = 0;
 		int countzerodb = 0;
 		for (int x = 0; x<lc.sameAs.size();x++) {

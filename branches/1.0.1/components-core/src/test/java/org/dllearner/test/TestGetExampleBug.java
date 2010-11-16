@@ -8,6 +8,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
@@ -38,7 +39,7 @@ public class TestGetExampleBug {
 				positiveSet.add("http://3ba.se/conferences/ThomasRiechert");
 				//positiveSet.add("http://3ba.se/conferences/FMILeipzig");
 
-				SPARQLTasks st = new SPARQLTasks(new SparqlEndpoint(new URL(OntowikiUrl)));
+				SPARQLTasks st = new EndpointBasedSPARQLTasks(new SparqlEndpoint(new URL(OntowikiUrl)));
 				AutomaticNegativeExampleFinderSPARQL ane = 
 					new AutomaticNegativeExampleFinderSPARQL(positiveSet,st, new TreeSet<String>());
 				SortedSet<String> negExamples = new TreeSet<String>();

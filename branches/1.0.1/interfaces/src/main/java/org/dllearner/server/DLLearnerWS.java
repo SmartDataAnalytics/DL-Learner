@@ -54,13 +54,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.NaturalLanguageDescriptionConvertVisitor;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
-import org.dllearner.kb.sparql.SparqlQueryException;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.datastructures.Datastructures;
@@ -907,16 +901,16 @@ public class DLLearnerWS {
 	 * @param query The SPARQL query.
 	 * @param useCache Specify whether to use a cache for queries.
 	 * @return The result of the SPARQL query in JSON format or null if the endpoint does not exist.
-	 * @see SPARQLEndpoint#getEndpointByName;
+	 * @see SparqlEndpoint#getEndpointByName;
 	 */
 	@WebMethod
 	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query, boolean useCache) {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
 		SPARQLTasks st;
 		if(useCache) {
-			st = new SPARQLTasks(endpoint);
+			st = new EndpointBasedSPARQLTasks(endpoint);
 		} else {
-			st = new SPARQLTasks(Cache.getDefaultCache(), endpoint);
+			st = new EndpointBasedSPARQLTasks(Cache.getDefaultCache(), endpoint);
 		}
 		return st.query(query);
 	}

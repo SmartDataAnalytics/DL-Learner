@@ -28,11 +28,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -110,7 +106,7 @@ public class TestIterativeLearning {
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
 					.asList(new String[] { graph })), new ArrayList<String>());
-			sparqlTasks = new SPARQLTasks(Cache.getDefaultCache(), sparqlEndpoint);
+			sparqlTasks = new EndpointBasedSPARQLTasks(Cache.getDefaultCache(), sparqlEndpoint);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

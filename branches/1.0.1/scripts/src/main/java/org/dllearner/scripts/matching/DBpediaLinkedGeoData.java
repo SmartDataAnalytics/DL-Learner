@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.Files;
@@ -74,10 +75,10 @@ public class DBpediaLinkedGeoData {
 	
 //	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointDBpedia();
 	public static SparqlEndpoint dbpediaEndpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
-	private static SPARQLTasks dbpedia = new SPARQLTasks(new Cache("cache/dbpedia_file/"), dbpediaEndpoint);	
+	private static SPARQLTasks dbpedia = new EndpointBasedSPARQLTasks(new Cache("cache/dbpedia_file/"), dbpediaEndpoint);
 	private static SparqlEndpoint geoDataEndpoint = SparqlEndpoint.getEndpointLOCALGeoData();
 //	private static SPARQLTasks lgd = new SPARQLTasks(new Cache("cache/lgd/"), geoDataEndpoint);
-	private static SPARQLTasks lgd = new SPARQLTasks(geoDataEndpoint);	
+	private static SPARQLTasks lgd = new EndpointBasedSPARQLTasks(geoDataEndpoint);	
 	
 	private static Map<POIClass, Integer> noMatchPerClass = new HashMap<POIClass, Integer>();
 	private static Map<POIClass, Integer> matchPerClass = new HashMap<POIClass, Integer>();

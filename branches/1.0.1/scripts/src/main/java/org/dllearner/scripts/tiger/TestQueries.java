@@ -18,11 +18,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ocel.ROLearner2;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.owl.Description;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -90,7 +86,7 @@ public class TestQueries {
 		try {
 			sparqlEndpoint = new SparqlEndpoint(new URL(sparqlEndpointURL), new ArrayList<String>(Arrays
 					.asList(new String[] { graph })), new ArrayList<String>());
-			sparqlTasks = new SPARQLTasks( sparqlEndpoint);
+			sparqlTasks = new EndpointBasedSPARQLTasks( sparqlEndpoint);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

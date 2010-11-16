@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
@@ -20,7 +21,7 @@ public class CountInstances {
 		
 		public CountInstances( String url , List<String> defaultGraphs){
 			try{
-			 t = new SPARQLTasks(Cache.getDefaultCache(), 
+			 t = new EndpointBasedSPARQLTasks(Cache.getDefaultCache(),
 					 new SparqlEndpoint(new URL(url), defaultGraphs, new ArrayList<String>()));
 			}catch (Exception e) {
 				e.printStackTrace();	

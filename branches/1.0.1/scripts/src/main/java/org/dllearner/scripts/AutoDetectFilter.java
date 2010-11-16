@@ -22,6 +22,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
@@ -43,7 +44,7 @@ public class AutoDetectFilter {
 	//	String url = "http://139.18.2.37:8890/sparql";
 		String resource = "http://dbpedia.org/resource/Angela_Merkel";
 		//resource = "http://dbpedia.org/resource/Lutheran";
-		AutoDetectFilter adf = new AutoDetectFilter(new SPARQLTasks(Cache.getDefaultCache(),
+		AutoDetectFilter adf = new AutoDetectFilter(new EndpointBasedSPARQLTasks(Cache.getDefaultCache(),
 				SparqlEndpoint.getEndpointDBpedia()),resource);
 		
 		adf.detect();

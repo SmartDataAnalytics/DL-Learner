@@ -10,7 +10,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
@@ -71,7 +71,7 @@ public class SparqlEndpointTest {
 			"LIMIT 100";
 		
 		SPARQLquery ="SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100";
-		SortedSet<String> tmp = new SPARQLTasks(se).queryAsSet(SPARQLquery, "c");
+		SortedSet<String> tmp = new EndpointBasedSPARQLTasks(se).queryAsSet(SPARQLquery, "c");
 		int i =tmp.size();
 	
 		

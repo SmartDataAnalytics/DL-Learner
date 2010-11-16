@@ -425,10 +425,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// get Options for endpoints
 		
 		if (configurator.getUseCache()){
-			return new SPARQLTasks(new Cache(configurator.getCacheDir(), configurator.getUseCacheDatabase()),
+			return new EndpointBasedSPARQLTasks(new Cache(configurator.getCacheDir(), configurator.getUseCacheDatabase()),
 					getSparqlEndpoint());
 		}else {
-			return new SPARQLTasks(getSparqlEndpoint());
+			return new EndpointBasedSPARQLTasks(getSparqlEndpoint());
 		}
 	}
 

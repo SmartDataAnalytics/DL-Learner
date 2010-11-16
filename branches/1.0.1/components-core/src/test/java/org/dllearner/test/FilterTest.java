@@ -3,6 +3,7 @@ package org.dllearner.test;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SetManipulation;
@@ -39,7 +40,7 @@ public class FilterTest {
 	
 	//	System.out.println(qextrashort);
 		
-		 st = new SPARQLTasks( SparqlEndpoint.getEndpointDBpedia());
+		 st = new EndpointBasedSPARQLTasks( SparqlEndpoint.getEndpointDBpedia());
 		 st.queryAsTuple(subject, true);
 		 st.query(qlong);
 		 st.query(qextralong);

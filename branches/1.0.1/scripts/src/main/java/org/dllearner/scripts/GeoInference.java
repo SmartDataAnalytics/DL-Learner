@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
@@ -52,7 +53,7 @@ public class GeoInference {
 		
 		// db.aksw.org SPARQL endpoint
 		SparqlEndpoint endpoint = null;//SparqlEndpoint.getEndpointLOCALGeonames();
-		SPARQLTasks st = new SPARQLTasks(endpoint);
+		SPARQLTasks st = new EndpointBasedSPARQLTasks(endpoint);
 		
 		URI test = URI.create("http://sws.geonames.org/2959441/");
 		List<URI> parents = new LinkedList<URI>();

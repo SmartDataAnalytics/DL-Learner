@@ -43,11 +43,7 @@ import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -402,11 +398,11 @@ public class WikipediaCategoryCleaner {
 
 		if (LOCAL) {
 			// url = "http://139.18.2.37:8890/sparql";
-			sparqlTasks = new SPARQLTasks(cache, SparqlEndpoint
+			sparqlTasks = new EndpointBasedSPARQLTasks(cache, SparqlEndpoint
 					.getEndpointLOCALDBpedia());
 		} else {
 			// url = "http://dbpedia.openlinksw.com:8890/sparql";
-			sparqlTasks = new SPARQLTasks(cache, SparqlEndpoint
+			sparqlTasks = new EndpointBasedSPARQLTasks(cache, SparqlEndpoint
 					.getEndpointDBpedia());
 			
 		}

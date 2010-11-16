@@ -33,42 +33,27 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 /**
  * @author Sebastian Hellmann Convenience class for SPARQL queries initialized
  *         with a SparqlEndpoint. A Cache can also be used to further improve
  *         query time. Some methods allow basic reasoning
  */
-public class SPARQLTasks {
+public abstract class SPARQLTasks {
 
 	private static Logger logger = Logger.getLogger(SPARQLTasks.class);
 
-	private final Cache cache;
+	private Cache cache;
 
-	private final SparqlEndpoint sparqlEndpoint;
+    public SPARQLTasks(){
+    }
 
-	/**
-	 * @param sparqlEndpoint
-	 *            the Endpoint the sparql queries will be send to
-	 */
-	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
-//		super();
-		this.cache = null;
-		this.sparqlEndpoint = sparqlEndpoint;
-	}
+    /**
+     *
+     * @return
+     */
+    public abstract SparqlQuery buildSPARQLQuery(String sparqlQueryString);
 
-	/**
-	 * @param cache
-	 *            a cache object
-	 * @param sparqlEndpoint
-	 *            the Endpoint the sparql queries will be send to
-	 */
-	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
-//		super();
-		this.cache = cache;
-		this.sparqlEndpoint = sparqlEndpoint;
-	}
 
 	/**
 	 * get all superclasses up to a certain depth, 1 means direct superclasses
@@ -479,12 +464,12 @@ public class SPARQLTasks {
 	 * @return jena ResultSet
 	 */
 	public ResultSetRewindable queryAsResultSet(String sparqlQueryString) {
-		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
-		if(cache == null) {
+		SparqlQuery sq = buildSPARQLQuery(sparqlQueryString);
+		if(getCache() == null) {
 			return sq.send();
 		} else {
 			// get JSON from cache and convert to result set
-			String json = cache.executeSparqlQuery(sq);
+			String json = getCache().executeSparqlQuery(sq);
 			return SparqlQuery.convertJSONtoResultSet(json);
 		}
 	}
@@ -495,13 +480,13 @@ public class SPARQLTasks {
 	 * @return -1 on failure count on success
 	 */
 	public int queryAsCount(String sparqlQueryString) {
-		SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
+		SparqlQuery sq = buildSPARQLQuery(sparqlQueryString);
 		ResultSetRewindable rsw = null;
-		if(cache == null) {
+		if(getCache() == null) {
 			rsw = sq.send();
 		} else {
 			// get JSON from cache and convert to result set
-			String json = cache.executeSparqlQuery(sq);
+			String json = getCache().executeSparqlQuery(sq);
 			rsw =  SparqlQuery.convertJSONtoResultSet(json);
 		}
 		int ret = -1;
@@ -522,27 +507,26 @@ public class SPARQLTasks {
 	 */
 	public String query(String sparqlQueryString) {
 		String jsonString;
-		if (cache == null) {
+		if (getCache() == null) {
 			
-			SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
+			SparqlQuery sq = buildSPARQLQuery(sparqlQueryString);
 			//SimpleClock sc = new SimpleClock();
 			sq.send();
 			//sc.printAndSet("querysend");
 			jsonString = sq.getJson();
 			
 		} else {
-			jsonString = cache.executeSparqlQuery(new SparqlQuery(
-					sparqlQueryString, sparqlEndpoint));
+			jsonString = getCache().executeSparqlQuery(buildSPARQLQuery(sparqlQueryString));
 		}
 		return jsonString;
 	}
 
 	public boolean ask(String askQueryString) {
-		if(cache == null) {
-			SparqlQuery sq = new SparqlQuery(askQueryString, sparqlEndpoint);
+		if(getCache() == null) {
+			SparqlQuery sq = buildSPARQLQuery(askQueryString);
 			return sq.sendAsk();
 		} else {
-			return cache.executeSparqlAskQuery(new SparqlQuery(askQueryString, sparqlEndpoint));
+			return getCache().executeSparqlAskQuery(buildSPARQLQuery(askQueryString));
 		}
 	}
 	
@@ -589,14 +573,14 @@ public class SPARQLTasks {
 
 	}
 
-	public SparqlEndpoint getSparqlEndpoint() {
-		return sparqlEndpoint;
-	}
-	
-	public static SPARQLTasks getPredefinedSPARQLTasksWithCache(String endpointName) {
-		return new SPARQLTasks( Cache.getDefaultCache(), SparqlEndpoint.getEndpointByName(endpointName) );
-	}
 
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
 }
 
 /*

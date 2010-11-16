@@ -33,7 +33,7 @@ import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.extraction.*;
 import org.dllearner.kb.manipulator.Manipulator;
-import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 
@@ -70,7 +70,7 @@ public class SparqlExtractionTest {
 			Manipulator manipulator = Manipulator.getDefaultManipulator();
 
 			TupleAquisitor tupleAquisitor = 
-				new SparqlTupleAquisitor(SparqlQueryMaker.getAllowYAGOFilter(),SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA"));
+				new SparqlTupleAquisitor(SparqlQueryMaker.getAllowYAGOFilter(), EndpointBasedSPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA"));
 			
 			boolean getAllSuperClasses = true;
 			boolean closeAfterRecursion = true;

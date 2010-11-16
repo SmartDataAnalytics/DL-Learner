@@ -36,10 +36,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.StringToResource;
 import org.dllearner.kb.manipulator.Rule.Months;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 
@@ -60,7 +57,7 @@ public class LearnOSMClasses {
 		File matchesFile = new File("log/geodata/owlsameas_en.dat");
 		Map<URI,URI> matches = Utility.getMatches(matchesFile);
 		
-		SPARQLTasks dbpedia = new SPARQLTasks(new Cache("cache/matching"),dbpediaEndpoint);
+		SPARQLTasks dbpedia = new EndpointBasedSPARQLTasks(new Cache("cache/matching"),dbpediaEndpoint);
 		Set<String> positives = new TreeSet<String>();
 		Set<String> negatives = new TreeSet<String>();
 		

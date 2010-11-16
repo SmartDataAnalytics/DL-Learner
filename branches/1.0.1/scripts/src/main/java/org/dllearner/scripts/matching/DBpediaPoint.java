@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.EndpointBasedSPARQLTasks;
 import org.dllearner.kb.sparql.SPARQLTasks;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -51,7 +52,7 @@ public class DBpediaPoint extends Point {
 	Pattern pattern = Pattern.compile("[\\w| ]+");
 	
 	// use a cache such that DBpedia points can be quickly constructed from URIs 
-	private static SPARQLTasks st = new SPARQLTasks(new Cache("cache/dbpedia_points/"), DBpediaLinkedGeoData.dbpediaEndpoint);
+	private static SPARQLTasks st = new EndpointBasedSPARQLTasks(new Cache("cache/dbpedia_points/"), DBpediaLinkedGeoData.dbpediaEndpoint);
 	
 	/**
 	 * Constructs a DBpedia point using SPARQL.
