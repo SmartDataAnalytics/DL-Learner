@@ -38,7 +38,7 @@ public class EndpointBasedSPARQLTasks extends SPARQLTasks{
 
     @Override
     public SparqlQuery buildSPARQLQuery(String sparqlQueryString) {
-        return new SparqlQuery(sparqlQueryString, sparqlEndpoint);
+        return new EndpointBasedSparqlQuery(sparqlQueryString, sparqlEndpoint);
     }
 
     /**

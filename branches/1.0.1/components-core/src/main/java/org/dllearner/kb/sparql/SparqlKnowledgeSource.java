@@ -399,7 +399,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 
 	public SparqlQuery sparqlQuery(String query) {
-		return new SparqlQuery(query, getSparqlEndpoint());
+		return new EndpointBasedSparqlQuery(query, getSparqlEndpoint());
 	}
 
 	

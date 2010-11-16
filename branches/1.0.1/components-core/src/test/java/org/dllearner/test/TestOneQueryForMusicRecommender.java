@@ -3,6 +3,7 @@ package org.dllearner.test;
 import java.util.List;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import org.dllearner.kb.sparql.EndpointBasedSparqlQuery;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 
@@ -66,7 +67,7 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 		//QueryEngineHTTP queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
 		
 		try{
-			SparqlQuery s = new SparqlQuery(sparqlQueryString, SparqlEndpoint.getEndpointJamendo());
+			SparqlQuery s = new EndpointBasedSparqlQuery(sparqlQueryString, SparqlEndpoint.getEndpointJamendo());
 			s.send();
 			//rs = queryExecution.execSelect();
 			

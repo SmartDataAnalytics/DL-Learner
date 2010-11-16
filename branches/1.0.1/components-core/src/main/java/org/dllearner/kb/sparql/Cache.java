@@ -284,9 +284,14 @@ public class Cache implements Serializable {
 	 */
 	public String executeSparqlQuery(SparqlQuery query) {
 		if(useDatabase) {
-			return h2.executeSelectQuery(query.getSparqlEndpoint(), query.getSparqlQueryString());
+            if(query instanceof EndpointBasedSparqlQuery){
+                /** Expecting an EndpointBasedSparqlQuery here */
+                return h2.executeSelectQuery(((EndpointBasedSparqlQuery)query).getSparqlEndpoint(), query.getSparqlQueryString());
+            }else{
+                throw new RuntimeException("Expected an EndpointBasedSparqlQuery here.");
+            }
+
 		}
-		
 		Monitor totaltime =JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
 		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
 	

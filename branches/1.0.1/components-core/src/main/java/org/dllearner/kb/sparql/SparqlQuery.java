@@ -27,15 +27,11 @@ import java.nio.charset.Charset;
 
 import javax.xml.ws.http.HTTPException;
 
+import com.hp.hpl.jena.query.*;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.Monitor;
 
 /**
@@ -47,7 +43,7 @@ import com.jamonapi.Monitor;
  * @author Sebastian Hellmann
  * 
  */
-public class SparqlQuery {
+public abstract class SparqlQuery {
 
 	private static boolean logDeletedOnStart = false;
 
@@ -64,25 +60,32 @@ public class SparqlQuery {
 
 	private String sparqlQueryString;
 
-	private QueryEngineHTTP queryExecution;
-
-	private SparqlEndpoint sparqlEndpoint;
-
 	private ResultSetRewindable rs;
 
+    /**
+     * Default Constructor.
+     */
+    public SparqlQuery(){
+
+    }
 	/**
 	 * Standard constructor.
 	 * 
 	 * @param sparqlQueryString
 	 *            A SPARQL query string
-	 * @param sparqlEndpoint
-	 *            An Endpoint object
 	 */
-	public SparqlQuery(String sparqlQueryString, SparqlEndpoint sparqlEndpoint) {
+	public SparqlQuery(String sparqlQueryString) {
 		// QUALITY there seems to be a bug in ontowiki
-		this.sparqlQueryString = sparqlQueryString.replaceAll("\n", " ");
-		this.sparqlEndpoint = sparqlEndpoint;
+		this.setSparqlQueryString(sparqlQueryString);
 	}
+
+
+    /**
+     * Build a query execution, specific to the implementation.
+     *
+     * @return A newly created query execution.
+     */
+    protected abstract QueryExecution buildQueryExecution();
 
 	/**
 	 * Sends a SPARQL query using the Jena library.
@@ -91,34 +94,19 @@ public class SparqlQuery {
 	public ResultSetRewindable send() {
 		isRunning = true;
 
-		String service = sparqlEndpoint.getURL().toString();
-
-		writeToSparqlLog("***********\nNew Query:");
-		SparqlQuery.writeToSparqlLog("wget -S -O - '\n" + sparqlEndpoint.getHTTPRequest());
-		writeToSparqlLog(sparqlQueryString);
-
-		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
-
-		// add default and named graphs
-		for (String dgu : sparqlEndpoint.getDefaultGraphURIs()) {
-			queryExecution.addDefaultGraph(dgu);
-		}
-		for (String ngu : sparqlEndpoint.getNamedGraphURIs()) {
-			queryExecution.addNamedGraph(ngu);
-		}
+        QueryExecution queryExecution = buildQueryExecution();
 
 		Monitor httpTime = JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "sparql query time").start();
 
 		try {
-			logger.debug("sending query: length: " + sparqlQueryString.length() + " | ENDPOINT: "
-					+ sparqlEndpoint.getURL().toString());
+			logger.debug("executing query: length: " + getSparqlQueryString().length());
 
 			// we execute the query and store the result in a rewindable result set
 			ResultSet tmp = queryExecution.execSelect();
 			rs = ResultSetFactory.makeRewindable(tmp);
 		} catch (HTTPException e) {
 			logger.debug("HTTPException in SparqlQuery\n" + e.toString());
-			logger.debug("query was " + sparqlQueryString);
+			logger.debug("query was " + getSparqlQueryString());
 			writeToSparqlLog("ERROR: HTTPException occured" + e.toString());
 			isRunning = false;
 			throw e;
@@ -127,9 +115,9 @@ public class SparqlQuery {
 			if (logger.isDebugEnabled()) {
 				logger.debug("RuntimeException in SparqlQuery (see /log/sparql.txt): "
 						+ e.toString());
-				int length = Math.min(sparqlQueryString.length(), 300);
+				int length = Math.min(getSparqlQueryString().length(), 300);
 				logger.debug("query was (max. 300 chars displayed) "
-						+ sparqlQueryString.substring(0, length - 1).replaceAll("\n", " "));
+						+ getSparqlQueryString().substring(0, length - 1).replaceAll("\n", " "));
 			}
 			writeToSparqlLog("ERROR: HTTPException occured: " + e.toString());
 			isRunning = false;
@@ -142,20 +130,31 @@ public class SparqlQuery {
 		return rs;
 	}
 
+    /**
+     * Perform the implementation specific operations of sendAsk();
+     * @return
+     */
+    protected abstract boolean sendAskLocal();
+
+    /**
+     * Get the Query Execution instance currently associated with this instance.
+     *
+     * @return the Query Execution instance currently associated with this instance.
+     */
+    protected abstract QueryExecution getQueryExecution();
+
 	public boolean sendAsk() {
 		isRunning = true;
-		String service = sparqlEndpoint.getURL().toString();
-		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
-		boolean result = queryExecution.execAsk();
+		boolean result = sendAskLocal();
 		isRunning = false;
 		return result;
 	}
-	
+
 	/**
 	 * Stops the execution of the query.
 	 */
 	public void stop() {
-		queryExecution.abort();
+		getQueryExecution().abort();
 		isRunning = false;
 	}
 
@@ -166,13 +165,6 @@ public class SparqlQuery {
 	 */
 	public String getSparqlQueryString() {
 		return sparqlQueryString;
-	}
-
-	/**
-	 * @return sparqlEndpoint object
-	 */
-	public SparqlEndpoint getSparqlEndpoint() {
-		return sparqlEndpoint;
 	}
 
 	/**
@@ -217,7 +209,7 @@ public class SparqlQuery {
 	 * @param s
 	 *            the String to log
 	 */
-	private static void writeToSparqlLog(String s) {
+	protected void writeToSparqlLog(String s) {
 		File f = new File(sparqlLog);
 		if(!f.canWrite() ){
 			logger.info("could not write SPARQL log to : "+sparqlLog);
@@ -294,4 +286,12 @@ public class SparqlQuery {
 		return convertResultSetToXMLString(convertJSONtoResultSet(json));
 	}
 
+    /**
+     * Set the SPARQL Query String, but strip all \n characters
+     *
+     * @param sparqlQueryString The SPARQL Query String
+     */
+    public void setSparqlQueryString(String sparqlQueryString) {
+        this.sparqlQueryString = sparqlQueryString.replaceAll("\n", " ");
+    }
 }
