@@ -9,6 +9,7 @@
     <test name="Unit Tester" annotations="JDK" verbose="1">
         <packages>
             <package name="org.dllearner.integration"/>
+            <package name="org.dllearner.test.sparql"/>
         </packages>
     </test>
 </suite>
