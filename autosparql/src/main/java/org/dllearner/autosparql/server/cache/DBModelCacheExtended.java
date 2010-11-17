@@ -10,7 +10,7 @@ import java.sql.Statement;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.dllearner.autosparql.server.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;

@@ -8,6 +8,7 @@ import org.dllearner.autosparql.server.cache.DBModelCache;
 import org.dllearner.autosparql.server.cache.DBModelCacheComplete;
 import org.dllearner.autosparql.server.cache.DBModelCacheExtended;
 import org.dllearner.autosparql.server.cache.DBModelCacheSingle;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.junit.Test;
 
 public class CacheTest {
