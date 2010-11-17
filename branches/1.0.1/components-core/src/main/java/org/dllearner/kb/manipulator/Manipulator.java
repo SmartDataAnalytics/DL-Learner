@@ -45,7 +45,7 @@ public class Manipulator {
 	private static Logger logger = Logger.getLogger(Manipulator.class);
 	private List<Rule> rules = new ArrayList<Rule>();
 	
-	private Manipulator() {
+	public Manipulator() {
 	}
 
 	public Manipulator(List<Rule> rules) {

@@ -19,6 +19,7 @@ public class ModelBasedSPARQLTasks extends SPARQLTasks{
     public SparqlQuery buildSPARQLQuery(String sparqlQueryString) {
         ModelBasedSparqlQuery result = new ModelBasedSparqlQuery();
         result.setModel(getModel());
+        result.setSparqlQueryString(sparqlQueryString);
         return result;
     }
 
