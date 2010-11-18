@@ -177,7 +177,7 @@ public class SparqlEndpoint {
 	public static SparqlEndpoint getEndpointDBpediaLiveAKSW() {
 		URL u = null;
 		try { 
-			u = new URL("http://139.18.2.96:8899/sparql");
+			u = new URL("http://dbpedia.aksw.org:8899/sparql");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
