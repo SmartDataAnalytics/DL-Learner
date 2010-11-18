@@ -53,32 +53,23 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 
 		
 		<dependency>
             <groupId>org.aksw.commons</groupId>
             <artifactId>commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
 		
 		
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>sparql-query-generator</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
