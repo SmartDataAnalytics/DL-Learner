@@ -174,6 +174,18 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 	
+	public static SparqlEndpoint getEndpointDBpediaLiveAKSW() {
+		URL u = null;
+		try { 
+			u = new URL("http://139.18.2.96:8899/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://dbpedia.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+	
 	public static SparqlEndpoint getEndpointDBpediaHanne() {
 		URL u = null;
 		try { 
