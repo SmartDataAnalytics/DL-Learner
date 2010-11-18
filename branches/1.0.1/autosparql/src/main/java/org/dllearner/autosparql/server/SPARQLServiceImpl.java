@@ -123,6 +123,12 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public void setEndpoint(Endpoint endpoint) {
+		try {
+			System.out.println(SparqlEndpoint.getEndpointDBpediaLive());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		switch(endpoint.getID()){
 			case 0:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
 			case 1:setEndpoint(SparqlEndpoint.getEndpointDBpediaLive());break;

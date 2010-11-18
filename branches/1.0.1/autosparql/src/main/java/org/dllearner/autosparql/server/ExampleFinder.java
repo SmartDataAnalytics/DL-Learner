@@ -181,17 +181,17 @@ public class ExampleFinder {
 //		return findExampleByGeneralisation(gen.getLastLGG());
 //	}
 	
-	private Example findExampleByLGG(List<QueryTree<String>> posExamples,
-			List<QueryTree<String>> negExamples) throws SPARQLQueryException{
+	private Example findExampleByLGG(List<QueryTree<String>> posExamplesTrees,
+			List<QueryTree<String>> negExamplesTrees) throws SPARQLQueryException{
 		logger.info("USING LGG");
 		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpoint.getURL().toString());
-		if(negExamples.isEmpty()){
+		if(negExamplesTrees.isEmpty()){
 			logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
-			List<QueryTree<String>> trees = gen.getSPARQLQueryTrees(posExamples, negExamples);
+			List<QueryTree<String>> trees = gen.getSPARQLQueryTrees(posExamplesTrees, negExamplesTrees);
 			return findExampleByGeneralisation(trees.get(0));
 		}
 		
-		List<String> queries = gen.getSPARQLQueries(posExamples, negExamples);
+		List<String> queries = gen.getSPARQLQueries(posExamplesTrees, negExamplesTrees);
 		for(String query : queries){
 			logger.info("Trying query");
 			currentQuery = query + " LIMIT 10";

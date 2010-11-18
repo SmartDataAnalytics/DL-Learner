@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dllearner.autosparql.server.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
