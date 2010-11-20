@@ -123,18 +123,13 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public void setEndpoint(Endpoint endpoint) {
-		try {
-			System.out.println(SparqlEndpoint.getEndpointDBpediaLive());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		switch(endpoint.getID()){
 			case 0:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
 			case 1:setEndpoint(SparqlEndpoint.getEndpointDBpediaLive());break;
 			case 2:setEndpoint(SparqlEndpoint.getEndpointDBpediaAKSW());break;
-			case 3:setEndpoint(SparqlEndpoint.getEndpointDBpediaHanne());break;
-			case 4:setEndpoint(SparqlEndpoint.getEndpointLinkedGeoData());break;
+			case 3:setEndpoint(SparqlEndpoint.getEndpointDBpediaLiveAKSW());break;
+			case 4:setEndpoint(SparqlEndpoint.getEndpointDBpediaHanne());break;
+			case 5:setEndpoint(SparqlEndpoint.getEndpointLinkedGeoData());break;
 			default:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
 		}
 	}
@@ -146,8 +141,9 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		endpoints.add(new Endpoint(0, "DBpedia"));
 		endpoints.add(new Endpoint(1, "DBpedia_Live"));
 		endpoints.add(new Endpoint(2, "DBpedia@AKSW"));
-		endpoints.add(new Endpoint(3, "DBpedia@Hanne"));
-		endpoints.add(new Endpoint(4, "LinkedGeoData"));
+		endpoints.add(new Endpoint(3, "DBpedia_Live@AKSW"));
+		endpoints.add(new Endpoint(4, "DBpedia@Hanne"));
+		endpoints.add(new Endpoint(5, "LinkedGeoData"));
 		
 		return endpoints;
 	}

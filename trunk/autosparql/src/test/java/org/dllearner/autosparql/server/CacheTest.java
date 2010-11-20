@@ -13,31 +13,31 @@ import org.junit.Test;
 
 public class CacheTest {
 	
-	@Test
-	public void test1(){
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.ERROR);		
-		Logger.getLogger(DBModelCacheComplete.class).setLevel(Level.ERROR);
-		
-		DBModelCache cache = new DBModelCacheComplete("cache", SparqlEndpoint.getEndpointDBpediaAKSW(), 2);
-	}
-	
-	@Test
-	public void test2(){
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.ERROR);		
-		Logger.getLogger(DBModelCacheSingle.class).setLevel(Level.ERROR);
-		
-		DBModelCache cache = new DBModelCacheSingle("cache", SparqlEndpoint.getEndpointDBpediaAKSW());
-	}
+//	@Test
+//	public void test1(){
+//		SimpleLayout layout = new SimpleLayout();
+//		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+//		Logger logger = Logger.getRootLogger();
+//		logger.removeAllAppenders();
+//		logger.addAppender(consoleAppender);
+//		logger.setLevel(Level.ERROR);		
+//		Logger.getLogger(DBModelCacheComplete.class).setLevel(Level.ERROR);
+//		
+//		DBModelCache cache = new DBModelCacheComplete("cache", SparqlEndpoint.getEndpointDBpediaAKSW(), 2);
+//	}
+//	
+//	@Test
+//	public void test2(){
+//		SimpleLayout layout = new SimpleLayout();
+//		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+//		Logger logger = Logger.getRootLogger();
+//		logger.removeAllAppenders();
+//		logger.addAppender(consoleAppender);
+//		logger.setLevel(Level.ERROR);		
+//		Logger.getLogger(DBModelCacheSingle.class).setLevel(Level.ERROR);
+//		
+//		DBModelCache cache = new DBModelCacheSingle("cache", SparqlEndpoint.getEndpointDBpediaAKSW());
+//	}
 	
 	@Test
 	public void test3(){
@@ -49,7 +49,7 @@ public class CacheTest {
 		logger.setLevel(Level.ERROR);		
 		Logger.getLogger(DBModelCacheExtended.class).setLevel(Level.ERROR);
 		
-		DBModelCache cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaAKSW());
+		DBModelCache cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 	}
 
 }
