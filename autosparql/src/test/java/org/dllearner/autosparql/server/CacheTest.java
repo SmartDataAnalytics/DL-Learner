@@ -1,6 +1,9 @@
 package org.dllearner.autosparql.server;
 
+import java.io.IOException;
+
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -41,13 +44,19 @@ public class CacheTest {
 	
 	@Test
 	public void test3(){
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.ERROR);		
-		Logger.getLogger(DBModelCacheExtended.class).setLevel(Level.ERROR);
+		try {
+			SimpleLayout layout = new SimpleLayout();
+			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			FileAppender fileAppender = new FileAppender( layout, "log/dbpedia_cache_creation.log", false );
+			Logger logger = Logger.getRootLogger();
+			logger.removeAllAppenders();
+//			logger.addAppender(consoleAppender);
+			logger.addAppender(fileAppender);
+			logger.setLevel(Level.INFO);		
+			Logger.getLogger(DBModelCacheExtended.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		DBModelCache cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 	}
