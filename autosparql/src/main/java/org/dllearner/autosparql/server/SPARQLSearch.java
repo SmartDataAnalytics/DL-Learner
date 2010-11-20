@@ -31,8 +31,7 @@ public class SPARQLSearch {
 		
 		String query = buildSearchQuery(searchTerm, limit, offset);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		
-		
+		System.out.println(query);
 		String uri;
 		String label;
 		String imageURL;
