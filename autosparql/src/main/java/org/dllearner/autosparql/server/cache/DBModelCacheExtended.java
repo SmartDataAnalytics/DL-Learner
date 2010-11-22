@@ -8,8 +8,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.aksw.commons.util.strings.StringUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -18,6 +20,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
+import com.google.common.base.Joiner;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -82,8 +85,50 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 
 	@Override
 	public Model getModel(String uri, int recursionDepth) {
-		// TODO Auto-generated method stub
-		return null;
+		Model model = ModelFactory.createDefaultModel();
+		
+		byte[] md5 = md5(uri);	 
+		
+		try {
+			//Get the ID for the resource
+			PreparedStatement ps = conn.prepareStatement("SELECT ID FROM RESOURCE_CACHE WHERE URI_HASH=? LIMIT 1");
+			ps.setBytes(1, md5);
+			java.sql.ResultSet rs = ps.executeQuery();
+			rs.next();
+			int id = rs.getInt("ID");
+			
+			Set<Integer> ids = new HashSet<Integer>();
+			ids.add(id);
+			
+			//Retrieve all IDs
+			Set<Integer> tmp = new HashSet<Integer>();
+			tmp.add(id);
+			for(int i = 1; i <= recursionDepth; i++){
+				ps = conn.prepareStatement("SELECT ID2 FROM RESOURCE2RESOURCE WHERE ID1 IN(" + Joiner.on(',').join(tmp) + ")");
+				tmp.clear();
+				rs = ps.executeQuery();
+				while(rs.next()){
+					tmp.add(rs.getInt("ID2"));
+				}
+				ids.addAll(tmp);
+				
+			}
+		
+			//Retrieve the Triples for all IDs
+			ps = conn.prepareStatement("SELECT TRIPLES FROM RESOURCE_CACHE WHERE ID IN(" + Joiner.on(',').join(ids) + ")");
+			rs = ps.executeQuery();
+			Clob clob;
+			while(rs.next()){
+				clob = rs.getClob("TRIPLES");
+				model.read(clob.getAsciiStream(), null, "N-TRIPLE");
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return model;
 	}
 	
 	private void createCache(){
@@ -330,7 +375,10 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		Logger.getLogger(DBModelCacheExtended.class).setLevel(Level.INFO);
 		DBModelCacheExtended cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 //		cache.fillCache(resource, 2);
-		System.out.println(cache.getModel(resource).size());
+		long startTime = System.nanoTime();
+		System.out.println(cache.getModel(resource, 2).size());
+		long endTime = System.nanoTime();
+		System.out.println((endTime - startTime) / 1000000);
 	}
 
 }
