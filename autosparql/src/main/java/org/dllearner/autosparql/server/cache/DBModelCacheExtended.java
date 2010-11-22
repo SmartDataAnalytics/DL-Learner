@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
-import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -57,7 +56,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		modelGen = new ModelGenerator(endpoint);
 		
 		createCache();
-		fillCache();
+//		fillCache();
 	}
 
 	@Override
@@ -67,10 +66,10 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		byte[] md5 = md5(uri);	 
 		
 		try {
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM QUERY_CACHE WHERE QUERYHASH=? LIMIT 1");
+			PreparedStatement ps = conn.prepareStatement("SELECT TRIPLES FROM RESOURCE_CACHE WHERE URI_HASH=? LIMIT 1");
 			ps.setBytes(1, md5);
 			java.sql.ResultSet rs = ps.executeQuery();
-			
+			rs.next();
 			Clob clob = rs.getClob("TRIPLES");
 			
 			model.read(clob.getAsciiStream(), null, "N-TRIPLE");
@@ -103,11 +102,11 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
         conn = DriverManager.getConnection("jdbc:h2:" + databaseDirectory + "/" + databaseName + jdbcString, "sa", "");
 
         // create cache table if it does not exist
-        Statement stmt = conn.createStatement();
-        stmt.execute("DROP TABLE IF EXISTS RESOURCE_CACHE");
-        stmt.execute("DROP TABLE IF EXISTS RESOURCE2RESOURCE");
-        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY, TRIPLES CLOB, STORE_TIME TIMESTAMP)");
-        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE2RESOURCE (ID1 INT, ID2 INT, PRIMARY KEY(ID1, ID2))");
+//        Statement stmt = conn.createStatement();
+//        stmt.execute("DROP TABLE IF EXISTS RESOURCE_CACHE");
+//        stmt.execute("DROP TABLE IF EXISTS RESOURCE2RESOURCE");
+//        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY, TRIPLES CLOB, STORE_TIME TIMESTAMP)");
+//        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE2RESOURCE (ID1 INT, ID2 INT, PRIMARY KEY(ID1, ID2))");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -121,7 +120,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		}
 	}
 	
-	private void fillCache(){
+	public void fillCache(){
 		monitor.reset();
 		monitor.start();
 		logger.info("Filling cache...");
@@ -158,6 +157,42 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		monitor.stop();
 		logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
 		
+	}
+	
+	private void fillCacheRec(String resource, int depth, int maxDepth){
+		monitor.reset();
+		monitor.start();
+		logger.info("Filling cache...");
+		com.hp.hpl.jena.rdf.model.Statement st;
+		String objectURI;
+		logger.info("Fetching triples for resource " + resource);
+		Model model = createModel(resource);
+		logger.info("Got " + model.size() + " triples");
+		String modelStr = convertModel2String(model);
+		logger.info("Writing to DB triples for resource " + resource);
+		writeTriples2DB(resource, modelStr);
+		int id = getResourceID(resource);
+		for(StmtIterator iter = model.listStatements(); iter.hasNext();){
+			st = iter.next();
+			if(st.getObject().isURIResource()){
+				objectURI = st.getObject().asResource().getURI();
+				if(objectURI.startsWith("http://dbpedia.org/resource/")){
+					System.out.println(resource + "->" + st.getPredicate().getURI() + "->" + objectURI);
+					System.out.println(depth);
+					if(depth <= maxDepth){
+						fillCacheRec(objectURI, depth + 1, maxDepth);
+					}
+					logger.info("Writing to DB key-key entry for resources " + resource + " and " + objectURI);
+					logger.info("Database ID for " + resource + " is " + id);
+					writeKey2KeyIntoDB(id, objectURI);
+				}
+			}
+		}
+		monitor.stop();
+	}
+	
+	public void fillCache(String resource, int maxDepth){
+		fillCacheRec(resource, 0, maxDepth);
 	}
 	
 	private int getResourceID(String resource){
@@ -283,6 +318,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	}
 	
 	public static void main(String[] args) throws IOException{
+		String resource = "http://dbpedia.org/resource/Leipzig";
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		FileAppender fileAppender = new FileAppender( layout, "log/dbpedia_cache_creation.log", false );
@@ -290,9 +326,11 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.INFO);		
-		Logger.getLogger(DBModelCacheExtended.class);
+		logger.setLevel(Level.ERROR);		
+		Logger.getLogger(DBModelCacheExtended.class).setLevel(Level.INFO);
 		DBModelCacheExtended cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+//		cache.fillCache(resource, 2);
+		System.out.println(cache.getModel(resource).size());
 	}
 
 }
