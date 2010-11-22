@@ -81,10 +81,12 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	@Override
 	public PagingLoadResult<Example> getCurrentQueryResult(
 			PagingLoadConfig config) throws SPARQLQueryException {
+		logger.info("Retrieving results for current query.");
 		List<Example> queryResult = new ArrayList<Example>();
 		
 		String currentQuery = getExampleFinder().getCurrentQuery();
-		
+		logger.info("Current query:\n");
+		logger.info(currentQuery);
 		int limit = config.getLimit();
 		int offset = config.getOffset();
 		int totalLength = 10;
@@ -155,7 +157,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private String modifyQuery(String query){
 		String newQuery = query.replace("SELECT ?x0 WHERE {", 
-				"SELECT DISTINCT ?x0 ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.");
+				"SELECT DISTINCT(?x0) ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.FILTER(LANGMATCHES(LANG(?label), 'en'))");
 		
 		return newQuery;
 	}

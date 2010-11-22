@@ -34,15 +34,19 @@ public class SPARQLSearch {
 		System.out.println(query);
 		String uri;
 		String label;
-		String imageURL;
-		String comment;
+		String imageURL = "";
+		String comment = "";
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
 			uri = qs.getResource("object").getURI();
 			label = qs.getLiteral("label").getLexicalForm();
-			imageURL = qs.getResource("imageURL").getURI();
-			comment = qs.getLiteral("comment").getLexicalForm();
+			if(qs.getResource("imageURL") != null){
+				imageURL = qs.getResource("imageURL").getURI();
+			}
+			if(qs.getLiteral("comment") != null){
+				comment = qs.getLiteral("comment").getLexicalForm();
+			}
 			searchResult.add(new Example(uri, label, imageURL, comment));
 		}
 		return searchResult;
@@ -93,11 +97,11 @@ public class SPARQLSearch {
 		sb.append("SELECT distinct(?object) ?label ?imageURL ?comment WHERE {\n");
 		sb.append("?object a ?class.\n");
 		sb.append("?object <").append(RDFS.label).append("> ?label.\n");
-		sb.append("?object <").append(FOAF.depiction.getURI()).append("> ?imageURL.\n");
 		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
-		sb.append("?object <").append(RDFS.comment).append("> ?comment.\n");
-		sb.append("filter(langmatches(lang(?comment), \"en\"))");
-		sb.append("filter(langmatches(lang(?label), \"en\"))");
+		sb.append("FILTER(LANGMATCHES(LANG(?label), \"en\"))");
+		sb.append("OPTIONAL{?object <").append(FOAF.depiction.getURI()).append("> ?imageURL.}\n");
+		sb.append("OPTIONAL{?object <").append(RDFS.comment).append("> ?comment.\n");
+		sb.append("FILTER(LANGMATCHES(LANG(?comment), \"en\"))}");
 		sb.append("}\n");
 		sb.append("LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
