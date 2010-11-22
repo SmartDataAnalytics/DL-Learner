@@ -323,6 +323,12 @@
                 <artifactId>postgresql</artifactId>
                 <version>8.4-701.jdbc4</version>
             </dependency>
+            
+            <dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r07</version>
+		</dependency>
 
         </dependencies>
     </dependencyManagement>
