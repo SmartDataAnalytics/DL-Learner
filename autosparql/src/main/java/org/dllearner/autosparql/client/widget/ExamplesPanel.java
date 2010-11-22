@@ -137,7 +137,7 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("DUMMY TEXT");
+		grid.getView().setEmptyText("No examples selected");
 //		grid.getView().setShowDirtyCells(showDirtyCells)
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
@@ -244,7 +244,7 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("DUMMY TEXT");
+		grid.getView().setEmptyText("No examples selected");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,

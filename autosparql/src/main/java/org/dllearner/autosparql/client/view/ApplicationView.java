@@ -127,11 +127,11 @@ public class ApplicationView extends View {
 	    vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 	    mainPanel.add(vPanel, new RowData(0.7, 1, new Margins(0, 0, 0, 5)));
 	    
-	    examplesPanel = new ExamplesPanel();
-	    vPanel.add(examplesPanel, new RowData(1, 0.5, new Margins(0, 0, 5, 0)));
-		
 		resultPanel = new ResultPanel();
 		vPanel.add(resultPanel, new RowData(1, 0.5, new Margins(10, 0, 0, 0)));
+		
+		examplesPanel = new ExamplesPanel();
+	    vPanel.add(examplesPanel, new RowData(1, 0.5, new Margins(0, 0, 5, 0)));
 //
 	    // registry serves as a global context
 	    Registry.register(VIEWPORT, viewport);
