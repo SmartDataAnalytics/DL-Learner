@@ -40,7 +40,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.configurators.ISLEConfigurator;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.ConfigOption;
@@ -69,7 +69,7 @@ public final class ConfigJavaGenerator {
 	private static final SortedSet<String> EXTENDSREFINEMENTOPERATOR = 
 		new TreeSet<String>(Arrays.asList(new String[]{
 				ROLearnerConfigurator.class.getSimpleName(),
-				ROLComponent2Configurator.class.getSimpleName(),
+				OCELConfigurator.class.getSimpleName(),
 				CELOEConfigurator.class.getSimpleName(),
 				ISLEConfigurator.class.getSimpleName()
 				}));
@@ -82,11 +82,11 @@ public final class ConfigJavaGenerator {
 	private static final String UNUSED = "@SuppressWarnings(\"unused\")\n";
 	private static final String OVERRIDE = "@SuppressWarnings(\"all\")\n";
 
-	private static final String TARGET_DIR = "src/dl-learner/org/dllearner/core/configurators";
+	private static final String TARGET_DIR = "../components-core/src/main/java/org/dllearner/core/configurators";
 
 	private static final String TARGET_PACKAGE = "org.dllearner.core.configurators";
 
-	private static final String HEADER_FILE = "doc/header.txt";
+	private static final String HEADER_FILE = "../interfaces/doc/header.txt";
 
 	private static final String HEADER = getHeader();
 

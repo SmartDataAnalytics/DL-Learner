@@ -249,20 +249,20 @@ return ISLEConfigurator.getISLE(learningProblem, reasoningService);
 * @param learningProblem see LearningProblem
 * @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
-* @return a component ready for initialization ROLearner
+* @return a component ready for initialization OCEL
 **/
-public static ROLearner getROLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
+public static OCEL getOCEL(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return OCELConfigurator.getOCEL(learningProblem, reasoningService);
 }
 
 /**
 * @param learningProblem see LearningProblem
 * @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
-* @return a component ready for initialization ROLComponent2
+* @return a component ready for initialization ROLearner
 **/
-public static OCEL getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return ROLComponent2Configurator.getROLComponent2(learningProblem, reasoningService);
+public static ROLearner getROLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
 }
 
 

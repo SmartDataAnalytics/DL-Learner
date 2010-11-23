@@ -38,7 +38,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -317,8 +317,8 @@ public class WikipediaCategoryCleaner {
 					posExamples, negExamples);
 	
 			// learning algorithm
-			la = ComponentFactory.getROLComponent2(lp, f);
-			ROLComponent2Configurator lc = la.getConfigurator();
+			la = ComponentFactory.getOCEL(lp, f);
+			OCELConfigurator lc = la.getConfigurator();
 			la.getConfigurator().setNoisePercentage(20);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(100);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(50);

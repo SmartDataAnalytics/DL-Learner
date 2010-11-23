@@ -131,7 +131,7 @@ public class NewSample {
 		PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard( f, posExamples, negExamples);
 		
 		// learning algorithm
-		OCEL la = ComponentFactory.getROLComponent2( lp, f);
+		OCEL la = ComponentFactory.getOCEL( lp, f);
 		//OPTIONAL PARAMETERS
 		la.getConfigurator().setUseAllConstructor( false);
 		la.getConfigurator().setUseExistsConstructor(true);

@@ -27,7 +27,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.SearchTreeNode;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -46,7 +46,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 
 //	public static long exampleMemoryCounter = 0;
 	
-	private ROLComponent2Configurator configurator;
+	private OCELConfigurator configurator;
 	
 	private static DecimalFormat df = new DecimalFormat();
 	
@@ -81,7 +81,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
 	
-	public ExampleBasedNode(ROLComponent2Configurator configurator, Description concept) {
+	public ExampleBasedNode(OCELConfigurator configurator, Description concept) {
 		this.configurator = configurator;
 		this.concept = concept;
 		horizontalExpansion = 0;
