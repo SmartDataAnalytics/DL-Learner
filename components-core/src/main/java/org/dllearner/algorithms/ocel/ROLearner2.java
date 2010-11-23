@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -64,7 +64,7 @@ import com.jamonapi.Monitor;
 public class ROLearner2 {
 
 	private static Logger logger = Logger.getLogger(ROLearner2.class);
-	private ROLComponent2Configurator configurator;
+	private OCELConfigurator configurator;
 
 	// basic setup: learning problem and reasoning service
 	private ReasonerComponent rs;
@@ -212,7 +212,7 @@ public class ROLearner2 {
 	private Map<String, String> prefixes;
 
 	public ROLearner2(
-			ROLComponent2Configurator configurator,
+			OCELConfigurator configurator,
 			LearningProblem learningProblem,
 			ReasonerComponent rs,
 			RefinementOperator operator,

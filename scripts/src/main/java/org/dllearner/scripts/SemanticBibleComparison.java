@@ -47,7 +47,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -397,7 +397,7 @@ public class SemanticBibleComparison {
 			System.exit(0);
 			}
 		
-		ROLComponent2Configurator c = la.getConfigurator();
+		OCELConfigurator c = la.getConfigurator();
 		
 		//defaultSettings:
 		c.setUseHasValueConstructor(false);
@@ -478,7 +478,7 @@ public class SemanticBibleComparison {
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getROLComponent2(lp, f);
+			la = ComponentFactory.getOCEL(lp, f);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			Config conf = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(conf).saveFile(new File(tmpFilename));
@@ -529,7 +529,7 @@ public class SemanticBibleComparison {
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getROLComponent2(lp, f);
+			la = ComponentFactory.getOCEL(lp, f);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			Config c = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(c).saveFile(new File(tmpFilename));

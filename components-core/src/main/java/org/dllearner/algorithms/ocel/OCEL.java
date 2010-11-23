@@ -33,7 +33,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -83,9 +83,9 @@ import org.dllearner.utilities.Helper;
  */
 public class OCEL extends LearningAlgorithm {
 	
-	private ROLComponent2Configurator configurator;
+	private OCELConfigurator configurator;
 	@Override
-	public ROLComponent2Configurator getConfigurator(){
+	public OCELConfigurator getConfigurator(){
 		return configurator;
 	}
 	
@@ -154,12 +154,12 @@ public class OCEL extends LearningAlgorithm {
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
 	public OCEL(PosNegLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		this.configurator = new ROLComponent2Configurator(this);
+		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public OCEL(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		this.configurator = new ROLComponent2Configurator(this);
+		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {

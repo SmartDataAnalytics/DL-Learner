@@ -85,7 +85,7 @@ public class ExampleDataCollector {
 			
 			FastInstanceChecker rc = ComponentFactory.getFastInstanceChecker(tmp);
 			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(rc, pos, neg);
-			OCEL la = ComponentFactory.getROLComponent2(lp, rc);
+			OCEL la = ComponentFactory.getOCEL(lp, rc);
 //			la.getConfigurator().setUseNegation(false);
 //			la.getConfigurator().setUseAllConstructor(false);
 //			la.getConfigurator().setUseExistsConstructor(false);

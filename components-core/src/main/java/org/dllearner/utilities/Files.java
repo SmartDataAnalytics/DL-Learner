@@ -286,8 +286,8 @@ public class Files {
 	 */
 	public static void backupDirectory(String dir){
 		File f = new File(dir);
-		String backupDir = "tmp/"+System.currentTimeMillis();
-		mkdir("tmp");
+		String backupDir = "../tmp/"+System.currentTimeMillis();
+		mkdir("../tmp");
 		mkdir(backupDir);
 		
 		if(debug){

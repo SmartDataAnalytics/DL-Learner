@@ -637,7 +637,7 @@ public class TestIterativeLearning {
 			// Math.floor(0.8d*((double)ex.getPosTrain().size()));
 		}
 
-		OCEL la = ComponentFactory.getROLComponent2(lp, rc);
+		OCEL la = ComponentFactory.getOCEL(lp, rc);
 //		CELOE la = ComponentFactory.getCELOE(lp, rc);
 		la.getConfigurator().setUseExistsConstructor(true);
 

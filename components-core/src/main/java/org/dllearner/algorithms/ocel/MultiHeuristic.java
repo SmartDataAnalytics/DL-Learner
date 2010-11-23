@@ -21,7 +21,7 @@ package org.dllearner.algorithms.ocel;
 
 import java.util.List;
 
-import org.dllearner.core.configurators.ROLComponent2Configurator;
+import org.dllearner.core.configurators.OCELConfigurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
@@ -70,7 +70,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	private ROLComponent2Configurator configurator;
+	private OCELConfigurator configurator;
 	
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
@@ -92,7 +92,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 //		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
 	}
 	
-	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
+	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, OCELConfigurator configurator) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.configurator = configurator;
@@ -144,7 +144,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
-	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, OCELConfigurator configurator) {
 		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, configurator);
 		return multi.getNodeScore(node);
 	}

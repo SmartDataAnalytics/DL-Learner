@@ -253,6 +253,15 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "sea
 public boolean getReplaceSearchTree() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "replaceSearchTree") ;
 }
+/**
+* expansionPenaltyFactor heuristic penalty per syntactic construct used (lower = finds more complex expression, but might miss simple ones).
+* mandatory: false| reinit necessary: true
+* default value: 0.1
+* @return double 
+**/
+public double getExpansionPenaltyFactor() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "expansionPenaltyFactor") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -450,6 +459,15 @@ reinitNecessary = true;
 **/
 public void setReplaceSearchTree(boolean replaceSearchTree) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "replaceSearchTree", replaceSearchTree);
+reinitNecessary = true;
+}
+/**
+* @param expansionPenaltyFactor heuristic penalty per syntactic construct used (lower = finds more complex expression, but might miss simple ones).
+* mandatory: false| reinit necessary: true
+* default value: 0.1
+**/
+public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "expansionPenaltyFactor", expansionPenaltyFactor);
 reinitNecessary = true;
 }
 
