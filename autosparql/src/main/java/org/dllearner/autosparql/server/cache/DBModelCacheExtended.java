@@ -219,6 +219,13 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		monitor.stop();
 		logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
 		
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void fillCacheBatched(){
@@ -271,6 +278,12 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		}
 		monitor.stop();
 		logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
