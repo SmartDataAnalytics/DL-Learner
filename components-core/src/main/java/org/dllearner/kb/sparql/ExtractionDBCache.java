@@ -57,7 +57,7 @@ public class ExtractionDBCache {
 	private boolean autoServerMode = true;
 	
 	// specifies after how many seconds a cached result becomes invalid
-	private long freshnessSeconds = 15 * 24 * 60 * 60; // 15 days	
+	private long freshnessInMilliseconds = 15 * 24 * 60 * 60 + 1000; // 15 days	
 	
 	private Connection conn;
 	
@@ -102,7 +102,8 @@ public class ExtractionDBCache {
 		ResultSet rs = ps.executeQuery();
 		
 //		long startTime = System.nanoTime();
-		boolean readFromCache = rs.next() && (rs.getTimestamp("STORE_TIME").getTime() - System.currentTimeMillis() < freshnessSeconds);
+		boolean entryExists = rs.next();
+		boolean readFromCache = entryExists && (System.currentTimeMillis() - rs.getTimestamp("STORE_TIME").getTime() < freshnessInMilliseconds);
 //		long runTime = System.nanoTime() - startTime;
 //		System.out.println(Helper.prettyPrintNanoSeconds(runTime, true, true));
 		
@@ -137,11 +138,20 @@ public class ExtractionDBCache {
 			String modelStr = baos.toString("UTF-8");
 			
 			// use a prepared statement, so that Java handles all the escaping stuff correctly automatically
-			PreparedStatement ps2=conn.prepareStatement("INSERT INTO QUERY_CACHE VALUES(?,?,?,?)");
-			ps2.setBytes(1, md5);
-			ps2.setString(2, query);
-			ps2.setClob(3, new StringReader(modelStr));
-			ps2.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+			PreparedStatement ps2;
+			if(entryExists){
+				ps2 = conn.prepareStatement("UPDATE QUERY_CACHE SET TRIPLES=?, STORE_TIME=? WHERE QUERYHASH=?");
+				ps2.setClob(1, new StringReader(modelStr));
+				ps2.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
+				ps2.setBytes(3, md5);
+			} else {
+				ps2 = conn.prepareStatement("INSERT INTO QUERY_CACHE VALUES(?,?,?,?)");
+				ps2.setBytes(1, md5);
+				ps2.setString(2, query);
+				ps2.setClob(3, new StringReader(modelStr));
+				ps2.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+			}
+			
 			ps2.executeUpdate(); 
 			
 			return m2;
@@ -155,7 +165,8 @@ public class ExtractionDBCache {
 		ps.setBytes(1, md5);
 		ResultSet rs = ps.executeQuery();
 		
-		boolean readFromCache = rs.next() && (rs.getTimestamp("STORE_TIME").getTime() - System.currentTimeMillis() < freshnessSeconds);
+		boolean entryExists = rs.next();
+		boolean readFromCache = entryExists && (System.currentTimeMillis() - rs.getTimestamp("STORE_TIME").getTime() < freshnessInMilliseconds);
 		
 		if(readFromCache) {
 //			System.out.println("cache");
@@ -175,11 +186,20 @@ public class ExtractionDBCache {
 			String json = SparqlQuery.convertResultSetToJSON(rs2);
 			
 			// use a prepared statement, so that Java handles all the escaping stuff correctly automatically
-			PreparedStatement ps2=conn.prepareStatement("INSERT INTO QUERY_CACHE VALUES(?,?,?,?)");
-			ps2.setBytes(1, md5);
-			ps2.setString(2, query);
-			ps2.setClob(3, new StringReader(json));
-			ps2.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+			PreparedStatement ps2;
+			if(entryExists){
+				ps2 = conn.prepareStatement("UPDATE QUERY_CACHE SET TRIPLES=?, STORE_TIME=? WHERE QUERYHASH=?");
+				ps2.setClob(1, new StringReader(json));
+				ps2.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
+				ps2.setBytes(3, md5);
+			} else {
+				ps2 = conn.prepareStatement("INSERT INTO QUERY_CACHE VALUES(?,?,?,?)");
+				ps2.setBytes(1, md5);
+				ps2.setString(2, query);
+				ps2.setClob(3, new StringReader(json));
+				ps2.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
+			}
+			
 			ps2.executeUpdate(); 
 			return json;
 		}
@@ -211,7 +231,7 @@ public class ExtractionDBCache {
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException, UnsupportedEncodingException {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointLOCALDBpedia();
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 		String resource = "http://dbpedia.org/resource/Leipzig";
 		String query = "CONSTRUCT { <"+resource+"> ?p ?o } WHERE { <"+resource+"> ?p ?o }"; 
 		System.out.println("query: " + query);
@@ -219,9 +239,9 @@ public class ExtractionDBCache {
 		ExtractionDBCache h2 = new ExtractionDBCache("cache"); 
 		long startTime = System.nanoTime();
 		Model m = h2.executeConstructQuery(endpoint, query);
-		for(int i=0; i<1000; i++) {
-			h2.executeConstructQuery(endpoint, query);
-		}
+//		for(int i=0; i<1000; i++) {
+//			h2.executeConstructQuery(endpoint, query);
+//		}
 		long runTime = System.nanoTime() - startTime;
 		System.out.println("Answer obtained in " + Helper.prettyPrintNanoSeconds(runTime));
 		System.out.println(ExtractionDBCache.toNTriple(m));
