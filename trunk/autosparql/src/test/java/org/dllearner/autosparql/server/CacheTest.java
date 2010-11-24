@@ -43,11 +43,11 @@ public class CacheTest {
 //	}
 	
 	@Test
-	public void test3(){
+	public void fillCacheBatchedTest(){
 		try {
 			SimpleLayout layout = new SimpleLayout();
 			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-			FileAppender fileAppender = new FileAppender( layout, "log/dbpedia_cache_creation.log", false );
+			FileAppender fileAppender = new FileAppender( layout, "log/fillCacheBatched.log", false );
 			Logger logger = Logger.getRootLogger();
 			logger.removeAllAppenders();
 //			logger.addAppender(consoleAppender);
@@ -58,7 +58,28 @@ public class CacheTest {
 			e.printStackTrace();
 		}
 		
-		DBModelCache cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		DBModelCacheExtended cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		cache.fillCacheBatched(1000);
+	}
+	
+	@Test
+	public void fillCacheTest(){
+		try {
+			SimpleLayout layout = new SimpleLayout();
+			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			FileAppender fileAppender = new FileAppender( layout, "log/fillCache.log", false );
+			Logger logger = Logger.getRootLogger();
+			logger.removeAllAppenders();
+//			logger.addAppender(consoleAppender);
+			logger.addAppender(fileAppender);
+			logger.setLevel(Level.INFO);		
+			Logger.getLogger(DBModelCacheExtended.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		DBModelCacheExtended cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		cache.fillCache(1000);
 	}
 
 }

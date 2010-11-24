@@ -8,7 +8,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.aksw.commons.util.strings.StringUtils;
@@ -19,12 +23,15 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 
 import com.google.common.base.Joiner;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -40,7 +47,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	private boolean autoServerMode = true;
 	private Connection conn;
 	
-	private static final int CHUNK_SIZE = 1000;
+	private static final int CHUNK_SIZE = 50;
 	
 	private ModelGenerator modelGen;
 	
@@ -59,7 +66,6 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		modelGen = new ModelGenerator(endpoint);
 		
 		createCache();
-//		fillCache();
 	}
 
 	@Override
@@ -147,11 +153,11 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
         conn = DriverManager.getConnection("jdbc:h2:" + databaseDirectory + "/" + databaseName + jdbcString, "sa", "");
 
         // create cache table if it does not exist
-//        Statement stmt = conn.createStatement();
-//        stmt.execute("DROP TABLE IF EXISTS RESOURCE_CACHE");
-//        stmt.execute("DROP TABLE IF EXISTS RESOURCE2RESOURCE");
-//        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY, TRIPLES CLOB, STORE_TIME TIMESTAMP)");
-//        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE2RESOURCE (ID1 INT, ID2 INT, PRIMARY KEY(ID1, ID2))");
+        Statement stmt = conn.createStatement();
+        stmt.execute("DROP TABLE IF EXISTS RESOURCE_CACHE");
+        stmt.execute("DROP TABLE IF EXISTS RESOURCE2RESOURCE");
+        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY, TRIPLES CLOB, STORE_TIME TIMESTAMP)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE2RESOURCE (ID1 INT, ID2 INT, PRIMARY KEY(ID1, ID2))");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -166,18 +172,22 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	}
 	
 	public void fillCache(){
+		fillCache(-1);
+	}
+	
+	public void fillCache(int limit){
 		monitor.reset();
 		monitor.start();
 		logger.info("Filling cache...");
 		int cnt = getResourcesCount();
 		logger.info("Number of resources: " + cnt);
-		Set<String> resources;
 		Model model;
 		com.hp.hpl.jena.rdf.model.Statement st;
 		String objectURI;
 		String modelStr;
-		for(int i = 0; i <= 1; i++){
-			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+		int i = 0;
+		List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+		while(!resources.isEmpty()){
 			for(String resource : resources){
 				logger.info("Fetching triples for resource " + resource);
 				model = createModel(resource);
@@ -198,11 +208,121 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 					}
 				}
 			}
+			i++;
+			
+			if(limit != -1 && i * CHUNK_SIZE >= limit){
+				break;
+			}
+			
+			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
 		}
 		monitor.stop();
 		logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
 		
 	}
+	
+	public void fillCacheBatched(){
+		fillCacheBatched(-1);
+	}
+	
+	public void fillCacheBatched(int limit){
+		monitor.reset();
+		monitor.start();
+		logger.info("Filling cache...");
+		Model model;
+		String resource;
+		Map<String, Model> resources2ModelMap;
+		com.hp.hpl.jena.rdf.model.Statement st;
+		String objectURI;
+		String modelStr;
+		int i = 0;
+		List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+		while(!resources.isEmpty()){
+			resources2ModelMap = getTriplesPerResource(resources);
+			for(Entry<String, Model> entry : resources2ModelMap.entrySet()){
+				resource = entry.getKey();
+				model = entry.getValue();
+				logger.info("Resource: " + resource);
+				logger.info("Got " + model.size() + " triples:");
+				modelStr = convertModel2String(model);
+				logger.info("Writing triples to DB");
+				writeTriples2DB(resource, modelStr);
+				int id = getResourceID(resource);
+				for(StmtIterator iter = model.listStatements(); iter.hasNext();){
+					st = iter.next();
+					if(st.getObject().isURIResource()){
+						objectURI = st.getObject().asResource().getURI();
+						if(objectURI.startsWith("http://dbpedia.org/resource/")){
+							logger.info("Writing to DB key-key entry for resources " + resource + " and " + objectURI);
+							logger.info("Database ID for " + resource + " is " + id);
+							writeKey2KeyIntoDB(id, objectURI);
+						}
+					}
+				}
+			}
+			i++;
+			
+			if(limit != -1 && i * CHUNK_SIZE >= limit){
+				break;
+			}
+			
+			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+			
+		}
+		monitor.stop();
+		logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
+		
+	}
+	
+	private Model getTriples(List<String> resources){
+		logger.info("Fetching triple for resources:\n" + resources);
+		String query = createConstructQuery(resources, 1000, 0);
+		logger.info("Sending query:\n" + query);
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(
+				endpoint.getURL().toString(),
+				query,
+				endpoint.getDefaultGraphURIs(),
+				endpoint.getNamedGraphURIs());
+		Model all = ModelFactory.createDefaultModel();
+		try {
+			Model model = qexec.execConstruct();
+			all.add(model);
+			qexec.close();
+			int i = 1;
+			while(model.size() != 0){
+				query = createConstructQuery(resources, 1000, i * 1000);
+				logger.info("Sending query:\n" + query);
+				qexec = QueryExecutionFactory.sparqlService(
+						endpoint.getURL().toString(),
+						query,
+						endpoint.getDefaultGraphURIs(),
+						endpoint.getNamedGraphURIs());
+				model = qexec.execConstruct();
+				all.add(model);
+				qexec.close();
+				i++;
+			}
+		} catch (Exception e) {
+			logger.error("An error occured while trying to create the JENA Model for resources " + resources, e);
+		}
+		
+		return all;
+	}
+	
+	private Map<String, Model> getTriplesPerResource(List<String> resources){
+		Model allTriplesModel = getTriples(resources);
+		
+		Map<String, Model> resource2Triples = new HashMap<String, Model>();
+		Model model;
+		for(String resource : resources){
+			model = ModelFactory.createDefaultModel();
+			model.add(allTriplesModel.listStatements(allTriplesModel.createResource(resource), (Property)null, (RDFNode)null));
+			resource2Triples.put(resource, model);
+		}
+		
+		return resource2Triples;
+	}
+	
 	
 	private void fillCacheRec(String resource, int depth, int maxDepth){
 		monitor.reset();
@@ -271,6 +391,33 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		sb.append("ORDER BY ?p ?o");
 		
 		sb.append("\n");
+		
+		sb.append("LIMIT ").append(limit).append("\n");
+		
+		sb.append("OFFSET ").append(offset);
+		
+		return sb.toString();
+	}
+	
+	private String createConstructQuery(List<String> resources, int limit, int offset){
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {\n");
+		int i = 0;
+		for(String resource : resources){
+			sb.append("<").append(resource).append("> ").append("?p").append(i).append(" ?o").append(i).append(".\n");
+			i++;
+		}
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		i = 0;
+		for(String resource : resources){
+			sb.append("{<").append(resource).append("> ").append("?p").append(i).append(" ?o").append(i).append(".}\n");
+			if(i < resources.size()-1){
+				sb.append("UNION");
+			}
+			i++;
+		}
+		sb.append("}\n");
 		
 		sb.append("LIMIT ").append(limit).append("\n");
 		
@@ -371,14 +518,28 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.ERROR);		
+		logger.setLevel(Level.INFO);		
 		Logger.getLogger(DBModelCacheExtended.class).setLevel(Level.INFO);
 		DBModelCacheExtended cache = new DBModelCacheExtended("cache", SparqlEndpoint.getEndpointDBpediaLiveAKSW());
-//		cache.fillCache(resource, 2);
-		long startTime = System.nanoTime();
-		System.out.println(cache.getModel(resource, 2).size());
-		long endTime = System.nanoTime();
-		System.out.println((endTime - startTime) / 1000000);
+		cache.fillCacheBatched();
+//		long startTime = System.nanoTime();
+//		Model model = cache.getModel(resource, 2);
+//		long endTime = System.nanoTime();
+//		System.out.println(model.size());
+//		System.out.println((endTime - startTime) / 1000000 + "s");
+//		for(StmtIterator iter = model.listStatements();iter.hasNext();){
+//			System.out.println(iter.next());
+//		}
+//		
+//		ModelGenerator modelGen = new ModelGenerator(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+//		startTime = System.nanoTime();
+//		model = modelGen.createModel(resource, Strategy.INCREMENTALLY, 2);
+//		endTime = System.nanoTime();
+//		System.out.println(model.size());
+//		System.out.println((endTime - startTime) / 1000000 + "s");
+//		for(StmtIterator iter = model.listStatements();iter.hasNext();){
+//			System.out.println(iter.next());
+//		}
 	}
 
 }

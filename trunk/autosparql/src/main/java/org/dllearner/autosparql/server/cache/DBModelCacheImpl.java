@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -49,8 +51,8 @@ public class DBModelCacheImpl {
 		return cnt;
 	}
 	
-	protected Set<String> getResources(int limit, int offset){
-		Set<String> resources = new HashSet<String>();
+	protected List<String> getResources(int limit, int offset){
+		List<String> resources = new ArrayList<String>();
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT DISTINCT ?object WHERE {?object a ?class. ");
