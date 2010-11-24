@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -100,7 +101,7 @@ public class DBModelCacheSingle extends DBModelCacheImpl implements DBModelCache
 		logger.info("Filling cache...");
 		int cnt = getResourcesCount();
 		logger.info("Number of resources: " + cnt);
-		Set<String> resources;
+		List<String> resources;
 		Model model;
 		String modelStr;
 //		ISparqlEndpoint endpoint = new HttpSparqlEndpoint(this.endpoint.getURL().toString(), new HashSet<String>(this.endpoint.getDefaultGraphURIs()));
