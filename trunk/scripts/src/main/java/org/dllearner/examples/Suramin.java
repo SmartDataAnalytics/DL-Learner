@@ -58,7 +58,7 @@ public class Suramin {
 			.create("http://dl-learner.org/suramin");
 
 	// directory of Prolog files
-	private static final String prologDirectory = "examples/suramin/prolog/";
+	private static final String prologDirectory = "../examples/suramin/prolog/";
 
 	// mapping of symbols to names of chemical elements
 	private static Map<String, String> chemElements;
@@ -85,7 +85,7 @@ public class Suramin {
 		createChemElementsMapping();
 		String[] files = new String[] { "suramin.pl" };
 
-		File owlFile = new File("examples/suramin/suramin.owl");
+		File owlFile = new File("../examples/suramin/suramin.owl");
 
 		Program program = null;
 		long startTime, duration;
@@ -161,7 +161,7 @@ public class Suramin {
 		System.out.println("OK (" + time + ").");
 		
 		// generating conf files
-		File confTrainFile = new File("examples/suramin/train.conf");
+		File confTrainFile = new File("../examples/suramin/train.conf");
 		Files.clearFile(confTrainFile);
 		String confHeader = "import(\"suramin.owl\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
