@@ -1,0 +1,1937 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://dl-learner.org/breasttissue#"
+     xml:base="http://dl-learner.org/breasttissue"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:breasttissue="http://dl-learner.org/breasttissue#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://dl-learner.org/breasttissue"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasAreaNormalizedByDA -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasAreaNormalizedByDA">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasAreaUnderSpectrum -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasAreaUnderSpectrum">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasHighFrequencySlopeOfPhaseAngle -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasHighFrequencySlopeOfPhaseAngle">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasImpedanceDistanceBetweenSpectralEnds -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasImpedanceDistanceBetweenSpectralEnds">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasImpedivityAtZeroFrequency -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasImpedivityAtZeroFrequency">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasLengthOfTheSpectralCurve -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasLengthOfTheSpectralCurve">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasMaximumOfTheSpectrum -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasMaximumOfTheSpectrum">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#hasPhaseAngleAt500KHz -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/breasttissue#hasPhaseAngleAt500KHz">
+        <rdfs:domain rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient -->
+
+    <owl:Class rdf:about="http://dl-learner.org/breasttissue#Patient"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient1">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.19</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">220.74</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">228.8</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.91</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">524.79</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">556.83</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">60.2</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">6843.6</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient10 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient10">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.22</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.26</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">153.17</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">172.37</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.44</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">423.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">558.27</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">6108.11</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">79.06</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient100 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient100">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.22</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2400.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2447.77</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">261.35</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37939.26</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">535.69</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">596.04</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">63.65</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient101 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient101">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15381.1</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">169.2</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2000.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2063.07</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">283.64</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">330.27</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">46.57</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient102 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient102">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2000.0</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">204.09</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2088.65</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40087.92</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">478.52</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">520.22</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">77.06</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient103 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient103">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.2</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1063.44</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">164.07</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">174480.48</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2600.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2664.58</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">418.69</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">977.55</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient104 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient104">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">103.73</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12655.34</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1475.37</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1600.0</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.96</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">432.13</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">436.94</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient105 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient105">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14</hasHighFrequencySlopeOfPhaseAngle>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">178.69</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">185.45</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2300.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2480.59</hasLengthOfTheSpectralCurve>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.43</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">49.59</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5086.29</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient106 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient106">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">154.12</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2545.42</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2600.0</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">39845.77</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">53.45</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">729.37</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">745.47</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient11 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient11">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.3</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.32</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10622.55</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">246.74</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">255.82</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">41.52</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">410.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">508.54</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">67.52</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient12 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient12">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">207.27</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">219.3</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">44.78</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">500.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">602.53</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">76.87</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9819.45</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient13 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient13">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasPhaseAngleAt500KHz>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">120.9</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40.36</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">438.78</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4879.5</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">525.42</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">80.79</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">89.94</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient14 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient14">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.28</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">155.32</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">172.75</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">366.94</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40.9</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">471.59</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7064.82</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">75.6</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient15 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient15">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">245.47</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">253.89</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">32.04</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">485.67</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">541.36</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">64.86</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8135.97</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient16 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient16">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.2</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.36</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10055.84</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">236.49</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">245.69</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">390.0</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40.93</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">477.55</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">70.32</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient17 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient17">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1963.61</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">24.42</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">269.5</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">329.09</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">44.74</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">66.84</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">80.41</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient18 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient18">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.19</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">300.0</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3039.56</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">31.3</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">387.08</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">51.35</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">82.42</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">97.11</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient19 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient19">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.22</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.29</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">227.26</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">229.22</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">24.89</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">325.0</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.6</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">462.7</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5705.33</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient2">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.27</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">121.15</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.11</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3163.24</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">330.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">400.23</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">69.72</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">99.08</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient20 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient20">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.47</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">191.8</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">194.87</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.44</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">294.47</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">36.77</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">445.51</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5541.26</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient21 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient21">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.19</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.19</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">107.75</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">144.69</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.11</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3055.01</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">500.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">542.9</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">96.56</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient22 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient22">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14.27</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">151.98</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">211.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">217.13</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.24</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.75</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.94</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient23 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient23">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.02</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">196.86</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.87</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">200.75</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.66</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.59</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7.97</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">82.06</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient24 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient24">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.19</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1235.98</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.65</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">245.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">292.38</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">42.15</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">46.69</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">62.9</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient25 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient25">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1066.16</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.56</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">352.66</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">382.73</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">43.69</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">52.79</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">68.53</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient26 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient26">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">243.29</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">263.64</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">383.93</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.6</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">67.82</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">68.54</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.99</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient27 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient27">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17.51</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">259.89</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">267.52</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">465.09</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">56.34</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">58.24</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7.99</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient28 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient28">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.02</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.42</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17.78</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">250.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">278.31</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">55.79</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">57.17</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">652.9</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient29 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient29">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasHighFrequencySlopeOfPhaseAngle>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10.68</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">200.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">218.03</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">220.81</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40.95</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">42.32</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.22</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient3">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11888.39</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">253.79</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">264.8</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">44.89</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">551.88</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">656.77</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">77.79</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient30 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient30">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1033.85</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.54</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.56</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">355.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">372.04</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">86.58</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">89.56</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient31 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient31">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.27</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.09</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">272.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">286.92</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">60.69</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">63.79</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">718.95</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient32 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient32">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1370.84</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16.12</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.03</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">341.62</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">385.13</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">79.94</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">85.04</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient33 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient33">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.16</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.18</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">160.32</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">187.57</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.76</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.89</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">341.88</hasAreaUnderSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.22</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.19</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient34 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient34">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14.59</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.05</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">301.3</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">335.77</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">57.72</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">64.62</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">942.77</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient35 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient35">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10.66</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">155.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">184.82</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25.84</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.13</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">38.94</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">415.11</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient36 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient36">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">144.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">160.37</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.13</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.65</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.58</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7.57</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">70.43</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient37 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient37">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.78</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">178.0</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.16</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">215.91</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.75</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">41.54</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">489.44</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient38 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient38">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13.29</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">195.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">232.59</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">328.38</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.02</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.46</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8.77</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient39 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient39">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.16</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10.86</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">117.81</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">123.6</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1342.28</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.38</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">433.2</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">435.09</hasImpedivityAtZeroFrequency>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient4">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.24</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.29</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">105.2</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">137.64</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">380.0</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">39.25</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">493.7</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5402.17</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">88.76</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient40 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient40">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">224.15</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">232.28</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">250.0</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.16</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">70.32</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">70.91</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.1</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient41 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient41">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.83</hasMaximumOfTheSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.74</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">307.79</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">331.08</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">339.51</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">87.62</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">88.63</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient42 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient42">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.2</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">236.0</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">236.88</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">244.97</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">32.42</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">36.01</hasMaximumOfTheSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.89</hasAreaNormalizedByDA>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">48.45</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient43 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient43">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.02</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1154.34</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14.6</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.93</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">481.47</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">501.89</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">71.41</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">79.06</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient44 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient44">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.81</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25.54</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">252.0</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.87</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">280.66</hasLengthOfTheSpectralCurve>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">38.54</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">493.79</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient45 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient45">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">172.52</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">174.93</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.32</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">192.22</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">32.19</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.54</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.12</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient46 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient46">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10.59</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">121.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">141.77</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">144.47</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.02</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">24.44</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.91</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient47 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient47">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.18</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.45</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">196.36</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">239.94</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.15</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">42.58</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">54.58</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">843.26</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient48 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient48">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.28</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">112.72</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">115.92</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1308.12</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">31.37</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">365.98</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">370.4</hasImpedivityAtZeroFrequency>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient49 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient49">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17.87</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">248.62</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">260.28</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">277.26</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.71</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">56.04</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">58.82</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient5">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.2</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.24</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">103.87</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">124.91</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.34</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3290.46</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">362.83</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">424.8</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">69.39</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient50 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient50">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasPhaseAngleAt500KHz>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">100.79</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.8</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1189.29</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.41</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">544.65</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">553.36</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">96.58</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient51 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient51">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.82</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2741.03</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">310.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">388.98</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">49.33</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">85.27</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">98.51</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient52 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient52">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1217.42</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.32</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">274.99</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">327.56</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40.85</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">52.42</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">66.46</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient53 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient53">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.44</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">150.92</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">157.88</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">281.32</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.6</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">398.9</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">46.38</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5305.12</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient54 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient54">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1664.67</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.84</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">327.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">379.26</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">43.22</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">62.77</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">76.21</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient55 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient55">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">142.5</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">150.22</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17.69</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2657.91</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">47.56</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">470.52</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">491.47</hasLengthOfTheSpectralCurve>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient56 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient56">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.96</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">197.01</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">223.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">252.48</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.45</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.1</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.95</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient57 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient57">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.17</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13.88</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">152.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">180.61</hasLengthOfTheSpectralCurve>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.76</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">31.28</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.22</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">94.35</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient58 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient58">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">102.5</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.83</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.57</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">303.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">321.65</hasLengthOfTheSpectralCurve>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.54</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.72</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient59 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient59">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13.96</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">180.76</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">250.0</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.14</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">280.12</hasLengthOfTheSpectralCurve>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.64</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">6.1</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient6">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</hasPhaseAngleAt500KHz>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">107.69</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">118.63</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.87</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2475.56</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">389.87</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">429.39</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">49.76</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient60 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient60">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.24</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.77</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">197.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">231.78</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.99</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.46</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">409.65</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient61 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient61">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.24</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.77</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">197.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">231.78</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.99</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.46</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">409.65</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient62 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient62">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">215.37</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">216.41</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.79</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">280.45</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">48.51</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.23</hasAreaNormalizedByDA>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">53.6</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient63 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient63">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.77</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">178.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">209.18</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25.92</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">30.85</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">40.29</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">474.4</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient64 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient64">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">185.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">210.18</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.86</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">29.49</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">361.75</hasAreaUnderSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">39.89</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.07</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient65 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient65">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.13</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">265.15</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.11</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.78</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">391.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">400.99</hasLengthOfTheSpectralCurve>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7.41</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient66 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient66">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.67</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.33</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">41.51</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">502.0</hasImpedivityAtZeroFrequency>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">53.24</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">544.04</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">834.27</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient67 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient67">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">176.0</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.23</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">191.99</hasLengthOfTheSpectralCurve>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.59</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.87</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">79.71</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.58</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient68 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient68">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">145.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">162.51</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.3</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.22</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.89</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">6.17</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">82.46</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient69 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient69">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">124.13</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">134.89</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.46</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.59</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.8</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">78.34</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9.12</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient7">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1189.55</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.94</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">290.46</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">330.27</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.7</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">65.54</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">74.64</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient70 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient70">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.16</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.29</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">103.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">124.98</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.32</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">23.75</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.29</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">78.26</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8.12</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient71 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient71">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.02</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1489.39</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1724.09</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3053.97</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">399.19</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">404.13</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7.56</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">71.43</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient72 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient72">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1385.66</hasImpedivityAtZeroFrequency>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">143.09</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">143.26</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1524.61</hasLengthOfTheSpectralCurve>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">202.48</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">43.39</hasAreaNormalizedByDA>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8785.03</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient73 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient73">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1064.1</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1084.25</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.31</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">179.98</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">191.9</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2937.97</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">66.56</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient74 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient74">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.02</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16.15</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">200.85</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">207.11</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3344.43</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">50.55</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">623.91</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">649.37</hasImpedivityAtZeroFrequency>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient75 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient75">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.69</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1336.16</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1500.0</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">366.8</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">375.1</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4759.45</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">78.45</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient76 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient76">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasPhaseAngleAt500KHz>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.98</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">173.19</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">175.02</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25.22</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">346.09</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">654.8</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">770.0</hasImpedivityAtZeroFrequency>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient77 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient77">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.97</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">214.17</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">216.81</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">33.77</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">427.53</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">528.7</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">650.0</hasImpedivityAtZeroFrequency>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient78 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient78">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.6</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">189.16</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">190.68</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">23.98</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">304.27</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">594.32</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">691.97</hasImpedivityAtZeroFrequency>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient79 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient79">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14.22</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1428.84</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1461.75</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">387.64</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">391.85</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5574.0</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">57.23</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient8">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.19</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1756.23</hasAreaUnderSpectrum>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.19</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">275.68</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">331.59</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">39.31</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">82.66</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">91.53</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient80 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient80">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">108.29</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11072.0</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1178.27</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1496.74</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17.29</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">631.05</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">640.28</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient81 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient81">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1111.81</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.79</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">377.3</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">386.99</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7659.74</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">86.03</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">990.98</hasLengthOfTheSpectralCurve>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient82 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient82">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1270.67</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3612.97</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">551.08</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">555.35</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">6.51</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">68.78</hasMaximumOfTheSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">895.19</hasLengthOfTheSpectralCurve>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient83 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient83">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasHighFrequencySlopeOfPhaseAngle>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">111.44</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11852.49</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1402.88</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1647.94</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20.55</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">565.9</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">576.77</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient84 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient84">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10814.05</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1197.76</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1535.85</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16.97</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">632.17</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">637.35</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">96.61</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient85 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient85">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.05</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">125.9</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16640.72</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2073.03</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2100.0</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">380.64</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">390.48</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">42.62</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient86 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient86">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.03</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14.64</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1742.38</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1800.0</hasImpedivityAtZeroFrequency>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">293.37</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">301.06</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4406.15</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">67.63</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient87 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient87">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.12</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.38</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">113.2</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2100.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2461.45</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35671.61</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">436.1</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">450.55</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">79.17</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient88 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient88">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.06</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1402.23</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1666.15</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1746.58</hasLengthOfTheSpectralCurve>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">19.23</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">51.85</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">58.6</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">72.93</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient89 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient89">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-9.26</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">102.2</hasAreaNormalizedByDA>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">120.3</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">120.65</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12331.1</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1700.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2212.18</hasLengthOfTheSpectralCurve>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient9">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">164.12</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">184.59</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">44.34</hasAreaNormalizedByDA>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">470.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">603.32</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8185.36</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">84.48</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient90 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient90">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.02</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">101.46</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">136.82</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">170.33</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">18.86</hasAreaNormalizedByDA>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1941.37</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1949.12</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3212.08</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient91 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient91">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13113.2</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">160.07</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1850.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1916.99</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">196.73</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">253.62</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">51.7</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient92 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient92">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.27</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2350.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2457.68</hasLengthOfTheSpectralCurve>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27758.64</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">289.57</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">426.23</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">515.29</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">53.87</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient93 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient93">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.09</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.21</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15021.55</hasAreaUnderSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1800.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1893.66</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">217.83</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">290.2</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">362.86</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">41.4</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient94 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient94">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.11</hasHighFrequencySlopeOfPhaseAngle>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">138.36</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1900.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1924.52</hasLengthOfTheSpectralCurve>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">234.9</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.44</hasAreaNormalizedByDA>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">272.62</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7481.59</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient95 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient95">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.16</hasHighFrequencySlopeOfPhaseAngle>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13831.72</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">157.57</hasMaximumOfTheSpectrum>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1800.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1823.03</hasLengthOfTheSpectralCurve>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.87</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">351.9</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">385.56</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient96 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient96">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.23</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1850.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1908.18</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">208.74</hasMaximumOfTheSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">249.35</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">26.58</hasAreaNormalizedByDA>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">325.19</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8644.98</hasAreaUnderSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient97 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient97">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.04</hasHighFrequencySlopeOfPhaseAngle>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.05</hasPhaseAngleAt500KHz>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1603.07</hasLengthOfTheSpectralCurve>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1650.0</hasImpedivityAtZeroFrequency>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.23</hasAreaNormalizedByDA>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">262.13</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">274.43</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5824.9</hasAreaUnderSpectrum>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">81.24</hasMaximumOfTheSpectrum>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient98 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient98">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.08</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.18</hasHighFrequencySlopeOfPhaseAngle>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2800.0</hasImpedivityAtZeroFrequency>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2896.58</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">298.58</hasMaximumOfTheSpectrum>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">31388.65</hasAreaUnderSpectrum>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">501.04</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">53.82</hasAreaNormalizedByDA>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">583.26</hasImpedanceDistanceBetweenSpectralEnds>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/breasttissue#Patient99 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/breasttissue#Patient99">
+        <rdf:type rdf:resource="http://dl-learner.org/breasttissue#Patient"/>
+        <hasPhaseAngleAt500KHz rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07</hasPhaseAngleAt500KHz>
+        <hasHighFrequencySlopeOfPhaseAngle rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.35</hasHighFrequencySlopeOfPhaseAngle>
+        <hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint rdf:datatype="http://www.w3.org/2001/XMLSchema#double">171.39</hasDistanceBetweenI0AndRealPartOfTheMaximumFrequencyPoint>
+        <hasImpedivityAtZeroFrequency rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2329.84</hasImpedivityAtZeroFrequency>
+        <hasAreaUnderSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25369.04</hasAreaUnderSpectrum>
+        <hasLengthOfTheSpectralCurve rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2686.44</hasLengthOfTheSpectralCurve>
+        <hasMaximumOfTheSpectrum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">336.08</hasMaximumOfTheSpectrum>
+        <hasImpedanceDistanceBetweenSpectralEnds rdf:datatype="http://www.w3.org/2001/XMLSchema#double">377.25</hasImpedanceDistanceBetweenSpectralEnds>
+        <hasAreaNormalizedByDA rdf:datatype="http://www.w3.org/2001/XMLSchema#double">67.25</hasAreaNormalizedByDA>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.0.0.1413) http://owlapi.sourceforge.net -->
+
