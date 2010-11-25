@@ -89,6 +89,7 @@ public class Mutagenesis {
 	// list of all bonds
 	private static Set<String> bonds = new TreeSet<String>();
 	private static List<String> positiveExamples = new LinkedList<String>();
+	private static List<String> negativeExamples = new LinkedList<String>();
 
 	// list of all "hasProperty" test
 
@@ -224,6 +225,7 @@ public class Mutagenesis {
 		Files.clearFile(confSecondTrainFile);
 		generateConfFile(confSecondTrainFile);
 		positiveExamples.clear();
+		negativeExamples.clear();
 		generatePositiveExamples(prologDirectory + "42/all.pl");
 		appendExamples(confSecondTrainFile, positiveExamples);
 		duration = System.nanoTime() - startTime;
@@ -256,6 +258,11 @@ public class Mutagenesis {
 				int end = trainingContent.indexOf(")");
 				String individual = trainingContent.substring(start, end);
 				positiveExamples.add(individual);
+			} else {
+				int start = trainingContent.indexOf("(") + 1;
+				int end = trainingContent.indexOf(")");
+				String individual = trainingContent.substring(start, end);
+				negativeExamples.add(individual);
 			}
 		}
 	}
@@ -570,13 +577,11 @@ public class Mutagenesis {
 	 */
 	public static void appendExamples(File file, List<String> examples) {
 		StringBuffer content = new StringBuffer();
-		for (String compound : compounds) {
-			if (examples.contains(compound.toString())) {
-				content.append("+\"" + getIndividual(compound) + "\"\n");
-			} else {
-				content.append("-\"" + getIndividual(compound.toString())
-						+ "\"\n");
-			}
+		for (String posEx : positiveExamples) {
+			content.append("+\"" + getIndividual(posEx) + "\"\n");
+		}
+		for (String negEx : negativeExamples) {
+			content.append("-\"" + getIndividual(negEx) + "\"\n");
 		}
 		Files.appendFile(file, content.toString());
 	}
