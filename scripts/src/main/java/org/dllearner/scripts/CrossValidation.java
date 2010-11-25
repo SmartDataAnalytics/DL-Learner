@@ -47,6 +47,7 @@ import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.statistics.Stat;
+import org.dllearner.utilities.Files;
 
 /**
  * Performs cross validation for the given problem. Supports
@@ -66,6 +67,8 @@ public class CrossValidation {
 	private Stat accuracyTraining = new Stat();
 	private Stat fMeasure = new Stat();
 	private Stat fMeasureTraining = new Stat();
+	private static boolean writeToFile = false;
+	private static File outputFile;
 	
 	public static void main(String[] args) {
 		File file = new File(args[0]);
@@ -79,6 +82,11 @@ public class CrossValidation {
 			folds = Integer.parseInt(args[1]);
 		else
 			leaveOneOut = true;
+		
+		if(args.length > 2) {
+			writeToFile = true;
+			outputFile = new File(args[2]);
+		}
 		
 		if(folds < 2) {
 			System.out.println("At least 2 fold needed.");
@@ -198,7 +206,7 @@ public class CrossValidation {
 			System.out.println("Cross validation for learning problem " + lp + " not supported.");
 			System.exit(0);
 		}
-		
+
 		// run the algorithm
 		for(int currFold=0; currFold<folds; currFold++) {
 			// we always perform a full initialisation to make sure that
@@ -246,8 +254,8 @@ public class CrossValidation {
 			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
 			Set<Individual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
 			
-			System.out.println("test set errors pos: " + tmp2);
-			System.out.println("test set errors neg: " + tmp3);
+			outputWriter("test set errors pos: " + tmp2);
+			outputWriter("test set errors neg: " + tmp3);
 			
 			// calculate training accuracies 
 			int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold));
@@ -277,30 +285,29 @@ public class CrossValidation {
 			
 			length.addNumber(concept.getLength());
 			
-			System.out.println("fold " + currFold + " (" + file + "):");
-			System.out.println("  training: " + pos.size() + " positive and " + neg.size() + " negative examples");
-			System.out.println("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
+			outputWriter("fold " + currFold + " (" + file + "):");
+			outputWriter("  training: " + pos.size() + " positive and " + neg.size() + " negative examples");
+			outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
 					+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
-			System.out.println("  concept: " + concept);
-			System.out.println("  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)");
-			System.out.println("  length: " + df.format(concept.getLength()));
-			System.out.println("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
+			outputWriter("  concept: " + concept);
+			outputWriter("  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)");
+			outputWriter("  length: " + df.format(concept.getLength()));
+			outputWriter("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
 			
 			// free all resources
 			rs.releaseKB();
 			cm.freeAllComponents();			
 		}
 		
-		System.out.println();
-		System.out.println("Finished " + folds + "-folds cross-validation on " + file + ".");
-		System.out.println("runtime: " + statOutput(df, runtime, "s"));
-		System.out.println("length: " + statOutput(df, length, ""));
-		System.out.println("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
-		System.out.println("F-Measure: " + statOutput(df, fMeasure, "%"));
-		System.out.println("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));		
-		System.out.println("predictive accuracy: " + statOutput(df, accuracy, "%"));
-
-		
+		outputWriter("");
+		outputWriter("Finished " + folds + "-folds cross-validation on " + file + ".");
+		outputWriter("runtime: " + statOutput(df, runtime, "s"));
+		outputWriter("length: " + statOutput(df, length, ""));
+		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
+		outputWriter("F-Measure: " + statOutput(df, fMeasure, "%"));
+		outputWriter("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));		
+		outputWriter("predictive accuracy: " + statOutput(df, accuracy, "%"));
+			
 	}
 	
 	private int getCorrectPosClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
@@ -363,6 +370,16 @@ public class CrossValidation {
 
 	public Stat getRuntime() {
 		return runtime;
+	}
+	
+	private void outputWriter(String output) {
+		if(writeToFile) {
+			Files.appendFile(outputFile, output +"\n");
+			System.out.println(output);
+		} else {
+			System.out.println(output);
+		}
+		
 	}
 
 }
