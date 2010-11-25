@@ -194,6 +194,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				dbMonitor.start();
 				writeTriples2DB(resource, modelStr);
 				int id = getResourceID(resource);
+				writeKey2KeyIntoDB(id, id);
 				if(id != -1){
 					for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
 						st = iter.next();
@@ -416,7 +417,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			logger.error("An error occured while trying to get ID for resource " + resource + "from DB", e);
 			e.printStackTrace();
 		}
-		return -1;
+		return id;
 	}
 	
 	private String createConstructQuery(String resource, int limit, int offset){
@@ -516,7 +517,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				ps.setBytes(1, md5(key));
 				ps.setClob(2, new StringReader(value));
 				ps.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
-				ps.addBatch();
+				ps.executeUpdate();
 			}
 		} catch (SQLException e) {
 			logger.error("An error occured while writing triples for resource " + key + " to DB.", e);
