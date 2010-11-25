@@ -179,7 +179,9 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		String objectURI;
 		String modelStr;
 		int i = 0;
+		logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + i*CHUNK_SIZE+CHUNK_SIZE);
 		List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+		logger.info("Got resources:\n" + resources);
 		while (!resources.isEmpty()) {
 			for (String resource : resources) {
 				logger.info("Fetching triples for resource: " + resource);
@@ -213,8 +215,9 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			if (limit != -1 && i * CHUNK_SIZE >= limit) {
 				break;
 			}
-
+			logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + i*CHUNK_SIZE+CHUNK_SIZE);
 			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+			logger.info("Got resources:\n" + resources);
 		}
 		monitor.stop();
 		logger.info("Time to fetch the triples: " + queryMonitor.getTotal()/1000 + "s");
