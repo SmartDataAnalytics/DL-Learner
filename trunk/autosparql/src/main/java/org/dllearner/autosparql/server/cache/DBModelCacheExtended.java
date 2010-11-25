@@ -45,7 +45,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	private boolean autoServerMode = true;
 	private Connection conn;
 	
-	private static final int CHUNK_SIZE = 1000;
+	private static final int CHUNK_SIZE = 100;
 	
 	private ModelGenerator modelGen;
 	
@@ -180,25 +180,28 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		String modelStr;
 		int i = 0;
 		List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
-		while(!resources.isEmpty()){
-			for(String resource : resources){
-				logger.info("Fetching triples for resource " + resource);
+		while (!resources.isEmpty()) {
+			for (String resource : resources) {
+				logger.info("Fetching triples for resource: " + resource);
 				queryMonitor.start();
 				model = createModel(resource);
 				queryMonitor.stop();
-				logger.info("Got " + model.size() + " triples");
+				logger.info("Got " + model.size() + " triples in " + queryMonitor.getLastValue()/1000 + "s.");
 				modelStr = convertModel2String(model);
 				logger.info("Writing triples to DB");
 				dbMonitor.start();
 				writeTriples2DB(resource, modelStr);
 				int id = getResourceID(resource);
-				for(StmtIterator iter = model.listStatements(); iter.hasNext();){
+				for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
 					st = iter.next();
-					if(st.getObject().isURIResource()){
+					if (st.getObject().isURIResource()) {
 						objectURI = st.getObject().asResource().getURI();
-						if(objectURI.startsWith("http://dbpedia.org/resource/")){
-							logger.info("Writing to DB key-key entry for resources " + resource + " and " + objectURI);
-							logger.info("Database ID for " + resource + " is " + id);
+						if (objectURI
+								.startsWith("http://dbpedia.org/resource/")) {
+							logger.info("Writing to DB key-key entry for resources "
+									+ resource + " and " + objectURI);
+							logger.info("Database ID for " + resource + " is "
+									+ id);
 							writeKey2KeyIntoDB(id, objectURI);
 						}
 					}
@@ -206,11 +209,11 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				dbMonitor.stop();
 			}
 			i++;
-			
-			if(limit != -1 && i * CHUNK_SIZE >= limit){
+
+			if (limit != -1 && i * CHUNK_SIZE >= limit) {
 				break;
 			}
-			
+
 			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
 		}
 		monitor.stop();
@@ -220,6 +223,61 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		
 		try {
 			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void fillCache2(int limit){
+		try {
+			monitor.reset();
+			monitor.start();
+			logger.info("Filling cache...");
+			Model model;
+			com.hp.hpl.jena.rdf.model.Statement st;
+			String objectURI;
+			String modelStr;
+			int i = 0;
+			List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO RESOURCE_CACHE VALUES(null,?,?,?)");;
+			while(!resources.isEmpty()){
+				ps.clearBatch();
+				for(String resource : resources){
+					logger.info("Fetching triples for resource " + resource);
+					queryMonitor.start();
+					model = createModel(resource);
+					queryMonitor.stop();
+					logger.info("Got " + model.size() + " triples");
+					modelStr = convertModel2String(model);
+					logger.info("Writing triples to DB");
+					
+					writeTriples2Batch(resource, modelStr, ps);
+					
+				}
+				dbMonitor.start();
+				ps.executeBatch();
+				dbMonitor.stop();
+				i++;
+				
+				if(limit != -1 && i * CHUNK_SIZE >= limit){
+					break;
+				}
+				
+				resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+			}
+			monitor.stop();
+			logger.info("Time to fetch the triples: " + queryMonitor.getTotal()/1000 + "s");
+			logger.info("Time to write to database: " + dbMonitor.getTotal()/1000 + "s");
+			logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
+			
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -400,6 +458,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	
 	private Model createModel(String resource){
 		String query = createConstructQuery(resource, CHUNK_SIZE, 0);
+		logger.info("Sending query:\n" + query);
 		QueryExecution qexec = QueryExecutionFactory.sparqlService(
 				endpoint.getURL().toString(),
 				query,
@@ -413,6 +472,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			int i = 0;
 			while(model.size() != 0){
 				query = createConstructQuery(resource, CHUNK_SIZE, i * CHUNK_SIZE);
+				logger.info("Sending query:\n" + query);
 				qexec = QueryExecutionFactory.sparqlService(
 						endpoint.getURL().toString(),
 						query,
@@ -446,8 +506,19 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				ps.setBytes(1, md5(key));
 				ps.setClob(2, new StringReader(value));
 				ps.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
-				ps.executeUpdate();
+				ps.addBatch();
 			}
+		} catch (SQLException e) {
+			logger.error("An error occured while writing triples for resource " + key + " to DB.", e);
+		} 
+	}
+	
+	private void writeTriples2Batch(String key, String value, PreparedStatement ps){
+		try {
+			ps.setBytes(1, md5(key));
+			ps.setClob(2, new StringReader(value));
+			ps.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
+			ps.addBatch();
 		} catch (SQLException e) {
 			logger.error("An error occured while writing triples for resource " + key + " to DB.", e);
 		} 
