@@ -45,7 +45,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	private boolean autoServerMode = true;
 	private Connection conn;
 	
-	private static final int CHUNK_SIZE = 100;
+	private static final int CHUNK_SIZE = 1000;
 	
 	private ModelGenerator modelGen;
 	
@@ -320,6 +320,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				logger.info("Writing triples to DB");
 				writeTriples2DB(resource, modelStr);
 				int id = getResourceID(resource);
+				writeKey2KeyIntoDB(id, id);
 				for(StmtIterator iter = model.listStatements(); iter.hasNext();){
 					st = iter.next();
 					if(st.getObject().isURIResource()){
@@ -551,6 +552,22 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			}
 			logger.info("Database ID for " + resource2 + " is " + id2);
 			ps = conn.prepareStatement("INSERT INTO RESOURCE2RESOURCE VALUES(?,?)");
+			ps.setInt(1, id1);
+			ps.setInt(2, id2);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			if(!(e.getErrorCode() == 1062)){
+				logger.error("An error occured while writing key-key entry to DB.", e);
+			}
+//			if(!(e.getErrorCode() == 23001)){
+//				logger.error("An error occured while writing key-key entry to DB.", e);
+//			}
+		} 
+	}
+	
+	private void writeKey2KeyIntoDB(int id1, int id2){
+		try {
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO RESOURCE2RESOURCE VALUES(?,?)");
 			ps.setInt(1, id1);
 			ps.setInt(2, id2);
 			ps.executeUpdate();
