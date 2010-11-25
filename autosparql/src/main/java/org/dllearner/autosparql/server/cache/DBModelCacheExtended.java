@@ -472,7 +472,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			Model model = qexec.execConstruct();
 			all.add(model);
 			qexec.close();
-			int i = 0;
+			int i = 1;
 			while(model.size() != 0){
 				query = createConstructQuery(resource, CHUNK_SIZE, i * CHUNK_SIZE);
 				logger.info("Sending query:\n" + query);
