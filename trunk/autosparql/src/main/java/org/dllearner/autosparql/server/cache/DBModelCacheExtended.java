@@ -55,6 +55,8 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	private Monitor queryMonitor = MonitorFactory.getTimeMonitor("Query monitor");
 	private Monitor dbMonitor = MonitorFactory.getTimeMonitor("DB monitor");
 	
+	private boolean useMySQL = false;
+	
 	public DBModelCacheExtended(String cacheDirectory, SparqlEndpoint endpoint){
 		super(endpoint);
 		
@@ -68,11 +70,18 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		connect2Database();
 	}
 	
+	public void setUseMySQL(boolean useMySQL){
+		this.useMySQL = useMySQL;
+	}
+	
 	private void connect2Database(){
 		try {
 			// load driver
-			Class.forName("com.mysql.jdbc.Driver");
-//			Class.forName("org.h2.Driver");
+			if(useMySQL){
+				Class.forName("com.mysql.jdbc.Driver");
+			} else {
+				Class.forName("org.h2.Driver");
+			}
 			
 			String jdbcString = "";
 			if(autoServerMode) {
@@ -80,8 +89,12 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			}
 			
 			// connect to database (created automatically if not existing)
-//        conn = DriverManager.getConnection("jdbc:h2:" + databaseDirectory + "/" + databaseName + jdbcString, "sa", "");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/dbpedia_cache", "root", "root");
+			if(useMySQL){
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/dbpedia_cache", "root", "root");
+			} else {
+				conn = DriverManager.getConnection("jdbc:h2:" + databaseDirectory + "/" + databaseName + jdbcString, "sa", "");
+			}
+			
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -148,8 +161,11 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		
         // create cache table if it does not exist
         Statement stmt = conn.createStatement();
-//        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY, TRIPLES CLOB, STORE_TIME TIMESTAMP)");
-        stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY(16), TRIPLES LONGTEXT, STORE_TIME TIMESTAMP)");
+        if(useMySQL){
+        	stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY(16), TRIPLES LONGTEXT, STORE_TIME TIMESTAMP)");
+        } else {
+        	stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE_CACHE(ID INT AUTO_INCREMENT PRIMARY KEY, URI_HASH BINARY, TRIPLES CLOB, STORE_TIME TIMESTAMP)");
+        }
         stmt.execute("CREATE TABLE IF NOT EXISTS RESOURCE2RESOURCE (ID1 INT, ID2 INT, PRIMARY KEY(ID1, ID2))");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -557,12 +573,16 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 			ps.setInt(2, id2);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			if(!(e.getErrorCode() == 1062)){
-				logger.error("An error occured while writing key-key entry to DB.", e);
+			if(useMySQL){
+				if(!(e.getErrorCode() == 1062)){
+					logger.error("An error occured while writing key-key entry to DB.", e);
+				}
+			} else {
+				if(!(e.getErrorCode() == 23001)){
+					logger.error("An error occured while writing key-key entry to DB.", e);
+				}
 			}
-//			if(!(e.getErrorCode() == 23001)){
-//				logger.error("An error occured while writing key-key entry to DB.", e);
-//			}
+			
 		} 
 	}
 	
