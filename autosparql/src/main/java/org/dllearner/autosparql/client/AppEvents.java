@@ -3,6 +3,10 @@ package org.dllearner.autosparql.client;
 import com.extjs.gxt.ui.client.event.EventType;
 
 public class AppEvents {
+	
+	public static final EventType NavHome = new EventType();
+	
+	public static final EventType NavQuery = new EventType();
 
 	public static final EventType Init = new EventType();
 
