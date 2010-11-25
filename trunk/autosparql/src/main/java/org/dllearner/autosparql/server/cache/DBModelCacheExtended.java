@@ -58,10 +58,15 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	private boolean useMySQL = false;
 	
 	public DBModelCacheExtended(String cacheDirectory, SparqlEndpoint endpoint){
+		this(cacheDirectory, endpoint, false);
+	}
+	
+	public DBModelCacheExtended(String cacheDirectory, SparqlEndpoint endpoint, boolean useMySQL){
 		super(endpoint);
 		
 		this.cacheDirectory = cacheDirectory;
 		this.endpoint = endpoint;
+		this.useMySQL = useMySQL;
 		
 		databaseDirectory = cacheDirectory;
 		
