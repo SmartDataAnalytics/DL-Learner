@@ -194,20 +194,25 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				dbMonitor.start();
 				writeTriples2DB(resource, modelStr);
 				int id = getResourceID(resource);
-				for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
-					st = iter.next();
-					if (st.getObject().isURIResource()) {
-						objectURI = st.getObject().asResource().getURI();
-						if (objectURI
-								.startsWith("http://dbpedia.org/resource/")) {
-							logger.info("Writing to DB key-key entry for resources "
-									+ resource + " and " + objectURI);
-							logger.info("Database ID for " + resource + " is "
-									+ id);
-							writeKey2KeyIntoDB(id, objectURI);
+				if(id != -1){
+					for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
+						st = iter.next();
+						if (st.getObject().isURIResource()) {
+							objectURI = st.getObject().asResource().getURI();
+							if (objectURI
+									.startsWith("http://dbpedia.org/resource/")) {
+								logger.info("Writing to DB key-key entry for resources "
+										+ resource + " and " + objectURI);
+								logger.info("Database ID for " + resource + " is "
+										+ id);
+								writeKey2KeyIntoDB(id, objectURI);
+							}
 						}
 					}
+				} else {
+					logger.info("Something went wrong for resource " + resource);
 				}
+				
 				dbMonitor.stop();
 			}
 			i++;
@@ -397,16 +402,17 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	}
 	
 	private int getResourceID(String resource){
+		int id = -1;
 		try {
+			
 			PreparedStatement ps = conn.prepareStatement("SELECT ID FROM RESOURCE_CACHE WHERE URI_HASH=? LIMIT 1");
 			ps.setBytes(1, md5(resource));
 			java.sql.ResultSet rs = ps.executeQuery();
-			rs.next();
-			int id = rs.getInt("ID");
-			
-			return id;
+			if(rs.next()){
+				id = rs.getInt("ID");
+			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			logger.error("An error occured while trying to get ID for resource " + resource + "from DB", e);
 			e.printStackTrace();
 		}
 		return -1;
