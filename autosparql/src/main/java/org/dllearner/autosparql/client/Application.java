@@ -1,6 +1,8 @@
 package org.dllearner.autosparql.client;
 
 import org.dllearner.autosparql.client.controller.ApplicationController;
+import org.dllearner.autosparql.client.controller.HomeController;
+import org.dllearner.autosparql.client.controller.QueryController;
 import org.dllearner.autosparql.client.controller.SearchController;
 
 import com.extjs.gxt.ui.client.GXT;
@@ -20,6 +22,8 @@ import com.hp.hpl.jena.query.larq.HitLARQ;
 public class Application
     implements EntryPoint, ValueChangeHandler<String>
 {
+	
+	public static final String SERVICE = "sparqlservice";
 
   /**
    * This is the entry point method.
@@ -30,18 +34,20 @@ public class Application
 	  
 	  Dispatcher dispatcher = Dispatcher.get();
 	  dispatcher.addController(new ApplicationController());
-//	  dispatcher.addController(new SearchController());
+	  dispatcher.addController(new HomeController());
+	  dispatcher.addController(new QueryController());
 	  
-	  String initToken = History.getToken();
-	  if(initToken.isEmpty()){
-		  History.newItem(HistoryTokens.HOME);
-	  }
+	  
+//	  String initToken = History.getToken();
+//	  if(initToken.isEmpty()){
+//		  History.newItem(HistoryTokens.HOME);
+//	  }
 	  
 	  History.addValueChangeHandler(this);
 	  
-	  History.fireCurrentHistoryState();
+//	  History.fireCurrentHistoryState();
 	  
-//	  Dispatcher.forwardEvent(AppEvents.Init);
+	  Dispatcher.forwardEvent(AppEvents.Init);
 	  
 	  GXT.hideLoadingPanel("loading");
 	  
@@ -55,7 +61,7 @@ public class Application
 			if(historyToken.equals(HistoryTokens.HOME)){
 				Dispatcher.forwardEvent(AppEvents.NavHome);
 			} else if(historyToken.equals(HistoryTokens.QUERY)){
-				Dispatcher.forwardEvent(AppEvents.Init);
+				Dispatcher.forwardEvent(AppEvents.NavQuery);
 			}
 		}
 		
