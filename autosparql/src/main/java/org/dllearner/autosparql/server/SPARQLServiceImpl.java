@@ -1,27 +1,24 @@
 package org.dllearner.autosparql.server;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.SPARQLService;
+import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.util.Endpoints;
+import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 
-import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 
 public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLService{
 
@@ -30,162 +27,91 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	 */
 	private static final long serialVersionUID = 1448196614767491966L;
 	
-	private static final String ENDPOINT = "endpoint";
-	private static final String EXAMPLE_FINDER = "examplefinder";
+	private static final String AUTOSPARQL_SESSION = "autosparql_session";
 	
-	private SPARQLSearch search;
-	private ExtractionDBCache constructCache;
-	private ExtractionDBCache selectCache;
+	private List<SPARQLEndpointEx> endpoints;
 	
 	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
 	
 	public SPARQLServiceImpl(){
-		constructCache = new ExtractionDBCache("construct-cache");
-		selectCache = new ExtractionDBCache("select-cache");
-		
-		search = new SPARQLSearch(selectCache);
-	}
-
-	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) {
-		int limit = config.getLimit();
-		int offset = config.getOffset();
-		
-		List<Example> searchResult = search.searchFor(searchTerm, getEndpoint(), limit, offset);
-		int totalLength = search.count(searchTerm, getEndpoint());
-		
-		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
-		result.setOffset(offset);
-		result.setTotalLength(totalLength);
-		
-		return result;
 	}
 	
-	public void setEndpoint(SparqlEndpoint endpoint){
-		getSession().setAttribute(ENDPOINT, endpoint);
-//		getExampleFinder().setEndpoint(endpoint);
+	private String getPath(){
+		return getRootPath() + "org/dllearner/autosparql/public/endpoints.xml";
+	}
+	
+	private String getRootPath(){
+		String path = System.getProperty("catalina.home");
+		if(path == null){
+			return "";
+		} else {
+			return path + (path.endsWith("/") ? "" : "/");
+		}
+	}
+
+	@Override
+	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException{
+		return getAutoSPARQLSession().getSearchResult(searchTerm, config);
 	}
 	
 	@Override
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException{
-		logger.info("RETRIEVING NEXT SIMILIAR EXAMPLE");
-		logger.info("POS EXAMPLES: " + posExamples);
-		logger.info("NEG EXAMPLES: " + negExamples);
-		
-		ExampleFinder exFinder = getExampleFinder();
-		Example example = exFinder.findSimilarExample(posExamples, negExamples);
-		
-		return example;
+		return getAutoSPARQLSession().getSimilarExample(posExamples, negExamples);
 	}
 
 	@Override
 	public PagingLoadResult<Example> getCurrentQueryResult(
 			PagingLoadConfig config) throws SPARQLQueryException {
-		logger.info("Retrieving results for current query.");
-		List<Example> queryResult = new ArrayList<Example>();
-		
-		String currentQuery = getExampleFinder().getCurrentQuery();
-		logger.info("Current query:\n");
-		logger.info(currentQuery);
-		int limit = config.getLimit();
-		int offset = config.getOffset();
-		int totalLength = 10;
-		
+		return getAutoSPARQLSession().getCurrentQueryResult(config);
+	}
+	
+	@Override
+	public void setEndpoint(Endpoint endpoint) throws AutoSPARQLException{
 		try {
-			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), getCountQuery(currentQuery)));
-			totalLength = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+			createNewAutoSPARQLSession(endpoints.get(endpoint.getID()));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
+			throw new AutoSPARQLException(e);
 		}
-		
+	}
+
+	@Override
+	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
+		if(endpoints == null){
+			endpoints = new Endpoints(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml")).getEndpoints();
+		}
 		try {
-			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(getEndpoint(), modifyQuery(currentQuery + " OFFSET " + offset)));
+			List<Endpoint> endpoints = new ArrayList<Endpoint>();
 			
-			String uri;
-			String label = "";
-			String imageURL = "";
-			String comment = "";
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				uri = qs.getResource("x0").getURI();
-				label = qs.getLiteral("label").getLexicalForm();
-				queryResult.add(new Example(uri, label, imageURL, comment));
+			for(SPARQLEndpointEx endpoint : this.endpoints){
+				endpoints.add(new Endpoint(this.endpoints.indexOf(endpoint), endpoint.getLabel()));
 			}
+			
+			return endpoints;
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
-		result.setOffset(offset);
-		result.setTotalLength(totalLength);
-		
-		return result;
-	}
-	
-	@Override
-	public void setEndpoint(Endpoint endpoint) {
-		switch(endpoint.getID()){
-			case 0:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
-			case 1:setEndpoint(SparqlEndpoint.getEndpointDBpediaLive());break;
-			case 2:setEndpoint(SparqlEndpoint.getEndpointDBpediaAKSW());break;
-			case 3:setEndpoint(SparqlEndpoint.getEndpointDBpediaLiveAKSW());break;
-			case 4:setEndpoint(SparqlEndpoint.getEndpointDBpediaHanne());break;
-			case 5:setEndpoint(SparqlEndpoint.getEndpointLinkedGeoData());break;
-			default:setEndpoint(SparqlEndpoint.getEndpointDBpedia());break;
+			logger.error(e);
+			throw new AutoSPARQLException(e);
 		}
 	}
 
 	@Override
-	public List<Endpoint> getEndpoints() {
-		List<Endpoint> endpoints = new ArrayList<Endpoint>();
-		
-		endpoints.add(new Endpoint(0, "DBpedia"));
-		endpoints.add(new Endpoint(1, "DBpedia_Live"));
-		endpoints.add(new Endpoint(2, "DBpedia@AKSW"));
-		endpoints.add(new Endpoint(3, "DBpedia_Live@AKSW"));
-		endpoints.add(new Endpoint(4, "DBpedia@Hanne"));
-		endpoints.add(new Endpoint(5, "LinkedGeoData"));
-		
-		return endpoints;
-	}
-
-	@Override
-	public String getCurrentQuery() throws SPARQLQueryException {
-		return getExampleFinder().getCurrentQueryHTML();
+	public String getCurrentQuery() throws AutoSPARQLException {
+		return getAutoSPARQLSession().getCurrentQuery();
 	}
 	
-	private String modifyQuery(String query){
-		String newQuery = query.replace("SELECT ?x0 WHERE {", 
-				"SELECT DISTINCT(?x0) ?label WHERE{\n?x0 <" + RDFS.label + "> ?label.FILTER(LANGMATCHES(LANG(?label), 'en'))");
-		
-		return newQuery;
+	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
+		AutoSPARQLSession session = new AutoSPARQLSession(endpoint);
+		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	
-	private SparqlEndpoint getEndpoint(){
-		SparqlEndpoint endpoint = (SparqlEndpoint) getSession().getAttribute(ENDPOINT);
-		return endpoint;
-	}
-	
-	private ExampleFinder getExampleFinder(){
-		ExampleFinder exFinder = (ExampleFinder) getSession().getAttribute(EXAMPLE_FINDER);
-		if(exFinder == null){
-			exFinder = new ExampleFinder(getEndpoint(), selectCache, constructCache);
-			getSession().setAttribute(EXAMPLE_FINDER, exFinder);
-		}
-		return exFinder;
+	private AutoSPARQLSession getAutoSPARQLSession(){
+		return (AutoSPARQLSession) getThreadLocalRequest().getSession().getAttribute(AUTOSPARQL_SESSION);
 	}
 	
 	private HttpSession getSession(){
 		return getThreadLocalRequest().getSession();
 	}
 	
-	private String getCountQuery(String query){
-		String newQuery = query.replace("SELECT ?x0", 
-				"SELECT COUNT(DISTINCT ?x0)");
-		newQuery = newQuery.substring(0, newQuery.indexOf('}') + 1);
-		
-		return newQuery;
-	}
 
 }

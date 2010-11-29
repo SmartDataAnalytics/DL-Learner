@@ -3,6 +3,7 @@ package org.dllearner.autosparql.client.controller;
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.view.ApplicationView;
+import org.dllearner.autosparql.client.widget.ErrorDialog;
 
 import com.extjs.gxt.ui.client.event.EventType;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
@@ -23,7 +24,7 @@ public class ApplicationController extends Controller {
 		if (type == AppEvents.Init) {
 			onInit(event);
 		} else if (type == AppEvents.Error) {
-			onError(event);
+			onError((Throwable)event.getData());
 		}
 	}
 
@@ -31,8 +32,9 @@ public class ApplicationController extends Controller {
 		appView = new ApplicationView(this);
 	}
 
-	protected void onError(AppEvent ae) {
-		System.out.println("error: " + ae.<Object> getData());
+	protected void onError(Throwable throwable) {
+		ErrorDialog dialog = new ErrorDialog(throwable);
+		dialog.showDialog();
 	}
 
 	private void onInit(AppEvent event) {

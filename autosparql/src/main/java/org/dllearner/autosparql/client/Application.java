@@ -3,7 +3,6 @@ package org.dllearner.autosparql.client;
 import org.dllearner.autosparql.client.controller.ApplicationController;
 import org.dllearner.autosparql.client.controller.HomeController;
 import org.dllearner.autosparql.client.controller.QueryController;
-import org.dllearner.autosparql.client.controller.SearchController;
 
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.mvc.Dispatcher;
@@ -12,8 +11,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
-import com.hp.hpl.jena.query.larq.HitLARQ;
 
 
 /**

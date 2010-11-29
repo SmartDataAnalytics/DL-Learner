@@ -25,7 +25,7 @@ public class ExampleFinder {
 	
 	private SparqlEndpoint endpoint;
 	private ExtractionDBCache selectCache;
-	private org.dllearner.kb.sparql.ExtractionDBCache constructCache;
+	private ExtractionDBCache constructCache;
 	
 	private List<String> posExamples;
 	private List<String> negExamples;
@@ -57,10 +57,12 @@ public class ExampleFinder {
 		
 		Model model;
 		for(String resource : posExamples){
+			logger.info("Fetching model for resource: " + resource);
 			model = modelGen.createModel(resource, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
 			posExampleTrees.add(treeGen.getQueryTree(resource, model));
 		}
 		for(String resource : negExamples){
+			logger.info("Fetching model for resource: " + resource);
 			model = modelGen.createModel(resource, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
 			negExampleTrees.add(treeGen.getQueryTree(resource, model));
 		}

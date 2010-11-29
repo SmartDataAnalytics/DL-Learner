@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client;
 
 import java.util.List;
 
+import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
@@ -15,17 +16,17 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("sparqlService")
 public interface SPARQLService extends RemoteService{
 	
-	PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config);
+	PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException;
 	
 	Example getSimilarExample(List<String> posExamples, List<String> negExamples) throws SPARQLQueryException;
 	
 	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;
 	
-	String getCurrentQuery() throws SPARQLQueryException;
+	String getCurrentQuery() throws AutoSPARQLException;
 	
-	void setEndpoint(Endpoint endpoint);
+	void setEndpoint(Endpoint endpoint) throws AutoSPARQLException;
 	
-	List<Endpoint> getEndpoints();
+	List<Endpoint> getEndpoints() throws AutoSPARQLException;
 	
 	/**
      * Utility class to get the RPC Async interface from client-side code
