@@ -20,6 +20,7 @@
 			<artifactId>gwt-servlet</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
@@ -42,25 +43,26 @@
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>arq</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 		</dependency>
-
 		
 		<dependency>
             <groupId>org.aksw.commons</groupId>
             <artifactId>commons</artifactId>
         </dependency>
-		
 		
 		<dependency>
 			<groupId>org.dllearner</groupId>
@@ -71,14 +73,21 @@
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
+		
+		<dependency>
+        	<groupId>commons-configuration</groupId>
+        	<artifactId>commons-configuration</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>
