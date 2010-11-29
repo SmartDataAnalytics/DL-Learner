@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <endpoints>
 	<endpoint>
-		<url>http://live.dbpedia.org/</url>
+		<url>http://live.dbpedia.org/sparql/</url>
 		<label>DBpedia Live@AKSW</label>
 		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
 		<predicateFilters>
@@ -11,21 +11,35 @@
 	</endpoint>
 	
 	<endpoint>
-		<url>http://dbpedia.org/</url>
+		<url>http://dbpedia.org/sparql/</url>
 		<label>DBpedia</label>
 		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
 		<predicateFilters>
-			<predicate>http://dbpedia.org/ontology/wikiPageWikiLink</predicate>
+			<predicate>http://dbpedia.org/property/wikilink</predicate>
 			<predicate>http://dbpedia.org/property/wikiPageUsesTemplate</predicate>
 		</predicateFilters>
 	</endpoint>
 	
 	<endpoint>
-		<url>http://dbpedia.org/</url>
-		<label>DBpedia</label>
+		<url>http://dbpedia-live.org/sparql/</url>
+		<label>DBpedia Live</label>
 		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
 		<predicateFilters>
 			<predicate>http://dbpedia.org/property/wikiPageUsesTemplate</predicate>
 		</predicateFilters>
+	</endpoint>
+	
+	<endpoint>
+		<url>http://linkedgeodata.org/sparql/</url>
+		<label>LinkedGeoData</label>
+		<defaultGraphURI>http://linkedgeodata.org</defaultGraphURI>
+		<predicateFilters/>
+	</endpoint>
+	
+	<endpoint>
+		<url>http://chebi.bio2rdf.org/sparql</url>
+		<label>Chebi</label>
+		<defaultGraphURI>http://linkedgeodata.org</defaultGraphURI>
+		<predicateFilters/>
 	</endpoint>
 </endpoints>
