@@ -17,8 +17,6 @@ import org.dllearner.kb.sparql.SparqlQuery;
 
 public class SPARQLSearch {
 	
-	private static final String CACHE_DIR = "cache";
-	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	
