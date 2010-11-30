@@ -1,7 +1,9 @@
 package org.dllearner.sparqlquerygenerator.util;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
@@ -44,8 +46,7 @@ public class ModelGenerator {
 	}
 	
 	public ModelGenerator(SparqlEndpoint endpoint, Set<String> predicateFilters){
-		this.endpoint = endpoint;
-		this.predicateFilters = predicateFilters;
+		this(endpoint, predicateFilters, new ExtractionDBCache("cache"));
 	}
 	
 	public ModelGenerator(SparqlEndpoint endpoint, Set<String> predicateFilters, ExtractionDBCache cache){
@@ -82,7 +83,7 @@ public class ModelGenerator {
 	 * @param example The example resource for which a CONSTRUCT query is created.
 	 * @return The JENA ARQ Query object.
 	 */
-	private Query makeConstructQueryOptional(String resource, int limit, int offset, Set<String> predicateFilter){
+	private String makeConstructQueryOptional(String resource, int limit, int offset, Set<String> predicateFilter){
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
@@ -119,7 +120,7 @@ public class ModelGenerator {
 		
 		Query query = QueryFactory.create(sb.toString());
 		
-		return query;
+		return sb.toString();
 	}
 	
 	
@@ -128,7 +129,7 @@ public class ModelGenerator {
 	 * @param example The example resource for which a CONSTRUCT query is created.
 	 * @return The JENA ARQ Query object.
 	 */
-	private Query makeConstructQuery(String example, Set<String> predicateFilters){
+	private String makeConstructQuery(String example, Set<String> predicateFilters){
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
@@ -144,62 +145,59 @@ public class ModelGenerator {
 		sb.append("}\n");
 		Query query = QueryFactory.create(sb.toString());
 		
-		return query;
+		return sb.toString();
 	}
 	
 	
 	
 	private Model getModelChunked(String resource){
 		logger.debug("Resource: " + resource);
-		Query query = makeConstructQueryOptional(resource, CHUNK_SIZE, 0, predicateFilters);
+		String query = makeConstructQueryOptional(resource, CHUNK_SIZE, 0, predicateFilters);
 		logger.debug("Sending SPARQL query ...");
 		logger.debug("Query:\n" + query.toString());
 		queryMonitor.start();
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(
-				endpoint.getURL().toString(),
-				query,
-				endpoint.getDefaultGraphURIs(),
-				endpoint.getNamedGraphURIs());
 		Model all = ModelFactory.createDefaultModel();
-		Model model = qexec.execConstruct();
-		logger.debug("Got " + model.size() + " new triple");
-		all.add(model);
-		queryMonitor.stop();
-		qexec.close();
-		int i = 1;
-		while(model.size() != 0){
-			query = makeConstructQueryOptional(resource, CHUNK_SIZE, i * CHUNK_SIZE, predicateFilters);
-			logger.debug("Sending SPARQL query ...");
-			logger.debug("Query:\n" + query.toString());
-			queryMonitor.start();
-			qexec = QueryExecutionFactory.sparqlService(
-					endpoint.getURL().toString(),
-					query,
-					endpoint.getDefaultGraphURIs(),
-					endpoint.getNamedGraphURIs());
-			model = qexec.execConstruct();
-			logger.debug("Got " + model.size() + " new triple");
+		try {
+			Model model = cache.executeConstructQuery(endpoint, query);
+			logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
 			all.add(model);
 			queryMonitor.stop();
-			qexec.close();
-			i++;
+			int i = 1;
+			while(model.size() != 0){
+				query = makeConstructQueryOptional(resource, CHUNK_SIZE, i * CHUNK_SIZE, predicateFilters);
+				logger.debug("Sending SPARQL query ...");
+				logger.debug("Query:\n" + query.toString());
+				queryMonitor.start();
+				model = cache.executeConstructQuery(endpoint, query);
+				queryMonitor.stop();
+				logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
+				all.add(model);
+				i++;
+			}
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e);
+		} catch (SQLException e) {
+			logger.error(e);
 		}
 		return all;
 	}
 	
 	private Model getModelIncrementallyRec(String resource, int depth){
 		logger.debug("Resource: " + resource);
-		Query query = makeConstructQuery(resource, predicateFilters);
+		String query = makeConstructQuery(resource, predicateFilters);
 		logger.debug("Sending SPARQL query ...");
-		logger.debug("Query:\n" + query.toString());
+		logger.debug("Query:\n" + query);
 		queryMonitor.start();
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(
-				endpoint.getURL().toString(),
-				query,
-				endpoint.getDefaultGraphURIs(),
-				endpoint.getNamedGraphURIs());
-		Model model = qexec.execConstruct();
-		logger.debug("Got " + model.size() + " new triples:");
+		Model model = null;
+		try {
+			model = cache.executeConstructQuery(endpoint, query);
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e);
+		} catch (SQLException e) {
+			logger.error(e);
+		}
+		queryMonitor.stop();
+		logger.debug("Got " + model.size() + " new triples in " + queryMonitor.getLastValue() + "ms:");
 		Statement st = null;
 		for(Iterator<Statement> i = model.listStatements();i.hasNext(); st = i.next()){
 			logger.debug(st);
