@@ -6,17 +6,26 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.junit.Test;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -28,6 +37,8 @@ public class ModelCreationTest {
 	
 	private static final Logger logger = Logger.getLogger(ModelCreationTest.class);
 	
+	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+	
 	@Test
 	public void test1(){
 		try {
@@ -38,17 +49,21 @@ public class ModelCreationTest {
 			logger.removeAllAppenders();
 			logger.addAppender(consoleAppender);
 			logger.addAppender(fileAppender);
-			logger.setLevel(Level.INFO);
+			logger.setLevel(Level.DEBUG);
 			Logger.getLogger(ModelGenerator.class).setLevel(Level.DEBUG);
 			Logger.getLogger(ModelCreationTest.class).setLevel(Level.DEBUG);
 			
 			
-			URL url = new URL("http://dbpedia.aksw.org:8890/sparql");
+			URL url = new URL("http://lod.openlinksw.com/sparql/");
 			SparqlEndpoint endpoint = new SparqlEndpoint(url, Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
-			ModelGenerator modelGen = new ModelGenerator(endpoint);
+			Set<String> predicateFilters = new HashSet<String>();
+			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			
+			ModelGenerator modelGen = new ModelGenerator(endpoint, predicateFilters, new ExtractionDBCache("testCache"));
 			
 			logger.debug("Using chunk strategy.");
-			Model model1 = modelGen.createModel(RESOURCE, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
+			Model model1 = modelGen.createModel(RESOURCE, ModelGenerator.Strategy.CHUNKS, 3);
 			logger.debug("Got overall " + model1.size() + " triple.");
 			
 			logger.debug("Using incremental strategy.");
@@ -56,7 +71,7 @@ public class ModelCreationTest {
 			logger.debug("Got overall " + model2.size() + " triple.");
 			
 			logger.debug("Using chunk with optional strategy.");
-			Model model3 = modelGen.createModel(RESOURCE, null, RECURSION_DEPTH);
+			Model model3 = modelGen.createModel(RESOURCE, null, 3);
 			logger.debug("Got overall " + model3.size() + " triple.");
 			
 			Model diff = ModelFactory.createDefaultModel();
@@ -91,5 +106,89 @@ public class ModelCreationTest {
 			e.printStackTrace();
 		}
 	}
+	
+//	@Test
+//	public void multiThreadedModelCreationTest(){
+//		BlockingQueue<Model> queue = new LinkedBlockingQueue<Model>();
+//		
+//		ModelConsumer consumer = new ModelConsumer(queue);
+//		
+//		int offset = 100;
+//		for(int i = 0; i <= 5; i++){
+//			new Thread(new ModelProducer(queue, i * offset)).start();
+//			
+//		}
+//		new Thread(consumer).start();
+//		
+//		try {
+//			Thread.sleep(10000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	class ModelProducer implements Runnable{
+//		
+//		protected BlockingQueue<Model> queue;
+//		private int offset;
+//
+//		public ModelProducer(BlockingQueue<Model> queue, int offset) {
+//			this.queue = queue;
+//			this.offset = offset;
+//		}
+//
+//		@Override
+//		public void run() {
+//			Model model = getModel(offset);System.out.println(offset + " -> " + model.size());
+//			try {
+//				queue.put(model);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		private Model getModel(int offset){
+//			Query query = QueryFactory.create(
+//					"CONSTRUCT " +
+//					"{<http://dbpedia.org/resource/Dresden> ?p1 ?o1. ?o1 ?p2 ?o2.}" +
+//					" WHERE " +
+//					"{<http://dbpedia.org/resource/Dresden> ?p1 ?o1. ?o1 ?p2 ?o2.}" +
+//					"LIMIT 100 OFFSET " + offset);
+//			
+//			QueryExecution qexec = QueryExecutionFactory.sparqlService(
+//					ENDPOINT.getURL().toString(),
+//					query,
+//					ENDPOINT.getDefaultGraphURIs(),
+//					ENDPOINT.getNamedGraphURIs());
+//			return qexec.execConstruct();
+//		}
+//		
+//	}
+//	
+//	class ModelConsumer implements Runnable{
+//		
+//		protected BlockingQueue<Model> queue;
+//		private Model completeModel;
+//
+//		public ModelConsumer(BlockingQueue<Model> queue) {
+//			this.queue = queue; 
+//			completeModel = ModelFactory.createDefaultModel();
+//		}
+//
+//		@Override
+//		public void run() {
+//			while(true){
+//				try {
+//					Model m = queue.take();
+//					completeModel.add(m);
+//					System.out.println(completeModel.size());
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		
+//	}
 
 }

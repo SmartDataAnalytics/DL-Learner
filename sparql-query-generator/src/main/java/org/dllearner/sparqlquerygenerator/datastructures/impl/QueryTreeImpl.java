@@ -502,7 +502,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     @Override
     public String toSPARQLQueryString() {
     	if(children.isEmpty()){
-    		return "SELECT ?x WHERE {?x ?y ?z.}";
+    		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
     	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
@@ -515,7 +515,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     @Override
     public String toSPARQLQueryString(boolean filtered) {
     	if(children.isEmpty()){
-    		return "SELECT ?x WHERE {?x ?y ?z.}";
+    		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
     	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
