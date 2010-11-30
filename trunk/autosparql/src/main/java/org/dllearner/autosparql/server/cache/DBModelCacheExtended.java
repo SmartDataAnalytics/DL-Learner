@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -187,11 +188,88 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		}
 	}
 	
-	public void fillCache(){
-		fillCache(-1);
+	public void fillCache(int limit){
+		fillCache(limit, Collections.<String>emptySet());
 	}
 	
-	public void fillCache(int limit){
+	public void fillCache(){
+		fillCache(-1, Collections.<String>emptySet());
+	}
+	
+	public void fillCache(Set<String> resourceFilters){
+		fillCache(-1, resourceFilters);
+	}
+	
+//	public void fillCache(int limit){
+//		monitor.reset();
+//		monitor.start();
+//		logger.info("Filling cache...");
+//		Model model;
+//		com.hp.hpl.jena.rdf.model.Statement st;
+//		String objectURI;
+//		String modelStr;
+//		int i = 0;
+//		logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + i*CHUNK_SIZE+CHUNK_SIZE);
+//		List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+//		logger.info("Got resources:\n" + resources);
+//		while (!resources.isEmpty()) {
+//			for (String resource : resources) {
+//				logger.info("Fetching triples for resource: " + resource);
+//				queryMonitor.start();
+//				model = createModel(resource);
+//				queryMonitor.stop();
+//				logger.info("Got " + model.size() + " triples in " + queryMonitor.getLastValue()/1000 + "s.");
+//				modelStr = convertModel2String(model);
+//				logger.info("Writing triples to DB");
+//				dbMonitor.start();
+//				writeTriples2DB(resource, modelStr);
+//				int id = getResourceID(resource);
+//				writeKey2KeyIntoDB(id, id);
+//				if(id != -1){
+//					for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
+//						st = iter.next();
+//						if (st.getObject().isURIResource()) {
+//							objectURI = st.getObject().asResource().getURI();
+//							if (objectURI
+//									.startsWith("http://dbpedia.org/resource/")) {
+//								logger.info("Writing to DB key-key entry for resources "
+//										+ resource + " and " + objectURI);
+//								logger.info("Database ID for " + resource + " is "
+//										+ id);
+//								writeKey2KeyIntoDB(id, objectURI);
+//							}
+//						}
+//					}
+//				} else {
+//					logger.info("Something went wrong for resource " + resource);
+//				}
+//				
+//				dbMonitor.stop();
+//			}
+//			i++;
+//
+//			if (limit != -1 && i * CHUNK_SIZE >= limit) {
+//				break;
+//			}
+//			logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + i*CHUNK_SIZE+CHUNK_SIZE);
+//			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
+//			logger.info("Got resources:\n" + resources);
+//		}
+//		monitor.stop();
+//		logger.info("Time to fetch the triples: " + queryMonitor.getTotal()/1000 + "s");
+//		logger.info("Time to write to database: " + dbMonitor.getTotal()/1000 + "s");
+//		logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
+//		
+//		try {
+//			conn.close();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//	}
+	
+	public void fillCache(int limit, Set<String> resourceFilters){
 		monitor.reset();
 		monitor.start();
 		logger.info("Filling cache...");
@@ -199,53 +277,58 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		com.hp.hpl.jena.rdf.model.Statement st;
 		String objectURI;
 		String modelStr;
+		List<String> resources;
+		int count = getResourcesCount(resourceFilters);
+		logger.info("Resource count: " + count);
 		int i = 0;
-		logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + i*CHUNK_SIZE+CHUNK_SIZE);
-		List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
-		logger.info("Got resources:\n" + resources);
-		while (!resources.isEmpty()) {
-			for (String resource : resources) {
-				logger.info("Fetching triples for resource: " + resource);
-				queryMonitor.start();
-				model = createModel(resource);
-				queryMonitor.stop();
-				logger.info("Got " + model.size() + " triples in " + queryMonitor.getLastValue()/1000 + "s.");
-				modelStr = convertModel2String(model);
-				logger.info("Writing triples to DB");
-				dbMonitor.start();
-				writeTriples2DB(resource, modelStr);
-				int id = getResourceID(resource);
-				writeKey2KeyIntoDB(id, id);
-				if(id != -1){
-					for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
-						st = iter.next();
-						if (st.getObject().isURIResource()) {
-							objectURI = st.getObject().asResource().getURI();
-							if (objectURI
-									.startsWith("http://dbpedia.org/resource/")) {
-								logger.info("Writing to DB key-key entry for resources "
-										+ resource + " and " + objectURI);
-								logger.info("Database ID for " + resource + " is "
-										+ id);
-								writeKey2KeyIntoDB(id, objectURI);
+		while(i*CHUNK_SIZE <= count){
+			try {
+				logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + (i*CHUNK_SIZE+CHUNK_SIZE));
+				resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE, resourceFilters);
+				logger.info("Got resources:\n" + resources);
+				
+				for (String resource : resources) {
+					logger.info("Fetching triples for resource: " + resource);
+					queryMonitor.start();
+					model = createModel(resource);
+					queryMonitor.stop();
+					logger.info("Got " + model.size() + " triples in " + queryMonitor.getLastValue()/1000 + "s.");
+					modelStr = convertModel2String(model);
+					logger.info("Writing triples to DB");
+					dbMonitor.start();
+					writeTriples2DB(resource, modelStr);
+					int id = getResourceID(resource);
+					writeKey2KeyIntoDB(id, id);
+					if(id != -1){
+						for (StmtIterator iter = model.listStatements(); iter.hasNext();) {
+							st = iter.next();
+							if (st.getObject().isURIResource()) {
+								objectURI = st.getObject().asResource().getURI();
+								if (objectURI
+										.startsWith("http://dbpedia.org/resource/")) {
+									logger.info("Writing to DB key-key entry for resources "
+											+ resource + " and " + objectURI);
+									logger.info("Database ID for " + resource + " is "
+											+ id);
+									writeKey2KeyIntoDB(id, objectURI);
+								}
 							}
 						}
+					} else {
+						logger.info("Something went wrong for resource " + resource);
 					}
-				} else {
-					logger.info("Something went wrong for resource " + resource);
+					
+					dbMonitor.stop();
 				}
-				
-				dbMonitor.stop();
+				logger.info("Successfully added resources from " + i*CHUNK_SIZE + " to " + (i*CHUNK_SIZE+CHUNK_SIZE));
+			} catch (Exception e) {
+				logger.error("An error occured while writing resources from " + i*CHUNK_SIZE + " to " + (i*CHUNK_SIZE+CHUNK_SIZE));
+				logger.error(e);
 			}
+			
 			i++;
-
-			if (limit != -1 && i * CHUNK_SIZE >= limit) {
-				break;
-			}
-			logger.info("Fetching resources from " + i*CHUNK_SIZE + " to " + i*CHUNK_SIZE+CHUNK_SIZE);
-			resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
-			logger.info("Got resources:\n" + resources);
 		}
+		
 		monitor.stop();
 		logger.info("Time to fetch the triples: " + queryMonitor.getTotal()/1000 + "s");
 		logger.info("Time to write to database: " + dbMonitor.getTotal()/1000 + "s");
@@ -253,61 +336,6 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		
 		try {
 			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	
-	public void fillCache2(int limit){
-		try {
-			monitor.reset();
-			monitor.start();
-			logger.info("Filling cache...");
-			Model model;
-			com.hp.hpl.jena.rdf.model.Statement st;
-			String objectURI;
-			String modelStr;
-			int i = 0;
-			List<String> resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO RESOURCE_CACHE VALUES(null,?,?,?)");;
-			while(!resources.isEmpty()){
-				ps.clearBatch();
-				for(String resource : resources){
-					logger.info("Fetching triples for resource " + resource);
-					queryMonitor.start();
-					model = createModel(resource);
-					queryMonitor.stop();
-					logger.info("Got " + model.size() + " triples");
-					modelStr = convertModel2String(model);
-					logger.info("Writing triples to DB");
-					
-					writeTriples2Batch(resource, modelStr, ps);
-					
-				}
-				dbMonitor.start();
-				ps.executeBatch();
-				dbMonitor.stop();
-				i++;
-				
-				if(limit != -1 && i * CHUNK_SIZE >= limit){
-					break;
-				}
-				
-				resources = getResources(CHUNK_SIZE, i * CHUNK_SIZE);
-			}
-			monitor.stop();
-			logger.info("Time to fetch the triples: " + queryMonitor.getTotal()/1000 + "s");
-			logger.info("Time to write to database: " + dbMonitor.getTotal()/1000 + "s");
-			logger.info("Overall time needed: " + monitor.getTotal()/1000 + "s");
-			
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -572,7 +600,6 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 				ps.executeUpdate();
 				id2 = getResourceID(resource2);
 			}
-			logger.info("Database ID for " + resource2 + " is " + id2);
 			ps = conn.prepareStatement("INSERT INTO RESOURCE2RESOURCE VALUES(?,?)");
 			ps.setInt(1, id1);
 			ps.setInt(2, id2);
