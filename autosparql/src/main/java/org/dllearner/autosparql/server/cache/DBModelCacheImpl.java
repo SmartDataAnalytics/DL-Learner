@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -32,10 +32,14 @@ public class DBModelCacheImpl {
 		}
 	}
 	
-	protected int getResourcesCount(){
-		String query = "SELECT COUNT(DISTINCT ?object) WHERE {?object a ?class}";
+	protected int getResourcesCount(Set<String> resourcesFilters){
+		StringBuilder query = new StringBuilder("SELECT COUNT(DISTINCT ?resource) WHERE {?resource a ?class.");
+		for(String filter : resourcesFilters){
+			query.append("FILTER(REGEX(?resource, '").append(filter).append("'))");
+		}
+		query.append("}");
 		
-		QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), query.toString());
 		
 		for (String dgu : endpoint.getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
@@ -51,12 +55,19 @@ public class DBModelCacheImpl {
 		return cnt;
 	}
 	
-	protected List<String> getResources(int limit, int offset){
+	protected int getResourcesCount(){
+		return getResourcesCount(Collections.<String>emptySet());
+	}
+	
+	protected List<String> getResources(int limit, int offset, Set<String> resourcesFilters){
 		List<String> resources = new ArrayList<String>();
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT DISTINCT ?object WHERE {?object a ?class. ");
-		sb.append("FILTER(regex(?object, 'http://dbpedia.org/resource/')) }");
+		sb.append("SELECT DISTINCT ?resource WHERE {?resource a ?class. ");
+		for(String filter : resourcesFilters){
+			sb.append("FILTER(REGEX(?resource, '").append(filter).append("')).");
+		}
+		sb.append("}\n");
 		sb.append(" LIMIT ").append(limit);
 		sb.append(" OFFSET ").append(offset);
 		
@@ -73,12 +84,16 @@ public class DBModelCacheImpl {
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			if(qs.get("object").isURIResource()){
-				resources.add(qs.getResource("object").getURI());
+			if(qs.get("resource").isURIResource()){
+				resources.add(qs.getResource("resource").getURI());
 			}
 		}
 		
 		return resources;
+	}
+	
+	protected List<String> getResources(int limit, int offset){
+		return getResources(limit, offset, Collections.<String>emptySet());
 	}
 	
 	protected byte[] md5(String string) {
