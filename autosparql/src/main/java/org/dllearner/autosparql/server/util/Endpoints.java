@@ -52,6 +52,21 @@ public class Endpoints {
 	public List<SPARQLEndpointEx> getEndpoints(){
 		return endpoints;
 	}
+	public static SPARQLEndpointEx getDBPediaAKSWEndpoint(){
+		try {
+			URL url = new URL("http://live.dbpedia.org/sparql/");
+			List<String> defaultGraphURIs = Collections.singletonList("http://dbpedia.org");
+			List<String> namedGraphURIs = Collections.emptyList();
+			List<String> predicateFilters = new ArrayList<String>();
+			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(url, defaultGraphURIs, namedGraphURIs, "", predicateFilters);
+			return endpoint;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public static void main(String[] args){
 		Endpoints endpoints = new Endpoints("endpoints.xml");

@@ -1,11 +1,13 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
@@ -23,9 +25,10 @@ import org.dllearner.kb.sparql.SparqlQuery;
 
 public class ExampleFinder {
 	
-	private SparqlEndpoint endpoint;
+	private SPARQLEndpointEx endpoint;
 	private ExtractionDBCache selectCache;
 	private ExtractionDBCache constructCache;
+	private ModelGenerator modelGen;
 	
 	private List<String> posExamples;
 	private List<String> negExamples;
@@ -38,10 +41,12 @@ public class ExampleFinder {
 	
 	private QueryTree<String> currentQueryTree;
 	
-	public ExampleFinder(SparqlEndpoint endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
+	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
 		this.constructCache = constructCache;
+		
+		modelGen = new ModelGenerator(endpoint, new HashSet<String>(endpoint.getPredicateFilters()), constructCache);
 	}
 	
 	public Example findSimilarExample(List<String> posExamples,
@@ -49,7 +54,7 @@ public class ExampleFinder {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
-		ModelGenerator modelGen = new ModelGenerator(endpoint, constructCache);
+		
 		QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, endpoint, 5000);
 		
 		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
@@ -110,17 +115,18 @@ public class ExampleFinder {
 //	}
 	
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
-		logger.info("USING GENERALISATION");
-		logger.info("QUERY BEFORE GENERALISATION: \n\n" + tree.toSPARQLQueryString(true));
+		logger.info("Using generalisation");
+		logger.info("Query before generalisation: \n\n" + tree.toSPARQLQueryString(true));
 		Generalisation<String> generalisation = new Generalisation<String>();
 		
 		QueryTree<String> genTree = generalisation.generalise(tree);
 		
 		currentQuery = genTree.toSPARQLQueryString(true);
 		currentQueryTree = genTree;
-		logger.info("QUERY AFTER GENERALISATION: \n\n" + currentQuery);
+		logger.info("Query after generalisation: \n\n" + currentQuery);
 		
-		currentQuery = currentQuery + " ORDER BY ?x0 LIMIT 10";
+//		currentQuery = currentQuery + " ORDER BY ?x0 LIMIT 10";
+		currentQuery = currentQuery + " LIMIT 10";
 		String result = "";
 		try {
 			result = selectCache.executeSelectQuery(endpoint, currentQuery);
@@ -140,6 +146,7 @@ public class ExampleFinder {
 				return getExample(uri);
 			}
 		}
+		logger.info("Found no new example. Trying again generalisation...");
 		return findExampleByGeneralisation(genTree);
 	}
 
@@ -224,7 +231,7 @@ public class ExampleFinder {
 	}
 	
 	private Example getExample(String uri){
-		logger.info("Retrieving data for resouce " + uri);
+		logger.info("Retrieving data for resource " + uri);
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ?label ?imageURL ?comment WHERE{\n");
 		sb.append("<").append(uri).append("> <").append(RDFS.label.getURI()).append("> ").append("?label.\n");
@@ -269,7 +276,7 @@ public class ExampleFinder {
 		return out.toString();
 	}
 	
-	public void setEndpoint(SparqlEndpoint endpoint){
+	public void setEndpoint(SPARQLEndpointEx endpoint){
 		this.endpoint = endpoint;
 	}
 	

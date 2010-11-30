@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.server;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,12 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
 	
 	public SPARQLServiceImpl(){
+		try {
+			new File("./TEST.txt").createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private String getPath(){
