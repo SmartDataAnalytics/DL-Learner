@@ -3,6 +3,7 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 
@@ -17,6 +18,8 @@ import org.dllearner.kb.sparql.SparqlQuery;
 
 public class SPARQLSearch {
 	
+	private static final Logger logger = Logger.getLogger(SPARQLSearch.class);
+	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	
@@ -25,11 +28,12 @@ public class SPARQLSearch {
 	}
 	
 	public List<Example> searchFor(String searchTerm, SparqlEndpoint endpoint, int limit, int offset){
+		logger.info("Searching for term: " + searchTerm);
 		List<Example> searchResult = new ArrayList<Example>();
 		
 		String query = buildSearchQuery(searchTerm, limit, offset);
+		logger.info("Sending query:\n" + query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		System.out.println(query);
 		String uri;
 		String label;
 		String imageURL = "";
@@ -96,7 +100,7 @@ public class SPARQLSearch {
 		sb.append("?object a ?class.\n");
 		sb.append("?object <").append(RDFS.label).append("> ?label.\n");
 		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
-		sb.append("FILTER(LANGMATCHES(LANG(?label), \"en\"))");
+		sb.append("FILTER(LANGMATCHES(LANG(?label), \"en\"))\n");
 		sb.append("OPTIONAL{?object <").append(FOAF.depiction.getURI()).append("> ?imageURL.}\n");
 		sb.append("OPTIONAL{?object <").append(RDFS.comment).append("> ?comment.\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?comment), \"en\"))}");
