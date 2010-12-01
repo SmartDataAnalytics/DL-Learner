@@ -8,6 +8,10 @@
 	<servlet>
     	<servlet-name>sparqlServiceImpl</servlet-name>
     	<servlet-class>org.dllearner.autosparql.server.SPARQLServiceImpl</servlet-class>
+    	<init-param> 
+    		<param-name>configPath</param-name> 
+    		<param-value>/WEB-INF/classes/config.ini</param-value> 
+   		</init-param> 
   	</servlet>
 
   	<servlet-mapping>

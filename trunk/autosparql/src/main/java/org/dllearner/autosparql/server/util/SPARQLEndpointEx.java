@@ -8,17 +8,23 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 public class SPARQLEndpointEx extends SparqlEndpoint {
 	private String label;
 	private List<String> predicateFilters;
+	private String prefix;
 	
 	public SPARQLEndpointEx(URL u, List<String> defaultGraphURIs,
-			List<String> namedGraphURIs, String label, List<String> predicateFilters) {
+			List<String> namedGraphURIs, String label, String prefix, List<String> predicateFilters) {
 		super(u, defaultGraphURIs, namedGraphURIs);
 		
 		this.label = label;
+		this.prefix = prefix;
 		this.predicateFilters = predicateFilters;
 	}
 	
 	public String getLabel(){
 		return label;
+	}
+	
+	public String getPrefix(){
+		return prefix;
 	}
 	
 	public List<String> getPredicateFilters(){
