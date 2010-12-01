@@ -1,11 +1,13 @@
 package org.dllearner.autosparql.server;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -16,6 +18,7 @@ import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.Endpoints;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.ini4j.Ini;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
@@ -34,13 +37,29 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
 	
+	private String baseDir;
+	private String cacheDir;
+	
 	public SPARQLServiceImpl(){
+		super();
+	}
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		String configPath = config.getInitParameter("configPath");
+		loadConfig(configPath);
+	}
+	
+	private void loadConfig(String path){
 		try {
-			new File("./TEST.txt").createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			InputStream is = getServletContext().getResourceAsStream(path);
+			Ini ini = new Ini(is);
+			baseDir = ini.get("baseDir").get("path");
+			cacheDir = ini.get("cacheDir").get("path");
+		} catch (Exception e){
 			e.printStackTrace();
-		}
+		} 
 	}
 	
 	private String getPath(){
@@ -85,10 +104,10 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
-		if(endpoints == null){
-			endpoints = new Endpoints(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml")).getEndpoints();
-		}
 		try {
+			if(endpoints == null){
+				endpoints = new Endpoints(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml")).getEndpoints();
+			}
 			List<Endpoint> endpoints = new ArrayList<Endpoint>();
 			
 			for(SPARQLEndpointEx endpoint : this.endpoints){
@@ -97,6 +116,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			
 			return endpoints;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e);
 			throw new AutoSPARQLException(e);
 		}
@@ -108,7 +128,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
-		AutoSPARQLSession session = new AutoSPARQLSession(endpoint);
+		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir));
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	

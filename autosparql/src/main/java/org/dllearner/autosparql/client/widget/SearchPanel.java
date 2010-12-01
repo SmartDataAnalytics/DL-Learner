@@ -227,7 +227,9 @@ public class SearchPanel extends ContentPanel {
 			}
 		});
 		
+		grid.setAutoExpandMax(1000);
 		add(grid, new RowData(1, 1));
+		
 		add(toolbar, new RowData(1, -1));
 	}
 	
