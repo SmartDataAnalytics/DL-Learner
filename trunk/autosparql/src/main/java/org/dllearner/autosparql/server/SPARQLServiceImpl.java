@@ -105,7 +105,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
-		logger.info(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml"));
+		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml"));
 		try {
 			if(endpoints == null){
 				endpoints = new Endpoints(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml")).getEndpoints();
@@ -113,6 +113,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			List<Endpoint> endpoints = new ArrayList<Endpoint>();
 			
 			for(SPARQLEndpointEx endpoint : this.endpoints){
+				logger.info("Loaded endpoint: " + endpoint);
 				endpoints.add(new Endpoint(this.endpoints.indexOf(endpoint), endpoint.getLabel()));
 			}
 			
