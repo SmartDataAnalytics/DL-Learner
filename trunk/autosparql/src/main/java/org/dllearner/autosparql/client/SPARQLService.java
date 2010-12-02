@@ -28,6 +28,8 @@ public interface SPARQLService extends RemoteService{
 	
 	List<Endpoint> getEndpoints() throws AutoSPARQLException;
 	
+	String getMessage();
+	
 	/**
      * Utility class to get the RPC Async interface from client-side code
      */

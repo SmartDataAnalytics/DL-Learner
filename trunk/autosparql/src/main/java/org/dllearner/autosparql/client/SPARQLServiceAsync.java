@@ -27,5 +27,7 @@ public interface SPARQLServiceAsync
     void setEndpoint(Endpoint endpoint, AsyncCallback<Void> callback);
 	
 	void getEndpoints(AsyncCallback<List<Endpoint>> callback);
+	
+	void getMessage(AsyncCallback<String> callback);
     
 }

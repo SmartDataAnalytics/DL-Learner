@@ -16,6 +16,7 @@ import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
@@ -49,6 +50,22 @@ public class HomeView extends View {
 	}
 	
 	private ComboBox<Endpoint> createEndpointSelector(){
+		SPARQLService.Util.getInstance().getMessage(new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				System.out.println("Context path: " + result);
+				MessageBox.info("Servlet context path", result, null);
+				
+			}
+		});
+		
 		final ListStore<Endpoint> endpoints = new ListStore<Endpoint>();  
 		SPARQLService.Util.getInstance().getEndpoints(new AsyncCallback<List<Endpoint>>() {
 

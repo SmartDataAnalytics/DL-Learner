@@ -141,6 +141,11 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private HttpSession getSession(){
 		return getThreadLocalRequest().getSession();
 	}
+
+	@Override
+	public String getMessage() {
+		return getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml");
+	}
 	
 
 }
