@@ -14,22 +14,22 @@ public class TrainAndTestSet {
 	private File pdbproteins;
 	private String[] trainset;
 	private String[] testset;
-	private HashMap setentries;
-	private ArrayList pdbprotlines;
+	private HashMap<Integer,String> setentries;
+	private ArrayList<String> pdbprotlines;
 	
-	private ArrayList getPdbprotlines() {
+	private ArrayList<String> getPdbprotlines() {
 		return pdbprotlines;
 	}
 
-	private void setPdbprotlines(ArrayList pdbprotlines) {
+	private void setPdbprotlines(ArrayList<String> pdbprotlines) {
 		this.pdbprotlines = pdbprotlines;
 	}
 
-	private HashMap getSetentries() {
+	private HashMap<Integer,String> getSetentries() {
 		return setentries;
 	}
 
-	private void setSetentries(HashMap setentries) {
+	private void setSetentries(HashMap<Integer,String> setentries) {
 		this.setentries = setentries;
 	}
 
@@ -73,7 +73,7 @@ public class TrainAndTestSet {
 	
 	private void createArrayList(int linenumber){
 		try {
-			ArrayList arraylist = new ArrayList();
+			ArrayList<String> arraylist = new ArrayList<String>();
 			LineNumberReader lnr = new LineNumberReader(new FileReader(this.getPdbproteins()));
 			for (int i = 0; i < linenumber; i++) {
 				String line = lnr.readLine();
@@ -94,9 +94,9 @@ public class TrainAndTestSet {
 	private String [] create_set(int setsize, int linenr){
 		String [] set = new String [setsize];
 		if (this.getSetentries() == null) {
-			this.setSetentries(new HashMap(2*setsize));
+			this.setSetentries(new HashMap<Integer,String>(2*setsize));
 		}
-		HashMap setmap = this.getSetentries();
+		HashMap<Integer,String> setmap = this.getSetentries();
 		Random gen = new Random();
 		for (int i = 0; i < setsize; i++) {
 			int lnr = gen.nextInt(linenr);
@@ -133,7 +133,7 @@ public class TrainAndTestSet {
 
 	private String getpdbid (int lineNumber) {
 		// Initialize a LineNumberReader
-		ArrayList arraylist = this.getPdbprotlines();
+		ArrayList<String> arraylist = this.getPdbprotlines();
 		String line =(String) arraylist.get(lineNumber);
 		String pdb_id = line.substring(0, 4);
 		return pdb_id;
