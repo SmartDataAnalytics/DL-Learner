@@ -52,6 +52,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void loadConfig(String path){
+		logger.info("Loading config file");
 		try {
 			InputStream is = getServletContext().getResourceAsStream(path);
 			Ini ini = new Ini(is);
@@ -104,6 +105,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
+		logger.info(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml"));
 		try {
 			if(endpoints == null){
 				endpoints = new Endpoints(getServletContext().getRealPath("org.dllearner.autosparql.Application/endpoints.xml")).getEndpoints();
