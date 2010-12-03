@@ -84,6 +84,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException{
+		logger.info("Searching for " + searchTerm + "(" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getSearchResult(searchTerm, config);
 	}
 	
@@ -101,6 +102,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	@Override
 	public void setEndpoint(Endpoint endpoint) throws AutoSPARQLException{
+		logger.info("Set new endpoint " + endpoint.getLabel() + "(" + getSession().getId() + ")");
 		try {
 			createNewAutoSPARQLSession(endpoints.get(endpoint.getID()));
 		} catch (Exception e) {
@@ -137,13 +139,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
-		logger.info("Cache path: " + getServletContext().getRealPath(cacheDir));
+		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir));
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	
 	private AutoSPARQLSession getAutoSPARQLSession(){
-		return (AutoSPARQLSession) getThreadLocalRequest().getSession().getAttribute(AUTOSPARQL_SESSION);
+		logger.info("Loading AutoSPARQL user session object form HTTPSession(" + getSession().getId() + ")");
+		return (AutoSPARQLSession) getSession().getAttribute(AUTOSPARQL_SESSION);
 	}
 	
 	private HttpSession getSession(){
