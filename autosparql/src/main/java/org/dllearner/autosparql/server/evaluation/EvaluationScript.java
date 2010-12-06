@@ -1,5 +1,7 @@
 package org.dllearner.autosparql.server.evaluation;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,6 +13,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 
 public class EvaluationScript {
@@ -19,8 +22,9 @@ public class EvaluationScript {
 	 * @param args
 	 * @throws ClassNotFoundException 
 	 * @throws SQLException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		
 		Class.forName("com.mysql.jdbc.Driver");
@@ -35,32 +39,47 @@ public class EvaluationScript {
 		int id;
 		String query;
 		int frequency;
-		QueryExecution qexec;
+		QueryEngineHTTP qexec;
 		com.hp.hpl.jena.query.ResultSet rs_jena;
 		int rowCount = 0;
+		StringBuilder sb;
+		BufferedReader bf;
+		String tmp;
 		while(rs.next()){
 			id = rs.getInt("id");
-			query = rs.getString("query");
+			sb = new StringBuilder();
+			bf = new BufferedReader(rs.getClob("query").getCharacterStream());
+			while ((tmp = bf.readLine()) != null){
+		        sb.append(tmp);
+			}
+			query = sb.toString();
 			frequency = rs.getInt("frequency");
+			System.out.println(query);
 			
-			qexec = QueryExecutionFactory.sparqlService(
-					endpoint.getURL().toString(),
-					query,
-					endpoint.getDefaultGraphURIs(),
-					endpoint.getNamedGraphURIs());
-			rs_jena = qexec.execSelect();
-			
-			if(rs_jena.hasNext()){
-				rowCount = 0;
-				while(rs_jena.hasNext()){
-					rs_jena.next();
-					rowCount++;
+			try {
+				qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
+				for (String dgu : endpoint.getDefaultGraphURIs()) {
+					qexec.addDefaultGraph(dgu);
 				}
+				for (String ngu : endpoint.getNamedGraphURIs()) {
+					qexec.addNamedGraph(ngu);
+				}		
+				rs_jena = qexec.execSelect();
 				
-				ps.setInt(1, id);
-				ps.setString(2, query);
-				ps.setInt(3, frequency);
-				ps.setInt(4, rowCount);
+				if(rs_jena.hasNext()){
+					rowCount = 0;
+					while(rs_jena.hasNext()){
+						rs_jena.next();
+						rowCount++;
+					}
+					
+					ps.setInt(1, id);
+					ps.setString(2, query);
+					ps.setInt(3, frequency);
+					ps.setInt(4, rowCount);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			
 		}
