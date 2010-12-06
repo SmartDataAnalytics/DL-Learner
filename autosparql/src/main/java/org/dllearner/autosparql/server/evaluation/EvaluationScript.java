@@ -32,7 +32,7 @@ public class EvaluationScript {
 		Connection conn = DriverManager.getConnection("jdbc:mysql://139.18.2.173/dbpedia_queries", "root", "WQPRisDa2");
 		
 		Statement st = conn.createStatement();
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO 'SELECT_queries_with_resultset' VALUES(?,?,?,?)");
+		PreparedStatement ps = conn.prepareStatement("UPDATE 'SELECT_queries' SET resultCount = ? WHERE id = ?");
 		
 		ResultSet rs = st.executeQuery("SELECT * FROM `SELECT_queries`");
 		
@@ -42,19 +42,10 @@ public class EvaluationScript {
 		QueryEngineHTTP qexec;
 		com.hp.hpl.jena.query.ResultSet rs_jena;
 		int rowCount = 0;
-		StringBuilder sb;
-		BufferedReader bf;
-		String tmp;
 		while(rs.next()){
 			id = rs.getInt("id");
-			sb = new StringBuilder();
-			bf = new BufferedReader(rs.getClob("query").getCharacterStream());
-			while ((tmp = bf.readLine()) != null){
-		        sb.append(tmp);
-			}
-			query = sb.toString();
+			query = rs.getString("query");
 			frequency = rs.getInt("frequency");
-			System.out.println(query);
 			
 			try {
 				qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
@@ -73,10 +64,9 @@ public class EvaluationScript {
 						rowCount++;
 					}
 					
-					ps.setInt(1, id);
-					ps.setString(2, query);
-					ps.setInt(3, frequency);
-					ps.setInt(4, rowCount);
+					ps.setInt(1, rowCount);
+					ps.setInt(2, id);
+					ps.execute();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
