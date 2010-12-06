@@ -8,7 +8,10 @@ import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
+import org.dllearner.sparqlquerygenerator.cache.ModelCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
@@ -19,23 +22,18 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-
 public class ExampleFinder {
 	
 	private SPARQLEndpointEx endpoint;
 	private ExtractionDBCache selectCache;
 	private ExtractionDBCache constructCache;
 	private ModelGenerator modelGen;
+	private ModelCache modelCache;
 	
 	private List<String> posExamples;
 	private List<String> negExamples;
 	
 	private static final Logger logger = Logger.getLogger(ExampleFinder.class);
-	
-	private static final int RECURSION_DEPTH = 2;
 	
 	private String currentQuery;
 	
@@ -47,6 +45,7 @@ public class ExampleFinder {
 		this.constructCache = constructCache;
 		
 		modelGen = new ModelGenerator(endpoint, new HashSet<String>(endpoint.getPredicateFilters()), constructCache);
+		modelCache = new ModelCache(modelGen);
 	}
 	
 	public Example findSimilarExample(List<String> posExamples,
@@ -63,12 +62,12 @@ public class ExampleFinder {
 		Model model;
 		for(String resource : posExamples){
 			logger.info("Fetching model for resource: " + resource);
-			model = modelGen.createModel(resource, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
+			model = modelCache.getModel(resource);
 			posExampleTrees.add(treeGen.getQueryTree(resource, model));
 		}
 		for(String resource : negExamples){
 			logger.info("Fetching model for resource: " + resource);
-			model = modelGen.createModel(resource, ModelGenerator.Strategy.CHUNKS, RECURSION_DEPTH);
+			model = modelCache.getModel(resource);
 			negExampleTrees.add(treeGen.getQueryTree(resource, model));
 		}
 		
