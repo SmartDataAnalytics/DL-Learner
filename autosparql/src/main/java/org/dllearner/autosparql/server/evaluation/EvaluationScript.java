@@ -16,7 +16,12 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.server.cache.DBModelCacheExtended;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.sparql.algebra.Algebra;
+import com.hp.hpl.jena.sparql.algebra.Op;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.sse.SSE;
 
 
 public class EvaluationScript {
@@ -28,6 +33,7 @@ public class EvaluationScript {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		FileAppender fileAppender = new FileAppender(
@@ -61,6 +67,9 @@ public class EvaluationScript {
 			id = rs.getInt("id");
 			query = rs.getString("query");
 			
+			// @Lorenz: Code ungetestet
+			if(checkQuerySimple(query)) {
+			
 			try {
 				qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
 				for (String dgu : endpoint.getDefaultGraphURIs()) {
@@ -86,9 +95,26 @@ public class EvaluationScript {
 				logger.error("ERROR. An error occured while working with query " + id, e);
 			}
 			
+			}
 		}
 		
 		
+	}
+	
+	// checks whether query is obviously not learnable
+	private static boolean checkQuerySimple(String query) {
+		if(query.contains("UNION")) {
+			return false;
+		}	
+		return true;
+	}
+	
+	private static boolean checkQuerySyntax(String query) {
+		Query q = QueryFactory.create(query);
+		Op op = Algebra.compile(q);
+		// ... perform checks ... can we fully decide when an algebra expression is not in the target language?
+		SSE.write(op) ;
+		return true;
 	}
 
 }
