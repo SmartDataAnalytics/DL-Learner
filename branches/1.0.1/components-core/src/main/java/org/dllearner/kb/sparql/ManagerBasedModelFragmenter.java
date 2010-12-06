@@ -1,7 +1,6 @@
 package org.dllearner.kb.sparql;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -53,13 +52,13 @@ public class ManagerBasedModelFragmenter implements IModelFragmenter {
         sparqlTasks.setModel(model);
 
         /** Get some weird erros with this one and blank nodes, but only when dissolve blank nodes = true */
-        TupleAquisitor tupleAquisitor = new SparqlTupleAquisitorImproved(new SparqlQueryMaker(), sparqlTasks, recursionDepth);
+        TupleAquisitor tupleAquisitor = new SparqlTupleAquisitorImproved(new SparqlQueryMaker(), sparqlTasks, getRecursionDepth());
 //        TupleAquisitor tupleAquisitor = new SparqlTupleAquisitor(new SparqlQueryMaker(), sparqlTasks);
         tupleAquisitor.dissolveBlankNodes = false;
 
         /** These properties are hard coded here due to time constraints but we could make these fields and inject them in the future */
         ExtractionAlgorithm extractionAlgorithm = new ExtractionAlgorithm();
-        extractionAlgorithm.setRecursionDepth(recursionDepth);
+        extractionAlgorithm.setRecursionDepth(getRecursionDepth());
         extractionAlgorithm.setManipulator(manipulator);
         extractionAlgorithm.setCloseAfterRecursion(true);
         extractionAlgorithm.setGetAllSuperClasses(true);
@@ -75,5 +74,23 @@ public class ManagerBasedModelFragmenter implements IModelFragmenter {
         m.setTupleAquisitor(tupleAquisitor);
 
         return m;
+    }
+
+    /**
+     * Get the recursion depth.
+     *
+     * @return The recursion depth.
+     */
+    public int getRecursionDepth() {
+        return recursionDepth;
+    }
+
+    /**
+     * Set the recursion depth.
+     *
+     * @param recursionDepth The recursion depth.
+     */
+    public void setRecursionDepth(int recursionDepth) {
+        this.recursionDepth = recursionDepth;
     }
 }
