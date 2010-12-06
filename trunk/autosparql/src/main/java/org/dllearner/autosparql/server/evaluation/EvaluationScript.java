@@ -1,6 +1,5 @@
 package org.dllearner.autosparql.server.evaluation;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,15 +8,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.dllearner.autosparql.server.cache.DBModelCacheExtended;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 
 public class EvaluationScript {
-
+	
 	/**
 	 * @param args
 	 * @throws ClassNotFoundException 
@@ -25,6 +28,19 @@ public class EvaluationScript {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		FileAppender fileAppender = new FileAppender(
+				layout, "log/filterQueriesScriptExecution.log", false);
+		// FileAppender fileAppender = new FileAppender( layout,
+		// "log/fillCache_" + databaseType + ".log", false );
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.addAppender(fileAppender);
+		logger.setLevel(Level.INFO);
+		Logger.getLogger(DBModelCacheExtended.class).setLevel(Level.INFO);
+		
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		
 		Class.forName("com.mysql.jdbc.Driver");
@@ -38,14 +54,12 @@ public class EvaluationScript {
 		
 		int id;
 		String query;
-		int frequency;
 		QueryEngineHTTP qexec;
 		com.hp.hpl.jena.query.ResultSet rs_jena;
 		int rowCount = 0;
 		while(rs.next()){
 			id = rs.getInt("id");
 			query = rs.getString("query");
-			frequency = rs.getInt("frequency");
 			
 			try {
 				qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
@@ -69,7 +83,7 @@ public class EvaluationScript {
 					ps.execute();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("ERROR. An error occured while working with query " + id, e);
 			}
 			
 		}
