@@ -39,7 +39,7 @@
 	<endpoint>
 		<url>http://chebi.bio2rdf.org/sparql</url>
 		<label>Chebi</label>
-		<defaultGraphURI>http://linkedgeodata.org</defaultGraphURI>
+		<defaultGraphURI/>
 		<predicateFilters/>
 	</endpoint>
 </endpoints>
