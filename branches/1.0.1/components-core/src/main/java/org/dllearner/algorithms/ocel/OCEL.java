@@ -290,7 +290,7 @@ public class OCEL extends LearningAlgorithm {
 		}else if(name.equals("guaranteeXgoodDescriptions")) {
 			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
 		} else if(name.equals("maxClassDescriptionTests")) {
-			maxClassDescriptionTests =  (Integer) entry.getValue();
+			setMaxClassDescriptionTests((Integer) entry.getValue());
 		} else if(name.equals("logLevel")) {
 			setLogLevel(((String)entry.getValue()).toUpperCase());
 		} else if(name.equals("forceRefinementLengthIncrease")) {
@@ -430,7 +430,7 @@ public class OCEL extends LearningAlgorithm {
                 getMaxExecutionTimeInSeconds(),
                 getMinExecutionTimeInSeconds(),
 				guaranteeXgoodDescriptions,
-				maxClassDescriptionTests,
+                getMaxClassDescriptionTests(),
 				forceRefinementLengthIncrease
 		);
 		// note: used concepts and roles do not need to be passed
@@ -586,5 +586,13 @@ public class OCEL extends LearningAlgorithm {
 
     public void setWriteSearchTree(boolean writeSearchTree) {
         this.writeSearchTree = writeSearchTree;
+    }
+
+    public int getMaxClassDescriptionTests() {
+        return maxClassDescriptionTests;
+    }
+
+    public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+        this.maxClassDescriptionTests = maxClassDescriptionTests;
     }
 }
