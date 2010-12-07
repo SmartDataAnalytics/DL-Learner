@@ -13,12 +13,13 @@ import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class OWLAPIOntologyCollector {
 	
 	private static Logger logger = Logger.getLogger(OWLAPIOntologyCollector.class);
 	 
-	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	private OWLOntologyManager manager;
 	private OWLDataFactory factory;
 	private OWLOntology currentOntology;
 	private IRI ontologyIRI;
@@ -28,9 +29,14 @@ public class OWLAPIOntologyCollector {
 
 	public OWLAPIOntologyCollector(){
 		 this("http://www.fragment.org/fragment", "cache/"+System.currentTimeMillis()+".owl");
+
 	 }
 	 
 	 public OWLAPIOntologyCollector(String ontologyIRI, String physicalIRI){
+         /** Explicitly create the data factory here - that way it's not shared - if it is shared it won't be thread safe*/
+         factory = new OWLDataFactoryImpl();
+         manager = OWLManager.createOWLOntologyManager(factory);
+
 		 this.ontologyIRI = IRI.create(ontologyIRI);
 		 this.physicalIRI = IRI.create(new File(physicalIRI));
 		 SimpleIRIMapper mapper = new SimpleIRIMapper(this.ontologyIRI, this.physicalIRI);
@@ -41,7 +47,6 @@ public class OWLAPIOntologyCollector {
 			 logger.error("FATAL failed to create Ontology " + this.ontologyIRI);
 			 e.printStackTrace();
 		 }
-		 this.factory = manager.getOWLDataFactory();
 		 
 	 }
 
