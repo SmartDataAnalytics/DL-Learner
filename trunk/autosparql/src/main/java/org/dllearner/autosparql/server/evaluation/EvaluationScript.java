@@ -16,12 +16,17 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.server.cache.DBModelCacheExtended;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
+import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
+import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.sse.SSE;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 
 
 public class EvaluationScript {
@@ -83,13 +88,17 @@ public class EvaluationScript {
 				if(rs_jena.hasNext()){
 					rowCount = 0;
 					while(rs_jena.hasNext()){
-						rs_jena.next();
-						rowCount++;
+						//we increment the counter only if the result is a URI resource, and not a literal or blanknode
+						if(rs_jena.next().get("var0").isURIResource()){
+							rowCount++;
+						}
 					}
-					
-					ps.setInt(1, rowCount);
-					ps.setInt(2, id);
-					ps.execute();
+					//we only write to database if there are min 1 resources in the resultset
+					if(rowCount > 0){
+						ps.setInt(1, rowCount);
+						ps.setInt(2, id);
+						ps.execute();
+					}
 				}
 			} catch (Exception e) {
 				logger.error("ERROR. An error occured while working with query " + id, e);
@@ -114,6 +123,31 @@ public class EvaluationScript {
 		Op op = Algebra.compile(q);
 		// ... perform checks ... can we fully decide when an algebra expression is not in the target language?
 		SSE.write(op) ;
+		return true;
+	}
+	
+	private static boolean checkTargetVarIsSubject(String queryString){
+		Query query = QueryFactory.create(queryString);
+		Element queryPattern = query.getQueryPattern();
+//		System.out.println(queryPattern);
+		if(queryPattern instanceof ElementGroup){
+			for(Element element : ((ElementGroup) queryPattern).getElements()){
+				if(element instanceof ElementTriplesBlock){
+					BasicPattern triples = ((ElementTriplesBlock) element).getPattern();
+					for(Triple triple : triples){
+						System.out.println(triple);
+						if(triple.getObject().isVariable()){
+							System.out.println(triple.getObject().getName());
+							System.out.println("Has to be filtered.");
+						} else {
+							
+							System.out.println(triple.getObject().isVariable());
+						}
+						
+					}
+				}
+			}
+		}
 		return true;
 	}
 
