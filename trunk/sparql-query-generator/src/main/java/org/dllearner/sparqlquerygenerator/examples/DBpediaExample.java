@@ -19,8 +19,8 @@
  */
 package org.dllearner.sparqlquerygenerator.examples;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -42,8 +42,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class DBpediaExample {
 	
-	public static Set<QueryTree<String>> getPosExampleTrees(){
-		Set<QueryTree<String>> posExampleTrees = new HashSet<QueryTree<String>>();
+	public static List<QueryTree<String>> getPosExampleTrees(){
+		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
 		
 		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
 		
@@ -53,8 +53,8 @@ public class DBpediaExample {
 		return posExampleTrees;
 	}
 	
-	public static Set<QueryTree<String>> getNegExampleTrees(){
-		Set<QueryTree<String>> negExampleTrees = new HashSet<QueryTree<String>>();
+	public static List<QueryTree<String>> getNegExampleTrees(){
+		List<QueryTree<String>> negExampleTrees = new ArrayList<QueryTree<String>>();
 		
 		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
 		

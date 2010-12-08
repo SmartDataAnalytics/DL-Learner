@@ -113,11 +113,21 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 
 		@Override
 		public int compare(Statement s1, Statement s2) {
+//			if(s1.getPredicate() == null && s2.getPredicate() == null){
+//				return 0;
+//			}
+//			return s1.getPredicate().toString().compareTo(s2.getPredicate().toString())
+//			+ s1.getObject().toString().compareTo(s2.getObject().toString());
 			if(s1.getPredicate() == null && s2.getPredicate() == null){
 				return 0;
 			}
-			return s1.getPredicate().toString().compareTo(s2.getPredicate().toString())
-			+ s1.getObject().toString().compareTo(s2.getObject().toString());
+			
+			if(s1.getPredicate().toString().compareTo(s2.getPredicate().toString()) == 0){
+				return s1.getObject().toString().compareTo(s2.getObject().toString());
+			} else {
+				return s1.getPredicate().toString().compareTo(s2.getPredicate().toString());
+			}
+			
 		}
 
 		
