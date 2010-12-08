@@ -19,6 +19,7 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -63,6 +64,7 @@ public class ExampleFinder {
 		for(String resource : posExamples){
 			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
+			logger.info("Statements:\n" + model.listStatements().toList());
 			posExampleTrees.add(treeGen.getQueryTree(resource, model));
 		}
 		for(String resource : negExamples){
@@ -125,10 +127,10 @@ public class ExampleFinder {
 		logger.info("Query after generalisation: \n\n" + currentQuery);
 		
 //		currentQuery = currentQuery + " ORDER BY ?x0 LIMIT 10";
-		currentQuery = currentQuery + " LIMIT 10";
+		currentQuery = currentQuery;// + " LIMIT 10";
 		String result = "";
 		try {
-			result = selectCache.executeSelectQuery(endpoint, currentQuery);
+			result = selectCache.executeSelectQuery(endpoint, currentQuery + " LIMIT 10");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new SPARQLQueryException(e, encodeHTML(currentQuery));
@@ -202,11 +204,11 @@ public class ExampleFinder {
 		List<String> queries = gen.getSPARQLQueries(posExamplesTrees, negExamplesTrees);
 		for(String query : queries){
 			logger.info("Trying query");
-			currentQuery = query + " LIMIT 10";
+			currentQuery = query;// + " LIMIT 10";
 			logger.info(query);
 			String result = "";
 			try {
-				result = selectCache.executeSelectQuery(endpoint, currentQuery);
+				result = selectCache.executeSelectQuery(endpoint, currentQuery + " LIMIT 10");
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new SPARQLQueryException(e, encodeHTML(query));
