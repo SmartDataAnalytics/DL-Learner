@@ -39,7 +39,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	private static final Logger logger = Logger.getLogger(BruteForceNBRStrategy.class);
 
 	@Override
-	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree, Set<QueryTree<N>> negExampleTrees) {
+	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees) {
 		logger.info("Making NBR on");
 		logger.info(posExampleTree.getStringRepresentation());
 		logger.info("with negative examples");
@@ -83,7 +83,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 
 	@Override
 	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
-			Set<QueryTree<N>> negExampleTrees) {
+			List<QueryTree<N>> negExampleTrees) {
 		logger.info("Making NBR on");
 		logger.info(posExampleTree.getStringRepresentation());
 		logger.info("with negative examples");
@@ -104,7 +104,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	}
 	
 	private void compute(QueryTree<N> posExampleTree,
-			Set<QueryTree<N>> negExampleTrees, List<QueryTree<N>> nbrs) {
+			List<QueryTree<N>> negExampleTrees, List<QueryTree<N>> nbrs) {
 		
 		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
 		if(subsumesTrees(posExampleTree, negExampleTrees)){
@@ -147,7 +147,7 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	}
 	
 	private boolean subsumesTrees(QueryTree<N> posExampleTree,
-			Set<QueryTree<N>> negExampleTrees){
+			List<QueryTree<N>> negExampleTrees){
 		boolean subsumesTree = false;
 		for(QueryTree<N> negTree : negExampleTrees){
 			subsumesTree = negTree.isSubsumedBy(posExampleTree);

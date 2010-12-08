@@ -52,6 +52,8 @@ public class Filter {
 		filters.add(FOAF.homepage.toString());
 		filters.add(FOAF.depiction.toString());
 		filters.add(FOAF.Image.toString());
+		filters.add(FOAF.surname.toString());
+		filters.add(FOAF.birthday.toString());
 		
 		return filters;
 	}

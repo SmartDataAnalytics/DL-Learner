@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -40,7 +39,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
-			Set<QueryTree<N>> negExampleTrees) {
+			List<QueryTree<N>> negExampleTrees) {
 		Map<QueryTree<N>, Integer> map = new HashMap<QueryTree<N>, Integer>();
 		for(QueryTree<N> negExampleTree : negExampleTrees){
 			checkSubsumptionBreadthFirst(posExampleTree, negExampleTree, map);
@@ -53,7 +52,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 
 	@Override
 	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
-			Set<QueryTree<N>> negExampleTrees) {
+			List<QueryTree<N>> negExampleTrees) {
 		// TODO Auto-generated method stub
 		return null;
 	}

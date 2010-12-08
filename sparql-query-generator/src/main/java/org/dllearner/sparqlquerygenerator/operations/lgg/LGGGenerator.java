@@ -19,7 +19,7 @@
  */
 package org.dllearner.sparqlquerygenerator.operations.lgg;
 
-import java.util.Set;
+import java.util.List;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 
@@ -34,8 +34,8 @@ public interface LGGGenerator<N> {
 	
 	QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters);
 	
-	QueryTree<N> getLGG(Set<QueryTree<N>> trees);
+	QueryTree<N> getLGG(List<QueryTree<N>> trees);
 	
-	QueryTree<N> getLGG(Set<QueryTree<N>> trees, boolean learnFilters);
+	QueryTree<N> getLGG(List<QueryTree<N>> trees, boolean learnFilters);
 
 }

@@ -5,11 +5,18 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.ConsoleAppender;
@@ -20,8 +27,11 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.junit.Test;
 
+import com.clarkparsia.pellet.sparqldl.engine.QueryEngine;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -29,6 +39,9 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class ModelCreationTest {
 	
@@ -107,26 +120,132 @@ public class ModelCreationTest {
 		}
 	}
 	
-//	@Test
-//	public void multiThreadedModelCreationTest(){
-//		BlockingQueue<Model> queue = new LinkedBlockingQueue<Model>();
-//		
-//		ModelConsumer consumer = new ModelConsumer(queue);
-//		
-//		int offset = 100;
-//		for(int i = 0; i <= 5; i++){
-//			new Thread(new ModelProducer(queue, i * offset)).start();
-//			
-//		}
-//		new Thread(consumer).start();
-//		
-//		try {
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	@Test
+	public void multiThreadedModelCreationTest(){
+		String resource = "http://dbpedia.org/resource/Munich";
+		
+		Model model = ModelFactory.createDefaultModel();
+		
+		int proCnt = Runtime.getRuntime().availableProcessors();
+		logger.info("Number of processor: " + proCnt);
+		Future<Model>[] ret = new Future[proCnt];
+		List<String> queries = 	queries = createSearchQueries("Hamburg", "Vienna", "Stuttgart", "Frankfurt", "Kiel");;//createQueries(resource, proCnt);
+		
+		ExecutorService es = Executors.newFixedThreadPool(proCnt);
+		for(int i = 0; i < 5; i++){
+			ret[i] = es.submit(new ModelRetrievalTask(queries.get(i)));
+		}
+		
+		for (int i = 0; i < proCnt; i++) {
+            try {
+                model.add(ret[i].get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+            	e.printStackTrace();
+            }
+        }
+		
+		es.shutdown();
+		System.out.println(model.size());
+		
+		Model singleThreadedModel = ModelFactory.createDefaultModel();
+		Monitor mon = MonitorFactory.getTimeMonitor("singleThreaded").start();
+		queries = createSearchQueries("Leipzig", "Berlin", "Dresden", "Munich", "Dortmund");
+		for(String query : queries){
+			singleThreadedModel.add(getModel(query));
+		}
+		mon.stop();
+		System.out.println("Single threaded: " + mon.getTotal());
+		
+	}
+	
+	private class ModelRetrievalTask implements Callable<Model>{
+		
+		private String query;
+		
+		public ModelRetrievalTask(String query){
+			this.query = query;
+		}
+
+		@Override
+		public Model call() throws Exception {
+			System.out.println(query);
+			Monitor mon = MonitorFactory.getTimeMonitor("query").start();
+			JamonMonitorLogger.getTimeMonitor(ModelCreationTest.class, "time").start();
+			QueryEngineHTTP queryExecution = new QueryEngineHTTP(ENDPOINT.getURL().toString(), query);
+			for (String dgu : ENDPOINT.getDefaultGraphURIs()) {
+				queryExecution.addDefaultGraph(dgu);
+			}
+			for (String ngu : ENDPOINT.getNamedGraphURIs()) {
+				queryExecution.addNamedGraph(ngu);
+			}			
+			Model model = queryExecution.execConstruct();
+			mon.stop();
+			System.out.println(mon.getLastValue());
+			return model;
+		}
+		
+	}
+	
+	private Model getModel(String query){
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(ENDPOINT.getURL().toString(), query);
+		for (String dgu : ENDPOINT.getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : ENDPOINT.getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}			
+		Model model = queryExecution.execConstruct();
+		
+		return model;
+	}
+	
+	private List<String> createQueries(String resource, int cnt){
+		List<String> queries = new ArrayList<String>(cnt);
+		for(int i = 0; i < cnt; i++){
+			queries.add(createConstructQuery(resource, 50, i * 50));
+		}
+		
+		return queries;
+	}
+	
+	private String createConstructQuery(String resource, int limit, int offset){
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {\n");
+		sb.append("<").append(resource).append("> ").append("?p ").append("?o").append(".\n");
+		sb.append("}\n");
+		sb.append("WHERE {\n");
+		sb.append("<").append(resource).append("> ").append("?p ").append("?o").append(".\n");
+		
+		sb.append("}\n");
+		sb.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
+		
+		return sb.toString();
+	}
+	
+	private List<String> createSearchQueries(String ... searchTerms){
+		List<String> queries = new ArrayList<String>();
+		for(String term : searchTerms){
+			queries.add(createSearchQuery(term));
+		}
+		return queries;
+	}
+	
+	private String createSearchQuery(String searchTerm){
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT");
+		sb.append("{?s ?p ?o.}");
+		sb.append("WHERE");
+		sb.append("{?s ?p ?o.");
+		sb.append("?s rdfs:label ?label.");
+		sb.append("?label bif:contains '").append(searchTerm).append("'.} LIMIT 1000");
+		
+//		sb.append("SELECT ?s ?label WHERE {?s rdfs:label ?label. ?label bif:contains '").append(searchTerm).append("'.} limit 500");
+		return sb.toString();
+	}
+	
 //	
 //	class ModelProducer implements Runnable{
 //		

@@ -49,12 +49,12 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	}
 
 	@Override
-	public QueryTree<N> getLGG(Set<QueryTree<N>> trees) {
+	public QueryTree<N> getLGG(List<QueryTree<N>> trees) {
 		return getLGG(trees, false);
 	}
 	
 	@Override
-	public QueryTree<N> getLGG(Set<QueryTree<N>> trees, boolean learnFilters) {
+	public QueryTree<N> getLGG(List<QueryTree<N>> trees, boolean learnFilters) {
 		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
 		
 		logger.info("Computing LGG for");
@@ -69,8 +69,10 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			return trees.iterator().next();
 		}
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
+		logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
 		for(int i = 2; i < treeList.size(); i++){
 			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
+			logger.info("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
 		}
 		
 		logger.info("LGG = ");

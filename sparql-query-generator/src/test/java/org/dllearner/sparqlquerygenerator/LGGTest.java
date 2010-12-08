@@ -19,7 +19,7 @@
  */
 package org.dllearner.sparqlquerygenerator;
 
-import java.util.Set;
+import java.util.List;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
@@ -46,7 +46,7 @@ public class LGGTest {
 	public void testLGGWithDBpediaExample(){
 		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
 		
-		Set<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
+		List<QueryTree<String>> posExampleTrees = DBpediaExample.getPosExampleTrees();
 		
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
@@ -88,7 +88,7 @@ public class LGGTest {
 	public void testLGGWithLinkedGeoDataExample(){
 		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
 		
-		Set<QueryTree<String>> posExampleTrees = LinkedGeoDataExample.getPosExampleTrees();
+		List<QueryTree<String>> posExampleTrees = LinkedGeoDataExample.getPosExampleTrees();
 		
 		int cnt = 1;
 		for(QueryTree<String> tree : posExampleTrees){
