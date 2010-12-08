@@ -5,12 +5,14 @@ import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
 import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Generalisation<N> {
 	
 	private static final Logger logger = Logger.getLogger(Generalisation.class);
+	
+	private int maxEdgeCount = 10;
+	public double pruningFactor = 0.5;
 	
 	public QueryTree<N> generalise(QueryTree<N> queryTree){
 		QueryTree<N> copy = new QueryTreeImpl<N>(queryTree);
@@ -19,9 +21,17 @@ public class Generalisation<N> {
 		removeStatementsWithProperty(copy, OWL.sameAs.getURI());
 		
 //		retainTypeEdges(copy);
-		pruneTree(copy, 0.5);
+		pruneTree(copy, pruningFactor);
 		
 		return copy;
+	}
+	
+	public void setMaxEdgeCount(int maxEdgeCount){
+		this.maxEdgeCount = maxEdgeCount;
+	}
+	
+	public void setPruningFactor(double pruningFactor){
+		this.pruningFactor = pruningFactor;
 	}
 	
 	private void removeStatementsWithProperty(QueryTree<N> tree, String property){
@@ -50,7 +60,8 @@ public class Generalisation<N> {
 		for(QueryTree<N> child : tree.getChildren()){
 			logger.info("Removing child: " + child);
 			tree.removeChild((QueryTreeImpl<N>) child);
-			if((double)tree.getChildCount()/childCountBefore <= limit){
+			if( (tree.getUserObjectClosure().size() - 1) <= maxEdgeCount
+					&& (double)tree.getChildCount()/childCountBefore <= limit){
 				break;
 			}
 		}
