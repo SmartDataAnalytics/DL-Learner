@@ -260,7 +260,7 @@ public class OCEL extends LearningAlgorithm {
 		} else if(name.equals("improveSubsumptionHierarchy")) {
 			improveSubsumptionHierarchy = (Boolean) entry.getValue();
 		} else if(name.equals("useAllConstructor")) {
-			useAllConstructor = (Boolean) entry.getValue();
+			setUseAllConstructor((Boolean) entry.getValue());
 		} else if(name.equals("useExistsConstructor")) {
 			useExistsConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useHasValueConstructor")) {
@@ -268,9 +268,9 @@ public class OCEL extends LearningAlgorithm {
 		} else if(name.equals("valueFrequencyThreshold")) {
 			valueFrequencyThreshold = (Integer) entry.getValue();
 		} else if(name.equals("useCardinalityRestrictions")) {
-			useCardinalityRestrictions = (Boolean) entry.getValue();
+			setUseCardinalityRestrictions((Boolean) entry.getValue());
 		} else if(name.equals("useNegation")) {
-			useNegation = (Boolean) entry.getValue();
+			setUseNegation((Boolean) entry.getValue());
 		} else if(name.equals("noisePercentage")) {
 			noisePercentage = (Double) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
@@ -394,12 +394,12 @@ public class OCEL extends LearningAlgorithm {
 				classHierarchy,
 					applyAllFilter,
 					applyExistsFilter,
-					useAllConstructor, 
+                isUseAllConstructor(),
 					useExistsConstructor,
                 isUseHasValueConstructor(),
 					valueFrequencyThreshold,
-					useCardinalityRestrictions,
-					useNegation,
+                isUseCardinalityRestrictions(),
+                isUseNegation(),
 					useBooleanDatatypes,
 					useDoubleDatatypes,
 					startClass,
@@ -594,5 +594,29 @@ public class OCEL extends LearningAlgorithm {
 
     public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
         this.maxClassDescriptionTests = maxClassDescriptionTests;
+    }
+
+    public boolean isUseNegation() {
+        return useNegation;
+    }
+
+    public void setUseNegation(boolean useNegation) {
+        this.useNegation = useNegation;
+    }
+
+    public boolean isUseCardinalityRestrictions() {
+        return useCardinalityRestrictions;
+    }
+
+    public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+        this.useCardinalityRestrictions = useCardinalityRestrictions;
+    }
+
+    public boolean isUseAllConstructor() {
+        return useAllConstructor;
+    }
+
+    public void setUseAllConstructor(boolean useAllConstructor) {
+        this.useAllConstructor = useAllConstructor;
     }
 }
