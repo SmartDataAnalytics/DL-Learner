@@ -46,6 +46,8 @@ public interface QueryTree<N> {
     List<QueryTree<N>> getChildren();
     
     List<QueryTree<N>> getChildren(Object edge);
+    
+    Set<QueryTree<N>> getChildrenClosure();
 
     Object getEdge(QueryTree<N> child);
     
