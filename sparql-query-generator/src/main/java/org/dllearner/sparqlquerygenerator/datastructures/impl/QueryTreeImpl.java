@@ -272,6 +272,19 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
         return path;
     }
+    
+    public Set<QueryTree<N>> getChildrenClosure() {
+        Set<QueryTree<N>> children = new HashSet<QueryTree<N>>();
+        getChildrenClosure(this, children);
+        return children;
+    }
+
+    private void getChildrenClosure(QueryTree<N> tree, Set<QueryTree<N>> bin) {
+        bin.add(tree);
+        for (QueryTree<N> child : tree.getChildren()) {
+        	getChildrenClosure(child, bin);
+        }
+    }
 
 
     public Set<N> getUserObjectClosure() {
