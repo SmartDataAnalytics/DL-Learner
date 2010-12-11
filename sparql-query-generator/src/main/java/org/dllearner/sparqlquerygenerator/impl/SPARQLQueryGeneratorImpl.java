@@ -32,6 +32,7 @@ import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGenerator;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.NBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -66,12 +67,16 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 	
 	private QueryTree<String> lgg;
 	
-	
+	private NBRStrategy nbrStrategy;
 	
 	
 	public SPARQLQueryGeneratorImpl(String endpointURL){
 		this.endpointURL = endpointURL;
 		modelGen = new ModelGenerator(endpointURL);
+	}
+	
+	public SPARQLQueryGeneratorImpl(NBRStrategy nbrStrategy){
+		this.nbrStrategy = nbrStrategy;
 	}
 
 	@Override
@@ -284,7 +289,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		lggMonitor.start();
 		
 		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
-		QueryTree<String> lgg = lggGenerator.getLGG(posQueryTrees);
+		lgg = lggGenerator.getLGG(posQueryTrees);
 		
 		lggMonitor.stop();
 		
@@ -297,7 +302,7 @@ public class SPARQLQueryGeneratorImpl implements SPARQLQueryGenerator{
 		
 		nbrMonitor.start();
 		
-		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>();
+		NBRGenerator<String> nbrGenerator = new NBRGeneratorImpl<String>(nbrStrategy);
 //		QueryTree<String> nbr = nbrGenerator.getNBR(lgg, negQueryTrees);
 		
 		

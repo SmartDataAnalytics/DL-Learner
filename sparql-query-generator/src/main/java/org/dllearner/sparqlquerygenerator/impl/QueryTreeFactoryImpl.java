@@ -99,7 +99,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					}
 					tree.addChild(new QueryTreeImpl<String>(sb.toString()), st.getPredicate().toString());
 				} else {
-					if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
+					if(tree.getUserObjectPathToRoot().size() < 3 && 
+							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 						subTree = new QueryTreeImpl<String>(st.getObject().toString());
 						tree.addChild(subTree, st.getPredicate().toString());
 						fillTree(subTree, resource2Statements);
