@@ -52,7 +52,10 @@ public class ManagerBasedModelFragmenter implements IModelFragmenter {
         sparqlTasks.setModel(model);
 
         /** Get some weird erros with this one and blank nodes, but only when dissolve blank nodes = true */
-        TupleAquisitor tupleAquisitor = new SparqlTupleAquisitorImproved(new SparqlQueryMaker(), sparqlTasks, getRecursionDepth());
+        SparqlQueryMaker queryMaker = new SparqlQueryMaker();
+        /** Later on use a setter/getter for this so we can do dependency injection */
+        queryMaker.setLiterals(true);
+        TupleAquisitor tupleAquisitor = new SparqlTupleAquisitorImproved(queryMaker, sparqlTasks, getRecursionDepth());
 //        TupleAquisitor tupleAquisitor = new SparqlTupleAquisitor(new SparqlQueryMaker(), sparqlTasks);
         tupleAquisitor.dissolveBlankNodes = false;
 

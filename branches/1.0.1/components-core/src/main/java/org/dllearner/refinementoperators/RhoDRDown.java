@@ -1057,7 +1057,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		mA.get(nc).put(1,m1);
 		
 		// most specific negated classes, which are not disjoint with nc
-		SortedSet<Description> m2 = new TreeSet<Description>();
+		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
 			m2 = getNegClassCandidates(nc);
 			mA.get(nc).put(2,m2);
