@@ -32,5 +32,9 @@ public class ModelCache {
 	public void clear(){
 		cache.clear();
 	}
+	
+	public void dispose(){
+		cache = null;
+	}
 
 }
