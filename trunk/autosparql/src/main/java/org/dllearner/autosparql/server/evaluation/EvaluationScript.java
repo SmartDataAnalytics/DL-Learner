@@ -1,5 +1,6 @@
 package org.dllearner.autosparql.server.evaluation;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -13,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -30,6 +33,7 @@ import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.ini4j.IniFile;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
@@ -45,8 +49,9 @@ public class EvaluationScript {
 	 * @throws SQLException 
 	 * @throws SPARQLQueryException 
 	 * @throws IOException 
+	 * @throws BackingStoreException 
 	 */
-	public static void main(String[] args) throws ClassNotFoundException, SQLException, SPARQLQueryException, IOException {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException, SPARQLQueryException, IOException, BackingStoreException {
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		FileAppender fileAppender = new FileAppender(
@@ -73,8 +78,17 @@ public class EvaluationScript {
 		ExtractionDBCache selectQueriesCache = new ExtractionDBCache("evaluation/select-cache");
 		ExtractionDBCache constructQueriesCache = new ExtractionDBCache("evaluation/construct-cache");
 		
+		String iniFile = "settings.ini";
+		Preferences prefs = new IniFile(new File(iniFile));
+		String dbServer = prefs.node("database").get("server", null);
+		String dbName = prefs.node("database").get("name", null);
+		String dbUser = prefs.node("database").get("user", null);
+		String dbPass = prefs.node("database").get("pass", null);
+		
 		Class.forName("com.mysql.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://139.18.2.173/dbpedia_queries", "root", "WQPRisDa2");
+		String url =
+            "jdbc:mysql://"+dbServer+"/"+dbName;
+		Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
 		PreparedStatement ps = conn.prepareStatement("INSERT INTO evaluation (" +
 				"id, original_query, learned_query," +
 				"examples_needed, pos_examples_needed, neg_examples_needed," +
