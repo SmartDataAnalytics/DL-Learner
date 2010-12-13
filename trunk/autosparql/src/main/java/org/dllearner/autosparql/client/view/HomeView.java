@@ -15,6 +15,7 @@ import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.HtmlContainer;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -23,6 +24,7 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 
 public class HomeView extends View {
 	
@@ -31,6 +33,10 @@ public class HomeView extends View {
 	public static final String VIEWPORT = "viewport";
 	
 	private LayoutContainer container;
+        private HtmlContainer intro;
+        private HtmlContainer page;
+        private HtmlContainer maincontent;
+        private HtmlContainer sidecontent;
 	
 	public HomeView(Controller controller) {
 		super(controller);
@@ -44,9 +50,78 @@ public class HomeView extends View {
 //	    layout.setEnableState(false);
 //	    container.setLayout(layout);
 //	    container.add(createEndpointSelector(), new BorderLayoutData(LayoutRegion.NORTH));
-		container.add(createEndpointSelector());
-		Hyperlink learnQueryLink = new Hyperlink("Learn Query", HistoryTokens.QUERY);
-		container.add(learnQueryLink);
+
+                // page
+                page = new HtmlContainer(
+                    "<div class=pagecontainer>"+
+                        "<div class=teaser>"+
+                        "</div>"+
+                        "<div class=pagecontent>"+
+                            "<div class=contentcol1>"+
+                            "</div>"+
+                            "<div class=contentcol2>"+
+                            "</div>"+
+                        "</div>"+
+                    "</div>"
+                        );
+
+                // intro = logo, title, claim, description, demoselector
+                intro = new HtmlContainer(
+                    "<h1 id=demo-title><span id=demo-intro-logo></span> <span>AutoSPARQL</span> <span class=hideme>&mdash;</span> <strong>Queries made Easy</strong></h1>"+
+                    "<div id=demo-intro>"+
+                        "<div class=description>"+
+                            "<p><strong>AutoSPARQL allows you to create queries for over RDF knowledge bases with low effort. "+
+                            "It can be used to find lists of things and display their properties. "+
+                            "Watch the screencast, or test it to see how it works:</strong></p>"+
+                        "</div>"+
+                        "<div id=demo-selector>"+
+                            "<div id=demo-selector-endpoints>"+
+                            "</div>"+
+                            "<div id=demo-selector-button>"+
+                            "</div>"+
+                        "</div>"+
+                    "</div>");
+
+                intro.add(new Image("logo-dl.png"), "#demo-intro-logo");
+                intro.add(createEndpointSelector(), "#demo-selector-endpoints");
+                intro.add(new Hyperlink("Learn Query", HistoryTokens.QUERY), "#demo-selector-button");
+
+                // maincontent
+                maincontent = new HtmlContainer(
+                    "<h2>How to use?</h2>"+
+                    "<ol>"+
+                        "<li>search for a query result, e.g. if you want to query &quot;cities in France&quot;, you could search for &quot;Paris&quot;</li>"+
+                        "<li>once you have found &quot;Paris&quot; and marked it with &quot;+&quot;</li>"+
+                        "<li>an interactive guide will ask you further questions</li>"+
+                        "<li>which lead you to your desired query</li>"+
+                    "</ol>"+
+                    "<h2>Authors</h2>"+
+                    "<p><a href=\"http://jens-lehmann.org\">Jens Lehmann</a> and " +
+                        "<a href=\"http://bis.informatik.uni-leipzig.de/LorenzBuehmann\">Lorenz Bühmann</a> for "+
+                        "<a href=\"http://aksw.org/Groups/MOLE\">MOLE</a>  @ <a href=\"http://aksw.org\">AKSW</a>, <a href=\"http://www.zv.uni-leipzig.de/en/\">University of Leipzig</a>"+
+                    "</p>"
+                        );
+
+                // sidecontent
+                sidecontent = new HtmlContainer(
+                    "<h2>Watch the Screencast</h2>"+
+                    "<object width=\"400\" height=\"233\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"400\" height=\"233\"></embed></object>"+
+                    "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span></a></p>"
+                        );
+
+                sidecontent.add(new Image("dl-learner_logo.gif"), "#dllearnerlogo");
+
+                // put page together
+                page.add(intro, ".teaser");
+                page.add(maincontent, ".contentcol1");
+                page.add(sidecontent, ".contentcol2");
+
+                // add page to gwt container
+                container.add(page);
+
+                //container.add(createEndpointSelector());
+		//Hyperlink learnQueryLink = new Hyperlink("Learn Query", HistoryTokens.QUERY);
+		//container.add(learnQueryLink);
 		HTML savedQueries = new HTML("<br /><p>TODO: box with saved queries</p>");
 		container.add(savedQueries);
 		HTML slogan = new HTML("<p>Slogan: AutoSPARQL - Queries made Easy</p>");

@@ -1,5 +1,217 @@
 /** Add css rules here for your application. */
 
+/* -- DEMO-HEADER ----------------------------------------------------------- */
+
+#demo-header
+{
+    height: 100%;
+    overflow:hidden;
+    background-color:#0b479d;
+    color:#eee;
+    font-size:30px;
+    line-height:40px;
+    font-weight:normal;
+}
+
+#demo-header *
+{
+    display:block;
+    float:left;
+    margin:5px; padding:0;
+    height:40px;
+    text-shadow:1px 1px 2px #111;
+}
+
+#demo-header * * { float:none; margin:0; }
+
+/* -- Layout Intro ---------------------------------------------------------- */
+
+.pagecontainer
+{
+    width:50em;
+    margin:1em auto;
+    font-size:large;
+    background-color:#fff;
+    color:#333;
+    -moz-box-shadow:0px 0px 0.25em #666;
+    -webkit-box-shadow:0px 0px 0.25em #666;
+}
+
+.teaser
+{
+    overflow:hidden;
+    color:#fff;
+    background-color: #0b479d;
+}
+
+.teaser #demo-title
+{
+    float:left;
+    width:11em;
+    font-size:1.25em;
+    margin:0; padding:1.5em 1em;
+    text-align:center;
+}
+
+#demo-title *
+{
+    display:block;
+    margin:0 auto; padding:0;
+    font-weight:normal;
+    font-family:sans-serif;
+    line-height: 1;
+}
+
+#demo-title span
+{
+    font-size:1.75em;
+    text-shadow:1px 1px 3px #000;
+}
+
+#demo-title img
+{
+    
+}
+
+#demo-title strong
+{
+    font-weight:normal;
+    font-family: serif;
+    font-style: italic;
+    line-height: 1.75;
+    text-shadow:1px 1px 3px #000;
+}
+
+.teaser #demo-intro
+{
+    margin:0 1.25em 0 17.5em;
+    padding:1.25em 0;
+    
+}
+
+.teaser .description
+{
+    font-size:1.5em;
+    font-weight:normal;
+    color:#eee;
+    text-shadow:1px 1px 2px #111;
+}
+
+.teaser #demo-selector
+{
+    margin-top:1em;
+    overflow:hidden;
+}
+
+#demo-selector-endpoints
+{
+    width:310px;
+    float:left;
+}
+
+#demo-selector-endpoints .x-form-field-wrap
+{
+    width:300px !important;
+}
+
+#demo-selector-endpoints .x-form-field
+{
+    width:266px !important;
+    padding-top:4px;
+    font-size: 24px;
+    line-height: 36px;
+    height:43px;
+}
+
+#demo-selector-endpoints .x-form-trigger
+{
+    height:42px;
+    width:34px;
+    background:url(bg-form-trigger.png) no-repeat top right transparent;
+}
+
+#demo-selector-button
+{
+    margin-left:320px;
+}
+
+#demo-selector-button a
+{
+    display:block;
+    width:150px;
+    font-size: 18px;
+    font-weight:normal;
+    line-height: 42px;
+    height:42px;
+    text-decoration:none;
+    color:#000;
+
+    background-color:#ccc;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0.46, #8A8A8A), color-stop(0.73, #B3B3B3), color-stop(0.87, #E0E0E0));
+    background: -moz-linear-gradient(center top, #eee 46%, #ccc 73%, #bbb 87%);
+
+    border:outset 1px #7eadd9;
+    -moz-border-radius:3px;
+    border-radius:3px;
+    text-align:center;
+    text-shadow:1px 1px 2px #fff;
+
+    -moz-box-shadow:0px 0px 3px #000;
+}
+
+.pagecontainer .pagecontent
+{
+    font-size: 0.8em;
+    padding:1.875em;
+    line-height:1.5;
+    overflow:hidden;
+}
+
+.pagecontent .contentcol1
+{
+    width:28.4375em;
+    float:left;
+}
+
+.pagecontent .contentcol2
+{
+    margin-left:30.3125em;
+}
+
+/* -- Typography ------------------------------------------------------------ */
+
+.pagecontent h2
+{
+    font-weight:normal;
+    font-color:#000;
+    font-size: 1.5em;
+    margin-bottom:0.5em;
+    text-shadow:1px 1px 2px #999;
+}
+
+
+.pagecontent ol, .pagecontent ul, .pagecontent p
+{
+    margin-bottom:1em;
+}
+
+.pagecontent ol
+{
+    list-style:decimal outside;
+}
+
+.pagecontent li
+{
+    margin:0 1em 0.5em 1.5em;
+}
+
+.pagecontent object, .pagecontent embed, .pagecontent iframe
+{
+    width:28em !important;
+    height:15.75em !important;
+    margin-bottom:1em;
+}
+
 	.row-Style-Odd{
 		background-color: #eaeaea;
 	}
@@ -19,24 +231,12 @@
 	.x-grid3-row td.x-grid3-cell{
 		vertical-align: middle;
 	}
-	
-	#demo-theme {
-  float: right;
-  padding-top: 5px;
-  padding-right: 8px;
-  position: relative;
-}
 
-#demo-title {
-  color: black;
-  font-family: tahoma, arial, sans-serif;
-  font-size: 16px;
-  font-size-adjust: none;
-  font-stretch: normal;
-  font-style: normal;
-  font-variant: normal;
-  font-weight: normal;
-  line-height: normal;
-  padding: 6px 0 8px 6px;
+
+/* -- ETC ------------------------------------------------------------------- */
+
+.hideme
+{
+    position:absolute;
+    left:-5000em;
 }
-	
