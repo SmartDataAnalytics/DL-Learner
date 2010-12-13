@@ -16,6 +16,7 @@ public class Generalisation<N> {
 	
 	private int maxEdgeCount = 15;
 	public double pruningFactor = 0.5;
+	private int maxEqualEdgesFromRoot = 3;
 	
 	boolean invert = false;
 	
@@ -26,7 +27,10 @@ public class Generalisation<N> {
 //		removeStatementsWithProperty(copy, OWL.sameAs.getURI());
 		
 //		retainTypeEdges(copy);
-		return pruneTree(copy, pruningFactor);
+		copy = pruneTree(copy, pruningFactor);
+		removeEqualEdgesFromRoot(copy);
+		return copy;
+//		return pruneTree(copy, pruningFactor);
 		
 //		return copy;
 	}
@@ -37,6 +41,24 @@ public class Generalisation<N> {
 	
 	public void setPruningFactor(double pruningFactor){
 		this.pruningFactor = pruningFactor;
+	}
+	
+	public void setMaxEqualEdgesFromRoot(int max){
+		this.maxEqualEdgesFromRoot = max;
+	}
+	
+	private void removeEqualEdgesFromRoot(QueryTree<N> tree){
+		List<QueryTree<N>> children;
+		int childCount = 1;
+		for(Object edge : tree.getEdges()){
+			children = tree.getChildren(edge);
+			childCount = children.size();
+			while(childCount > maxEqualEdgesFromRoot){
+				tree.removeChild((QueryTreeImpl<N>) children.get(childCount-1));
+				childCount--;
+			}
+		}
+		
 	}
 	
 	private void removeStatementsWithProperty(QueryTree<N> tree, String property){
