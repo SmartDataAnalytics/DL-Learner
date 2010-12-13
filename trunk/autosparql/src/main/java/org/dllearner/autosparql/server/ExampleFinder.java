@@ -3,6 +3,7 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
@@ -10,16 +11,18 @@ import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.sparqlquerygenerator.SPARQLQueryGenerator;
+import org.dllearner.sparqlquerygenerator.SPARQLQueryGeneratorCached;
 import org.dllearner.sparqlquerygenerator.cache.ModelCache;
+import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.BruteForceNBRStrategy;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -30,6 +33,7 @@ public class ExampleFinder {
 	private ExtractionDBCache constructCache;
 	private ModelGenerator modelGen;
 	private ModelCache modelCache;
+	private QueryTreeCache queryTreeCache;
 	
 	private List<String> posExamples;
 	private List<String> negExamples;
@@ -40,6 +44,10 @@ public class ExampleFinder {
 	
 	private QueryTree<String> currentQueryTree;
 	
+	private Set<String> testedQueries;
+	
+	private SPARQLQueryGeneratorCached queryGen;
+	
 	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
@@ -47,6 +55,11 @@ public class ExampleFinder {
 		
 		modelGen = new ModelGenerator(endpoint, new HashSet<String>(endpoint.getPredicateFilters()), constructCache);
 		modelCache = new ModelCache(modelGen);
+		queryTreeCache = new QueryTreeCache();
+		testedQueries = new HashSet<String>();
+		
+		queryGen = new SPARQLQueryGeneratorCachedImpl(new GreedyNBRStrategy());
+//		queryGen = new SPARQLQueryGeneratorCachedImpl(new BruteForceNBRStrategy());
 	}
 	
 	public Example findSimilarExample(List<String> posExamples,
@@ -54,23 +67,22 @@ public class ExampleFinder {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
-		
-		QueryTreeGenerator treeGen = new QueryTreeGenerator(constructCache, endpoint, 5000);
-		
 		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
 		List<QueryTree<String>> negExampleTrees = new ArrayList<QueryTree<String>>();
 		
 		Model model;
+		QueryTree<String> queryTree;
 		for(String resource : posExamples){
 			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
-			logger.info("Statements:\n" + model.listStatements().toList());
-			posExampleTrees.add(treeGen.getQueryTree(resource, model));
+			queryTree = queryTreeCache.getQueryTree(resource, model);
+			posExampleTrees.add(queryTree);
 		}
 		for(String resource : negExamples){
 			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
-			negExampleTrees.add(treeGen.getQueryTree(resource, model));
+			queryTree = queryTreeCache.getQueryTree(resource, model);
+			negExampleTrees.add(queryTree);
 		}
 		
 		if(posExamples.size() == 1 && negExamples.isEmpty()){
@@ -126,11 +138,16 @@ public class ExampleFinder {
 		currentQueryTree = genTree;
 		logger.info("Query after generalisation: \n\n" + currentQuery);
 		
-//		currentQuery = currentQuery + " ORDER BY ?x0 LIMIT 10";
-		currentQuery = currentQuery;// + " LIMIT 10";
 		String result = "";
 		try {
-			result = selectCache.executeSelectQuery(endpoint, currentQuery + " LIMIT 10");
+			logger.info(tree.getChildren().isEmpty());
+			if(testedQueries.contains(currentQuery) && !currentQueryTree.getChildren().isEmpty()){
+				return findExampleByGeneralisation(currentQueryTree);
+			} else {
+				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1)));
+				testedQueries.add(currentQuery);
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new SPARQLQueryException(e, encodeHTML(currentQuery));
@@ -142,6 +159,7 @@ public class ExampleFinder {
 		while(rs.hasNext()){
 			qs = rs.next();
 			uri = qs.getResource("x0").getURI();
+			logger.info(uri);
 			if(!posExamples.contains(uri) && !negExamples.contains(uri)){
 				logger.info("Found new example: " + uri);
 				return getExample(uri);
@@ -194,21 +212,26 @@ public class ExampleFinder {
 	private Example findExampleByLGG(List<QueryTree<String>> posExamplesTrees,
 			List<QueryTree<String>> negExamplesTrees) throws SPARQLQueryException{
 		logger.info("USING LGG");
-		SPARQLQueryGenerator gen = new SPARQLQueryGeneratorImpl(endpoint.getURL().toString());
 		if(negExamplesTrees.isEmpty()){
 			logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
-			List<QueryTree<String>> trees = gen.getSPARQLQueryTrees(posExamplesTrees, negExamplesTrees);
-			return findExampleByGeneralisation(trees.get(0));
+			queryGen.getSPARQLQueries(posExamplesTrees);
+			QueryTree<String> lgg = queryGen.getLastLGG();
+			return findExampleByGeneralisation(lgg);
 		}
 		
-		List<String> queries = gen.getSPARQLQueries(posExamplesTrees, negExamplesTrees);
+		List<String> queries = queryGen.getSPARQLQueries(posExamplesTrees, negExamplesTrees);
 		for(String query : queries){
+			if(testedQueries.contains(query)){
+				logger.info("Skipping query because it was already tested before:\n" + query);
+				continue;
+			}
 			logger.info("Trying query");
-			currentQuery = query;// + " LIMIT 10";
+			currentQuery = query;
 			logger.info(query);
 			String result = "";
 			try {
-				result = selectCache.executeSelectQuery(endpoint, currentQuery + " LIMIT 10");
+				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, 10));
+				testedQueries.add(currentQuery);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new SPARQLQueryException(e, encodeHTML(query));
@@ -228,14 +251,16 @@ public class ExampleFinder {
 		}
 		logger.info("None of the queries contained a new example.");
 		logger.info("Changing to Generalisation...");
-		return findExampleByGeneralisation(gen.getLastLGG());
+		return findExampleByGeneralisation(queryGen.getLastLGG());
 	}
 	
 	private Example getExample(String uri){
 		logger.info("Retrieving data for resource " + uri);
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ?label ?imageURL ?comment WHERE{\n");
+		sb.append("OPTIONAL{\n");
 		sb.append("<").append(uri).append("> <").append(RDFS.label.getURI()).append("> ").append("?label.\n");
+		sb.append("}\n");
 		sb.append("OPTIONAL{\n");
 		sb.append("<").append(uri).append("> <").append(FOAF.depiction.getURI()).append("> ").append("?imageURL.\n");
 		sb.append("}\n");
@@ -247,18 +272,23 @@ public class ExampleFinder {
 		sb.append("}");
 		
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, sb.toString()));
-		QuerySolution qs = rs.next();
-		
-		String label = qs.getLiteral("label").getLexicalForm();
-		
+		String label = uri;
 		String imageURL = "";
-		if(qs.getResource("imageURL") != null){
-			imageURL = qs.getResource("imageURL").getURI();
-		}
-		
 		String comment = "";
-		if(qs.getLiteral("comment") != null){
-			comment = qs.getLiteral("comment").getLexicalForm();
+		if(rs.hasNext()){
+			QuerySolution qs = rs.next();		
+			
+			if(qs.getLiteral("label") != null){
+				label = qs.getLiteral("label").getLexicalForm();
+			}
+			
+			if(qs.getResource("imageURL") != null){
+				imageURL = qs.getResource("imageURL").getURI();
+			}
+			
+			if(qs.getLiteral("comment") != null){
+				comment = qs.getLiteral("comment").getLexicalForm();
+			}
 		}
 		
 		return new Example(uri, label, imageURL, comment);
@@ -287,5 +317,9 @@ public class ExampleFinder {
 	
 	public String getCurrentQueryHTML(){
 		return encodeHTML(currentQuery);
+	}
+	
+	public String getLimitedQuery(String query, int limit){
+		return query + " LIMIT " + limit;
 	}
 }

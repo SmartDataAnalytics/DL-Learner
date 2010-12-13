@@ -19,6 +19,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
@@ -36,6 +37,19 @@ public class QueryFilterScript {
 	private Connection conn;
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	
+	private static final String PREFIXES = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " +
+	"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " +
+	"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+	"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+	"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
+	"PREFIX dc: <http://purl.org/dc/elements/1.1/> " +
+	"PREFIX : <http://dbpedia.org/resource/> " +
+	"PREFIX dbpedia2: <http://dbpedia.org/property/> " +
+	"PREFIX dbpedia: <http://dbpedia.org/> " +
+	"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+	"PREFIX umbelBus: <http://umbel.org/umbel/sc/Business> " +
+	"PREFIX umbelCountry: <http://umbel.org/umbel/sc/IndependentCountry>";
+	
 	
 	public QueryFilterScript(){
 		try {
@@ -51,7 +65,8 @@ public class QueryFilterScript {
 	
 	private void run(){
 //		countQueryResultSet();
-		filterQueriesWithTargetVarNotSubject();
+		filterQueriesWithSyntaxError();
+//		filterQueriesWithTargetVarNotSubject();
 	}
 	
 	private void countQueryResultSet(){
@@ -109,12 +124,42 @@ public class QueryFilterScript {
 		}
 	}
 	
+	private void filterQueriesWithSyntaxError(){
+		try {
+			Statement st = conn.createStatement();
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM queries_final WHERE id = ?");
+			ResultSet rs = st.executeQuery("SELECT * FROM queries_final where query not like '%filter%'");
+			
+			int id;
+			String query;
+			while(rs.next()){
+				id = rs.getInt("id");
+				query = rs.getString("query");
+				
+				try {
+					if(!checkQuerySyntax(query)){
+						System.out.println(query);
+						System.out.println(rs.getInt("resultCount"));
+						ps.setInt(1, id);
+//						ps.execute();
+					}
+				} catch (Exception e) {
+					logger.error("ERROR. An error occured while working with query " + id, e);
+				}
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
 	private void filterQueriesWithTargetVarNotSubject(){
 		try {
 			Statement st = conn.createStatement();
-			PreparedStatement ps = conn.prepareStatement("DELETE FROM tmp WHERE id = ?");
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM queries_final WHERE id = ?");
 			
-			ResultSet rs = st.executeQuery("SELECT * FROM tmp");
+			ResultSet rs = st.executeQuery("SELECT * FROM queries_final WHERE resultCount<2000 AND query not like '%filter%'");
 			
 			int id;
 			String query;
@@ -170,15 +215,25 @@ public class QueryFilterScript {
 		return true;
 	}
 	
-	private boolean checkQuerySyntax(String query) {
-		Query q = QueryFactory.create(query);
-		Op op = Algebra.compile(q);
-		// ... perform checks ... can we fully decide when an algebra expression is not in the target language?
-		SSE.write(op) ;
+	private boolean checkQuerySyntax(String queryString) {
+		queryString = queryString.replaceAll("owl:sameAs", "<http://www.w3.org/2002/07/owl#owl:sameAs>");
+		queryString = queryString.replaceAll("skos:subject", "<http://www.w3.org/2004/02/skos/core#subject>");
+//		Query q = QueryFactory.create(query);
+//		Op op = Algebra.compile(q);
+//		// ... perform checks ... can we fully decide when an algebra expression is not in the target language?
+//		SSE.write(op) ;
+		try {
+			QueryFactory.create(queryString);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 	
 	private boolean checkTargetVarIsSubject(String queryString){
+		queryString = queryString.replaceAll("owl:sameAs", "<http://www.w3.org/2002/07/owl#owl:sameAs>");
+		queryString = queryString.replaceAll("skos:subject", "<http://www.w3.org/2004/02/skos/core#subject>");
 		try {
 			Query query = QueryFactory.create(queryString);
 			Element queryPattern = query.getQueryPattern();

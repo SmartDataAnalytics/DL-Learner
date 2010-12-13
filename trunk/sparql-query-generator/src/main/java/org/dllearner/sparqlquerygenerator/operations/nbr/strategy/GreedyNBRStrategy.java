@@ -22,12 +22,15 @@ package org.dllearner.sparqlquerygenerator.operations.nbr.strategy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+
+import com.hp.hpl.jena.sparql.function.library.e;
 
 /**
  * 
@@ -65,15 +68,52 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 //			}
 //		}
 //		
+		System.out.println(printTreeWithValues(nbr, matrix));
+		
+		List<QueryTree<N>> candidates2Remove = new ArrayList<QueryTree<N>>();
+		
 		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
-			System.err.println(entry.getValue());
 			if(sum(entry.getValue()) < negExampleTrees.size()/2.0){
-				System.err.println("REMOVE");
-				nbr.removeChild((QueryTreeImpl<N>) entry.getKey());
+				candidates2Remove.add(entry.getKey());
 			}
 		}
+		removeLeafs(nbr, candidates2Remove);
 		
 		return nbr;
+	}
+	
+	private void removeLeafs(QueryTree<N> nbr, List<QueryTree<N>> candidates2Remove){
+		for(Iterator<QueryTree<N>> iter = nbr.getLeafs().iterator(); iter.hasNext();){
+			QueryTree<N> leaf = iter.next();
+			
+			if(candidates2Remove.contains(leaf)){
+				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
+			}
+		}
+	}
+	
+	private String printTreeWithValues(QueryTree<N> tree, Map<QueryTree<N>, List<Integer>> matrix){
+		int depth = tree.getPathToRoot().size();
+        StringBuilder sb = new StringBuilder();
+        if(tree.isRoot()){
+        	sb.append("TREE\n\n");
+        }
+//        ren = ren.replace("\n", "\n" + sb);
+        sb.append(tree.getUserObject() + "(" +matrix.get(tree) +  ")");
+        sb.append("\n");
+        for (QueryTree<N> child : tree.getChildren()) {
+            for (int i = 0; i < depth; i++) {
+                sb.append("\t");
+            }
+            Object edge = tree.getEdge(child);
+            if (edge != null) {
+            	sb.append("  ");
+            	sb.append(edge);
+            	sb.append(" ---> ");
+            }
+            sb.append(printTreeWithValues(child, matrix));
+        }
+        return sb.toString();
 	}
 	
 	private int sum(List<Integer> list){
@@ -90,39 +130,58 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 		return Collections.singletonList(computeNBR(posExampleTree, negExampleTrees));
 	}
 	
+//	private void checkTree(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> posTree, QueryTree<N> negTree, int index){
+//		int entry;
+//		if(!posTree.getUserObject().equals("?") && !posTree.getUserObject().equals(negTree.getUserObject())){
+//			entry = 1;
+//		} else {
+//			entry = 1;
+//			for(Object edge : posTree.getEdges()){
+//				for(QueryTree<N> child1 : posTree.getChildren(edge)){
+//					for(QueryTree<N> child2 : negTree.getChildren(edge)){
+//						if(!posTree.getUserObject().equals("?") && child1.getUserObject().equals(child2.getUserObject())){
+//							entry = 0;break;
+//						}
+//						if(posTree.getUserObject().equals("?")){
+//							checkTree(matrix, child1, child2, index);
+//						}
+//					}
+//				}
+//			}
+//			Object edge;
+//			for(QueryTree<N> child1 : posTree.getChildren()){
+//	    		edge = posTree.getEdge(child1);
+//	    		for(QueryTree<N> child2 : negTree.getChildren(edge)){
+//	    			
+//	    		}
+//	    		
+//	    	}
+//		}
+//		setMatrixEntry(matrix, posTree, index, entry);
+//		if(entry == 1){
+//			for(QueryTree<N> child : posTree.getChildrenClosure()){
+//				setMatrixEntry(matrix, child, index, 0);
+//			}
+//		}
+//	}
+	
 	private void checkTree(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> posTree, QueryTree<N> negTree, int index){
-		int entry;
-		if(!posTree.getUserObject().equals("?") && !posTree.getUserObject().equals(negTree.getUserObject())){
+		int entry = 1;
+		Object edge;
+		for(QueryTree<N> child1 : posTree.getChildren()){
 			entry = 1;
-		} else {
-			entry = 1;
-			for(Object edge : posTree.getEdges()){
-				for(QueryTree<N> child1 : posTree.getChildren(edge)){
-					for(QueryTree<N> child2 : negTree.getChildren(edge)){
-						if(!posTree.getUserObject().equals("?") && child1.getUserObject().equals(child2.getUserObject())){
-							entry = 0;break;
-						}
-						if(posTree.getUserObject().equals("?")){
-							checkTree(matrix, child1, child2, index);
-						}
-					}
-				}
-			}
-			Object edge;
-			for(QueryTree<N> child1 : posTree.getChildren()){
-	    		edge = posTree.getEdge(child1);
-	    		for(QueryTree<N> child2 : negTree.getChildren(edge)){
-	    			
-	    		}
-	    		
-	    	}
+    		edge = posTree.getEdge(child1);
+    		for(QueryTree<N> child2 : negTree.getChildren(edge)){
+    			if(!child1.getUserObject().equals("?") && child1.getUserObject().equals(child2.getUserObject())){
+    				entry = 0;checkTree(matrix, child1, child2, index);
+    			} else if(child1.getUserObject().equals("?")){
+    				entry = 0;
+    				checkTree(matrix, child1, child2, index);
+    			}
+    		}
+    		setMatrixEntry(matrix, child1, index, entry);
 		}
-		setMatrixEntry(matrix, posTree, index, entry);
-		if(entry == 1){
-			for(QueryTree<N> child : posTree.getChildrenClosure()){
-				setMatrixEntry(matrix, child, index, 0);
-			}
-		}
+		
 	}
 	
 	private void setMatrixEntry(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> row, int column, int entry){
@@ -134,7 +193,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 		try {
 			list.set(column, entry);
 		} catch (IndexOutOfBoundsException e) {
-			list.add(column, entry);
+			list.add(entry);
 		}
 	}
 
