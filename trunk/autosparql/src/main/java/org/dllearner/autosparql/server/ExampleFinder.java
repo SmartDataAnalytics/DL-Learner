@@ -16,6 +16,8 @@ import org.dllearner.sparqlquerygenerator.cache.ModelCache;
 import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGenerator;
+import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.BruteForceNBRStrategy;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
@@ -48,6 +50,8 @@ public class ExampleFinder {
 	
 	private SPARQLQueryGeneratorCached queryGen;
 	
+	private boolean makeAlwaysNBR = false;
+	
 	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
@@ -58,7 +62,7 @@ public class ExampleFinder {
 		queryTreeCache = new QueryTreeCache();
 		testedQueries = new HashSet<String>();
 		
-		queryGen = new SPARQLQueryGeneratorCachedImpl(new GreedyNBRStrategy());
+		queryGen = new SPARQLQueryGeneratorCachedImpl(new GreedyNBRStrategy<String>());
 //		queryGen = new SPARQLQueryGeneratorCachedImpl(new BruteForceNBRStrategy());
 	}
 	
@@ -127,24 +131,32 @@ public class ExampleFinder {
 //		return null;
 //	}
 	
+	private QueryTree<String> makeNBR(QueryTree<String> posTree, List<QueryTree<String>> negTrees){
+		NBRGenerator<String> nbrGen = new NBRGeneratorImpl<String>(new GreedyNBRStrategy<String>());
+		return nbrGen.getNBR(posTree, negTrees);
+	}
+	
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
 		logger.info("Using generalisation");
 		logger.info("Query before generalisation: \n\n" + tree.toSPARQLQueryString(true));
-		Generalisation<String> generalisation = new Generalisation<String>();
+		Generalisation<String> posGen = new Generalisation<String>();
 		
-		QueryTree<String> genTree = generalisation.generalise(tree);
+		QueryTree<String> genTree = posGen.generalise(tree);
 		
 		currentQuery = genTree.toSPARQLQueryString(true);
 		currentQueryTree = genTree;
 		logger.info("Query after generalisation: \n\n" + currentQuery);
 		
+		if(makeAlwaysNBR){
+			makeNBR(currentQueryTree, null);
+		}
+		
 		String result = "";
 		try {
-			logger.info(tree.getChildren().isEmpty());
 			if(testedQueries.contains(currentQuery) && !currentQueryTree.getChildren().isEmpty()){
 				return findExampleByGeneralisation(currentQueryTree);
 			} else {
-				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1)));
+				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
 				testedQueries.add(currentQuery);
 			}
 			
@@ -230,7 +242,7 @@ public class ExampleFinder {
 			logger.info(query);
 			String result = "";
 			try {
-				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, 10));
+				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
 				testedQueries.add(currentQuery);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -294,6 +306,10 @@ public class ExampleFinder {
 		return new Example(uri, label, imageURL, comment);
 	}
 	
+	public void setMakeAlwaysNBR(boolean makeAlwaysNRB){
+		this.makeAlwaysNBR = makeAlwaysNRB;
+	}
+	
 	public String encodeHTML(String s) {
 		StringBuffer out = new StringBuffer();
 		for (int i = 0; i < s.length(); i++) {
@@ -319,7 +335,10 @@ public class ExampleFinder {
 		return encodeHTML(currentQuery);
 	}
 	
-	public String getLimitedQuery(String query, int limit){
+	public String getLimitedQuery(String query, int limit, boolean distinct){
+		if(distinct){
+			query = "SELECT DISTINCT " + query.substring(7);
+		}
 		return query + " LIMIT " + limit;
 	}
 }
