@@ -71,7 +71,12 @@ public class Generalisation<N> {
 		if( edgeCount > maxEdgeCount){
 			removeLeafs(tree, edgeCount-maxEdgeCount);
 		} else {
-			removeLeafs(tree, edgeCount/2);
+			if(edgeCount == 1){
+				removeLeafs(tree, 1);
+			} else {
+				removeLeafs(tree, edgeCount/2);
+			}
+			
 		}
 		return tree;
 		
