@@ -63,20 +63,20 @@ public class ApplicationView extends View {
 		LayoutContainer c = new LayoutContainer(new RowLayout(
 				Orientation.VERTICAL));
 		StringBuffer sb = new StringBuffer();
-		sb.append("<div id='demo-theme'></div><div id=demo-title>AutoSPARQL</div>");
+		sb.append("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
 
 		HtmlContainer headerPanel = new HtmlContainer(sb.toString());
 		headerPanel.setStateful(false);
 		headerPanel.setId("demo-header");
-		headerPanel.addStyleName("x-small-editor");
+		//headerPanel.addStyleName("x-small-editor");
 
-		final Image logo = new Image("dl-learner_logo.gif");
-		logo.setHeight("30px");
-		headerPanel.add(logo, "#demo-theme");
+		final Image logo = new Image("logo-dl.png");
+		//logo.setHeight("30px");
+		headerPanel.add(logo, "#demo-header-logo");
 
 		c.add(headerPanel);
 
-		BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 33);
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 50);
 		data.setMargins(new Margins());
 		viewport.add(c, data);
 

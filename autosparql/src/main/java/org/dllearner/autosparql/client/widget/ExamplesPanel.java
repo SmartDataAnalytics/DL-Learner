@@ -51,6 +51,7 @@ public class ExamplesPanel extends ContentPanel {
 	private void createPosExamplesGrid(){
 		LayoutContainer container = new LayoutContainer(new RowLayout());
 		container.add(new Text("Should belong to query result:"), new RowData(1, -1));
+                container.addStyleName("ttt-class ddd-class");
 		posExamplesStore = new ListStore<Example>();
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
