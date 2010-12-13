@@ -50,6 +50,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     private List<QueryTreeImpl<N>> children;
 
     private Map<QueryTree<N>, Object> child2EdgeMap;
+    private Map<String, List<QueryTree<N>>> edge2ChildrenMap;
     
     private NodeRenderer<N> toStringRenderer;
     
@@ -62,6 +63,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         this.userObject = userObject;
         children = new ArrayList<QueryTreeImpl<N>>();
         child2EdgeMap = new HashMap<QueryTree<N>, Object>();
+        edge2ChildrenMap = new HashMap<String, List<QueryTree<N>>>();
         toStringRenderer = new NodeRenderer<N>() {
             public String render(QueryTree<N> object) {
                 return object.toString();
@@ -102,6 +104,13 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public void addChild(QueryTreeImpl<N> child, Object edge) {
         addChild(child);
         child2EdgeMap.put(child, edge);
+        
+        List<QueryTree<N>> children = edge2ChildrenMap.get(edge);
+        if(children == null){
+        	children = new ArrayList<QueryTree<N>>();
+        	edge2ChildrenMap.put((String)edge, children);
+        }
+        children.add(child);
     }
 
 
@@ -149,11 +158,16 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     public List<QueryTree<N>> getChildren(Object edge) {
-    	List<QueryTree<N>> children = new ArrayList<QueryTree<N>>();
-    	for(Entry<QueryTree<N>, Object> entry : child2EdgeMap.entrySet()){
-    		if(entry.getValue().equals(edge)){
-    			children.add(entry.getKey());
-    		}
+//    	List<QueryTree<N>> children = new ArrayList<QueryTree<N>>();
+//    	for(Entry<QueryTree<N>, Object> entry : child2EdgeMap.entrySet()){
+//    		if(entry.getValue().equals(edge)){
+//    			children.add(entry.getKey());
+//    		}
+//    	}
+//        return children;
+    	List<QueryTree<N>> children = edge2ChildrenMap.get(edge);
+    	if(children == null){
+    		children = new ArrayList<QueryTree<N>>();
     	}
         return children;
     }
