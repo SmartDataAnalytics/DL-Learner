@@ -147,7 +147,7 @@
     color:#000;
 
     background-color:#ccc;
-    background: -webkit-gradient(linear, left bottom, left top, color-stop(0.46, #8A8A8A), color-stop(0.73, #B3B3B3), color-stop(0.87, #E0E0E0));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.46, #eee), color-stop(0.73, #ccc), color-stop(0.87, #bbb));
     background: -moz-linear-gradient(center top, #eee 46%, #ccc 73%, #bbb 87%);
 
     border:outset 1px #7eadd9;
