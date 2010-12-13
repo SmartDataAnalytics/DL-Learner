@@ -156,7 +156,10 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 	private void learnPosOnly(){
 		resultQueries.clear();
 		if(posQueryTrees.size() == 2 || newPosExample != null){
-			logger.debug("Computing LGG ...");
+			if(logger.isDebugEnabled()){
+				logger.debug("Computing LGG ...");
+			}
+			
 			Monitor monitor = MonitorFactory.getTimeMonitor("LGG monitor");
 			
 			monitor.start();
@@ -170,9 +173,11 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 			
 			newPosExample = null;
 			
-			logger.debug("LGG");
-			logger.debug(lgg.getStringRepresentation());
-			logger.debug("LGG computation time: " + monitor.getTotal() + " ms");
+			if(logger.isDebugEnabled()){
+				logger.debug("LGG");
+				logger.debug(lgg.getStringRepresentation());
+				logger.debug("LGG computation time: " + monitor.getTotal() + " ms");
+			}
 		}
 		
 		resultQueries.add(lgg.toSPARQLQueryString(true));
@@ -182,7 +187,10 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 	private void learnPosNeg(){
 		resultQueries.clear();
 		if(newPosExample != null){
-			logger.info("Computing LGG ...");
+			if(logger.isDebugEnabled()){
+				logger.debug("Computing LGG ...");
+			}
+			
 			Monitor lggMonitor = MonitorFactory.getTimeMonitor("LGG monitor");
 			
 			lggMonitor.start();
@@ -196,9 +204,11 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 			
 			newPosExample = null;
 			
-			logger.info("LGG");
-			logger.info(lgg.getStringRepresentation());
-			logger.info("LGG computation time: " + lggMonitor.getTotal() + " ms");
+			if(logger.isDebugEnabled()){
+				logger.debug("LGG");
+				logger.debug(lgg.getStringRepresentation());
+				logger.debug("LGG computation time: " + lggMonitor.getTotal() + " ms");
+			}
 		}
 		
 		
@@ -208,15 +218,18 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 		
 		int i = 1;
 		for(QueryTree<String> nbr : nbrGenerator.getNBRs(lgg, negQueryTrees)){
-			logger.info("NBR " + i++);
-			logger.info(nbr.getStringRepresentation());
+			if(logger.isDebugEnabled()){
+				logger.debug("NBR " + i++);
+				logger.debug(nbr.getStringRepresentation());
+			}
 			resultQueries.add(nbr.toSPARQLQueryString(true));
 			resultTrees.add(nbr);
 		}
 		
 		nbrMonitor.stop();
-		
-		logger.info("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
+		if(logger.isDebugEnabled()){
+			logger.debug("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
+		}
 		
 	}
 

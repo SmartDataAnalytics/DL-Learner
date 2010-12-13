@@ -61,11 +61,19 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	public QueryTree<N> getLGG(List<QueryTree<N>> trees, boolean learnFilters) {
 		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
 		
-		logger.info("Computing LGG for");
+		if(logger.isInfoEnabled()){
+			logger.info("Computing LGG for");
+		}
+		
 		for(int i = 0; i < treeList.size(); i++){
-			logger.info(treeList.get(i).getStringRepresentation());
+			if(logger.isInfoEnabled()){
+				logger.info(treeList.get(i).getStringRepresentation());
+			}
+			
 			if(i != treeList.size() - 1){
-				logger.info("and");
+				if(logger.isInfoEnabled()){
+					logger.info("and");
+				}
 			}
 		}
 		
@@ -75,15 +83,23 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
 		mon.start();
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
-		logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
+		if(logger.isInfoEnabled()){
+			logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
+		}
+		
 		for(int i = 2; i < treeList.size(); i++){
 			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
-			logger.info("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
+			if(logger.isInfoEnabled()){
+				logger.info("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
+			}
 		}
 		mon.stop();
 		
-		logger.info("LGG = ");
-		logger.info(lgg.getStringRepresentation());
+		if(logger.isInfoEnabled()){
+			logger.info("LGG = ");
+			logger.info(lgg.getStringRepresentation());
+		}
+		
 		
 		return lgg;
 	}
@@ -167,8 +183,10 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 				}
 			}
 		}
-		logger.debug("Computed LGG:");
-		logger.debug(lgg.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("Computed LGG:");
+			logger.debug(lgg.getStringRepresentation());
+		}
 		return lgg;
 	}
 

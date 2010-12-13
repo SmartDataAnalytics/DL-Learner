@@ -1,7 +1,6 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,19 +8,16 @@ import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
-import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Generalisation<N> {
 	
 	private static final Logger logger = Logger.getLogger(Generalisation.class);
 	
-	private int maxEdgeCount = 10;
+	private int maxEdgeCount = 15;
 	public double pruningFactor = 0.5;
 	
 	boolean invert = false;
-	
-	private List<QueryTree<N>> rest;
 	
 	public QueryTree<N> generalise(QueryTree<N> queryTree){
 		QueryTree<N> copy = new QueryTreeImpl<N>(queryTree);
@@ -30,9 +26,9 @@ public class Generalisation<N> {
 //		removeStatementsWithProperty(copy, OWL.sameAs.getURI());
 		
 //		retainTypeEdges(copy);
-		pruneTree(copy, pruningFactor);
+		return pruneTree(copy, pruningFactor);
 		
-		return copy;
+//		return copy;
 	}
 	
 	public void setMaxEdgeCount(int maxEdgeCount){
@@ -61,27 +57,73 @@ public class Generalisation<N> {
 		
 	}
 	
-	private void pruneTree(QueryTree<N> tree, double limit){
-		logger.info("Pruning tree:");
-//		logger.info(tree.getStringRepresentation());
-		logger.info("Number of triple pattern: " + ((QueryTreeImpl<N>)tree).getTriplePatternCount());
-//		logger.info(((QueryTreeImpl<N>)tree).getSPARQLQueryTree().getStringRepresentation());
-		int childCountBefore = tree.getChildCount();
-		
-		List<QueryTree<N>> children = new ArrayList<QueryTree<N>>(tree.getChildren());
-//		Collections.shuffle(children);
-		QueryTree<N> child;
-		for(Iterator<QueryTree<N>> iter = children.iterator(); iter.hasNext(); ){
-			child = iter.next();
-			logger.info("Removing child: " + child);
-			tree.removeChild((QueryTreeImpl<N>) child);
-			if( (tree.getChildCount()) <= maxEdgeCount
-					&& (double)tree.getChildCount()/childCountBefore <= limit){
-				break;
-			}
+	private QueryTree<N> pruneTree(QueryTree<N> tree, double limit){
+		if(logger.isInfoEnabled()){
+			logger.info("Pruning tree:");
+//			logger.info(tree.getStringRepresentation());
+			logger.info("Number of triple pattern: " + ((QueryTreeImpl<N>)tree).getTriplePatternCount());
+//			logger.info(((QueryTreeImpl<N>)tree).getSPARQLQueryTree().getStringRepresentation());
 		}
 		
+		tree = ((QueryTreeImpl<N>)tree).getSPARQLQueryTree();
 		
+		int edgeCount = tree.getChildrenClosure().size()-1;
+		if( edgeCount > maxEdgeCount){
+			removeLeafs(tree, edgeCount-maxEdgeCount);
+		} else {
+			removeLeafs(tree, edgeCount/2);
+		}
+		return tree;
+		
+		
+//		List<QueryTree<N>> children = new ArrayList<QueryTree<N>>(tree.getChildren());
+//		QueryTree<N> child;
+//		for(Iterator<QueryTree<N>> iter = children.iterator(); iter.hasNext(); ){
+//			child = iter.next();
+//			if(logger.isInfoEnabled()){
+//				logger.info("Removing child: " + child);
+//			}
+//			tree.removeChild((QueryTreeImpl<N>) child);
+//			int newEdgeCount = tree.getUserObjectClosure().size()-1;
+//			if( newEdgeCount <= maxEdgeCount
+//					&& (double)newEdgeCount/edgeCount <= limit){
+//				break;
+//			}
+//		}
+//		return tree;
+	}
+	
+	private void removeLeafs(QueryTree<N> tree, int cnt){
+		int level = tree.getMaxDepth();
+		
+		while(cnt > 0){
+			for(QueryTree<N> leaf : getLeafsAtLevel(tree, level)){
+				if(logger.isInfoEnabled()){
+					logger.info("Removing edge [" + 
+							leaf.getParent().getUserObject() + "--" + leaf.getParent().getEdge(leaf) + "-->" + leaf.getUserObject() + "]");
+				}
+				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
+				cnt--;
+				if(cnt == 0){
+					break;
+				}
+			}
+			level--;
+		}
+		if(logger.isInfoEnabled()){
+			logger.info(tree.getStringRepresentation());
+		}
+	}
+	
+	private List<QueryTree<N>> getLeafsAtLevel(QueryTree<N> tree, int level){
+		List<QueryTree<N>> leafs = new ArrayList<QueryTree<N>>();
+		for(QueryTree<N> leaf : tree.getLeafs()){
+			if(leaf.getPathToRoot().size() == level){
+				leafs.add(leaf);
+			}
+		}
+			
+		return leafs;
 	}
 	
 	private void retainTypeEdges(QueryTree<N> tree){
