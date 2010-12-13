@@ -12,24 +12,24 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class QueryTreeCache {
 
-	private Map<Model, QueryTree<?>> cache;
-	private QueryTreeFactory<?> factory;
+	private Map<Model, QueryTree<String>> cache;
+	private QueryTreeFactory<String> factory;
 	
 	public QueryTreeCache(){
-		cache = new HashMap<Model, QueryTree<?>>();
+		cache = new HashMap<Model, QueryTree<String>>();
 		factory = new QueryTreeFactoryImpl();
 	}
 	
-	public QueryTree<?> getQueryTree(String root, Model model){
-		QueryTree<?> tree = cache.get(model);
+	public QueryTree<String> getQueryTree(String root, Model model){
+		QueryTree<String> tree = cache.get(model);
 		if(tree == null){
 			tree = factory.getQueryTree(root, model);
 		}
 		return tree;
 	}
 	
-	public QueryTree<?> getQueryTree(Resource root, Model model){
-		QueryTree<?> tree = cache.get(model);
+	public QueryTree<String> getQueryTree(Resource root, Model model){
+		QueryTree<String> tree = cache.get(model);
 		if(tree == null){
 			tree = factory.getQueryTree(root, model);
 		}
