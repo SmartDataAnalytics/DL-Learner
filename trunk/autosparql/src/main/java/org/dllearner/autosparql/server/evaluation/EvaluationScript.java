@@ -75,7 +75,11 @@ public class EvaluationScript {
 		
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection conn = DriverManager.getConnection("jdbc:mysql://139.18.2.173/dbpedia_queries", "root", "WQPRisDa2");
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO evaluation {?,?,?,?,?,?,?,?,?,?}");
+		PreparedStatement ps = conn.prepareStatement("INSERT INTO evaluation (" +
+				"id, original_query, learned_query," +
+				"examples_needed, pos_examples_needed, neg_examples_needed," +
+				"total_time_in_ms, query_time_in_ms, lgg_time_in_ms, nbr_time_in_ms " +
+				"VALUES(?,?,?,?,?,?,?,?,?,?)");
 		
 		//fetch all queries from table 'tmp', where the number of results is lower than 2000
 		Statement st = conn.createStatement();
