@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
@@ -121,7 +122,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		
 		Set<QueryTreeImpl<N>> addedChildren;
 		QueryTreeImpl<N> lggChild;
-		for(Object edge : tree1.getEdges()){
+		for(Object edge : new TreeSet<Object>(tree1.getEdges())){
 			if(logger.isDebugEnabled()){
 				logger.debug("Regarding egde: " + edge);
 			}
