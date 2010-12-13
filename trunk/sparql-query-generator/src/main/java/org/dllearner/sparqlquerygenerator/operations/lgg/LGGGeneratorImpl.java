@@ -80,8 +80,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		if(trees.size() == 1){
 			return trees.iterator().next();
 		}
-		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
-		mon.start();
+		
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
 		if(logger.isInfoEnabled()){
 			logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
@@ -93,7 +92,6 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 				logger.info("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
 			}
 		}
-		mon.stop();
 		
 		if(logger.isInfoEnabled()){
 			logger.info("LGG = ");
@@ -111,6 +109,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			logger.debug("and");
 			logger.debug(tree2.getStringRepresentation());
 		}
+		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
+		mon.start();
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
 		
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
@@ -183,8 +183,9 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 				}
 			}
 		}
+		mon.stop();
 		if(logger.isDebugEnabled()){
-			logger.debug("Computed LGG:");
+			logger.debug("Computed LGG(" + mon.getLastValue() + "ms):");
 			logger.debug(lgg.getStringRepresentation());
 		}
 		return lgg;

@@ -232,5 +232,9 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 		}
 		
 	}
+	
+	public QueryTree<String> getCurrentQueryTree(){
+		return resultTrees.get(0);
+	}
 
 }

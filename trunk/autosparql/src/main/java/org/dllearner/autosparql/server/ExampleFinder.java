@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -288,9 +289,9 @@ public class ExampleFinder {
 		}
 		if(logger.isInfoEnabled()){
 			logger.info("None of the queries contained a new example.");
-			logger.info("Changing to Generalisation...");
+			logger.info("Making again NBR...");
 		}
-		return findExampleByGeneralisation(queryGen.getLastLGG());
+		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
 	}
 	
 	private Example getExample(String uri){
