@@ -289,9 +289,10 @@ public class ExampleFinder {
 		}
 		if(logger.isInfoEnabled()){
 			logger.info("None of the queries contained a new example.");
-			logger.info("Making again NBR...");
+			logger.info("Making Generalisation...");
 		}
-		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
+		return findExampleByGeneralisation(queryGen.getCurrentQueryTree());
+//		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
 	}
 	
 	private Example getExample(String uri){
