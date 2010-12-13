@@ -27,7 +27,7 @@ public class Generalisation<N> {
 		QueryTree<N> copy = new QueryTreeImpl<N>(queryTree);
 		
 		copy.setUserObject((N)"?");
-		removeStatementsWithProperty(copy, OWL.sameAs.getURI());
+//		removeStatementsWithProperty(copy, OWL.sameAs.getURI());
 		
 //		retainTypeEdges(copy);
 		pruneTree(copy, pruningFactor);
