@@ -558,11 +558,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     @Override
     public String toSPARQLQueryString() {
     	if(children.isEmpty()){
-    		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
+    		return "SELECT DISTINCT ?x0 WHERE {?x0 ?y ?z.}";
     	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT ?x0 WHERE {\n");
+    	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
     	buildSPARQLQueryString(this, sb, false);
     	sb.append("}");
     	return sb.toString();
@@ -571,11 +571,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     @Override
     public String toSPARQLQueryString(boolean filtered) {
     	if(children.isEmpty()){
-    		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
+    		return "SELECT DISTINCT ?x0 WHERE {?x0 ?y ?z.}";
     	}
     	cnt = 0;
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT ?x0 WHERE {\n");
+    	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
     	buildSPARQLQueryString(this, sb, filtered);
     	sb.append("}");
     	return sb.toString();
