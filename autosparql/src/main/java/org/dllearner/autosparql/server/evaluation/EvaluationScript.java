@@ -29,6 +29,7 @@ import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
@@ -93,10 +94,10 @@ public class EvaluationScript {
             "jdbc:mysql://"+dbServer+"/"+dbName;
 		Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
 		PreparedStatement ps = conn.prepareStatement("INSERT INTO evaluation (" +
-				"id, original_query, learned_query," +
+				"id, original_query, learned_query, triple_pattern_count," +
 				"examples_needed, pos_examples_needed, neg_examples_needed," +
 				"total_time_in_ms, query_time_in_ms, lgg_time_in_ms, nbr_time_in_ms) " +
-				"VALUES(?,?,?,?,?,?,?,?,?,?)");
+				"VALUES(?,?,?,?,?,?,?,?,?,?,?)");
 		
 		//fetch all queries from table 'tmp', where the number of results is lower than 2000
 		Statement st = conn.createStatement();
@@ -160,6 +161,15 @@ public class EvaluationScript {
 				boolean equivalentQueries = false;
 				do{
 					nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
+					learnedQuery = exampleFinder.getCurrentQuery();
+					logger.info("Learned query:\n" + learnedQuery);
+					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
+					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
+					if(equivalentQueries){
+						break;
+					}
+					
+					
 					logger.info("Next suggested example is " + nextExample);
 					//if the example is contained in the resultset of the query, we add it to the positive examples,
 					//otherwise to the negatives
@@ -182,13 +192,11 @@ public class EvaluationScript {
 						break;
 					}
 					
-					learnedQuery = exampleFinder.getCurrentQuery();
-					logger.info("Learned query:\n" + learnedQuery);
-					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
-					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
+					
 				} while(!equivalentQueries);
 				
 				if(!failed){
+					int triplePatternCount = ((QueryTreeImpl<String>)exampleFinder.getCurrentQueryTree()).getTriplePatternCount();
 					int posExamplesCount = posExamples.size();
 					int negExamplesCount = negExamples.size();
 					int examplesCount = posExamplesCount + negExamplesCount;
@@ -197,7 +205,7 @@ public class EvaluationScript {
 					double nbrTime = MonitorFactory.getTimeMonitor("NBR").getTotal();
 					double totalTime = queryTime + nbrTime + lggTime;
 					
-					write2DB(ps, id, query, learnedQuery,
+					write2DB(ps, id, query, learnedQuery, triplePatternCount,
 							examplesCount, posExamplesCount, negExamplesCount,
 							totalTime, queryTime, lggTime, nbrTime);
 					logger.info("Number of examples needed: " 
@@ -222,20 +230,21 @@ public class EvaluationScript {
 	}
 	
 	private static void write2DB(PreparedStatement ps, 
-			int id, String originalQuery, String learnedQuery, int examplesCount,
-			int posExamplesCount, int negExamplesCount, double totalTime,
-			double queryTime, double lggTime, double nbrTime){
+			int id, String originalQuery, String learnedQuery, int triplePatternCount,
+			int examplesCount, int posExamplesCount, int negExamplesCount,
+			double totalTime, double queryTime, double lggTime, double nbrTime){
 		try {
 			ps.setInt(1, id);
 			ps.setString(2, originalQuery);
 			ps.setString(3, learnedQuery);
-			ps.setInt(4, examplesCount);
-			ps.setInt(5, posExamplesCount);
-			ps.setInt(6, negExamplesCount);
-			ps.setDouble(7, totalTime);
-			ps.setDouble(8, queryTime);
-			ps.setDouble(9, lggTime);
-			ps.setDouble(10, nbrTime);
+			ps.setInt(4, triplePatternCount);
+			ps.setInt(5, examplesCount);
+			ps.setInt(6, posExamplesCount);
+			ps.setInt(7, negExamplesCount);
+			ps.setDouble(8, totalTime);
+			ps.setDouble(9, queryTime);
+			ps.setDouble(10, lggTime);
+			ps.setDouble(11, nbrTime);
 			
 			ps.executeUpdate();
 		} catch (SQLException e) {
