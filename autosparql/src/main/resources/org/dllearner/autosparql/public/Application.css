@@ -212,6 +212,135 @@
     margin-bottom:1em;
 }
 
+/* -- Message boxes --------------------------------------------------------- */
+
+/**
+
+<!-- einzelen Meldung -->
+
+<p class="message-box {message-box-help|message-box-info|message-box-error|message-box-warning|message-box-success}">
+    ...
+</p>
+
+<!-- mehrere zusammengefasste (gleichartige) Meldungen -->
+
+<div class="message-box {message-box-help|message-box-info|message-box-error|message-box-warning|message-box-success}">
+    <p>...</p>
+    <p>...</p>
+</div>
+
+ */
+
+.message-box, .message-box-help, .message-box-info,
+.message-box-error, .message-box-warning, .message-box-success {
+  	background-color: #eee;
+  	border: 1px solid #ddd;
+  	color: #000;
+  	margin: .5em;
+  	padding: .45em .9em;
+        font-size:13px;
+        line-height:19px;
+}
+
+.message-box-help {
+  	padding-left:32px;
+  	border-color:#b9daed;
+  	background:url(icon-help.png) no-repeat 8px 0.6em #e9eef2;
+}
+
+.message-box-info {
+  	padding-left:32px;
+  	border-color:#B8E2FB;
+  	background:url(icon-info.png) no-repeat 8px 0.6em #E8F6FF;
+}
+
+.message-box-error {
+  	padding-left:32px;
+  	border-color:#FFAEAE;
+  	background:url(icon-error.png) no-repeat 8px 0.6em #FEEBEB;
+}
+
+.message-box-warning {
+  	padding-left:32px;
+  	border-color:#F2DD8C;
+  	background:url(icon-warning.png) no-repeat 8px 0.6em #FFF5CC;
+}
+
+.message-box-success {
+  	padding-left:32px;
+  	border-color:#BBDF8D;
+  	background:url(icon-success.png) no-repeat 8px 0.6em #EAF7D9;
+}
+
+div.message-box, div.message-box-help, div.message-box-info,
+div.message-box-error, div.message-box-warning, div.message-box-success {
+  	padding-bottom:0;
+  	margin-bottom:0.9em;
+}
+
+/* -- Buttons --------------------------------------------------------------- */
+
+.button-positive button, .button-negative button
+{
+    border-radius:7px !important;
+    -moz-border-radius:7px !important;
+    line-height: 14px !important;
+    font-size: 14px !important;
+}
+
+.button-positive *, .button-negative *
+{
+    font-weight:bold !important;
+    border:none !important;
+    background:transparent !important;
+}
+
+.button-positive *
+{
+    color:green !important;
+}
+
+.button-positive.x-btn-over button
+{
+    color:white !important;
+    background:green !important;
+}
+
+.button-negative *
+{
+    color:red !important;
+}
+
+.button-negative.x-btn-over button
+{
+    color:white !important;
+    background:red !important;
+}
+
+/* -- Layout Helper --------------------------------------------------------- */
+
+.is-headline
+{
+    display:block;
+    font-weight:normal;
+    font-color:#000;
+    text-shadow:1px 1px 2px #999;
+    font-size:1.25em;
+}
+
+.add-padding
+{
+    padding:0 18px;
+    margin:18px 0;
+}
+
+pre.resultquery
+{
+    font-size:1.25em; line-height:1.5;
+    font-weight:bold;
+    font-family:monospace;
+}
+
 	.row-Style-Odd{
 		background-color: #eaeaea;
 	}
@@ -239,4 +368,9 @@
 {
     position:absolute;
     left:-5000em;
+}
+
+.x-panel
+{
+    margin:0 0 10px 0 !important;
 }

@@ -50,8 +50,7 @@ public class ExamplesPanel extends ContentPanel {
 	
 	private void createPosExamplesGrid(){
 		LayoutContainer container = new LayoutContainer(new RowLayout());
-		container.add(new Text("Should belong to query result:"), new RowData(1, -1));
-                container.addStyleName("ttt-class ddd-class");
+		container.add(new Text("<strong class=\"is-headline add-padding\">Should belong to query result:</strong>"), new RowData(1, -1));
 		posExamplesStore = new ListStore<Example>();
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
@@ -101,7 +100,8 @@ public class ExamplesPanel extends ContentPanel {
 					ListStore<Example> store, Grid<Example> grid) {
 				VerticalPanel p = new VerticalPanel();
 				p.setSize(25, 50);
-				Button move2NegButton = new Button("-");
+				Button move2NegButton = new Button("&ndash;");
+                                move2NegButton.addStyleName("button-negative");
 				move2NegButton.setSize(20, 20);
 				move2NegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
@@ -111,6 +111,7 @@ public class ExamplesPanel extends ContentPanel {
 					}
 				});
 				Button removeButton = new Button("x");
+                                removeButton.addStyleName("button-negative");
 				removeButton.setSize(20, 20);
 				removeButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
@@ -138,7 +139,7 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("No examples selected");
+		grid.getView().setEmptyText("<p class=\"message-box message-box-info\">No examples selected</p>");
 //		grid.getView().setShowDirtyCells(showDirtyCells)
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
@@ -158,7 +159,7 @@ public class ExamplesPanel extends ContentPanel {
 	
 	private void createNegExamplesGrid(){
 		LayoutContainer container = new LayoutContainer(new RowLayout());
-		container.add(new Text("Should not belong to query result:"), new RowData(1, -1));
+		container.add(new Text("<strong class=\"is-headline add-padding\">Should not belong to query result:</strong>"), new RowData(1, -1));
 		negExamplesStore = new ListStore<Example>();
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
@@ -209,6 +210,7 @@ public class ExamplesPanel extends ContentPanel {
 				VerticalPanel p = new VerticalPanel();
 				p.setSize(25, 50);
 				Button move2PosButton = new Button("+");
+                                move2PosButton.addStyleName("button-positive");
 				move2PosButton.setSize(20, 20);
 				move2PosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
@@ -218,6 +220,7 @@ public class ExamplesPanel extends ContentPanel {
 					}
 				});
 				Button removeButton = new Button("x");
+                                removeButton.addStyleName("button-negative");
 				removeButton.setSize(20, 20);
 				removeButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
@@ -245,7 +248,7 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("No examples selected");
+		grid.getView().setEmptyText("<p class=\"message-box message-box-info\">No examples selected.</p>");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,
