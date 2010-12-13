@@ -66,6 +66,7 @@ public class EvaluationScript {
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
+		Logger.getLogger(ExampleFinder.class).setLevel(Level.OFF);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
@@ -187,9 +188,9 @@ public class EvaluationScript {
 						+ (posExamples.size() + negExamples.size()) 
 						+ "(+" + posExamples.size() + "/-" + negExamples.size() + ")");
 				learnedCnt++;
-			if(testedCnt == 200){
-				break;
-			}
+//			if(testedCnt == 200){
+//				break;
+//			}
 			} catch (Exception e) {
 				logger.error("Error while learning query " + id, e);
 			}
@@ -218,11 +219,9 @@ public class EvaluationScript {
 			ps.setDouble(9, lggTime);
 			ps.setDouble(10, nbrTime);
 			
-			logger.info(ps.toString());
-			
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e);
+			logger.error("Error while writing to DB.",e);
 			e.printStackTrace();
 		}
 		
