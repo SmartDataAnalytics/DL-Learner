@@ -31,6 +31,9 @@ import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+
 /**
  * 
  * @author Lorenz Bühmann
@@ -43,13 +46,8 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
 			List<QueryTree<N>> negExampleTrees) {
-//		Map<QueryTree<N>, Integer> tree2Index = new Hashtable<QueryTree<N>, Integer>();
-//		int rowIndex = 0;
-//		for(QueryTree<N> child : posExampleTree.getChildrenClosure()){
-//			tree2Index.put(child, rowIndex);
-//			rowIndex++;
-//		}
-//		int[][] matrix = new int[rowIndex][negExampleTrees.size()];
+		Monitor mon = MonitorFactory.getTimeMonitor("NBR");
+		mon.start();
 		
 		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
 		Map<QueryTree<N>, List<Integer>> matrix = new HashMap<QueryTree<N>, List<Integer>>();
@@ -58,29 +56,19 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 			checkTree(matrix, nbr, negExampleTrees.get(i), i);
 		}
 		
-		int sum;
-//		for(int row = 0; row < matrix.length; row++){
-//			sum = 0;
-//			for(int column = 0; column < matrix[row].length; column++){
-//				sum += matrix[row][column];
-//			}
-//			if(sum < negExampleTrees.size()/2){
-//				nbr.removeChild(tree2Index.get(key));
-//			}
-//		}
-//		
 		if(logger.isInfoEnabled()){
 			logger.info(printTreeWithValues(nbr, matrix));
 		}
 		
 		List<QueryTree<N>> candidates2Remove = new ArrayList<QueryTree<N>>();
-		
 		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
 			if(sum(entry.getValue()) < negExampleTrees.size()/2.0){
 				candidates2Remove.add(entry.getKey());
 			}
 		}
 		removeLeafs(nbr, candidates2Remove);
+		
+		mon.stop();
 		
 		return nbr;
 	}

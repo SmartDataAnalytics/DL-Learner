@@ -43,5 +43,7 @@ public interface SPARQLQueryGeneratorCached {
 	List<String> getSPARQLQueries(List<QueryTree<String>> posExamples, List<QueryTree<String>> negExamples, boolean learnFilters);
 	
 	QueryTree<String> getLastLGG();
+	
+	QueryTree<String> getCurrentQueryTree();
 
 }

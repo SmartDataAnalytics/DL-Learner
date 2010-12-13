@@ -65,7 +65,7 @@ public class EvaluationScript {
 		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
-		Logger.getLogger(Generalisation.class).setLevel(Level.INFO);
+		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
