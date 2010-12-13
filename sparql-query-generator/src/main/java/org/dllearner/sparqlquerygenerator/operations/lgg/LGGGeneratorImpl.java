@@ -28,6 +28,9 @@ import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+
 /**
  * 
  * @author Lorenz Bühmann
@@ -68,12 +71,15 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		if(trees.size() == 1){
 			return trees.iterator().next();
 		}
+		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
+		mon.start();
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
 		logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
 		for(int i = 2; i < treeList.size(); i++){
 			lgg = computeLGG(lgg, treeList.get(i), learnFilters);
 			logger.info("LGG for 1-" + (i+1) + ":\n" + lgg.getStringRepresentation());
 		}
+		mon.stop();
 		
 		logger.info("LGG = ");
 		logger.info(lgg.getStringRepresentation());
@@ -82,10 +88,12 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	}
 	
 	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){
-		logger.debug("Computing LGG for");
-		logger.debug(tree1.getStringRepresentation());
-		logger.debug("and");
-		logger.debug(tree2.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("Computing LGG for");
+			logger.debug(tree1.getStringRepresentation());
+			logger.debug("and");
+			logger.debug(tree2.getStringRepresentation());
+		}
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
 		
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
@@ -114,36 +122,46 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		Set<QueryTreeImpl<N>> addedChildren;
 		QueryTreeImpl<N> lggChild;
 		for(Object edge : tree1.getEdges()){
-			logger.debug("Regarding egde: " + edge);
+			if(logger.isDebugEnabled()){
+				logger.debug("Regarding egde: " + edge);
+			}
 			addedChildren = new HashSet<QueryTreeImpl<N>>();
 			for(QueryTree<N> child1 : tree1.getChildren(edge)){
 				for(QueryTree<N> child2 : tree2.getChildren(edge)){
 					lggChild = (QueryTreeImpl<N>) computeLGG(child1, child2, learnFilters);
 					boolean add = true;
 					for(QueryTreeImpl<N> addedChild : addedChildren){
-						logger.debug("Subsumption test");
+						if(logger.isDebugEnabled()){
+							logger.debug("Subsumption test");
+						}
 						if(addedChild.isSubsumedBy(lggChild)){
-							logger.debug("Previously added child");
-							logger.debug(addedChild.getStringRepresentation());
-							logger.debug("is subsumed by");
-							logger.debug(lggChild.getStringRepresentation());
-							logger.debug("so we can skip adding the LGG");
+							if(logger.isDebugEnabled()){
+								logger.debug("Previously added child");
+								logger.debug(addedChild.getStringRepresentation());
+								logger.debug("is subsumed by");
+								logger.debug(lggChild.getStringRepresentation());
+								logger.debug("so we can skip adding the LGG");
+							}
 							add = false;
 							break;
 						} else if(lggChild.isSubsumedBy(addedChild)){
-							logger.debug("Computed LGG");
-							logger.debug(lggChild.getStringRepresentation());
-							logger.debug("is subsumed by previously added child");
-							logger.debug(addedChild.getStringRepresentation());
-							logger.debug("so we can remove it");
+							if(logger.isDebugEnabled()){
+								logger.debug("Computed LGG");
+								logger.debug(lggChild.getStringRepresentation());
+								logger.debug("is subsumed by previously added child");
+								logger.debug(addedChild.getStringRepresentation());
+								logger.debug("so we can remove it");
+							}
 							lgg.removeChild(addedChild);
 						} 
 					}
 					if(add){
 						lgg.addChild(lggChild, edge);
 						addedChildren.add(lggChild);
-						logger.debug("Adding child");
-						logger.debug(lggChild.getStringRepresentation());
+						if(logger.isDebugEnabled()){
+							logger.debug("Adding child");
+							logger.debug(lggChild.getStringRepresentation());
+						}
 					} 
 				}
 			}

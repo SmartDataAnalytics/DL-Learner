@@ -55,12 +55,12 @@ public class SingleQueryEvaluationScript {
 		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.INFO);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
-		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
+		Logger.getLogger(Generalisation.class).setLevel(Level.INFO);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
-//				new URL("http://dbpedia.org/sparql"),
-				new URL("http://db0.aksw.org:8999/sparql"),
+				new URL("http://dbpedia.org/sparql"),
+//				new URL("http://db0.aksw.org:8999/sparql"),
 				Collections.singletonList("http://dbpedia.org"),
 				Collections.<String>emptyList(),
 				null, null,

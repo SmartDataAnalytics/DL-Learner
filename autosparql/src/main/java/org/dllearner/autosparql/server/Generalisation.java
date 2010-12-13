@@ -1,5 +1,10 @@
 package org.dllearner.autosparql.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
@@ -13,6 +18,10 @@ public class Generalisation<N> {
 	
 	private int maxEdgeCount = 10;
 	public double pruningFactor = 0.5;
+	
+	boolean invert = false;
+	
+	private List<QueryTree<N>> rest;
 	
 	public QueryTree<N> generalise(QueryTree<N> queryTree){
 		QueryTree<N> copy = new QueryTreeImpl<N>(queryTree);
@@ -54,17 +63,25 @@ public class Generalisation<N> {
 	
 	private void pruneTree(QueryTree<N> tree, double limit){
 		logger.info("Pruning tree:");
-		logger.info(tree.getStringRepresentation());
+//		logger.info(tree.getStringRepresentation());
+		logger.info("Number of triple pattern: " + ((QueryTreeImpl<N>)tree).getTriplePatternCount());
+//		logger.info(((QueryTreeImpl<N>)tree).getSPARQLQueryTree().getStringRepresentation());
 		int childCountBefore = tree.getChildCount();
 		
-		for(QueryTree<N> child : tree.getChildren()){
+		List<QueryTree<N>> children = new ArrayList<QueryTree<N>>(tree.getChildren());
+//		Collections.shuffle(children);
+		QueryTree<N> child;
+		for(Iterator<QueryTree<N>> iter = children.iterator(); iter.hasNext(); ){
+			child = iter.next();
 			logger.info("Removing child: " + child);
 			tree.removeChild((QueryTreeImpl<N>) child);
-			if( (tree.getUserObjectClosure().size() - 1) <= maxEdgeCount
+			if( (tree.getChildCount()) <= maxEdgeCount
 					&& (double)tree.getChildCount()/childCountBefore <= limit){
 				break;
 			}
 		}
+		
+		
 	}
 	
 	private void retainTypeEdges(QueryTree<N> tree){

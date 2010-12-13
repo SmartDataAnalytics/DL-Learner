@@ -292,6 +292,49 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         getUserObjectClosure(this, objects);
         return objects;
     }
+    
+    public int getTriplePatternCount(){
+    	return countTriplePattern(this);
+    }
+    
+    private int countTriplePattern(QueryTree<N> tree){
+    	int cnt = 0;
+    	Object object;
+    	if(!tree.isLeaf()){
+    		for(QueryTree<N> child : tree.getChildren()){
+        		object = child.getUserObject();
+        		boolean objectIsResource = !object.equals("?");
+        		cnt++;
+        		if(!objectIsResource){
+        			cnt+=countTriplePattern(child);
+        		}
+        	}
+    	}
+    	return cnt;
+    }
+    
+    public QueryTree<N> getSPARQLQueryTree(){
+    	return createSPARQLQueryTree(this);
+    }
+    
+    private QueryTree<N> createSPARQLQueryTree(QueryTree<N> tree){
+    	QueryTree<N> copy = new QueryTreeImpl<N>(tree.getUserObject());
+    	if(tree.getUserObject().equals("?")){
+    		for(QueryTree<N> child : tree.getChildren()){
+    			copy.addChild((QueryTreeImpl<N>) createSPARQLQueryTree(child), tree.getEdge(child));
+        	}
+    	}
+//    	for(QueryTree<N> child : tree.getChildren()){
+//    		if(child.getUserObject().equals("?")){
+//    			copy.addChild((QueryTreeImpl<N>) createSPARQLQueryTree(child), tree.getEdge(child));
+//    		} else {
+//    			copy.addChild((QueryTreeImpl<N>) child, tree.getEdge(child));
+//    		}
+//    		
+//    	}
+    	
+    	return copy;
+    }
 
     private void getUserObjectClosure(QueryTree<N> tree, Set<N> bin) {
         bin.add(tree.getUserObject());
