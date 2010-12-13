@@ -166,7 +166,7 @@ public class ResultPanel extends ContentPanel {
 			@Override
 			public void onSuccess(String result) {
 				queryTab.removeAll();System.out.println("Current query:\n" + result);
-				queryTab.addText(result);
+				queryTab.addText("<pre class=\"resultquery add-padding\"><code>"+result+"</code></pre>");
 				queryTab.layout();
 			}
 		});

@@ -72,6 +72,7 @@ public class SearchPanel extends ContentPanel {
 	
 	private void createInputPanel(){
 		LayoutContainer c = new LayoutContainer(new HBoxLayout());
+                c.addStyleName("add-padding");
 		
 		inputField = new TextField<String>();
 		inputField.setTitle("");
@@ -173,6 +174,7 @@ public class SearchPanel extends ContentPanel {
 				VerticalPanel p = new VerticalPanel();
 				p.setSize(25, 50);
 				Button addPosButton = new Button("+");
+                                addPosButton.addStyleName("button-positive");
 				addPosButton.setSize(20, 20);
 				addPosButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
@@ -183,7 +185,8 @@ public class SearchPanel extends ContentPanel {
 						Dispatcher.forwardEvent(event);
 					}
 				});
-				Button addNegButton = new Button("-");
+				Button addNegButton = new Button("&ndash;");
+                                addNegButton.addStyleName("button-negative");
 				addNegButton.setSize(20, 20);
 				addNegButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 					@Override
