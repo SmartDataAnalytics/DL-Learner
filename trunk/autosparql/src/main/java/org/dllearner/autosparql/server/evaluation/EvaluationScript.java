@@ -32,6 +32,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.ini4j.IniFile;
 
@@ -65,8 +66,9 @@ public class EvaluationScript {
 		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
+		Logger.getLogger(GreedyNBRStrategy.class).setLevel(Level.OFF);
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
-		Logger.getLogger(ExampleFinder.class).setLevel(Level.OFF);
+		Logger.getLogger(ExampleFinder.class).setLevel(Level.INFO);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
@@ -115,6 +117,9 @@ public class EvaluationScript {
 		//iterate over the queries
 		int testedCnt = 0;
 		int learnedCnt = 0;
+		int mostGeneralQueryCount = 0;
+		String mostGeneralQuery = "SELECT ?x0 WHERE {?x0 ?y ?z.}";
+		boolean failed = false;
 		while(queries.next()){
 			id = queries.getInt("id");
 			query = queries.getString("query");
@@ -123,7 +128,8 @@ public class EvaluationScript {
 			MonitorFactory.getTimeMonitor("Query").reset();
 			MonitorFactory.getTimeMonitor("LGG").reset();
 			MonitorFactory.getTimeMonitor("NBR").reset();
-			
+			mostGeneralQueryCount = 0;
+			failed = false;
 			try {
 				//send query to SPARQLEndpoint
 				rs = SparqlQuery.convertJSONtoResultSet(selectQueriesCache.executeSelectQuery(endpoint, query));
@@ -164,31 +170,43 @@ public class EvaluationScript {
 						negExamples.add(nextExample);
 						logger.info("Suggested example is considered as negative example.");
 					}
-					if(learnedQuery.equals(exampleFinder.getCurrentQuery())){
-						continue;
+					
+					if(learnedQuery.equals(mostGeneralQuery)){
+						mostGeneralQueryCount++;
+					} else {
+						mostGeneralQueryCount = 0;
 					}
+					if(mostGeneralQueryCount == 10){
+						logger.info("Breaking because seems to be that we run into an infinite loop");
+						failed = true;
+						break;
+					}
+					
 					learnedQuery = exampleFinder.getCurrentQuery();
 					logger.info("Learned query:\n" + learnedQuery);
 					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
 				} while(!equivalentQueries);
 				
-				int posExamplesCount = posExamples.size();
-				int negExamplesCount = negExamples.size();
-				int examplesCount = posExamplesCount + negExamplesCount;
-				double queryTime = MonitorFactory.getTimeMonitor("Query").getTotal();
-				double lggTime = MonitorFactory.getTimeMonitor("LGG").getTotal();
-				double nbrTime = MonitorFactory.getTimeMonitor("NBR").getTotal();
-				double totalTime = queryTime + nbrTime + lggTime;
+				if(!failed){
+					int posExamplesCount = posExamples.size();
+					int negExamplesCount = negExamples.size();
+					int examplesCount = posExamplesCount + negExamplesCount;
+					double queryTime = MonitorFactory.getTimeMonitor("Query").getTotal();
+					double lggTime = MonitorFactory.getTimeMonitor("LGG").getTotal();
+					double nbrTime = MonitorFactory.getTimeMonitor("NBR").getTotal();
+					double totalTime = queryTime + nbrTime + lggTime;
+					
+					write2DB(ps, id, query, learnedQuery,
+							examplesCount, posExamplesCount, negExamplesCount,
+							totalTime, queryTime, lggTime, nbrTime);
+					logger.info("Number of examples needed: " 
+							+ (posExamples.size() + negExamples.size()) 
+							+ "(+" + posExamples.size() + "/-" + negExamples.size() + ")");
+					learnedCnt++;
+				}
 				
-				write2DB(ps, id, query, learnedQuery,
-						examplesCount, posExamplesCount, negExamplesCount,
-						totalTime, queryTime, lggTime, nbrTime);
-				logger.info("Number of examples needed: " 
-						+ (posExamples.size() + negExamples.size()) 
-						+ "(+" + posExamples.size() + "/-" + negExamples.size() + ")");
-				learnedCnt++;
-//			if(testedCnt == 200){
+//			if(testedCnt == 50){
 //				break;
 //			}
 			} catch (Exception e) {
@@ -236,6 +254,9 @@ public class EvaluationScript {
 	 * @return
 	 */
 	private static boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint){
+		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}")){
+			return false;
+		}
 		QueryEngineHTTP qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
 		for (String dgu : endpoint.getDefaultGraphURIs()) {
 			qexec.addDefaultGraph(dgu);

@@ -162,8 +162,12 @@ public class ExampleFinder {
 			if(testedQueries.contains(currentQuery) && !currentQueryTree.getChildren().isEmpty()){
 				return findExampleByGeneralisation(currentQueryTree);
 			} else {
-				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
-				testedQueries.add(currentQuery);
+				if(currentQueryTree.getChildren().isEmpty()){
+					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery("SELECT ?x0 WHERE {?x0 ?y ?z.FILTER(REGEX(?x0,'http://dbpedia.org/resource'))}", (posExamples.size()+negExamples.size()+1), true));
+				} else {
+					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
+					testedQueries.add(currentQuery);
+				}
 			}
 			
 		} catch (Exception e) {
@@ -252,12 +256,13 @@ public class ExampleFinder {
 		
 		List<String> queries = queryGen.getSPARQLQueries(posExamplesTrees, negExamplesTrees);
 		for(String query : queries){
-			if(testedQueries.contains(query)){
+			if(!queryGen.getCurrentQueryTree().getChildren().isEmpty() && testedQueries.contains(query)){
 				if(logger.isInfoEnabled()){
 					logger.info("Skipping query because it was already tested before:\n" + query);
 				}
 				continue;
 			}
+			
 			if(logger.isInfoEnabled()){
 				logger.info("Trying query");
 				logger.info(query);
@@ -266,8 +271,12 @@ public class ExampleFinder {
 			
 			String result = "";
 			try {
-				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
-				testedQueries.add(currentQuery);
+				if(queryGen.getCurrentQueryTree().getChildren().isEmpty()){
+					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery("SELECT ?x0 WHERE {?x0 ?y ?z.FILTER(REGEX(?x0,'http://dbpedia.org/resource'))}", (posExamples.size()+negExamples.size()+1), true));
+				} else {
+					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
+					testedQueries.add(currentQuery);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new SPARQLQueryException(e, encodeHTML(query));
@@ -291,8 +300,8 @@ public class ExampleFinder {
 			logger.info("None of the queries contained a new example.");
 			logger.info("Making Generalisation...");
 		}
-		return findExampleByGeneralisation(queryGen.getCurrentQueryTree());
-//		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
+//		return findExampleByGeneralisation(queryGen.getCurrentQueryTree());
+		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
 	}
 	
 	private Example getExample(String uri){

@@ -155,6 +155,7 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 	
 	private void learnPosOnly(){
 		resultQueries.clear();
+		resultTrees.clear();
 		if(posQueryTrees.size() == 2 || newPosExample != null){
 			if(logger.isDebugEnabled()){
 				logger.debug("Computing LGG ...");
@@ -186,6 +187,7 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 	
 	private void learnPosNeg(){
 		resultQueries.clear();
+		resultTrees.clear();
 		if(newPosExample != null){
 			if(logger.isDebugEnabled()){
 				logger.debug("Computing LGG ...");
@@ -210,6 +212,9 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 				logger.debug("LGG computation time: " + lggMonitor.getTotal() + " ms");
 			}
 		}
+		if(posQueryTrees.size() == 1){
+			lgg = posQueryTrees.get(0);
+		}
 		
 		
 		Monitor nbrMonitor = MonitorFactory.getTimeMonitor("NBR monitor");
@@ -225,7 +230,6 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 			resultQueries.add(nbr.toSPARQLQueryString(true));
 			resultTrees.add(nbr);
 		}
-		
 		nbrMonitor.stop();
 		if(logger.isDebugEnabled()){
 			logger.debug("Time to make NBR: " + nbrMonitor.getTotal() + " ms");
