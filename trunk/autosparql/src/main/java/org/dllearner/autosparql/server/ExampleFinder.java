@@ -267,7 +267,6 @@ public class ExampleFinder {
 				logger.info("Trying query");
 				logger.info(query);
 			}
-			currentQuery = query;
 			
 			String result = "";
 			try {
@@ -275,6 +274,7 @@ public class ExampleFinder {
 					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery("SELECT ?x0 WHERE {?x0 ?y ?z.FILTER(REGEX(?x0,'http://dbpedia.org/resource'))}", (posExamples.size()+negExamples.size()+1), true));
 				} else {
 					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
+					currentQueryTree = queryGen.getCurrentQueryTree();
 					testedQueries.add(currentQuery);
 				}
 			} catch (Exception e) {
@@ -369,6 +369,10 @@ public class ExampleFinder {
 	
 	public String getCurrentQuery(){
 		return currentQuery;
+	}
+	
+	public QueryTree<String> getCurrentQueryTree(){
+		return currentQueryTree;
 	}
 	
 	public String getCurrentQueryHTML(){
