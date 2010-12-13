@@ -18,7 +18,6 @@ import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGenerator;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
-import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.BruteForceNBRStrategy;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
@@ -137,15 +136,21 @@ public class ExampleFinder {
 	}
 	
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
-		logger.info("Using generalisation");
-		logger.info("Query before generalisation: \n\n" + tree.toSPARQLQueryString(true));
+		if(logger.isInfoEnabled()){
+			logger.info("Using generalisation");
+			logger.info("Query before generalisation: \n\n" + tree.toSPARQLQueryString(true));
+		}
+		
 		Generalisation<String> posGen = new Generalisation<String>();
 		
 		QueryTree<String> genTree = posGen.generalise(tree);
 		
 		currentQuery = genTree.toSPARQLQueryString(true);
 		currentQueryTree = genTree;
-		logger.info("Query after generalisation: \n\n" + currentQuery);
+		if(logger.isInfoEnabled()){
+			logger.info("Query after generalisation: \n\n" + currentQuery);
+		}
+		
 		
 		if(makeAlwaysNBR){
 			makeNBR(currentQueryTree, null);
@@ -171,13 +176,22 @@ public class ExampleFinder {
 		while(rs.hasNext()){
 			qs = rs.next();
 			uri = qs.getResource("x0").getURI();
-			logger.info(uri);
+			if(logger.isInfoEnabled()){
+				logger.info(uri);
+			}
+			
 			if(!posExamples.contains(uri) && !negExamples.contains(uri)){
-				logger.info("Found new example: " + uri);
+				if(logger.isInfoEnabled()){
+					logger.info("Found new example: " + uri);
+				}
+				
 				return getExample(uri);
 			}
 		}
-		logger.info("Found no new example. Trying again generalisation...");
+		if(logger.isInfoEnabled()){
+			logger.info("Found no new example. Trying again generalisation...");
+		}
+		
 		return findExampleByGeneralisation(genTree);
 	}
 
@@ -223,9 +237,13 @@ public class ExampleFinder {
 	
 	private Example findExampleByLGG(List<QueryTree<String>> posExamplesTrees,
 			List<QueryTree<String>> negExamplesTrees) throws SPARQLQueryException{
-		logger.info("USING LGG");
+		if(logger.isInfoEnabled()){
+			logger.info("USING LGG");
+		}
 		if(negExamplesTrees.isEmpty()){
-			logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
+			if(logger.isInfoEnabled()){
+				logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
+			}
 			queryGen.getSPARQLQueries(posExamplesTrees);
 			QueryTree<String> lgg = queryGen.getLastLGG();
 			return findExampleByGeneralisation(lgg);
@@ -234,12 +252,17 @@ public class ExampleFinder {
 		List<String> queries = queryGen.getSPARQLQueries(posExamplesTrees, negExamplesTrees);
 		for(String query : queries){
 			if(testedQueries.contains(query)){
-				logger.info("Skipping query because it was already tested before:\n" + query);
+				if(logger.isInfoEnabled()){
+					logger.info("Skipping query because it was already tested before:\n" + query);
+				}
 				continue;
 			}
-			logger.info("Trying query");
+			if(logger.isInfoEnabled()){
+				logger.info("Trying query");
+				logger.info(query);
+			}
 			currentQuery = query;
-			logger.info(query);
+			
 			String result = "";
 			try {
 				result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
@@ -259,15 +282,21 @@ public class ExampleFinder {
 					return getExample(uri);
 				}
 			}
-			logger.info("Query result contains no new examples. Trying another query...");
+			if(logger.isInfoEnabled()){
+				logger.info("Query result contains no new examples. Trying another query...");
+			}
 		}
-		logger.info("None of the queries contained a new example.");
-		logger.info("Changing to Generalisation...");
+		if(logger.isInfoEnabled()){
+			logger.info("None of the queries contained a new example.");
+			logger.info("Changing to Generalisation...");
+		}
 		return findExampleByGeneralisation(queryGen.getLastLGG());
 	}
 	
 	private Example getExample(String uri){
-		logger.info("Retrieving data for resource " + uri);
+		if(logger.isInfoEnabled()){
+			logger.info("Retrieving data for resource " + uri);
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ?label ?imageURL ?comment WHERE{\n");
 		sb.append("OPTIONAL{\n");
@@ -306,8 +335,8 @@ public class ExampleFinder {
 		return new Example(uri, label, imageURL, comment);
 	}
 	
-	public void setMakeAlwaysNBR(boolean makeAlwaysNRB){
-		this.makeAlwaysNBR = makeAlwaysNRB;
+	public void setMakeAlwaysNBR(boolean makeAlwaysNBR){
+		this.makeAlwaysNBR = makeAlwaysNBR;
 	}
 	
 	public String encodeHTML(String s) {

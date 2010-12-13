@@ -62,6 +62,8 @@ public interface QueryTree<N> {
     void sortChildren(Comparator<QueryTree<N>> comparator);
 
     int getChildCount();
+    
+    int getMaxDepth();
 
     boolean isRoot();
 

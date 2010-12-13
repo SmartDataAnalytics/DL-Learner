@@ -27,10 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
-
-import com.hp.hpl.jena.sparql.function.library.e;
 
 /**
  * 
@@ -38,6 +37,8 @@ import com.hp.hpl.jena.sparql.function.library.e;
  *
  */
 public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
+	
+	private static final Logger logger = Logger.getLogger(GreedyNBRStrategy.class);
 
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
@@ -68,7 +69,9 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 //			}
 //		}
 //		
-		System.out.println(printTreeWithValues(nbr, matrix));
+		if(logger.isInfoEnabled()){
+			logger.info(printTreeWithValues(nbr, matrix));
+		}
 		
 		List<QueryTree<N>> candidates2Remove = new ArrayList<QueryTree<N>>();
 		
@@ -180,6 +183,11 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
     			}
     		}
     		setMatrixEntry(matrix, child1, index, entry);
+    		if(entry == 1){
+    			for(QueryTree<N> child : posTree.getChildrenClosure()){
+    				setMatrixEntry(matrix, child, index, 0);
+    			}
+    		}
 		}
 		
 	}

@@ -218,9 +218,11 @@ public class EvaluationScript {
 			ps.setDouble(9, lggTime);
 			ps.setDouble(10, nbrTime);
 			
+			logger.info(ps.toString());
+			
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println(e.getMessage());			
+			logger.error(e);
 			e.printStackTrace();
 		}
 		
