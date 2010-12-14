@@ -96,8 +96,8 @@ public class EvaluationScript {
 		PreparedStatement ps = conn.prepareStatement("INSERT INTO evaluation (" +
 				"id, original_query, learned_query, triple_pattern_count," +
 				"examples_needed, pos_examples_needed, neg_examples_needed," +
-				"total_time_in_ms, query_time_in_ms, lgg_time_in_ms, nbr_time_in_ms) " +
-				"VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+				"total_time_in_ms, query_time_in_ms, query_time_avg, lgg_time_in_ms, lgg_time_avg, nbr_time_in_ms, nbr_time_avg) " +
+				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		
 		//fetch all queries from table 'tmp', where the number of results is lower than 2000
 		Statement st = conn.createStatement();
@@ -204,11 +204,14 @@ public class EvaluationScript {
 					double queryTime = MonitorFactory.getTimeMonitor("Query").getTotal();
 					double lggTime = MonitorFactory.getTimeMonitor("LGG").getTotal();
 					double nbrTime = MonitorFactory.getTimeMonitor("NBR").getTotal();
+					double queryTimeAvg = MonitorFactory.getTimeMonitor("Query").getAvg();
+					double lggTimeAvg = MonitorFactory.getTimeMonitor("LGG").getAvg();
+					double nbrTimeAvg = MonitorFactory.getTimeMonitor("NBR").getAvg();
 					double totalTime = queryTime + nbrTime + lggTime;
 					
 					write2DB(ps, id, query, learnedQuery, triplePatternCount,
 							examplesCount, posExamplesCount, negExamplesCount,
-							totalTime, queryTime, lggTime, nbrTime);
+							totalTime, queryTime, queryTimeAvg, lggTime, lggTimeAvg, nbrTime, nbrTimeAvg);
 					logger.info("Number of examples needed: " 
 							+ (posExamples.size() + negExamples.size()) 
 							+ "(+" + posExamples.size() + "/-" + negExamples.size() + ")");
@@ -223,17 +226,17 @@ public class EvaluationScript {
 			}
 		}
 		logger.info("Learned " + learnedCnt + " of " + testedCnt + " queries");
-		logger.info("Time to compute LGG(total): " + MonitorFactory.getTimeMonitor("LGG").getTotal());
-		logger.info("Time to compute LGG(avg): " + MonitorFactory.getTimeMonitor("LGG").getAvg());
-		logger.info("Time to compute LGG(min): " + MonitorFactory.getTimeMonitor("LGG").getMin());
-		logger.info("Time to compute LGG(max): " + MonitorFactory.getTimeMonitor("LGG").getMax());
+		logger.info(MonitorFactory.getTimeMonitor("Query"));
+		logger.info(MonitorFactory.getTimeMonitor("LGG"));
+		logger.info(MonitorFactory.getTimeMonitor("NBR"));
 
 	}
 	
 	private static void write2DB(PreparedStatement ps, 
 			int id, String originalQuery, String learnedQuery, int triplePatternCount,
 			int examplesCount, int posExamplesCount, int negExamplesCount,
-			double totalTime, double queryTime, double lggTime, double nbrTime){
+			double totalTime, double queryTime, double queryTimeAvg, 
+			double lggTime, double lggTimeAvg, double nbrTime, double nbrTimeAvg){
 		try {
 			ps.setInt(1, id);
 			ps.setString(2, originalQuery);
@@ -244,8 +247,11 @@ public class EvaluationScript {
 			ps.setInt(7, negExamplesCount);
 			ps.setDouble(8, totalTime);
 			ps.setDouble(9, queryTime);
-			ps.setDouble(10, lggTime);
-			ps.setDouble(11, nbrTime);
+			ps.setDouble(10, queryTimeAvg);
+			ps.setDouble(11, lggTime);
+			ps.setDouble(12, lggTimeAvg);
+			ps.setDouble(13, nbrTime);
+			ps.setDouble(14, nbrTimeAvg);
 			
 			ps.executeUpdate();
 		} catch (SQLException e) {

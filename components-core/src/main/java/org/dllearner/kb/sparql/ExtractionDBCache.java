@@ -39,6 +39,8 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * The class is used to cache information about resources to a database.
@@ -62,6 +64,8 @@ public class ExtractionDBCache {
 	private Connection conn;
 	
 	MessageDigest md5;
+	
+	private Monitor mon = MonitorFactory.getTimeMonitor("Query");
 	
 	public ExtractionDBCache(String cacheDir) {
 		databaseDirectory = cacheDir;
@@ -95,6 +99,7 @@ public class ExtractionDBCache {
 	}
 	
 	public Model executeConstructQuery(SparqlEndpoint endpoint, String query) throws SQLException, UnsupportedEncodingException {
+		mon.start();
 		byte[] md5 = md5(query);		
 //		Timestamp currTS = new Timestamp(new java.util.Date().getTime());
 		PreparedStatement ps=conn.prepareStatement("SELECT * FROM QUERY_CACHE WHERE QUERYHASH=? LIMIT 1");
@@ -151,7 +156,7 @@ public class ExtractionDBCache {
 				ps2.setClob(3, new StringReader(modelStr));
 				ps2.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
 			}
-			
+			mon.stop();
 			ps2.executeUpdate(); 
 			
 			return m2;
@@ -159,7 +164,10 @@ public class ExtractionDBCache {
 	}
 	
 	public String executeSelectQuery(SparqlEndpoint endpoint, String query) {
+		
 		try {
+			
+			mon.start();
 		byte[] md5 = md5(query);		
 		PreparedStatement ps=conn.prepareStatement("SELECT * FROM QUERY_CACHE WHERE QUERYHASH=? LIMIT 1");
 		ps.setBytes(1, md5);
@@ -199,13 +207,15 @@ public class ExtractionDBCache {
 				ps2.setClob(3, new StringReader(json));
 				ps2.setTimestamp(4, new java.sql.Timestamp(new java.util.Date().getTime()));
 			}
-			
+			mon.stop();
 			ps2.executeUpdate(); 
 			return json;
 		}
 		} catch(SQLException e) {
 			e.printStackTrace();
 			return null;
+		} finally{
+			mon.stop();
 		}
 	}	
 	
