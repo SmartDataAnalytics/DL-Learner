@@ -144,7 +144,8 @@ public class EvaluationScript {
 						resources.add(qs.get("var0").asResource().getURI());
 					}
 				}
-				logger.info("Query returned " + resources.size() + " results:\n" + resources);
+				logger.info("Query returned " + resources.size() + " results");
+//				logger.info(resources);
 				
 				
 				//start learning
