@@ -289,6 +289,7 @@ public class ExampleFinder {
 				qs = rs.next();
 				uri = qs.getResource("x0").getURI();
 				if(!posExamples.contains(uri) && !negExamples.contains(uri)){
+					currentQuery = queryGen.getCurrentQueryTree().toSPARQLQueryString();
 					return getExample(uri);
 				}
 			}
