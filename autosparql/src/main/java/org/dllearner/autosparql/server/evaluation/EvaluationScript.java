@@ -121,6 +121,8 @@ public class EvaluationScript {
 		int mostGeneralQueryCount = 0;
 		String mostGeneralQuery = "SELECT ?x0 WHERE {?x0 ?y ?z.}";
 		boolean failed = false;
+		String lastQuery = "";
+		int equalsLastQueryCount = 0;
 		while(queries.next()){
 			id = queries.getInt("id");
 			query = queries.getString("query");
@@ -130,6 +132,8 @@ public class EvaluationScript {
 			MonitorFactory.getTimeMonitor("LGG").reset();
 			MonitorFactory.getTimeMonitor("NBR").reset();
 			mostGeneralQueryCount = 0;
+			equalsLastQueryCount = 0;
+			lastQuery = "";
 			failed = false;
 			try {
 				//send query to SPARQLEndpoint
@@ -187,7 +191,13 @@ public class EvaluationScript {
 					} else {
 						mostGeneralQueryCount = 0;
 					}
-					if(mostGeneralQueryCount == 10){
+					if(lastQuery.equals(learnedQuery)){
+						equalsLastQueryCount++;
+					} else {
+						equalsLastQueryCount = 0;
+						lastQuery = learnedQuery;
+					}
+					if(mostGeneralQueryCount == 10 || equalsLastQueryCount == 20){
 						logger.info("Breaking because seems to be that we run into an infinite loop");
 						failed = true;
 						break;
