@@ -42,6 +42,8 @@ import com.jamonapi.MonitorFactory;
 public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	
 	private static final Logger logger = Logger.getLogger(GreedyNBRStrategy.class);
+	
+	private int maxEqualEdgesFromRoot = 3;
 
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
@@ -67,6 +69,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 			}
 		}
 		removeLeafs(nbr, candidates2Remove);
+		removeEqualEdgesFromRoot(nbr);
 		
 		mon.stop();
 		
@@ -74,14 +77,28 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	}
 	
 	private void removeLeafs(QueryTree<N> nbr, List<QueryTree<N>> candidates2Remove){
-		for(Iterator<QueryTree<N>> iter = nbr.getLeafs().iterator(); iter.hasNext();){
-			QueryTree<N> leaf = iter.next();
-			
+		for(QueryTree<N> leaf : new ArrayList<QueryTree<N>>(nbr.getLeafs())){
 			if(candidates2Remove.contains(leaf)){
+				logger.info("REMOVE " + leaf);
 				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
 			}
 		}
 	}
+	
+	private void removeEqualEdgesFromRoot(QueryTree<N> tree){
+		List<QueryTree<N>> children;
+		int childCount = 1;
+		for(Object edge : tree.getEdges()){
+			children = tree.getChildren(edge);
+			childCount = children.size();
+			while(childCount > maxEqualEdgesFromRoot){
+				tree.removeChild((QueryTreeImpl<N>) children.get(childCount-1));
+				childCount--;
+			}
+		}
+		
+	}
+	
 	
 	private String printTreeWithValues(QueryTree<N> tree, Map<QueryTree<N>, List<Integer>> matrix){
 		int depth = tree.getPathToRoot().size();
