@@ -97,7 +97,7 @@ public class ResultPanel extends ContentPanel {
 //		grid.setHideHeaders(true);
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
-		grid.getView().setEmptyText("DUMMY TEXT");
+		grid.getView().setEmptyText("");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,

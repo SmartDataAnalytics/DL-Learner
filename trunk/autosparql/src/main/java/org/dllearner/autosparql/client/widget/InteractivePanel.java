@@ -178,7 +178,7 @@ public class InteractivePanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("DUMMY TEXT");
+		grid.getView().setEmptyText("");
 //		grid.getView().setShowDirtyCells(showDirtyCells)
 		
 		add(grid, new RowData(1, 1));
