@@ -26,10 +26,37 @@
 
 /* -- Layout Intro ---------------------------------------------------------- */
 
+body.home_view
+{
+    overflow: auto !important;
+    background-color: #F0F0F0;
+    height:auto !important;
+    width:auto !important;
+}
+
+body.home_view #x-auto-0,
+body.home_view #x-auto-1,
+body.home_view #x-auto-2,
+body.home_view #x-auto-4,
+body.home_view #x-auto-14
+{
+    position: static !important;
+    overflow: auto !important;
+    height:auto !important;
+    width:auto !important;
+    top:auto !important;
+    left:auto !important;
+}
+
+body.home_view #x-auto-1
+{
+    display: none;
+}
+
 .pagecontainer
 {
     width:50em;
-    margin:1em auto;
+    margin:2.5em auto;
     font-size:large;
     background-color:#fff;
     color:#333;
