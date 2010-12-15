@@ -27,6 +27,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 
 public class QueryView extends View {
 	
@@ -81,6 +82,8 @@ public class QueryView extends View {
 		      wrapper.removeAll();
 		      wrapper.add(mainPanel);
 		      wrapper.layout();
+		      RootPanel.get().addStyleName("query_view");
+		      RootPanel.get().removeStyleName("home_view");
 		      return;
 		} else if(event.getType() == AppEvents.AddPosExample){
 			examplesPanel.addPositiveExample((Example) event.getData());

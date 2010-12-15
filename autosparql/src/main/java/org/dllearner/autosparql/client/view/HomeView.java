@@ -25,6 +25,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootPanel;
 
 public class HomeView extends View {
 	
@@ -186,6 +187,8 @@ public class HomeView extends View {
 		      wrapper.removeAll();
 		      wrapper.add(container);
 		      wrapper.layout();
+		      RootPanel.get().addStyleName("home_view");
+		      RootPanel.get().removeStyleName("query_view");
 		      return;
 		}
 		 
