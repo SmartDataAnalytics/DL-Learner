@@ -19,8 +19,18 @@
  */
 package org.dllearner.sparqlquerygenerator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.examples.DBpediaExample;
@@ -28,12 +38,18 @@ import org.dllearner.sparqlquerygenerator.examples.LinkedGeoDataExample;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * 
@@ -41,6 +57,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  *
  */
 public class LGGTest {
+	
+	private static final Logger logger = Logger.getLogger(LGGTest.class);
 	
 	@Test
 	public void testLGGWithDBpediaExample(){
@@ -117,6 +135,69 @@ public class LGGTest {
 		Assert.assertTrue(lgg.isSameTreeAs(tree));
 		
 		System.out.println(tree.toSPARQLQueryString());
+		
+	}
+	
+	@Test
+	public void performanceTest(){
+		int recursionDepth = 2;
+		int limit = 10;
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+		ExtractionDBCache cache = new ExtractionDBCache("cache");
+		ModelGenerator modelGen = new ModelGenerator(endpoint, cache);
+		QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
+		
+		String queryString = "SELECT ?resource WHERE {?resource a ?class." +
+				" FILTER(REGEX(?resource,'http://dbpedia.org/resource'))} LIMIT " + limit;
+		SparqlQuery query = new SparqlQuery(queryString, endpoint);
+		ResultSet rs = query.send();
+		
+		
+		
+		//load the models
+		SortedMap<String, Model> resource2Model = new TreeMap<String, Model>();
+		Model model;
+		String resource;
+		logger.info("Resources(#triple):");
+		while(rs.hasNext()){
+			resource = rs.next().get("resource").asResource().getURI();
+			logger.info(resource);
+			model = modelGen.createModel(resource, Strategy.CHUNKS, recursionDepth);
+			logger.info(resource + "(" + model.size() + ")");
+			resource2Model.put(resource, model);
+		}
+		
+		//create the querytrees
+		SortedMap<String, QueryTree<String>> resource2Tree = new TreeMap<String, QueryTree<String>>();
+		Map<QueryTree<String>, String> tree2Resource = new HashMap<QueryTree<String>, String>(limit);
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		QueryTree<String> tree;
+		for(Entry<String, Model> entry : resource2Model.entrySet()){
+			tree = treeFactory.getQueryTree(entry.getKey(), entry.getValue());
+			trees.add(tree);
+			resource2Tree.put(entry.getKey(), tree);
+			tree2Resource.put(tree, entry.getKey());
+		}
+		
+		
+		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+		QueryTree<String> tree1;
+		QueryTree<String> tree2;
+		QueryTree<String> lgg;
+		for(int i = 0; i < trees.size(); i++){
+			for(int j = i+1; j < trees.size(); j++){
+				tree1 = trees.get(i);
+				tree2 = trees.get(j);
+				lgg = lggGen.getLGG(tree1, tree2);
+				logger.info("LGG(" + tree2Resource.get(tree1) + ", " + tree2Resource.get(tree2) + ") needed "
+						+ MonitorFactory.getTimeMonitor("LGG").getLastValue() + "ms");
+				logger.info("Tree 1:\n" + tree1.getStringRepresentation());
+				logger.info("Tree 2:\n" + tree2.getStringRepresentation());
+				logger.info("LGG:\n" + lgg.getStringRepresentation());
+			}
+		}
+		logger.info("Average time to compute LGG: " + MonitorFactory.getTimeMonitor("LGG").getAvg());
+		
 		
 	}
 
