@@ -315,7 +315,7 @@ public class ExampleFinder {
 		sb.append("<").append(uri).append("> <").append(RDFS.label.getURI()).append("> ").append("?label.\n");
 		sb.append("}\n");
 		sb.append("OPTIONAL{\n");
-		sb.append("<").append(uri).append("> <").append(FOAF.depiction.getURI()).append("> ").append("?imageURL.\n");
+		sb.append("<").append(uri).append("> <http://dbpedia.org/ontology/thumbnail> ").append("?imageURL.\n");
 		sb.append("}\n");
 		sb.append("OPTIONAL{\n");
 		sb.append("<").append(uri).append("> <").append(RDFS.comment.getURI()).append("> ").append("?comment.\n");
