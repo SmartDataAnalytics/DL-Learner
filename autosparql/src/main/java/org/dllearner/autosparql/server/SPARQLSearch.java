@@ -101,7 +101,7 @@ public class SPARQLSearch {
 		sb.append("?object <").append(RDFS.label).append("> ?label.\n");
 		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?label), \"en\"))\n");
-		sb.append("OPTIONAL{?object <").append(FOAF.depiction.getURI()).append("> ?imageURL.}\n");
+		sb.append("OPTIONAL{?object <http://dbpedia.org/ontology/thumbnail> ?imageURL.}\n");
 		sb.append("OPTIONAL{?object <").append(RDFS.comment).append("> ?comment.\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?comment), \"en\"))}");
 		sb.append("}\n");
