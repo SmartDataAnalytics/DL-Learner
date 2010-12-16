@@ -139,7 +139,7 @@ public class ExamplesPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("<p class=\"message-box message-box-info\">No examples selected</p>");
+		grid.getView().setEmptyText("<p class=\"message-box message-box-info\">No examples selected.</p>");
 //		grid.getView().setShowDirtyCells(showDirtyCells)
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override

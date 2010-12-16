@@ -217,7 +217,7 @@ public class SearchPanel extends ContentPanel {
 		grid.setAutoExpandColumn("label");
 //		grid.setLoadMask(true);
 		grid.addPlugin(expander);
-		grid.getView().setEmptyText("No resources found.");
+		grid.getView().setEmptyText("<p class=\"message-box message-box-info\">No resources found.</p>");
 		grid.getView().setViewConfig(new GridViewConfig(){
 			@Override
 			public String getRowStyle(ModelData model, int rowIndex,
