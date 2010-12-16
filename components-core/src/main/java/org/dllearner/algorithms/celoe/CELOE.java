@@ -172,6 +172,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useDoubleDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
 		options.add(CommonConfigOptions.getNoisePercentage());
+		options.add(CommonConfigOptions.getTerminateOnNoiseReached(false));
 		options.add(CommonConfigOptions.getMaxDepth(7));
 		options.add(CommonConfigOptions.maxNrOfResults(10));
 		options.add(CommonConfigOptions.maxClassDescriptionTests());
@@ -330,6 +331,10 @@ public class CELOE extends LearningAlgorithm {
 	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}	
+	
+	public double getCurrentlyBestAccuracy() {
+		return bestEvaluatedDescriptions.getBest().getAccuracy();
+	}
 	
 	@Override
 	public void start() {
@@ -681,7 +686,8 @@ public class CELOE extends LearningAlgorithm {
 		return 
 		stop || 
 		(configurator.getMaxClassDescriptionTests() != 0 && (expressionTests >= configurator.getMaxClassDescriptionTests())) ||
-		(configurator.getMaxExecutionTimeInSeconds() != 0 && ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l)));
+		(configurator.getMaxExecutionTimeInSeconds() != 0 && ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l))) ||
+		(configurator.getTerminateOnNoiseReached() && (100*getCurrentlyBestAccuracy()>100-configurator.getNoisePercentage()));
 	}
 	
 	private void reset() {
@@ -785,4 +791,5 @@ public class CELOE extends LearningAlgorithm {
 	public int getClassExpressionTests() {
 		return expressionTests;
 	}	
+	
 }
