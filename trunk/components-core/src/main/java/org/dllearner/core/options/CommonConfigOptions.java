@@ -78,6 +78,10 @@ public final class CommonConfigOptions {
 		return new BooleanConfigOption("terminateOnNoiseReached", "specifies whether to terminate when noise criterion is met", terminateOnNoiseReachedDefault);
 	}
 	
+	public static BooleanConfigOption getTerminateOnNoiseReached(boolean defaultValue) {
+		return new BooleanConfigOption("terminateOnNoiseReached", "specifies whether to terminate when noise criterion is met", defaultValue);
+	}	
+	
 	public static IntegerConfigOption getMaxDepth(int defaultValue) {
 		return new IntegerConfigOption("maxDepth", "maximum depth of description", defaultValue);
 	}

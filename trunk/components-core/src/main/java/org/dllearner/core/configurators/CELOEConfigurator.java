@@ -164,6 +164,15 @@ public double getNoisePercentage() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "noisePercentage") ;
 }
 /**
+* terminateOnNoiseReached specifies whether to terminate when noise criterion is met.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getTerminateOnNoiseReached() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "terminateOnNoiseReached") ;
+}
+/**
 * maxDepth maximum depth of description.
 * mandatory: false| reinit necessary: true
 * default value: 7
@@ -369,6 +378,15 @@ reinitNecessary = true;
 **/
 public void setNoisePercentage(double noisePercentage) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "noisePercentage", noisePercentage);
+reinitNecessary = true;
+}
+/**
+* @param terminateOnNoiseReached specifies whether to terminate when noise criterion is met.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "terminateOnNoiseReached", terminateOnNoiseReached);
 reinitNecessary = true;
 }
 /**
