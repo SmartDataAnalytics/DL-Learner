@@ -48,6 +48,9 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	@Override
 	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
 			List<QueryTree<N>> negExampleTrees) {
+		if(logger.isInfoEnabled()){
+			logger.info("Making NBR...");
+		}
 		Monitor mon = MonitorFactory.getTimeMonitor("NBR");
 		mon.start();
 		
@@ -58,17 +61,43 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 			checkTree(matrix, nbr, negExampleTrees.get(i), i);
 		}
 		
-		if(logger.isInfoEnabled()){
-			logger.info(printTreeWithValues(nbr, matrix));
-		}
-		
 		List<QueryTree<N>> candidates2Remove = new ArrayList<QueryTree<N>>();
 		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
 			if(sum(entry.getValue()) < negExampleTrees.size()/2.0){
 				candidates2Remove.add(entry.getKey());
 			}
 		}
-		removeLeafs(nbr, candidates2Remove);
+		
+		if(logger.isInfoEnabled()){
+			logger.info("Marked tree:\n" + printTreeWithValues(nbr, matrix));
+			logger.info("Removing leafs with rowsum < #negTrees/2");
+		}
+		
+		QueryTree<N> parent;
+		for(QueryTree<N> leaf : new ArrayList<QueryTree<N>>(nbr.getLeafs())){
+			parent = leaf.getParent();
+			if(candidates2Remove.contains(leaf)){
+				if(logger.isInfoEnabled()){
+					logger.info("Removing edge [" + 
+							leaf.getParent().getUserObject() + "--" + leaf.getParent().getEdge(leaf) + "-->" + leaf.getUserObject() + "]");
+				}
+				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
+				if(logger.isInfoEnabled()){
+					logger.info("Checking if removal leads to cover a negative tree...");
+				}
+				for(QueryTree<N> negTree : negExampleTrees){
+					if(negTree.isSubsumedBy(nbr)){
+						parent.addChild((QueryTreeImpl<N>) leaf);
+						if(logger.isInfoEnabled()){
+							logger.info("Removal of the edge leads to cover a negative tree. Reverting removal.");
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+//		removeLeafs(nbr, candidates2Remove);
 		removeEqualEdgesFromRoot(nbr);
 		
 		mon.stop();

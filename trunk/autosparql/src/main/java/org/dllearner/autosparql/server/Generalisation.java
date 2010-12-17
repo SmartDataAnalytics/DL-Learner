@@ -83,7 +83,7 @@ public class Generalisation<N> {
 		if(logger.isInfoEnabled()){
 			logger.info("Pruning tree:");
 //			logger.info(tree.getStringRepresentation());
-			logger.info("Number of triple pattern: " + ((QueryTreeImpl<N>)tree).getTriplePatternCount());
+//			logger.info("Number of triple pattern: " + ((QueryTreeImpl<N>)tree).getTriplePatternCount());
 //			logger.info(((QueryTreeImpl<N>)tree).getSPARQLQueryTree().getStringRepresentation());
 		}
 		
@@ -137,9 +137,9 @@ public class Generalisation<N> {
 			}
 			level--;
 		}
-		if(logger.isInfoEnabled()){
-			logger.info(tree.getStringRepresentation());
-		}
+//		if(logger.isInfoEnabled()){
+//			logger.info("Resulting tree:\n" + tree.getStringRepresentation());
+//		}
 	}
 	
 	private List<QueryTree<N>> getLeafsAtLevel(QueryTree<N> tree, int level){
