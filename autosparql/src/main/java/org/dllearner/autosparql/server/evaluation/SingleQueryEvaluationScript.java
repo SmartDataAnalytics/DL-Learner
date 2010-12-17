@@ -21,9 +21,13 @@ import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -52,15 +56,17 @@ public class SingleQueryEvaluationScript {
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.INFO);
 		Logger.getLogger(ModelGenerator.class).setLevel(Level.OFF);
-		Logger.getLogger(SPARQLQueryGeneratorImpl.class).setLevel(Level.INFO);
+		Logger.getLogger(SPARQLQueryGeneratorCachedImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getLogger(Generalisation.class).setLevel(Level.INFO);
+		Logger.getLogger(GreedyNBRStrategy.class).setLevel(Level.INFO);
+		Logger.getLogger(ExampleFinder.class).setLevel(Level.INFO);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
-				new URL("http://dbpedia.org/sparql"),
-//				new URL("http://db0.aksw.org:8999/sparql"),
+//				new URL("http://dbpedia.org/sparql"),
+				new URL("http://db0.aksw.org:8999/sparql"),
 				Collections.singletonList("http://dbpedia.org"),
 				Collections.<String>emptyList(),
 				null, null,
@@ -68,8 +74,13 @@ public class SingleQueryEvaluationScript {
 		ExtractionDBCache selectQueriesCache = new ExtractionDBCache("evaluation/select-cache");
 		ExtractionDBCache constructQueriesCache = new ExtractionDBCache("evaluation/construct-cache");
 		
-		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX : <http://dbpedia.org/resource/> PREFIX dbpedia2: <http://dbpedia.org/property/> PREFIX dbpedia: <http://dbpedia.org/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
-				"SELECT * WHERE { ?var0 owl:sameAs ?var1. ?var0 rdf:type <http://dbpedia.org/class/yago/State108654360> }";
+		String query = ""+
+//		"PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX : <http://dbpedia.org/resource/> PREFIX dbpedia2: <http://dbpedia.org/property/> PREFIX dbpedia: <http://dbpedia.org/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
+//				"SELECT * WHERE { ?var0 owl:sameAs ?var1. ?var0 rdf:type <http://dbpedia.org/class/yago/State108654360> }";
+//		"SELECT ?var0 WHERE { ?var0 skos:subject <http://dbpedia.org/resource/Category:French_films> }";
+//		"PREFIX dbpedia2: <http://dbpedia.org/property/> PREFIX dbpo:  <http://dbpedia.org/ontology/> SELECT DISTINCT ?var0 WHERE {  ?var0 a dbpo:Band . ?var0 dbpedia2:genre  <http://dbpedia.org/resource/Hard_rock> . ?var0 dbpedia2:genre  <http://dbpedia.org/resource/Heavy_metal_music> . ?var0  dbpedia2:genre <http://dbpedia.org/resource/Blues-rock> . }";
+		"PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> SELECT DISTINCT ?var0 ?label ?homepage ?genre WHERE {?var0 a dbo:Band .?band rdfs:label ?label .OPTIONAL { ?var0 foaf:homepage ?homepage } .?var0 dbo:genre ?genre .?genre dbo:instrument dbpedia:Electric_guitar .?genre dbo:stylisticOrigin dbpedia:Jazz .}";
+
 		com.hp.hpl.jena.query.ResultSet rs;
 		SortedSet<String> resources;
 		QuerySolution qs;
@@ -102,7 +113,8 @@ public class SingleQueryEvaluationScript {
 				negExamples = new ArrayList<String>();
 				
 				//we choose the first resource in the set as positive example
-				String posExample = resources.first();
+//				String posExample = resources.first();
+				String posExample = "http://dbpedia.org/resource/Foals";
 				logger.info("Selected " + posExample + " as first positive example.");
 				posExamples.add(posExample);
 
@@ -112,6 +124,13 @@ public class SingleQueryEvaluationScript {
 				boolean equivalentQueries = false;
 				do{
 					nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
+					learnedQuery = exampleFinder.getCurrentQuery();
+					logger.info("Learned query:\n" + learnedQuery);
+					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
+					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
+					if(equivalentQueries){
+						break;
+					}
 					logger.info("Next suggested example is " + nextExample);
 					//if the example is contained in the resultset of the query, we add it to the positive examples,
 					//otherwise to the negatives
@@ -122,19 +141,18 @@ public class SingleQueryEvaluationScript {
 						negExamples.add(nextExample);
 						logger.info("Suggested example is considered as negative example.");
 					}
-					learnedQuery = exampleFinder.getCurrentQuery();
-					logger.info("Learned query:\n" + learnedQuery);
-					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
-					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
+					
 				} while(!equivalentQueries);
 				
 				logger.info("Number of examples needed: " 
 						+ (posExamples.size() + negExamples.size()) 
 						+ "(+" + posExamples.size() + "/-" + negExamples.size() + ")");
+				logger.info(((QueryTreeImpl<String>)exampleFinder.getCurrentQueryTree()).getTriplePatternCount());
 			} catch (Exception e) {
 				logger.error("Error while learning query ", e);
 			}
-		
+		logger.info(MonitorFactory.getTimeMonitor("LGG"));
+		logger.info(MonitorFactory.getTimeMonitor("Query"));
 		logger.info("Time to compute LGG(total): " + MonitorFactory.getTimeMonitor("LGG").getTotal());
 		logger.info("Time to compute LGG(avg): " + MonitorFactory.getTimeMonitor("LGG").getAvg());
 		logger.info("Time to compute LGG(min): " + MonitorFactory.getTimeMonitor("LGG").getMin());

@@ -49,7 +49,11 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2,
 			boolean learnFilters) {
-		return computeLGG(tree1, tree2, learnFilters);
+		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
+		mon.start();
+		QueryTree<N> lgg = computeLGG(tree1, tree2, learnFilters);
+		mon.stop();
+		return lgg;
 	}
 
 	@Override
@@ -80,7 +84,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		if(trees.size() == 1){
 			return trees.iterator().next();
 		}
-		
+		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
+		mon.start();
 		QueryTree<N> lgg = computeLGG(treeList.get(0), treeList.get(1), learnFilters);
 		if(logger.isInfoEnabled()){
 			logger.info("LGG for 1 and 2:\n" + lgg.getStringRepresentation());
@@ -97,7 +102,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			logger.info("LGG = ");
 			logger.info(lgg.getStringRepresentation());
 		}
-		
+		mon.stop();
 		
 		return lgg;
 	}
@@ -109,8 +114,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			logger.debug("and");
 			logger.debug(tree2.getStringRepresentation());
 		}
-		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
-		mon.start();
+		
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
 		
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
@@ -183,9 +187,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 				}
 			}
 		}
-		mon.stop();
 		if(logger.isDebugEnabled()){
-			logger.debug("Computed LGG(" + mon.getLastValue() + "ms):");
+			logger.debug("Computed LGG:");
 			logger.debug(lgg.getStringRepresentation());
 		}
 		return lgg;

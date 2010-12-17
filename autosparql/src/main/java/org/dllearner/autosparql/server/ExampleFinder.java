@@ -68,6 +68,9 @@ public class ExampleFinder {
 	
 	public Example findSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException{
+		logger.info("Searching similiar example");
+		logger.info("Positive examples: " + posExamples);
+		logger.info("Negative examples: " + negExamples);
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
@@ -77,21 +80,24 @@ public class ExampleFinder {
 		Model model;
 		QueryTree<String> queryTree;
 		for(String resource : posExamples){
-			logger.info("Fetching model for resource: " + resource);
+//			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
 			queryTree = queryTreeCache.getQueryTree(resource, model);
 			posExampleTrees.add(queryTree);
 		}
 		for(String resource : negExamples){
-			logger.info("Fetching model for resource: " + resource);
+//			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
 			queryTree = queryTreeCache.getQueryTree(resource, model);
 			negExampleTrees.add(queryTree);
 		}
 		
 		if(posExamples.size() == 1 && negExamples.isEmpty()){
+			logger.info("Up to now only 1 positive example is selected. Calling positive generalisation...");
 			return findExampleByGeneralisation(posExampleTrees.get(0));
 		} else {
+			logger.info("There are " + posExamples.size() + " positive examples and " 
+					+ negExamples.size() + "negative examples selected. Calling LGG/NBR...");
 			return findExampleByLGG(posExampleTrees, negExampleTrees);
 		}
 		
@@ -138,8 +144,9 @@ public class ExampleFinder {
 	
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
 		if(logger.isInfoEnabled()){
-			logger.info("Using generalisation");
-			logger.info("Query before generalisation: \n\n" + tree.toSPARQLQueryString(true));
+			logger.info("Making positive generalisation...");
+			logger.info("Tree before generalisation:\n" + tree.getStringRepresentation());
+			logger.info("Query before generalisation:\n" + tree.toSPARQLQueryString(true));
 		}
 		
 		Generalisation<String> posGen = new Generalisation<String>();
@@ -149,7 +156,8 @@ public class ExampleFinder {
 		currentQuery = genTree.toSPARQLQueryString(true);
 		currentQueryTree = genTree;
 		if(logger.isInfoEnabled()){
-			logger.info("Query after generalisation: \n\n" + currentQuery);
+			logger.info("Tree after generalisation:\n" + tree.getStringRepresentation());
+			logger.info("Query after generalisation:\n" + currentQuery);
 		}
 		
 		
@@ -160,6 +168,9 @@ public class ExampleFinder {
 		String result = "";
 		try {
 			if(testedQueries.contains(currentQuery) && !currentQueryTree.getChildren().isEmpty()){
+				if(logger.isInfoEnabled()){
+					logger.info("Query was already used before. Calling again positive generalisation...");
+				}
 				return findExampleByGeneralisation(currentQueryTree);
 			} else {
 				if(currentQueryTree.getChildren().isEmpty()){
@@ -178,6 +189,9 @@ public class ExampleFinder {
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
+		if(logger.isInfoEnabled()){
+			logger.info("Resources in resultset:");
+		}
 		while(rs.hasNext()){
 			qs = rs.next();
 			uri = qs.getResource("x0").getURI();
@@ -194,7 +208,7 @@ public class ExampleFinder {
 			}
 		}
 		if(logger.isInfoEnabled()){
-			logger.info("Found no new example. Trying again generalisation...");
+			logger.info("The query resultset contains no new example. Calling again generalisation...");
 		}
 		
 		return findExampleByGeneralisation(genTree);
@@ -242,15 +256,14 @@ public class ExampleFinder {
 	
 	private Example findExampleByLGG(List<QueryTree<String>> posExamplesTrees,
 			List<QueryTree<String>> negExamplesTrees) throws SPARQLQueryException{
-		if(logger.isInfoEnabled()){
-			logger.info("USING LGG");
-		}
 		if(negExamplesTrees.isEmpty()){
-			if(logger.isInfoEnabled()){
-				logger.info("No negative examples given. Avoiding big queries by GENERALISATION");
-			}
 			queryGen.getSPARQLQueries(posExamplesTrees);
 			QueryTree<String> lgg = queryGen.getLastLGG();
+			if(logger.isInfoEnabled()){
+				logger.info("No negative examples given.");
+				logger.info("Computed LGG:\n" + lgg.getStringRepresentation());
+				logger.info("Avoiding big queries by calling positive generalisation...");
+			}
 			return findExampleByGeneralisation(lgg);
 		}
 		
@@ -290,16 +303,17 @@ public class ExampleFinder {
 				uri = qs.getResource("x0").getURI();
 				if(!posExamples.contains(uri) && !negExamples.contains(uri)){
 					currentQuery = queryGen.getCurrentQueryTree().toSPARQLQueryString();
+					logger.info("Found new example: " + uri);
 					return getExample(uri);
 				}
 			}
 			if(logger.isInfoEnabled()){
-				logger.info("Query result contains no new examples. Trying another query...");
+				logger.info("Query resultset contains no new example. Trying another query...");
 			}
 		}
 		if(logger.isInfoEnabled()){
-			logger.info("None of the queries contained a new example.");
-			logger.info("Making Generalisation...");
+			logger.info("None of the tested queries which was not tested before contained a new example.");
+			logger.info("Making again NBR...");
 		}
 //		return findExampleByGeneralisation(queryGen.getCurrentQueryTree());
 		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
