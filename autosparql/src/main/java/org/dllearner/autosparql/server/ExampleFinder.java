@@ -17,6 +17,8 @@ import org.dllearner.sparqlquerygenerator.cache.ModelCache;
 import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGenerator;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
@@ -92,13 +94,23 @@ public class ExampleFinder {
 			negExampleTrees.add(queryTree);
 		}
 		
+//		if(posExamples.size() == 1 && negExamples.isEmpty()){
+//			logger.info("Up to now only 1 positive example is selected.");
+//			return findExampleByGeneralisation(posExampleTrees.get(0));
+//		} else {
+//			logger.info("There are " + posExamples.size() + " positive examples and " 
+//					+ negExamples.size() + " negative examples selected. Calling LGG/NBR...");
+//			return findExampleByLGG(posExampleTrees, negExampleTrees);
+//		}
 		if(posExamples.size() == 1 && negExamples.isEmpty()){
-			logger.info("Up to now only 1 positive example is selected. Calling positive generalisation...");
+			logger.info("Up to now only 1 positive example is selected.");
 			return findExampleByGeneralisation(posExampleTrees.get(0));
-		} else {
+		} else if(negExamples.isEmpty()){
 			logger.info("There are " + posExamples.size() + " positive examples and " 
-					+ negExamples.size() + "negative examples selected. Calling LGG/NBR...");
+					+ negExamples.size() + " negative examples selected. Calling LGG/NBR...");
 			return findExampleByLGG(posExampleTrees, negExampleTrees);
+		} else {
+			return findExampleByNBR(posExampleTrees, negExampleTrees);
 		}
 		
 	}
@@ -145,7 +157,7 @@ public class ExampleFinder {
 	private Example findExampleByGeneralisation(QueryTree<String> tree) throws SPARQLQueryException{
 		if(logger.isInfoEnabled()){
 			logger.info("Making positive generalisation...");
-			logger.info("Tree before generalisation:\n" + tree.getStringRepresentation());
+//			logger.info("Tree before generalisation:\n" + tree.getStringRepresentation());
 			logger.info("Query before generalisation:\n" + tree.toSPARQLQueryString(true));
 		}
 		
@@ -156,7 +168,7 @@ public class ExampleFinder {
 		currentQuery = genTree.toSPARQLQueryString(true);
 		currentQueryTree = genTree;
 		if(logger.isInfoEnabled()){
-			logger.info("Tree after generalisation:\n" + tree.getStringRepresentation());
+//			logger.info("Tree after generalisation:\n" + currentQueryTree.getStringRepresentation());
 			logger.info("Query after generalisation:\n" + currentQuery);
 		}
 		
@@ -286,9 +298,9 @@ public class ExampleFinder {
 				if(queryGen.getCurrentQueryTree().getChildren().isEmpty()){
 					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery("SELECT ?x0 WHERE {?x0 ?y ?z.FILTER(REGEX(?x0,'http://dbpedia.org/resource'))}", (posExamples.size()+negExamples.size()+1), true));
 				} else {
-					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
+					result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, (posExamples.size()+negExamples.size()+1), true));
 					currentQueryTree = queryGen.getCurrentQueryTree();
-					testedQueries.add(currentQuery);
+					testedQueries.add(query);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -317,6 +329,21 @@ public class ExampleFinder {
 		}
 //		return findExampleByGeneralisation(queryGen.getCurrentQueryTree());
 		return findExampleByLGG(Collections.singletonList(queryGen.getCurrentQueryTree()), negExamplesTrees);
+	}
+	
+	private Example findExampleByNBR(List<QueryTree<String>> posExamplesTrees,
+			List<QueryTree<String>> negExamplesTrees){
+		logger.info("Making NBR...");
+		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+		QueryTree<String> lgg = lggGen.getLGG(posExamplesTrees);
+		
+		List<String> resources = new ArrayList<String>();
+		resources.addAll(posExamples);
+		resources.addAll(negExamples);
+		
+		NBR<String> nbr = new NBR<String>(endpoint, selectCache);
+		return nbr.makeNBR(resources, lgg, negExamplesTrees);
+		
 	}
 	
 	private Example getExample(String uri){
