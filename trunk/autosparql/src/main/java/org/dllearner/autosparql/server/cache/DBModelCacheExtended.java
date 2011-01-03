@@ -24,14 +24,17 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
+import com.clarkparsia.pellet.sparqldl.engine.QueryEngine;
 import com.google.common.base.Joiner;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -582,6 +585,40 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 		} catch (SQLException e) {
 			logger.error("An error occured while writing triples for resource " + key + " to DB.", e);
 		} 
+	}
+	
+	private int getTripleCount(Property predicate, RDFNode object){
+		int cnt;
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT COUNT DISTINCT ?x WHERE {?x ");
+		sb.append("<").append(predicate.getURI()).append("> ");
+		if(object.isLiteral()){
+			sb.append(object.asLiteral().getValue());
+		} else if(object.isURIResource()){
+			sb.append("<").append(object.asResource().getURI()).append(">");
+		}
+		sb.append("}");
+		QueryEngineHTTP queryExecution = new QueryEngineHTTP(endpoint.getURL().toString(), sb.toString());
+		for (String dgu : endpoint.getDefaultGraphURIs()) {
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : endpoint.getNamedGraphURIs()) {
+			queryExecution.addNamedGraph(ngu);
+		}	
+		ResultSet rs = queryExecution.execSelect();
+		cnt = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		return cnt;
+	}
+	
+	private void filterModel(Model model){
+		com.hp.hpl.jena.rdf.model.Statement st;
+		for(StmtIterator it = model.listStatements(); it.hasNext();){
+			st = it.nextStatement();
+			int cnt = getTripleCount(st.getPredicate(), st.getObject());
+			if(cnt == 1){
+				st.changeObject("?");
+			}
+		}
 	}
 	
 	private void writeKey2KeyIntoDB(int id1, String resource2){
