@@ -1,7 +1,19 @@
 package org.dllearner.autosparql.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -16,6 +28,9 @@ public class NBR<N> {
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
+	private String query;
+	
+	private static final Logger logger = Logger.getLogger(NBR.class);
 	
 	public NBR(SparqlEndpoint endpoint, ExtractionDBCache cache){
 		this.endpoint = endpoint;
@@ -23,17 +38,33 @@ public class NBR<N> {
 	}
 	
 	public Example makeNBR(List<String> resources, QueryTree<N> lgg, List<QueryTree<N>> negTrees){
+		//We only consider here the tree which corresponds to the SPARQL-Query
 		QueryTree<N> relevantTree = ((QueryTreeImpl<N>)lgg).getSPARQLQueryTree();
-		for(QueryTree<N> leaf : relevantTree.getLeafs()){
+		
+		QueryTree<N> nbr = new QueryTreeImpl<N>(relevantTree);
+		Map<QueryTree<N>, List<Integer>> matrix = new HashMap<QueryTree<N>, List<Integer>>();
+		
+		for(int i = 0; i < negTrees.size(); i++){
+			checkTree(matrix, nbr, negTrees.get(i), i);
+		}
+		
+//		System.err.println(printTreeWithValues(nbr, matrix));
+		List<QueryTree<N>> orderedLeafs = getLeafsOrderedByRowSum(nbr, matrix);
+//		System.err.println(orderedLeafs);
+		
+		for(QueryTree<N> leaf : orderedLeafs){
 			if(leaf.getUserObject().equals("?")){
+				logger.info("Removing edge [" + 
+						leaf.getParent().getUserObject() + "--" + leaf.getParent().getEdge(leaf) + "-->" + leaf.getUserObject() + "]");
 				QueryTree<N> parent = leaf.getParent();
 				Object edge = parent.getEdge(leaf);
 				parent.removeChild((QueryTreeImpl<N>) leaf);
-				if(coversNegativeTree(lgg, negTrees)){
-					parent.addChild((QueryTreeImpl<N>) leaf);
-				} else {
-					String query = getLimitedEdgeCountQuery(relevantTree);//.toSPARQLQueryString();
-					System.out.println(query);
+//				if(coversNegativeTree(nbr, negTrees)){
+//					parent.addChild((QueryTreeImpl<N>) leaf);
+//					logger.info("Undoing change because a negative tree would be covered.");
+//				} else {
+					query = getLimitedEdgeCountQuery(nbr);//.toSPARQLQueryString();
+					logger.info("Testing query\n" + query);
 					String result = cache.executeSelectQuery(endpoint, query);
 					ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 					String uri;
@@ -46,16 +77,18 @@ public class NBR<N> {
 						}
 						
 					}
-				}
+//				}
 				
 			} else {
+				logger.info("Replacing label for node " + leaf.getUserObject());
 				N oldLabel = leaf.getUserObject();
 				leaf.setUserObject((N) "?");
-				if(coversNegativeTree(lgg, negTrees)){
-					leaf.setUserObject(oldLabel);
-				} else {
-					String query = getLimitedEdgeCountQuery(relevantTree);//.toSPARQLQueryString();
-					System.out.println(query);
+//				if(coversNegativeTree(nbr, negTrees)){
+//					leaf.setUserObject(oldLabel);
+//					logger.info("Undoing change because a negative tree would be covered.");
+//				} else {
+					query = getLimitedEdgeCountQuery(nbr);//.toSPARQLQueryString();
+					logger.info("Testing query\n" + query);
 					String result = cache.executeSelectQuery(endpoint, query);
 					ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 					String uri;
@@ -67,13 +100,48 @@ public class NBR<N> {
 							return new Example(uri, null, null, null);
 						}
 					}
-				}
+//				}
 				
 			}
 		}
 		return makeNBR(resources, relevantTree, negTrees);
-		//We only consider here the tree which corresponds to the SPARQL-Query
 		
+	}
+	
+	public String getQuery(){
+		return query;
+	}
+	
+	private List<QueryTree<N>> getLeafsOrderedByRowSum(QueryTree<N> tree, Map<QueryTree<N>, List<Integer>> matrix){
+		List<QueryTree<N>> leafs = new ArrayList<QueryTree<N>>();
+		
+		SortedMap<Integer, List<QueryTree<N>>> map = new TreeMap<Integer, List<QueryTree<N>>>();
+		int rowSum;
+		List<QueryTree<N>> treeList;
+		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
+			rowSum = sum(entry.getValue());
+			treeList = map.get(rowSum);
+			if(treeList == null){
+				treeList = new ArrayList<QueryTree<N>>();
+				map.put(rowSum, treeList);
+			}
+			treeList.add(entry.getKey());
+		}
+		
+		for(List<QueryTree<N>> trees : map.values()){
+			leafs.addAll(trees);
+		}
+		Collections.reverse(leafs);
+		
+		return leafs;
+	}
+	
+	private int sum(List<Integer> list){
+		int sum = 0;
+		for(Integer i : list){
+			sum += i;
+		}
+		return sum;
 	}
 	
 	private boolean coversNegativeTree(QueryTree<N> lgg, List<QueryTree<N>> negTrees){
@@ -83,6 +151,45 @@ public class NBR<N> {
 			}
 		}
 		return false;
+	}
+	
+	private void checkTree(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> posTree, QueryTree<N> negTree, int index){
+		int entry = 1;
+		Object edge;
+		for(QueryTree<N> child1 : posTree.getChildren()){
+			entry = 1;
+    		edge = posTree.getEdge(child1);
+    		for(QueryTree<N> child2 : negTree.getChildren(edge)){
+    			if(!child1.getUserObject().equals("?") && child1.getUserObject().equals(child2.getUserObject())){
+    				entry = 0;checkTree(matrix, child1, child2, index);
+    			} else if(child1.getUserObject().equals("?")){
+    				entry = 0;
+    				checkTree(matrix, child1, child2, index);
+    			}
+    		}
+    		setMatrixEntry(matrix, child1, index, entry);
+    		if(entry == 1){
+    			for(QueryTree<N> child : child1.getChildrenClosure()){
+    				if(!child1.equals(child)){
+    					setMatrixEntry(matrix, child, index, 0);
+    				}
+    			}
+    		}
+		}
+		
+	}
+	
+	private void setMatrixEntry(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> row, int column, int entry){
+		List<Integer> list = matrix.get(row);
+		if(list == null){
+			list = new ArrayList<Integer>();
+			matrix.put(row, list);
+		}
+		try {
+			list.set(column, entry);
+		} catch (IndexOutOfBoundsException e) {
+			list.add(entry);
+		}
 	}
 	
 	private String getLimitedEdgeCountQuery(QueryTree<N> tree){
@@ -99,5 +206,92 @@ public class NBR<N> {
 		return tree.toSPARQLQueryString();
 	}
 	
+	private String printTreeWithValues(QueryTree<N> tree, Map<QueryTree<N>, List<Integer>> matrix){
+		int depth = tree.getPathToRoot().size();
+        StringBuilder sb = new StringBuilder();
+        if(tree.isRoot()){
+        	sb.append("TREE\n\n");
+        }
+//        ren = ren.replace("\n", "\n" + sb);
+        sb.append(tree.getUserObject() + "(" +matrix.get(tree) +  ")");
+        sb.append("\n");
+        for (QueryTree<N> child : tree.getChildren()) {
+            for (int i = 0; i < depth; i++) {
+                sb.append("\t");
+            }
+            Object edge = tree.getEdge(child);
+            if (edge != null) {
+            	sb.append("  ");
+            	sb.append(edge);
+            	sb.append(" ---> ");
+            }
+            sb.append(printTreeWithValues(child, matrix));
+        }
+        return sb.toString();
+	}
+	
+	
+	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+		Queue<QueryTree<N>> gens = gen(lgg);
+		
+		while(!gens.isEmpty()){
+			QueryTree<N> tree = gens.poll();
+			if(!coversNegativeTree(tree, negTrees)){
+				SortedSet<String> foundResources = getResources(tree);
+				foundResources.removeAll(knownResources);
+				if(!foundResources.isEmpty()){
+					return new Example(foundResources.first(), null, null, null);
+				} else {
+					logger.info("Found no new resources");
+				}
+			} else {
+				logger.info("Covers negative tree");
+			}
+		}
+		return null;
+	}
+	
+	private Queue<QueryTree<N>> gen(QueryTree<N> tree){
+		Queue<QueryTree<N>> gens = new LinkedList<QueryTree<N>>();
+		
+		QueryTree<N> genTree;
+		N label;
+		N parentLabel;
+		for(QueryTree<N> child : tree.getChildren()){
+			label = child.getUserObject();
+			parentLabel = child.getParent().getUserObject();
+			if(!label.equals("?") && parentLabel.equals("?")){
+				child.setUserObject((N) "?");
+				genTree = new QueryTreeImpl<N>(tree);
+				gens.add(genTree);
+				child.setUserObject(label);
+			}
+		}
+		
+		return gens;
+	}
+	
+	private SortedSet<String> getResources(QueryTree<N> tree){
+		SortedSet<String> resources = new TreeSet<String>();
+		
+		String query = tree.toSPARQLQueryString();
+		logger.info("Testing query\n" + query);
+		String result = cache.executeSelectQuery(endpoint, query);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		String uri;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("x0").getURI();
+			resources.add(uri);
+		}
+		
+		return resources;
+	}
+	
+	
+	private void applyGen(){
+		
+	}
 
 }
