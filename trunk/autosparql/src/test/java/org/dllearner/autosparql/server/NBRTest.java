@@ -7,12 +7,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
@@ -22,7 +25,10 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.junit.Test;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 
 public class NBRTest {
 	
@@ -30,6 +36,7 @@ public class NBRTest {
 	
 	@Test
 	public void test1(){
+		HttpQuery.urlLimit = 0;
 		try {
 			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
 			SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"),
@@ -43,16 +50,36 @@ public class NBRTest {
 			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 			NBR<String> nbrGen = new NBR<String>(endpoint, cache);
 			
+			String targetQuery = "PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> " +
+			"SELECT DISTINCT ?var0 ?homepage ?genre WHERE {" +
+			"?var0 a dbo:Band ." +
+			"?var0 rdfs:label ?label." +
+			"OPTIONAL { ?var0 foaf:homepage ?homepage } ." +
+			"?var0 dbo:genre ?genre ." +
+			"?genre dbo:instrument dbpedia:Electric_guitar ." +
+			"?genre dbo:stylisticOrigin dbpedia:Jazz .}";
+			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, targetQuery));
+			SortedSet<String> targetResources = new TreeSet<String>();
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				if(qs.get("var0").isURIResource()){
+					targetResources.add(qs.get("var0").asResource().getURI());
+				}
+			}
+			
 			List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
 			List<QueryTree<String>> negTrees = new ArrayList<QueryTree<String>>();
 			List<String> knownResources = new ArrayList<String>();
 			
 			String uri = "http://dbpedia.org/resource/Foals";
+			knownResources.add(uri);
 			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
 			posTrees.add(tree);
 			
 			uri = "http://dbpedia.org/resource/Hot_Chip";
+			knownResources.add(uri);
 			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 			tree = treeFactory.getQueryTree(uri, model);
 			negTrees.add(tree);
@@ -60,6 +87,23 @@ public class NBRTest {
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
 			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+			String learnedQuery = nbrGen.getQuery();
+			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
+				uri = example.getURI();
+				knownResources.add(uri);
+				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				tree = treeFactory.getQueryTree(uri, model);
+				if(targetResources.contains(uri)){
+					System.out.println("Found new positive example " + uri);
+					posTrees.add(tree);
+					lgg = lggGen.getLGG(posTrees);
+				} else {
+					System.out.println("Found new negative example " + uri);
+					negTrees.add(tree);
+				}
+				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+				learnedQuery = nbrGen.getQuery();
+			}
 			
 			
 			
@@ -69,6 +113,23 @@ public class NBRTest {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
+		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}")){
+			return false;
+		}
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		SortedSet<String> learnedResources = new TreeSet<String>();
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			if(qs.get("x0").isURIResource()){
+				learnedResources.add(qs.get("x0").asResource().getURI());
+			}
+		}
+		return originalResources.equals(learnedResources);
 	}
 
 }

@@ -23,12 +23,14 @@ import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 
 public class NBR<N> {
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	private String query;
+	private int limit;
 	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
@@ -232,6 +234,7 @@ public class NBR<N> {
 	
 	
 	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+		limit = knownResources.size();
 		Queue<QueryTree<N>> gens = gen(lgg);
 		
 		while(!gens.isEmpty()){
@@ -274,7 +277,8 @@ public class NBR<N> {
 	private SortedSet<String> getResources(QueryTree<N> tree){
 		SortedSet<String> resources = new TreeSet<String>();
 		
-		String query = tree.toSPARQLQueryString();
+		query = tree.toSPARQLQueryString();
+		query = getLimitedQuery(query);
 		logger.info("Testing query\n" + query);
 		String result = cache.executeSelectQuery(endpoint, query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
@@ -292,6 +296,11 @@ public class NBR<N> {
 	
 	private void applyGen(){
 		
+	}
+	
+	private String getLimitedQuery(String query){
+		query = "SELECT DISTINCT " + query.substring(7);
+		return query + " LIMIT " + (limit+1);
 	}
 
 }

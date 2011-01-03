@@ -590,7 +590,7 @@ public class DBModelCacheExtended extends DBModelCacheImpl implements DBModelCac
 	private int getTripleCount(Property predicate, RDFNode object){
 		int cnt;
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT COUNT DISTINCT ?x WHERE {?x ");
+		sb.append("SELECT COUNT(DISTINCT ?x) WHERE {?x ");
 		sb.append("<").append(predicate.getURI()).append("> ");
 		if(object.isLiteral()){
 			sb.append(object.asLiteral().getValue());
