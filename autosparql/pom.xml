@@ -104,7 +104,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<module>app</module>
+							<module>org.dllearner.autosparql.Application</module>
 						</configuration>
 						<goals>
 							<goal>compile</goal>
@@ -115,7 +115,7 @@
 				</executions>
 				<configuration>
 					<hostedWebapp>war</hostedWebapp>
-					<runTarget>app/index.html</runTarget>
+					<runTarget>org.dllearner.autosparql.Application/index.html</runTarget>
 					<modules>
 						<module>org.dllearner.autosparql.Application</module>
 					</modules>
