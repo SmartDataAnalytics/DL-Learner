@@ -40,6 +40,10 @@ public interface QueryTree<N> {
     N getUserObject();
     
     void setUserObject(N userObject);
+    
+    void setId(int id);
+    
+    int getId();
 
     QueryTree<N> getParent();
     
@@ -47,7 +51,7 @@ public interface QueryTree<N> {
     
     List<QueryTree<N>> getChildren(Object edge);
     
-    Set<QueryTree<N>> getChildrenClosure();
+    List<QueryTree<N>> getChildrenClosure();
 
     Object getEdge(QueryTree<N> child);
     

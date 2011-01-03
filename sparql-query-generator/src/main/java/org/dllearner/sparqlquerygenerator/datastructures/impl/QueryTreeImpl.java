@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -58,6 +57,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private int cnt;
     
+    private int id;
+    
 
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
@@ -66,7 +67,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         edge2ChildrenMap = new HashMap<String, List<QueryTree<N>>>();
         toStringRenderer = new NodeRenderer<N>() {
             public String render(QueryTree<N> object) {
-                return object.toString();
+                return object.toString() + "(" + object.getId() + ")";
             }
         };
     }
@@ -84,6 +85,16 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     public void setUserObject(N userObject) {
         this.userObject = userObject;
+    }
+    
+    @Override
+    public void setId(int id) {
+    	this.id = id;
+    }
+    
+    @Override
+    public int getId() {
+    	return id;
     }
 
 
@@ -287,13 +298,13 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         return path;
     }
     
-    public Set<QueryTree<N>> getChildrenClosure() {
-        Set<QueryTree<N>> children = new HashSet<QueryTree<N>>();
+    public List<QueryTree<N>> getChildrenClosure() {
+        List<QueryTree<N>> children = new ArrayList<QueryTree<N>>();
         getChildrenClosure(this, children);
         return children;
     }
 
-    private void getChildrenClosure(QueryTree<N> tree, Set<QueryTree<N>> bin) {
+    private void getChildrenClosure(QueryTree<N> tree, List<QueryTree<N>> bin) {
         bin.add(tree);
         for (QueryTree<N> child : tree.getChildren()) {
         	getChildrenClosure(child, bin);
