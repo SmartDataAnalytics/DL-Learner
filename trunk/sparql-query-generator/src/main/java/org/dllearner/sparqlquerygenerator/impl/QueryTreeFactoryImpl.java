@@ -25,6 +25,8 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
@@ -42,6 +44,13 @@ import com.hp.hpl.jena.rdf.model.Statement;
  */
 public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
+	private int nodeId;
+	private Comparator<Statement> comparator;
+	
+	public QueryTreeFactoryImpl(){
+		comparator = new StatementComparator();
+	}
+	
 	@Override
 	public QueryTreeImpl<String> getQueryTree(String example, Model model) {
 		return createTree(model.getResource(example), model);
@@ -58,7 +67,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	}
 	
 	private QueryTreeImpl<String> createTree(Resource s, Model model){
-		Comparator<Statement> comparator = new StatementComparator();
+		nodeId = 0;
 		
 		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
 		
@@ -81,6 +90,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	}
 	
 	private void fillTree(QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements){
+		tree.setId(nodeId++);
 		if(resource2Statements.containsKey(tree.getUserObject())){
 			QueryTreeImpl<String> subTree;
 			for(Statement st : resource2Statements.get(tree.getUserObject())){
@@ -89,15 +99,18 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 				}
 				if(st.getObject().isLiteral()){
 					Literal lit = st.getLiteral();
+					String escapedLit = lit.getLexicalForm().replace("\"", "\\\"");
 					StringBuilder sb = new StringBuilder();
-					sb.append("\"").append(lit.getLexicalForm()).append("\"");
+					sb.append("\"").append(escapedLit).append("\"");
 					if(lit.getDatatypeURI() != null){
 						sb.append("^^<").append(lit.getDatatypeURI()).append(">");
 					}
 					if(!lit.getLanguage().isEmpty()){
 						sb.append("@").append(lit.getLanguage());
 					}
-					tree.addChild(new QueryTreeImpl<String>(sb.toString()), st.getPredicate().toString());
+					subTree = new QueryTreeImpl<String>(sb.toString());
+					subTree.setId(nodeId++);
+					tree.addChild(subTree, st.getPredicate().toString());
 				} else {
 					if(tree.getUserObjectPathToRoot().size() < 3 && 
 							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
@@ -134,5 +147,39 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		
 	}
+	
+	public static String encode(String s) {
+        char [] htmlChars = s.toCharArray();
+        StringBuffer encodedHtml = new StringBuffer();
+        for (int i=0; i<htmlChars.length; i++) {
+            switch(htmlChars[i]) {
+            case '<':
+                encodedHtml.append("&lt;");
+                break;
+            case '>':
+                encodedHtml.append("&gt;");
+                break;
+            case '&':
+                encodedHtml.append("&amp;");
+                break;
+            case '\'':
+                encodedHtml.append("&#39;");
+                break;
+            case '"':
+                encodedHtml.append("&quot;");
+                break;
+            case '\\':
+                encodedHtml.append("&#92;");
+                break;
+            case (char)133:
+                encodedHtml.append("&#133;");
+                break;
+            default:
+                encodedHtml.append(htmlChars[i]);
+                break;
+            }
+        }
+        return encodedHtml.toString();
+    }
 
 }
