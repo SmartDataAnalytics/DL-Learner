@@ -104,7 +104,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<module>org.dllearner.autosparql.Application</module>
+							<module>app</module>
 						</configuration>
 						<goals>
 							<goal>compile</goal>
@@ -115,7 +115,7 @@
 				</executions>
 				<configuration>
 					<hostedWebapp>war</hostedWebapp>
-					<runTarget>org.dllearner.autosparql.Application/index.html</runTarget>
+					<runTarget>app/index.html</runTarget>
 					<modules>
 						<module>org.dllearner.autosparql.Application</module>
 					</modules>
@@ -134,8 +134,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>org/dllearner/autosparql/server/CacheTest.java</exclude>
-						<exclude>org/dllearner/autosparql/server/ExampleFinderTest.java</exclude>
+						<exclude>org/dllearner/autosparql/server/*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
