@@ -43,6 +43,9 @@ public class SPARQLSearch {
 			qs = rs.next();
 			uri = qs.getResource("object").getURI();
 			label = qs.getLiteral("label").getLexicalForm();
+			if(uri.startsWith("http://dbpedia.org/resource/Category:")){
+				label = "Category:" + label;
+			}
 			if(qs.getResource("imageURL") != null){
 				imageURL = qs.getResource("imageURL").getURI();
 			}

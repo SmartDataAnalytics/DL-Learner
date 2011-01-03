@@ -25,6 +25,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.server.ExampleFinder;
 import org.dllearner.autosparql.server.Generalisation;
+import org.dllearner.autosparql.server.NBR;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -70,6 +71,7 @@ public class EvaluationScript {
 		Logger.getLogger(GreedyNBRStrategy.class).setLevel(Level.OFF);
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(ExampleFinder.class).setLevel(Level.INFO);
+		Logger.getLogger(NBR.class).setLevel(Level.INFO);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
@@ -168,7 +170,7 @@ public class EvaluationScript {
 					nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
 					learnedQuery = exampleFinder.getCurrentQuery();
 					logger.info("Learned query:\n" + learnedQuery);
-					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
+					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint, selectQueriesCache);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
 					if(equivalentQueries){
 						break;
@@ -279,18 +281,11 @@ public class EvaluationScript {
 	 * @param endpoint
 	 * @return
 	 */
-	private static boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint){
+	private static boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
 		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}")){
 			return false;
 		}
-		QueryEngineHTTP qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-		for (String dgu : endpoint.getDefaultGraphURIs()) {
-			qexec.addDefaultGraph(dgu);
-		}
-		for (String ngu : endpoint.getNamedGraphURIs()) {
-			qexec.addNamedGraph(ngu);
-		}		
-		com.hp.hpl.jena.query.ResultSet rs = qexec.execSelect();
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		
 		SortedSet<String> learnedResources = new TreeSet<String>();
 		QuerySolution qs;

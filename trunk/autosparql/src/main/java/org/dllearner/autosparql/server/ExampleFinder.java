@@ -342,7 +342,9 @@ public class ExampleFinder {
 		resources.addAll(negExamples);
 		
 		NBR<String> nbr = new NBR<String>(endpoint, selectCache);
-		return nbr.makeNBR(resources, lgg, negExamplesTrees);
+		Example example = nbr.makeNBR(resources, lgg, negExamplesTrees);
+		currentQuery = nbr.getQuery();
+		return example;
 		
 	}
 	

@@ -17,6 +17,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.server.ExampleFinder;
 import org.dllearner.autosparql.server.Generalisation;
+import org.dllearner.autosparql.server.NBR;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -62,6 +63,7 @@ public class SingleQueryEvaluationScript {
 		Logger.getLogger(Generalisation.class).setLevel(Level.INFO);
 		Logger.getLogger(GreedyNBRStrategy.class).setLevel(Level.INFO);
 		Logger.getLogger(ExampleFinder.class).setLevel(Level.INFO);
+		Logger.getLogger(NBR.class).setLevel(Level.INFO);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
@@ -79,7 +81,7 @@ public class SingleQueryEvaluationScript {
 //				"SELECT * WHERE { ?var0 owl:sameAs ?var1. ?var0 rdf:type <http://dbpedia.org/class/yago/State108654360> }";
 //		"SELECT ?var0 WHERE { ?var0 skos:subject <http://dbpedia.org/resource/Category:French_films> }";
 //		"PREFIX dbpedia2: <http://dbpedia.org/property/> PREFIX dbpo:  <http://dbpedia.org/ontology/> SELECT DISTINCT ?var0 WHERE {  ?var0 a dbpo:Band . ?var0 dbpedia2:genre  <http://dbpedia.org/resource/Hard_rock> . ?var0 dbpedia2:genre  <http://dbpedia.org/resource/Heavy_metal_music> . ?var0  dbpedia2:genre <http://dbpedia.org/resource/Blues-rock> . }";
-		"PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> SELECT DISTINCT ?var0 ?label ?homepage ?genre WHERE {?var0 a dbo:Band .?band rdfs:label ?label .OPTIONAL { ?var0 foaf:homepage ?homepage } .?var0 dbo:genre ?genre .?genre dbo:instrument dbpedia:Electric_guitar .?genre dbo:stylisticOrigin dbpedia:Jazz .}";
+		"PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> SELECT DISTINCT ?var0 ?homepage ?genre WHERE {?var0 a dbo:Band .?var0 rdfs:label ?label .OPTIONAL { ?var0 foaf:homepage ?homepage } .?var0 dbo:genre ?genre .?genre dbo:instrument dbpedia:Electric_guitar .?genre dbo:stylisticOrigin dbpedia:Jazz .}";
 
 		com.hp.hpl.jena.query.ResultSet rs;
 		SortedSet<String> resources;
@@ -126,7 +128,7 @@ public class SingleQueryEvaluationScript {
 					nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
 					learnedQuery = exampleFinder.getCurrentQuery();
 					logger.info("Learned query:\n" + learnedQuery);
-					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint);
+					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint, selectQueriesCache);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
 					if(equivalentQueries){
 						break;
@@ -167,15 +169,11 @@ public class SingleQueryEvaluationScript {
 	 * @param endpoint
 	 * @return
 	 */
-	private static boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint){
-		QueryEngineHTTP qexec = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-		for (String dgu : endpoint.getDefaultGraphURIs()) {
-			qexec.addDefaultGraph(dgu);
+	private static boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
+		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}")){
+			return false;
 		}
-		for (String ngu : endpoint.getNamedGraphURIs()) {
-			qexec.addNamedGraph(ngu);
-		}		
-		com.hp.hpl.jena.query.ResultSet rs = qexec.execSelect();
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
 		
 		SortedSet<String> learnedResources = new TreeSet<String>();
 		QuerySolution qs;
