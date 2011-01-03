@@ -74,8 +74,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     public QueryTreeImpl(QueryTree<N> tree){
     	this(tree.getUserObject());
+    	setId(tree.getId());
+    	QueryTreeImpl<N> subTree;
     	for(QueryTree<N> child : tree.getChildren()){
-    		addChild(new QueryTreeImpl<N>(child), tree.getEdge(child));
+    		subTree = new QueryTreeImpl<N>(child);
+    		subTree.setId(child.getId());
+    		addChild(subTree, tree.getEdge(child));
     	}
     }
 
