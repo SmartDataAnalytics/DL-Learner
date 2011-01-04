@@ -15,12 +15,20 @@ public class GeneralisedQueryTree<N> {
 		changes = new ArrayList<QueryTreeChange>();
 	}
 	
-	public QueryTree<N> getTree(){
+	public void setQueryTree(QueryTree<N> tree){
+		this.tree = tree;
+	}
+	
+	public QueryTree<N> getQueryTree(){
 		return tree;
 	}
 	
 	public void addChange(QueryTreeChange change){
 		changes.add(change);
+	}
+	
+	public void addChanges(List<QueryTreeChange> changes){
+		changes.addAll(changes);
 	}
 	
 	public List<QueryTreeChange> getChanges(){

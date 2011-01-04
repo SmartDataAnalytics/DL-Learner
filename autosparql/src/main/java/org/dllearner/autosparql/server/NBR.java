@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.QueryTreeChange.ChangeType;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -236,18 +237,21 @@ public class NBR<N> {
 	
 	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		limit = knownResources.size();
-		Queue<QueryTree<N>> gens = gen(lgg);
+		Queue<GeneralisedQueryTree<N>> gens = gen(new GeneralisedQueryTree<N>(lgg));
 		
+		GeneralisedQueryTree<N> genTree;
+		QueryTree<N> queryTree;
 		while(!gens.isEmpty()){
-			QueryTree<N> tree = gens.poll();
-			if(!coversNegativeTree(tree, negTrees)){
-				SortedSet<String> foundResources = getResources(tree);
+			genTree = gens.poll();
+			queryTree = genTree.getQueryTree();
+			if(!coversNegativeTree(queryTree, negTrees)){
+				SortedSet<String> foundResources = getResources(queryTree);
 				foundResources.removeAll(knownResources);
 				if(!foundResources.isEmpty()){
 					return new Example(foundResources.first(), null, null, null);
 				} else {
 					logger.info("Found no new resources");
-					gens.addAll(gen(tree));
+					gens.addAll(gen(genTree));
 				}
 			} else {
 				logger.info("Covers negative tree");
@@ -256,39 +260,91 @@ public class NBR<N> {
 		return null;
 	}
 	
-	private Queue<QueryTree<N>> gen(QueryTree<N> tree){
-		Queue<QueryTree<N>> gens = new LinkedList<QueryTree<N>>();
+//	private Queue<QueryTree<N>> gen(QueryTree<N> tree){
+//		Queue<QueryTree<N>> gens = new LinkedList<QueryTree<N>>();
+//		
+//		QueryTree<N> genTree;
+//		GeneralisedQueryTree<N> gTree;
+//		N label;
+//		N parentLabel;
+//		Object edge;
+//		QueryTree<N> parent;
+//		for(QueryTree<N> child : tree.getChildren()){
+//			label = child.getUserObject();
+//			parentLabel = child.getParent().getUserObject();
+//			if(!label.equals("?") && parentLabel.equals("?")){
+//				child.setUserObject((N) "?");
+//				genTree = new QueryTreeImpl<N>(tree);
+//				gTree = new GeneralisedQueryTree<N>(genTree);
+//				gTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REPLACE_LABEL));
+//				gens.add(genTree);
+//				child.setUserObject(label);
+//			} else if(label.equals("?")){
+//				edge = tree.getEdge(child);
+//				parent = child.getParent();
+//				if(child.isLeaf()){
+//					int pos = parent.removeChild((QueryTreeImpl<N>) child);
+//					genTree = new QueryTreeImpl<N>(tree);
+//					gens.add(genTree);
+//					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
+//				} else {
+//					int pos = parent.removeChild((QueryTreeImpl<N>) child);
+//					for(QueryTree<N> subTree : gen(child)){
+//						parent.addChild((QueryTreeImpl<N>) subTree, edge, pos);
+//						genTree = new QueryTreeImpl<N>(tree);
+//						System.err.println(getSPARQLQuery(genTree));
+//						gens.add(genTree);
+//						parent.removeChild((QueryTreeImpl<N>) subTree);
+//					}
+//					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
+//				}
+//			}
+//		}
+//		
+//		return gens;
+//	}
+	
+	private Queue<GeneralisedQueryTree<N>> gen(GeneralisedQueryTree<N> tree){
+		Queue<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
 		
-		QueryTree<N> genTree;
+		QueryTree<N> queryTree = tree.getQueryTree();
+		List<QueryTreeChange> changes = tree.getChanges();
+		GeneralisedQueryTree<N> genTree;
 		N label;
 		N parentLabel;
 		Object edge;
 		QueryTree<N> parent;
-		for(QueryTree<N> child : tree.getChildren()){
+		for(QueryTree<N> child : queryTree.getChildren()){
 			label = child.getUserObject();
 			parentLabel = child.getParent().getUserObject();
 			if(!label.equals("?") && parentLabel.equals("?")){
 				child.setUserObject((N) "?");
-				genTree = new QueryTreeImpl<N>(tree);
+				genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+				genTree.addChanges(changes);
+				genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REPLACE_LABEL));
 				gens.add(genTree);
 				child.setUserObject(label);
 			} else if(label.equals("?")){
-				edge = tree.getEdge(child);
+				edge = queryTree.getEdge(child);
 				parent = child.getParent();
 				if(child.isLeaf()){
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					genTree = new QueryTreeImpl<N>(tree);
+					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree.addChanges(changes);
+					genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REMOVE_NODE));
 					gens.add(genTree);
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					System.out.println(pos);
-					for(QueryTree<N> subTree : gen(child)){
-						parent.addChild((QueryTreeImpl<N>) subTree, edge, pos);
-						genTree = new QueryTreeImpl<N>(tree);
-						System.err.println(getSPARQLQuery(genTree));
+					for(GeneralisedQueryTree<N> subTree : gen(new GeneralisedQueryTree<N>(child))){
+						parent.addChild((QueryTreeImpl<N>) subTree.getQueryTree(), edge, pos);
+						genTree = new GeneralisedQueryTree<N>(queryTree);
+						genTree.addChanges(changes);
+						genTree.addChanges(subTree.getChanges());
+						System.out.println(genTree.getChanges());
+						System.err.println(getSPARQLQuery(genTree.getQueryTree()));
 						gens.add(genTree);
-						parent.removeChild((QueryTreeImpl<N>) subTree);
+						parent.removeChild((QueryTreeImpl<N>) subTree.getQueryTree());
 					}
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				}
