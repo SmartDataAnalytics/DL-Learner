@@ -23,6 +23,12 @@ public class QueryTreeChange {
 	public ChangeType getType() {
 		return type;
 	}
+	
+	@Override
+	public String toString() {
+//		return "nodeId" + (type==ChangeType.REPLACE_LABEL ? "Replace" : "Remove");
+		return nodeId + (type==ChangeType.REPLACE_LABEL ? "a" : "b");
+	}
 
 
 }
