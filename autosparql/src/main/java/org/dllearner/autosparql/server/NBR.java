@@ -247,6 +247,7 @@ public class NBR<N> {
 					return new Example(foundResources.first(), null, null, null);
 				} else {
 					logger.info("Found no new resources");
+					gens.addAll(gen(tree));
 				}
 			} else {
 				logger.info("Covers negative tree");
@@ -261,6 +262,8 @@ public class NBR<N> {
 		QueryTree<N> genTree;
 		N label;
 		N parentLabel;
+		Object edge;
+		QueryTree<N> parent;
 		for(QueryTree<N> child : tree.getChildren()){
 			label = child.getUserObject();
 			parentLabel = child.getParent().getUserObject();
@@ -269,6 +272,26 @@ public class NBR<N> {
 				genTree = new QueryTreeImpl<N>(tree);
 				gens.add(genTree);
 				child.setUserObject(label);
+			} else if(label.equals("?")){
+				edge = tree.getEdge(child);
+				parent = child.getParent();
+				if(child.isLeaf()){
+					int pos = parent.removeChild((QueryTreeImpl<N>) child);
+					genTree = new QueryTreeImpl<N>(tree);
+					gens.add(genTree);
+					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
+				} else {
+					int pos = parent.removeChild((QueryTreeImpl<N>) child);
+					System.out.println(pos);
+					for(QueryTree<N> subTree : gen(child)){
+						parent.addChild((QueryTreeImpl<N>) subTree, edge, pos);
+						genTree = new QueryTreeImpl<N>(tree);
+						System.err.println(getSPARQLQuery(genTree));
+						gens.add(genTree);
+						parent.removeChild((QueryTreeImpl<N>) subTree);
+					}
+					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
+				}
 			}
 		}
 		
@@ -293,6 +316,7 @@ public class NBR<N> {
 		
 		return resources;
 	}
+	
 	
 	
 	private void applyGen(){
