@@ -20,6 +20,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -277,7 +278,7 @@ public class NBR<N> {
 	private SortedSet<String> getResources(QueryTree<N> tree){
 		SortedSet<String> resources = new TreeSet<String>();
 		
-		query = tree.toSPARQLQueryString();
+		query = getSPARQLQuery(tree);//tree.toSPARQLQueryString();
 		query = getLimitedQuery(query);
 		logger.info("Testing query\n" + query);
 		String result = cache.executeSelectQuery(endpoint, query);
@@ -302,5 +303,55 @@ public class NBR<N> {
 		query = "SELECT DISTINCT " + query.substring(7);
 		return query + " LIMIT " + (limit+1);
 	}
+	
+    public String getSPARQLQuery(QueryTree<N> tree) {
+    	if(tree.getChildren().isEmpty()){
+    		return "SELECT ?x0 WHERE {?x0 ?y ?z.}";
+    	}
+    	int cnt = 0;
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("SELECT ?x0 WHERE {\n");
+    	buildSPARQLQueryString(tree, sb, false, cnt);
+    	sb.append("}");
+    	return sb.toString();
+    }
+    
+    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered, int cnt){
+    	Object subject = null;
+    	if(tree.getUserObject().equals("?")){
+    		subject = "?x" + cnt++;
+    	} else {
+    		subject = "<" + tree.getUserObject() + ">";
+    	}
+    	Object predicate;
+    	Object object;
+    	if(!tree.isLeaf()){
+    		for(QueryTree<N> child : tree.getChildren()){
+    			if(child.isLiteralNode()){
+    				continue;
+    			}
+        		predicate = tree.getEdge(child);
+        		if(((String)predicate).startsWith("http://dbpedia.org/property")){
+        			continue;
+        		}
+        		if(filtered){
+        			if(Filter.getAllFilterProperties().contains(predicate.toString())){
+        				continue;
+        			}
+        		}
+        		object = child.getUserObject();
+        		boolean objectIsResource = !object.equals("?");
+        		if(!objectIsResource){
+        			object = "?x" + cnt;
+        		} else if(((String)object).startsWith("http://")){
+        			object = "<" + object + ">";
+        		}
+        		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
+        		if(!objectIsResource){
+        			buildSPARQLQueryString(child, sb, filtered, cnt);
+        		}
+        	}
+    	} 
+    }
 
 }
