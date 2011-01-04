@@ -34,6 +34,8 @@ public class NBR<N> {
 	private String query;
 	private int limit;
 	
+	private int nodeId;
+	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
 	public NBR(SparqlEndpoint endpoint, ExtractionDBCache cache){
@@ -236,13 +238,16 @@ public class NBR<N> {
 	
 	
 	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+		lgg = getFilteredTree(lgg);
+		logger.info(lgg.getStringRepresentation());
 		limit = knownResources.size();
-		Queue<GeneralisedQueryTree<N>> gens = gen(new GeneralisedQueryTree<N>(lgg));
+		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
 		
 		GeneralisedQueryTree<N> genTree;
 		QueryTree<N> queryTree;
 		while(!gens.isEmpty()){
-			genTree = gens.poll();
+			genTree = gens.remove(0);
+			logger.info("Changes: " + genTree.getChanges());
 			queryTree = genTree.getQueryTree();
 			if(!coversNegativeTree(queryTree, negTrees)){
 				SortedSet<String> foundResources = getResources(queryTree);
@@ -251,7 +256,7 @@ public class NBR<N> {
 					return new Example(foundResources.first(), null, null, null);
 				} else {
 					logger.info("Found no new resources");
-					gens.addAll(gen(genTree));
+					gens.addAll(0, getAllowedGeneralisations(genTree));
 				}
 			} else {
 				logger.info("Covers negative tree");
@@ -304,8 +309,16 @@ public class NBR<N> {
 //		return gens;
 //	}
 	
-	private Queue<GeneralisedQueryTree<N>> gen(GeneralisedQueryTree<N> tree){
-		Queue<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
+	private List<GeneralisedQueryTree<N>> getAllowedGeneralisations(GeneralisedQueryTree<N> tree){
+		logger.info("Computing allowed generalisations...");
+		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
+		gens.addAll(computeAllowedGeneralisations(tree));
+		
+		return gens;
+	}
+	
+	private List<GeneralisedQueryTree<N>> computeAllowedGeneralisations(GeneralisedQueryTree<N> tree){
+		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
 		
 		QueryTree<N> queryTree = tree.getQueryTree();
 		List<QueryTreeChange> changes = tree.getChanges();
@@ -314,16 +327,21 @@ public class NBR<N> {
 		N parentLabel;
 		Object edge;
 		QueryTree<N> parent;
+		boolean isLiteralNode;
 		for(QueryTree<N> child : queryTree.getChildren()){
 			label = child.getUserObject();
+			isLiteralNode = child.isLiteralNode();
 			parentLabel = child.getParent().getUserObject();
 			if(!label.equals("?") && parentLabel.equals("?")){
 				child.setUserObject((N) "?");
+				child.setVarNode(true);
 				genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
 				genTree.addChanges(changes);
 				genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REPLACE_LABEL));
 				gens.add(genTree);
 				child.setUserObject(label);
+				child.setLiteralNode(isLiteralNode);
+				child.setResourceNode(!isLiteralNode);
 			} else if(label.equals("?")){
 				edge = queryTree.getEdge(child);
 				parent = child.getParent();
@@ -336,13 +354,13 @@ public class NBR<N> {
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					for(GeneralisedQueryTree<N> subTree : gen(new GeneralisedQueryTree<N>(child))){
+					for(GeneralisedQueryTree<N> subTree : computeAllowedGeneralisations(new GeneralisedQueryTree<N>(child))){
 						parent.addChild((QueryTreeImpl<N>) subTree.getQueryTree(), edge, pos);
-						genTree = new GeneralisedQueryTree<N>(queryTree);
+						genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
 						genTree.addChanges(changes);
 						genTree.addChanges(subTree.getChanges());
-						System.out.println(genTree.getChanges());
-						System.err.println(getSPARQLQuery(genTree.getQueryTree()));
+//						System.out.println(genTree.getChanges());
+//						System.err.println(getSPARQLQuery(genTree.getQueryTree()));
 						gens.add(genTree);
 						parent.removeChild((QueryTreeImpl<N>) subTree.getQueryTree());
 					}
@@ -382,6 +400,34 @@ public class NBR<N> {
 	private String getLimitedQuery(String query){
 		query = "SELECT DISTINCT " + query.substring(7);
 		return query + " LIMIT " + (limit+1);
+	}
+	
+	private QueryTree<N> getFilteredTree(QueryTree<N> tree){
+		nodeId = 0;
+		QueryTree<N> filteredTree = createFilteredTree(tree);
+		return filteredTree;
+	}
+	
+	private QueryTree<N> createFilteredTree(QueryTree<N> tree){
+		QueryTree<N> filteredTree = new QueryTreeImpl<N>(tree.getUserObject());
+		filteredTree.setId(nodeId);
+		QueryTree<N> subTree;
+		Object predicate;
+    	for(QueryTree<N> child : tree.getChildren()){
+    		if(child.isLiteralNode()){
+    			continue;
+    		}
+    		predicate = tree.getEdge(child);
+    		if(((String)predicate).startsWith("http://dbpedia.org/property")){
+    			continue;
+    		}
+    		this.nodeId++;
+    		subTree = createFilteredTree(child);
+    		subTree.setLiteralNode(child.isLiteralNode());
+    		subTree.setResourceNode(child.isResourceNode());
+    		filteredTree.addChild((QueryTreeImpl<N>)subTree, tree.getEdge(child));
+    	}
+    	return filteredTree;
 	}
 	
     public String getSPARQLQuery(QueryTree<N> tree) {
