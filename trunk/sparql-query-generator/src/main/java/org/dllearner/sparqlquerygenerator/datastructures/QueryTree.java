@@ -44,6 +44,18 @@ public interface QueryTree<N> {
     void setId(int id);
     
     int getId();
+    
+    boolean isLiteralNode();
+    
+    void setLiteralNode(boolean isLiteralNode);
+    
+    boolean isResourceNode();
+    
+    void setResourceNode(boolean isResourceNode);
+    
+    boolean isVarNode();
+    
+    void setVarNode(boolean isVarNode);
 
     QueryTree<N> getParent();
     

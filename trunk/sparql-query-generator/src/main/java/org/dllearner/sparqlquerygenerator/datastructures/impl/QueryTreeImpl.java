@@ -59,6 +59,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     private int id;
     
+    private boolean isLiteralNode = false;
+    private boolean isResourceNode = false;
+    
 
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
@@ -79,6 +82,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for(QueryTree<N> child : tree.getChildren()){
     		subTree = new QueryTreeImpl<N>(child);
     		subTree.setId(child.getId());
+    		subTree.setLiteralNode(child.isLiteralNode());
+    		subTree.setResourceNode(child.isResourceNode());
     		addChild(subTree, tree.getEdge(child));
     	}
     }
@@ -99,6 +104,37 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     @Override
     public int getId() {
     	return id;
+    }
+    
+    @Override
+    public boolean isLiteralNode() {
+    	return isLiteralNode;
+    }
+    
+    @Override
+    public void setLiteralNode(boolean isLiteralNode) {
+    	this.isLiteralNode = isLiteralNode;
+    }
+    
+    @Override
+    public boolean isResourceNode() {
+    	return isResourceNode;
+    }
+    
+    @Override
+    public void setResourceNode(boolean isResourceNode) {
+    	this.isResourceNode = isResourceNode;
+    }
+    
+    @Override
+    public boolean isVarNode() {
+    	return !isLiteralNode && !isResourceNode;
+    }
+    
+    @Override
+    public void setVarNode(boolean isVarNode) {
+    	isLiteralNode = false;
+    	isResourceNode = false;
     }
 
 
