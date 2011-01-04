@@ -69,9 +69,13 @@ public interface QueryTree<N> {
     
     void addChild(QueryTreeImpl<N> child);
     
+    void addChild(QueryTreeImpl<N> child, int position);
+    
     void addChild(QueryTreeImpl<N> child, Object edge);
     
-    void removeChild(QueryTreeImpl<N> child);
+    void addChild(QueryTreeImpl<N> child, Object edge, int position);
+    
+    int removeChild(QueryTreeImpl<N> child);
     
     Set<Object> getEdges();
     

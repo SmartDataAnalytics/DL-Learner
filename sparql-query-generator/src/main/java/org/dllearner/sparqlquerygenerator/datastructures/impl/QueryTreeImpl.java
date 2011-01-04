@@ -151,6 +151,12 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         children.add(child);
         child.parent = this;
     }
+    
+    @Override
+    public void addChild(QueryTreeImpl<N> child, int position) {
+    	children.add(position, child);
+        child.parent = this;
+    }
 
     public void addChild(QueryTreeImpl<N> child, Object edge) {
         addChild(child);
@@ -163,11 +169,27 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
         children.add(child);
     }
+    
+    @Override
+    public void addChild(QueryTreeImpl<N> child, Object edge, int position) {
+    	addChild(child, position);
+        child2EdgeMap.put(child, edge);
+        
+        List<QueryTree<N>> children = edge2ChildrenMap.get(edge);
+        if(children == null){
+        	children = new ArrayList<QueryTree<N>>();
+        	edge2ChildrenMap.put((String)edge, children);
+        }
+        children.add(child);
+    	
+    }
 
 
-    public void removeChild(QueryTreeImpl<N> child) {
+    public int removeChild(QueryTreeImpl<N> child) {
+    	int pos = children.indexOf(child);
         children.remove(child);
         child.parent = null;
+        return pos;
     }
     
     public void removeChildren(Set<QueryTreeImpl<N>> children) {
