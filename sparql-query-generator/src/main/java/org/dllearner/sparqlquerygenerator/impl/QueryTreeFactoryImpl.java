@@ -110,11 +110,13 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					}
 					subTree = new QueryTreeImpl<String>(sb.toString());
 					subTree.setId(nodeId++);
+					subTree.setLiteralNode(true);
 					tree.addChild(subTree, st.getPredicate().toString());
 				} else {
 					if(tree.getUserObjectPathToRoot().size() < 3 && 
 							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 						subTree = new QueryTreeImpl<String>(st.getObject().toString());
+						subTree.setResourceNode(true);
 						tree.addChild(subTree, st.getPredicate().toString());
 						fillTree(subTree, resource2Statements);
 					}
