@@ -1,5 +1,6 @@
 package org.dllearner.autosparql.server;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,6 +13,11 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -19,8 +25,11 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
+import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.junit.Test;
@@ -36,6 +45,21 @@ public class NBRTest {
 	
 	@Test
 	public void test1(){
+		try {
+			SimpleLayout layout = new SimpleLayout();
+			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			FileAppender fileAppender = new FileAppender(
+					layout, "log/nbr_evaluation.log", false);
+			Logger logger = Logger.getRootLogger();
+			logger.removeAllAppenders();
+			logger.addAppender(consoleAppender);
+			logger.addAppender(fileAppender);
+			logger.setLevel(Level.OFF);
+			Logger.getLogger(NBR.class).setLevel(Level.INFO);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		HttpQuery.urlLimit = 0;
 		try {
 			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
