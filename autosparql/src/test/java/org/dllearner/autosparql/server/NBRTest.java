@@ -141,6 +141,102 @@ public class NBRTest {
 		
 	}
 	
+	@Test
+	public void optimisedTest(){
+		try {
+			SimpleLayout layout = new SimpleLayout();
+			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			FileAppender fileAppender = new FileAppender(
+					layout, "log/nbr_evaluation.log", false);
+			Logger logger = Logger.getRootLogger();
+			logger.removeAllAppenders();
+			logger.addAppender(consoleAppender);
+			logger.addAppender(fileAppender);
+			logger.setLevel(Level.OFF);
+			Logger.getLogger(NBR.class).setLevel(Level.INFO);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		HttpQuery.urlLimit = 0;
+		try {
+			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
+			SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"),
+					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
+			Set<String> predicateFilters = new HashSet<String>();
+			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			
+			ModelGenerator modelGen = new ModelGenerator(endpoint, predicateFilters, cache);
+			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
+			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+			NBR<String> nbrGen = new NBR<String>(endpoint, cache);
+			
+			String targetQuery = "PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> " +
+			"SELECT DISTINCT ?var0 ?homepage ?genre WHERE {" +
+			"?var0 a dbo:Band ." +
+			"?var0 rdfs:label ?label." +
+			"OPTIONAL { ?var0 foaf:homepage ?homepage } ." +
+			"?var0 dbo:genre ?genre ." +
+			"?genre dbo:instrument dbpedia:Electric_guitar ." +
+			"?genre dbo:stylisticOrigin dbpedia:Jazz .}";
+			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, targetQuery));
+			SortedSet<String> targetResources = new TreeSet<String>();
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				if(qs.get("var0").isURIResource()){
+					targetResources.add(qs.get("var0").asResource().getURI());
+				}
+			}
+			
+			List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
+			List<QueryTree<String>> negTrees = new ArrayList<QueryTree<String>>();
+			List<String> knownResources = new ArrayList<String>();
+			
+			String uri = "http://dbpedia.org/resource/Foals";
+			knownResources.add(uri);
+			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
+			posTrees.add(tree);
+			
+			uri = "http://dbpedia.org/resource/Hot_Chip";
+			knownResources.add(uri);
+			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			tree = treeFactory.getQueryTree(uri, model);
+			negTrees.add(tree);
+			
+			QueryTree<String> lgg = lggGen.getLGG(posTrees);
+			
+			Example example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
+			String learnedQuery = nbrGen.getQuery();
+			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
+				uri = example.getURI();
+				knownResources.add(uri);
+				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				tree = treeFactory.getQueryTree(uri, model);
+				if(targetResources.contains(uri)){
+					System.out.println("Found new positive example " + uri);
+					posTrees.add(tree);
+					lgg = lggGen.getLGG(posTrees);
+				} else {
+					System.out.println("Found new negative example " + uri);
+					negTrees.add(tree);
+				}
+				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+				learnedQuery = nbrGen.getQuery();
+			}
+			
+			
+			
+			
+			
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	private boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
 		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}")){
 			return false;

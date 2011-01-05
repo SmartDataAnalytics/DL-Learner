@@ -269,25 +269,41 @@ public class NBR<N> {
 		lgg = getFilteredTree(lgg);
 		logger.info(lgg.getStringRepresentation());
 		limit = knownResources.size();
-		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
+		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
 		
-		GeneralisedQueryTree<N> genTree;
+		GeneralisedQueryTree<N> tree1;
+		QueryTree<N> tree2;
+		GeneralisedQueryTree<N> tmp;
 		QueryTree<N> queryTree;
-		while(!gens.isEmpty()){
-			genTree = gens.remove(0);
-			logger.info("Changes: " + genTree.getChanges());
-			queryTree = genTree.getQueryTree();
-			if(!coversNegativeTree(queryTree, negTrees)){
-				SortedSet<String> foundResources = getResources(queryTree);
-				foundResources.removeAll(knownResources);
-				if(!foundResources.isEmpty()){
-					return new Example(foundResources.first(), null, null, null);
-				} else {
-					logger.info("Found no new resources");
-					gens.addAll(0, getAllowedGeneralisations(genTree));
+		List<GeneralisedQueryTree<N>> gens;
+		List<QueryTree<N>> neededGeneralisations;
+		while(!queue.isEmpty()){
+			neededGeneralisations = new ArrayList<QueryTree<N>>();
+			tree1 = queue.remove(0);
+			tmp = tree1;
+			logger.info("Changes: " + tmp.getChanges());
+			queryTree = tmp.getQueryTree();
+			if(!coversNegativeTree(tmp.getQueryTree(), negTrees)){
+				while(!coversNegativeTree(tmp.getQueryTree(), negTrees)){
+					gens = getAllowedGeneralisations(tmp);
+					tmp = gens.remove(0);
+					queue.addAll(0, gens);
 				}
-			} else {
-				logger.info("Covers negative tree");
+			}
+			List<QueryTreeChange> sequence = genSequence(tree1, tmp);
+			sequence.remove(sequence.size()-1);
+			tree2 = applyGen(tree1.getQueryTree(), sequence);
+			SortedSet<String> foundResources = getResources(tree2);
+			foundResources.removeAll(knownResources);
+			Example example;
+			if(!foundResources.isEmpty()){
+				do{
+					example = new Example(foundResources.first(),null,null,null);
+					sequence.remove(sequence.size()-1);
+					foundResources = getResources(tree2);
+					foundResources.removeAll(knownResources);
+				} while(!foundResources.isEmpty());
+				return example;
 			}
 		}
 		return null;
@@ -428,8 +444,28 @@ public class NBR<N> {
 	
 	
 	
-	private void applyGen(){
+	private QueryTree<N> applyGen(QueryTree<N> tree, List<QueryTreeChange> changes){
+		QueryTree<N> genTree = new QueryTreeImpl<N>(tree);
 		
+		QueryTree<N> node;
+		QueryTree<N> parentNode;
+		for(QueryTreeChange change : changes){
+			node = tree.getNodeById(change.getNodeId());
+			if(change.getType() == ChangeType.REMOVE_NODE){
+				parentNode = node.getParent();
+				parentNode.removeChild((QueryTreeImpl<N>) node);
+			} else {
+				node.setUserObject((N) "?");
+			}
+		}
+		
+		return genTree;
+	}
+	
+	private List<QueryTreeChange> genSequence(GeneralisedQueryTree<N> treeBefore, GeneralisedQueryTree<N> treeAfter){
+		List<QueryTreeChange> changes = new ArrayList<QueryTreeChange>(treeAfter.getChanges());
+		changes.removeAll(treeAfter.getChanges());
+		return changes;
 	}
 	
 	private String getLimitedQuery(String query){
