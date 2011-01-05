@@ -265,6 +265,34 @@ public class NBR<N> {
 		return null;
 	}
 	
+	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+		lgg = getFilteredTree(lgg);
+		logger.info(lgg.getStringRepresentation());
+		limit = knownResources.size();
+		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
+		
+		GeneralisedQueryTree<N> genTree;
+		QueryTree<N> queryTree;
+		while(!gens.isEmpty()){
+			genTree = gens.remove(0);
+			logger.info("Changes: " + genTree.getChanges());
+			queryTree = genTree.getQueryTree();
+			if(!coversNegativeTree(queryTree, negTrees)){
+				SortedSet<String> foundResources = getResources(queryTree);
+				foundResources.removeAll(knownResources);
+				if(!foundResources.isEmpty()){
+					return new Example(foundResources.first(), null, null, null);
+				} else {
+					logger.info("Found no new resources");
+					gens.addAll(0, getAllowedGeneralisations(genTree));
+				}
+			} else {
+				logger.info("Covers negative tree");
+			}
+		}
+		return null;
+	}
+	
 //	private Queue<QueryTree<N>> gen(QueryTree<N> tree){
 //		Queue<QueryTree<N>> gens = new LinkedList<QueryTree<N>>();
 //		
@@ -309,15 +337,16 @@ public class NBR<N> {
 //		return gens;
 //	}
 	
-	private List<GeneralisedQueryTree<N>> getAllowedGeneralisations(GeneralisedQueryTree<N> tree){
+	public List<GeneralisedQueryTree<N>> getAllowedGeneralisations(GeneralisedQueryTree<N> tree){
 		logger.info("Computing allowed generalisations...");
 		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
-		gens.addAll(computeAllowedGeneralisations(tree));
+//		QueryTreeChange initChange = new QueryTreeChange(0, ChangeType.REPLACE_LABEL);
+		gens.addAll(computeAllowedGeneralisations(tree, tree.getLastChange()));
 		
 		return gens;
 	}
 	
-	private List<GeneralisedQueryTree<N>> computeAllowedGeneralisations(GeneralisedQueryTree<N> tree){
+	private List<GeneralisedQueryTree<N>> computeAllowedGeneralisations(GeneralisedQueryTree<N> tree, QueryTreeChange lastChange){
 		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
 		
 		QueryTree<N> queryTree = tree.getQueryTree();
@@ -333,6 +362,9 @@ public class NBR<N> {
 			isLiteralNode = child.isLiteralNode();
 			parentLabel = child.getParent().getUserObject();
 			if(!label.equals("?") && parentLabel.equals("?")){
+				if(lastChange.getNodeId() >= child.getId() || lastChange.getType()==ChangeType.REMOVE_NODE){
+					continue;
+				}
 				child.setUserObject((N) "?");
 				child.setVarNode(true);
 				genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
@@ -346,6 +378,9 @@ public class NBR<N> {
 				edge = queryTree.getEdge(child);
 				parent = child.getParent();
 				if(child.isLeaf()){
+					if(lastChange.getNodeId() < child.getId() ){
+						continue;
+					}
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
 					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
 					genTree.addChanges(changes);
@@ -354,7 +389,7 @@ public class NBR<N> {
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					for(GeneralisedQueryTree<N> subTree : computeAllowedGeneralisations(new GeneralisedQueryTree<N>(child))){
+					for(GeneralisedQueryTree<N> subTree : computeAllowedGeneralisations(new GeneralisedQueryTree<N>(child), tree.getLastChange())){
 						parent.addChild((QueryTreeImpl<N>) subTree.getQueryTree(), edge, pos);
 						genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
 						genTree.addChanges(changes);

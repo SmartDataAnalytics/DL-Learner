@@ -24,6 +24,8 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.examples.DBpediaExample;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
@@ -110,24 +112,24 @@ public class NBRTest {
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
-			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
-			String learnedQuery = nbrGen.getQuery();
-			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
-				uri = example.getURI();
-				knownResources.add(uri);
-				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-				tree = treeFactory.getQueryTree(uri, model);
-				if(targetResources.contains(uri)){
-					System.out.println("Found new positive example " + uri);
-					posTrees.add(tree);
-					lgg = lggGen.getLGG(posTrees);
-				} else {
-					System.out.println("Found new negative example " + uri);
-					negTrees.add(tree);
-				}
-				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
-				learnedQuery = nbrGen.getQuery();
-			}
+			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);System.out.println(example.getURI());
+//			String learnedQuery = nbrGen.getQuery();
+//			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
+//				uri = example.getURI();
+//				knownResources.add(uri);
+//				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+//				tree = treeFactory.getQueryTree(uri, model);
+//				if(targetResources.contains(uri)){
+//					System.out.println("Found new positive example " + uri);
+//					posTrees.add(tree);
+//					lgg = lggGen.getLGG(posTrees);
+//				} else {
+//					System.out.println("Found new negative example " + uri);
+//					negTrees.add(tree);
+//				}
+//				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+//				learnedQuery = nbrGen.getQuery();
+//			}
 			
 			
 			
@@ -154,6 +156,115 @@ public class NBRTest {
 			}
 		}
 		return originalResources.equals(learnedResources);
+	}
+	
+	@Test
+	public void testAllowedGeneralisationsGeneration(){
+		QueryTree<String> tree = DBpediaExample.getPosExampleTrees().get(0);
+		NBR<String> nbrGen = new NBR<String>(null, null);
+		
+		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
+		GeneralisedQueryTree<String> genTree;
+		QueryTree<String> queryTree;
+		while(!gens.isEmpty()){
+			genTree = gens.remove(0);
+			queryTree = genTree.getQueryTree();
+			System.out.println("Changes:" + genTree.getChanges());
+//			System.out.println("Query:\n" + queryTree.toSPARQLQueryString());
+			gens.addAll(0, nbrGen.getAllowedGeneralisations(genTree));
+			
+		}
+		
+	}
+	
+	@Test
+	public void testAllowedGeneralisationsGeneration2(){
+		QueryTree<String> tree = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> child = new QueryTreeImpl<String>("node1");
+		child.setId(1);
+		Object edge = "edge";
+		tree.addChild(child, edge);
+		System.out.println(tree.getStringRepresentation());
+		NBR<String> nbrGen = new NBR<String>(null, null);
+		
+		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
+		GeneralisedQueryTree<String> genTree;
+		QueryTree<String> queryTree;
+		while(!gens.isEmpty()){
+			genTree = gens.remove(0);
+			queryTree = genTree.getQueryTree();
+			System.out.println("Changes:" + genTree.getChanges());
+			System.out.println("Query:\n" + queryTree.toSPARQLQueryString());
+			gens.addAll(0, nbrGen.getAllowedGeneralisations(genTree));
+			
+		}
+		
+	}
+	
+	@Test
+	public void testAllowedGeneralisationsGeneration3(){
+		Logger.getLogger(NBR.class).setLevel(Level.OFF);
+		QueryTree<String> tree = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> child = new QueryTreeImpl<String>("node1");
+		child.setId(1);
+		Object edge = "edge";
+		tree.addChild(child, edge);
+		QueryTreeImpl<String> child2 = new QueryTreeImpl<String>("node2");
+		child2.setId(2);
+		child.addChild(child2, edge);
+		child2 = new QueryTreeImpl<String>("node3");
+		child2.setId(3);
+		child.addChild(child2, edge);
+		System.out.println(tree.getStringRepresentation());
+		NBR<String> nbrGen = new NBR<String>(null, null);
+		
+		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
+		GeneralisedQueryTree<String> genTree;
+		QueryTree<String> queryTree;
+		while(!gens.isEmpty()){
+			genTree = gens.remove(0);
+			queryTree = genTree.getQueryTree();
+			System.out.println("Changes:" + genTree.getChanges());
+//			System.out.println("Query:\n" + queryTree.toSPARQLQueryString());
+			gens.addAll(0, nbrGen.getAllowedGeneralisations(genTree));
+			
+		}
+		
+	}
+	
+	@Test
+	public void testAllowedGeneralisationsGeneration4(){
+		QueryTree<String> tree = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> child = new QueryTreeImpl<String>("node1");
+		child.setId(1);
+		QueryTreeImpl<String> child2 = new QueryTreeImpl<String>("node2");
+		child2.setId(2);
+		child.addChild(child2, "edge2");
+		child2 = new QueryTreeImpl<String>("node3");
+		child2.setId(3);
+		child.addChild(child2, "edge3");
+		tree.addChild(child, "edge1");
+		child = new QueryTreeImpl<String>("node4");
+		child.setId(4);
+		tree.addChild(child, "edge4");
+		
+		System.out.println(tree.getStringRepresentation());
+		NBR<String> nbrGen = new NBR<String>(null, null);
+		
+		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
+		GeneralisedQueryTree<String> genTree;
+		QueryTree<String> queryTree;
+		int cnt = 0;
+		while(!gens.isEmpty()){cnt++;
+			genTree = gens.remove(0);
+			queryTree = genTree.getQueryTree();
+			System.out.println("Changes:" + genTree.getChanges());
+			System.out.println("Query:\n" + queryTree.toSPARQLQueryString());
+			gens.addAll(0, nbrGen.getAllowedGeneralisations(genTree));
+			
+		}
+		System.out.println(cnt);
+		
 	}
 
 }
