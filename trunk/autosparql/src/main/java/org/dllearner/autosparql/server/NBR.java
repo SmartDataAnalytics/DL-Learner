@@ -2,6 +2,7 @@ package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,8 @@ public class NBR<N> {
 	private int limit;
 	
 	private int nodeId;
+	
+	private GeneralisedQueryTreeComparator comparator = new GeneralisedQueryTreeComparator();
 	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
@@ -287,7 +290,7 @@ public class NBR<N> {
 			queryTree = tmp.getQueryTree();
 			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
 			while(!coversNegTree){
-				gens = getAllowedGeneralisations(tmp);
+				gens = getAllowedGeneralisationsSorted(tmp);
 				if(gens.isEmpty()){
 					break;
 				}
@@ -370,6 +373,12 @@ public class NBR<N> {
 //		QueryTreeChange initChange = new QueryTreeChange(0, ChangeType.REPLACE_LABEL);
 		gens.addAll(computeAllowedGeneralisations(tree, tree.getLastChange()));
 		
+		return gens;
+	}
+	
+	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted(GeneralisedQueryTree<N> tree){
+		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(tree);
+		Collections.sort(gens, comparator);		
 		return gens;
 	}
 	
@@ -562,6 +571,38 @@ public class NBR<N> {
         		}
         	}
     	} 
+    }
+    
+    class GeneralisedQueryTreeComparator implements Comparator<GeneralisedQueryTree<N>>{
+
+    	@Override
+		public int compare(GeneralisedQueryTree<N> tree1, GeneralisedQueryTree<N> tree2) {
+			int aCount1 = 0;
+			int aCount2 = 0;
+			int bCount1 = 0;
+			int bCount2 = 0;
+			for(QueryTreeChange change : tree1.getChanges()){
+				if(change.getType() == ChangeType.REPLACE_LABEL){
+					aCount1++;
+				} else {
+					bCount1++;
+				}
+			}
+			for(QueryTreeChange change : tree2.getChanges()){
+				if(change.getType() == ChangeType.REPLACE_LABEL){
+					aCount2++;
+				} else {
+					bCount2++;
+				}
+			}
+			if(aCount1 == aCount2){
+				return (bCount1 <= bCount2) ? -1 : 1; 
+			} else {
+				return (aCount1 < aCount2) ? -1 : 1; 
+			}
+			
+		}
+    	
     }
 
 }
