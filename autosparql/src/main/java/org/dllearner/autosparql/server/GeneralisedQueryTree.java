@@ -3,6 +3,7 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dllearner.autosparql.server.QueryTreeChange.ChangeType;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 
 public class GeneralisedQueryTree<N> {
@@ -38,6 +39,13 @@ public class GeneralisedQueryTree<N> {
 	
 	public List<QueryTreeChange> getChanges(){
 		return changes;
+	}
+	
+	public QueryTreeChange getLastChange(){
+		if(changes.isEmpty()){
+			return new QueryTreeChange(0, ChangeType.REPLACE_LABEL);
+		}
+		return changes.get(changes.size()-1);
 	}
 
 }

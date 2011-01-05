@@ -1,5 +1,7 @@
 package org.dllearner.autosparql.server;
 
+import org.kr.dl.dig.v1_1.InstanceofDocument.Instanceof;
+
 public class QueryTreeChange {
 	
 	static enum ChangeType{
@@ -28,6 +30,23 @@ public class QueryTreeChange {
 	public String toString() {
 //		return "nodeId" + (type==ChangeType.REPLACE_LABEL ? "Replace" : "Remove");
 		return nodeId + (type==ChangeType.REPLACE_LABEL ? "a" : "b");
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this){
+			return true;
+		}
+		if(obj == null || !(obj instanceof QueryTreeChange)){
+			return false;
+		}
+		QueryTreeChange other = (QueryTreeChange)obj;
+		return nodeId == other.getNodeId() && type == other.getType();
+	}
+	
+	@Override
+	public int hashCode() {
+		return nodeId + type.hashCode() + 37;
 	}
 
 
