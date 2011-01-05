@@ -112,24 +112,24 @@ public class NBRTest {
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
-			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);System.out.println(example.getURI());
-//			String learnedQuery = nbrGen.getQuery();
-//			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
-//				uri = example.getURI();
-//				knownResources.add(uri);
-//				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-//				tree = treeFactory.getQueryTree(uri, model);
-//				if(targetResources.contains(uri)){
-//					System.out.println("Found new positive example " + uri);
-//					posTrees.add(tree);
-//					lgg = lggGen.getLGG(posTrees);
-//				} else {
-//					System.out.println("Found new negative example " + uri);
-//					negTrees.add(tree);
-//				}
-//				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
-//				learnedQuery = nbrGen.getQuery();
-//			}
+			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+			String learnedQuery = nbrGen.getQuery();
+			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
+				uri = example.getURI();
+				knownResources.add(uri);
+				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				tree = treeFactory.getQueryTree(uri, model);
+				if(targetResources.contains(uri)){
+					System.out.println("Found new positive example " + uri);
+					posTrees.add(tree);
+					lgg = lggGen.getLGG(posTrees);
+				} else {
+					System.out.println("Found new negative example " + uri);
+					negTrees.add(tree);
+				}
+				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+				learnedQuery = nbrGen.getQuery();
+			}
 			
 			
 			
