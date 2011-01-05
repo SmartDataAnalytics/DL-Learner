@@ -281,17 +281,24 @@ public class NBR<N> {
 			neededGeneralisations = new ArrayList<QueryTree<N>>();
 			tree1 = queue.remove(0);
 			tmp = tree1;
-			logger.info("Changes: " + tmp.getChanges());
+			if(logger.isInfoEnabled()){
+				logger.info("Changes: " + tmp.getChanges());
+			}
 			queryTree = tmp.getQueryTree();
-			if(!coversNegativeTree(tmp.getQueryTree(), negTrees)){
-				while(!coversNegativeTree(tmp.getQueryTree(), negTrees)){
-					gens = getAllowedGeneralisations(tmp);
-					tmp = gens.remove(0);
-					queue.addAll(0, gens);
+			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
+			while(!coversNegTree){
+				gens = getAllowedGeneralisations(tmp);
+				if(gens.isEmpty()){
+					break;
 				}
+				tmp = gens.remove(0);
+				queue.addAll(0, gens);
+				coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
 			}
 			List<QueryTreeChange> sequence = genSequence(tree1, tmp);
-			sequence.remove(sequence.size()-1);
+			if(coversNegTree){
+				sequence.remove(sequence.size()-1);
+			}
 			tree2 = applyGen(tree1.getQueryTree(), sequence);
 			SortedSet<String> foundResources = getResources(tree2);
 			foundResources.removeAll(knownResources);
@@ -304,6 +311,10 @@ public class NBR<N> {
 					foundResources.removeAll(knownResources);
 				} while(!foundResources.isEmpty());
 				return example;
+			} else {
+				if(logger.isInfoEnabled()){
+					logger.info("Query result contains no new resources. Trying next tree from queue...");
+				}
 			}
 		}
 		return null;
@@ -428,7 +439,9 @@ public class NBR<N> {
 		
 		query = getSPARQLQuery(tree);//tree.toSPARQLQueryString();
 		query = getLimitedQuery(query);
-		logger.info("Testing query\n" + query);
+		if(logger.isInfoEnabled()){
+			logger.info("Testing query\n" + query);
+		}
 		String result = cache.executeSelectQuery(endpoint, query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
