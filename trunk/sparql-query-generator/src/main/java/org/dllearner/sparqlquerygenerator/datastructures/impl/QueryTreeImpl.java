@@ -106,6 +106,21 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return id;
     }
     
+    public QueryTree<N> getNodeById(int nodeId){
+    	QueryTree<N> node = null;
+    	if(this.id == nodeId){
+    		node = this;
+    	} else {
+    		for(QueryTree<N> child : children){
+    			node = child.getNodeById(nodeId);
+    			if(node != null){
+    				return node;
+    			}
+    		}
+    	}
+    	return node;
+    }
+    
     @Override
     public boolean isLiteralNode() {
     	return isLiteralNode;

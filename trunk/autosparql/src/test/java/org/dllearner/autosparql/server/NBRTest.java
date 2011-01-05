@@ -258,6 +258,8 @@ public class NBRTest {
 	public void testAllowedGeneralisationsGeneration(){
 		QueryTree<String> tree = DBpediaExample.getPosExampleTrees().get(0);
 		NBR<String> nbrGen = new NBR<String>(null, null);
+		System.out.println(tree.getStringRepresentation());
+		System.out.println(tree.getNodeById(5));
 		
 		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
 		GeneralisedQueryTree<String> genTree;
