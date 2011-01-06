@@ -329,13 +329,19 @@ public class NBR<N> {
 			foundResources.removeAll(knownResources);
 			Example example;
 			if(!foundResources.isEmpty()){
-				do{
-					example = new Example(foundResources.first(),null,null,null);
-					tree2 = neededGeneralisations.get(index--);
-					foundResources = getResources(tree2);
-					foundResources.removeAll(knownResources);
-				} while(!foundResources.isEmpty());
-				return example;
+				int i = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
+				// TODO: currently asks query twice (has been tested in binary search already)
+				foundResources = getResources(neededGeneralisations.get(i));
+				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
+				return new Example(foundResources.first(),null,null,null);
+				// linear search:
+//				do{
+//					example = new Example(foundResources.first(),null,null,null);
+//					tree2 = neededGeneralisations.get(index--);
+//					foundResources = getResources(tree2);
+//					foundResources.removeAll(knownResources);
+//				} while(!foundResources.isEmpty());
+//				return example;
 			} else {
 				if(logger.isInfoEnabled()){
 					logger.info("Query result contains no new resources. Trying next tree from queue...");
@@ -343,6 +349,23 @@ public class NBR<N> {
 			}
 		}
 		return null;
+	}
+	
+	// uses binary search to find most specific tree containing new resource
+	// invoke with low = 0 and high = listsize-1
+	private int findMostSpecificResourceTree(List<QueryTree<N>> trees, List<String> knownResources, int low, int high) {
+		if(low==high) {
+			return low;
+		}
+		int testIndex = low + (high-low)/2;
+		// perform SPARQL query
+		SortedSet<String> resources = getResources(trees.get(testIndex));
+		resources.removeAll(knownResources);
+		if(resources.isEmpty()) {
+			return findMostSpecificResourceTree(trees,knownResources,testIndex+1,high);
+		} else {
+			return findMostSpecificResourceTree(trees,knownResources,low,testIndex);
+		}
 	}
 	
 //	private Queue<QueryTree<N>> gen(QueryTree<N> tree){
