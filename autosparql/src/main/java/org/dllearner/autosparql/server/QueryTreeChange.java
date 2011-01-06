@@ -1,6 +1,5 @@
 package org.dllearner.autosparql.server;
 
-import org.kr.dl.dig.v1_1.InstanceofDocument.Instanceof;
 
 public class QueryTreeChange {
 	
