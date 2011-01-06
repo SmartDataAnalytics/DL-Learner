@@ -12,14 +12,13 @@ public class PostLGG<N> {
 		}
 	}
 	
-	private boolean existsPathInEveryTree(List<QueryTree<N>> trees){
-		boolean exists = true;
-		
+	private boolean existsPathInEveryTree(List<Object> path, List<QueryTree<N>> trees){
 		for(QueryTree<N> tree : trees){
-			
+			if(!existsPath(path, tree)){
+				return false;
+			}
 		}
-		
-		return exists;
+		return true;
 	}
 	
 	private boolean existsPath(List<Object> path, QueryTree<N> tree){
@@ -27,6 +26,9 @@ public class PostLGG<N> {
 		Object edge = path.remove(0);
 		for(QueryTree<N> child : tree.getChildren(edge)){
 			exists = existsPath(path, child);
+			if(exists){
+				return true;
+			}
 		}
 		return exists;
 	}
