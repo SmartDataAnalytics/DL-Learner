@@ -102,6 +102,12 @@ public class NBRTest {
 			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
 			posTrees.add(tree);
 			
+			uri = "http://dbpedia.org/resource/31Knots";
+			knownResources.add(uri);
+			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			tree = treeFactory.getQueryTree(uri, model);
+			posTrees.add(tree);
+			
 			uri = "http://dbpedia.org/resource/Hot_Chip";
 			knownResources.add(uri);
 			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
@@ -148,7 +154,7 @@ public class NBRTest {
 					layout, "log/nbr_evaluation.log", false);
 			Logger logger = Logger.getRootLogger();
 			logger.removeAllAppenders();
-			logger.addAppender(consoleAppender);
+//			logger.addAppender(consoleAppender);
 			logger.addAppender(fileAppender);
 			logger.setLevel(Level.OFF);
 			Logger.getLogger(NBR.class).setLevel(Level.INFO);
@@ -230,8 +236,22 @@ public class NBRTest {
 					System.out.println("Found new negative example " + uri);
 					negTrees.add(tree);
 				}
-				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
+				/*
+				System.out.println(learnedQuery);
+				cache.executeSelectQuery(endpoint, learnedQuery);
+				ResultSet rs2 = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, learnedQuery));
+				SortedSet<String> learnedResources = new TreeSet<String>();
+				QuerySolution qs2;
+				while(rs2.hasNext()){
+					qs2 = rs.next();
+					if(qs2.get("var0").isURIResource()){
+						learnedResources.add(qs2.get("var0").asResource().getURI());
+					}
+				}				
+				System.out.println("learned tree covers " + learnedResources.size() + " resources (target: " + targetResources.size() + ")");
+				*/
 			}
 			
 			
