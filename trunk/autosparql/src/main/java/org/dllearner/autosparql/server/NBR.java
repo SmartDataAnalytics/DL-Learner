@@ -274,13 +274,10 @@ public class NBR<N> {
 	
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		lgg = getFilteredTree(lgg);
-		negTrees = getFilteredTrees(negTrees);
-		PostLGG<N> postLgg = new PostLGG<N>();
-		postLgg.simplifyTree(lgg, negTrees);
-		
 		logger.info(lgg.getStringRepresentation());
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
+		logger.info(getQueueLogInfo(queue));
 		
 		GeneralisedQueryTree<N> tree1;
 		QueryTree<N> tree2;
@@ -297,11 +294,7 @@ public class NBR<N> {
 			}
 			queryTree = tmp.getQueryTree();
 			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
-			if(!coversNegTree){
-				if(logger.isInfoEnabled()){
-					logger.info("Generalising until a tree is found which covers a negative tree.");
-				}
-			}
+			logger.info("covers negative tree: " + coversNegTree);
 			while(!coversNegTree){
 				gens = getAllowedGeneralisationsSorted(tmp);
 //				for(GeneralisedQueryTree<N> t : gens){
@@ -319,7 +312,11 @@ public class NBR<N> {
 					logger.info("Changes: " + tmp.getChanges());
 				}
 				queue.addAll(0, gens);
+				logger.info(getQueueLogInfo(queue));
 				coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
+				if(coversNegTree) {
+					logger.info("covers negative tree");
+				}
 			}
 		
 //			List<QueryTreeChange> sequence = genSequence(tree1, tmp);
@@ -338,9 +335,11 @@ public class NBR<N> {
 			foundResources.removeAll(knownResources);
 			Example example;
 			if(!foundResources.isEmpty()){
+				logger.info("binary search for most specific query returning a resource - start");
 				int i = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
 				// TODO: currently asks query twice (has been tested in binary search already)
 				foundResources = getResources(neededGeneralisations.get(i));
+				logger.info("binary search for most specific query returning a resource - completed");
 				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
 				return new Example(foundResources.first(),null,null,null);
 				// linear search:
@@ -521,11 +520,11 @@ public class NBR<N> {
 		SortedSet<String> resources = new TreeSet<String>();
 		
 		query = tree.toSPARQLQueryString();
-		query = getDistinctQuery(query);
+		query = getLimitedQuery(query);
 		if(logger.isInfoEnabled()){
 			logger.info("Testing query\n" + query);
 		}
-		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query));
+		String result = cache.executeSelectQuery(endpoint, query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -564,12 +563,8 @@ public class NBR<N> {
 		return changes;
 	}
 	
-	private String getDistinctQuery(String query){
-		query = "SELECT DISTINCT " + query.substring(7);
-		return query;
-	}
-	
 	private String getLimitedQuery(String query){
+		query = "SELECT DISTINCT " + query.substring(7);
 		return query + " LIMIT " + (limit+1);
 	}
 	
@@ -577,19 +572,6 @@ public class NBR<N> {
 		nodeId = 0;
 		QueryTree<N> filteredTree = createFilteredTree(tree);
 		return filteredTree;
-	}
-	
-	private List<QueryTree<N>> getFilteredTrees(List<QueryTree<N>> trees){
-		List<QueryTree<N>> filteredTrees = new ArrayList<QueryTree<N>>();
-		
-		QueryTree<N> filteredTree;
-		for(QueryTree<N> tree : trees){
-			nodeId = 0;
-			filteredTree = createFilteredTree(tree);
-			filteredTrees.add(filteredTree);
-		}
-		
-		return filteredTrees;
 	}
 	
 	private QueryTree<N> createFilteredTree(QueryTree<N> tree){
@@ -644,7 +626,13 @@ public class NBR<N> {
     	Object object;
     	if(!tree.isLeaf()){
     		for(QueryTree<N> child : tree.getChildren()){
+    			if(child.isLiteralNode()){
+    				continue;
+    			}
         		predicate = tree.getEdge(child);
+        		if(((String)predicate).startsWith("http://dbpedia.org/property")){
+        			continue;
+        		}
         		if(filtered){
         			if(Filter.getAllFilterProperties().contains(predicate.toString())){
         				continue;
@@ -663,6 +651,19 @@ public class NBR<N> {
         		}
         	}
     	} 
+    }
+    
+    private String getQueueLogInfo(List<GeneralisedQueryTree<N>> queue) {
+    	int displayElements = 3;
+    	int max = Math.min(displayElements, queue.size());
+    	String str = "queue (size " + queue.size() + "): ";
+    	for(int i=0; i<max; i++) {
+    		str += queue.get(i).getChanges().toString() + ", ";
+    	}
+    	if(queue.size()>displayElements) {
+    		str += " ... ";
+    	}
+    	return str;
     }
     
     class GeneralisedQueryTreeComparator implements Comparator<GeneralisedQueryTree<N>>{
