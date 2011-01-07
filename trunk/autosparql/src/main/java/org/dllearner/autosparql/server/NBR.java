@@ -274,6 +274,10 @@ public class NBR<N> {
 	
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		lgg = getFilteredTree(lgg);
+		negTrees = getFilteredTrees(negTrees);
+		PostLGG<N> postLgg = new PostLGG<N>();
+		postLgg.simplifyTree(lgg, negTrees);
+		
 		logger.info(lgg.getStringRepresentation());
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
@@ -293,6 +297,11 @@ public class NBR<N> {
 			}
 			queryTree = tmp.getQueryTree();
 			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
+			if(!coversNegTree){
+				if(logger.isInfoEnabled()){
+					logger.info("Generalising until a tree is found which covers a negative tree.");
+				}
+			}
 			while(!coversNegTree){
 				gens = getAllowedGeneralisationsSorted(tmp);
 //				for(GeneralisedQueryTree<N> t : gens){
@@ -512,11 +521,11 @@ public class NBR<N> {
 		SortedSet<String> resources = new TreeSet<String>();
 		
 		query = tree.toSPARQLQueryString();
-		query = getLimitedQuery(query);
+		query = getDistinctQuery(query);
 		if(logger.isInfoEnabled()){
 			logger.info("Testing query\n" + query);
 		}
-		String result = cache.executeSelectQuery(endpoint, query);
+		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query));
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -555,8 +564,12 @@ public class NBR<N> {
 		return changes;
 	}
 	
-	private String getLimitedQuery(String query){
+	private String getDistinctQuery(String query){
 		query = "SELECT DISTINCT " + query.substring(7);
+		return query;
+	}
+	
+	private String getLimitedQuery(String query){
 		return query + " LIMIT " + (limit+1);
 	}
 	
@@ -564,6 +577,19 @@ public class NBR<N> {
 		nodeId = 0;
 		QueryTree<N> filteredTree = createFilteredTree(tree);
 		return filteredTree;
+	}
+	
+	private List<QueryTree<N>> getFilteredTrees(List<QueryTree<N>> trees){
+		List<QueryTree<N>> filteredTrees = new ArrayList<QueryTree<N>>();
+		
+		QueryTree<N> filteredTree;
+		for(QueryTree<N> tree : trees){
+			nodeId = 0;
+			filteredTree = createFilteredTree(tree);
+			filteredTrees.add(filteredTree);
+		}
+		
+		return filteredTrees;
 	}
 	
 	private QueryTree<N> createFilteredTree(QueryTree<N> tree){
@@ -618,13 +644,7 @@ public class NBR<N> {
     	Object object;
     	if(!tree.isLeaf()){
     		for(QueryTree<N> child : tree.getChildren()){
-    			if(child.isLiteralNode()){
-    				continue;
-    			}
         		predicate = tree.getEdge(child);
-        		if(((String)predicate).startsWith("http://dbpedia.org/property")){
-        			continue;
-        		}
         		if(filtered){
         			if(Filter.getAllFilterProperties().contains(predicate.toString())){
         				continue;
