@@ -7,11 +7,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -26,7 +25,6 @@ import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 
 public class NBR<N> {
 	
@@ -339,6 +337,7 @@ public class NBR<N> {
 				int i = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
 				// TODO: currently asks query twice (has been tested in binary search already)
 				foundResources = getResources(neededGeneralisations.get(i));
+				foundResources.removeAll(knownResources);
 				logger.info("binary search for most specific query returning a resource - completed");
 				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
 				return new Example(foundResources.first(),null,null,null);
@@ -520,11 +519,11 @@ public class NBR<N> {
 		SortedSet<String> resources = new TreeSet<String>();
 		
 		query = tree.toSPARQLQueryString();
-		query = getLimitedQuery(query);
+		query = getDistinctQuery(query);
 		if(logger.isInfoEnabled()){
-			logger.info("Testing query\n" + query);
+			logger.info("Testing query\n" + getLimitedQuery(query));
 		}
-		String result = cache.executeSelectQuery(endpoint, query);
+		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query));
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -564,8 +563,11 @@ public class NBR<N> {
 	}
 	
 	private String getLimitedQuery(String query){
-		query = "SELECT DISTINCT " + query.substring(7);
 		return query + " LIMIT " + (limit+1);
+	}
+	
+	private String getDistinctQuery(String query){
+		return "SELECT DISTINCT " + query.substring(7);
 	}
 	
 	private QueryTree<N> getFilteredTree(QueryTree<N> tree){

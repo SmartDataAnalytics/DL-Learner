@@ -279,8 +279,8 @@ public class NBRTest {
 				learnedResources.add(qs.get("x0").asResource().getURI());
 			}
 		}
-		System.out.println("#Learned resources: " + learnedResources.size());
-		System.out.println("#Target resources: " + originalResources.size());
+		System.out.println("#Resource in learned query: " + learnedResources.size());
+		System.out.println("#Resource in target query : " + originalResources.size());
 		return originalResources.equals(learnedResources);
 	}
 	
