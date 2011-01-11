@@ -17,6 +17,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -165,13 +166,13 @@ public class NBRTest {
 		HttpQuery.urlLimit = 0;
 		try {
 			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
-			SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"),
-					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
-			Set<String> predicateFilters = new HashSet<String>();
+			List<String> predicateFilters = new ArrayList<String>();
+			SparqlEndpoint endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
+					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 			
-			ModelGenerator modelGen = new ModelGenerator(endpoint, predicateFilters, cache);
+			ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), cache);
 			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
 			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 			NBR<String> nbrGen = new NBR<String>(endpoint, cache);
@@ -228,6 +229,7 @@ public class NBRTest {
 				knownResources.add(uri);
 				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 				tree = treeFactory.getQueryTree(uri, model);
+				tree = getFilteredTree(tree);
 				if(targetResources.contains(uri)){
 					System.out.println("Found new positive example " + uri);
 					posTrees.add(tree);
@@ -407,9 +409,9 @@ public class NBRTest {
 		QueryTree<String> subTree;
 		Object predicate;
     	for(QueryTree<String> child : tree.getChildren()){
-    		if(child.isLiteralNode()){
-    			continue;
-    		}
+//    		if(child.isLiteralNode()){
+//    			continue;
+//    		}
     		predicate = tree.getEdge(child);
     		if(((String)predicate).startsWith("http://dbpedia.org/property")){
     			continue;

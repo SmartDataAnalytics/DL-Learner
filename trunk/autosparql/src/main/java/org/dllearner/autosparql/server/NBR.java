@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,24 +17,33 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.QueryTreeChange.ChangeType;
+import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.util.Filter;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.rdf.model.Model;
 
 public class NBR<N> {
 	
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
+	private QueryTreeFactory<String> treeFactory;
+	private ModelGenerator modelGen;
 	private String query;
 	private int limit;
 	
 	private int nodeId;
+	private QueryTree<N> lgg;
 	
 	private LastQueryTreeChangeComparator comparator = new LastQueryTreeChangeComparator();
 	
@@ -42,6 +52,9 @@ public class NBR<N> {
 	public NBR(SparqlEndpoint endpoint, ExtractionDBCache cache){
 		this.endpoint = endpoint;
 		this.cache = cache;
+		
+		modelGen = new ModelGenerator(endpoint, new HashSet<String>(((SPARQLEndpointEx)endpoint).getPredicateFilters()), cache);
+		treeFactory = new QueryTreeFactoryImpl();
 	}
 	
 	public Example makeNBR(List<String> resources, QueryTree<N> lgg, List<QueryTree<N>> negTrees){
@@ -272,10 +285,13 @@ public class NBR<N> {
 	
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		lgg = getFilteredTree(lgg);
+		PostLGG<N> postGen = new PostLGG<N>();
+		postGen.simplifyTree(lgg, negTrees);
 		logger.info(lgg.getStringRepresentation());
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
 		logger.info(getQueueLogInfo(queue));
+		this.lgg = lgg;
 		
 		GeneralisedQueryTree<N> tree1;
 		QueryTree<N> tree2;
@@ -329,26 +345,14 @@ public class NBR<N> {
 				tree2 = tmp.getQueryTree();
 			}
 			
-			SortedSet<String> foundResources = getResources(tree2);
-			foundResources.removeAll(knownResources);
-			Example example;
-			if(!foundResources.isEmpty()){
+//			QueryTree<N> newTree = getNewResource(tree2, knownResources);
+			String newResource = getNewResource(tree2, knownResources);
+			if(!(newResource == null)){
 				logger.info("binary search for most specific query returning a resource - start");
-				int i = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
-				// TODO: currently asks query twice (has been tested in binary search already)
-				foundResources = getResources(neededGeneralisations.get(i));
-				foundResources.removeAll(knownResources);
+				newResource = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
 				logger.info("binary search for most specific query returning a resource - completed");
 				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
-				return new Example(foundResources.first(),null,null,null);
-				// linear search:
-//				do{
-//					example = new Example(foundResources.first(),null,null,null);
-//					tree2 = neededGeneralisations.get(index--);
-//					foundResources = getResources(tree2);
-//					foundResources.removeAll(knownResources);
-//				} while(!foundResources.isEmpty());
-//				return example;
+				return new Example(newResource, null, null, null);
 			} else {
 				if(logger.isInfoEnabled()){
 					logger.info("Query result contains no new resources. Trying next tree from queue...");
@@ -358,17 +362,27 @@ public class NBR<N> {
 		return null;
 	}
 	
+	private QueryTree<N> getQueryTree(String resource){
+		Model model = modelGen.createModel(resource, Strategy.CHUNKS, 2);
+		QueryTree<String> tree = treeFactory.getQueryTree(resource, model);
+		return getFilteredTree((QueryTree<N>) tree);
+	}
+	
 	// uses binary search to find most specific tree containing new resource
 	// invoke with low = 0 and high = listsize-1
-	private int findMostSpecificResourceTree(List<QueryTree<N>> trees, List<String> knownResources, int low, int high) {
-		if(low==high) {
-			return low;
-		}
+	private String findMostSpecificResourceTree(List<QueryTree<N>> trees, List<String> knownResources, int low, int high) {
+//		if(low==high) {
+//			return low;
+//		}
 		int testIndex = low + (high-low)/2;
 		// perform SPARQL query
-		SortedSet<String> resources = getResources(trees.get(testIndex));
-		resources.removeAll(knownResources);
-		if(resources.isEmpty()) {
+		
+//		QueryTree<N> t = getNewResource(trees.get(testIndex), knownResources);
+		String t = getNewResource(trees.get(testIndex), knownResources);
+		if(testIndex == high){
+			return t;
+		}
+		if(t == null) {
 			return findMostSpecificResourceTree(trees,knownResources,testIndex+1,high);
 		} else {
 			return findMostSpecificResourceTree(trees,knownResources,low,testIndex);
@@ -536,7 +550,47 @@ public class NBR<N> {
 		return resources;
 	}
 	
+	private SortedSet<String> getResources(QueryTree<N> tree, int limit, int offset){
+		SortedSet<String> resources = new TreeSet<String>();
+		
+		query = getLimitedQuery(tree, limit, offset);
+		query = getDistinctQuery(query);
+		if(logger.isInfoEnabled()){
+			logger.info("Testing query\n" + query);
+		}
+		String result = cache.executeSelectQuery(endpoint, query);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		String uri;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("x0").getURI();
+			resources.add(uri);
+		}
+		
+		return resources;
+	}
 	
+	private String getNewResource(QueryTree<N> tree, List<String> knownResources){
+		int i = 0;
+		int chunkSize = 10;
+		SortedSet<String> foundResources = getResources(tree, 10, chunkSize * i);
+		foundResources.removeAll(knownResources);
+		QueryTree<N> newTree;
+		while(!foundResources.isEmpty()){
+			for(String resource : foundResources){
+				newTree = getQueryTree(resource);
+				if(!newTree.isSubsumedBy(lgg)){
+//					return newTree;
+					return resource;
+				}
+			}
+			i++;
+			foundResources = getResources(tree, 10, chunkSize * i);
+		}
+		logger.info("Found no resource which would modify the LGG");
+		return null;
+	}
 	
 	private QueryTree<N> applyGen(QueryTree<N> tree, List<QueryTreeChange> changes){
 		QueryTree<N> genTree = new QueryTreeImpl<N>(tree);
@@ -564,6 +618,16 @@ public class NBR<N> {
 	
 	private String getLimitedQuery(String query){
 		return query + " LIMIT " + (limit+1);
+	}
+	
+	private String getLimitedQuery(QueryTree<N> tree, int limit){
+		String query = tree.toSPARQLQueryString();
+		return query + " LIMIT " + (limit);
+	}
+	
+	private String getLimitedQuery(QueryTree<N> tree, int limit, int offset){
+		String query = tree.toSPARQLQueryString();
+		return query + " LIMIT " + limit + " OFFSET " + offset;
 	}
 	
 	private String getDistinctQuery(String query){
