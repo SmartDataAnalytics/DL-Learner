@@ -284,10 +284,11 @@ public class NBR<N> {
 	}
 	
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+		logger.info("Computing next question...");
 		lgg = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>();
 		postGen.simplifyTree(lgg, negTrees);
-		logger.info(lgg.getStringRepresentation());
+		logger.info("Starting generalisation with tree:\n" + lgg.getStringRepresentation());
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
 		logger.info(getQueueLogInfo(queue));
@@ -301,6 +302,7 @@ public class NBR<N> {
 		List<QueryTree<N>> neededGeneralisations;
 		while(!queue.isEmpty()){
 			neededGeneralisations = new ArrayList<QueryTree<N>>();
+			logger.info("Selecting first tree from queue");
 			tree1 = queue.remove(0);
 			tmp = tree1;
 			if(logger.isInfoEnabled()){
