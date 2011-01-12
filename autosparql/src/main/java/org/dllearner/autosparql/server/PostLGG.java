@@ -17,10 +17,10 @@ public class PostLGG<N> {
 		if(logger.isDebugEnabled()){
 			logger.debug("Making post LGG simplification");
 			logger.debug("LGG:\n" + tree.getStringRepresentation());
-			int i = 1;
-			for(QueryTree<N> negTree : negTrees){
-				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + negTree.getStringRepresentation());
-			}
+//			int i = 1;
+//			for(QueryTree<N> negTree : negTrees){
+//				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + negTree.getStringRepresentation());
+//			}
 		}
 		
 		List<Object> path;

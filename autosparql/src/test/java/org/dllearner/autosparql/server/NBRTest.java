@@ -117,6 +117,7 @@ public class NBRTest {
 			tree = treeFactory.getQueryTree(uri, model);
 			negTrees.add(tree);
 			
+			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
 			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
@@ -225,10 +226,13 @@ public class NBRTest {
 			tree = getFilteredTree(tree);
 			negTrees.add(tree);
 			
+			logger.info("Pos trees:\n " + printTrees(posTrees));
+			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
 			Example example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 			String learnedQuery = nbrGen.getQuery();
+			logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, cache));
 			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
 				uri = example.getURI();
 				knownResources.add(uri);
@@ -243,6 +247,7 @@ public class NBRTest {
 					logger.info("Found new negative example " + uri);
 					negTrees.add(tree);
 				}
+				logger.info("Pos trees:\n " + printTrees(posTrees));
 				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
 				/*
@@ -271,6 +276,20 @@ public class NBRTest {
 		
 	}
 	
+	private int getResultCount(String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		SortedSet<String> resources = new TreeSet<String>();
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			if(qs.get("x0").isURIResource()){
+				resources.add(qs.get("x0").asResource().getURI());
+			}
+		}
+		return resources.size();
+	}
+	
 	private boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
 		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}") || query.equals(lastQuery)){
 			return false;
@@ -286,8 +305,8 @@ public class NBRTest {
 				learnedResources.add(qs.get("x0").asResource().getURI());
 			}
 		}
-		logger.info("#Resource in learned query: " + learnedResources.size());
-		logger.info("#Resource in target query : " + originalResources.size());
+		logger.info("#Resources in learned query: " + learnedResources.size());
+		logger.info("#Resources in target query : " + originalResources.size());
 		return originalResources.equals(learnedResources);
 	}
 	
@@ -428,6 +447,15 @@ public class NBRTest {
     		filteredTree.addChild((QueryTreeImpl<String>)subTree, tree.getEdge(child));
     	}
     	return filteredTree;
+	}
+	
+	private String printTrees(List<QueryTree<String>> trees){
+		StringBuilder sb = new StringBuilder();
+		int i = 1;
+		for(QueryTree<String> tree : trees){
+			sb.append(tree.getStringRepresentation()).append("\n");
+		}
+		return sb.toString();
 	}
 
 }

@@ -284,15 +284,15 @@ public class NBR<N> {
 	}
 	
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
-		logger.info("Computing next question...");
-		lgg = getFilteredTree(lgg);
-		PostLGG<N> postGen = new PostLGG<N>();
-		postGen.simplifyTree(lgg, negTrees);
-		logger.debug("Starting generalisation with tree:\n" + lgg.getStringRepresentation());
-		limit = knownResources.size();
-		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
-		logger.debug(getQueueLogInfo(queue));
 		this.lgg = lgg;
+		logger.info("Computing next question...");
+		QueryTree<N> postLGG = getFilteredTree(lgg);
+		PostLGG<N> postGen = new PostLGG<N>();
+		postGen.simplifyTree(postLGG, negTrees);
+//		logger.debug("Starting generalisation with tree:\n" + postLGG.getStringRepresentation());
+		limit = knownResources.size();
+		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(postLGG));
+		logger.debug(getQueueLogInfo(queue));
 		
 		GeneralisedQueryTree<N> tree1;
 		QueryTree<N> tree2;
@@ -460,6 +460,29 @@ public class NBR<N> {
 			}
 		}
 		return nodes;
+	}
+	
+	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSortedByMatrix(GeneralisedQueryTree<N> tree){
+		List<QueryTreeChange> changes = new ArrayList<QueryTreeChange>();
+		System.err.println(tree.getQueryTree().getStringRepresentation());
+		QueryTreeChange lastChange = tree.getLastChange();
+		for(QueryTree<N> node : getPossibleNodes2Change(tree.getQueryTree())){
+			if(lastChange.getType() == ChangeType.REMOVE_NODE){
+				if(node.getUserObject().equals("?") && node.getId() < lastChange.getNodeId()){
+					changes.add(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
+				}
+			} else {
+				if(node.getUserObject().equals("?")){
+					changes.add(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
+				} else {
+					changes.add(new QueryTreeChange(node.getId(), ChangeType.REPLACE_LABEL));
+				}
+			}
+		}
+		System.out.println();
+		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(tree);
+		Collections.sort(gens, comparator);	
+		return gens;
 	}
 	
 	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted(GeneralisedQueryTree<N> tree){
