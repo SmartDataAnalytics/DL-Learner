@@ -5,8 +5,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -33,6 +35,7 @@ import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
+import org.dllearner.utilities.Helper;
 import org.junit.Test;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -154,6 +157,11 @@ public class NBRTest {
 	
 	@Test
 	public void optimisedTest(){
+		// basic setup
+		String baseURI = "http://dbpedia.org/resource/";
+		Map<String,String> prefixes = new HashMap<String,String>();
+		prefixes.put("dbo","http://dbpedia.org/ontology/");
+		
 		try {
 			SimpleLayout layout = new SimpleLayout();
 			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -239,7 +247,7 @@ public class NBRTest {
 			negTrees.add(tree);
 			
 //			logger.debug("Pos trees:\n " + printTrees(posTrees));
-			logger.info("Positive examples: " + posExamples);
+			logger.info("Positive examples: " + Helper.getAbbreviatedList(posExamples, baseURI, prefixes));
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
@@ -263,7 +271,7 @@ public class NBRTest {
 					logger.info("Found new negative example " + uri);
 					negTrees.add(tree);
 				}
-				logger.info("Positive examples: " + posExamples);
+				logger.info("Positive examples: " + Helper.getAbbreviatedList(posExamples, baseURI, prefixes));
 //				logger.debug("Pos trees:\n " + printTrees(posTrees));
 				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
