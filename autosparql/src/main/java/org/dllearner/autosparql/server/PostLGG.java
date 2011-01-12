@@ -14,11 +14,12 @@ public class PostLGG<N> {
 	
 	public void simplifyTree(QueryTree<N> tree, List<QueryTree<N>> negTrees){
 		
-		if(logger.isInfoEnabled()){
-			logger.info("Making post LGG simplification");
-			logger.info("LGG:\n" + tree.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("Making post LGG simplification");
+			logger.debug("LGG:\n" + tree.getStringRepresentation());
+			int i = 1;
 			for(QueryTree<N> negTree : negTrees){
-				logger.info("Neg tree:\n" + negTree.getStringRepresentation());
+				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + negTree.getStringRepresentation());
 			}
 		}
 		
@@ -46,8 +47,8 @@ public class PostLGG<N> {
 				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
 			}
 		}
-		if(logger.isInfoEnabled()){
-			logger.info("Pruned tree: " + tree.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("Pruned tree:\n" + tree.getStringRepresentation());
 		}
 	}
 	

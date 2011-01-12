@@ -153,14 +153,17 @@ public class NBRTest {
 		try {
 			SimpleLayout layout = new SimpleLayout();
 			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			consoleAppender.setThreshold(Level.INFO);
 			FileAppender fileAppender = new FileAppender(
 					layout, "log/nbr_evaluation.log", false);
+			fileAppender.setThreshold(Level.DEBUG);
 			Logger logger = Logger.getRootLogger();
 			logger.removeAllAppenders();
-//			logger.addAppender(consoleAppender);
+			logger.addAppender(consoleAppender);
 			logger.addAppender(fileAppender);
-			logger.setLevel(Level.OFF);
-			Logger.getLogger(NBR.class).setLevel(Level.INFO);
+//			logger.setLevel(Level.OFF);
+			Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
+			Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

@@ -288,10 +288,10 @@ public class NBR<N> {
 		lgg = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>();
 		postGen.simplifyTree(lgg, negTrees);
-		logger.info("Starting generalisation with tree:\n" + lgg.getStringRepresentation());
+		logger.debug("Starting generalisation with tree:\n" + lgg.getStringRepresentation());
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(lgg));
-		logger.info(getQueueLogInfo(queue));
+		logger.debug(getQueueLogInfo(queue));
 		this.lgg = lgg;
 		
 		GeneralisedQueryTree<N> tree1;
@@ -302,36 +302,36 @@ public class NBR<N> {
 		List<QueryTree<N>> neededGeneralisations;
 		while(!queue.isEmpty()){
 			neededGeneralisations = new ArrayList<QueryTree<N>>();
-			logger.info("Selecting first tree from queue");
+			logger.debug("Selecting first tree from queue");
 			tree1 = queue.remove(0);
 			tmp = tree1;
-			if(logger.isInfoEnabled()){
-				logger.info("Changes: " + tmp.getChanges());
+			if(logger.isDebugEnabled()){
+				logger.debug("Changes: " + tmp.getChanges());
 			}
 			queryTree = tmp.getQueryTree();
 			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
-			logger.info("covers negative tree: " + coversNegTree);
+			logger.debug("covers negative tree: " + coversNegTree);
 			while(!coversNegTree){
 				gens = getAllowedGeneralisationsSorted(tmp);
 //				for(GeneralisedQueryTree<N> t : gens){
 //					logger.info(t.getChanges());
 //				}
 				if(gens.isEmpty()){
-					if(logger.isInfoEnabled()){
-						logger.info("Couldn't create a generalisation which covers a negative tree.");
+					if(logger.isDebugEnabled()){
+						logger.debug("Couldn't create a generalisation which covers a negative tree.");
 					}
 					break;
 				}
 				tmp = gens.remove(0);
 				neededGeneralisations.add(tmp.getQueryTree());
-				if(logger.isInfoEnabled()){
-					logger.info("Changes: " + tmp.getChanges());
+				if(logger.isDebugEnabled()){
+					logger.debug("Changes: " + tmp.getChanges());
 				}
 				queue.addAll(0, gens);
-				logger.info(getQueueLogInfo(queue));
+				logger.debug(getQueueLogInfo(queue));
 				coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
 				if(coversNegTree) {
-					logger.info("covers negative tree");
+					logger.debug("covers negative tree");
 				}
 			}
 		
@@ -350,14 +350,14 @@ public class NBR<N> {
 //			QueryTree<N> newTree = getNewResource(tree2, knownResources);
 			String newResource = getNewResource(tree2, knownResources);
 			if(!(newResource == null)){
-				logger.info("binary search for most specific query returning a resource - start");
+				logger.debug("binary search for most specific query returning a resource - start");
 				newResource = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
-				logger.info("binary search for most specific query returning a resource - completed");
+				logger.debug("binary search for most specific query returning a resource - completed");
 				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
 				return new Example(newResource, null, null, null);
 			} else {
-				if(logger.isInfoEnabled()){
-					logger.info("Query result contains no new resources. Trying next tree from queue...");
+				if(logger.isDebugEnabled()){
+					logger.debug("Query result contains no new resources. Trying next tree from queue...");
 				}
 			}
 		}
@@ -436,12 +436,30 @@ public class NBR<N> {
 //	}
 	
 	public List<GeneralisedQueryTree<N>> getAllowedGeneralisations(GeneralisedQueryTree<N> tree){
-		logger.info("Computing allowed generalisations...");
+		logger.debug("Computing allowed generalisations...");
 		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
 //		QueryTreeChange initChange = new QueryTreeChange(0, ChangeType.REPLACE_LABEL);
 		gens.addAll(computeAllowedGeneralisations(tree, tree.getLastChange()));
 		
 		return gens;
+	}
+	
+	private List<QueryTree<N>> getPossibleNodes2Change(QueryTree<N> tree){
+		List<QueryTree<N>> nodes = new ArrayList<QueryTree<N>>();
+		for(QueryTree<N> child : tree.getChildren()){
+			if(child.isLeaf()){
+				nodes.add(child);
+			} else {
+				if(child.getParent().getUserObject().equals("?")){
+					if(child.getUserObject().equals("?")){
+						nodes.addAll(getPossibleNodes2Change(child));
+					} else {
+						nodes.add(child);
+					}
+				}
+			}
+		}
+		return nodes;
 	}
 	
 	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted(GeneralisedQueryTree<N> tree){
@@ -536,8 +554,8 @@ public class NBR<N> {
 		
 		query = tree.toSPARQLQueryString();
 		query = getDistinctQuery(query);
-		if(logger.isInfoEnabled()){
-			logger.info("Testing query\n" + getLimitedQuery(query));
+		if(logger.isDebugEnabled()){
+			logger.debug("Testing query\n" + getLimitedQuery(query));
 		}
 		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query));
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
@@ -555,12 +573,12 @@ public class NBR<N> {
 	private SortedSet<String> getResources(QueryTree<N> tree, int limit, int offset){
 		SortedSet<String> resources = new TreeSet<String>();
 		
-		query = getLimitedQuery(tree, limit, offset);
+		query = tree.toSPARQLQueryString();
 		query = getDistinctQuery(query);
-		if(logger.isInfoEnabled()){
-			logger.info("Testing query\n" + query);
+		if(logger.isDebugEnabled()){
+			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset));
 		}
-		String result = cache.executeSelectQuery(endpoint, query);
+		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -590,7 +608,7 @@ public class NBR<N> {
 			i++;
 			foundResources = getResources(tree, 10, chunkSize * i);
 		}
-		logger.info("Found no resource which would modify the LGG");
+		logger.debug("Found no resource which would modify the LGG");
 		return null;
 	}
 	
@@ -620,6 +638,10 @@ public class NBR<N> {
 	
 	private String getLimitedQuery(String query){
 		return query + " LIMIT " + (limit+1);
+	}
+	
+	private String getLimitedQuery(String query, int limit, int offset){
+		return query + " LIMIT " + limit + " OFFSET " + offset;
 	}
 	
 	private String getLimitedQuery(QueryTree<N> tree, int limit){
