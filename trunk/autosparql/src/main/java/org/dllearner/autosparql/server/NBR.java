@@ -630,6 +630,7 @@ public class NBR<N> {
 			}
 			i++;
 			foundResources = getResources(tree, 10, chunkSize * i);
+			foundResources.removeAll(knownResources);
 		}
 		logger.debug("Found no resource which would modify the LGG");
 		return null;
