@@ -135,6 +135,30 @@ public class Helper {
 		}
 	}
 
+	/**
+	 * Transforms a list of URIs into their abbreviated version.
+	 * @see #getAbbreviatedString(String, String, Map)
+	 * @param list List of URIs.
+	 * @param baseURI The base uri (ignored if null).
+	 * @param prefixes A prefix map (ignored if null), where each entry contains a
+	 *            short string e.g. ns1 as key and the corresponding uri as
+	 *            value.
+	 * @return A list with shortened URIs.
+	 */
+	public static String getAbbreviatedList(List<String> list, String baseURI,
+			Map<String, String> prefixes) {
+		StringBuffer str = new StringBuffer("[");
+		Iterator<String> it = list.iterator(); // easier to implement using an iterator than foreach
+		while(it.hasNext()) {
+			str.append(getAbbreviatedString(it.next(),baseURI,prefixes));
+			if(it.hasNext()) {
+				str.append(", ");
+			}
+		}
+		str.append("]");
+		return str.toString();
+	}
+	
 	public static String prettyPrintNanoSeconds(long nanoSeconds) {
 		return prettyPrintNanoSeconds(nanoSeconds, false, false);
 	}
