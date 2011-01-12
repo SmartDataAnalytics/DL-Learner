@@ -294,6 +294,7 @@ public class NBR<N> {
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(postLGG));
 		logger.debug(getQueueLogInfo(queue));
+//		logger.debug("New: " + getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG)));
 		
 		GeneralisedQueryTree<N> tree1;
 		QueryTree<N> tree2;
@@ -350,6 +351,7 @@ public class NBR<N> {
 			
 //			QueryTree<N> newTree = getNewResource(tree2, knownResources);
 			String newResource = getNewResource(tree2, knownResources);
+			logger.debug("New resource before binary search: " + newResource);
 			if(!(newResource == null)){
 				logger.debug("binary search for most specific query returning a resource - start");
 				newResource = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
@@ -463,9 +465,8 @@ public class NBR<N> {
 		return nodes;
 	}
 	
-	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSortedByMatrix(GeneralisedQueryTree<N> tree){
+	private List<QueryTreeChange> getAllowedGeneralisationsSortedByMatrix(GeneralisedQueryTree<N> tree){
 		List<QueryTreeChange> changes = new ArrayList<QueryTreeChange>();
-		System.err.println(tree.getQueryTree().getStringRepresentation());
 		QueryTreeChange lastChange = tree.getLastChange();
 		for(QueryTree<N> node : getPossibleNodes2Change(tree.getQueryTree())){
 			if(lastChange.getType() == ChangeType.REMOVE_NODE){
@@ -475,19 +476,17 @@ public class NBR<N> {
 			} else {
 				if(node.getUserObject().equals("?")){
 					changes.add(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
-				} else {
+				} else if(lastChange.getNodeId() < node.getId()){
 					changes.add(new QueryTreeChange(node.getId(), ChangeType.REPLACE_LABEL));
 				}
 			}
 		}
-		System.out.println();
-		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(tree);
-		Collections.sort(gens, comparator);	
-		return gens;
+		return changes;
 	}
 	
 	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted(GeneralisedQueryTree<N> tree){
 		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(tree);
+//		logger.debug("Before sorting: " + getQueueLogInfo(gens));
 		Collections.sort(gens, comparator);	
 		return gens;
 	}
@@ -694,9 +693,9 @@ public class NBR<N> {
 		QueryTree<N> subTree;
 		Object predicate;
     	for(QueryTree<N> child : tree.getChildren()){
-    		if(child.isLiteralNode()){
-    			continue;
-    		}
+//    		if(child.isLiteralNode()){
+//    			continue;
+//    		}
     		predicate = tree.getEdge(child);
     		if(((String)predicate).startsWith("http://dbpedia.org/property")){
     			continue;

@@ -36,6 +36,7 @@ import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrat
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.dllearner.utilities.Helper;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -448,6 +449,73 @@ public class NBRTest {
 		}
 		System.out.println(cnt);
 		
+	}
+	
+	@Test
+	public void lggSubsumptionTest(){
+			try {
+				ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
+				List<String> predicateFilters = new ArrayList<String>();
+				SparqlEndpoint endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
+						Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
+				predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+				predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+				
+				ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), cache);
+				QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
+				LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+				NBR<String> nbrGen = new NBR<String>(endpoint, cache);
+				
+				String targetQuery = "PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> " +
+				"SELECT DISTINCT ?var0 ?homepage ?genre WHERE {" +
+				"?var0 a dbo:Band ." +
+				"?var0 rdfs:label ?label." +
+				"OPTIONAL { ?var0 foaf:homepage ?homepage } ." +
+				"?var0 dbo:genre ?genre ." +
+				"?genre dbo:instrument dbpedia:Electric_guitar ." +
+				"?genre dbo:stylisticOrigin dbpedia:Jazz .}";
+				ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, targetQuery));
+				SortedSet<String> targetResources = new TreeSet<String>();
+				QuerySolution qs;
+				while(rs.hasNext()){
+					qs = rs.next();
+					if(qs.get("var0").isURIResource()){
+						targetResources.add(qs.get("var0").asResource().getURI());
+					}
+				}
+				
+				List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
+				
+				String uri = "http://dbpedia.org/resource/Foals";
+				Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
+				tree = getFilteredTree(tree);
+				posTrees.add(tree);
+				
+				uri = "http://dbpedia.org/resource/31Knots";
+				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				tree = treeFactory.getQueryTree(uri, model);
+				tree = getFilteredTree(tree);
+				posTrees.add(tree);
+				
+				uri = "http://dbpedia.org/resource/65daysofstatic";
+				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				tree = treeFactory.getQueryTree(uri, model);
+				tree = getFilteredTree(tree);
+				posTrees.add(tree);
+				
+				QueryTree<String> lgg = lggGen.getLGG(posTrees);
+				
+				uri = "http://dbpedia.org/resource/Battles_%28band%29";
+				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+				tree = treeFactory.getQueryTree(uri, model);
+				tree = getFilteredTree(tree);
+				
+				Assert.assertTrue(tree.isSubsumedBy(lgg));
+				
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
 	}
 	
 	private QueryTree<String> getFilteredTree(QueryTree<String> tree){
