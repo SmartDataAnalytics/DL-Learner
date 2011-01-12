@@ -247,7 +247,7 @@ public class NBRTest {
 			negTrees.add(tree);
 			
 //			logger.debug("Pos trees:\n " + printTrees(posTrees));
-			logger.info("Positive examples: " + Helper.getAbbreviatedList(posExamples, baseURI, prefixes));
+			logger.info("Positive examples: " + Helper.getAbbreviatedCollection(posExamples, baseURI, prefixes));
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
@@ -256,6 +256,7 @@ public class NBRTest {
 			
 			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
 				logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, cache));
+//				logger.info("#Resources in LGG: " + Helper.getAbbreviatedCollection(getResult(lgg.toSPARQLQueryString(), endpoint, cache),baseURI,prefixes));
 				logger.info("#Resources in POST-LGG: " + getResultCount(nbrGen.getPostLGG().toSPARQLQueryString(), endpoint, cache));
 				uri = example.getURI();
 				knownResources.add(uri);
@@ -271,7 +272,7 @@ public class NBRTest {
 					logger.info("Found new negative example " + uri);
 					negTrees.add(tree);
 				}
-				logger.info("Positive examples: " + Helper.getAbbreviatedList(posExamples, baseURI, prefixes));
+				logger.info("Positive examples: " + Helper.getAbbreviatedCollection(posExamples, baseURI, prefixes));
 //				logger.debug("Pos trees:\n " + printTrees(posTrees));
 				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
@@ -301,7 +302,7 @@ public class NBRTest {
 		
 	}
 	
-	private int getResultCount(String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
+	private SortedSet<String> getResult(String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
 		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, getDistinctQuery(query)));
 		SortedSet<String> resources = new TreeSet<String>();
 		QuerySolution qs;
@@ -311,7 +312,11 @@ public class NBRTest {
 				resources.add(qs.get("x0").asResource().getURI());
 			}
 		}
-		return resources.size();
+		return resources;
+	}	
+	
+	private int getResultCount(String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
+		return getResult(query, endpoint, cache).size();
 	}
 	
 	private boolean isEquivalentQuery(SortedSet<String> originalResources, String query, SparqlEndpoint endpoint, ExtractionDBCache cache){

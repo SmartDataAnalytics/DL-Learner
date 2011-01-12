@@ -19,6 +19,7 @@
  */
 package org.dllearner.utilities;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,7 +146,7 @@ public class Helper {
 	 *            value.
 	 * @return A list with shortened URIs.
 	 */
-	public static String getAbbreviatedList(List<String> list, String baseURI,
+	public static String getAbbreviatedCollection(Collection<String> list, String baseURI,
 			Map<String, String> prefixes) {
 		StringBuffer str = new StringBuffer("[");
 		Iterator<String> it = list.iterator(); // easier to implement using an iterator than foreach
