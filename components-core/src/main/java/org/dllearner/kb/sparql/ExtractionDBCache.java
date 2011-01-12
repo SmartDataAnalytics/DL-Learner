@@ -59,7 +59,7 @@ public class ExtractionDBCache {
 	private boolean autoServerMode = true;
 	
 	// specifies after how many seconds a cached result becomes invalid
-	private long freshnessInMilliseconds = 15 * 24 * 60 * 60 + 1000; // 15 days	
+	private long freshnessInMilliseconds = 15 * 24 * 60 * 60 * 1000; // 15 days	
 	
 	private Connection conn;
 	
