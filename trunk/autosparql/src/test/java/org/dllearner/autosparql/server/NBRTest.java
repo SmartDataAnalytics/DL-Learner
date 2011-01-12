@@ -26,8 +26,11 @@ import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.examples.DBpediaExample;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
+import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.junit.Test;
@@ -163,6 +166,13 @@ public class NBRTest {
 			logger.addAppender(consoleAppender);
 			logger.addAppender(fileAppender);
 //			logger.setLevel(Level.OFF);
+			Logger.getLogger(ModelGenerator.class).setLevel(Level.OFF);
+			Logger.getLogger(SPARQLQueryGeneratorCachedImpl.class).setLevel(Level.OFF);
+			Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
+			Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
+			Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
+			Logger.getLogger(QueryTreeImpl.class).setLevel(Level.OFF);
+			Logger.getLogger(NBR.class).setLevel(Level.INFO);
 			Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
 			Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
 		} catch (IOException e1) {
