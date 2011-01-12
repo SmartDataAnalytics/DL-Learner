@@ -44,6 +44,7 @@ public class NBR<N> {
 	
 	private int nodeId;
 	private QueryTree<N> lgg;
+	private QueryTree<N> postLGG;
 	
 	private LastQueryTreeChangeComparator comparator = new LastQueryTreeChangeComparator();
 	
@@ -286,7 +287,7 @@ public class NBR<N> {
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		this.lgg = lgg;
 		logger.info("Computing next question...");
-		QueryTree<N> postLGG = getFilteredTree(lgg);
+		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>();
 		postGen.simplifyTree(postLGG, negTrees);
 //		logger.debug("Starting generalisation with tree:\n" + postLGG.getStringRepresentation());
@@ -726,6 +727,10 @@ public class NBR<N> {
     	buildSPARQLQueryString(tree, sb, false, cnt);
     	sb.append("}");
     	return sb.toString();
+    }
+    
+    public QueryTree<N> getPostLGG(){
+    	return postLGG;
     }
     
     private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder sb, boolean filtered, int cnt){

@@ -201,11 +201,13 @@ public class NBRTest {
 				}
 			}
 			
+			List<String> posExamples = new ArrayList<String>();
 			List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
 			List<QueryTree<String>> negTrees = new ArrayList<QueryTree<String>>();
 			List<String> knownResources = new ArrayList<String>();
 			
 			String uri = "http://dbpedia.org/resource/Foals";
+			posExamples.add(uri);
 			knownResources.add(uri);
 			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
@@ -213,6 +215,7 @@ public class NBRTest {
 			posTrees.add(tree);
 			
 			uri = "http://dbpedia.org/resource/31Knots";
+			posExamples.add(uri);
 			knownResources.add(uri);
 			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 			tree = treeFactory.getQueryTree(uri, model);
@@ -226,14 +229,17 @@ public class NBRTest {
 			tree = getFilteredTree(tree);
 			negTrees.add(tree);
 			
-			logger.info("Pos trees:\n " + printTrees(posTrees));
+//			logger.debug("Pos trees:\n " + printTrees(posTrees));
+			logger.info("Positive examples: " + posExamples);
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
 			Example example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 			String learnedQuery = nbrGen.getQuery();
-			logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, cache));
+			
 			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
+				logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, cache));
+				logger.info("#Resources in POST-LGG: " + getResultCount(nbrGen.getPostLGG().toSPARQLQueryString(), endpoint, cache));
 				uri = example.getURI();
 				knownResources.add(uri);
 				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
@@ -241,13 +247,15 @@ public class NBRTest {
 				tree = getFilteredTree(tree);
 				if(targetResources.contains(uri)){
 					logger.info("Found new positive example " + uri);
+					posExamples.add(uri);
 					posTrees.add(tree);
 					lgg = lggGen.getLGG(posTrees);
 				} else {
 					logger.info("Found new negative example " + uri);
 					negTrees.add(tree);
 				}
-				logger.info("Pos trees:\n " + printTrees(posTrees));
+				logger.info("Positive examples: " + posExamples);
+//				logger.debug("Pos trees:\n " + printTrees(posTrees));
 				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
 				/*
