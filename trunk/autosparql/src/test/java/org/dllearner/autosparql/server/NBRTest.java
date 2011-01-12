@@ -39,6 +39,8 @@ import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 
 public class NBRTest {
 	
+	private static Logger logger = Logger.getLogger(NBRTest.class);
+	
 	private static final String CACHE_DIR = "cache";
 	
 	private int nodeId;
@@ -231,11 +233,11 @@ public class NBRTest {
 				tree = treeFactory.getQueryTree(uri, model);
 				tree = getFilteredTree(tree);
 				if(targetResources.contains(uri)){
-					System.out.println("Found new positive example " + uri);
+					logger.info("Found new positive example " + uri);
 					posTrees.add(tree);
 					lgg = lggGen.getLGG(posTrees);
 				} else {
-					System.out.println("Found new negative example " + uri);
+					logger.info("Found new negative example " + uri);
 					negTrees.add(tree);
 				}
 				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
@@ -281,8 +283,8 @@ public class NBRTest {
 				learnedResources.add(qs.get("x0").asResource().getURI());
 			}
 		}
-		System.out.println("#Resource in learned query: " + learnedResources.size());
-		System.out.println("#Resource in target query : " + originalResources.size());
+		logger.info("#Resource in learned query: " + learnedResources.size());
+		logger.info("#Resource in target query : " + originalResources.size());
 		return originalResources.equals(learnedResources);
 	}
 	

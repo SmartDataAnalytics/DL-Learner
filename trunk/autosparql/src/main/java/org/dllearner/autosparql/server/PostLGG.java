@@ -13,7 +13,9 @@ public class PostLGG<N> {
 	private static final Logger logger = Logger.getLogger(PostLGG.class);
 	
 	public void simplifyTree(QueryTree<N> tree, List<QueryTree<N>> negTrees){
+		
 		if(logger.isInfoEnabled()){
+			logger.info("Making post LGG simplification");
 			logger.info("LGG:\n" + tree.getStringRepresentation());
 			for(QueryTree<N> negTree : negTrees){
 				logger.info("Neg tree:\n" + negTree.getStringRepresentation());
@@ -25,9 +27,9 @@ public class PostLGG<N> {
 		for(QueryTree<N> leaf : tree.getLeafs()){
 			pathExists = false;
 			path = getPathFromRootToNode(leaf);
-			if(logger.isInfoEnabled()){
-				logger.info("Path: " + path);
-			}
+//			if(logger.isInfoEnabled()){
+//				logger.info("Path: " + path);
+//			}
 			if(leaf.getParent().getUserObject().equals("?")){
 				pathExists = true;
 				for(QueryTree<N> negTree : negTrees){
@@ -37,9 +39,9 @@ public class PostLGG<N> {
 					}
 				}
 			}
-			if(logger.isInfoEnabled()){
-				logger.info("Exists: " + pathExists);
-			}
+//			if(logger.isInfoEnabled()){
+//				logger.info("Exists: " + pathExists);
+//			}
 			if(pathExists){
 				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
 			}
