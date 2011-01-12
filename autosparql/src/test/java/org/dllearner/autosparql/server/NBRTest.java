@@ -172,7 +172,6 @@ public class NBRTest {
 			Logger.getLogger(NBRGeneratorImpl.class).setLevel(Level.OFF);
 			Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 			Logger.getLogger(QueryTreeImpl.class).setLevel(Level.OFF);
-			Logger.getLogger(NBR.class).setLevel(Level.INFO);
 			Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
 			Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
 		} catch (IOException e1) {
@@ -295,8 +294,7 @@ public class NBRTest {
 	}
 	
 	private int getResultCount(String query, SparqlEndpoint endpoint, ExtractionDBCache cache){
-		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
-		
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, getDistinctQuery(query)));
 		SortedSet<String> resources = new TreeSet<String>();
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -474,6 +472,10 @@ public class NBRTest {
 			sb.append(tree.getStringRepresentation()).append("\n");
 		}
 		return sb.toString();
+	}
+	
+	private String getDistinctQuery(String query){
+		return "SELECT DISTINCT " + query.substring(7);
 	}
 
 }
