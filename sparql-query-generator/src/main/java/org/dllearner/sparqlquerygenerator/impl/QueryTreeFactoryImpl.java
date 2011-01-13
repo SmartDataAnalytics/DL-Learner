@@ -20,13 +20,14 @@
 package org.dllearner.sparqlquerygenerator.impl;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
@@ -46,9 +47,11 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	private int nodeId;
 	private Comparator<Statement> comparator;
+	private Set<String> predicateFilters;
 	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
+		predicateFilters = new HashSet<String>(Filter.getAllFilterProperties());
 	}
 	
 	@Override
@@ -94,7 +97,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		if(resource2Statements.containsKey(tree.getUserObject())){
 			QueryTreeImpl<String> subTree;
 			for(Statement st : resource2Statements.get(tree.getUserObject())){
-				if(Filter.getAllFilterProperties().contains(st.getPredicate().toString())){
+				if(predicateFilters.contains(st.getPredicate().toString())){
 					continue;
 				}
 				if(st.getObject().isLiteral()){
