@@ -3,8 +3,11 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
@@ -12,11 +15,17 @@ public class PostLGG<N> {
 	
 	private static final Logger logger = Logger.getLogger(PostLGG.class);
 	
+	private SPARQLEndpointEx endpoint;
+	
+	public PostLGG(SPARQLEndpointEx endpoint){
+		this.endpoint = endpoint;
+	}
+	
 	public void simplifyTree(QueryTree<N> tree, List<QueryTree<N>> negTrees){
 		
 		if(logger.isDebugEnabled()){
 			logger.debug("Making post LGG simplification");
-			logger.debug("LGG:\n" + tree.getStringRepresentation());
+			logger.debug("LGG:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 //			int i = 1;
 //			for(QueryTree<N> negTree : negTrees){
 //				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + negTree.getStringRepresentation());
@@ -48,7 +57,7 @@ public class PostLGG<N> {
 			}
 		}
 		if(logger.isDebugEnabled()){
-			logger.debug("Pruned tree:\n" + tree.getStringRepresentation());
+			logger.debug("Pruned tree:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		}
 	}
 	

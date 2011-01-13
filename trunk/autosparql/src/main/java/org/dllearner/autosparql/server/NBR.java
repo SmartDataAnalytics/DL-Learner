@@ -17,17 +17,18 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.QueryTreeChange.ChangeType;
+import org.dllearner.autosparql.server.util.QueryTreeConverter;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
+import org.dllearner.sparqlquerygenerator.cache.ModelCache;
+import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
-import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.util.Filter;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
-import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -36,9 +37,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 public class NBR<N> {
 	
 	private ExtractionDBCache cache;
-	private SparqlEndpoint endpoint;
-	private QueryTreeFactory<String> treeFactory;
+	private SPARQLEndpointEx endpoint;
 	private ModelGenerator modelGen;
+	private ModelCache modelCache;
+	private QueryTreeCache treeCache;
+	
 	private String query;
 	private int limit;
 	
@@ -46,16 +49,19 @@ public class NBR<N> {
 	private QueryTree<N> lgg;
 	private QueryTree<N> postLGG;
 	
+	
+	
 	private LastQueryTreeChangeComparator comparator = new LastQueryTreeChangeComparator();
 	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
-	public NBR(SparqlEndpoint endpoint, ExtractionDBCache cache){
+	public NBR(SPARQLEndpointEx endpoint, ExtractionDBCache cache){
 		this.endpoint = endpoint;
 		this.cache = cache;
 		
 		modelGen = new ModelGenerator(endpoint, new HashSet<String>(((SPARQLEndpointEx)endpoint).getPredicateFilters()), cache);
-		treeFactory = new QueryTreeFactoryImpl();
+		modelCache = new ModelCache(modelGen);
+		treeCache = new QueryTreeCache();
 	}
 	
 	public Example makeNBR(List<String> resources, QueryTree<N> lgg, List<QueryTree<N>> negTrees){
@@ -288,13 +294,13 @@ public class NBR<N> {
 		this.lgg = lgg;
 		logger.info("Computing next question...");
 		postLGG = getFilteredTree(lgg);
-		PostLGG<N> postGen = new PostLGG<N>();
+		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
 //		logger.debug("Starting generalisation with tree:\n" + postLGG.getStringRepresentation());
 		limit = knownResources.size();
 		List<GeneralisedQueryTree<N>> queue = getAllowedGeneralisations(new GeneralisedQueryTree<N>(postLGG));
 		logger.debug(getQueueLogInfo(queue));
-//		logger.debug("New: " + getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG)));
+		logger.debug("New: " + getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG), negTrees));
 		
 		GeneralisedQueryTree<N> tree1;
 		QueryTree<N> tree2;
@@ -307,11 +313,13 @@ public class NBR<N> {
 			logger.debug("Selecting first tree from queue");
 			tree1 = queue.remove(0);
 			tmp = tree1;
+			
 			if(logger.isDebugEnabled()){
 				logger.debug("Changes: " + tmp.getChanges());
 			}
 			queryTree = tmp.getQueryTree();
 			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
+			neededGeneralisations.add(tmp.getQueryTree());
 			logger.debug("covers negative tree: " + coversNegTree);
 			while(!coversNegTree){
 				gens = getAllowedGeneralisationsSorted(tmp);
@@ -368,8 +376,8 @@ public class NBR<N> {
 	}
 	
 	private QueryTree<N> getQueryTree(String resource){
-		Model model = modelGen.createModel(resource, Strategy.CHUNKS, 2);
-		QueryTree<String> tree = treeFactory.getQueryTree(resource, model);
+		Model model = modelCache.getModel(resource);
+		QueryTree<String> tree = treeCache.getQueryTree(resource, model);
 		return getFilteredTree((QueryTree<N>) tree);
 	}
 	
@@ -465,23 +473,64 @@ public class NBR<N> {
 		return nodes;
 	}
 	
-	private List<QueryTreeChange> getAllowedGeneralisationsSortedByMatrix(GeneralisedQueryTree<N> tree){
-		List<QueryTreeChange> changes = new ArrayList<QueryTreeChange>();
+	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSortedByMatrix(GeneralisedQueryTree<N> tree, List<QueryTree<N>> negTrees){
+		Map<QueryTree<N>, List<Integer>> matrix = createMatrix(tree.getQueryTree(), negTrees);
+		List<GeneralisedQueryTree<N>> gens = new ArrayList<GeneralisedQueryTree<N>>();
+		System.err.println(TreeHelper.getAbbreviatedTreeRepresentation(tree.getQueryTree(), endpoint.getBaseURI(), endpoint.getPrefixes()));
+		System.err.println(TreeHelper.getAbbreviatedTreeRepresentation(negTrees.get(0), endpoint.getBaseURI(), endpoint.getPrefixes()));
+		
+		Map<GeneralisedQueryTree<N>, Integer> genTree2Sum = new HashMap<GeneralisedQueryTree<N>, Integer>();
+		
+		QueryTree<N> queryTree = tree.getQueryTree();
 		QueryTreeChange lastChange = tree.getLastChange();
+		List<QueryTreeChange> changes = tree.getChanges();
+		GeneralisedQueryTree<N> genTree;
+		N label;
+		Object edge;
+		QueryTree<N> parent;
+		boolean isLiteralNode;
 		for(QueryTree<N> node : getPossibleNodes2Change(tree.getQueryTree())){
+			label = node.getUserObject();
+			parent = node.getParent();
+			isLiteralNode = node.isLiteralNode();
+			edge = parent.getEdge(node);
 			if(lastChange.getType() == ChangeType.REMOVE_NODE){
 				if(node.getUserObject().equals("?") && node.getId() < lastChange.getNodeId()){
-					changes.add(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
+					int pos = parent.removeChild((QueryTreeImpl<N>) node);
+					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree.addChanges(changes);
+					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
+					genTree2Sum.put(genTree, sum(matrix.get(node)));
+					parent.addChild((QueryTreeImpl<N>) node, edge, pos);
 				}
 			} else {
 				if(node.getUserObject().equals("?")){
-					changes.add(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
+					int pos = parent.removeChild((QueryTreeImpl<N>) node);
+					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree.addChanges(changes);
+					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
+					genTree2Sum.put(genTree, sum(matrix.get(node)));
+					parent.addChild((QueryTreeImpl<N>) node, edge, pos);
 				} else if(lastChange.getNodeId() < node.getId()){
-					changes.add(new QueryTreeChange(node.getId(), ChangeType.REPLACE_LABEL));
+					node.setUserObject((N) "?");
+					node.setVarNode(true);
+					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree.addChanges(changes);
+					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REPLACE_LABEL));
+					genTree2Sum.put(genTree, sum(matrix.get(node)));
+					node.setUserObject(label);
+					node.setLiteralNode(isLiteralNode);
+					node.setResourceNode(!isLiteralNode);
 				}
 			}
 		}
-		return changes;
+		List<Entry<GeneralisedQueryTree<N>, Integer>> entries = new ArrayList<Entry<GeneralisedQueryTree<N>,Integer>>(genTree2Sum.entrySet());
+		Collections.sort(entries, new NegativeTreeOccurenceComparator());
+		for(Entry<GeneralisedQueryTree<N>, Integer> e : entries){
+			gens.add(e.getKey());
+			System.out.println(e.getKey().getChanges());
+		}
+		return gens;
 	}
 	
 	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted(GeneralisedQueryTree<N> tree){
@@ -597,6 +646,7 @@ public class NBR<N> {
 		SortedSet<String> resources = new TreeSet<String>();
 		
 		query = tree.toSPARQLQueryString();
+//		logger.info(QueryTreeConverter.getSPARQLQuery(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		query = getDistinctQuery(query);
 		if(logger.isDebugEnabled()){
 			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset));
@@ -617,7 +667,7 @@ public class NBR<N> {
 	private String getNewResource(QueryTree<N> tree, List<String> knownResources){
 		int i = 0;
 		int chunkSize = 10;
-		SortedSet<String> foundResources = getResources(tree, 10, chunkSize * i);
+		SortedSet<String> foundResources = getResources(tree, chunkSize, chunkSize * i);
 		foundResources.removeAll(knownResources);
 		QueryTree<N> newTree;
 		while(!foundResources.isEmpty()){
@@ -629,7 +679,7 @@ public class NBR<N> {
 				}
 			}
 			i++;
-			foundResources = getResources(tree, 10, chunkSize * i);
+			foundResources = getResources(tree, chunkSize, chunkSize * i);
 			foundResources.removeAll(knownResources);
 		}
 		logger.debug("Found no resource which would modify the LGG");
@@ -861,6 +911,36 @@ public class NBR<N> {
 				}
 			}
 			
+		}
+    	
+    }
+    
+    class NegativeTreeOccurenceComparator implements Comparator<Entry<GeneralisedQueryTree<N>,Integer>>{
+
+		@Override
+		public int compare(Entry<GeneralisedQueryTree<N>, Integer> entry1,
+				Entry<GeneralisedQueryTree<N>, Integer> entry2) {
+			int sum1 = entry1.getValue();
+			int sum2 = entry2.getValue();
+			if(sum1 == sum2){
+				QueryTreeChange change1 = entry1.getKey().getLastChange();
+				QueryTreeChange change2 = entry2.getKey().getLastChange();
+				if(change1.getType()==ChangeType.REPLACE_LABEL){
+					if(change2.getType()==ChangeType.REPLACE_LABEL){
+						return change1.getNodeId() - change2.getNodeId();
+					} else {
+						return 1;
+					}
+				} else {
+					if(change2.getType()==ChangeType.REPLACE_LABEL){
+						return 1;
+					} else {
+						return change2.getNodeId() - change1.getNodeId();
+					}
+				}
+			} else {
+				return sum2-sum1;
+			}
 		}
     	
     }

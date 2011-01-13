@@ -2,6 +2,7 @@ package org.dllearner.autosparql.server.util;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
@@ -9,10 +10,30 @@ public class SPARQLEndpointEx extends SparqlEndpoint {
 	private String label;
 	private List<String> predicateFilters;
 	private String prefix;
+	private String baseURI;
+	private Map<String, String> prefixes;
 	
 	public SPARQLEndpointEx(URL u, List<String> defaultGraphURIs,
 			List<String> namedGraphURIs, String label, String prefix, List<String> predicateFilters) {
 		super(u, defaultGraphURIs, namedGraphURIs);
+		
+		this.label = label;
+		this.prefix = prefix;
+		this.predicateFilters = predicateFilters;
+	}
+	
+	public SPARQLEndpointEx(URL u, List<String> defaultGraphURIs,
+			List<String> namedGraphURIs, String label, String baseURI, Map<String, String> prefixes, List<String> predicateFilters) {
+		super(u, defaultGraphURIs, namedGraphURIs);
+		
+		this.label = label;
+		this.baseURI = baseURI;
+		this.prefixes = prefixes;
+		this.predicateFilters = predicateFilters;
+	}
+	
+	public SPARQLEndpointEx(SparqlEndpoint endpoint, String label, String prefix, List<String> predicateFilters) {
+		super(endpoint.getURL(), endpoint.getDefaultGraphURIs(), endpoint.getNamedGraphURIs());
 		
 		this.label = label;
 		this.prefix = prefix;
@@ -25,6 +46,14 @@ public class SPARQLEndpointEx extends SparqlEndpoint {
 	
 	public String getPrefix(){
 		return prefix;
+	}
+	
+	public String getBaseURI(){
+		return baseURI;
+	}
+	
+	public Map<String, String> getPrefixes(){
+		return prefixes;
 	}
 	
 	public List<String> getPredicateFilters(){
