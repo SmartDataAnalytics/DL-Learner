@@ -20,10 +20,13 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
+import org.dllearner.sparqlquerygenerator.cache.ModelCache;
+import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.examples.DBpediaExample;
@@ -53,108 +56,6 @@ public class NBRTest {
 	private int nodeId;
 	private String lastQuery = "";
 	
-	@Test
-	public void test1(){
-		try {
-			SimpleLayout layout = new SimpleLayout();
-			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-			FileAppender fileAppender = new FileAppender(
-					layout, "log/nbr_evaluation.log", false);
-			Logger logger = Logger.getRootLogger();
-			logger.removeAllAppenders();
-			logger.addAppender(consoleAppender);
-			logger.addAppender(fileAppender);
-			logger.setLevel(Level.OFF);
-			Logger.getLogger(NBR.class).setLevel(Level.INFO);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		HttpQuery.urlLimit = 0;
-		try {
-			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
-			SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"),
-					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
-			Set<String> predicateFilters = new HashSet<String>();
-			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
-			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-			
-			ModelGenerator modelGen = new ModelGenerator(endpoint, predicateFilters, cache);
-			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
-			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
-			NBR<String> nbrGen = new NBR<String>(endpoint, cache);
-			
-			String targetQuery = "PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> " +
-			"SELECT DISTINCT ?var0 ?homepage ?genre WHERE {" +
-			"?var0 a dbo:Band ." +
-			"?var0 rdfs:label ?label." +
-			"OPTIONAL { ?var0 foaf:homepage ?homepage } ." +
-			"?var0 dbo:genre ?genre ." +
-			"?genre dbo:instrument dbpedia:Electric_guitar ." +
-			"?genre dbo:stylisticOrigin dbpedia:Jazz .}";
-			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, targetQuery));
-			SortedSet<String> targetResources = new TreeSet<String>();
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				if(qs.get("var0").isURIResource()){
-					targetResources.add(qs.get("var0").asResource().getURI());
-				}
-			}
-			
-			List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
-			List<QueryTree<String>> negTrees = new ArrayList<QueryTree<String>>();
-			List<String> knownResources = new ArrayList<String>();
-			
-			String uri = "http://dbpedia.org/resource/Foals";
-			knownResources.add(uri);
-			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
-			posTrees.add(tree);
-			
-			uri = "http://dbpedia.org/resource/31Knots";
-			knownResources.add(uri);
-			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-			tree = treeFactory.getQueryTree(uri, model);
-			posTrees.add(tree);
-			
-			uri = "http://dbpedia.org/resource/Hot_Chip";
-			knownResources.add(uri);
-			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-			tree = treeFactory.getQueryTree(uri, model);
-			negTrees.add(tree);
-			
-			
-			QueryTree<String> lgg = lggGen.getLGG(posTrees);
-			
-			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
-			String learnedQuery = nbrGen.getQuery();
-			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
-				uri = example.getURI();
-				knownResources.add(uri);
-				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-				tree = treeFactory.getQueryTree(uri, model);
-				if(targetResources.contains(uri)){
-					System.out.println("Found new positive example " + uri);
-					posTrees.add(tree);
-					lgg = lggGen.getLGG(posTrees);
-				} else {
-					System.out.println("Found new negative example " + uri);
-					negTrees.add(tree);
-				}
-				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
-				learnedQuery = nbrGen.getQuery();
-			}
-			
-			
-			
-			
-			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
-	}
 	
 	@Test
 	public void optimisedTest(){
@@ -162,6 +63,15 @@ public class NBRTest {
 		String baseURI = "http://dbpedia.org/resource/";
 		Map<String,String> prefixes = new HashMap<String,String>();
 		prefixes.put("dbo","http://dbpedia.org/ontology/");
+		prefixes.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
+		prefixes.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		prefixes.put("skos","http://www.w3.org/2004/02/skos/core#");
+		prefixes.put("geo","http://www.w3.org/2003/01/geo/wgs84_pos#");
+		prefixes.put("georss","http://www.georss.org/georss/");
+		prefixes.put("owl","http://www.w3.org/2002/07/owl#");
+		prefixes.put("yago","http://dbpedia.org/class/yago/");
+		prefixes.put("cyc","http://sw.opencyc.org/concept/");
+		
 		
 		try {
 			SimpleLayout layout = new SimpleLayout();
@@ -191,12 +101,13 @@ public class NBRTest {
 		try {
 			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
 			List<String> predicateFilters = new ArrayList<String>();
-			SparqlEndpoint endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
-					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
+			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
+					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters);
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 			
 			ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), cache);
+			
 			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
 			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 			NBR<String> nbrGen = new NBR<String>(endpoint, cache);
@@ -224,7 +135,7 @@ public class NBRTest {
 			List<QueryTree<String>> negTrees = new ArrayList<QueryTree<String>>();
 			List<String> knownResources = new ArrayList<String>();
 			
-			String uri = "http://dbpedia.org/resource/Foals";
+			String uri = "http://dbpedia.org/resource/Foals";//genre: Math_Rock
 			posExamples.add(uri);
 			knownResources.add(uri);
 			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
@@ -232,13 +143,29 @@ public class NBRTest {
 			tree = getFilteredTree(tree);
 			posTrees.add(tree);
 			
-			uri = "http://dbpedia.org/resource/31Knots";
+			uri = "http://dbpedia.org/resource/31Knots";//genre: Math_Rock
 			posExamples.add(uri);
 			knownResources.add(uri);
 			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 			tree = treeFactory.getQueryTree(uri, model);
 			tree = getFilteredTree(tree);
 			posTrees.add(tree);
+			
+//			uri = "http://dbpedia.org/resource/Liquid_Tension_Experiment";//genre: Jazz_Fusion
+//			posExamples.add(uri);
+//			knownResources.add(uri);
+//			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+//			tree = treeFactory.getQueryTree(uri, model);
+//			tree = getFilteredTree(tree);
+//			posTrees.add(tree);
+//			
+//			uri = "http://dbpedia.org/resource/The_Mars_Volta";//genre: Jazz_Fusion
+//			posExamples.add(uri);
+//			knownResources.add(uri);
+//			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+//			tree = treeFactory.getQueryTree(uri, model);
+//			tree = getFilteredTree(tree);
+//			posTrees.add(tree);
 			
 			uri = "http://dbpedia.org/resource/Hot_Chip";
 			knownResources.add(uri);
@@ -456,7 +383,7 @@ public class NBRTest {
 			try {
 				ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
 				List<String> predicateFilters = new ArrayList<String>();
-				SparqlEndpoint endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
+				SPARQLEndpointEx endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
 						Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
 				predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 				predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
