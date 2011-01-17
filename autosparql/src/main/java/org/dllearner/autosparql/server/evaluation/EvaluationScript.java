@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -18,6 +19,8 @@ import java.util.TreeSet;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections15.ListUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -27,12 +30,18 @@ import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.server.ExampleFinder;
 import org.dllearner.autosparql.server.Generalisation;
 import org.dllearner.autosparql.server.NBR;
+import org.dllearner.autosparql.server.PostLGG;
+import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.sparqlquerygenerator.cache.ModelCache;
+import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
@@ -40,7 +49,6 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.ini4j.IniFile;
 
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.jamonapi.MonitorFactory;
 
 public class EvaluationScript {
@@ -49,6 +57,7 @@ public class EvaluationScript {
 	
 	private static final int maxRepeatedNegativesCount = 10;
 	private static final int startingPositiveExamplesCount = 3;
+	private static final int maxNBRExecutionTimeInSeconds = 10;
 
 	/**
 	 * @param args
@@ -61,8 +70,10 @@ public class EvaluationScript {
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, SPARQLQueryException, IOException, BackingStoreException {
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		consoleAppender.setThreshold(Level.INFO);
 		FileAppender fileAppender = new FileAppender(
 				layout, "log/evaluation.log", false);
+		fileAppender.setThreshold(Level.DEBUG);
 		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
@@ -75,7 +86,8 @@ public class EvaluationScript {
 		Logger.getLogger(GreedyNBRStrategy.class).setLevel(Level.OFF);
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(ExampleFinder.class).setLevel(Level.INFO);
-		Logger.getLogger(NBR.class).setLevel(Level.INFO);
+		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
+		Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
 		
 		
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
@@ -88,6 +100,13 @@ public class EvaluationScript {
 		
 		ExtractionDBCache selectQueriesCache = new ExtractionDBCache("evaluation/select-cache");
 		ExtractionDBCache constructQueriesCache = new ExtractionDBCache("evaluation/construct-cache");
+		
+		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+		NBR<String> nbrGen = new NBR<String>(endpoint, selectQueriesCache, constructQueriesCache);
+		nbrGen.setMaxExecutionTimeInSeconds(maxNBRExecutionTimeInSeconds);
+		ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(endpoint.getPredicateFilters()), constructQueriesCache);
+		ModelCache modelCache = new ModelCache(modelGen);
+		QueryTreeCache treeCache = new QueryTreeCache();
 		
 		String iniFile = "settings.ini";
 		Preferences prefs = new IniFile(new File(iniFile));
@@ -116,12 +135,12 @@ public class EvaluationScript {
 		
 		int id;
 		String query;
-		com.hp.hpl.jena.query.ResultSet rs;
-		SortedSet<String> resources;
-		QuerySolution qs;
+		SortedSet<String> targetResources;
 		ExampleFinder exampleFinder;
 		List<String> posExamples;
 		List<String> negExamples;
+		List<QueryTree<String>> posExampleTrees;
+		List<QueryTree<String>> negExampleTrees;
 		//iterate over the queries
 		int testedCnt = 0;
 		int learnedCnt = 0;
@@ -131,7 +150,11 @@ public class EvaluationScript {
 		String lastQuery = "";
 		int equalsLastQueryCount = 0;
 		int repeatedNegativeCount;
+		int timeOutErrorCount;
+		int repeatedNegativeErrorCount;
+		QueryTree<String> lgg = null;
 		while(queries.next()){
+			lgg = null;
 			id = queries.getInt("id");
 			query = queries.getString("query");
 			logger.info("Evaluating query:\n" + query);
@@ -142,47 +165,56 @@ public class EvaluationScript {
 			mostGeneralQueryCount = 0;
 			equalsLastQueryCount = 0;
 			repeatedNegativeCount = 0;
+			timeOutErrorCount = 0;
+			repeatedNegativeErrorCount = 0;
 			lastQuery = "";
 			failed = false;
+			
 			try {
-				//send query to SPARQLEndpoint
-				rs = SparqlQuery.convertJSONtoResultSet(selectQueriesCache.executeSelectQuery(endpoint, query));
-				
-				
-				//put the URIs for the resources in variable var0 into a separate list
-				resources = new TreeSet<String>();
-				while(rs.hasNext()){
-					qs = rs.next();
-					if(qs.get("var0").isURIResource()){
-						resources.add(qs.get("var0").asResource().getURI());
-					}
-				}
-				logger.info("Query returned " + resources.size() + " results");
-//				logger.info(resources);
-				
+				targetResources = getResources(query, endpoint, selectQueriesCache);
+				logger.info("Target query returned " + targetResources.size() + " results");
 				
 				//start learning
 				exampleFinder = new ExampleFinder(endpoint, selectQueriesCache, constructQueriesCache);
 				posExamples = new ArrayList<String>();
 				negExamples = new ArrayList<String>();
+				posExampleTrees = new ArrayList<QueryTree<String>>();
+				negExampleTrees = new ArrayList<QueryTree<String>>();
 				//we choose the first n resources in the set as positive example
-				Iterator<String> iter = resources.iterator();
+				Iterator<String> iter = targetResources.iterator();
 				String posExample;
 				for(int i = 0; i < startingPositiveExamplesCount; i++){
 					posExample = iter.next();
 					posExamples.add(posExample);
+					posExampleTrees.add(treeCache.getQueryTree(posExample, modelCache.getModel(posExample)));
 				}
-				logger.info("Selected " + posExamples + " as first + " + startingPositiveExamplesCount + " positive example.");
+				logger.info("Selected " + posExamples + " as first " + startingPositiveExamplesCount + " positive examples.");
 				
 				//we ask for the next similar example
 				String nextExample;
 				String learnedQuery = "";
 				boolean equivalentQueries = false;
 				do{
-					nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
-					learnedQuery = exampleFinder.getCurrentQuery();
+					try {
+//						nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
+						lgg = lggGen.getLGG(posExampleTrees);
+						nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
+					} catch (TimeOutException e) {
+						timeOutErrorCount++;
+//						QueryTree<String> lgg = exampleFinder.getLGG();
+						String newPosExample = getNewPosExampleNotCoveredByLGG(lgg, targetResources, posExamples, endpoint, selectQueriesCache);
+						if(newPosExample != null){
+							posExamples.add(newPosExample);
+							continue;
+						} else {
+							failed = true;
+							break;
+						}
+					}
+//					learnedQuery = exampleFinder.getCurrentQuery();
+					learnedQuery = nbrGen.getQuery();
 					logger.info("Learned query:\n" + learnedQuery);
-					equivalentQueries = isEquivalentQuery(resources, learnedQuery, endpoint, selectQueriesCache);
+					equivalentQueries = isEquivalentQuery(targetResources, learnedQuery, endpoint, selectQueriesCache);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
 					if(equivalentQueries){
 						break;
@@ -192,14 +224,29 @@ public class EvaluationScript {
 					logger.info("Next suggested example is " + nextExample);
 					//if the example is contained in the resultset of the query, we add it to the positive examples,
 					//otherwise to the negatives
-					if(resources.contains(nextExample)){
+					if(targetResources.contains(nextExample)){
 						posExamples.add(nextExample);
+						posExampleTrees.add(treeCache.getQueryTree(nextExample, modelCache.getModel(nextExample)));
 						logger.info("Suggested example is considered as positive example.");
 						repeatedNegativeCount = 0;
 					} else {
 						negExamples.add(nextExample);
+						negExampleTrees.add(treeCache.getQueryTree(nextExample, modelCache.getModel(nextExample)));
 						logger.info("Suggested example is considered as negative example.");
 						repeatedNegativeCount++;
+					}
+					
+					if(repeatedNegativeCount > maxRepeatedNegativesCount){
+						repeatedNegativeErrorCount++;
+//						QueryTree<String> lgg = exampleFinder.getLGG();
+						String newPosExample = getNewPosExampleNotCoveredByLGG(lgg, targetResources, posExamples, endpoint, selectQueriesCache);
+						if(newPosExample != null){
+							posExamples.add(newPosExample);
+							continue;
+						} else {
+							failed = true;
+							break;
+						}
 					}
 					
 					if(learnedQuery.equals(mostGeneralQuery)){
@@ -235,9 +282,9 @@ public class EvaluationScript {
 					double nbrTimeAvg = MonitorFactory.getTimeMonitor("NBR").getAvg();
 					double totalTime = queryTime + nbrTime + lggTime;
 					
-					write2DB(ps, id, query, learnedQuery, triplePatternCount,
-							examplesCount, posExamplesCount, negExamplesCount,
-							totalTime, queryTime, queryTimeAvg, lggTime, lggTimeAvg, nbrTime, nbrTimeAvg);
+//					write2DB(ps, id, query, learnedQuery, triplePatternCount,
+//							examplesCount, posExamplesCount, negExamplesCount,
+//							totalTime, queryTime, queryTimeAvg, lggTime, lggTimeAvg, nbrTime, nbrTimeAvg);
 					logger.info("Number of examples needed: " 
 							+ (posExamples.size() + negExamples.size()) 
 							+ "(+" + posExamples.size() + "/-" + negExamples.size() + ")");
@@ -312,6 +359,29 @@ public class EvaluationScript {
 		logger.info("Number of resources in original query: " + originalResources.size());
 		logger.info("Number of resources in learned query: " + learnedResources.size());
 		return originalResources.equals(learnedResources);
+	}
+	
+	private static SortedSet<String> getResources(String query, SPARQLEndpointEx endpoint, ExtractionDBCache cache){
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		SortedSet<String> resources = new TreeSet<String>();
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			if(qs.get("var0").isURIResource()){
+				resources.add(qs.get("var0").asResource().getURI());
+			}
+		}
+		return resources;
+	}
+	
+	private static String getNewPosExampleNotCoveredByLGG(QueryTree<String> lgg, SortedSet<String> targetResources, List<String> selectedPosExamples, 
+			SPARQLEndpointEx endpoint, ExtractionDBCache cache){
+		SortedSet<String> lggResources = getResources(lgg.toSPARQLQueryString(), endpoint, cache);
+		SortedSet<String> targetCopy = new TreeSet<String>(targetResources);
+		targetCopy.removeAll(lggResources);
+		targetCopy.removeAll(selectedPosExamples);
+		return targetCopy.first();
 	}
 
 }
