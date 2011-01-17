@@ -341,6 +341,11 @@
 			<artifactId>guava</artifactId>
 			<version>r07</version>
 		</dependency>
+        <dependency>
+      		<groupId>com.dumontierlab</groupId>
+      		<artifactId>pdb2rdf-parser</artifactId>
+      		<version>0.0.8</version>
+    	</dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -403,6 +408,12 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <!-- This repository contains the jars for pdb2rdf -->
+		<repository>
+			<id>semanticscience.org</id>
+			<name>Semanticscience projects</name>
+			<url>http://s1.semanticscience.org:8080/nexus/content/groups/public</url>
+		</repository>
     </repositories>
 
     <pluginRepositories>
