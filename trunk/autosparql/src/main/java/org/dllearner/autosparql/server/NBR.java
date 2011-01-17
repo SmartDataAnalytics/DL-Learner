@@ -35,7 +35,13 @@ public class NBR<N> {
 	
 	private boolean generalizeSortedByNegatives = true;
 	
-	private ExtractionDBCache cache;
+	private volatile boolean stop = false;
+	private boolean isRunning;
+	private int maxExecutionTimeInSeconds = 10;
+	private long startTime;
+	
+	private ExtractionDBCache selectCache;
+	private ExtractionDBCache constructCache;
 	private SPARQLEndpointEx endpoint;
 	private ModelGenerator modelGen;
 	private ModelCache modelCache;
@@ -54,13 +60,18 @@ public class NBR<N> {
 	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
-	public NBR(SPARQLEndpointEx endpoint, ExtractionDBCache cache){
+	public NBR(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
-		this.cache = cache;
+		this.selectCache = selectCache;
+		this.constructCache = constructCache;
 		
-		modelGen = new ModelGenerator(endpoint, new HashSet<String>(((SPARQLEndpointEx)endpoint).getPredicateFilters()), cache);
+		modelGen = new ModelGenerator(endpoint, new HashSet<String>(((SPARQLEndpointEx)endpoint).getPredicateFilters()), constructCache);
 		modelCache = new ModelCache(modelGen);
 		treeCache = new QueryTreeCache();
+	}
+	
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds){
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 	
 	public Example makeNBR(List<String> resources, QueryTree<N> lgg, List<QueryTree<N>> negTrees){
@@ -87,7 +98,7 @@ public class NBR<N> {
 //				} else {
 					query = getLimitedEdgeCountQuery(nbr);//.toSPARQLQueryString();
 					logger.info("Testing query\n" + query);
-					String result = cache.executeSelectQuery(endpoint, query);
+					String result = selectCache.executeSelectQuery(endpoint, query);
 					ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 					String uri;
 					QuerySolution qs;
@@ -111,7 +122,7 @@ public class NBR<N> {
 //				} else {
 					query = getLimitedEdgeCountQuery(nbr);//.toSPARQLQueryString();
 					logger.info("Testing query\n" + query);
-					String result = cache.executeSelectQuery(endpoint, query);
+					String result = selectCache.executeSelectQuery(endpoint, query);
 					ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 					String uri;
 					QuerySolution qs;
@@ -289,6 +300,7 @@ public class NBR<N> {
 	}
 	
 	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+		startTime = System.currentTimeMillis();
 		this.lgg = lgg;
 		logger.info("Computing next question...");
 		postLGG = getFilteredTree(lgg);
@@ -631,7 +643,7 @@ public class NBR<N> {
 		if(logger.isDebugEnabled()){
 			logger.debug("Testing query\n" + getLimitedQuery(query));
 		}
-		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query));
+		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query));
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -653,7 +665,7 @@ public class NBR<N> {
 		if(logger.isDebugEnabled()){
 			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset));
 		}
-		String result = cache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
+		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -867,6 +879,25 @@ public class NBR<N> {
 			}
 		}
     	
+    }
+    
+    public void stop(){
+    	stop = true;
+    }
+    
+    public boolean isRunning(){
+    	return isRunning;
+    }
+    
+    private boolean isTerminationCriteriaReached(){
+    	if(stop){
+    		return true;
+    	}
+    	boolean result = false;
+    	long totalTimeNeeded = System.currentTimeMillis() - this.startTime;
+		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
+    	result = totalTimeNeeded >= maxMilliSeconds;
+    	return result;
     }
 
 }

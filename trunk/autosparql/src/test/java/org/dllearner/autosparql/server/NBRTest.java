@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,13 +19,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
-import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
-import org.dllearner.sparqlquerygenerator.cache.ModelCache;
-import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.examples.DBpediaExample;
@@ -35,7 +31,6 @@ import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
-import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.dllearner.utilities.Helper;
@@ -51,7 +46,8 @@ public class NBRTest {
 	
 	private static Logger logger = Logger.getLogger(NBRTest.class);
 	
-	private static final String CACHE_DIR = "cache";
+	private static final String SELECT_CACHE_DIR = "select-cache";
+	private static final String CONSTRUCT_CACHE_DIR = "construct-cache";
 	
 	private int nodeId;
 	private String lastQuery = "";
@@ -99,18 +95,19 @@ public class NBRTest {
 		}
 		HttpQuery.urlLimit = 0;
 		try {
-			ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
+			ExtractionDBCache selectCache = new ExtractionDBCache(SELECT_CACHE_DIR);
+			ExtractionDBCache constructCache = new ExtractionDBCache(CONSTRUCT_CACHE_DIR);
 			List<String> predicateFilters = new ArrayList<String>();
 			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
 					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters);
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 			
-			ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), cache);
+			ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), constructCache);
 			
 			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
 			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
-			NBR<String> nbrGen = new NBR<String>(endpoint, cache);
+			NBR<String> nbrGen = new NBR<String>(endpoint, selectCache, constructCache);
 			
 			String targetQuery = "PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> " +
 			"SELECT DISTINCT ?var0 ?homepage ?genre WHERE {" +
@@ -120,7 +117,7 @@ public class NBRTest {
 			"?var0 dbo:genre ?genre ." +
 			"?genre dbo:instrument dbpedia:Electric_guitar ." +
 			"?genre dbo:stylisticOrigin dbpedia:Jazz .}";
-			ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, targetQuery));
+			ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, targetQuery));
 			SortedSet<String> targetResources = new TreeSet<String>();
 			QuerySolution qs;
 			while(rs.hasNext()){
@@ -182,10 +179,10 @@ public class NBRTest {
 			Example example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
 			String learnedQuery = nbrGen.getQuery();
 			
-			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, cache)){
-				logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, cache));
+			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, selectCache)){
+				logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, selectCache));
 //				logger.info("#Resources in LGG: " + Helper.getAbbreviatedCollection(getResult(lgg.toSPARQLQueryString(), endpoint, cache),baseURI,prefixes));
-				logger.info("#Resources in POST-LGG: " + getResultCount(nbrGen.getPostLGG().toSPARQLQueryString(), endpoint, cache));
+				logger.info("#Resources in POST-LGG: " + getResultCount(nbrGen.getPostLGG().toSPARQLQueryString(), endpoint, selectCache));
 				uri = example.getURI();
 				knownResources.add(uri);
 				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
@@ -270,7 +267,7 @@ public class NBRTest {
 	@Test
 	public void testAllowedGeneralisationsGeneration(){
 		QueryTree<String> tree = DBpediaExample.getPosExampleTrees().get(0);
-		NBR<String> nbrGen = new NBR<String>(null, null);
+		NBR<String> nbrGen = new NBR<String>(null, null, null);
 		System.out.println(tree.getStringRepresentation());
 		System.out.println(tree.getNodeById(5));
 		
@@ -296,7 +293,7 @@ public class NBRTest {
 		Object edge = "edge";
 		tree.addChild(child, edge);
 		System.out.println(tree.getStringRepresentation());
-		NBR<String> nbrGen = new NBR<String>(null, null);
+		NBR<String> nbrGen = new NBR<String>(null, null, null);
 		
 		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
 		GeneralisedQueryTree<String> genTree;
@@ -327,7 +324,7 @@ public class NBRTest {
 		child2.setId(3);
 		child.addChild(child2, edge);
 		System.out.println(tree.getStringRepresentation());
-		NBR<String> nbrGen = new NBR<String>(null, null);
+		NBR<String> nbrGen = new NBR<String>(null, null, null);
 		
 		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
 		GeneralisedQueryTree<String> genTree;
@@ -360,7 +357,7 @@ public class NBRTest {
 		tree.addChild(child, "edge4");
 		
 		System.out.println(tree.getStringRepresentation());
-		NBR<String> nbrGen = new NBR<String>(null, null);
+		NBR<String> nbrGen = new NBR<String>(null, null, null);
 		
 		List<GeneralisedQueryTree<String>> gens = nbrGen.getAllowedGeneralisations(new GeneralisedQueryTree<String>(tree));
 		GeneralisedQueryTree<String> genTree;
@@ -381,17 +378,18 @@ public class NBRTest {
 	@Test
 	public void lggSubsumptionTest(){
 			try {
-				ExtractionDBCache cache = new ExtractionDBCache(CACHE_DIR);
+				ExtractionDBCache selectCache = new ExtractionDBCache(SELECT_CACHE_DIR);
+				ExtractionDBCache constructCache = new ExtractionDBCache(CONSTRUCT_CACHE_DIR);
 				List<String> predicateFilters = new ArrayList<String>();
 				SPARQLEndpointEx endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
 						Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
 				predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 				predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 				
-				ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), cache);
+				ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), constructCache);
 				QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
 				LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
-				NBR<String> nbrGen = new NBR<String>(endpoint, cache);
+				NBR<String> nbrGen = new NBR<String>(endpoint, selectCache, constructCache);
 				
 				String targetQuery = "PREFIX dbpedia: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> " +
 				"SELECT DISTINCT ?var0 ?homepage ?genre WHERE {" +
@@ -401,7 +399,7 @@ public class NBRTest {
 				"?var0 dbo:genre ?genre ." +
 				"?genre dbo:instrument dbpedia:Electric_guitar ." +
 				"?genre dbo:stylisticOrigin dbpedia:Jazz .}";
-				ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, targetQuery));
+				ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, targetQuery));
 				SortedSet<String> targetResources = new TreeSet<String>();
 				QuerySolution qs;
 				while(rs.hasNext()){
