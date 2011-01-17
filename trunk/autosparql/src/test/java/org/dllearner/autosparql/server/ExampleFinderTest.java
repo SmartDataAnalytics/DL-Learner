@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
+import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.Endpoints;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.junit.Test;
@@ -30,6 +31,9 @@ public class ExampleFinderTest {
 			
 			System.out.println(f.findSimilarExample(posExamples, negExamples));
 		} catch (SPARQLQueryException e) {
+			e.printStackTrace();
+		} catch (TimeOutException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

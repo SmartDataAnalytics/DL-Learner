@@ -18,6 +18,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -176,7 +177,7 @@ public class NBRTest {
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
-			Example example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
+			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
 			String learnedQuery = nbrGen.getQuery();
 			
 			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, selectCache)){
@@ -199,7 +200,7 @@ public class NBRTest {
 				}
 				logger.info("Positive examples: " + Helper.getAbbreviatedCollection(posExamples, baseURI, prefixes));
 //				logger.debug("Pos trees:\n " + printTrees(posTrees));
-				example = nbrGen.getQuestionOptimised(lgg, negTrees, knownResources);
+				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
 				/*
 				System.out.println(learnedQuery);
@@ -222,6 +223,9 @@ public class NBRTest {
 			
 			
 		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (TimeOutException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
