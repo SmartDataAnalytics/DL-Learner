@@ -14,9 +14,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.xml.ws.http.HTTPException;
+
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.QueryTreeChange.ChangeType;
+import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -33,7 +36,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 public class NBR<N> {
 	
-	private boolean generalizeSortedByNegatives = true;
+	private boolean generalizeSortedByNegatives = false;
 	
 	private volatile boolean stop = false;
 	private boolean isRunning;
@@ -271,7 +274,11 @@ public class NBR<N> {
 	}
 	
 	
-	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
+		return computeQuestionOptimized(lgg, negTrees, knownResources);
+	}
+	
+	private Example computeQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		lgg = getFilteredTree(lgg);
 		logger.info(lgg.getStringRepresentation());
 		limit = knownResources.size();
@@ -299,7 +306,7 @@ public class NBR<N> {
 		return null;
 	}
 	
-	public Example getQuestionOptimised(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
+	private Example computeQuestionOptimized(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
 		startTime = System.currentTimeMillis();
 		this.lgg = lgg;
 		logger.info("Computing next question...");
@@ -336,9 +343,9 @@ public class NBR<N> {
 			logger.debug("covers negative tree: " + coversNegTree);
 			while(!coversNegTree){
 				if(generalizeSortedByNegatives){
-					gens = getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG), negTrees);
+					gens = getAllowedGeneralisationsSortedByMatrix(tmp, negTrees);
 				} else {
-					gens = getAllowedGeneralisationsSorted(new GeneralisedQueryTree<N>(postLGG));
+					gens = getAllowedGeneralisationsSorted(tmp);
 				}
 				if(gens.isEmpty()){
 					if(logger.isDebugEnabled()){
@@ -359,11 +366,6 @@ public class NBR<N> {
 				}
 			}
 		
-//			List<QueryTreeChange> sequence = genSequence(tree1, tmp);
-//			if(coversNegTree){
-//				sequence.remove(sequence.size()-1);
-//			} 
-//			tree2 = applyGen(tree1.getQueryTree(), sequence);
 			int index = neededGeneralisations.size()-1;
 			if(coversNegTree){
 				tree2 = neededGeneralisations.get(index--);
@@ -373,6 +375,9 @@ public class NBR<N> {
 			
 //			QueryTree<N> newTree = getNewResource(tree2, knownResources);
 			String newResource = getNewResource(tree2, knownResources);
+			if(isTerminationCriteriaReached()){
+				throw new TimeOutException(maxExecutionTimeInSeconds);
+			}
 			logger.debug("New resource before binary search: " + newResource);
 			if(!(newResource == null)){
 				logger.debug("binary search for most specific query returning a resource - start");
@@ -389,6 +394,7 @@ public class NBR<N> {
 		return null;
 	}
 	
+	
 	private QueryTree<N> getQueryTree(String resource){
 		Model model = modelCache.getModel(resource);
 		QueryTree<String> tree = treeCache.getQueryTree(resource, model);
@@ -397,7 +403,7 @@ public class NBR<N> {
 	
 	// uses binary search to find most specific tree containing new resource
 	// invoke with low = 0 and high = listsize-1
-	private String findMostSpecificResourceTree(List<QueryTree<N>> trees, List<String> knownResources, int low, int high) {
+	private String findMostSpecificResourceTree(List<QueryTree<N>> trees, List<String> knownResources, int low, int high) throws TimeOutException {
 //		if(low==high) {
 //			return low;
 //		}
@@ -405,7 +411,15 @@ public class NBR<N> {
 		// perform SPARQL query
 		
 //		QueryTree<N> t = getNewResource(trees.get(testIndex), knownResources);
-		String t = getNewResource(trees.get(testIndex), knownResources);
+		String t = getNewResource(trees.get(testIndex), knownResources);;
+		try {
+			t = getNewResource(trees.get(testIndex), knownResources);
+		} catch (HTTPException e) {
+			throw new TimeOutException(maxExecutionTimeInSeconds);
+		}
+		if(isTerminationCriteriaReached()){
+			throw new TimeOutException(maxExecutionTimeInSeconds);
+		}
 		if(testIndex == high){
 			return t;
 		}
@@ -549,7 +563,6 @@ public class NBR<N> {
 	
 	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted(GeneralisedQueryTree<N> tree){
 		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(tree);
-//		logger.debug("Before sorting: " + getQueueLogInfo(gens));
 		Collections.sort(gens, comparator);	
 		return gens;
 	}

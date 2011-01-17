@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -27,9 +28,6 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ExampleFinder {
@@ -49,6 +47,7 @@ public class ExampleFinder {
 	private String currentQuery;
 	
 	private QueryTree<String> currentQueryTree;
+	private QueryTree<String> lgg;
 	
 	private Set<String> testedQueries;
 	
@@ -75,7 +74,7 @@ public class ExampleFinder {
 	}
 	
 	public Example findSimilarExample(List<String> posExamples,
-			List<String> negExamples) throws SPARQLQueryException{
+			List<String> negExamples) throws SPARQLQueryException, TimeOutException{
 		logger.info("Searching similiar example");
 		logger.info("Positive examples: " + posExamples);
 		logger.info("Negative examples: " + negExamples);
@@ -276,7 +275,7 @@ public class ExampleFinder {
 			List<QueryTree<String>> negExamplesTrees) throws SPARQLQueryException{
 		if(negExamplesTrees.isEmpty()){
 			queryGen.getSPARQLQueries(posExamplesTrees);
-			QueryTree<String> lgg = queryGen.getLastLGG();
+			lgg = queryGen.getLastLGG();
 			if(logger.isInfoEnabled()){
 				logger.info("No negative examples given.");
 				logger.info("Computed LGG:\n" + lgg.getStringRepresentation());
@@ -341,7 +340,7 @@ public class ExampleFinder {
 			List<QueryTree<String>> negExamplesTrees){
 		logger.info("Making NBR...");
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
-		QueryTree<String> lgg = lggGen.getLGG(posExamplesTrees);
+		lgg = lggGen.getLGG(posExamplesTrees);
 		
 		List<String> resources = new ArrayList<String>();
 		resources.addAll(posExamples);
@@ -353,6 +352,10 @@ public class ExampleFinder {
 		currentQuery = nbr.getQuery();
 		return example;
 		
+	}
+	
+	public QueryTree<String> getLGG(){
+		return lgg;
 	}
 	
 	private Example getExample(String uri){
