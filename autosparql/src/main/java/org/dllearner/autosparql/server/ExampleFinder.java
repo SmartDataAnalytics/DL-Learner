@@ -27,6 +27,8 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -51,6 +53,8 @@ public class ExampleFinder {
 	private Set<String> testedQueries;
 	
 	private SPARQLQueryGeneratorCached queryGen;
+	private LGGGenerator<String> lggGen;
+	private NBR<String> nbrGen;
 	
 	private boolean makeAlwaysNBR = false;
 	
@@ -65,6 +69,8 @@ public class ExampleFinder {
 		testedQueries = new HashSet<String>();
 		
 		queryGen = new SPARQLQueryGeneratorCachedImpl(new GreedyNBRStrategy<String>());
+		lggGen = new LGGGeneratorImpl<String>();
+		nbrGen = new NBR<String>(endpoint, selectCache, constructCache);
 //		queryGen = new SPARQLQueryGeneratorCachedImpl(new BruteForceNBRStrategy());
 	}
 	
@@ -324,7 +330,7 @@ public class ExampleFinder {
 			}
 		}
 		if(logger.isInfoEnabled()){
-			logger.info("None of the tested queries which was not tested before contained a new example.");
+			logger.info("None of the tested queries which were not tested before contained a new example.");
 			logger.info("Making again NBR...");
 		}
 //		return findExampleByGeneralisation(queryGen.getCurrentQueryTree());
@@ -341,7 +347,8 @@ public class ExampleFinder {
 		resources.addAll(posExamples);
 		resources.addAll(negExamples);
 		
-		NBR<String> nbr = new NBR<String>(endpoint, selectCache);
+		NBR<String> nbr = new NBR<String>(endpoint, selectCache, constructCache);
+//		nbr.getQuestion(lgg, negExamplesTrees, resources);
 		Example example = nbr.makeNBR(resources, lgg, negExamplesTrees);
 		currentQuery = nbr.getQuery();
 		return example;

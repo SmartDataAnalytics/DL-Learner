@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -45,6 +46,9 @@ import com.jamonapi.MonitorFactory;
 public class EvaluationScript {
 	
 	private static final Logger logger = Logger.getLogger(EvaluationScript.class);
+	
+	private static final int maxRepeatedNegativesCount = 10;
+	private static final int startingPositiveExamplesCount = 3;
 
 	/**
 	 * @param args
@@ -81,6 +85,7 @@ public class EvaluationScript {
 				Collections.<String>emptyList(),
 				null, null,
 				Collections.<String>emptyList());
+		
 		ExtractionDBCache selectQueriesCache = new ExtractionDBCache("evaluation/select-cache");
 		ExtractionDBCache constructQueriesCache = new ExtractionDBCache("evaluation/construct-cache");
 		
@@ -125,6 +130,7 @@ public class EvaluationScript {
 		boolean failed = false;
 		String lastQuery = "";
 		int equalsLastQueryCount = 0;
+		int repeatedNegativeCount;
 		while(queries.next()){
 			id = queries.getInt("id");
 			query = queries.getString("query");
@@ -135,6 +141,7 @@ public class EvaluationScript {
 			MonitorFactory.getTimeMonitor("NBR").reset();
 			mostGeneralQueryCount = 0;
 			equalsLastQueryCount = 0;
+			repeatedNegativeCount = 0;
 			lastQuery = "";
 			failed = false;
 			try {
@@ -158,10 +165,15 @@ public class EvaluationScript {
 				exampleFinder = new ExampleFinder(endpoint, selectQueriesCache, constructQueriesCache);
 				posExamples = new ArrayList<String>();
 				negExamples = new ArrayList<String>();
-				//we choose the first resource in the set as positive example
-				String posExample = resources.first();
-				logger.info("Selected " + posExample + " as first positive example.");
-				posExamples.add(posExample);
+				//we choose the first n resources in the set as positive example
+				Iterator<String> iter = resources.iterator();
+				String posExample;
+				for(int i = 0; i < startingPositiveExamplesCount; i++){
+					posExample = iter.next();
+					posExamples.add(posExample);
+				}
+				logger.info("Selected " + posExamples + " as first + " + startingPositiveExamplesCount + " positive example.");
+				
 				//we ask for the next similar example
 				String nextExample;
 				String learnedQuery = "";
@@ -183,9 +195,11 @@ public class EvaluationScript {
 					if(resources.contains(nextExample)){
 						posExamples.add(nextExample);
 						logger.info("Suggested example is considered as positive example.");
+						repeatedNegativeCount = 0;
 					} else {
 						negExamples.add(nextExample);
 						logger.info("Suggested example is considered as negative example.");
+						repeatedNegativeCount++;
 					}
 					
 					if(learnedQuery.equals(mostGeneralQuery)){
