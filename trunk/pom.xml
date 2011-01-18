@@ -341,11 +341,16 @@
 			<artifactId>guava</artifactId>
 			<version>r07</version>
 		</dependency>
-        <dependency>
-      		<groupId>com.dumontierlab</groupId>
-      		<artifactId>pdb2rdf-parser</artifactId>
-      		<version>0.0.8</version>
-    	</dependency>
+	<dependency>
+               <groupId>com.dumontierlab</groupId>
+               <artifactId>pdb2rdf-parser</artifactId>
+               <version>0.0.9</version>
+        </dependency>
+	<dependency>
+               <groupId>com.dumontierlab</groupId>
+               <artifactId>pdb2rdf-cli</artifactId>
+               <version>0.0.9</version>
+        </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -412,7 +417,7 @@
 		<repository>
 			<id>semanticscience.org</id>
 			<name>Semanticscience projects</name>
-			<url>http://s1.semanticscience.org:8080/nexus/content/groups/public</url>
+			<url>http://s1.semanticscience.org:8080/nexus/content/groups/public/</url>
 		</repository>
     </repositories>
 
