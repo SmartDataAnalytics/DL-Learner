@@ -61,6 +61,8 @@ public class ExtractionDBCache {
 	// specifies after how many seconds a cached result becomes invalid
 	private long freshnessInMilliseconds = 15 * 24 * 60 * 60 * 1000; // 15 days	
 	
+	private int maxExecutionTimeInSeconds = 0;
+	
 	private Connection conn;
 	
 	MessageDigest md5;
@@ -99,7 +101,7 @@ public class ExtractionDBCache {
 	}
 	
 	public Model executeConstructQuery(SparqlEndpoint endpoint, String query) throws SQLException, UnsupportedEncodingException {
-		return executeConstructQuery(endpoint, query, 0);
+		return executeConstructQuery(endpoint, query, maxExecutionTimeInSeconds);
 	}
 	
 	public Model executeConstructQuery(SparqlEndpoint endpoint, String query, int maxExecutionTimeInSeconds) throws SQLException, UnsupportedEncodingException {
@@ -169,7 +171,7 @@ public class ExtractionDBCache {
 	}
 	
 	public String executeSelectQuery(SparqlEndpoint endpoint, String query) {
-		return executeSelectQuery(endpoint, query, 0);
+		return executeSelectQuery(endpoint, query, maxExecutionTimeInSeconds);
 	}
 	
 	public String executeSelectQuery(SparqlEndpoint endpoint, String query, int maxExecutionTimeInSeconds) {
@@ -248,6 +250,10 @@ public class ExtractionDBCache {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds){
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException, UnsupportedEncodingException {
