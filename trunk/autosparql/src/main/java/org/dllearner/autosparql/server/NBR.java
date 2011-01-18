@@ -56,6 +56,7 @@ public class NBR<N> {
 	private int nodeId;
 	private QueryTree<N> lgg;
 	private QueryTree<N> postLGG;
+	private List<QueryTree<N>> negTrees;
 	
 	
 	
@@ -309,6 +310,8 @@ public class NBR<N> {
 	private Example computeQuestionOptimized(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
 		startTime = System.currentTimeMillis();
 		this.lgg = lgg;
+		this.negTrees = negTrees;
+		System.err.println(negTrees.get(0).getStringRepresentation());
 		logger.info("Computing next question...");
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
@@ -596,6 +599,11 @@ public class NBR<N> {
 					gens.add(genTree);
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
+					System.out.println("resource: " + label);
+					for(QueryTree<N> c : child.getChildren()){
+						System.out.println("child: " + c.getUserObject());
+						System.out.println(hasAlwaysSameParent(c, negTrees));
+					}
 					child.setUserObject((N) "?");
 					child.setVarNode(true);
 					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
@@ -646,6 +654,47 @@ public class NBR<N> {
 		}
 		
 		return gens;
+	}
+	
+	private boolean hasAlwaysSameParent(QueryTree<N> node, List<QueryTree<N>> trees){
+		N parentLabel = node.getParent().getUserObject();
+		N nodeLabel = node.getUserObject();
+		List<Object> path = getPathFromRootToNode(node);
+		List<QueryTree<N>> nodes;
+		for(QueryTree<N> tree : trees){
+			nodes = getNodesByPath(tree, new ArrayList<Object>(path));
+			if(!nodes.isEmpty()){
+				for(QueryTree<N> otherNode : nodes){
+					if(nodeLabel.equals(otherNode.getUserObject()) && !otherNode.getParent().getUserObject().equals(parentLabel)){
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	private List<QueryTree<N>> getNodesByPath(QueryTree<N> tree, List<Object> path){
+		List<QueryTree<N>> nodes = new ArrayList<QueryTree<N>>();
+		for(QueryTree<N> child : tree.getChildren(path.remove(0))){
+			if(path.isEmpty()){
+				nodes.add(child);
+			} else {
+				nodes.addAll(getNodesByPath(child, new ArrayList<Object>(path)));
+			}
+		}
+		return nodes;
+	}
+	
+	private List<Object> getPathFromRootToNode(QueryTree<N> node){
+		List<Object> path = new ArrayList<Object>();
+		QueryTree<N> parent = node.getParent();
+		path.add(parent.getEdge(node));
+		if(!parent.isRoot()){
+			path.addAll(getPathFromRootToNode(parent));
+		}
+		Collections.reverse(path);
+		return path;
 	}
 	
 	private SortedSet<String> getResources(QueryTree<N> tree){
