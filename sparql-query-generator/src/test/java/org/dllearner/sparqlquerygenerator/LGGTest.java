@@ -20,10 +20,13 @@
 package org.dllearner.sparqlquerygenerator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -138,13 +141,16 @@ public class LGGTest {
 		
 	}
 	
-	@Test
+//	@Test
 	public void performanceTest(){
-		int recursionDepth = 2;
-		int limit = 10;
+		int recursionDepth = 3;
+		int limit = 100;
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 		ExtractionDBCache cache = new ExtractionDBCache("cache");
-		ModelGenerator modelGen = new ModelGenerator(endpoint, cache);
+		Set<String> predicateFilters = new HashSet<String>();
+		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		ModelGenerator modelGen = new ModelGenerator(endpoint, predicateFilters, cache);
 		QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
 		
 		String queryString = "SELECT ?resource WHERE {?resource a ?class." +
@@ -160,23 +166,39 @@ public class LGGTest {
 		String resource;
 		logger.info("Resources(#triple):");
 		while(rs.hasNext()){
-			resource = rs.next().get("resource").asResource().getURI();
-			logger.info(resource);
-			model = modelGen.createModel(resource, Strategy.CHUNKS, recursionDepth);
-			logger.info(resource + "(" + model.size() + ")");
-			resource2Model.put(resource, model);
+			try {
+				resource = rs.next().get("resource").asResource().getURI();
+				model = modelGen.createModel(resource, Strategy.CHUNKS, recursionDepth);
+				logger.info(resource + "(" + model.size() + ")");
+				resource2Model.put(resource, model);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
+//		model = modelGen.createModel("http://dbpedia.org/resource/A_Farewell_to_Arms", Strategy.CHUNKS, recursionDepth);
+//		logger.info("http://dbpedia.org/resource/A_Farewell_to_Arms" + "(" + model.size() + ")");
+//		resource2Model.put("http://dbpedia.org/resource/A_Farewell_to_Arms", model);
+//		model = modelGen.createModel("http://dbpedia.org/resource/Darjeeling", Strategy.CHUNKS, recursionDepth);
+//		logger.info("http://dbpedia.org/resource/Darjeeling" + "(" + model.size() + ")");
+//		resource2Model.put("http://dbpedia.org/resource/Darjeeling", model);
+			
+			
 		//create the querytrees
 		SortedMap<String, QueryTree<String>> resource2Tree = new TreeMap<String, QueryTree<String>>();
 		Map<QueryTree<String>, String> tree2Resource = new HashMap<QueryTree<String>, String>(limit);
 		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
 		QueryTree<String> tree;
 		for(Entry<String, Model> entry : resource2Model.entrySet()){
-			tree = treeFactory.getQueryTree(entry.getKey(), entry.getValue());
-			trees.add(tree);
-			resource2Tree.put(entry.getKey(), tree);
-			tree2Resource.put(tree, entry.getKey());
+			try {
+				tree = treeFactory.getQueryTree(entry.getKey(), entry.getValue());
+				trees.add(tree);
+				resource2Tree.put(entry.getKey(), tree);
+				tree2Resource.put(tree, entry.getKey());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		
@@ -186,17 +208,25 @@ public class LGGTest {
 		QueryTree<String> lgg;
 		for(int i = 0; i < trees.size(); i++){
 			for(int j = i+1; j < trees.size(); j++){
-				tree1 = trees.get(i);
-				tree2 = trees.get(j);
-				lgg = lggGen.getLGG(tree1, tree2);
-				logger.info("LGG(" + tree2Resource.get(tree1) + ", " + tree2Resource.get(tree2) + ") needed "
-						+ MonitorFactory.getTimeMonitor("LGG").getLastValue() + "ms");
-				logger.info("Tree 1:\n" + tree1.getStringRepresentation());
-				logger.info("Tree 2:\n" + tree2.getStringRepresentation());
-				logger.info("LGG:\n" + lgg.getStringRepresentation());
+				try {
+					tree1 = trees.get(i);
+					tree2 = trees.get(j);
+					lgg = lggGen.getLGG(tree1, tree2);
+					logger.info("LGG(" + tree2Resource.get(tree1) + ", " + tree2Resource.get(tree2) + ") needed "
+							+ MonitorFactory.getTimeMonitor("LGG").getLastValue() + "ms");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+//				logger.info("Tree 1:\n" + tree1.getStringRepresentation());
+//				logger.info("Tree 2:\n" + tree2.getStringRepresentation());
+//				logger.info("LGG:\n" + lgg.getStringRepresentation());
 			}
 		}
 		logger.info("Average time to compute LGG: " + MonitorFactory.getTimeMonitor("LGG").getAvg());
+		logger.info("Min time to compute LGG: " + MonitorFactory.getTimeMonitor("LGG").getMin());
+		logger.info("Max time to compute LGG: " + MonitorFactory.getTimeMonitor("LGG").getMax());
+		logger.info("#computed LGGs: " + MonitorFactory.getTimeMonitor("LGG").getHits());
 		
 		
 	}
