@@ -57,6 +57,7 @@ public class NBR<N> {
 	private QueryTree<N> lgg;
 	private QueryTree<N> postLGG;
 	private List<QueryTree<N>> negTrees;
+	private List<Integer> determiningNodeIds;
 	
 	
 	
@@ -151,6 +152,25 @@ public class NBR<N> {
 			checkTree(matrix, tree, negTrees.get(i), i);
 		}
 		return matrix;
+	}
+	
+	private List<Integer> getDeterminingNodeIds(QueryTree<N> lgg, List<QueryTree<N>> trees){
+		List<Integer> nodeIds = new ArrayList<Integer>();
+		
+		boolean parentIsResource = false;
+		boolean childIsResource = false;
+		for(QueryTree<N> child : lgg.getChildren()){
+			parentIsResource = !child.getParent().getUserObject().equals("?");
+			childIsResource = !child.getUserObject().equals("?");
+			if(parentIsResource && childIsResource && hasAlwaysSameParent(child, trees)){
+				nodeIds.add(child.getId());
+			}
+			if(!child.isLeaf()){
+				nodeIds.addAll(getDeterminingNodeIds(child, trees));
+			}
+		}
+		
+		return nodeIds;
 	}
 	
 	public String getQuery(){
@@ -311,8 +331,10 @@ public class NBR<N> {
 		startTime = System.currentTimeMillis();
 		this.lgg = lgg;
 		this.negTrees = negTrees;
-		System.err.println(negTrees.get(0).getStringRepresentation());
+		determiningNodeIds = getDeterminingNodeIds(lgg, negTrees);
+//		System.err.println(negTrees.get(0).getStringRepresentation());
 		logger.info("Computing next question...");
+		logger.info("LGG:\n" + lgg.getStringRepresentation());
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
@@ -414,7 +436,7 @@ public class NBR<N> {
 		// perform SPARQL query
 		
 //		QueryTree<N> t = getNewResource(trees.get(testIndex), knownResources);
-		String t = getNewResource(trees.get(testIndex), knownResources);;
+		String t = null;
 		try {
 			t = getNewResource(trees.get(testIndex), knownResources);
 		} catch (HTTPException e) {
@@ -599,10 +621,12 @@ public class NBR<N> {
 					gens.add(genTree);
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
-					System.out.println("resource: " + label);
+					Map<Integer, N> node2Label = new HashMap<Integer, N>(); 
 					for(QueryTree<N> c : child.getChildren()){
-						System.out.println("child: " + c.getUserObject());
-						System.out.println(hasAlwaysSameParent(c, negTrees));
+						if(determiningNodeIds.contains(c.getId())){
+							node2Label.put(Integer.valueOf(c.getId()), c.getUserObject());
+							c.setUserObject((N)"?");
+						}
 					}
 					child.setUserObject((N) "?");
 					child.setVarNode(true);
@@ -613,6 +637,12 @@ public class NBR<N> {
 					child.setUserObject(label);
 					child.setLiteralNode(isLiteralNode);
 					child.setResourceNode(!isLiteralNode);
+					for(QueryTree<N> c : child.getChildren()){
+						N oldLabel = node2Label.get(c.getId());
+						if(oldLabel != null){
+							c.setUserObject(oldLabel);
+						}
+					}
 				}
 //				child.setUserObject((N) "?");
 //				child.setVarNode(true);

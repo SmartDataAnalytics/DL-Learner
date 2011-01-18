@@ -40,6 +40,7 @@ import com.jamonapi.MonitorFactory;
 public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	
 	private Logger logger = Logger.getLogger(LGGGeneratorImpl.class);
+	private int nodeId;
 
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2) {
@@ -49,10 +50,12 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2,
 			boolean learnFilters) {
+		nodeId = 0;
 		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
 		mon.start();
 		QueryTree<N> lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
+		addNumbering(lgg);
 		return lgg;
 	}
 
@@ -63,6 +66,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	
 	@Override
 	public QueryTree<N> getLGG(List<QueryTree<N>> trees, boolean learnFilters) {
+		nodeId = 0;
 		List<QueryTree<N>> treeList = new ArrayList<QueryTree<N>>(trees);
 		
 		if(logger.isInfoEnabled()){
@@ -103,7 +107,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			logger.info(lgg.getStringRepresentation());
 		}
 		mon.stop();
-		
+		addNumbering(lgg);
 		return lgg;
 	}
 	
@@ -192,6 +196,13 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			logger.debug(lgg.getStringRepresentation());
 		}
 		return lgg;
+	}
+	
+	private void addNumbering(QueryTree<N> tree){
+		tree.setId(nodeId++);
+		for(QueryTree<N> child : tree.getChildren()){
+			addNumbering(child);
+		}
 	}
 
 }
