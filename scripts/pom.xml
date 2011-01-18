@@ -36,6 +36,14 @@
         	<groupId>postgresql</groupId>
         	<artifactId>postgresql</artifactId>
         </dependency>
-       
+	<dependency>
+		<groupId>com.dumontierlab</groupId>
+		<artifactId>pdb2rdf-parser</artifactId>
+        </dependency>
+	<dependency>
+		<groupId>com.dumontierlab</groupId>
+		<artifactId>pdb2rdf-cli</artifactId>
+        </dependency>
+	
     </dependencies>
 </project>
