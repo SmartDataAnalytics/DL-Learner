@@ -19,7 +19,6 @@ import java.util.TreeSet;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.collections15.ListUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -58,6 +57,7 @@ public class EvaluationScript {
 	private static final int maxRepeatedNegativesCount = 10;
 	private static final int startingPositiveExamplesCount = 3;
 	private static final int maxNBRExecutionTimeInSeconds = 10;
+	private static String learnedQuery;
 
 	/**
 	 * @param args
@@ -103,6 +103,7 @@ public class EvaluationScript {
 		
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 		NBR<String> nbrGen = new NBR<String>(endpoint, selectQueriesCache, constructQueriesCache);
+		Generalisation<String> posGen = new Generalisation<String>();
 		nbrGen.setMaxExecutionTimeInSeconds(maxNBRExecutionTimeInSeconds);
 		ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(endpoint.getPredicateFilters()), constructQueriesCache);
 		ModelCache modelCache = new ModelCache(modelGen);
@@ -198,7 +199,14 @@ public class EvaluationScript {
 					try {
 //						nextExample = exampleFinder.findSimilarExample(posExamples, negExamples).getURI();
 						lgg = lggGen.getLGG(posExampleTrees);
-						nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
+						if(negExamples.isEmpty()){
+							nextExample = getExampleByPositiveGeneralisation(lgg, ListUtils.union(posExamples, negExamples), endpoint, selectQueriesCache);
+							learnedQuery = EvaluationScript.learnedQuery;
+						} else {
+							nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
+							learnedQuery = nbrGen.getQuery();
+						}
+						
 					} catch (TimeOutException e) {
 						timeOutErrorCount++;
 //						QueryTree<String> lgg = exampleFinder.getLGG();
@@ -212,7 +220,7 @@ public class EvaluationScript {
 						}
 					}
 //					learnedQuery = exampleFinder.getCurrentQuery();
-					learnedQuery = nbrGen.getQuery();
+					
 					logger.info("Learned query:\n" + learnedQuery);
 					equivalentQueries = isEquivalentQuery(targetResources, learnedQuery, endpoint, selectQueriesCache);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
@@ -382,6 +390,19 @@ public class EvaluationScript {
 		targetCopy.removeAll(lggResources);
 		targetCopy.removeAll(selectedPosExamples);
 		return targetCopy.first();
+	}
+	
+	private static String getExampleByPositiveGeneralisation(QueryTree<String> lgg, List<String> knownResources, SPARQLEndpointEx endpoint, ExtractionDBCache cache){
+		Generalisation<String> posGen = new Generalisation<String>();
+		QueryTree<String> genTree = posGen.generalise(lgg);
+		learnedQuery = genTree.toSPARQLQueryString();
+		SortedSet<String> resources = getResources(learnedQuery, endpoint, cache);
+		resources.removeAll(knownResources);
+		if(resources.isEmpty()){
+			return getExampleByPositiveGeneralisation(genTree, knownResources, endpoint, cache);
+		} else {
+			return resources.first();
+		}
 	}
 
 }
