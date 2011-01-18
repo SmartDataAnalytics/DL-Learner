@@ -11,9 +11,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.prefs.BackingStoreException;
@@ -58,6 +60,7 @@ public class EvaluationScript {
 	private static final int startingPositiveExamplesCount = 3;
 	private static final int maxNBRExecutionTimeInSeconds = 10;
 	private static String learnedQuery;
+	private static int maxQueryTimeInSeconds = 10;
 
 	/**
 	 * @param args
@@ -89,17 +92,31 @@ public class EvaluationScript {
 		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
 		Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
 		
-		
+		String baseURI = "http://dbpedia.org/resource/";
+		Map<String,String> prefixes = new HashMap<String,String>();
+		prefixes.put("dbo","http://dbpedia.org/ontology/");
+		prefixes.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
+		prefixes.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		prefixes.put("skos","http://www.w3.org/2004/02/skos/core#");
+		prefixes.put("geo","http://www.w3.org/2003/01/geo/wgs84_pos#");
+		prefixes.put("georss","http://www.georss.org/georss/");
+		prefixes.put("owl","http://www.w3.org/2002/07/owl#");
+		prefixes.put("yago","http://dbpedia.org/class/yago/");
+		prefixes.put("cyc","http://sw.opencyc.org/concept/");
+		List<String> predicateFilters = new ArrayList<String>();
+		predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+//		predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		predicateFilters.add("http://dbpedia.org/property/");
 		SPARQLEndpointEx endpoint = new SPARQLEndpointEx(
-//				new URL("http://dbpedia.org/sparql"),
 				new URL("http://db0.aksw.org:8999/sparql"),
 				Collections.singletonList("http://dbpedia.org"),
-				Collections.<String>emptyList(),
-				null, null,
-				Collections.<String>emptyList());
+				Collections.<String>emptyList(), 
+				null, baseURI, prefixes, predicateFilters);
 		
 		ExtractionDBCache selectQueriesCache = new ExtractionDBCache("evaluation/select-cache");
+		selectQueriesCache.setMaxExecutionTimeInSeconds(maxQueryTimeInSeconds);
 		ExtractionDBCache constructQueriesCache = new ExtractionDBCache("evaluation/construct-cache");
+		constructQueriesCache.setMaxExecutionTimeInSeconds(maxQueryTimeInSeconds);
 		
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 		NBR<String> nbrGen = new NBR<String>(endpoint, selectQueriesCache, constructQueriesCache);
@@ -206,7 +223,8 @@ public class EvaluationScript {
 							nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
 							learnedQuery = nbrGen.getQuery();
 						}
-						
+//						nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
+//						learnedQuery = nbrGen.getQuery();
 					} catch (TimeOutException e) {
 						timeOutErrorCount++;
 //						QueryTree<String> lgg = exampleFinder.getLGG();
@@ -383,6 +401,20 @@ public class EvaluationScript {
 		return resources;
 	}
 	
+	private static SortedSet<String> getResources2(String query, SPARQLEndpointEx endpoint, ExtractionDBCache cache){
+		com.hp.hpl.jena.query.ResultSet rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query));
+		
+		SortedSet<String> resources = new TreeSet<String>();
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			if(qs.get("x0").isURIResource()){
+				resources.add(qs.get("x0").asResource().getURI());
+			}
+		}
+		return resources;
+	}
+	
 	private static String getNewPosExampleNotCoveredByLGG(QueryTree<String> lgg, SortedSet<String> targetResources, List<String> selectedPosExamples, 
 			SPARQLEndpointEx endpoint, ExtractionDBCache cache){
 		SortedSet<String> lggResources = getResources(lgg.toSPARQLQueryString(), endpoint, cache);
@@ -396,7 +428,7 @@ public class EvaluationScript {
 		Generalisation<String> posGen = new Generalisation<String>();
 		QueryTree<String> genTree = posGen.generalise(lgg);
 		learnedQuery = genTree.toSPARQLQueryString();
-		SortedSet<String> resources = getResources(learnedQuery, endpoint, cache);
+		SortedSet<String> resources = getResources2(learnedQuery, endpoint, cache);
 		resources.removeAll(knownResources);
 		if(resources.isEmpty()){
 			return getExampleByPositiveGeneralisation(genTree, knownResources, endpoint, cache);
