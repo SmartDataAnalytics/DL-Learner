@@ -447,6 +447,49 @@ public class NBRTest {
 			}
 	}
 	
+	@Test
+	public void testLGG(){
+		try {
+			ExtractionDBCache constructCache = new ExtractionDBCache(CONSTRUCT_CACHE_DIR);
+			List<String> predicateFilters = new ArrayList<String>();
+			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
+					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
+			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			
+			ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), constructCache);
+			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
+			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
+			
+			List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
+			
+			String uri = "http://dbpedia.org/resource/%C3%80_double_tour";
+			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
+			tree = getFilteredTree(tree);
+			posTrees.add(tree);
+			
+			uri = "http://dbpedia.org/resource/%C3%80_la_folie";
+			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			tree = treeFactory.getQueryTree(uri, model);
+			tree = getFilteredTree(tree);
+			posTrees.add(tree);
+			
+			uri = "http://dbpedia.org/resource/%C3%80_nos_amours";
+			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			tree = treeFactory.getQueryTree(uri, model);
+			tree = getFilteredTree(tree);
+			posTrees.add(tree);
+			
+			QueryTree<String> lgg = lggGen.getLGG(posTrees);
+			System.out.println(lgg.getStringRepresentation());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		 
+			
+	}
+	
 	private QueryTree<String> getFilteredTree(QueryTree<String> tree){
 		nodeId = 0;
 		QueryTree<String> filteredTree = createFilteredTree(tree);
