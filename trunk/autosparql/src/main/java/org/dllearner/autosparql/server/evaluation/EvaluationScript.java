@@ -427,14 +427,22 @@ public class EvaluationScript {
 	private static String getExampleByPositiveGeneralisation(QueryTree<String> lgg, List<String> knownResources, SPARQLEndpointEx endpoint, ExtractionDBCache cache){
 		Generalisation<String> posGen = new Generalisation<String>();
 		QueryTree<String> genTree = posGen.generalise(lgg);
-		learnedQuery = genTree.toSPARQLQueryString();
-		SortedSet<String> resources = getResources2(learnedQuery, endpoint, cache);
+		learnedQuery = getDistinctQuery(genTree.toSPARQLQueryString());
+		SortedSet<String> resources = getResources2(getLimitedQuery(learnedQuery, knownResources.size()+1), endpoint, cache);
 		resources.removeAll(knownResources);
 		if(resources.isEmpty()){
 			return getExampleByPositiveGeneralisation(genTree, knownResources, endpoint, cache);
 		} else {
 			return resources.first();
 		}
+	}
+	
+	private static String getDistinctQuery(String query){
+		return "SELECT DISTINCT " + query.substring(7);
+	}
+	
+	private static String getLimitedQuery(String query, int limit){
+		return query + " LIMIT " + limit;
 	}
 
 }
