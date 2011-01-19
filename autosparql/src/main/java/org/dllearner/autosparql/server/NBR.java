@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -40,7 +41,7 @@ public class NBR<N> {
 	
 	private volatile boolean stop = false;
 	private boolean isRunning;
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 1000;
 	private long startTime;
 	
 	private ExtractionDBCache selectCache;
@@ -334,7 +335,6 @@ public class NBR<N> {
 		determiningNodeIds = getDeterminingNodeIds(lgg, negTrees);
 //		System.err.println(negTrees.get(0).getStringRepresentation());
 		logger.info("Computing next question...");
-		logger.info("LGG:\n" + lgg.getStringRepresentation());
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
@@ -750,9 +750,8 @@ public class NBR<N> {
 	
 	private SortedSet<String> getResources(QueryTree<N> tree, int limit, int offset){
 		SortedSet<String> resources = new TreeSet<String>();
-		
+		limitEqualEdgesToLeafs(tree, 1);
 		query = tree.toSPARQLQueryString();
-//		logger.info(QueryTreeConverter.getSPARQLQuery(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		query = getDistinctQuery(query);
 		if(logger.isDebugEnabled()){
 			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset));
@@ -970,6 +969,31 @@ public class NBR<N> {
 				return sum2-sum1;
 			}
 		}
+    	
+    }
+    
+    private void limitEqualEdgesToLeafs(QueryTree<N> tree, int maxEqualEdgeCount){
+    	Set<QueryTree<N>> parents = new HashSet<QueryTree<N>>();
+    	for(QueryTree<N> leaf : tree.getLeafs()){
+    		if(leaf.getUserObject().equals("?")){
+    			parents.add(leaf.getParent());
+    		}
+    	}
+    	for(QueryTree<N> parent : parents){
+    		for(Object edge : parent.getEdges()){
+    			int cnt = 0;
+    			for(QueryTree<N> child : parent.getChildren(edge)){
+    				if(child.getUserObject().equals("?")){
+    					if(child.isLeaf()){
+    						cnt++;
+    						if(cnt>maxEqualEdgeCount){
+    							parent.removeChild((QueryTreeImpl<N>) child);
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
     	
     }
     

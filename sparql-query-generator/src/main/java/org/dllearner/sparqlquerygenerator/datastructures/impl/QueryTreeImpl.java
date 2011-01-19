@@ -203,6 +203,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public int removeChild(QueryTreeImpl<N> child) {
     	int pos = children.indexOf(child);
         children.remove(child);
+        edge2ChildrenMap.get(child2EdgeMap.get(child)).remove(child);
         child.parent = null;
         return pos;
     }
@@ -257,7 +258,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	if(children == null){
     		children = new ArrayList<QueryTree<N>>();
     	}
-        return children;
+        return new ArrayList<QueryTree<N>>(children);
     }
     
     public int getChildCount() {
