@@ -771,22 +771,22 @@ public class NBR<N> {
 	
 	private String getNewResource(QueryTree<N> tree, List<String> knownResources){
 		int i = 0;
-		int chunkSize = 10;
-		SortedSet<String> foundResources = getResources(tree, chunkSize, chunkSize * i);
-		foundResources.removeAll(knownResources);
+		int chunkSize = 40;
+		SortedSet<String> foundResources;
 		QueryTree<N> newTree;
-		while(!foundResources.isEmpty()){
+		int foundSize;
+		do{
+			foundResources = getResources(tree, chunkSize, chunkSize * i);
+			foundSize = foundResources.size();
+			foundResources.removeAll(knownResources);
 			for(String resource : foundResources){
 				newTree = getQueryTree(resource);
 				if(!newTree.isSubsumedBy(lgg)){
-//					return newTree;
 					return resource;
 				}
 			}
 			i++;
-			foundResources = getResources(tree, chunkSize, chunkSize * i);
-			foundResources.removeAll(knownResources);
-		}
+		} while(foundSize == chunkSize);
 		logger.debug("Found no resource which would modify the LGG");
 		return null;
 	}
@@ -982,11 +982,18 @@ public class NBR<N> {
     	for(QueryTree<N> parent : parents){
     		for(Object edge : parent.getEdges()){
     			int cnt = 0;
+    			boolean existsResourceChild = false;
+    			for(QueryTree<N> child : parent.getChildren(edge)){
+    				if(!child.getUserObject().equals("?")){
+    					existsResourceChild = true;
+    					break;
+    				}
+    			}
     			for(QueryTree<N> child : parent.getChildren(edge)){
     				if(child.getUserObject().equals("?")){
     					if(child.isLeaf()){
     						cnt++;
-    						if(cnt>maxEqualEdgeCount){
+    						if(existsResourceChild || cnt>maxEqualEdgeCount){
     							parent.removeChild((QueryTreeImpl<N>) child);
     						}
     					}
