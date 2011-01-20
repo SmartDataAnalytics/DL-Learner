@@ -26,10 +26,10 @@ public class PostLGG<N> {
 		if(logger.isDebugEnabled()){
 			logger.debug("Making post LGG simplification");
 			logger.debug("LGG:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
-//			int i = 1;
-//			for(QueryTree<N> negTree : negTrees){
-//				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + negTree.getStringRepresentation());
-//			}
+			int i = 1;
+			for(QueryTree<N> negTree : negTrees){
+				logger.debug("Neg tree (" + i++ + "/" + negTrees.size() +"):\n" + TreeHelper.getAbbreviatedTreeRepresentation(negTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+			}
 		}
 		
 		List<Object> path;
@@ -64,22 +64,54 @@ public class PostLGG<N> {
 	private boolean pathExists(QueryTree<N> leaf, List<Object> path, QueryTree<N> tree){
 		List<QueryTree<N>> negLeaves;
 		Object lastEdge = path.remove(path.size()-1);
+		
 		for(QueryTree<N> node : getNodesByPath(tree, path)){
 			negLeaves = node.getChildren(lastEdge);
+			boolean exists = false;
 			if(negLeaves.isEmpty()){
-				break;
+				return false;
 			} else {
 				if(leaf.getUserObject().equals("?")){
 					return true;
 				}
 				for(QueryTree<N> negLeaf : negLeaves){
 					if(negLeaf.getUserObject().equals(leaf.getUserObject())){
-						return true;
+						exists = true;
+						break;
 					}
 				}
 			}
+			if(!exists){
+				return false;
+			}
 		}
-		return false;
+		return true;
+		
+//		List<QueryTree<N>> negLeaves;
+//		Object lastEdge = path.remove(path.size()-1);
+//		for(QueryTree<N> node : getNodesByPath(tree, path)){
+//			negLeaves = node.getChildren(lastEdge);
+//			if(negLeaves.isEmpty()){
+//				return false;
+//			} else {
+//				if(leaf.getUserObject().equals("?")){
+//					return true;
+//				}
+//				for(QueryTree<N> negLeaf : negLeaves){
+//					if(negLeaf.getUserObject().equals(leaf.getUserObject())){
+//						return true;
+//					}
+//				}
+//			}
+//		}
+//		return false;
+		
+//		for(QueryTree<N> node : getNodesByPath(tree, path)){
+//			if(!node.getUserObject().equals(leaf.getUserObject())){
+//				return false;
+//			}
+//		}
+//		return true;
 	}
 	
 	private List<Object> getPathFromRootToNode(QueryTree<N> node){
