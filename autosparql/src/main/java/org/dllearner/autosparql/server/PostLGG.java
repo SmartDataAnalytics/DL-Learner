@@ -3,7 +3,6 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
@@ -40,7 +39,7 @@ public class PostLGG<N> {
 //			if(logger.isInfoEnabled()){
 //				logger.info("Path: " + path);
 //			}
-			if(leaf.getParent().getUserObject().equals("?")){
+//			if(leaf.getParent().getUserObject().equals("?")){
 				pathExists = true;
 				for(QueryTree<N> negTree : negTrees){
 					if(!pathExists(leaf, new ArrayList<Object>(path), negTree)){
@@ -48,7 +47,7 @@ public class PostLGG<N> {
 						break;
 					}
 				}
-			}
+//			}
 //			if(logger.isInfoEnabled()){
 //				logger.info("Exists: " + pathExists);
 //			}
