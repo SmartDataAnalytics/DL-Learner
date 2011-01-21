@@ -57,7 +57,7 @@ public class PostLGG<N> {
 				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
 			}
 		}
-		checkSameEdgeOccurences(tree, negTrees);
+//		checkSameEdgeOccurences(tree, negTrees);
 		if(logger.isDebugEnabled()){
 			logger.debug("Pruned tree:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		}
