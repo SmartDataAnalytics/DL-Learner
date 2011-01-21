@@ -56,11 +56,11 @@ public class EvaluationScript {
 	
 	private static final Logger logger = Logger.getLogger(EvaluationScript.class);
 	
-	private static final int maxRepeatedNegativesCount = 10;
+	private static final int maxRepeatedNegativesCount = 20;
 	private static final int startingPositiveExamplesCount = 3;
-	private static final int maxNBRExecutionTimeInSeconds = 10;
+	private static final int maxNBRExecutionTimeInSeconds = 50;
 	private static String learnedQuery;
-	private static int maxQueryTimeInSeconds = 10;
+	private static int maxQueryTimeInSeconds = 30;
 
 	/**
 	 * @param args
@@ -90,7 +90,7 @@ public class EvaluationScript {
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(ExampleFinder.class).setLevel(Level.INFO);
 		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
-		Logger.getLogger(PostLGG.class).setLevel(Level.DEBUG);
+		Logger.getLogger(PostLGG.class).setLevel(Level.OFF);
 		
 		String baseURI = "http://dbpedia.org/resource/";
 		Map<String,String> prefixes = new HashMap<String,String>();
@@ -242,6 +242,7 @@ public class EvaluationScript {
 					logger.info("Learned query:\n" + learnedQuery);
 					equivalentQueries = isEquivalentQuery(targetResources, learnedQuery, endpoint, selectQueriesCache);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
+					logger.info("Learned successfully query " + id);
 					if(equivalentQueries){
 						break;
 					}
@@ -417,7 +418,7 @@ public class EvaluationScript {
 	
 	private static String getNewPosExampleNotCoveredByLGG(QueryTree<String> lgg, SortedSet<String> targetResources, List<String> selectedPosExamples, 
 			SPARQLEndpointEx endpoint, ExtractionDBCache cache){
-		SortedSet<String> lggResources = getResources(lgg.toSPARQLQueryString(), endpoint, cache);
+		SortedSet<String> lggResources = getResources2(lgg.toSPARQLQueryString(), endpoint, cache);
 		SortedSet<String> targetCopy = new TreeSet<String>(targetResources);
 		targetCopy.removeAll(lggResources);
 		targetCopy.removeAll(selectedPosExamples);
