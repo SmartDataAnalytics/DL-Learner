@@ -31,6 +31,7 @@ public class HelixRDFCreator {
 	
 	private static ArrayList<Resource> positives;
 	private static ArrayList<Resource> negatives;
+	private static String saveDir = "../test/pdb/";
 
 	/**
 	 * @param args
@@ -40,7 +41,7 @@ public class HelixRDFCreator {
 		
 		
 		
-		TrainAndTestSet sets = new TrainAndTestSet(1);
+		TrainAndTestSet sets = new TrainAndTestSet(10);
 		PdbRdfModel trainmodel = new PdbRdfModel();
 		trainmodel.add(getRdfModelForIds(sets.getTrainset()));
 		/* 
@@ -81,7 +82,7 @@ public class HelixRDFCreator {
 			SimpleDateFormat df = new SimpleDateFormat("_yyyy_MM_dd_HH:mm");
 			String date = df.format(new Date());
 			createConfFile(date);
-			String filename = "Helixtrainer" + date + ".rdf";
+			String filename = saveDir + "Helixtrainer" + date + ".rdf";
 			PrintStream out = new PrintStream (new File(filename));
 			
 			// Output query results
@@ -269,7 +270,7 @@ public class HelixRDFCreator {
 	private static void createConfFile(String date){
 		try
     	{
-			String filename = "pdb" + date + ".conf";
+			String filename = saveDir + "pdb" + date + ".conf";
 			PrintStream out = new PrintStream (new File(filename));
 			
 			out.println("import(\"AA_properties.owl\");");
