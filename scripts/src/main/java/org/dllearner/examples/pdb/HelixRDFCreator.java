@@ -19,6 +19,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import com.dumontierlab.pdb2rdf.model.PdbRdfModel;
 import com.dumontierlab.pdb2rdf.parser.PdbXmlParser;
@@ -49,23 +50,38 @@ public class HelixRDFCreator {
 		
 		// PdbRdfModel testmodel =  getRdfModelForIds(sets.getTestset());
 		
+		/* 
+		 * as we have to handle several amino acid chains we need the first
+		 * amino acid of every chain, they are returned as ResIterator
+		 */
 		ResIterator niter = getFirstAA(trainmodel);
 		
-		/* take all amino acids which are in helices and put them into the
-		 * positives ArrayList, and all others in the negatives ArrayList
+		/* 
+		 * take all amino acids which are in helices and put them into the
+		 * global positives ArrayList, and all others in the global negatives ArrayList
 		 */
 		createPositivesAndNegatives(niter, trainmodel);
+		
+		
+		/*
+		 * remove all triples that contain information about begin and end of helices
+		 */
+		Property ba = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "beginsAt");
+		trainmodel = removeStatementsWithPoperty(trainmodel, ba);
+		Property ea = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "endsAt");
+		trainmodel = removeStatementsWithPoperty(trainmodel, ea);
 		
 		/*
 		 * writes the conf-File
 		 */
-		createConfFile();
 
 		
 		try
     	{
-			SimpleDateFormat df = new SimpleDateFormat("_yyyy_MM_dd");
-			String filename = "Helixtrainer" + df.format(new Date()) + ".rdf";
+			SimpleDateFormat df = new SimpleDateFormat("_yyyy_MM_dd_HH:mm");
+			String date = df.format(new Date());
+			createConfFile(date);
+			String filename = "Helixtrainer" + date + ".rdf";
 			PrintStream out = new PrintStream (new File(filename));
 			
 			// Output query results
@@ -123,14 +139,14 @@ public class HelixRDFCreator {
 		// CONSTRUCT Abfrage
 		 
 		PdbRdfModel construct = new PdbRdfModel();
-		String queryString = 
 			/* i do it kind of difficult, but i want to be certain that i only get the sequences of
-			 Polypeptides(L) which contain at least one Helix. Furthermore i collect the information
-			 about at which position helices begin and end.
-			 NOTE:	this information has to be removed before oututing the model. But i will use this
-			 		to check for positive and negative train amino acids
+			 * Polypeptides(L) which contain at least one Helix. Furthermore i collect the information
+			 * about at which position helices begin and end.
+			 * NOTE:	this information has to be removed before oututing the model. But i will use this
+			 * 			to check for positive and negative train amino acids
 			*/ 
-    		"PREFIX pdb: <http://bio2rdf.org/pdb:> " +
+		String queryString = 
+			"PREFIX pdb: <http://bio2rdf.org/pdb:> " +
     		"CONSTRUCT { ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
     		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 . " +
     		" ?x5 <http://purl.org/dc/terms/isPartOf> ?x4 . " +
@@ -156,7 +172,7 @@ public class HelixRDFCreator {
 
 	private static ResIterator getFirstAA( PdbRdfModel model) {
 		PdbRdfModel construct = new PdbRdfModel();
-		/* i search for all amino acids (AA) that have a successor
+		/* i look for all amino acids (AA) that have a successor
 		 * but do not have a predecessor -> it's the first AA of every
 		 * polypeptide chain
 		 */
@@ -179,64 +195,81 @@ public class HelixRDFCreator {
 
 	private static void createPositivesAndNegatives(ResIterator riter, PdbRdfModel model) {
 		
-		// Properties i have to use to check for while going through the AA-chain
+		// Properties i have to check for while going through the AA-chain
 		Property iib = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "isImmediatelyBefore");
 		Property ba = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "beginsAt");
 		Property ea = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "endsAt");
 		ArrayList<Resource> pos = new ArrayList<Resource>();
 		ArrayList<Resource> neg = new ArrayList<Resource>();
 		
-		
+		// every element in riter stands for a AA-chain start
 		// every first amino acid indicates a new AA-chain 
 		while (riter.hasNext()) {
 			// Initialization of variables needed
 			Resource aaOne = riter.nextResource();
-			Resource obj  = aaOne;
-			Resource nobj = aaOne;
+			Resource currentaa  = aaOne;
+			Resource nextaa = aaOne;
 			boolean inHelix = false;
 						
 			// look if there is a next AA
 			do {
 				// looks weird, but is needed to enter loop even for the last AA which does not have a iib-Property
-				obj = nobj;
+				currentaa = nextaa;
 				// die Guten ins Töpfchen ...
 				// if we get an non-empty iterator for pdb:beginsAt the next AAs are within a AA-chain
-				if(model.listResourcesWithProperty(ba, obj).hasNext() && !inHelix ){
+				if(model.listResourcesWithProperty(ba, currentaa).hasNext() && !inHelix ){
 					inHelix = true;
 					System.out.println("Entering Helix!");
 				}
 				// die Schlechten ins Kröpfchen
 				// if we get an non-empty iterator for pdb:endsAt and are already within a AA-chain
 				// the AAs AFTER the current ones aren't within a helix
-				if (model.listResourcesWithProperty(ea, obj).hasNext() && inHelix){
+				if (model.listResourcesWithProperty(ea, currentaa).hasNext() && inHelix){
 					inHelix = false;
 					System.out.println("Leaving Helix!");
 				}
 				// get next AA if there is one
-				if (model.listObjectsOfProperty(obj, iib).hasNext()){
-					nobj = model.getProperty(obj, iib).getResource();
+				if (model.listObjectsOfProperty(currentaa, iib).hasNext()){
+					nextaa = model.getProperty(currentaa, iib).getResource();
 				}
 				
 				// do something different if we are in a helix
 				if (inHelix){
-					pos.add(obj);
-					System.out.println(obj.getURI() + " " + iib.getURI() + " " + nobj.getURI() + " we are in!");
+					pos.add(currentaa);
+					System.out.println(currentaa.getURI() + " " + iib.getURI() + " " + nextaa.getURI() + " we are in!");
 				} else {
-					neg.add(obj);
-					System.out.println(obj.getURI() + " " + iib.getURI() + " " + nobj.getURI());
+					neg.add(currentaa);
+					System.out.println(currentaa.getURI() + " " + iib.getURI() + " " + nextaa.getURI());
 				}
 				
-			} while (obj.hasProperty(iib)) ;
+			} while (currentaa.hasProperty(iib)) ;
 		}
 		positives = pos;
 		negatives = neg;
 	}
 	
-	private static void createConfFile(){
+	private static PdbRdfModel removeStatementsWithPoperty(PdbRdfModel model, Property prop){
+				
+		String queryString = 
+			"PREFIX pdb: <http://bio2rdf.org/pdb:> " +
+    		"CONSTRUCT { ?x1 pdb:" + prop.getLocalName() + " ?x2 . } " +
+    		"WHERE { ?x1 pdb:" + prop.getLocalName() + " ?x2 . }";
+		System.out.println(queryString);
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+    	StmtIterator stmtiter = qe.execConstruct().listStatements(); 
+    	qe.close();
+    	while(stmtiter.hasNext()){
+    		model.remove(stmtiter.next());
+    	}
+    	
+    	return model;
+	}
+	
+	private static void createConfFile(String date){
 		try
     	{
-			SimpleDateFormat df = new SimpleDateFormat("_yyyy_MM_dd");
-			String filename = "pdb" + df.format(new Date()) + ".conf";
+			String filename = "pdb" + date + ".conf";
 			PrintStream out = new PrintStream (new File(filename));
 			
 			out.println("import(\"AA_properties.owl\");");
