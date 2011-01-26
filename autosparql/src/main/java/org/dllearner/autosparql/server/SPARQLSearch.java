@@ -3,18 +3,17 @@ package org.dllearner.autosparql.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aksw.commons.util.strings.BifContains;
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
-
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class SPARQLSearch {
 	
@@ -28,6 +27,7 @@ public class SPARQLSearch {
 	}
 	
 	public List<Example> searchFor(String searchTerm, SparqlEndpoint endpoint, int limit, int offset){
+		searchTerm = new BifContains(searchTerm).makeWithAnd();
 		logger.info("Searching for term: " + searchTerm);
 		List<Example> searchResult = new ArrayList<Example>();
 		
@@ -102,8 +102,8 @@ public class SPARQLSearch {
 		sb.append("SELECT distinct(?object) ?label ?imageURL ?comment WHERE {\n");
 		sb.append("?object a ?class.\n");
 		sb.append("?object <").append(RDFS.label).append("> ?label.\n");
-		sb.append("?label bif:contains \"").append(searchTerm).append("\".\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?label), \"en\"))\n");
+		sb.append("FILTER(bif:contains(?label, '" + searchTerm + "'))\n");
 		sb.append("OPTIONAL{?object <http://dbpedia.org/ontology/thumbnail> ?imageURL.}\n");
 		sb.append("OPTIONAL{?object <").append(RDFS.comment).append("> ?comment.\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?comment), \"en\"))}");

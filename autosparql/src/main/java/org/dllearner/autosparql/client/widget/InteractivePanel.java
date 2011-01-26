@@ -185,6 +185,7 @@ public class InteractivePanel extends ContentPanel {
 	}
 	
 	public void setExample(Example example){
+		examplesStore.removeAll();
 		examplesStore.add(example);
 	}
 	
