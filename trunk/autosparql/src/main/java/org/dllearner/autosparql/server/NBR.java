@@ -592,6 +592,11 @@ public class NBR<N> {
 		return gens;
 	}
 	
+	/**
+	 * Computing the allowed generalisations, i.e. we traverse the tree from the root depths first. For the current considered node n 
+	 * if the label of the parent node is a "?" and n is a resource node, we can replace it with "?", and if the current node n is a "?"
+	 * and a leaf node, it can be removed. 
+	 */
 	private List<GeneralisedQueryTree<N>> computeAllowedGeneralisations(GeneralisedQueryTree<N> tree, QueryTreeChange lastChange){
 		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
 		

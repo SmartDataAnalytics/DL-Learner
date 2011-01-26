@@ -12,6 +12,20 @@ import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 
+/**
+ * This class can be used to simplify a query tree. In general we use it after the LGG is computed, 
+ * because the tree of the LGG can be further simplified (only as approximation) by using 
+ * the negative trees. In particular there are currently 2 simplifications:
+ * 
+ * 1: 
+ * If for a node n_1 there exists a path from n_1 to a node n_2 over the edge p, which is also contained
+ * in every other tree, then we can generalise n_2 if it is a resource or remove n_2 if it is a variable.
+ * 
+ * 2:
+ * If from a node n_1 there exists to edges p_1 and p_2 which always occur together in other trees
+ * we can remove one edge.
+ * 
+ */
 public class PostLGG<N> {
 	
 	private static final Logger logger = Logger.getLogger(PostLGG.class);

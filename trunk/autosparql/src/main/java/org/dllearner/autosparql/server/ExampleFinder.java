@@ -57,6 +57,8 @@ public class ExampleFinder {
 	
 	private boolean makeAlwaysNBR = false;
 	
+	private static final int MAX_NBR_COMPUTING_TIME = 100;
+	
 	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
@@ -70,6 +72,7 @@ public class ExampleFinder {
 		queryGen = new SPARQLQueryGeneratorCachedImpl(new GreedyNBRStrategy<String>());
 		lggGen = new LGGGeneratorImpl<String>();
 		nbrGen = new NBR<String>(endpoint, selectCache, constructCache);
+		nbrGen.setMaxExecutionTimeInSeconds(MAX_NBR_COMPUTING_TIME);
 //		queryGen = new SPARQLQueryGeneratorCachedImpl(new BruteForceNBRStrategy());
 	}
 	
@@ -346,10 +349,15 @@ public class ExampleFinder {
 		resources.addAll(posExamples);
 		resources.addAll(negExamples);
 		
-		NBR<String> nbr = new NBR<String>(endpoint, selectCache, constructCache);
-//		nbr.getQuestion(lgg, negExamplesTrees, resources);
-		Example example = nbr.makeNBR(resources, lgg, negExamplesTrees);
-		currentQuery = nbr.getQuery();
+		Example example = null;
+		try {
+			example = nbrGen.getQuestion(lgg, negExamplesTrees, resources);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+		System.out.println(example);
+//		Example example = nbr.makeNBR(resources, lgg, negExamplesTrees);
+		currentQuery = nbrGen.getQuery();
 		return example;
 		
 	}
