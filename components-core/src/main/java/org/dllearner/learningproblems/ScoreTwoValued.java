@@ -54,6 +54,7 @@ public class ScoreTwoValued extends ScorePosNeg {
 		this(0,0,posAsPos,posAsNeg,negAsPos,negAsNeg);
 	}    
     
+	@Deprecated
 	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
     	this.conceptLength = conceptLength;
     	this.percentPerLengthUnit = percentPerLengthUnit;
@@ -65,6 +66,21 @@ public class ScoreTwoValued extends ScorePosNeg {
 		computeScore();
 	}
 	
+	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg, double accuracy) {
+    	this.conceptLength = conceptLength;
+    	this.percentPerLengthUnit = percentPerLengthUnit;
+		this.posAsPos = posAsPos;
+		this.posAsNeg = posAsNeg;
+		this.negAsPos = negAsPos;
+		this.negAsNeg = negAsNeg;
+		nrOfExamples = posAsPos.size()+posAsNeg.size()+negAsPos.size()+negAsNeg.size();
+		this.accuracy = accuracy;
+		score = accuracy - 1 - percentPerLengthUnit * conceptLength;
+	}
+	
+	// score should not be computed within this class anymore, but directly within learning problem (to support
+	// different functions like predictive accuracy, F-measure etc.)
+	@Deprecated
 	private void computeScore() {
 		// compute accuracy
 		accuracy = posAsPos.size() + negAsNeg.size();

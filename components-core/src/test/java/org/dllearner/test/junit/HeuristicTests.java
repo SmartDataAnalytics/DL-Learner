@@ -183,25 +183,16 @@ public class HeuristicTests {
 			kb.addAxiom(new ClassAssertionAxiom(Thing.instance,ind[i]));
 		}
 		
-		// A0 has 20 instances (i0 to i19) 
-		for(int i=0; i<20; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[i]));
-		}
+		// A0
+		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[0]));
+		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[1]));
+		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[5]));
 		
-		// A1 has 20 instances (i10 to i29)
-		for(int i=10; i<30; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[i]));
-		}
-		
-		// A2 has 40 instances (i10 to i49)
-		for(int i=10; i<50; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[2],ind[i]));
-		}		
-		
-		// A3 has 5 instances (i8 to i12)
-		for(int i=8; i<13; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[3],ind[i]));
-		}
+		// A1
+		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[0]));
+		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[1]));
+		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[2]));
+		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[5]));
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource ks = new KBFile(kb);
@@ -210,11 +201,22 @@ public class HeuristicTests {
 		ks.init();
 		reasoner.init();		
 		
-		Individual[] pos1 = new Individual[] {ind[1], ind[2]};
-		Individual[] neg1 = new Individual[] {ind[3], ind[4]};
+		Individual[] pos1 = new Individual[] {ind[0], ind[1], ind[2], ind[3], ind[4]};
+		Individual[] neg1 = new Individual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
+		
+		// F-Measure and no approximations
 		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, "fmeasure", false);
 		
-		// TODO: continue
+		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
+		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
+//		System.out.println(problem.getFMeasureOrTooWeakExact(nc[0], 1));
+//		System.out.println(problem.getFMeasureOrTooWeakExact(nc[1], 1));
+		
+		// F-Measure and approximations
+		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, "fmeasure", true);
+		
+		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
+		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
 	}
 	
 	
@@ -254,6 +256,13 @@ public class HeuristicTests {
 	// the class learning problem provides several ways to get the accuracy of a description, this method
 	// tests all of those
 	private static void assertEqualsClassLP(ClassLearningProblem problem, Description description, double accuracy) {
+		assertEquals(accuracy, problem.getAccuracy(description), delta);
+		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
+		assertEquals(accuracy, problem.computeScore(description).getAccuracy(), delta);
+		assertEquals(accuracy, problem.evaluate(description).getAccuracy(), delta);
+	}
+	
+	private static void assertEqualsPosNegLPStandard(PosNegLPStandard problem, Description description, double accuracy) {
 		assertEquals(accuracy, problem.getAccuracy(description), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
 		assertEquals(accuracy, problem.computeScore(description).getAccuracy(), delta);

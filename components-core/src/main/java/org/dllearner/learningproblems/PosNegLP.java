@@ -89,9 +89,9 @@ public abstract class PosNegLP extends LearningProblem {
 		options.add(new StringSetConfigOption("negativeExamples",
 				"negative examples",null, true, false));
 		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
-				"Specifies whether to use retrieval or instance checks for testing a concept.", false));
+				"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.", false));
 		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
-		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum.","twoChecks");
+		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum. - NO LONGER FULLY SUPPORTED.","twoChecks");
 		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
 		options.add(multiInstanceChecks);
 		return options;
