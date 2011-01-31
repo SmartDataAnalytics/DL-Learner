@@ -23,6 +23,8 @@ import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -37,8 +39,12 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.KBFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.Helper;
 import org.junit.Test;
+
+import scala.actors.threadpool.Arrays;
 
 /**
  * Tests for various heuristics employed in learning problems.
@@ -159,6 +165,60 @@ public class HeuristicTests {
 	}
 	
 	@Test
+	public void posNegLPLearningTests() throws ComponentInitException {
+		// create artificial ontology
+		KB kb = new KB();
+		String ns = "http://dl-learner.org/junit/";
+		NamedClass[] nc = new NamedClass[5];
+		for(int i=0; i<5; i++) {
+			nc[i] = new NamedClass(ns + "A" + i);
+		}
+		Individual[] ind = new Individual[100];
+		for(int i=0; i<100; i++) {
+			ind[i] = new Individual(ns + "i" + i);
+		}
+		
+		// assert individuals to owl:Thing (such that they exist in the knowledge base)
+		for(int i=0; i<100; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(Thing.instance,ind[i]));
+		}
+		
+		// A0 has 20 instances (i0 to i19) 
+		for(int i=0; i<20; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[i]));
+		}
+		
+		// A1 has 20 instances (i10 to i29)
+		for(int i=10; i<30; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[i]));
+		}
+		
+		// A2 has 40 instances (i10 to i49)
+		for(int i=10; i<50; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(nc[2],ind[i]));
+		}		
+		
+		// A3 has 5 instances (i8 to i12)
+		for(int i=8; i<13; i++) {
+			kb.addAxiom(new ClassAssertionAxiom(nc[3],ind[i]));
+		}
+		
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource ks = new KBFile(kb);
+		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		PosNegLPStandard problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		ks.init();
+		reasoner.init();		
+		
+		Individual[] pos1 = new Individual[] {ind[1], ind[2]};
+		Individual[] neg1 = new Individual[] {ind[3], ind[4]};
+		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, "fmeasure", false);
+		
+		// TODO: continue
+	}
+	
+	
+	@Test
 	public void approximationTests() {
 		// perform F-Measure example in ontology engineering paper, which was computed on paper
 		double[] approx1 = Heuristics.getFScoreApproximation(800, 0.8, 1, 10000, 41, 31);
@@ -226,4 +286,19 @@ public class HeuristicTests {
 		problem.init();		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, Individual[] positiveExamples, Individual[] negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
+		Set<Individual> s1 = new TreeSet<Individual>(Arrays.asList(positiveExamples));
+		Set<Individual> s2 = new TreeSet<Individual>(Arrays.asList(negativeExamples));
+		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod, useApproximations);
+	}
+	
+	// convencience method to set the learning problem to a desired configuration (approximations disabled)
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<Individual> positiveExamples, Set<Individual> negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
+		problem.getConfigurator().setPositiveExamples(Helper.getStringSet(positiveExamples)); 
+		problem.getConfigurator().setNegativeExamples(Helper.getStringSet(negativeExamples));
+		problem.getConfigurator().setAccuracyMethod(accuracyMethod);
+		problem.getConfigurator().setUseApproximations(useApproximations);
+		problem.init();		
+	}	
 }
