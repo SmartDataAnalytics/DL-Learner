@@ -313,18 +313,7 @@ public class PosNegLPStandard extends PosNegLP {
 	@Override
 	public double getAccuracyOrTooWeak(Description description, double noise) {	
 		// delegates to the appropriate methods
-		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);			
-		/*
-		if(useApproximations) {
-			if(useFMeasure) {
-				return getFMeasureOrTooWeakApprox(description, noise);
-			} else {
-				throw new Error("approximating pred. acc not implemented");
-			}
-		} else {
-			return getPredAccuracyOrTooWeakExact(description, noise);
-		}	
-		*/		
+		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);				
 	}	
 	
 	public double getAccuracyOrTooWeakApprox(Description description, double noise) {
@@ -386,6 +375,8 @@ public class PosNegLPStandard extends PosNegLP {
 			return ret;
 					
 		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+			System.out.println("Testing " + description);
+			
 			// we abort when there are too many uncovered positives
 			int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 			int instancesCovered = 0;
@@ -437,6 +428,8 @@ public class PosNegLPStandard extends PosNegLP {
 		if(heuristic.equals(HeuristicType.PRED_ACC)) {
 			return getPredAccuracyOrTooWeakExact(description, noise);
 		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+			return getFMeasureOrTooWeakExact(description, noise);
+			/*
 			// computing R(C) restricted to relevant instances
 			int additionalInstances = 0;
 			for(Individual ind : negativeExamples) {
@@ -457,6 +450,7 @@ public class PosNegLPStandard extends PosNegLP {
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);			
 			
 			return Heuristics.getFScore(recall, precision);
+			*/
 		} else {
 			throw new Error("Heuristic " + heuristic + " not implemented.");
 		}		
@@ -518,7 +512,8 @@ public class PosNegLPStandard extends PosNegLP {
 		
 		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 		
-		return getFMeasure(recall, precision);		
+//		return getFMeasure(recall, precision);
+		return Heuristics.getFScore(recall, precision);		
 	}
 	
 	// instead of using the standard operation, we use optimisation
