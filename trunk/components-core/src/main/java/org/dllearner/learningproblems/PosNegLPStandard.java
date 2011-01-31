@@ -61,6 +61,7 @@ public class PosNegLPStandard extends PosNegLP {
 	private double approxDelta = 0.05;
 	private boolean useApproximations;
 //	private boolean useFMeasure;	
+	private boolean useOldDIGOptions = false;
 	
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 	
@@ -218,6 +219,9 @@ public class PosNegLPStandard extends PosNegLP {
 	 * to implement TWO_CHECKS in this function, because we have to test all
 	 * examples to create a score object anyway).
 	 * 
+	 * NOTE: The options above are no longer supported, because of interface changes (the options
+	 * are more or less only relevant in combination with DIG).
+	 * 
 	 * @see org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks
 	 * @param concept
 	 *            The concept to test.
@@ -225,63 +229,92 @@ public class PosNegLPStandard extends PosNegLP {
 	 */
 	@Override
 	public ScorePosNeg computeScore(Description concept) {
-		if (useRetrievalForClassification) {
-			SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
-			SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
-			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
-			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
+		if(useOldDIGOptions) {
+			if (useRetrievalForClassification) {
+				SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
+				SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
+				SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
+				SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
 
-			// piecewise set construction
-			for (Individual posExample : positiveExamples) {
-				if (!posClassified.contains(posExample))
-					posAsNeg.add(posExample);
+				// piecewise set construction
+				for (Individual posExample : positiveExamples) {
+					if (!posClassified.contains(posExample))
+						posAsNeg.add(posExample);
+				}
+				SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
+				for (Individual negExample : negativeExamples) {
+					if (!posClassified.contains(negExample))
+						negAsNeg.add(negExample);
+				}
+				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
+			// instance checks for classification
+			} else {		
+				SortedSet<Individual> posAsPos = new TreeSet<Individual>();
+				SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
+				SortedSet<Individual> negAsPos = new TreeSet<Individual>();
+				SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
+				
+				if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+					SortedSet<Individual> posClassified = reasoner.hasType(concept,
+							allExamples);
+					SortedSet<Individual> negClassified = Helper.difference(allExamples,
+							posClassified);
+					posAsPos = Helper.intersection(positiveExamples, posClassified);
+					posAsNeg = Helper.intersection(positiveExamples, negClassified);
+					negAsPos = Helper.intersection(negativeExamples, posClassified);
+					negAsNeg = Helper.intersection(negativeExamples, negClassified);
+					
+					// System.out.println("pos classified: " + posClassified);
+					
+					return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
+							negAsNeg);
+				} else {
+					
+					for (Individual example : positiveExamples) {
+						if (reasoner.hasType(concept, example)) {
+							posAsPos.add(example);
+						} else {
+							posAsNeg.add(example);
+						}
+					}
+					for (Individual example : negativeExamples) {
+						if (reasoner.hasType(concept, example))
+							negAsPos.add(example);
+						else
+							negAsNeg.add(example);
+					}
+					return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
+							negAsNeg);
+				}
 			}
-			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
-			for (Individual negExample : negativeExamples) {
-				if (!posClassified.contains(negExample))
-					negAsNeg.add(negExample);
-			}
-			return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
-		// instance checks for classification
-		} else {		
+		} else {
+			
 			SortedSet<Individual> posAsPos = new TreeSet<Individual>();
 			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
 			SortedSet<Individual> negAsPos = new TreeSet<Individual>();
 			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
 			
-			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
-				SortedSet<Individual> posClassified = reasoner.hasType(concept,
-						allExamples);
-				SortedSet<Individual> negClassified = Helper.difference(allExamples,
-						posClassified);
-				posAsPos = Helper.intersection(positiveExamples, posClassified);
-				posAsNeg = Helper.intersection(positiveExamples, negClassified);
-				negAsPos = Helper.intersection(negativeExamples, posClassified);
-				negAsNeg = Helper.intersection(negativeExamples, negClassified);
-				
-				// System.out.println("pos classified: " + posClassified);
-				
-				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
-						negAsNeg);
-			} else {
-				
-				for (Individual example : positiveExamples) {
-					if (reasoner.hasType(concept, example)) {
-						posAsPos.add(example);
-					} else {
-						posAsNeg.add(example);
-					}
+			for (Individual example : positiveExamples) {
+				if (reasoner.hasType(concept, example)) {
+					posAsPos.add(example);
+				} else {
+					posAsNeg.add(example);
 				}
-				for (Individual example : negativeExamples) {
-					if (reasoner.hasType(concept, example))
-						negAsPos.add(example);
-					else
-						negAsNeg.add(example);
-				}
-				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
-						negAsNeg);
 			}
+			for (Individual example : negativeExamples) {
+				if (reasoner.hasType(concept, example))
+					negAsPos.add(example);
+				else
+					negAsNeg.add(example);
+			}
+			
+			// TODO: this computes accuracy twice - more elegant method should be implemented 
+			double accuracy = getAccuracyOrTooWeakExact(concept,1);
+			
+			return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
+						negAsNeg, accuracy);
 		}
+
 	}
 
 	/* (non-Javadoc)
