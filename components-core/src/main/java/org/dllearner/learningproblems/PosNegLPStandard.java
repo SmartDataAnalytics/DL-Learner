@@ -375,7 +375,7 @@ public class PosNegLPStandard extends PosNegLP {
 			return ret;
 					
 		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
-			System.out.println("Testing " + description);
+//			System.out.println("Testing " + description);
 			
 			// we abort when there are too many uncovered positives
 			int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
