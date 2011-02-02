@@ -139,13 +139,13 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
-		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
+//		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir));
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	
 	private AutoSPARQLSession getAutoSPARQLSession(){
-		logger.info("Loading AutoSPARQL user session object form HTTPSession(" + getSession().getId() + ")");
+//		logger.info("Loading AutoSPARQL user session object form HTTPSession(" + getSession().getId() + ")");
 		return (AutoSPARQLSession) getSession().getAttribute(AUTOSPARQL_SESSION);
 	}
 	
