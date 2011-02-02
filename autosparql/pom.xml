@@ -13,6 +13,12 @@
 	<packaging>war</packaging>
 	<name>AutoSPARQL</name>
 
+	<repositories>
+		<repository>
+			<id>Simmetrics</id>
+			<url>http://maven.mse.jhu.edu/m2repository/</url>
+		</repository>
+	</repositories>
 	<dependencies>
 
 		<!-- GWT dependencies (from central repo) -->
@@ -93,6 +99,74 @@
 			<groupId>org.ini4j</groupId>
 			<artifactId>ini4j</artifactId>
 		</dependency>
+		
+		
+		<!-- Jars for SIMBA stuff from Axel -->
+		
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>3.0.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.ac.shef.wit</groupId>
+			<artifactId>simmetrics</artifactId>
+			<version>1.6.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>stax</groupId>
+			<artifactId>stax-api</artifactId>
+			<version>1.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>woodstox</groupId>
+			<artifactId>wstx-api</artifactId>
+			<version>3.2.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	<dependency>
+		<groupId>edu.stanford</groupId>
+		<artifactId>postagger</artifactId>
+		<version>0.9.2</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/lib/stanford-postagger-2010-05-21.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>lbj</groupId>
+		<artifactId>library</artifactId>
+		<version>0.9.2</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/lib/LBJ2Library.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>lbj</groupId>
+		<artifactId>core</artifactId>
+		<version>0.9.2</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/lib/LBJ2.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>lbj</groupId>
+		<artifactId>ner</artifactId>
+		<version>0.9.2</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/lib/LbjNerTagger.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>jaws</groupId>
+		<artifactId>core</artifactId>
+		<version>0.9.2</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/lib/jaws-bin.jar</systemPath>
+	</dependency>
+		
 	</dependencies>
 
 	<build>
