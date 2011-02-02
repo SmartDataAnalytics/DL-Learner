@@ -29,12 +29,15 @@ public class AutoSPARQLSession {
 	private ExtractionDBCache selectCache;
 	private ExampleFinder exampleFinder;
 	
-	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir){
+	private String servletContextPath;
+	
+	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath){
 		this.endpoint = endpoint;
+		this.servletContextPath = servletContextPath;
 		
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
-		search = new SPARQLSearch(selectCache);
+		search = new SPARQLSearch(selectCache, servletContextPath);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 	}
 	

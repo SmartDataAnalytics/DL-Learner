@@ -41,6 +41,7 @@ public class QueryProcessor {
     TreeSet<String> nouns;
     WordnetQuery wnq;
     private boolean expansion = true;
+    
     public QueryProcessor(String _modelPath) {
         wnq = new WordnetQuery("src/main/resources/de/simba/ner/dictionary");
         try {
@@ -54,10 +55,10 @@ public class QueryProcessor {
         }
     }
 
-    public QueryProcessor(String _modelPath, String _endPoint) {
+    public QueryProcessor(String _modelPath, String _endPoint, String wordnetDictionaryPath) {
         endPoint = _endPoint;
 //        wnq = new WordnetQuery("D:\\Work\\Tools\\WordNetDict");
-        wnq = new WordnetQuery("src/main/resources/de/simba/ner/dictionary");
+        wnq = new WordnetQuery(wordnetDictionaryPath);
         try {
             tagger = new MaxentTagger(_modelPath);
             PatternLayout layout = new PatternLayout("%d{dd.MM.yyyy HH:mm:ss} %-5p [%t] %c: %m%n");
@@ -68,6 +69,7 @@ public class QueryProcessor {
             e.printStackTrace();
         }
     }
+    
 
     /** Get nouns from the string s
      *
@@ -186,7 +188,7 @@ public class QueryProcessor {
             if(relatedUri.startsWith("http://dbpedia.org"))
                 result.add(relatedUri);
         }
-        logger.info("********\nUri related to " + uri + "\n" + result + "*******\n\n");
+//        logger.info("********\nUri related to " + uri + "\n" + result + "*******\n\n");
         return result;
     }
 
@@ -364,8 +366,8 @@ public class QueryProcessor {
         expansion = setting;
     }
     public static void main(String[] args) {
-        QueryProcessor qp = new QueryProcessor("src/main/resources/de/simba/ner/models/left3words-wsj-0-18.tagger",
-                "http://live.dbpedia.org/sparql");
+        QueryProcessor qp = new QueryProcessor("src/main/resources/",
+                "http://live.dbpedia.org/sparql", "src/main/resources/");
         String query = "Universities in sachsen";
         qp.setSynonymExpansion(true);
         System.out.println(qp.runQuery(query));

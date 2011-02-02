@@ -1,17 +1,12 @@
 package org.dllearner.autosparql.server;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -27,8 +22,6 @@ import org.ini4j.Ini;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.google.gwt.user.server.rpc.SerializationPolicy;
-import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
 
 public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLService{
 
@@ -140,7 +133,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
 //		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
-		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir));
+		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir), getServletContext().getRealPath(""));
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	

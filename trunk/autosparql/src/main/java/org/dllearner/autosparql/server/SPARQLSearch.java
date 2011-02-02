@@ -30,16 +30,19 @@ public class SPARQLSearch {
 	private Map<String, Integer> relatedResources;
 	private String lastQuery = "";
 	
-	public SPARQLSearch(ExtractionDBCache cache){
+	private String servletContextPath;
+	
+	public SPARQLSearch(ExtractionDBCache cache, String servletContextPath){
 		this.cache = cache;
+		this.servletContextPath = servletContextPath;
 	}
 	
 	public List<Example> searchFor(String query, SparqlEndpoint endpoint, int limit, int offset){
 		List<Example> searchResult = new ArrayList<Example>();
 		
 		if(!query.equals(lastQuery)){
-			QueryProcessor qp = new QueryProcessor("src/main/resources/de/simba/ner/models/left3words-wsj-0-18.tagger",
-			endpoint.getURL().toString());
+			QueryProcessor qp = new QueryProcessor(servletContextPath + "WEB-INF/classes/de/simba/ner/models/left3words-wsj-0-18.tagger",
+			endpoint.getURL().toString(), servletContextPath + "WEB-INF/classes/de/simba/ner/dictionary");
 			qp.setSynonymExpansion(false);
 			qp.runQuery(query);
 			relatedResources = qp.getRelatedResources();

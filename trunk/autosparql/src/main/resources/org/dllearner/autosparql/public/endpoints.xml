@@ -11,6 +11,16 @@
 	</endpoint>
 	
 	<endpoint>
+		<url>http://db0.aksw.org:8999/sparql</url>
+		<label>DBpedia@DB0</label>
+		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
+		<predicateFilters>
+			<predicate>http://dbpedia.org/ontology/wikiPageWikiLink</predicate>
+			<predicate>http://dbpedia.org/property/</predicate>
+		</predicateFilters>
+	</endpoint>
+	
+	<endpoint>
 		<url>http://dbpedia.org/sparql/</url>
 		<label>DBpedia</label>
 		<defaultGraphURI>http://dbpedia.org</defaultGraphURI>
@@ -33,6 +43,13 @@
 		<url>http://linkedgeodata.org/sparql/</url>
 		<label>LinkedGeoData</label>
 		<defaultGraphURI>http://linkedgeodata.org</defaultGraphURI>
+		<predicateFilters/>
+	</endpoint>
+	
+	<endpoint>
+		<url>http://dbtune.org/musicbrainz/sparql</url>
+		<label>MusicBrainz</label>
+		<defaultGraphURI></defaultGraphURI>
 		<predicateFilters/>
 	</endpoint>
 	
