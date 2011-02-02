@@ -44,7 +44,7 @@ public class AutoSPARQLSession {
 			int offset = config.getOffset();
 			
 			List<Example> searchResult = search.searchFor(searchTerm, endpoint, limit, offset);
-			int totalLength = search.count(searchTerm, endpoint);
+			int totalLength = 100;//search.count(searchTerm, endpoint);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
 			result.setOffset(offset);
