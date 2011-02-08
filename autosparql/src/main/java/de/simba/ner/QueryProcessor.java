@@ -4,13 +4,6 @@
  */
 package de.simba.ner;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.*;
-import edu.stanford.nlp.ling.Sentence;
-import edu.stanford.nlp.ling.TaggedWord;
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import javatools.parsers.PlingStemmer;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,14 +12,28 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.hp.hpl.jena.query.*;
-import java.util.Iterator;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+
+import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
+
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.process.Morphology;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 /**
  *
@@ -94,12 +101,17 @@ public class QueryProcessor {
             List<ArrayList<? extends HasWord>> sentences = tagger.tokenizeText(new BufferedReader(new FileReader(temp)));
             for (ArrayList<? extends HasWord> sentence : sentences) {
                 ArrayList<TaggedWord> tSentence = tagger.tagSentence(sentence);
+                for(TaggedWord taWo : tSentence){
+                	System.out.println("Word:" + taWo.word() + " Tag: " + taWo.tag());
+                }
                 buffer = buffer + Sentence.listToString(tSentence, false);
             }
 
             logger.info("POS-tagged query = " + buffer);
             result = getNNs(buffer);
             //read strings
+            //stem words
+            result = getStemmedWords(result);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,8 +119,8 @@ public class QueryProcessor {
         return result;
     }
 
-    private HashMap<String, String> getMapFromSparql(String basicQuery) {
-        HashMap<String, String> result = new HashMap<String, String>();
+    private HashMap<String, SortedSet<String>> getMapFromSparql(String basicQuery) {
+        HashMap<String, SortedSet<String>> result = new HashMap<String, SortedSet<String>>();
         String query;
         boolean moreResults;
         int offset = 0;
@@ -117,19 +129,25 @@ public class QueryProcessor {
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endPoint, query);
             ResultSet results = qexec.execSelect();
 
-            if (results.hasNext()) {
-                moreResults = true;
-            } else {
-                moreResults = false;
-            }
+//            moreResults = results.hasNext();
+            
+            int cnt = 0;
             try {
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
-                    result.put(soln.get("?o").toString(), soln.get("?s").toString());
+                    String label = soln.get("o").asLiteral().getLexicalForm();
+                    SortedSet<String> resources = result.get(label);
+                    if(resources == null){
+                    	resources = new TreeSet<String>();
+                    	result.put(label, resources);
+                    }
+                    resources.add(soln.get("s").toString());
+                    cnt++;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            moreResults = (cnt == 1000);
             offset = offset + 1000;
         } while (moreResults);
 
@@ -149,20 +167,30 @@ public class QueryProcessor {
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endPoint, query);
             ResultSet results = qexec.execSelect();
 
-            moreResults = results.hasNext();
-            
+            int cnt = 0;
             try {
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
                     result.add(soln.get("?o").toString());
+                    cnt++;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            moreResults = cnt == 1000;
             offset = offset + 1000;
         } while (moreResults);
 
         return result;
+    }
+    
+    private TreeSet<String> getStemmedWords(TreeSet<String> words){
+    	TreeSet<String> stemmedWords = new TreeSet<String>();
+    	Morphology morpho = new Morphology();
+    	for(String w : words){
+    		stemmedWords.add(morpho.stem(w));
+    	}
+    	return stemmedWords;
     }
 
     /** Get all URIs that are related to the URI uri
@@ -173,7 +201,7 @@ public class QueryProcessor {
     private ArrayList<String> getRelatedUris(String uri) {
         TreeSet<String> uris;
         ArrayList<String> result = new ArrayList<String>();
-        String basicQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+        String basicQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " 
                 + "SELECT DISTINCT ?o "
                 + "WHERE {{<" + uri + "> ?p ?o } UNION {?o ?p <" + uri + ">} UNION {?o <" + uri + "> ?p}" +
                 "UNION {?p <" + uri + "> ?o}}";
@@ -197,7 +225,7 @@ public class QueryProcessor {
         entryCount = new HashMap<String, Integer>();
         int max = 0;
         int count;
-        ArrayList<String> uriList = new ArrayList(uris);
+        ArrayList<String> uriList = new ArrayList<String>(uris);
         logger.info("Threshold for frequency is "+nouns.size());
         //get all URIs that are related to the nouns found
         for (int i = 0; i < uriList.size(); i++) {
@@ -265,41 +293,35 @@ public class QueryProcessor {
      */
     private TreeSet<String> getURIs(String s) {
 
-        String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+        String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " 
+        		+ "PREFIX dbo: <http://www.dbpedia.org/ontology/>"
                 + "SELECT DISTINCT ?s ?o "
                 + "WHERE {?s rdfs:label ?o . "
                 + "?o <bif:contains> \"" + s.replaceAll(" ", "_") + "\"}";
 
-        String uri = "", label;
         AbstractStringMetric metric = new QGramsDistance();
         float max = 0, sim;
 
         TreeSet<String> results = new TreeSet<String>();
-        HashMap<String, String> labelToUri = getMapFromSparql(query);
+        HashMap<String, SortedSet<String>> labelToUris = getMapFromSparql(query);
 
-        logger.info("Found " + labelToUri.size() + " possible labels for " + s);
+        logger.info("Found " + labelToUris.size() + " possible labels for " + s);
         //logger.info(labelToUri);
 
-        TreeSet<String> cands = new TreeSet(labelToUri.keySet());
+        TreeSet<String> cands = new TreeSet<String>(labelToUris.keySet());
         Iterator<String> labels = cands.iterator();
-        String originalLabel;
+        String label;
         while (labels.hasNext()) {
-            originalLabel = labels.next();
-            //clear language information
-            if (originalLabel.contains("@")) {
-                label = originalLabel.substring(0, originalLabel.indexOf("@"));
-            } else {
-                label = originalLabel;
-            }
+            label = labels.next();
 
             //get best label
             sim = metric.getSimilarity(label.toLowerCase(), s.toLowerCase());
             if (sim > max) {
                 results = new TreeSet<String>();
-                results.add(labelToUri.get(originalLabel));
+                results.addAll(labelToUris.get(label));
                 max = sim;
             } else if (sim == max) {
-                results.add(labelToUri.get(originalLabel));
+                results.addAll(labelToUris.get(label));
             }
         }
 
@@ -353,7 +375,7 @@ public class QueryProcessor {
      * @return
      */
     public HashMap<String, Integer> getRelatedResources() {
-        logger.info("Related resources are "+entryCount);
+//        logger.info("Related resources are "+entryCount);
         return entryCount;
     }
 
@@ -366,11 +388,13 @@ public class QueryProcessor {
         expansion = setting;
     }
     public static void main(String[] args) {
-        QueryProcessor qp = new QueryProcessor("src/main/resources/",
-                "http://live.dbpedia.org/sparql", "src/main/resources/");
-        String query = "Universities in sachsen";
-        qp.setSynonymExpansion(true);
+//    	String endpoint = "http://dbpedia.org/sparql";
+    	String endpoint = "http://live.dbpedia.org/sparql";
+        QueryProcessor qp = new QueryProcessor("src/main/resources/de/simba/ner/models/left3words-wsj-0-18.tagger",
+                endpoint, "src/main/resources/de/simba/ner/dictionary");
+        String query = "Cities in Saxony";
+        qp.setSynonymExpansion(false);
         System.out.println(qp.runQuery(query));
-        System.out.println(qp.getRelatedResources());
+//        System.out.println(qp.getRelatedResources());
     }
 }

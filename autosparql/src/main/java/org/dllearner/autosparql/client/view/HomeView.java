@@ -20,12 +20,16 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class HomeView extends View {
 	
@@ -34,10 +38,12 @@ public class HomeView extends View {
 	public static final String VIEWPORT = "viewport";
 	
 	private LayoutContainer container;
-        private HtmlContainer intro;
-        private HtmlContainer page;
-        private HtmlContainer maincontent;
-        private HtmlContainer sidecontent;
+	private HtmlContainer intro;
+	private HtmlContainer page;
+	private HtmlContainer maincontent;
+	private HtmlContainer sidecontent;
+
+	private TextField<String> queryField;
 	
 	public HomeView(Controller controller) {
 		super(controller);
@@ -76,6 +82,9 @@ public class HomeView extends View {
                             "Watch the screencast, or test it to see how it works:</strong></p>"+
                         "</div>"+
                         "<div id=demo-selector>"+
+	                        "<div id=demo-selector-query>"+
+	                        "</div>"+
+	                        "<div class=target>@</div>" +
                             "<div id=demo-selector-endpoints>"+
                             "</div>"+
                             "<div id=demo-selector-button>"+
@@ -84,8 +93,23 @@ public class HomeView extends View {
                     "</div>");
 
                 intro.add(new Image("logo-dl.png"), "#demo-intro-logo");
+                queryField = new TextField<String>();
+                queryField.setWidth(150);
+                queryField.setEmptyText("Enter your query");
+                intro.add(queryField, "#demo-selector-query");
                 intro.add(createEndpointSelector(), "#demo-selector-endpoints");
-                intro.add(new Hyperlink("Learn Query", HistoryTokens.QUERY), "#demo-selector-button");
+                Hyperlink link = new Hyperlink("Learn Query", HistoryTokens.QUERY);
+               link.addClickListener(new ClickListener() {
+				
+				@Override
+				public void onClick(Widget sender) {
+					System.out.println(queryField.getValue());
+					Registry.register("Query", queryField.getValue());
+					System.out.println(Registry.get("Query"));
+					
+				}
+               });
+                intro.add(link, "#demo-selector-button");
 
                 // maincontent
                 maincontent = new HtmlContainer(
@@ -167,6 +191,7 @@ public class HomeView extends View {
 	    	
 			@Override
 			public void selectionChanged(SelectionChangedEvent<Endpoint> se) {
+				Registry.register("ENDPOINT", se.getSelectedItem().get("label"));
 				SPARQLService.Util.getInstance().setEndpoint(se.getSelectedItem(), new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {

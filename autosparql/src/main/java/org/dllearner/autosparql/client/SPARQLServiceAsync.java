@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client;
 
 import java.util.List;
 
+import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 
@@ -17,6 +18,10 @@ public interface SPARQLServiceAsync
      * @see org.dllearner.autosparql.client.SPARQLService
      */
     void getSearchResult(String searchTerm, PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback );
+    
+    void getQueryResult(String query, PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);
+	
+	void getNextQueryResult(String query, AsyncCallback<Example> callback);
 
     void getSimilarExample(List<String> posExamples, List<String> negExamples, AsyncCallback<Example> callback);
     

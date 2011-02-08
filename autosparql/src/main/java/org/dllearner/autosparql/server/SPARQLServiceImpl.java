@@ -82,6 +82,20 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	@Override
+	public PagingLoadResult<Example> getQueryResult(String query,
+			PagingLoadConfig config) throws AutoSPARQLException {
+		logger.info("Searching for " + query + "(" + getSession().getId() + ")");
+		return getAutoSPARQLSession().getQueryResult(query, config);
+	}
+
+	@Override
+	public Example getNextQueryResult(String query)
+			throws AutoSPARQLException {
+		logger.info("Searching for " + query + "(" + getSession().getId() + ")");
+		return getAutoSPARQLSession().getNextQueryResult(query);
+	}
+	
+	@Override
 	public Example getSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException{
 		return getAutoSPARQLSession().getSimilarExample(posExamples, negExamples);
@@ -150,6 +164,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public String getMessage() {
 		return "";
 	}
+
 	
 //	protected SerializationPolicy doGetSerializationPolicy(
 //			HttpServletRequest request, String moduleBaseURL, String strongName) {

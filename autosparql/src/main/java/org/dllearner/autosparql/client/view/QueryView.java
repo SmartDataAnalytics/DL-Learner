@@ -57,10 +57,11 @@ public class QueryView extends View {
 	    dummyPanel = new LayoutContainer(new FitLayout());
 	    vPanel.add(dummyPanel, new RowData(1, 0.2, new Margins(0, 0, 10, 0)));
 	    
-	    infoPanel = new InfoPanel();
-	    dummyPanel.add(infoPanel);
+//	    infoPanel = new InfoPanel();
+//	    dummyPanel.add(infoPanel);
 	    
 	    interactivePanel = new InteractivePanel();
+	    dummyPanel.add(interactivePanel);
 	    
 	    searchPanel = new SearchPanel();
 	    vPanel.add(searchPanel, new RowData(1, 0.8, new Margins(5, 0, 0, 0)));
@@ -84,6 +85,22 @@ public class QueryView extends View {
 		      wrapper.layout();
 		      RootPanel.get().addStyleName("query_view");
 		      RootPanel.get().removeStyleName("home_view");
+		      interactivePanel.mask("Computing examples related to query...");
+		      SPARQLService.Util.getInstance().getNextQueryResult((String)Registry.get("Query"), new AsyncCallback<Example>() {
+							
+							@Override
+							public void onSuccess(Example result) {
+								interactivePanel.setExample(result);
+								interactivePanel.unmask();
+							}
+							
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+								
+							}
+						});
+			
 		      return;
 		} else if(event.getType() == AppEvents.AddPosExample){
 			examplesPanel.addPositiveExample((Example) event.getData());

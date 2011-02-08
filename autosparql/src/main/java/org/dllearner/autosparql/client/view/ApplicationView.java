@@ -11,10 +11,14 @@ import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.HtmlContainer;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.Viewport;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -28,6 +32,11 @@ public class ApplicationView extends View {
 
 	  private Viewport viewport;
 	  private LayoutContainer center;
+	  private LayoutContainer north;
+	  private HtmlContainer headerPanel;
+	  
+	  private String endpoint;
+	  private String query;
 
 	  public ApplicationView(Controller controller) {
 	    super(controller);
@@ -60,26 +69,49 @@ public class ApplicationView extends View {
 	  }
 
 	private void createNorth() {
-		LayoutContainer c = new LayoutContainer(new RowLayout(
+		north = new LayoutContainer(new RowLayout(
 				Orientation.VERTICAL));
 		StringBuffer sb = new StringBuffer();
 		sb.append("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
+		sb.append("<div id=demo-header-title>looks for</div>");
+		sb.append("<div id=demo-header-query>\"").append(Registry.get("Query")).append("\"</div>");
+		sb.append("<div id=demo-header-endpoint>@ ").append(endpoint).append("</div>");
 
-		HtmlContainer headerPanel = new HtmlContainer(sb.toString());
+		headerPanel = new HtmlContainer(sb.toString());
 		headerPanel.setStateful(false);
 		headerPanel.setId("demo-header");
 		//headerPanel.addStyleName("x-small-editor");
-
+		
 		final Image logo = new Image("logo-dl.png");
 		//logo.setHeight("30px");
 		headerPanel.add(logo, "#demo-header-logo");
 
-		c.add(headerPanel);
+//		TextField<String> tF = new TextField<String>();
+//		tF.setWidth(200);
+//		tF.setHeight(100);
+//		tF.setValue("\"Cities in Saxony\"");
+//		tF.setId("demo-header-query");
+//		tF.addInputStyleName("header-query");
+//		LayoutContainer c1 = new LayoutContainer(new RowLayout(Orientation.HORIZONTAL));
+//		c1.add(headerPanel, new RowData(-1, 1));c1.add(tF, new RowData(1, 1));
+//		c.add(c1, new RowData(1, 1));
+		north.add(headerPanel);Registry.register("View", this);
 
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 50);
 		data.setMargins(new Margins());
-		viewport.add(c, data);
+		viewport.add(north, data);
 
+	}
+	
+	public void updateHeader(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
+		sb.append("<div id=demo-header-title>looks for</div>");
+		sb.append("<div id=demo-header-query>\"").append(Registry.get("Query")).append("\"</div>");
+		sb.append("<div id=demo-header-endpoint>@ ").append(Registry.get("ENDPOINT")).append("</div>");
+		headerPanel.setHtml(sb.toString());
+		headerPanel.repaint();
+//		viewport.repaint();
 	}
 
 	  private void createCenter() {

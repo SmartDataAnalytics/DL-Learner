@@ -24,6 +24,17 @@
 
 #demo-header * * { float:none; margin:0; }
 
+.header-query
+{
+	background-color:#0b479d;
+	color:#eee;
+	font-size:30px;
+    line-height:40px;
+    font-weight:normal;
+    background-image: none;
+    text-shadow:1px 1px 2px #111;
+}
+
 /* -- Layout Intro ---------------------------------------------------------- */
 
 body.home_view
@@ -124,26 +135,71 @@ body.home_view #x-auto-1
     text-shadow:1px 1px 2px #111;
 }
 
+.teaser .target
+{
+    font-size:1.6em;
+    font-weight:normal;
+    color:#eee;
+    text-shadow:1px 1px 2px #111;
+    float:left;
+    width:40px !important;
+    height:42px;
+    position: relative;
+}
+
 .teaser #demo-selector
 {
     margin-top:1em;
     overflow:hidden;
 }
 
+#demo-selector-target
+{
+    color:red;
+    
+}
+
+#demo-selector-query
+{
+    width:230px;
+    float:left;
+}
+
+#demo-selector-query .x-form-field-wrap
+{
+    width:270px !important;
+}
+
+#demo-selector-query .x-form-field
+{
+    width:226px !important;
+    padding-top:4px;
+    font-size: 24px;
+    line-height: 36px;
+    height:43px;
+}
+
+#demo-selector-query .x-form-trigger
+{
+    height:42px;
+    width:34px;
+    background:url(bg-form-trigger.png) no-repeat top right transparent;
+}
+
 #demo-selector-endpoints
 {
-    width:310px;
+    width:270px;
     float:left;
 }
 
 #demo-selector-endpoints .x-form-field-wrap
 {
-    width:300px !important;
+    width:260px !important;
 }
 
 #demo-selector-endpoints .x-form-field
 {
-    width:266px !important;
+    width:226px !important;
     padding-top:4px;
     font-size: 24px;
     line-height: 36px;
@@ -159,13 +215,13 @@ body.home_view #x-auto-1
 
 #demo-selector-button
 {
-    margin-left:320px;
+    margin-left:560px;
 }
 
 #demo-selector-button a
 {
     display:block;
-    width:150px;
+    width:110px;
     font-size: 18px;
     font-weight:normal;
     line-height: 42px;

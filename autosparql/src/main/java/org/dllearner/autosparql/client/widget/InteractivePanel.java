@@ -184,9 +184,14 @@ public class InteractivePanel extends ContentPanel {
 		add(grid, new RowData(1, 1));
 	}
 	
-	public void setExample(Example example){
+	public void setExample(Example example){System.out.println(example);
 		examplesStore.removeAll();
 		examplesStore.add(example);
+	}
+	
+	public void setExamples(List<Example> examples){
+		examplesStore.removeAll();
+		examplesStore.add(examples);
 	}
 	
 	public void showNextSimilarExample(List<String> posExamples, List<String> negExamples){
@@ -195,6 +200,7 @@ public class InteractivePanel extends ContentPanel {
 		
 		loader.load();
 	}
+	
 	
 
 }
