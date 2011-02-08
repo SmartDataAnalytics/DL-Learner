@@ -46,7 +46,27 @@ public class AutoSPARQLSession {
 			int limit = config.getLimit();
 			int offset = config.getOffset();
 			
-			List<Example> searchResult = search.searchFor(searchTerm, endpoint, limit, offset);
+			List<Example> searchResult = search.searchForKeyword(searchTerm, endpoint, limit, offset);
+			int totalLength = search.count(searchTerm, endpoint);
+			
+			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
+			result.setOffset(offset);
+			result.setTotalLength(totalLength);
+			
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AutoSPARQLException(e);
+		}
+	}
+	
+	public PagingLoadResult<Example> getQueryResult(String query,
+			PagingLoadConfig config) throws AutoSPARQLException {
+		try {
+			int limit = config.getLimit();
+			int offset = config.getOffset();
+			
+			List<Example> searchResult = search.searchForQuery(query, endpoint, limit, offset);
 			int totalLength = 100;//search.count(searchTerm, endpoint);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
@@ -58,6 +78,12 @@ public class AutoSPARQLSession {
 			e.printStackTrace();
 			throw new AutoSPARQLException(e);
 		}
+	}
+
+	public Example getNextQueryResult(String query)
+			throws AutoSPARQLException {System.out.println("Getting next resource for query " + query);
+		Example result = search.getNextQueryResult(query, endpoint);
+		return result;
 	}
 	
 	public Example getSimilarExample(List<String> posExamples,

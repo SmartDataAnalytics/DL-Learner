@@ -239,10 +239,14 @@ public class SearchPanel extends ContentPanel {
 	private void onSearch(){
 		showLoadingMessage(true);
 		loader.load();
-		if(firstSearch){
-			firstSearch = false;
-			Dispatcher.forwardEvent(AppEvents.ShowInteractiveMode);
-		}
+//		if(firstSearch){
+//			firstSearch = false;
+//			Dispatcher.forwardEvent(AppEvents.ShowInteractiveMode);
+//		}
+	}
+	
+	public void search(){
+		
 	}
 	
 	private void showLoadingMessage(boolean show){

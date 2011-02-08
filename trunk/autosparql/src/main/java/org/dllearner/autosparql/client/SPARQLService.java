@@ -18,6 +18,10 @@ public interface SPARQLService extends RemoteService{
 	
 	PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException;
 	
+	PagingLoadResult<Example> getQueryResult(String query, PagingLoadConfig config) throws AutoSPARQLException;
+	
+	Example getNextQueryResult(String query) throws AutoSPARQLException;
+	
 	Example getSimilarExample(List<String> posExamples, List<String> negExamples) throws SPARQLQueryException;
 	
 	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;

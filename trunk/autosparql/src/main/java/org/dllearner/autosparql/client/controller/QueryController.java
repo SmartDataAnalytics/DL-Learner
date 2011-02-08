@@ -4,6 +4,7 @@ import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.view.ApplicationView;
 import org.dllearner.autosparql.client.view.QueryView;
 
+import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.event.EventType;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
@@ -26,6 +27,7 @@ public class QueryController extends Controller {
 		EventType type = event.getType();
 
 		if (type == AppEvents.NavQuery) {
+			((ApplicationView)Registry.get("View")).updateHeader();
 			forwardToView(queryView, event);
 		} else if(type == AppEvents.AddPosExample){
 			forwardToView(queryView, event);
