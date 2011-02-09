@@ -27,8 +27,9 @@ public class SPARQLSearch {
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	
-	private Map<String, Integer> relatedResources;
+	private List<String> relatedResources;
 	private String lastQuery = "";
+	private int currentIndex = 0;
 	
 	private String servletContextPath;
 	
@@ -41,26 +42,21 @@ public class SPARQLSearch {
 		List<Example> searchResult = new ArrayList<Example>();
 		
 		if(!query.equals(lastQuery)){
+			currentIndex = 0;
 			QueryProcessor qp = new QueryProcessor(servletContextPath + "/WEB-INF/classes/de/simba/ner/models/left3words-wsj-0-18.tagger",
 			endpoint.getURL().toString(), servletContextPath + "/WEB-INF/classes/de/simba/ner/dictionary");
 			qp.setSynonymExpansion(false);
 			qp.runQuery(query);
-			relatedResources = qp.getRelatedResources();
+			Map<String, Integer> relatedResourcesMap = qp.getRelatedResources();
+			SortableValueMap<String, Integer> sortedMap = new SortableValueMap<String, Integer>(relatedResourcesMap);
+			sortedMap.sortByValue();
+			relatedResources = new ArrayList<String>(sortedMap.keySet());
 			lastQuery = query;
 		}
 //		Ordering.natural().onResultOf(Functions.forMap(relatedResources));
 		
-		SortableValueMap<String, Integer> sortedMap = new SortableValueMap<String, Integer>(relatedResources);
-		sortedMap.sortByValue();
-		int i=0;
-		for(Entry<String, Integer> entry : sortedMap.entrySet()){
-			if(i > offset){
-				searchResult.add(new Example(entry.getKey(), entry.getKey(), "", ""));
-			}
-			i++;
-			if((i-offset) > limit){
-				break;
-			}
+		for(int i = offset; i < (offset+limit); i++){
+			searchResult.add(new Example(relatedResources.get(i), relatedResources.get(i), "", ""));
 		}
 
 		return searchResult;
@@ -68,16 +64,16 @@ public class SPARQLSearch {
 	
 	public Example getNextQueryResult(String query, SparqlEndpoint endpoint){
 		searchForQuery(query, endpoint, 0, 0);
-		Example example = getExample(relatedResources.keySet().iterator().next(), endpoint);
-		System.out.println(example);
+		Example example = getExample(relatedResources.get(currentIndex), endpoint);
+		currentIndex++;
 		return example;
 	}
 	
 	public List<Example> searchForKeyword(String searchTerm, SparqlEndpoint endpoint, int limit, int offset){
 		List<Example> searchResult = new ArrayList<Example>();
-		
+		long startTime = System.currentTimeMillis();
+		logger.info("Searching for resources containing term(s) " + searchTerm + " in label...");
 		searchTerm = new BifContains(searchTerm).makeWithAnd();
-		logger.info("Searching for term: " + searchTerm);
 		
 		String query = buildSearchQuery(searchTerm, limit, offset);
 		logger.info("Sending query:\n" + query);
@@ -102,6 +98,7 @@ public class SPARQLSearch {
 			}
 			searchResult.add(new Example(uri, label, imageURL, comment));
 		}
+		logger.info("Done in " + (System.currentTimeMillis() - startTime) + "ms");
 		return searchResult;
 	}
 	
@@ -154,7 +151,7 @@ public class SPARQLSearch {
 		sb.append("OPTIONAL{").append(getAngleBracketsString(uri)).append(getAngleBracketsString(RDFS.comment.getURI())).append(" ?comment.\n");
 		sb.append("FILTER(LANGMATCHES(LANG(?comment), \"en\"))}");
 		sb.append("}\n");
-		System.out.println(sb.toString());
+		
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, sb.toString()));
 		String label;
 		String imageURL = "";
