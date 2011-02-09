@@ -220,7 +220,7 @@ public class EvaluationScript {
 							nextExample = getExampleByPositiveGeneralisation(lgg, ListUtils.union(posExamples, negExamples), endpoint, selectQueriesCache);
 							learnedQuery = EvaluationScript.learnedQuery;
 						} else {
-							nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
+							nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples));
 							learnedQuery = nbrGen.getQuery();
 						}
 //						nextExample = nbrGen.getQuestion(lgg, negExampleTrees, ListUtils.union(posExamples, negExamples)).getURI();
@@ -242,8 +242,9 @@ public class EvaluationScript {
 					logger.info("Learned query:\n" + learnedQuery);
 					equivalentQueries = isEquivalentQuery(targetResources, learnedQuery, endpoint, selectQueriesCache);
 					logger.info("Original query and learned query are equivalent: " + equivalentQueries);
-					logger.info("Learned successfully query " + id);
+					
 					if(equivalentQueries){
+						logger.info("Learned successfully query " + id);
 						break;
 					}
 					
@@ -297,7 +298,7 @@ public class EvaluationScript {
 				} while(!equivalentQueries);
 				
 				if(!failed){
-					int triplePatternCount = ((QueryTreeImpl<String>)exampleFinder.getCurrentQueryTree()).getTriplePatternCount();
+//					int triplePatternCount = ((QueryTreeImpl<String>)exampleFinder.getCurrentQueryTree()).getTriplePatternCount();
 					int posExamplesCount = posExamples.size();
 					int negExamplesCount = negExamples.size();
 					int examplesCount = posExamplesCount + negExamplesCount;
@@ -318,9 +319,9 @@ public class EvaluationScript {
 					learnedCnt++;
 				}
 				
-//			if(testedCnt == 50){
-//				break;
-//			}
+			if(learnedCnt == 20){
+				break;
+			}
 			} catch (Exception e) {
 				logger.error("Error while learning query " + id, e);
 			}

@@ -22,10 +22,11 @@ public class ExampleFinderTest {
 			ExampleFinder f = new ExampleFinder(endpoint, new ExtractionDBCache("select-cache"), new ExtractionDBCache("construct-cache"));
 			
 			List<String> posExamples = new ArrayList<String>();
-			posExamples.add("http://dbpedia.org/resource/Berlin");
+			posExamples.add("http://dbpedia.org/resource/Maroochydore%2C_Queensland");
+			posExamples.add("http://dbpedia.org/resource/Sparwood_Secondary_School");
 			
 			List<String> negExamples = new ArrayList<String>();
-//			negExamples.add("http://dbpedia.org/resource/Ackermann%E2%80%93Teubner_Memorial_Award");
+			negExamples.add("http://dbpedia.org/resource/CAT:Sport_in_Hamburg");
 //			negExamples.add("http://dbpedia.org/resource/Arizona_State_University");
 			
 			

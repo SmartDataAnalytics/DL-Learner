@@ -351,15 +351,21 @@ public class ExampleFinder {
 		
 		Example example = null;
 		try {
-			example = nbrGen.getQuestion(lgg, negExamplesTrees, resources);
+			String uri = nbrGen.getQuestion(lgg, negExamplesTrees, resources);
+			example = getExample(uri);
 		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}
-		System.out.println(example);
+		example = getExample(example.getURI());
 //		Example example = nbr.makeNBR(resources, lgg, negExamplesTrees);
 		currentQuery = nbrGen.getQuery();
 		return example;
 		
+	}
+	
+	
+	private String getAngleBracketsString(String str){
+		return "<" + str + ">";
 	}
 	
 	public QueryTree<String> getLGG(){
