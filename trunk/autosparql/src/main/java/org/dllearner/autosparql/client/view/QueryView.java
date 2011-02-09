@@ -85,22 +85,7 @@ public class QueryView extends View {
 		      wrapper.layout();
 		      RootPanel.get().addStyleName("query_view");
 		      RootPanel.get().removeStyleName("home_view");
-		      interactivePanel.mask("Computing examples related to query...");
-		      SPARQLService.Util.getInstance().getNextQueryResult((String)Registry.get("Query"), new AsyncCallback<Example>() {
-							
-							@Override
-							public void onSuccess(Example result) {
-								interactivePanel.setExample(result);
-								interactivePanel.unmask();
-							}
-							
-							@Override
-							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-								
-							}
-						});
-			
+		      onShowNextResourceRelatedToQuery();
 		      return;
 		} else if(event.getType() == AppEvents.AddPosExample){
 			examplesPanel.addPositiveExample((Example) event.getData());
@@ -167,7 +152,35 @@ public class QueryView extends View {
 		} else {
 			examplesPanel.addNegativeExample(example);
 		}
-		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
+//		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
+//			interactivePanel.mask("Searching...");
+//			SPARQLService.Util.getInstance().getSimilarExample(
+//					examplesPanel.getPositiveExamplesURIs(),
+//					examplesPanel.getNegativeExamplesUris(),
+//					new AsyncCallback<Example>() {
+//
+//						@Override
+//						public void onSuccess(Example result) {
+//							interactivePanel.unmask();
+//							interactivePanel.setExample(result);
+//							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+//									examplesPanel.getNegativeExamplesUris());
+//						}
+//
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							String details = caught.getMessage();
+//							if (caught instanceof SPARQLQueryException) {
+//								details = "An error occured while sending the following query:\n"
+//										+ ((SPARQLQueryException) caught)
+//												.getQuery();
+//							}
+//							MessageBox.alert("Error", details, null);
+//
+//						}
+//					});
+//		}
+		if (examplesPanel.getPositiveExamplesURIs().size() >= 2) {
 			interactivePanel.mask("Searching...");
 			SPARQLService.Util.getInstance().getSimilarExample(
 					examplesPanel.getPositiveExamplesURIs(),
@@ -194,7 +207,27 @@ public class QueryView extends View {
 
 						}
 					});
+		} else {
+			onShowNextResourceRelatedToQuery();
 		}
+	}
+	
+	private void onShowNextResourceRelatedToQuery(){
+		interactivePanel.mask("Computing examples related to query...");
+	      SPARQLService.Util.getInstance().getNextQueryResult((String)Registry.get("Query"), new AsyncCallback<Example>() {
+						
+						@Override
+						public void onSuccess(Example result) {
+							interactivePanel.setExample(result);
+							interactivePanel.unmask();
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
 	}
 	
 	private void onRemoveExample(Example example, Example.Type type){
