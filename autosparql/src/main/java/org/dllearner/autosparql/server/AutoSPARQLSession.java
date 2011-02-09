@@ -96,6 +96,7 @@ public class AutoSPARQLSession {
 			Example example = exampleFinder.findSimilarExample(posExamples, negExamples);
 			return example;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e);
 			throw new SPARQLQueryException(exampleFinder.getCurrentQueryHTML());
 		}

@@ -17,9 +17,9 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -177,14 +177,13 @@ public class NBRTest {
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
 			
-			Example example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+			uri = nbrGen.getQuestion(lgg, negTrees, knownResources);
 			String learnedQuery = nbrGen.getQuery();
 			
 			while(!isEquivalentQuery(targetResources, learnedQuery, endpoint, selectCache)){
 				logger.info("#Resources in LGG: " + getResultCount(lgg.toSPARQLQueryString(), endpoint, selectCache));
 //				logger.info("#Resources in LGG: " + Helper.getAbbreviatedCollection(getResult(lgg.toSPARQLQueryString(), endpoint, cache),baseURI,prefixes));
 				logger.info("#Resources in POST-LGG: " + getResultCount(nbrGen.getPostLGG().toSPARQLQueryString(), endpoint, selectCache));
-				uri = example.getURI();
 				knownResources.add(uri);
 				model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
 				tree = treeFactory.getQueryTree(uri, model);
@@ -200,7 +199,7 @@ public class NBRTest {
 				}
 				logger.info("Positive examples: " + Helper.getAbbreviatedCollection(posExamples, baseURI, prefixes));
 //				logger.debug("Pos trees:\n " + printTrees(posTrees));
-				example = nbrGen.getQuestion(lgg, negTrees, knownResources);
+				uri = nbrGen.getQuestion(lgg, negTrees, knownResources);
 				learnedQuery = nbrGen.getQuery();
 				/*
 				System.out.println(learnedQuery);
@@ -450,44 +449,71 @@ public class NBRTest {
 	@Test
 	public void testLGG(){
 		try {
+//			URL url = new URL("http://dbpedia.aksw.org:8999/sparql");
+			URL url = new URL("http://db0.aksw.org:8999/sparql");
 			ExtractionDBCache constructCache = new ExtractionDBCache(CONSTRUCT_CACHE_DIR);
 			List<String> predicateFilters = new ArrayList<String>();
-			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(new URL("http://db0.aksw.org:8999/sparql"),
+			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(url,
 					Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, null, predicateFilters);
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 			
+			String baseURI = "http://dbpedia.org/resource/";
+			Map<String,String> prefixes = new HashMap<String,String>();
+			prefixes.put("dbo","http://dbpedia.org/ontology/");
+			prefixes.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
+			prefixes.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+			prefixes.put("skos","http://www.w3.org/2004/02/skos/core#");
+			prefixes.put("geo","http://www.w3.org/2003/01/geo/wgs84_pos#");
+			prefixes.put("georss","http://www.georss.org/georss/");
+			prefixes.put("owl","http://www.w3.org/2002/07/owl#");
+			prefixes.put("yago","http://dbpedia.org/class/yago/");
+			prefixes.put("cyc","http://sw.opencyc.org/concept/");
+			
 			ModelGenerator modelGen = new ModelGenerator(endpoint, new HashSet<String>(predicateFilters), constructCache);
-			QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
 			LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 			
-			List<QueryTree<String>> posTrees = new ArrayList<QueryTree<String>>();
-			
-			String uri = "http://dbpedia.org/resource/%C3%80_double_tour";
-			Model model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-			QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
-			tree = getFilteredTree(tree);
-			posTrees.add(tree);
-			
-			uri = "http://dbpedia.org/resource/%C3%80_la_folie";
-			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-			tree = treeFactory.getQueryTree(uri, model);
-			tree = getFilteredTree(tree);
-			posTrees.add(tree);
-			
-			uri = "http://dbpedia.org/resource/%C3%80_nos_amours";
-			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
-			tree = treeFactory.getQueryTree(uri, model);
-			tree = getFilteredTree(tree);
-			posTrees.add(tree);
+			List<QueryTree<String>> posTrees = createQueryTrees(baseURI, modelGen, "Foals", "31Knots", "By_the_End_of_Tonight", "Fiasco_%28band%29","Lite_%28band%29",
+					"90_Day_Men", "65daysofstatic", "We_Versus_the_Shark", "Breadwinner_%28band%29" , "Don_Caballero" , "Blues_Creation_%28band%29" , "Oktobar_1864" );
 			
 			QueryTree<String> lgg = lggGen.getLGG(posTrees);
-			System.out.println(lgg.getStringRepresentation());
+			
+			System.out.println(TreeHelper.getAbbreviatedTreeRepresentation(lgg, baseURI, prefixes));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 		 
 			
+	}
+	
+	private List<QueryTree<String>> createQueryTrees(ModelGenerator modelGen, String ... resources){
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
+		Model model;
+		QueryTree<String> tree;
+		for(String resource : resources){
+			model = modelGen.createModel(resource, Strategy.CHUNKS, 2);
+			tree = treeFactory.getQueryTree(resource, model);
+			tree = getFilteredTree(tree);
+			trees.add(tree);
+		}
+		return trees;
+	}
+	
+	private List<QueryTree<String>> createQueryTrees(String baseURI, ModelGenerator modelGen,  String ... resources){
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl();
+		Model model;
+		QueryTree<String> tree;
+		String uri;
+		for(String resource : resources){
+			uri = baseURI + resource;
+			model = modelGen.createModel(uri, Strategy.CHUNKS, 2);
+			tree = treeFactory.getQueryTree(uri, model);
+			tree = getFilteredTree(tree);
+			trees.add(tree);
+		}
+		return trees;
 	}
 	
 	private QueryTree<String> getFilteredTree(QueryTree<String> tree){

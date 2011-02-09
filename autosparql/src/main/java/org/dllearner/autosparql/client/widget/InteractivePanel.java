@@ -184,7 +184,7 @@ public class InteractivePanel extends ContentPanel {
 		add(grid, new RowData(1, 1));
 	}
 	
-	public void setExample(Example example){System.out.println(example);
+	public void setExample(Example example){
 		examplesStore.removeAll();
 		examplesStore.add(example);
 	}

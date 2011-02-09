@@ -296,7 +296,7 @@ public class NBR<N> {
 	}
 	
 	
-	public Example getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
+	public String getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
 		return computeQuestionOptimized(lgg, negTrees, knownResources);
 	}
 	
@@ -328,7 +328,7 @@ public class NBR<N> {
 		return null;
 	}
 	
-	private Example computeQuestionOptimized(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
+	private String computeQuestionOptimized(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
 		startTime = System.currentTimeMillis();
 		this.lgg = lgg;
 		this.negTrees = negTrees;
@@ -409,7 +409,7 @@ public class NBR<N> {
 				newResource = findMostSpecificResourceTree(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
 				logger.debug("binary search for most specific query returning a resource - completed");
 				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
-				return new Example(newResource, null, null, null);
+				return newResource;
 			} else {
 				if(logger.isDebugEnabled()){
 					logger.debug("Query result contains no new resources. Trying next tree from queue...");

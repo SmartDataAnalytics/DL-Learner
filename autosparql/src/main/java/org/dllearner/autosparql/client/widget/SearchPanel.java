@@ -170,7 +170,7 @@ public class SearchPanel extends ContentPanel {
 			@Override
 			public Object render(final Example model, String property,
 					ColumnData config, int rowIndex, int colIndex,
-					ListStore<Example> store, Grid<Example> grid) {
+					final ListStore<Example> store, Grid<Example> grid) {
 				VerticalPanel p = new VerticalPanel();
 				p.setSize(25, 50);
 				Button addPosButton = new Button("+");
@@ -183,6 +183,7 @@ public class SearchPanel extends ContentPanel {
 						event.setData("example", model);
 						event.setData("type", Example.Type.POSITIVE);
 						Dispatcher.forwardEvent(event);
+//						store.remove(model);
 					}
 				});
 				Button addNegButton = new Button("&ndash;");
@@ -195,6 +196,7 @@ public class SearchPanel extends ContentPanel {
 						event.setData("example", model);
 						event.setData("type", Example.Type.NEGATIVE);
 						Dispatcher.forwardEvent(event);
+//						store.remove(model);
 					}
 				});
 				p.add(addPosButton);
