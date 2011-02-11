@@ -6,6 +6,7 @@ import java.util.Map;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
+import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -34,6 +35,14 @@ public class QueryTreeCache {
 			tree = factory.getQueryTree(root, model);
 		}
 		return tree;
+	}
+	
+	public void setPredicateFilter(Filter filter){
+		factory.setPredicateFilter(filter);
+	}
+	
+	public void setObjectFilter(Filter filter){
+		factory.setObjectFilter(filter);
 	}
 	
 	public void clear(){
