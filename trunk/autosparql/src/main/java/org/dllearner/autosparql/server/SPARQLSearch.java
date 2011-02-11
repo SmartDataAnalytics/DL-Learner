@@ -69,6 +69,10 @@ public class SPARQLSearch {
 		return example;
 	}
 	
+	public List<String> getAllQueryRelatedResources(){
+		return relatedResources;
+	}
+	
 	public List<Example> searchForKeyword(String searchTerm, SparqlEndpoint endpoint, int limit, int offset){
 		List<Example> searchResult = new ArrayList<Example>();
 		long startTime = System.currentTimeMillis();

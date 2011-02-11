@@ -92,6 +92,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public Example getNextQueryResult(String query)
 			throws AutoSPARQLException {
 		logger.info("Searching for " + query + "(" + getSession().getId() + ")");
+		System.out.println(getAutoSPARQLSession());
 		return getAutoSPARQLSession().getNextQueryResult(query);
 	}
 	
