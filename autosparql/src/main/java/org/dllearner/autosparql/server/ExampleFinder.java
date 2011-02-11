@@ -17,12 +17,14 @@ import org.dllearner.sparqlquerygenerator.SPARQLQueryGeneratorCached;
 import org.dllearner.sparqlquerygenerator.cache.ModelCache;
 import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.impl.SPARQLQueryGeneratorCachedImpl;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGenerator;
 import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
+import org.dllearner.sparqlquerygenerator.util.Filter;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -93,6 +95,7 @@ public class ExampleFinder {
 //			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
 			queryTree = queryTreeCache.getQueryTree(resource, model);
+			System.out.println(queryTree.getStringRepresentation());
 			posExampleTrees.add(queryTree);
 		}
 		for(String resource : negExamples){
@@ -169,16 +172,23 @@ public class ExampleFinder {
 			logger.info("Query before generalisation:\n" + tree.toSPARQLQueryString(true));
 		}
 		
-		Generalisation<String> posGen = new Generalisation<String>();
-		
-		QueryTree<String> genTree = posGen.generalise(tree);
-		
-		currentQuery = genTree.toSPARQLQueryString(true);
-		currentQueryTree = genTree;
-		if(logger.isInfoEnabled()){
-//			logger.info("Tree after generalisation:\n" + currentQueryTree.getStringRepresentation());
-			logger.info("Query after generalisation:\n" + currentQuery);
+		QueryTree<String> genTree;
+		if(((QueryTreeImpl<String>)tree).getTriplePatternCount() > 10 || currentQueryTree == tree){
+			Generalisation<String> posGen = new Generalisation<String>();
+			
+			genTree = posGen.generalise(tree);
+			currentQuery = genTree.toSPARQLQueryString(true);
+			currentQueryTree = genTree;
+			if(logger.isInfoEnabled()){
+//				logger.info("Tree after generalisation:\n" + currentQueryTree.getStringRepresentation());
+				logger.info("Query after generalisation:\n" + currentQuery);
+			}
+		} else {
+			genTree = tree;
+			currentQuery = tree.toSPARQLQueryString();
+			currentQueryTree = genTree;
 		}
+		
 		
 		
 		if(makeAlwaysNBR){
@@ -284,6 +294,7 @@ public class ExampleFinder {
 				logger.info("Computed LGG:\n" + lgg.getStringRepresentation());
 				logger.info("Avoiding big queries by calling positive generalisation...");
 			}
+			
 			return findExampleByGeneralisation(lgg);
 		}
 		
@@ -433,6 +444,14 @@ public class ExampleFinder {
 	
 	public void setEndpoint(SPARQLEndpointEx endpoint){
 		this.endpoint = endpoint;
+	}
+	
+	public void setPredicateFilter(Filter filter){
+		queryTreeCache.setPredicateFilter(filter);
+	}
+	
+	public void setObjectFilter(Filter filter){
+		queryTreeCache.setObjectFilter(filter);
 	}
 	
 	public String getCurrentQuery(){

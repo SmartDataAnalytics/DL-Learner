@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.sparqlquerygenerator.util.ExactMatchFilter;
 
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -17,6 +19,8 @@ import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
+import de.simba.ner.QueryProcessor;
 
 public class AutoSPARQLSession {
 	
@@ -30,6 +34,7 @@ public class AutoSPARQLSession {
 	private ExampleFinder exampleFinder;
 	
 	private String servletContextPath;
+	
 	
 	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath){
 		this.endpoint = endpoint;
@@ -83,6 +88,7 @@ public class AutoSPARQLSession {
 	public Example getNextQueryResult(String query)
 			throws AutoSPARQLException {System.out.println("Getting next resource for query " + query);
 		Example result = search.getNextQueryResult(query, endpoint);
+		exampleFinder.setObjectFilter(new ExactMatchFilter(new HashSet<String>(search.getAllQueryRelatedResources())));
 		return result;
 	}
 	
