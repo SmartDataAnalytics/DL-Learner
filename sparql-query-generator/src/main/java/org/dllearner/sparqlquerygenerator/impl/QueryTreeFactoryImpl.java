@@ -22,7 +22,6 @@ package org.dllearner.sparqlquerygenerator.impl;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -32,9 +31,13 @@ import java.util.TreeSet;
 import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.util.Filter;
+import org.dllearner.sparqlquerygenerator.util.Filters;
+import org.dllearner.sparqlquerygenerator.util.ZeroFilter;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
@@ -49,9 +52,20 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	private Comparator<Statement> comparator;
 	private Set<String> predicateFilters;
 	
+	private Filter predicateFilter = new ZeroFilter();
+	private Filter objectFilter = new ZeroFilter();
+	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
-		predicateFilters = new HashSet<String>(Filter.getAllFilterProperties());
+		predicateFilters = new HashSet<String>(Filters.getAllFilterProperties());
+	}
+	
+	public void setPredicateFilter(Filter filter){
+		this.predicateFilter = filter;
+	}
+	
+	public void setObjectFilter(Filter filter){
+		this.objectFilter = filter;
 	}
 	
 	@Override
@@ -96,11 +110,18 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		tree.setId(nodeId++);
 		if(resource2Statements.containsKey(tree.getUserObject())){
 			QueryTreeImpl<String> subTree;
+			Property predicate;
+			RDFNode object;
 			for(Statement st : resource2Statements.get(tree.getUserObject())){
+				predicate = st.getPredicate();
+				object = st.getObject();
+				if(!predicateFilter.isRelevantResource(predicate.getURI())){
+					continue;
+				}
 				if(predicateFilters.contains(st.getPredicate().toString())){
 					continue;
 				}
-				if(st.getObject().isLiteral()){
+				if(object.isLiteral()){
 					Literal lit = st.getLiteral();
 					String escapedLit = lit.getLexicalForm().replace("\"", "\\\"");
 					StringBuilder sb = new StringBuilder();
@@ -115,7 +136,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					subTree.setId(nodeId++);
 					subTree.setLiteralNode(true);
 					tree.addChild(subTree, st.getPredicate().toString());
-				} else {
+				} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 					if(tree.getUserObjectPathToRoot().size() < 3 && 
 							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 						subTree = new QueryTreeImpl<String>(st.getObject().toString());

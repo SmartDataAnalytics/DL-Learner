@@ -20,6 +20,7 @@
 package org.dllearner.sparqlquerygenerator;
 
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -36,5 +37,9 @@ public interface QueryTreeFactory<N> {
 	QueryTreeImpl<N> getQueryTree(Resource example, Model model);
 	
 	QueryTreeImpl<N> getQueryTree(String example);
+	
+	void setPredicateFilter(Filter filter);
+	
+	void setObjectFilter(Filter filter);
 
 }
