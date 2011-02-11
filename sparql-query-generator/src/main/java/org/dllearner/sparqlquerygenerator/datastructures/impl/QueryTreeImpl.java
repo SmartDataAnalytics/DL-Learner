@@ -33,7 +33,7 @@ import java.util.TreeSet;
 
 import org.dllearner.sparqlquerygenerator.datastructures.NodeRenderer;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.util.Filter;
+import org.dllearner.sparqlquerygenerator.util.Filters;
 
 /**
  * 
@@ -697,7 +697,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		for(QueryTree<N> child : tree.getChildren()){
         		predicate = tree.getEdge(child);
         		if(filtered){
-        			if(Filter.getAllFilterProperties().contains(predicate.toString())){
+        			if(Filters.getAllFilterProperties().contains(predicate.toString())){
         				continue;
         			}
         		}
