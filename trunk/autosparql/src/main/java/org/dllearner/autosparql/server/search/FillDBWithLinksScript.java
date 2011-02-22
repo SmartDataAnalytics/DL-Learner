@@ -72,6 +72,9 @@ public class FillDBWithLinksScript {
 			@Override
 			public void handleStatement(org.openrdf.model.Statement st) throws RDFHandlerException {
 				try {
+					from = st.getSubject().stringValue();
+					to = st.getObject().stringValue();
+					
 					select_ps.setString(1, from);
 					rs = select_ps.executeQuery();
 					if(rs.next()){
@@ -94,8 +97,7 @@ public class FillDBWithLinksScript {
 						rs = select_ps.executeQuery();
 						id1 = rs.getInt("id");
 					}
-					from = st.getSubject().stringValue();
-					to = st.getObject().stringValue();
+					
 					insert_link_ps.setInt(1, id1);
 					insert_link_ps.setInt(2, id2);
 					insert_link_ps.addBatch();
