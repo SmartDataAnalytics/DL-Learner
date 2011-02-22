@@ -58,7 +58,7 @@ public class FillDBWithLinksScript {
 		final PreparedStatement select_ps = conn.prepareStatement("SELECT id FROM nodes WHERE node=?");
 		final PreparedStatement count_links_ps = conn.prepareStatement("SELECT COUNT(*) as cnt FROM links2 WHERE id1=? AND id2=?");
 		final PreparedStatement insert_node_ps = conn.prepareStatement("INSERT INTO nodes(node) VALUES(?)");
-		final PreparedStatement insert_link_ps = conn.prepareStatement("INSERT INTO links2(id1,id2) VALUES(?,?)");
+		final PreparedStatement insert_link_ps = conn.prepareStatement("INSERT IGNORE INTO links2(id1,id2) VALUES(?,?)");
 		RDFParser parser = Rio.createParser(RDFFormat.NTRIPLES);
 		parser.setRDFHandler(new RDFHandler() {
 			String from;
@@ -75,7 +75,7 @@ public class FillDBWithLinksScript {
 				try {
 					from = st.getSubject().stringValue();
 					to = st.getObject().stringValue();
-					
+					//get ID1
 					select_ps.setString(1, from);
 					rs = select_ps.executeQuery();
 					if(rs.next()){
@@ -88,6 +88,7 @@ public class FillDBWithLinksScript {
 						rs.next();
 						id1 = rs.getInt("id");
 					}
+					//get ID2
 					select_ps.setString(1, to);
 					rs = select_ps.executeQuery();
 					if(rs.next()){
@@ -100,17 +101,11 @@ public class FillDBWithLinksScript {
 						rs.next();
 						id2 = rs.getInt("id");
 					}
-					count_links_ps.setInt(1, id1);
-					count_links_ps.setInt(2, id2);
-					rs = count_links_ps.executeQuery();
-					rs.next();
-					int count = rs.getInt("cnt") ;
-					if(count == 0){
-						insert_link_ps.setInt(1, id1);
-						insert_link_ps.setInt(2, id2);
-						insert_link_ps.addBatch();
-						cnt++;
-					}
+					//Insert link ID1->ID2
+					insert_link_ps.setInt(1, id1);
+					insert_link_ps.setInt(2, id2);
+					insert_link_ps.addBatch();
+					cnt++;
 					if(cnt == 10000){
 						insert_link_ps.executeBatch();
 						insert_link_ps.clearBatch();
