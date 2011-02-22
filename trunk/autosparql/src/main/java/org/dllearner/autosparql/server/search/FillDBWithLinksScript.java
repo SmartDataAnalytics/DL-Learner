@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.prefs.BackingStoreException;
@@ -22,7 +23,7 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 
 public class FillDBWithLinksScript {
-
+	
 	/**
 	 * @param args
 	 * @throws ClassNotFoundException 
@@ -51,29 +52,56 @@ public class FillDBWithLinksScript {
 		Class.forName("com.mysql.jdbc.Driver");
 		String url = "jdbc:mysql://"+dbServer+"/"+dbName;
 		Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-		Statement stmt = conn.createStatement();
-		stmt.execute("DROP TABLE IF EXISTS links");
-		stmt.execute("CREATE TABLE IF NOT EXISTS links (node1 VARCHAR(4000), node2 VARCHAR(4000)) ENGINE = MyISAM");
-		final PreparedStatement ps = conn.prepareStatement("INSERT INTO links(node1,node2) VALUES(?,?)");
+		final Statement stmt = conn.createStatement();
+//		stmt.execute("DROP TABLE IF EXISTS links");
+//		stmt.execute("CREATE TABLE IF NOT EXISTS links (node1 VARCHAR(4000), node2 VARCHAR(4000)) ENGINE = MyISAM");
+		final PreparedStatement select_ps = conn.prepareStatement("SELECT id FROM nodes WHERE node=?");
+		final PreparedStatement insert_node_ps = conn.prepareStatement("INSERT INTO nodes(node) VALUES(?)");
+		final PreparedStatement insert_link_ps = conn.prepareStatement("INSERT INTO links2(id1,id2) VALUES(?,?)");
 		RDFParser parser = Rio.createParser(RDFFormat.NTRIPLES);
 		parser.setRDFHandler(new RDFHandler() {
 			String from;
 			String to;
 			int cnt;
+			ResultSet rs;
+			int id1;
+			int id2;
 			@Override
 			public void startRDF() throws RDFHandlerException {}
 			
 			@Override
-			public void handleStatement(org.openrdf.model.Statement stmt) throws RDFHandlerException {
+			public void handleStatement(org.openrdf.model.Statement st) throws RDFHandlerException {
 				try {
-					from = stmt.getSubject().stringValue();
-					to = stmt.getObject().stringValue();
-					ps.setString(1, from);
-					ps.setString(2, to);
-					ps.addBatch();
+					select_ps.setString(1, from);
+					rs = select_ps.executeQuery();
+					if(rs.next()){
+						id1 = rs.getInt("id");
+					} else {
+						insert_node_ps.setString(1, from);
+						insert_node_ps.execute();
+						select_ps.setString(1, from);
+						rs = select_ps.executeQuery();
+						id1 = rs.getInt("id");
+					}
+					select_ps.setString(1, to);
+					rs = select_ps.executeQuery();
+					if(rs.next()){
+						id2 = rs.getInt("id");
+					} else {
+						insert_node_ps.setString(1, to);
+						insert_node_ps.execute();
+						select_ps.setString(1, to);
+						rs = select_ps.executeQuery();
+						id1 = rs.getInt("id");
+					}
+					from = st.getSubject().stringValue();
+					to = st.getObject().stringValue();
+					insert_link_ps.setInt(1, id1);
+					insert_link_ps.setInt(2, id2);
+					insert_link_ps.addBatch();
 					cnt++;
 					if(cnt == 10000){
-						ps.executeBatch();
+						insert_link_ps.executeBatch();
 						cnt = 0;
 					}
 				} catch (SQLException e) {
@@ -89,7 +117,7 @@ public class FillDBWithLinksScript {
 			public void endRDF() throws RDFHandlerException {}
 		});
 		parser.parse(new BufferedInputStream(is), "http://dbpedia.org");
-		ps.executeBatch();
+		insert_link_ps.executeBatch();
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 	}
 
