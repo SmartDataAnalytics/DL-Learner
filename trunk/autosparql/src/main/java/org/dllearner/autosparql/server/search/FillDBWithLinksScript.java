@@ -56,7 +56,7 @@ public class FillDBWithLinksScript {
 //		stmt.execute("DROP TABLE IF EXISTS links");
 //		stmt.execute("CREATE TABLE IF NOT EXISTS links (node1 VARCHAR(4000), node2 VARCHAR(4000)) ENGINE = MyISAM");
 		final PreparedStatement select_ps = conn.prepareStatement("SELECT id FROM nodes WHERE node=?");
-		final PreparedStatement select_link_ps = conn.prepareStatement("SELECT id1,id2 FROM links2 WHERE id1=? AND id2=?");
+		final PreparedStatement count_links_ps = conn.prepareStatement("SELECT COUNT(*) as cnt FROM links2 WHERE id1=? AND id2=?");
 		final PreparedStatement insert_node_ps = conn.prepareStatement("INSERT INTO nodes(node) VALUES(?)");
 		final PreparedStatement insert_link_ps = conn.prepareStatement("INSERT INTO links2(id1,id2) VALUES(?,?)");
 		RDFParser parser = Rio.createParser(RDFFormat.NTRIPLES);
@@ -100,10 +100,12 @@ public class FillDBWithLinksScript {
 						rs.next();
 						id2 = rs.getInt("id");
 					}
-					select_link_ps.setInt(1, id1);
-					select_link_ps.setInt(2, id2);
-					rs = select_link_ps.executeQuery();
-					if(!rs.next()){
+					count_links_ps.setInt(1, id1);
+					count_links_ps.setInt(2, id2);
+					rs = count_links_ps.executeQuery();
+					rs.next();
+					int count = rs.getInt("cnt") ;
+					if(count == 0){
 						insert_link_ps.setInt(1, id1);
 						insert_link_ps.setInt(2, id2);
 						insert_link_ps.addBatch();
