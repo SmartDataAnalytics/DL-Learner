@@ -84,6 +84,7 @@ public class FillDBWithLinksScript {
 						insert_node_ps.execute();
 						select_ps.setString(1, from);
 						rs = select_ps.executeQuery();
+						rs.next();
 						id1 = rs.getInt("id");
 					}
 					select_ps.setString(1, to);
@@ -95,7 +96,8 @@ public class FillDBWithLinksScript {
 						insert_node_ps.execute();
 						select_ps.setString(1, to);
 						rs = select_ps.executeQuery();
-						id1 = rs.getInt("id");
+						rs.next();
+						id2 = rs.getInt("id");
 					}
 					
 					insert_link_ps.setInt(1, id1);
