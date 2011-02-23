@@ -1,0 +1,4516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset id="musicbrainz-train">
+<question id="37">
+<string>
+Which members of the Beatles are dead?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?artist ?name
+WHERE { 
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band . 
+  ?band dc:title 'The Beatles' .
+  ?artist mm:endDate ?date .
+  ?artist dc:title ?name .
+  FILTER (bound(?date))
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/42a8f507-8412-4611-854f-926571049fa0
+</uri>
+<string>
+George Harrison
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/49a51491-650e-44b3-8085-2f07ac2986dd
+</uri>
+<string>
+Stuart Sutcliffe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/4d5447d7-c61c-4120-ba1b-d7f471d385b9
+</uri>
+<string>
+John Lennon
+</string>
+</answer>
+</answers>
+</question>
+<question id="26">
+<string>
+When was Elvis Presley born?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?beginDate
+WHERE {
+    ?artist dc:title 'Elvis Presley'.
+    ?artist mm:beginDate ?beginDate.
+}
+</query>
+<answers>
+<answer>
+<date>
+1935-01-08
+</date>
+</answer>
+</answers>
+</question>
+<question id="5">
+<string>
+Who composed the Star Wars soundtrack?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT DISTINCT ?composer ?name
+WHERE {
+    ?album mm:releaseType mm:TypeSoundtrack .
+    ?album dc:title ?title .
+    ?album ar:composer ?composer . 
+    ?composer dc:title ?name.
+    FILTER regex(?title,'Star Wars')
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/53b106e7-0cc6-42cc-ac95-ed8d30a3a98e
+</uri>
+<string>
+John Williams
+</string>
+</answer>
+</answers>
+</question>
+<question id="27">
+<string>
+How many artists are called John Williams?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT COUNT(?artist)
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist dc:title 'John Williams' .
+}
+</query>
+<answers>
+<answer>
+<number>
+13
+</number>
+</answer>
+</answers>
+</question>
+<question id="47">
+<string>
+Who collaborated on Tocotronic vs. Console?
+</string>
+<query>
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?artist ?name
+WHERE {
+  ?tvc rdf:type mm:Artist .
+  ?tvc dc:title 'Tocotronic vs. Console' .
+  ?artist rdf:type mm:Artist .
+  ?artist ar:collaboratedWith ?someone .
+  ?someone ar:toArtist ?tvc .
+  ?artist dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/7717539b-33aa-45d5-b88d-9e627172db19
+</uri>
+<string>
+Tocotronic
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/ca134505-1fcc-40a3-bef2-4f344b86d1f8
+</uri>
+<string>
+Console
+</string>
+</answer>
+</answers>
+</question>
+<question id="46">
+<string>
+List all members of The Notwist.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?artist ?name 
+WHERE {
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band .
+  ?band dc:title 'The Notwist' .
+  ?artist dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/0a018360-3bc2-4cca-bb34-406bd5882334
+</uri>
+<string>
+Martin Messerschmid
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/c4d30869-2366-45ef-8bab-c671aae79d2d
+</uri>
+<string>
+Markus Acher
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/ca134505-1fcc-40a3-bef2-4f344b86d1f8
+</uri>
+<string>
+Console
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/cd967b9f-fb7b-4944-aca0-7fc09678407f
+</uri>
+<string>
+Micha Acher
+</string>
+</answer>
+</answers>
+</question>
+<question id="22">
+<string>
+Give me all songs by Petula Clark.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?track ?title 
+WHERE {
+  ?track rdf:type mm:Track .
+  ?track dc:title ?title .
+  ?track dc:creator ?artist .
+  ?artist dc:title 'Petula Clark' .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d0a4cdd4-1173-445d-a49e-0cf1bde4a35d
+</uri>
+<string>
+This Girl's in Love With You
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/397b2e77-765a-4eb9-82eb-027938b1a0b0
+</uri>
+<string>
+Introduction
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/40308b3b-8ed5-4663-8fae-95eae474612c
+</uri>
+<string>
+Medley From 'Hair'
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/fdbdfffb-03f3-49cc-8efc-88efc89029d1
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a263d704-79d6-4825-a273-6b0cb2156c97
+</uri>
+<string>
+My Name Is Petula
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/58076a68-b793-4018-8caa-5cf0b64738ca
+</uri>
+<string>
+Call Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/05e64ed9-ef66-411e-af98-3838770a6a3f
+</uri>
+<string>
+Medley From 'My Fair Lady'
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f8f8fe72-0d8a-4cb7-bfa1-375ae4fe8bc7
+</uri>
+<string>
+Un Enfant
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/91e9f70d-108a-4207-b4a3-0b3db75a9932
+</uri>
+<string>
+Hey Jude
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/976213bd-67f5-46ac-a880-0ba3e7a3804a
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/9944b44b-e18e-4545-9191-ab855f9ed921
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ca575fa6-ad11-4346-9fee-23b8b4647872
+</uri>
+<string>
+Happy Heart
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/db7e19bf-db33-4912-b48c-7d0c204f8831
+</uri>
+<string>
+This is My Song
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f3456abb-b04e-40b6-806c-07f87225e4e6
+</uri>
+<string>
+Happy Heart (Junior Vasquez remix)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f106e307-315f-44e7-98f9-7a8cd0838476
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/afcabbac-6545-4ab7-bf49-f32cfe99f63a
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/26f99040-5fc0-4db6-bae7-896843bb3d54
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2763527c-656b-4ac9-9614-e5e2cda5ec01
+</uri>
+<string>
+I Know a Place
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/cde7c448-6fb6-44aa-839b-2b9fbc5aadf4
+</uri>
+<string>
+You'd Better Come Home
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/76a5dba4-2d0e-4587-96cc-8f55146196e5
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/5142b012-b351-447c-9f4d-40609e5c2e34
+</uri>
+<string>
+A Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d1550686-957f-45c8-865e-a9ad61fb8be3
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6da348c8-7ad4-4cbf-8a66-892d07699d2a
+</uri>
+<string>
+Who Am I?
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2e844043-6a54-4fd6-a686-091f35768f38
+</uri>
+<string>
+Colour My World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/8eedb416-71d3-411b-94b3-4b2825528015
+</uri>
+<string>
+This Is My Song
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/283fdb02-c640-4cfa-9b0c-cbe21f2249f3
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6281d038-9a0e-4016-a107-7161a76e6160
+</uri>
+<string>
+The Other Man's Grass Is Always Greener
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/47cff298-55ec-44d3-858f-43fadd3e20dd
+</uri>
+<string>
+Kiss Me Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6f53cb08-4f29-4e1a-87ff-6ded71c7c44b
+</uri>
+<string>
+The Other Man's Grass Is Always Greener
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/eae4fc9e-ee87-459a-84cb-4b4205d4880d
+</uri>
+<string>
+This Is My Song
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/29c91aac-0ebe-4ce0-9532-a6c0226111f0
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f4e7d503-6e73-4cba-9bb2-cd5fd53b3ce9
+</uri>
+<string>
+This (Girl's) in Love With You
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ccca9dc2-bbcb-4bbb-8ab4-ec5d7cacb6de
+</uri>
+<string>
+The Other Man's Grass Is Always Greener
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/96e941cb-46a9-4c9d-ac14-1bd0bf8acede
+</uri>
+<string>
+Who Am I
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a058d7fb-08c1-4c1f-b4bc-a86ef3c326d9
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/418e5cf0-883a-4a28-b81a-ea0447cecbb4
+</uri>
+<string>
+Happy Heart
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/627a30c3-babf-4094-bb82-656b1565bb25
+</uri>
+<string>
+You'd Better Come Home
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/57ec380a-bf6b-4f4a-b372-0e97eb73771e
+</uri>
+<string>
+This Is My Song
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2a5a030e-6d19-497a-a232-9170ab12a252
+</uri>
+<string>
+Round Every Corner
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ad85d77e-d45c-4296-8e12-3135f16e451a
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/415df48c-0ee5-4733-833f-1e0ce8d99dd0
+</uri>
+<string>
+A Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/40c87bc7-8f37-4749-976a-4c454b17bbcc
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/5bea152a-3df7-458a-b32c-7a0b89da5051
+</uri>
+<string>
+Let It Be Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2c4cdfa0-f705-408c-b795-df2349502f28
+</uri>
+<string>
+Colour My World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/12456eb3-4748-4951-9401-4c858a0913b4
+</uri>
+<string>
+This Girl's in Love With You
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2fb3055b-3ef1-4860-b1d4-1bdd762a86f8
+</uri>
+<string>
+Kiss Me Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/1df34ab8-b925-4aee-9074-060cf49a4727
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/da374447-43cf-4fb9-9d31-288e7f2f39b2
+</uri>
+<string>
+I Know a Place
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/73b8f85f-f743-4338-9784-c1e668194c89
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/417c3b56-383a-4605-9944-04e7ede6b320
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/015bdc93-ce73-4380-82f5-c4f35de7c908
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7b620a5d-4d0a-4118-9a0e-0782f641ad1d
+</uri>
+<string>
+Who Am I?
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6046b808-ed14-416e-b955-a5d427ea9d98
+</uri>
+<string>
+I Know a Place
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/522d8b56-fcf7-4115-b939-d81daf4c2632
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/3ac66b41-8e33-419e-ae78-231eaea7b46f
+</uri>
+<string>
+The Other Man's Grass Is Always Greener
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7596d0cd-3ec6-439c-b5b3-d4ddf0ab025f
+</uri>
+<string>
+Look at Mine
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/59b30b1a-cdde-4f5f-8b17-eacee28839ce
+</uri>
+<string>
+Round Every Corner
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/78cf60be-b3bf-4a81-b445-bc5c6e9a9c1d
+</uri>
+<string>
+The Cat in the Window (The Bird in the Sky)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/b347c813-6d8c-4b8a-831b-4b0239af013c
+</uri>
+<string>
+Happy Heart
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/bc7c04c0-1346-497f-b8ab-dbf63568e872
+</uri>
+<string>
+Thank You
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/96263cc7-d96c-4bbd-8565-522060a07734
+</uri>
+<string>
+You're the One
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7c93e501-673f-4bc3-96e7-6a5d7014375c
+</uri>
+<string>
+Don't Give Up
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a6250845-5142-44b6-a351-208f622bd5df
+</uri>
+<string>
+I Will Follow Him
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/8ddec4dc-d1c2-4efd-966b-ab12a77c9589
+</uri>
+<string>
+Baby It's Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/b929f370-c84b-4c0f-82e5-eb0bfd8a9d77
+</uri>
+<string>
+You'd Better Come Home
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/b52d4c21-69fc-4efd-84a4-63a86a7a7b96
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/c12d8cf3-dc63-4880-9d0c-720865241773
+</uri>
+<string>
+True Love Never Runs Smooth
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/710afd1f-f667-4ffc-b4c7-4b6a4a4c205a
+</uri>
+<string>
+I Want to Sing With Your Band
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d47e249b-1c4e-45ca-9a67-24cc627af288
+</uri>
+<string>
+Valentino
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/e4b3592d-bcc7-4280-9874-b2ac995ad6c2
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/02333bbf-de5e-40d3-8a93-e05e237868f7
+</uri>
+<string>
+Romeo
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/0a6fbef8-8ff5-4a9d-a9e4-733f81720c7c
+</uri>
+<string>
+Down Town
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f9accd1c-a22f-41bf-88e8-4db9a661f251
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/01536bff-2a2b-4a8b-83be-bd777b566a4a
+</uri>
+<string>
+Time for Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/90b51b94-0695-4bf1-b3af-4b493588a082
+</uri>
+<string>
+Just Say Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/c8573e66-cc12-4387-b7fc-8c47daf4d3b6
+</uri>
+<string>
+The Life and Soul of the Party
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/0c0ff295-f247-473a-8fe7-0c3ec23ef4a3
+</uri>
+<string>
+A Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/14d43e5c-cee1-439a-af4b-102834dd4f68
+</uri>
+<string>
+The Thirty First of June
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/fb2c261d-b4cf-4ebe-8a4c-f599c1ad991b
+</uri>
+<string>
+Where Did We Go Wrong
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/4d02bd10-c2c0-4fba-a41b-4c2dbf8edb29
+</uri>
+<string>
+I Can't Remember (Ever Loving You)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/8ad62002-9e25-474b-93b6-4817b42977b9
+</uri>
+<string>
+Dance With Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/1a4d48d6-a98e-4f3c-8f64-59a98f9a0d4c
+</uri>
+<string>
+If I Were a Bell
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2395634f-a2df-4cd5-8c34-e784d2ac8482
+</uri>
+<string>
+Rain
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/9f7e9956-8c6d-46f4-8ce7-68287f7e4348
+</uri>
+<string>
+Love Is a Long Journey
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/df4726dc-6f02-4351-a865-98c1242228b5
+</uri>
+<string>
+Your Way of Life
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/77eb6dff-b2a1-48e8-8373-5d3b89e5912d
+</uri>
+<string>
+We Can Work It Out
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6764e4fa-e3df-4d19-8786-4b445014f473
+</uri>
+<string>
+Hold on to What You've Got
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7091ea18-d7c3-44c3-af5f-580ddde87ef4
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ff05fc57-a1c5-4410-8616-910e1f25f1a5
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/428d90b1-0550-4f70-8f80-08574ddef6b7
+</uri>
+<string>
+I Know a Place
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/0d2f5d5c-d8f5-4baf-a663-3d064d03c8ba
+</uri>
+<string>
+With One Look
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f31a9f84-1667-421d-b9c7-67103dc82ca3
+</uri>
+<string>
+The Perfect Year
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/cfc30f56-3a99-49be-858b-7e38019a0b25
+</uri>
+<string>
+As If We Never Said Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/30b04a1c-5aca-4336-bc5a-0a88ce8456a8
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ecedfb2d-e482-4b3f-a622-01df58009c5e
+</uri>
+<string>
+A Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a8e372e4-9a61-4ea2-a0eb-1b6cece88a8b
+</uri>
+<string>
+Colour My World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/89825e2b-3db9-4bb0-ab0b-32c2bfad52fe
+</uri>
+<string>
+Ya Ya Twist
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/57991c8d-b644-459b-adf4-5e86fa1fe939
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/c2ea100b-d749-4be9-87ff-46e0167c976d
+</uri>
+<string>
+Don't Give Up
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/926f2b30-3a3a-4774-855f-a6cf4fa1cbf1
+</uri>
+<string>
+Time for Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f6331c17-945d-45c8-ab5a-a1abc628d893
+</uri>
+<string>
+You're the One
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/3abf9916-2924-4bf9-bedf-5dace045e689
+</uri>
+<string>
+Baby Lover
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/84533880-3925-48e5-9d2d-123b2aa3372a
+</uri>
+<string>
+Who Am I
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ab6a90b8-29eb-47ac-b419-3bd98ea288a9
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/b2d404d9-0322-44d7-8e9c-05752abbe22c
+</uri>
+<string>
+The Other Man's Grass
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/10490987-74b5-4493-964b-2d52ddfc7d7d
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/af1ef49b-f423-4408-8f16-e05a18c27acf
+</uri>
+<string>
+Kiss Me Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f374cbdc-27d6-4ebe-87e0-a2004bbd42b1
+</uri>
+<string>
+I Know a Place
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/8b8b594c-d729-4515-9963-68553047f8a6
+</uri>
+<string>
+Round Every Corner
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/8746c0b5-86f0-4198-95ec-a9f9a17d92f3
+</uri>
+<string>
+This Is My Song
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/5ee1a5fd-566e-4d3a-9562-e2fd31b4bce0
+</uri>
+<string>
+Sailor
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/c00ed8ea-ee35-4ba3-a722-c638589b1ee0
+</uri>
+<string>
+Romeo
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7a373869-c2c0-4552-8430-7c0d79ec9e84
+</uri>
+<string>
+Suddenly There's a Valley
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6b72ea1b-7695-4a59-8a55-b22e06a21489
+</uri>
+<string>
+Kiss Me Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/5ff74dd4-4ce5-4a4e-ae0f-685612f12b8a
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/17a0c5bc-2596-4b0d-9f65-9bb1b2728758
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6bc184e6-6b9a-4af0-90bd-7b623c2699af
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f59dadbf-354f-4d67-8608-30f139f33daa
+</uri>
+<string>
+A Groovy Kind of Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/8c603446-091c-4587-bbb8-7da606cabbc3
+</uri>
+<string>
+Days
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a4d2f0f4-0dc2-4887-ac09-8c0546904cbe
+</uri>
+<string>
+Black Coffee
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/026a2007-3581-4a24-9a78-5a381d8ed729
+</uri>
+<string>
+Homeward Bound
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/5ca3e10c-dbfe-42d3-9b23-753612173d87
+</uri>
+<string>
+Elusive Butterfly
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/35c0fab4-99c4-470f-9320-1b0df8ffb8cd
+</uri>
+<string>
+Here, There and Everywhere
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2a86d2c3-0c89-4d32-b11e-1c791fce87c2
+</uri>
+<string>
+Reach Out I'll Be There
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/58d4e9e7-18b3-4433-b32b-f6c8777abb4a
+</uri>
+<string>
+Cherish
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/493999cc-dd5c-41e4-bcca-c31ffd551094
+</uri>
+<string>
+Every Little Bit Hurts
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/55a936b3-0f12-496a-9ec5-adc7e7c52333
+</uri>
+<string>
+Nobody I Know (Partir il nous faut)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/860dfd53-854c-454b-8137-cd123f8a6f1f
+</uri>
+<string>
+Answer Me, My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/b4a1a70d-651d-4835-83df-2377f8962f47
+</uri>
+<string>
+I Want to Hold Your Hand
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7954d238-8575-4a28-8f52-3fe6fccf4707
+</uri>
+<string>
+You Belong to Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/0c29e25e-0745-484f-bfbd-68940b22cca5
+</uri>
+<string>
+Dancing in the Street
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/6e6d9599-74c8-4caa-844f-0cf9453e1f36
+</uri>
+<string>
+San Francisco (Be Sure to Wear Some Flowers in Your Hair)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/fdb50b4b-b0f0-4ccd-850d-cdf2d372097e
+</uri>
+<string>
+Well Respected Gentlemen (Un jeune homme bien)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/4cc2331b-c817-451a-a49c-6d8acb024393
+</uri>
+<string>
+Please Please Me (Tu perds ton cÅur)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/af3d95d7-dc52-4161-b856-06bebdc37310
+</uri>
+<string>
+Let It Be Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/204f9296-430d-4127-b07e-dd5d7b093b91
+</uri>
+<string>
+Am I That Easy to Forget? (Tu reviendras vers ta maison ?)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ebfb7254-00c0-46bd-8b00-f32e6fb9f48b
+</uri>
+<string>
+Foot Tapper (Mon bonheur danse)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d9cf2256-3cbf-46c3-b82d-60924d704a98
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d962f99a-7b03-4e7c-b023-c7a88ec1be9a
+</uri>
+<string>
+The Other Man's Grass Is Always Greener
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a57e107d-f039-4af6-afd6-efa44d9f21b1
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/3b893d27-43ff-442d-aee2-bd36e40dd571
+</uri>
+<string>
+Something
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ceb85b24-7c1a-4251-baf6-0443d1100e6b
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/e9cb8449-8c7f-406b-8b6d-494f1a587553
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/5d6d5191-5e4f-4637-be32-db9e01f3cfa5
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/efa9681c-ffd0-4eaa-8a0c-83f07aa36009
+</uri>
+<string>
+Downtown (New version)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/9d25dbee-9e94-4143-88ca-4fad44fe6304
+</uri>
+<string>
+With All My Heart
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d0666f43-a1ec-42be-a73f-fbdc6d99fdbc
+</uri>
+<string>
+A Long Way to Go
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ea5c2dee-65b3-4565-b6c6-aa3d6cd6bf2c
+</uri>
+<string>
+Ya Ya Twist
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/cb7750b2-ec8a-4e0f-aedb-ed5f53cb7694
+</uri>
+<string>
+Romeo
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/34263ff8-6cfc-49db-8090-32c99d6acaff
+</uri>
+<string>
+Majorca
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f2916313-1c1c-44ce-8702-802811e3d8f8
+</uri>
+<string>
+Suddenly There's a Valley
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/624d6403-b87a-4b76-bb3b-144aa97ac939
+</uri>
+<string>
+My Favourite Things
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/c98d1b71-3add-45d8-9c8e-755a21e74071
+</uri>
+<string>
+Something's Missing
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/d910924a-51e0-4673-bc5d-68880e7fb1a2
+</uri>
+<string>
+Sailor
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/78bb863d-eb79-4a16-bfc5-7209afeee2c0
+</uri>
+<string>
+Downtown (original version)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/1458424c-994e-4978-98c8-64fdd4f8a155
+</uri>
+<string>
+Casanova
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/3ef9dd52-df2a-4870-bc6d-983985b75333
+</uri>
+<string>
+Alone
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/2754e705-a74f-4dd8-b0d9-a1688d2917c5
+</uri>
+<string>
+Baby Lover
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a0576f28-cd59-4bbd-a1ff-f2d58d6c4762
+</uri>
+<string>
+The Little Shoe Maker
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/99c34128-ed1b-4a4a-8779-87bcbd9b7fb2
+</uri>
+<string>
+My Friend the Sea
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/10f6dde0-1dca-43e3-844f-7071a72b55fb
+</uri>
+<string>
+Chariot
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a0bb4990-111d-404b-816d-295a249786bf
+</uri>
+<string>
+Made in Heaven
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/90be0814-6ec5-49cc-9810-4bbd7067e8ba
+</uri>
+<string>
+Watch Your Heart
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ceaa8c24-150e-4b52-add7-24ece50f32ad
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ef2d4d17-8ceb-41d1-9925-8d2c0f052602
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/26e1f190-604e-4ee4-8bf7-40a5bf303643
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/dbc60306-2480-4016-bb97-96c5308364bb
+</uri>
+<string>
+Its the Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/405cfd78-a6fc-4876-a3a9-c2ccb70e3a5c
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/f6a4317f-b073-47b7-85ed-7e49df254e72
+</uri>
+<string>
+A Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/4d4b0ea2-93d8-450f-bfd8-c6eda98134aa
+</uri>
+<string>
+Call Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/fcadc325-69bd-4de5-a956-8e8d07e6198a
+</uri>
+<string>
+Strangers in the Night
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ce8fa0e3-0997-4b53-8439-854edbc8bc17
+</uri>
+<string>
+The Good Life
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/28338536-8f29-4de4-88bc-eae431e752dd
+</uri>
+<string>
+A Sign of the Times
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/a692e229-53a6-4c7a-b215-04974f482233
+</uri>
+<string>
+This Is My Song
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/ed5204e3-d422-44c9-bc3a-f6ecce5651ea
+</uri>
+<string>
+Downtown
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/7798c139-8e16-4be8-8ab0-676d166bd7e5
+</uri>
+<string>
+I Couldn't Live Without Your Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/dfdd9f39-efb2-40aa-8319-741392fb06bf
+</uri>
+<string>
+I Know a Place
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/31c5f748-95b1-4447-b191-b6f4d3854af0
+</uri>
+<string>
+Kiss Me Goodbye
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/3c72074a-467f-4188-8919-c205a0d7e7b7
+</uri>
+<string>
+Colour My World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/b06da1c6-3b6a-4718-a72d-b66f9e328f92
+</uri>
+<string>
+Don't Sleep in the Subway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/697e6311-f404-46ea-bdc7-377c468d9962
+</uri>
+<string>
+The Other Man's Grass Is Always Greener
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/4bc7d60a-bc91-4c2f-b105-93b883dd68eb
+</uri>
+<string>
+My Love
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/track/01b366cd-c94b-4572-a00d-3c831d407137
+</uri>
+<string>
+Give It a Try
+</string>
+</answer>
+</answers>
+</question>
+<question id="8">
+<string>
+Give me all Kraftwerk albums!
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?album ?albumtitle 
+WHERE {
+  ?album rdf:type mm:Album .
+  ?album mm:releaseType mm:TypeAlbum .
+  ?album dc:title ?albumtitle .
+  ?album dc:creator ?artist .
+  ?artist dc:title 'Kraftwerk' .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c60b47f1-fa8e-4571-9785-7212f9249287
+</uri>
+<string>
+Trans-Europe Express
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/30a6aaf1-1186-4251-8a63-b41cdf5c3641
+</uri>
+<string>
+Autobahn
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/07fcd2b3-e8e8-471c-bc4c-03d2a5346221
+</uri>
+<string>
+Tour de France Soundtracks
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/6aaa509e-f4c7-4687-a611-9d5488a363c2
+</uri>
+<string>
+Electric Cafe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/35d33139-e1b1-4ecf-bfaa-b46e0350beae
+</uri>
+<string>
+Radio-AktivitÃ¤t
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/388829e1-c5b3-4611-bef4-5f12d096e01d
+</uri>
+<string>
+Trans-Europa Express
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/7675941f-4a11-463c-8a05-924eb103a483
+</uri>
+<string>
+Trans Europa Express
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/aa7d78f0-6f79-44ac-ad97-cf6926a4a33c
+</uri>
+<string>
+Computerwelt
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/80203d4b-7b5d-449e-9dca-a62b959d937b
+</uri>
+<string>
+Techno Pop
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8cc90cc5-3c36-4f09-9ee1-05f0b7ff1c46
+</uri>
+<string>
+Trans Europe Express
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b9dfda8b-620e-4bb7-b9c7-e893727de4ff
+</uri>
+<string>
+Computer World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c68f7169-4414-4570-aeb9-11ed1df32187
+</uri>
+<string>
+Die Mensch-Maschine
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/4e56c217-9ad6-4a72-948a-f862ed48ce29
+</uri>
+<string>
+Kraftwerk 2
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8cb01654-34b5-409c-9217-33e1782bd433
+</uri>
+<string>
+The Man-Machine
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/d3036b19-ae67-4ac4-872f-01547f674dbc
+</uri>
+<string>
+Computerwelt
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/1e8b4073-29ca-42b7-9249-ee16ea96625f
+</uri>
+<string>
+Radio-Activity
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e4d727d2-e71a-47ee-8203-3ba14c1df659
+</uri>
+<string>
+Ralf &amp; Florian
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/57ceaa04-f3b1-445c-a7b3-154319f6a3ab
+</uri>
+<string>
+Kraftwerk
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/40be1219-13c3-4d0d-a7d7-1d593e2161d8
+</uri>
+<string>
+Tour de France Soundtracks
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cd6c0c29-5db7-439f-bb76-9a93fa8ff78d
+</uri>
+<string>
+Electric Cafe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/eda8951e-d79c-4d7d-8a98-039af2a587ea
+</uri>
+<string>
+Computer World / Electric Cafe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/995bf9d0-2994-44de-a211-c67294801ea0
+</uri>
+<string>
+La Maquina Humana
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/dba7690f-3dd3-41ce-8cad-e40cddd35d66
+</uri>
+<string>
+ã³ã³ãã¥ã¼ã¿ã¼ã»ã¯ã¼ã«ã
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/0ec7f213-457a-46db-bc8b-549b0b5e419e
+</uri>
+<string>
+Computer World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/d6a0b101-1763-429c-9043-7d4a1ff3a653
+</uri>
+<string>
+Radio-Activity
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/453a9328-4ae4-4559-9fbb-4c4d30008c03
+</uri>
+<string>
+Kraftwerk 2
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8327a929-e283-4307-8219-50a9166ef335
+</uri>
+<string>
+Trans Europe Express
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/7b32b5ab-ab40-4b57-9860-947fbfe42e28
+</uri>
+<string>
+Techno Pop
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/f31bf32e-d1de-4784-8d46-f5c9e9d579f3
+</uri>
+<string>
+Autobahn
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8c6c3f4b-6bdd-4920-a5a7-113727b191f3
+</uri>
+<string>
+Radio-Activity
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/394fa39c-231c-49de-845a-1e3d2a99266e
+</uri>
+<string>
+Computer World
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8479dc49-82d3-440e-9ca6-444fcead5d74
+</uri>
+<string>
+Tour de France
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/31089f3c-5c1b-45b2-a4de-93fb3566b3e1
+</uri>
+<string>
+Radio-AktivitÃ¤t
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3b2598b8-f0f7-4d39-a637-87d692899911
+</uri>
+<string>
+Ralf &amp; Florian
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/9c038eb1-6ec7-4732-8c66-54e4b085bd3d
+</uri>
+<string>
+Kraftwerk 1
+</string>
+</answer>
+</answers>
+</question>
+<question id="38">
+<string>
+Was Keith Richards a member of The Rolling Stones?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+ASK WHERE { 
+  ?artist dc:title 'Keith Richards' .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band . 
+  ?band dc:title 'The Rolling Stones' .
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="9">
+<string>
+How many bands are called Nirvana?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT COUNT(?artist)
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist mm:artistType mm:TypeGroup .
+  ?artist dc:title 'Nirvana' .
+}
+</query>
+<answers>
+<answer>
+<number>
+3
+</number>
+</answer>
+</answers>
+</question>
+<question id="19">
+<string>
+Who produced the album In Utero?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?producer ?name 
+WHERE {
+  ?album rdf:type mm:Album .
+  ?album mm:releaseType mm:TypeAlbum .
+  ?album dc:title 'In Utero' .
+  ?album ar:producer ?producer .
+  ?producer dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/a4d486bd-6020-4a36-9c7d-bf5ce174bcd1
+</uri>
+<string>
+Steve Albini
+</string>
+</answer>
+</answers>
+</question>
+<question id="12">
+<string>
+When is the birthday of Tom Waits?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?beginDate
+WHERE {
+    ?kuenstler dc:title 'Tom Waits'.
+    ?kuenstler mm:beginDate ?beginDate.
+}
+</query>
+<answers>
+<answer>
+<date>
+1949-12-07
+</date>
+</answer>
+</answers>
+</question>
+<question id="32">
+<string>
+Which artists died on the same day as Michael Jackson?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?artist ?name 
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist mm:artistType mm:TypePerson .
+  ?mj dc:title 'Michael Jackson' .
+  ?mj mm:endDate ?date .
+  ?artist mm:endDate ?date .
+  ?artist dc:title ?name .
+  FILTER (!sameTerm(?artist,?mj))
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/02e7d4da-40e4-4689-9a9c-37f11d656994
+</uri>
+<string>
+Yasmine
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/4fa2fa1f-81b8-4a20-99e3-5aa1965ebb0e
+</uri>
+<string>
+Sky Saxon
+</string>
+</answer>
+</answers>
+</question>
+<question id="16">
+<string>
+Give me all bands that Michael Stipe is a member of.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?band ?title
+WHERE { 
+ ?artist dc:title 'Michael Stipe' .
+ ?artist ar:memberOfBand ?bandinstance .
+ ?bandinstance ar:toArtist ?band .
+ ?band dc:title ?title .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/907981c8-f6be-4d8d-9210-01a0c4843b59
+</uri>
+<string>
+The Golden Palominos
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/ea4dfa26-f633-4da6-a52a-f49ea4897b58
+</uri>
+<string>
+R.E.M.
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/44e9e832-3f85-4094-a332-7d0548224cb2
+</uri>
+<string>
+Bingo Hand Job
+</string>
+</answer>
+</answers>
+</question>
+<question id="4">
+<string>
+How may albums did Michael Jackson record?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+SELECT COUNT(?albumtitle)
+WHERE {
+	?album dc:title ?albumtitle .
+	?album dc:creator ?artist .
+	?artist dc:title 'Michael Jackson' .
+}
+</query>
+<answers>
+<answer>
+<number>
+606
+</number>
+</answer>
+</answers>
+</question>
+<question id="49">
+<string>
+Until when was Tina Turner married to Ike Turner?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?date
+WHERE {
+  ?artist dc:title 'Tina Turner' .
+  ?artist ar:marriedTo ?spouseinstance .
+  ?spouseinstance ar:toArtist ?spouse .
+  ?spouse dc:title 'Ike Turner' .
+  ?spouseinstance mm:endDate ?date .
+}
+</query>
+<answers>
+<answer>
+<date>
+1978-01-01
+</date>
+</answer>
+</answers>
+</question>
+<question id="14">
+<string>
+How many bands broke up in 2010?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT COUNT(?artist)
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist mm:artistType mm:TypeGroup .
+  ?artist dc:title ?name .
+  { ?artist mm:endDate ?date .
+    FILTER ( ?date &lt;= '2010-12-31'^^xsd:date &amp;&amp; ?date &gt;= '2010-01-01'^^xsd:date ) }
+  UNION 
+  { ?artist mm:endDate ?date .
+    FILTER regex (?date,'2010')
+  }
+}
+</query>
+<answers>
+<answer>
+<number>
+110
+</number>
+</answer>
+</answers>
+</question>
+<question id="45">
+<string>
+Is there a group called The Notwist?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+ASK WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist mm:artistType mm:TypeGroup .
+  ?artist dc:title 'The Notwist' .
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="11">
+<string>
+Was Quee MacArthur a member of Queen?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+ASK WHERE {
+ ?artist dc:title 'Quee MacArthur' .
+ ?artist ar:memberOfBand ?bandinstance .
+ ?bandinstance ar:toArtist ?band .
+ ?band dc:title 'Queen' .
+}
+</query>
+<answers>
+<answer>
+<boolean>
+false
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="31">
+<string>
+When did Pete Best leave The Beatles?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?date
+WHERE {
+	?artist dc:title 'Pete Best' .
+	?artist ar:memberOfBand ?bandinstance .
+	?bandinstance ar:toArtist ?band .
+	?band dc:title 'The Beatles' .
+	?bandinstance mm:endDate ?date .
+}
+</query>
+<answers>
+<answer>
+<date>
+1962-08-16
+</date>
+</answer>
+</answers>
+</question>
+<question id="24">
+<string>
+How many members does the band Trio have?
+</string>
+<query>
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT COUNT(?member)
+WHERE {
+    ?band dc:title 'Trio'.
+    ?member ar:memberOfBand ?bandinstance.
+    ?bandinstance ar:toArtist ?band .
+}
+</query>
+<answers>
+<answer>
+<number>
+3
+</number>
+</answer>
+</answers>
+</question>
+<question id="23">
+<string>
+Since when does Fugazi exist?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?date
+WHERE {
+    ?artist dc:title 'Fugazi'.
+    ?artist mm:beginDate ?date.
+}
+</query>
+<answers>
+<answer>
+<date>
+1987-00-00
+</date>
+</answer>
+</answers>
+</question>
+<question id="39">
+<string>
+Give me all former members of the Berliner Philharmoniker.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?member ?name
+WHERE { 
+  ?member ar:memberOfBand ?orchestrainstance .
+  ?orchestrainstance ar:toArtist ?orchestra . 
+  ?orchestra dc:title 'Berliner Philharmoniker' .
+  ?member dc:title ?name .
+  OPTIONAL { ?orchestrainstance mm:endDate ?date .}
+  FILTER (bound(?date))
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/0d1af11b-9236-4cc4-8141-9ece7a495756
+</uri>
+<string>
+Wolfgang Boettcher
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/65a44f13-d63e-4516-a094-f3a5307e877f
+</uri>
+<string>
+Lothar Koch
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/6afe0f78-8e90-4539-b562-dfae433d41f2
+</uri>
+<string>
+Karl Leister
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/84045b93-beb0-4bc8-a855-93266ec6bbdc
+</uri>
+<string>
+James Galway
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/87b816f9-749b-42b2-9670-5d3a503bd9e9
+</uri>
+<string>
+Eberhard Finke
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/baa8f822-fc5e-49bb-92cb-df7a65071e8e
+</uri>
+<string>
+Henning Trog
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/d34f1593-36d4-42ad-8b56-fa9f2ea129c2
+</uri>
+<string>
+Gerd Seifert
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/e4669b9c-b321-4586-b18f-6f84724a6d4a
+</uri>
+<string>
+GÃ¶tz Teutsch
+</string>
+</answer>
+</answers>
+</question>
+<question id="21">
+<string>
+When did Kurt Cobain join Nirvana?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?begindate
+WHERE {
+  ?artist dc:title 'Kurt Cobain' .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance mm:beginDate ?begindate .
+  ?bandinstance ar:toArtist ?band .
+  ?band dc:title 'Nirvana' .
+}
+</query>
+<answers>
+<answer>
+<date>
+1988-02-01
+</date>
+</answer>
+</answers>
+</question>
+<question id="44">
+<string>
+How many versions of the song Smells Like Teen Spirit are there?
+</string>
+<query>
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT COUNT(?track)
+WHERE { 
+  ?track rdf:type mm:Track .
+  ?track dc:title 'Smells Like Teen Spirit' .
+}
+</query>
+<answers>
+<answer>
+<number>
+53
+</number>
+</answer>
+</answers>
+</question>
+<question id="50">
+<string>
+Give me the names of John Lennons children?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT DISTINCT ?name
+WHERE {
+  ?artist dc:title 'John Lennon' .
+  ?artist ar:isParent ?childinstance .
+  ?childinstance ar:toArtist ?child .
+  ?child dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<string>
+Sean Lennon
+</string>
+</answer>
+<answer>
+<string>
+Julian Lennon
+</string>
+</answer>
+</answers>
+</question>
+<question id="43">
+<string>
+Give me all Thrash Metal albums.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX ct: &lt;http://www.sc.cit-ec.uni-bielefeld.de/ontologies/musicbrainz#&gt;
+SELECT ?album ?name
+WHERE {
+    ?album rdf:type mm:Album .
+    ?album ct:tag ?tag .
+    ?album dc:title ?name .
+    FILTER regex(?tag,"thrash metal","i")
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/788fc4f7-429c-45e4-b9cb-406c074b380e
+</uri>
+<string>
+Les 100 chefs d'Åuvre de la musique classique, Volume 3 : Classique de charme
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ad02caf0-cf43-4a5e-ba6b-ef284f74c8d6
+</uri>
+<string>
+Una lucertola con la pelle di donna
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/46c90958-c6f6-4c79-b616-552877afc4c7
+</uri>
+<string>
+Local Flavor
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/9df2fd73-95dc-4b96-ab76-d5fd1f69af68
+</uri>
+<string>
+Welcome to the Universe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/788fc4f7-429c-45e4-b9cb-406c074b380e
+</uri>
+<string>
+Les 100 chefs d'Åuvre de la musique classique, Volume 3 : Classique de charme
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5a6c1b09-ef4d-43ae-aa65-79b3fbb87a7c
+</uri>
+<string>
+Future Trance, Volume 14 (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/6c64611c-0bad-4770-a50f-481fd67891bb
+</uri>
+<string>
+Best of Reactivate 2 (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/88cfcd4c-dbe2-46a0-886a-06d3c830ca24
+</uri>
+<string>
+Best of Dance 2006 (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cd7a8945-f7d9-40c3-91a3-35e68f82af13
+</uri>
+<string>
+Adios
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b1c908a7-792a-4212-b87d-c72704da293d
+</uri>
+<string>
+Now and Forever
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/4afb86c7-f9c7-4c8e-a566-686310584be7
+</uri>
+<string>
+Satan Live (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/7da712db-de00-4159-8c30-618ba7870046
+</uri>
+<string>
+Katram savu AtlantÄ«du
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/7bbebd61-30ed-4f1b-9e76-e0b4fa28e451
+</uri>
+<string>
+Return to the 36 Chambers: The Dirty Version
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/96c3dd97-c047-4086-bcf3-43276248b751
+</uri>
+<string>
+A Bach Festival (Empire Brass feat. organ: Douglas Major)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/2a1c08c0-c711-455c-b500-a2cc97df6ecf
+</uri>
+<string>
+Megatrends in Brutality
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/1269ed45-bfa2-4416-82f3-16fac9411c9e
+</uri>
+<string>
+'The Destroyer' DHR Mix Tape
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/aab9191c-f1d4-4b54-b7e5-ad9439d480a5
+</uri>
+<string>
+B.R.M.C.
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8dad8139-e991-42db-8179-8ae9020c6d30
+</uri>
+<string>
+4dolph5on:f4lk
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cc44b800-9705-444e-8329-51924ec55525
+</uri>
+<string>
+The People United Will Never Be Defeated! / Winnsboro Cotton Mill Blues (piano: Ralph van Raat)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/085609e1-b707-43b5-a986-f87882f6a735
+</uri>
+<string>
+MÃ¥ltid
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/2f311a8e-ca12-4c7a-a212-a652b7871ab4
+</uri>
+<string>
+Strawman
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/34e49fbc-5abe-4fcf-94dd-5cbf2453c95c
+</uri>
+<string>
+You're All I Want For Christmas
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/20df62c3-2a8c-40fd-82fe-b4fa22d08a3a
+</uri>
+<string>
+Bloodied but Unbowed
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/28909ef8-309b-46dc-8b2c-5e5b77909ed8
+</uri>
+<string>
+Wrong Idea / Travel On
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3149e627-6c1f-41d4-9d97-c697b7710983
+</uri>
+<string>
+Time of No Reply
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/58aea3d0-52bf-4a72-9b07-49212d7feebc
+</uri>
+<string>
+Suttobasu
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/59c70bb0-27aa-4b0e-93b1-966a38b5abc6
+</uri>
+<string>
+A Decade of Laughs
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5c7647a1-7758-4f45-91f8-4d9ce0e5a746
+</uri>
+<string>
+Golden State
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a18818ca-3c34-4153-a585-56ce645216d1
+</uri>
+<string>
+File Not Found
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a97d46b7-0810-4a6f-b896-3707a97c021d
+</uri>
+<string>
+Candy
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a9ed74cc-83ee-4ebd-9dd8-1cce1ff30a20
+</uri>
+<date>
+6- and 12-String Guitar
+</date>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b5ea0acd-dc9e-4cb8-9ecd-2373c4eb9837
+</uri>
+<string>
+Tashan Dorrsett
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/4bbd48d4-fb43-472a-b7b1-16df53e9f332
+</uri>
+<string>
+2nd CD
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/881243f5-1630-43b7-8eb8-e0fa5eb10c4a
+</uri>
+<string>
+Robotic Tongue
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/888695fa-8acf-4ddb-8726-23edf32e48c5
+</uri>
+<string>
+ã¨ã¢ãªã¢ã« (disc 1: A Sea of Honey)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8a6061ec-b632-4e26-a3df-9f2f48b719cf
+</uri>
+<string>
+Deep Shag
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a4c5c074-81e0-436c-b69a-e230ef2bc84c
+</uri>
+<string>
+Wiederkehr
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c11a0353-765c-4916-ad10-e2eb47c6ec2a
+</uri>
+<string>
+Saddle Creek Records, A Sampler
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c1c8541f-ab8f-4f73-afd0-8df98cac9cba
+</uri>
+<string>
+There's a Star
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cf1f5cc5-ba39-4f0b-8356-f506ff7caabe
+</uri>
+<string>
+Forbidden Broadway Volume Two
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e9a80e9a-bab9-4ea1-a8ea-2cbf180030d9
+</uri>
+<string>
+Loveless
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ec05e5ce-666c-4f4f-b45a-aa9831c444e2
+</uri>
+<string>
+Yargo Live!
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ccc17e02-ebc2-44b6-9408-d97d2242b7fa
+</uri>
+<string>
+New York City Boy
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/dd69418e-5b70-4191-a728-bd2a133c9b96
+</uri>
+<string>
+On How Life Is
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e94773df-98bf-41af-ac61-2c428bdb0cd2
+</uri>
+<string>
+KÃ¤r och galen
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e9cd5391-82cd-4ef8-b58d-1c1c319d1a2f
+</uri>
+<string>
+æå¾ç«ç±
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/f6ced30c-ac98-4588-8b43-c7e9cf43902e
+</uri>
+<string>
+Atlanta
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/fff8f4d9-6c61-43a8-be40-4cab9c1d1fe4
+</uri>
+<string>
+ImÃ¡k Ã©s mantrÃ¡k
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/9b655f72-69c5-4d0f-a9f9-736573945664
+</uri>
+<string>
+Can You Forgive Her?
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5a7e3fa2-0e66-47fe-8949-1412d0a24989
+</uri>
+<string>
+Definitive Jux Presents... II
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3645588f-cdcf-4746-97ac-da059d332010
+</uri>
+<string>
+Loaded
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8c0875e8-14c2-408e-97b8-08fe8b734176
+</uri>
+<string>
+Bothy Culture
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/f77525ab-981c-4bd2-ab5c-3fe4008c215a
+</uri>
+<string>
+Editor's Recommendation
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/56598388-5f37-4e25-88be-9e5ccb2840c3
+</uri>
+<string>
+Bull in the Heather
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/4f98cf29-afa0-4de4-9a18-3c6706abf675
+</uri>
+<string>
+Snowbound
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8e69581e-e54a-4142-ba8a-6fba8783b912
+</uri>
+<string>
+Aff un zo
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5a6c1b09-ef4d-43ae-aa65-79b3fbb87a7c
+</uri>
+<string>
+Future Trance, Volume 14 (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a7e38aad-2c60-4364-a9b5-e70437ca47f7
+</uri>
+<string>
+The Vermilion Family
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cda3f8f2-1d02-46db-b68c-4559b8ed6310
+</uri>
+<string>
+Battery Check
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/da17e300-e5c2-42da-9abf-1815b3ac2377
+</uri>
+<string>
+Definitive Collection (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/7458d118-2946-41c9-b081-220bc428dfde
+</uri>
+<string>
+2=1
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/72354fb3-8f75-47fb-b0d0-46b1df20a1c5
+</uri>
+<string>
+Furious George
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b9dcf7b4-276a-4aae-af04-c5f3b28b98b8
+</uri>
+<string>
+International Punk Rock Box Set (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cf7d8ccd-784f-4dba-a1c8-431ae9050531
+</uri>
+<string>
+Los Lonely Boys
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b69995f9-77a8-4d51-8b95-26882505a6dd
+</uri>
+<string>
+Ambulatory
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/68dd6622-2f27-4fff-a0ac-049966cfcfab
+</uri>
+<string>
+Live! Fillmore West 1969
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ccc2411e-106c-445b-a6a9-f2fb5e6b873e
+</uri>
+<string>
+Mielummin vanha kuin aikuinen / Paha maa
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/14e6793f-0f58-4f41-b662-34043d12e902
+</uri>
+<string>
+Tripping
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/9e531256-e4a2-4ab8-92fd-0c3f92136eba
+</uri>
+<string>
+I'm Stone in Love With You
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c7965114-f21d-4125-9ac0-0bbc4a0d3c70
+</uri>
+<string>
+Seven Veils of Silence
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5b8fae9c-5e0f-4d7f-aeb7-567747213ca1
+</uri>
+<string>
+Pantheon of Fiends
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/4b960355-1449-498c-82c0-e0ebb3d24b40
+</uri>
+<string>
+The Eros of Frigid Beauty
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/6c64611c-0bad-4770-a50f-481fd67891bb
+</uri>
+<string>
+Best of Reactivate 2 (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5fb14a4a-3527-4a4f-8d95-3f54bb5c9f86
+</uri>
+<string>
+Balla Da-li
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/46c90958-c6f6-4c79-b616-552877afc4c7
+</uri>
+<string>
+Local Flavor
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/88cfcd4c-dbe2-46a0-886a-06d3c830ca24
+</uri>
+<string>
+Best of Dance 2006 (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/20f3835e-97bb-4f65-8b56-4d85886d0dd3
+</uri>
+<string>
+A Girl in Winter
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/930a44b4-5ffd-405f-aa79-1a64833d5d98
+</uri>
+<string>
+Durations I-V, Coptic Light
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/52cedb7e-6bcf-439e-b30e-385e049b9e1b
+</uri>
+<string>
+the Relevance of Motion
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3784dcbc-6738-46cb-8658-b65abb27759e
+</uri>
+<string>
+Inner City Blues
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ad02caf0-cf43-4a5e-ba6b-ef284f74c8d6
+</uri>
+<string>
+Una lucertola con la pelle di donna
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5b950055-1215-4498-b160-7718c3836f59
+</uri>
+<string>
+More Than Miles (Dreamhouse 96)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/6a0709e5-5aa0-4f20-9590-47c15c47de8f
+</uri>
+<string>
+Best of the 80's (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3244973a-574a-4c25-8765-c147ba48fb51
+</uri>
+<string>
+Understanding the Words We Speak
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/2dce0624-4e7f-42e1-ab59-d639ede16d39
+</uri>
+<string>
+Arglistige TÃ¤uschung
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/375dc189-9598-4c89-8ae4-4f609a812b3e
+</uri>
+<string>
+Okami Original Soundtrack (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/622de931-d453-4673-b00b-b1db637feb2b
+</uri>
+<string>
+Good Life: The Best Of
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/64fd3a7f-c77a-43f3-b38b-ff39547e482d
+</uri>
+<string>
+The 2nd City EP
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/66db2a5d-4d6c-4f89-b8f3-b4f152f6b6b5
+</uri>
+<string>
+Time for Travelin': The Best of Joe Ely, Volume 2
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/968e53bd-68b8-43ef-9b2d-75ff9fb1295a
+</uri>
+<string>
+Trouble
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/fc02c2ae-ad1e-4900-8a50-c692d0a5b0b3
+</uri>
+<string>
+Llano
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/0742d882-6b74-4cd3-bcf6-5c4fbff8539e
+</uri>
+<string>
+SÃ¥ hÃ¤r Ã¤r det
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/13ce27c1-582d-4fd5-9369-10b955d0ef42
+</uri>
+<string>
+Rappimummepoppep
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8a4eb75d-fff3-4b46-9dd6-99a734f1e467
+</uri>
+<string>
+Soul Pieces EP
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/42e5c268-23a4-4001-8ff6-449814447d91
+</uri>
+<string>
+Martriden
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b1cd5e2d-4953-4146-b1d8-404e74123e34
+</uri>
+<string>
+You Don't Want Me / Only Fools Run Away
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/761c35e1-c1dd-4acc-adae-52a3cd4688da
+</uri>
+<string>
+Simple Sick Device
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/bd91c5e8-fd77-4783-b889-97354aa93c1e
+</uri>
+<string>
+J'aime pas l'amour
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8f7cd7a6-835f-418d-bf74-1c2a5bf8ee4b
+</uri>
+<string>
+Shri Rama Prarthana: The Complete Prayer (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/de0fdc30-b3e9-470a-9cc4-6e25598ff151
+</uri>
+<date>
+1999-06-18: Hultsfred Festival, Hultsfred, Sweden
+</date>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/54db48d3-0c11-41ae-9075-c1e5fff9bf6f
+</uri>
+<string>
+Madrigals 4 &amp; 5 (The Consort of Musicke feat. conductor: Anthony Rooley) (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/972edaec-842c-4bff-9917-842670a54d49
+</uri>
+<string>
+The Fear of Make-Believe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/dac8771a-6405-4197-a807-9150ea75e19a
+</uri>
+<string>
+Daybreak (pre-release)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a0da98ab-4807-4637-8916-e47e32cd337f
+</uri>
+<string>
+Some Births Are Worse Than Murders
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/cc52c39a-231e-4f29-9c26-cbf4c21879d5
+</uri>
+<string>
+Unedited/Unreviewed EP
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e623579e-8c99-4f70-b026-9c9d939fa671
+</uri>
+<string>
+Music Legend Collection 'Blues'
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/63db9a99-754d-4d84-9de0-d537e813148c
+</uri>
+<string>
+Stories of Devils, Angels, Lovers and Murderers
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/db43e3d3-17bd-42e8-9c9c-15655a17612d
+</uri>
+<string>
+The Story in Your Eyes
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b2b4f5fa-a6d5-45cc-a806-a1f93a93f1de
+</uri>
+<string>
+West Side Story (1977 Tokyo Cast) (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ea71ebb3-2642-4d93-969c-9953eddd0434
+</uri>
+<string>
+Mind Bombin
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5d70f256-eb38-40e7-ba3b-b777db3ab412
+</uri>
+<string>
+Tramp on the Street / Put My Rubber Doll Away
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/13e479ee-8230-4216-b74e-52b2fdb1508f
+</uri>
+<string>
+Heavy Ghost Appendices (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/be70502b-b745-4af3-9584-bd89ef893c69
+</uri>
+<string>
+Relocator
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/baebebec-a26b-45c4-b3b2-fa288f7d12a9
+</uri>
+<string>
+Sonica
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c309abf8-5980-45a9-bdaf-980de61e1c78
+</uri>
+<string>
+Ithaca
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/97727d83-d1c6-4060-8f80-e11418203ed8
+</uri>
+<string>
+Zelig Time
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/9df2fd73-95dc-4b96-ab76-d5fd1f69af68
+</uri>
+<string>
+Welcome to the Universe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8a6061ec-b632-4e26-a3df-9f2f48b719cf
+</uri>
+<string>
+Deep Shag
+</string>
+</answer>
+</answers>
+</question>
+<question id="28">
+<string>
+Since when is Tom Araya a member of Slayer?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?date
+WHERE {
+  ?artist dc:title 'Tom Araya' .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance mm:beginDate ?date .
+  ?bandinstance ar:toArtist ?band .
+  ?band dc:title 'Slayer' .
+}
+</query>
+<answers>
+<answer>
+<date>
+1981-01-01
+</date>
+</answer>
+</answers>
+</question>
+<question id="7">
+<string>
+Give me the present members of The Cure.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?artist ?name
+WHERE {
+  ?band rdf:type mm:Artist .
+  ?band dc:title 'The Cure' .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band .
+  ?artist dc:title ?name .
+  OPTIONAL {?bandinstance mm:endDate ?date .}
+  FILTER (!bound(?date))
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/2b2a7e94-fdc6-4c2e-859c-441faa4089cd
+</uri>
+<string>
+Porl Thompson
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/48555d10-ded8-4172-a737-33bffc0125d5
+</uri>
+<string>
+Simon Gallup
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/7d1a1624-784b-4f89-8ff9-b9b493cd059d
+</uri>
+<string>
+Robert Smith
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/e83e045f-2191-4ccd-b8ba-7d93852b6f9b
+</uri>
+<string>
+Jason Cooper
+</string>
+</answer>
+</answers>
+</question>
+<question id="17">
+<string>
+How many albums did Amy Macdonald release?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT COUNT(?album)
+WHERE {
+  ?album rdf:type mm:Album .
+  ?album mm:releaseType mm:TypeAlbum .
+  ?album dc:title ?albumtitle .
+  ?album dc:creator ?artist .
+  ?artist dc:title 'Amy Macdonald' .
+}
+</query>
+<answers>
+<answer>
+<number>
+10
+</number>
+</answer>
+</answers>
+</question>
+<question id="42">
+<string>
+Who composed the soundtrack of The Virgin Suicides?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?composer ?name
+WHERE {
+    ?album mm:releaseType mm:TypeSoundtrack .
+    ?album dc:title 'The Virgin Suicides' .
+    ?album ar:composer ?composer . 
+    ?composer dc:title ?name.
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/cb67438a-7f50-4f2b-a6f1-2bb2729fd538
+</uri>
+<string>
+Air
+</string>
+</answer>
+</answers>
+</question>
+<question id="40">
+<string>
+Who wrote the song Freeway of Love?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT DISTINCT ?artist ?name
+WHERE {
+  ?track rdf:type mm:Track .
+  ?track dc:title 'Freeway of Love' .
+  ?track dc:creator ?artist .
+  ?artist dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/2f9ecbed-27be-40e6-abca-6de49d50299e
+</uri>
+<string>
+Aretha Franklin
+</string>
+</answer>
+</answers>
+</question>
+<question id="15">
+<string>
+Give me all albums with the BBC Symphony Orchestra.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?album ?title
+WHERE {
+  ?album rdf:type mm:Album .
+  ?album ar:performingOrchestra ?orchestra .
+  ?orchestra dc:title 'BBC Symphony Orchestra' .
+  ?album dc:title ?title .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/4bc8b3da-9cc8-48e6-bfab-1ec94626e0d4
+</uri>
+<string>
+Brahms
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/63f82ef6-1ce9-4ea0-9c3d-a9de4640016c
+</uri>
+<string>
+Last Night of the Proms (The 100th Season)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e9cad5e7-4f41-4b7a-83f3-60554a0a8614
+</uri>
+<string>
+Beethoven/Mozart: Piano Concertos (Clifford Curzon)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/18a7aa23-6656-4e39-8ef7-c3a3a4f7ddaf
+</uri>
+<string>
+The Young Person's Guide to the Orchestra / Four Sea Interludes (BBC Symphony Orchestra feat. conductor: Sir Andrew Davis)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c7f1341d-874e-4533-a0bb-5abe77abcb6d
+</uri>
+<string>
+The Perlman Edition (disc 5: Prokofiev Violin Concertos &amp; Sonata for Two Violins)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3e559fdd-0bc1-452a-90f6-ae71fb600d83
+</uri>
+<string>
+Enigma Variations / Pomp and Circumstance / The Crown of India (BBC Symphony Orchestra, feat. conductor: Leonard Bernstein)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/02cbf72c-8b93-4e3c-86ee-a6e7ea586296
+</uri>
+<string>
+Cockaigne Overture / Introduction and Allegro / Serenade in E minor / Enigma Variations (BBC Symphony Orchestra feat. conductor: Andrew Davis)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/578da6d4-a5fc-4255-85e9-0a124f07f93f
+</uri>
+<string>
+The Dharma at Big Sur / My Father Knew Charles Ives (BBC Symphony Orchestra feat. conductor: John Adams) (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e6b43d6f-6c32-4a12-b93f-2e6680b82082
+</uri>
+<string>
+The Dharma at Big Sur / My Father Knew Charles Ives (BBC Symphony Orchestra feat. conductor: John Adams) (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a2988172-5ede-41b9-bf04-5259b9bc613d
+</uri>
+<string>
+Pli Selon Pli / Le Visage Nuptial / Le Soleil des eaux / Figures, Doubles, Prismes (BBC Symphony Orchestra feat. conductor: Pierre Boulez) (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/b2558e90-0506-4d8c-82b5-2ae9e29a7a71
+</uri>
+<string>
+The Isle of the Dead, Op. 29 / Two Ãtudes-tableaux / Pictures at an Exhibition (BBC Symphony Orchestra feat. conductor Evgeny Svetlanov)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5dcc5017-3fbd-457e-9326-31fce3f63905
+</uri>
+<string>
+Vanessa (BBC Symphony Orchestra feat. conductor: Leonard Slatkin) (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/a478a8a3-5c3e-4fc7-b201-04531cb84a83
+</uri>
+<string>
+Vanessa (BBC Symphony Orchestra feat. conductor: Leonard Slatkin) (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c8b9f993-c476-4ec7-947c-35cebe4f314c
+</uri>
+<string>
+A Sea Symphony (BBC Symphony Orchestra &amp; Chorus feat. conductor: Andrew Davis)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/43da5103-3b0e-41b9-9a4e-9fedc05621c4
+</uri>
+<string>
+Falstaff / Romance for Bassoon / Grania and Diarmid / Froissart
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3f4f58cf-56e5-48a0-9488-3c2b09a5a1ae
+</uri>
+<string>
+Not the Messiah (He's a Very Naughty Boy)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/24cf9b07-2f9e-4589-96ce-906f778dafc7
+</uri>
+<string>
+Taverner (BBC Symphony Orchestra feat. conductor: Oliver Knussen) (disc 1)
+</string>
+</answer>
+</answers>
+</question>
+<question id="36">
+<string>
+In which band did Frank Sinatra play?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?band ?name
+WHERE {
+  ?artist dc:title 'Frank Sinatra' .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band .
+  ?band dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/35e227e5-f724-4699-91b2-d5184cdc7411
+</uri>
+<string>
+The Rat Pack
+</string>
+</answer>
+</answers>
+</question>
+<question id="48">
+<string>
+Did the Sex Pistols already break up?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+ASK WHERE {
+    ?artist dc:title 'Sex Pistols'.
+    ?artist mm:endDate ?endDate.
+    FILTER (bound(?endDate))
+}
+</query>
+<answers>
+<answer>
+<boolean>
+true
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="20">
+<string>
+How long is the Miami Vice theme?
+</string>
+<query>
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?duration
+WHERE {
+  ?track rdf:type mm:Track . 
+  ?track dc:title ?title .
+  ?track mm:duration ?duration .
+  FILTER (regex(?title,'Miami Vice') &amp;&amp; regex(?title,'theme'))
+}
+</query>
+<answers>
+<answer>
+<string>
+150.266
+</string>
+</answer>
+</answers>
+</question>
+<question id="10">
+<string>
+When did the Sex Pistols break up?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?date
+WHERE {
+    ?artist rdf:type mm:Artist .
+    ?artist dc:title 'Sex Pistols'.
+    ?artist mm:endDate ?date .
+}
+</query>
+<answers>
+<answer>
+<date>
+1978-01-14
+</date>
+</answer>
+</answers>
+</question>
+<question id="29">
+<string>
+Give me all people who were members of The Beatles.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?artist ?name
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist mm:artistType mm:TypePerson .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band .
+  ?band dc:title 'The Beatles' .
+  ?artist dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/0d4ab0f9-bbda-4ab1-ae2c-f772ffcfbea9
+</uri>
+<string>
+Pete Best
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/300c4c73-33ac-4255-9d57-4e32627f5e13
+</uri>
+<string>
+Ringo Starr
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/42a8f507-8412-4611-854f-926571049fa0
+</uri>
+<string>
+George Harrison
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/49a51491-650e-44b3-8085-2f07ac2986dd
+</uri>
+<string>
+Stuart Sutcliffe
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/4d5447d7-c61c-4120-ba1b-d7f471d385b9
+</uri>
+<string>
+John Lennon
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/ba550d0e-adac-4864-b88b-407cab5e76af
+</uri>
+<string>
+Paul McCartney
+</string>
+</answer>
+</answers>
+</question>
+<question id="35">
+<string>
+Who was Frank Sinatra married to?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+SELECT ?artist ?name
+WHERE {
+  ?artist ar:marriedTo ?spouseinstance .
+  ?spouseinstance ar:toArtist ?spouse .
+  ?spouse dc:title 'Frank Sinatra' .
+  ?artist dc:title ?name .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/04bac187-160c-4b72-9ba1-cd6fd07ca6be
+</uri>
+<string>
+Mia Farrow
+</string>
+</answer>
+</answers>
+</question>
+<question id="6">
+<string>
+Which artists have their 50th birthday on May 30, 2011?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?artistname 
+WHERE {
+  ?artist dc:title ?artistname .
+  ?artist mm:beginDate "1961-05-30"^^xsd:dateTime .
+}
+</query>
+<answers>
+<answer>
+<string>
+Harry Enfield
+</string>
+</answer>
+<answer>
+<string>
+Tom McManamon
+</string>
+</answer>
+<answer>
+<string>
+Harry Enfield
+</string>
+<string>
+Tom McManamon
+</string>
+</answer>
+</answers>
+</question>
+<question id="41">
+<string>
+When did Kurt Cobain die?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?date
+WHERE {
+  ?artist dc:title 'Kurt Cobain' .
+  ?artist mm:endDate ?date .
+}
+</query>
+<answers>
+<answer>
+<date>
+1994-04-05
+</date>
+</answer>
+</answers>
+</question>
+<question id="13">
+<string>
+Which artists were born on the 29th of December 1960?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?artist ?name
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist mm:artistType mm:TypePerson .
+  ?artist dc:title ?name .
+  ?artist mm:beginDate "1960-12-29"^^xsd:dateTime .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/bda0b10d-09d4-4e49-bd89-7255c34da7bc
+</uri>
+<string>
+Ilkka Paananen
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/1c609c5b-d3f3-4b84-90eb-9ad01220b68b
+</uri>
+<string>
+Ramona Maria Luengen
+</string>
+</answer>
+</answers>
+</question>
+<question id="3">
+<string>
+When was the band Green Day founded?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?date
+WHERE {
+    ?artist rdf:type mm:Artist .
+    ?artist mm:artistType mm:TypeGroup .
+    ?artist dc:title 'Green Day'.
+    ?artist mm:beginDate ?date .
+}
+</query>
+<answers>
+<answer>
+<date>
+1989-00-00
+</date>
+</answer>
+</answers>
+</question>
+<question id="18">
+<string>
+Show me all live albums by Michael Jackson!
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?album ?title
+WHERE {
+  ?album rdf:type mm:Album . 
+  ?album mm:releaseType mm:TypeLive .
+  ?album dc:title ?title .
+  ?album dc:creator ?artist .
+  ?artist dc:title 'Michael Jackson' .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/90092a8c-899d-47af-aebc-a7806dd2bd67
+</uri>
+<string>
+In Concert
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3691c708-504e-4035-b987-f78c89c3294d
+</uri>
+<string>
+Heal the World Tour 92
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/c995c23e-83f4-4364-a13d-7ab17e6ab6f1
+</uri>
+<string>
+1988: Bad Tour Live in Rotterdam 1988
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/5c7cd653-5cab-43cf-9969-a823c619048a
+</uri>
+<date>
+1988-03-05: Madison Square Garden, New York, NY, USA
+</date>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/90663c57-b44d-4558-ba3d-b37673d54822
+</uri>
+<string>
+Live in Bucharest: The Dangerous Tour (disc 1)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/2d332333-5ccb-4560-a47d-3e605d2728d8
+</uri>
+<string>
+Live in Bucharest: The Dangerous Tour (disc 2)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/011dd451-1910-4ab5-b83f-63f65f6c9dcc
+</uri>
+<string>
+You Were There
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/36b9f2f1-1ba8-4e36-a97e-739ae02a6c56
+</uri>
+<string>
+All of It (Bucharest live October 92)
+</string>
+</answer>
+</answers>
+</question>
+<question id="2">
+<string>
+Which groups was David Bowie a member of?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?band ?bandname
+WHERE {
+  ?artist dc:title 'David Bowie' .
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band .
+  ?band mm:artistType mm:TypeGroup .
+  ?band dc:title ?bandname .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/39dfc059-93b1-41a1-af27-3a753c0711d3
+</uri>
+<string>
+Tin Machine
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/14797449-01d5-431b-9649-ec071c9ac410
+</uri>
+<string>
+David Bowie &amp; The Lower Third
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/03beedf4-babe-4a7e-82d9-4e5883164812
+</uri>
+<string>
+The Manish Boys
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/9f132fea-c047-4b5c-a7a3-4996812ce0d0
+</uri>
+<string>
+Bewlay Bros.
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/1e18f529-2965-494e-be50-4b2a023148d4
+</uri>
+<string>
+The Arnold Corns
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/artist/732ede83-aa0b-4ea3-a9cd-579b3ddf98f0
+</uri>
+<string>
+Davy Jones &amp; The Lower Third
+</string>
+</answer>
+</answers>
+</question>
+<question id="33">
+<string>
+Which singles did the Dead Kennedys release?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+SELECT ?single ?title
+WHERE {
+  ?artist rdf:type mm:Artist .
+  ?artist dc:title 'Dead Kennedys' .
+  ?single mm:releaseType mm:TypeSingle .
+  ?single dc:creator ?artist .
+  ?single dc:title ?title .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/1ac9bffe-b8cc-419d-acab-c4c8b5481447
+</uri>
+<string>
+Too Drunk to Fuck
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/ae51a412-c123-4659-922c-7fdeb195595f
+</uri>
+<string>
+Holiday in Cambodia
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/75db269a-64f1-410d-9e07-06d9aa8ff6d8
+</uri>
+<string>
+California Ã¼ber alles
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/51622cd0-2b15-4272-ab81-4c9221bbc833
+</uri>
+<string>
+Bleed for Me
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/d7222b51-7f3e-4e31-a015-7259753c52a3
+</uri>
+<string>
+Kill the Poor
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3529d969-f67a-43f4-946a-4febde04bcdb
+</uri>
+<string>
+Nazi Punks Fuck Off
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/437af265-b907-492b-8565-797ca7d0fdf9
+</uri>
+<string>
+Halloween
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/15cf0aa5-9087-483b-9770-0a9f8abaf6c6
+</uri>
+<string>
+Buzzbomb From Pasadena
+</string>
+</answer>
+</answers>
+</question>
+<question id="30">
+<string>
+Give me the birthdays of all members of The Beatles.
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?date
+WHERE {
+  ?artist ar:memberOfBand ?bandinstance .
+  ?bandinstance ar:toArtist ?band .
+  ?band dc:title 'The Beatles' .
+  ?artist mm:beginDate ?date .
+}
+</query>
+<answers>
+<answer>
+<date>
+1941-11-24
+</date>
+<string>
+1940-07-07
+</string>
+</answer>
+<answer>
+<date>
+1943-02-24
+</date>
+<string>
+1940-06-23
+</string>
+</answer>
+<answer>
+<string>
+1940-10-09
+</string>
+<date>
+1942-06-18
+</date>
+</answer>
+</answers>
+</question>
+<question id="1">
+<string>
+Which singles did Slayer release?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?album ?title
+WHERE {
+    ?album dc:creator ?artist .
+    ?artist dc:title 'Slayer'.
+    ?album mm:releaseType mm:TypeSingle .
+    ?album dc:title ?title .
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/6e978721-86a5-41dc-acfe-dd8b472322c8
+</uri>
+<string>
+Seasons in the Abyss
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/f196101b-48b9-4e9b-a447-757185d6e5c0
+</uri>
+<string>
+Serenity in Murder
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/1b1c3d04-ff0e-40e0-b755-5cd42f24c687
+</uri>
+<string>
+Stain of Mind
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/7adddf64-0b9a-47ba-b45f-081b871e61ba
+</uri>
+<string>
+Serenity in Murder: Divine Live!
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/561ce388-7848-424d-9cb5-61ac7bb286c5
+</uri>
+<string>
+Seasons in the Abyss
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/e2320c78-0840-481f-80fd-1a9da7019ba7
+</uri>
+<string>
+Eyes of the Insane
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/3185baf5-78f9-4a59-b463-114ff88307bb
+</uri>
+<string>
+Seasons in the Abyss (Blood Pack)
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/8fe8c7fe-80c4-4f3a-a360-ea231cd10e9e
+</uri>
+<string>
+Hate Worldwide
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/d272dbc2-ff1f-47da-823a-87719d31bb6b
+</uri>
+<string>
+God Send Death
+</string>
+</answer>
+<answer>
+<uri>
+http://musicbrainz.org/mm-2.1/album/6cd45627-74ac-44ea-87eb-e223e490940a
+</uri>
+<string>
+Serenity in Murder
+</string>
+</answer>
+</answers>
+</question>
+<question id="25">
+<string>
+Are the members of the Ramones that are not called Ramone?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX ar: &lt;http://musicbrainz.org/ar/ar-1.0#&gt;
+ASK WHERE {
+	?band dc:title 'Ramones' .
+	?artist dc:title ?name .
+	?artist ar:memberOfBand ?bandinstance .
+	?bandinstance ar:toArtist ?band .
+        FILTER (NOT regex(?name,"Ramone"))
+}
+</query>
+<answers>
+<answer>
+<boolean>
+false
+</boolean>
+</answer>
+</answers>
+</question>
+<question id="34">
+<string>
+Is Liz Story a person or a group?
+</string>
+<query>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX mm: &lt;http://musicbrainz.org/mm/mm-2.1#&gt;
+SELECT ?artisttype
+WHERE {
+    ?artist dc:title 'Liz Story'.
+    ?artist mm:artistType ?artisttype.
+}
+</query>
+<answers>
+<answer>
+<uri>
+http://musicbrainz.org/mm/mm-2.1#TypePerson
+</uri>
+</answer>
+</answers>
+</question>
+</dataset>
