@@ -93,7 +93,7 @@ public class ExampleFinder {
 		QueryTree<String> queryTree;
 		for(String resource : posExamples){
 //			logger.info("Fetching model for resource: " + resource);
-			model = modelCache.getModel(resource);
+			model = modelCache.getModel(resource);System.out.println(model.size());
 			queryTree = queryTreeCache.getQueryTree(resource, model);
 			System.out.println(queryTree.getStringRepresentation());
 			posExampleTrees.add(queryTree);
