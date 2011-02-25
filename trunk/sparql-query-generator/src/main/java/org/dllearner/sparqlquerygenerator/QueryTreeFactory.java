@@ -24,6 +24,7 @@ import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
 
 /**
  * 
@@ -41,5 +42,8 @@ public interface QueryTreeFactory<N> {
 	void setPredicateFilter(Filter filter);
 	
 	void setObjectFilter(Filter filter);
+	
+	void setStatementFilter(Selector filter);
+	
 
 }

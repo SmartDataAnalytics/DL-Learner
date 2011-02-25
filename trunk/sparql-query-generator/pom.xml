@@ -58,5 +58,10 @@
         	<artifactId>components-core</artifactId>
         </dependency>
         
+        <dependency>
+        	<groupId>uk.ac.shef.wit</groupId>
+        	<artifactId>simmetrics</artifactId>
+        	<version>1.6.2</version>
+        </dependency>
     </dependencies>
 </project>

@@ -39,6 +39,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
@@ -54,6 +56,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	private Filter predicateFilter = new ZeroFilter();
 	private Filter objectFilter = new ZeroFilter();
+	private Selector statementFilter = new SimpleSelector();
 	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
@@ -66,6 +69,12 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	public void setObjectFilter(Filter filter){
 		this.objectFilter = filter;
+	}
+	
+	@Override
+	public void setStatementFilter(Selector filter) {
+		this.statementFilter = filter;
+		
 	}
 	
 	@Override
@@ -90,7 +99,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		Statement st;
 		SortedSet<Statement> statements;
-		for(Iterator<Statement> it = model.listStatements(); it.hasNext();){
+		for(Iterator<Statement> it = model.listStatements(statementFilter); it.hasNext();){
 			st = it.next();
 			statements = resource2Statements.get(st.getSubject().toString());
 			if(statements == null){
