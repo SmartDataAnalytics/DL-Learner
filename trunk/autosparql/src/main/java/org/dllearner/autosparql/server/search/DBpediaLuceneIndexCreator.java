@@ -200,7 +200,7 @@ public class DBpediaLuceneIndexCreator {
 			String url =
 	            "jdbc:mysql://"+dbServer+"/"+dbName;
 			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-			ps = conn.prepareStatement("SELECT pagerank from pagerank WHERE uri = ?");
+			ps = conn.prepareStatement("SELECT rank from pagerank WHERE uri = ?");
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
