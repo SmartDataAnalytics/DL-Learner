@@ -10,6 +10,7 @@ import org.dllearner.sparqlquerygenerator.util.Filter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
 
 public class QueryTreeCache {
 
@@ -43,6 +44,10 @@ public class QueryTreeCache {
 	
 	public void setObjectFilter(Filter filter){
 		factory.setObjectFilter(filter);
+	}
+	
+	public void setStatementFilter(Selector filter){
+		factory.setStatementFilter(filter);
 	}
 	
 	public void clear(){
