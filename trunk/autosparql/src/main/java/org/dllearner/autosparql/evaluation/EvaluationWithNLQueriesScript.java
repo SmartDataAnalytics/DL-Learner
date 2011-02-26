@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -68,6 +69,8 @@ import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.query.ResultSet;
 
+import de.simba.ner.WordnetQuery;
+
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -81,6 +84,7 @@ public class EvaluationWithNLQueriesScript {
 	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/dbpedia-train_cleaned.xml";
 	private static final String SCHEMA_FILE_PATH = "evaluation/dbpedia_schema.owl";
 	private static final String LUCENE_INDEX_DIRECTORY = "/opt/autosparql/index";
+	private static final String WORDNET_DICTIONARY = "src/main/resources/de/simba/ner/dictionary";
 	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	
 	private static final int NR_OF_POS_START_EXAMPLES_COUNT = 3;
@@ -101,6 +105,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	private DBpediaSchemaIndex schemaIndex;
 	private LuceneSearch luceneSearch;
+	private WordnetQuery wordNet;
 	
 	private QuestionProcessor qProcessor = new QuestionProcessor();
 	
@@ -118,6 +123,7 @@ public class EvaluationWithNLQueriesScript {
 							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()), null, null, predicateFilters), selectCache, constructCache);
 			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
+			wordNet = new WordnetQuery(WORDNET_DICTIONARY);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -241,6 +247,14 @@ public class EvaluationWithNLQueriesScript {
 		return elements;
 	}
 	
+	private Set<String> getSynonyms(Collection<String> words){
+		Set<String> synonyms = new HashSet<String>();
+		for(String w : words){
+			synonyms.addAll(wordNet.getSynset(w));
+		}
+		return synonyms;
+	}
+	
 	private Set<String> getResourcesBySPARQLQuery(String query){
 		logger.info("Sending query...");
 		long startTime = System.currentTimeMillis();
@@ -271,6 +285,11 @@ public class EvaluationWithNLQueriesScript {
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
 				exFinder.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
+				//expand with synonyms
+				if(USE_SYNONYMS){
+					relevantWords.addAll(getSynonyms(relevantWords));
+					logger.info("Extended with synonyms: " + relevantWords);
+				}
 				question = "";
 				for(String word : relevantWords){
 					question += " " + word; 

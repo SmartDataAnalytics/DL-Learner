@@ -30,7 +30,7 @@ public class QuestionBasedStatementFilter implements Selector {
 		String object = null;
 		if(s.getObject().isURIResource()){
 			object = s.getObject().asResource().getURI();
-			object = object.substring(object.lastIndexOf("/"));
+			object = object.substring(object.lastIndexOf("/")+1);
 		} else if(s.getObject().isLiteral()){
 			object = s.getObject().asLiteral().getLexicalForm();
 		}

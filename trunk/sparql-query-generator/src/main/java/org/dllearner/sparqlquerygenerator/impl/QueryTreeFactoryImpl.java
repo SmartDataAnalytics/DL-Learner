@@ -99,7 +99,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		Statement st;
 		SortedSet<Statement> statements;
-		for(Iterator<Statement> it = model.listStatements(statementFilter); it.hasNext();){
+		Iterator<Statement> it = model.listStatements(statementFilter);
+		while(it.hasNext()){
 			st = it.next();
 			statements = resource2Statements.get(st.getSubject().toString());
 			if(statements == null){
