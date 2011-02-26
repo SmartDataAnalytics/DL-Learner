@@ -23,6 +23,10 @@
 			<url>http://maven.mse.jhu.edu/m2repository/</url>
 		</repository>
 		<repository>
+<id>opennlp.sf.net</id>
+<url>http://opennlp.sourceforge.net/maven2</url>
+</repository>
+		<repository>
 			<id>Sesame</id>
 			<url>http://repo.aduna-software.org/maven2/releases/</url>
 		</repository>
@@ -44,6 +48,11 @@
                         <artifactId>bliki-core</artifactId>
                         <version>3.0.16</version>
                 </dependency>
+                <dependency>
+<groupId>opennlp</groupId>
+<artifactId>tools</artifactId>
+<version>1.5.0</version>
+</dependency>
 
 		<!-- GWT dependencies (from central repo) -->
 		<dependency>
