@@ -30,6 +30,7 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ExampleFinder {
@@ -452,6 +453,10 @@ public class ExampleFinder {
 	
 	public void setObjectFilter(Filter filter){
 		queryTreeCache.setObjectFilter(filter);
+	}
+	
+	public void setStatementFilter(Selector filter){
+		queryTreeCache.setStatementFilter(filter);
 	}
 	
 	public String getCurrentQuery(){

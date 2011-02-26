@@ -5,12 +5,15 @@ import info.bliki.api.XMLPagesParser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -25,9 +28,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.lucene.analysis.StopAnalyzer;
+import org.apache.lucene.analysis.StopFilter;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.util.Version;
+import org.apache.solr.analysis.StopFilterFactory;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -37,13 +48,18 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.server.ExampleFinder;
 import org.dllearner.autosparql.server.Generalisation;
+import org.dllearner.autosparql.server.NBR;
 import org.dllearner.autosparql.server.exception.TimeOutException;
+import org.dllearner.autosparql.server.search.DBpediaSchemaIndex;
+import org.dllearner.autosparql.server.search.LuceneSearch;
+import org.dllearner.autosparql.server.search.QuestionProcessor;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.ExactMatchFilter;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -52,12 +68,19 @@ import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.query.ResultSet;
 
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+
 public class EvaluationWithNLQueriesScript {
 	private static Logger logger = Logger.getLogger(EvaluationWithNLQueriesScript.class);
 	
 	private static final boolean USE_SYNONYMS = false;
 	private static final String SOLR_SERVER_URL = "http://139.18.2.164:8983/solr/dbpediaCore/";
 	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/dbpedia-train_cleaned.xml";
+	private static final String SCHEMA_FILE_PATH = "evaluation/dbpedia_schema.owl";
+	private static final String LUCENE_INDEX_DIRECTORY = "/opt/autosparql/index";
 	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	
 	private static final int NR_OF_POS_START_EXAMPLES_COUNT = 3;
@@ -76,6 +99,11 @@ public class EvaluationWithNLQueriesScript {
 	
 	private ExampleFinder exFinder;
 	
+	private DBpediaSchemaIndex schemaIndex;
+	private LuceneSearch luceneSearch;
+	
+	private QuestionProcessor qProcessor = new QuestionProcessor();
+	
 	
 	public EvaluationWithNLQueriesScript(){
 		try {
@@ -88,6 +116,8 @@ public class EvaluationWithNLQueriesScript {
 			exFinder = new ExampleFinder(new SPARQLEndpointEx(
 					new SparqlEndpoint(new URL("http://lod.openlinksw.com/sparql"), 
 							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()), null, null, predicateFilters), selectCache, constructCache);
+			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
+			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -137,13 +167,13 @@ public class EvaluationWithNLQueriesScript {
 		logger.info("Done.");
 	}
 	
-	private Set<String> getResourcesByNLQuery(String query){
+	private Set<String> getResourcesByNLQuery(String question){
 		logger.info("Getting Top " + TOP_K + " resources related to question with Solr...");
 		Set<String> resources = new HashSet<String>();
 		QueryResponse response;
 		try {
 			ModifiableSolrParams params = new ModifiableSolrParams();
-			params.set("q", query);
+			params.set("q", question);
 			params.set("rows", TOP_K);
 			response = server.query(params);
 			for(SolrDocument d : response.getResults()){
@@ -155,6 +185,14 @@ public class EvaluationWithNLQueriesScript {
 			e.printStackTrace();
 		}
 		return resources;
+	}
+	
+	private List<String> getRelevantWords(String question){
+		return qProcessor.getRelevantWords(question);
+//		Properties props = new Properties();
+//	    props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+//	    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+
 	}
 	
 	private List<String> getResourcesByWikipedia(String query) {
@@ -179,7 +217,6 @@ public class EvaluationWithNLQueriesScript {
 			rd.close();
 			XMLPagesParser parser = new XMLPagesParser(sb.toString());
 			parser.parse();
-			String title;
 			for (Page page : parser.getPagesList()) {
 				resources.add("http://dbpedia.org/resource/" + page.getTitle().replace(" ", "_"));
 			}
@@ -193,6 +230,15 @@ public class EvaluationWithNLQueriesScript {
 			e.printStackTrace();
 		}
 		return resources;
+	}
+	
+	private List<String> getSchemaElementsByQuery(String query){
+		logger.info("Getting Top " + TOP_K + " schema elements related to question with Lucene...");
+		long startTime = System.currentTimeMillis();
+		List<String> elements = schemaIndex.getResources(query);
+		logger.info("Got " + elements.size() + " elements in " + (System.currentTimeMillis()-startTime) + "ms.");
+		logger.info(elements);
+		return elements;
 	}
 	
 	private Set<String> getResourcesBySPARQLQuery(String query){
@@ -212,6 +258,7 @@ public class EvaluationWithNLQueriesScript {
 		Set<String> answers;
 		List<String> examples;
 		Set<String> relatedResources;
+		List<String> relevantWords;
 		int i = 1;
 		for(String question : question2Answers.keySet()){
 			logger.info(getNewQuestionString(i++, question));
@@ -221,12 +268,23 @@ public class EvaluationWithNLQueriesScript {
 				logger.info("Target query: \n" + targetQuery);
 				answers = question2Answers.get(question);
 				logger.info("Answers (" + answers.size() + "): " + answers);
-				examples = getResourcesByWikipedia(question);
-				relatedResources = getResourcesByNLQuery(question.substring(0, question.length()-1));
+				//preprocess question to extract only relevant words and set them as filter for statements
+				relevantWords = getRelevantWords(question);
+				exFinder.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
+				question = "";
+				for(String word : relevantWords){
+					question += " " + word; 
+				}
+				question.trim();
+				logger.info("Rebuilt question string: " + question);
+				//get examples
+				examples = getResourcesByWikipedia(question);//luceneSearch.getResources(question)
+				//get resources which are relevant for query and add them as filter for objects
+//				relatedResources = getResourcesByNLQuery(question.substring(0, question.length()-1));
+//				relatedResources.addAll(getSchemaElementsByQuery(question.substring(0, question.length()-1)));
+//				exFinder.setObjectFilter(new ExactMatchFilter(relatedResources));
 				
-				exFinder.setObjectFilter(new ExactMatchFilter(relatedResources));
-				
-				//select some positive example and negative examples
+				//select some positive and negative examples
 				List<String> posExamples = new ArrayList<String>();
 				List<String> negExamples = new ArrayList<String>();
 				for(String ex : examples){
@@ -303,8 +361,16 @@ public class EvaluationWithNLQueriesScript {
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
 		Logger.getRootLogger().removeAllAppenders();
-		ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%m%n"));
+		Layout layout = new PatternLayout("%m%n");
+		ConsoleAppender appender = new ConsoleAppender(layout);
 		Logger.getRootLogger().addAppender(appender);
+		FileAppender fileAppender = new FileAppender(
+				layout, "log/evaluation.log", false);
+		fileAppender.setThreshold(Level.DEBUG);
+		Logger.getRootLogger().addAppender(fileAppender);
+		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
+		
+		
 		new EvaluationWithNLQueriesScript().evaluate();
 	}
 	

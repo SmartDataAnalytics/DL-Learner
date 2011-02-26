@@ -178,7 +178,7 @@ public class DBpediaLuceneIndexCreator {
 			ps.setString(1, uri);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()){
-				pageRank = rs.getInt("pagerank");
+				pageRank = rs.getInt("rank");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

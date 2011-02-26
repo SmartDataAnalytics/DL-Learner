@@ -85,7 +85,7 @@ public class LuceneSearch {
 			    Document d = searcher.doc(doc.doc);
 			    String uri = d.get("uri");
 			    String label = d.get("label");
-			    String comment = d.get("abstract");
+			    String comment = d.get("comment");
 			    String imageURL = d.get("imageURL");
 			    examples.add(new Example(uri, label, imageURL, comment));
 			}
