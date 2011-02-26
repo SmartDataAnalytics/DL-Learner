@@ -86,7 +86,7 @@ public class EvaluationWithNLQueriesScript {
 	private static final int NR_OF_POS_START_EXAMPLES_COUNT = 3;
 	private static final int NR_OF_NEG_START_EXAMPLES_COUNT = 3;
 	
-	private static final int TOP_K = 10;
+	private static final int TOP_K = 20;
 	
 	
 	private Map<String, String> question2query = new Hashtable<String, String>();
@@ -114,7 +114,7 @@ public class EvaluationWithNLQueriesScript {
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 			exFinder = new ExampleFinder(new SPARQLEndpointEx(
-					new SparqlEndpoint(new URL("http://lod.openlinksw.com/sparql"), 
+					new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), //new URL("http://lod.openlinksw.com/sparql"), 
 							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()), null, null, predicateFilters), selectCache, constructCache);
 			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
@@ -336,6 +336,8 @@ public class EvaluationWithNLQueriesScript {
 				e.printStackTrace();
 			} catch (SPARQLQueryException e) {
 				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error("Something went wrong. Trying next question...", e);
 			}
 		}
 	}
