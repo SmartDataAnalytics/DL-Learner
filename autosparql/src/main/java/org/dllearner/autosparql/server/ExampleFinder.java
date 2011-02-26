@@ -94,7 +94,7 @@ public class ExampleFinder {
 		QueryTree<String> queryTree;
 		for(String resource : posExamples){
 //			logger.info("Fetching model for resource: " + resource);
-			model = modelCache.getModel(resource);System.out.println(model.size());
+			model = modelCache.getModel(resource);
 			queryTree = queryTreeCache.getQueryTree(resource, model);
 			System.out.println(queryTree.getStringRepresentation());
 			posExampleTrees.add(queryTree);
@@ -356,7 +356,7 @@ public class ExampleFinder {
 		logger.info("Making NBR...");
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 		lgg = lggGen.getLGG(posExamplesTrees);
-		
+		logger.info("LGG: \n" + lgg.getStringRepresentation());
 		List<String> resources = new ArrayList<String>();
 		resources.addAll(posExamples);
 		resources.addAll(negExamples);
