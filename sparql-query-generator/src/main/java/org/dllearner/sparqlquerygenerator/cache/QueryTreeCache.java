@@ -47,7 +47,7 @@ public class QueryTreeCache {
 	}
 	
 	public void setStatementFilter(Selector filter){
-		factory.setStatementFilter(filter);
+		factory.setStatementSelector(filter);
 	}
 	
 	public void clear(){
