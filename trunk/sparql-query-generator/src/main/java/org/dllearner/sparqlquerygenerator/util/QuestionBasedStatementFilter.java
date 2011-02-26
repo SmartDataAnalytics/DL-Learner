@@ -1,5 +1,7 @@
 package org.dllearner.sparqlquerygenerator.util;
 
+import java.util.Set;
+
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
@@ -11,12 +13,13 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class QuestionBasedStatementFilter implements Selector {
 	
-	private String question;
+	private Set<String> questionWords;
 	private AbstractStringMetric metric;
 	private double threshold = 0.7;
 	
-	public QuestionBasedStatementFilter(String question){
-		this.question = question;
+	
+	public QuestionBasedStatementFilter(Set<String> questionWords){
+		this.questionWords = questionWords;
 		metric = new QGramsDistance();
 		
 	}
@@ -24,14 +27,26 @@ public class QuestionBasedStatementFilter implements Selector {
 	@Override
 	public boolean test(Statement s) {
 		String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
-		String object;
+		String object = null;
 		if(s.getObject().isURIResource()){
 			object = s.getObject().asResource().getURI();
 			object = object.substring(object.lastIndexOf("/"));
 		} else if(s.getObject().isLiteral()){
 			object = s.getObject().asLiteral().getLexicalForm();
 		}
+		if(isSimiliar2QuestionWord(object) || isSimiliar2QuestionWord(predicate)){
+			return true;
+		}
 		
+		return false;
+	}
+	
+	private boolean isSimiliar2QuestionWord(String s){
+		for(String word : questionWords){
+			if(areSimiliar(word, s)){
+				return true;
+			}
+		}
 		return false;
 	}
 	
