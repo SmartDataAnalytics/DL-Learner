@@ -13,6 +13,7 @@ import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementSelector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -46,6 +47,7 @@ public class QueryTreeFilterEvaluation {
 		QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
 		System.out.println("Tree without filtering:\n" + tree.getStringRepresentation());
 		
+		treeFactory.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
 		treeFactory.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
 		QueryTree<String> filteredTree = treeFactory.getQueryTree(uri, model);
 		System.out.println("Tree with filtering:\n" + filteredTree.getStringRepresentation());

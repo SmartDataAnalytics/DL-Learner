@@ -56,7 +56,8 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	
 	private Filter predicateFilter = new ZeroFilter();
 	private Filter objectFilter = new ZeroFilter();
-	private Selector statementFilter = new SimpleSelector();
+	private Selector statementSelector = new SimpleSelector();
+	private com.hp.hpl.jena.util.iterator.Filter<Statement> keepFilter;
 	
 	public QueryTreeFactoryImpl(){
 		comparator = new StatementComparator();
@@ -72,14 +73,24 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	}
 	
 	@Override
-	public void setStatementFilter(Selector filter) {
-		this.statementFilter = filter;
+	public void setStatementSelector(Selector selector) {
+		this.statementSelector = selector;
+		
+	}
+	
+	@Override
+	public void setStatementFilter(com.hp.hpl.jena.util.iterator.Filter<Statement> statementFilter) {
+		this.keepFilter = statementFilter;
 		
 	}
 	
 	@Override
 	public QueryTreeImpl<String> getQueryTree(String example, Model model) {
-		return createTree(model.getResource(example), model);
+		if(keepFilter == null){
+			return createTree(model.getResource(example), model);
+		} else {
+			return createTreeOptimized(model.getResource(example), model);
+		}
 	}
 
 	@Override
@@ -92,14 +103,44 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		return new QueryTreeImpl<String>(example);
 	}
 	
+	private QueryTreeImpl<String> createTreeOptimized(Resource s, Model model){
+		nodeId = 0;
+		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
+		
+		fillMap(s, model, resource2Statements);	
+		
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
+		fillTree(tree, resource2Statements);
+				
+		tree.setUserObject("?");
+		return tree;
+	}
+	
+	private void fillMap(Resource s, Model model, SortedMap<String, SortedSet<Statement>> resource2Statements){
+		Iterator<Statement> it = model.listStatements(s, null, (RDFNode)null).filterKeep(keepFilter);
+		Statement st;
+		SortedSet<Statement> statements;
+		while(it.hasNext()){
+			st = it.next();
+			statements = resource2Statements.get(st.getSubject().toString());
+			if(statements == null){
+				statements = new TreeSet<Statement>(comparator);
+				resource2Statements.put(st.getSubject().toString(), statements);
+			}
+			statements.add(st);
+			if(st.getObject().isURIResource()){
+				fillMap(st.getObject().asResource(), model, resource2Statements);
+			}
+		}
+	}
+	
 	private QueryTreeImpl<String> createTree(Resource s, Model model){
 		nodeId = 0;
-		
 		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
 		
 		Statement st;
 		SortedSet<Statement> statements;
-		Iterator<Statement> it = model.listStatements(statementFilter);
+		Iterator<Statement> it = model.listStatements(statementSelector);
 		while(it.hasNext()){
 			st = it.next();
 			statements = resource2Statements.get(st.getSubject().toString());

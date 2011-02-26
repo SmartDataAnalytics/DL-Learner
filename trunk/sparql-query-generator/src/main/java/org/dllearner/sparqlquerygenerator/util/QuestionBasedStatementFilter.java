@@ -5,18 +5,16 @@ import java.util.Set;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.util.iterator.Filter;
 
-public class QuestionBasedStatementFilter implements Selector {
+public class QuestionBasedStatementFilter extends Filter<Statement> {
 	
 	private Set<String> questionWords;
 	private AbstractStringMetric metric;
-	private double threshold = 0.7;
+	private double threshold = 0.5;
 	
+	int cnt = 0;
 	
 	public QuestionBasedStatementFilter(Set<String> questionWords){
 		this.questionWords = questionWords;
@@ -24,8 +22,22 @@ public class QuestionBasedStatementFilter implements Selector {
 		
 	}
 
+	private boolean isSimiliar2QuestionWord(String s){
+		for(String word : questionWords){
+			if(areSimiliar(word, s)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean areSimiliar(String s1, String s2){//cnt++;System.out.println(cnt);
+		float sim = metric.getSimilarity(s1, s2);
+		return sim >= threshold;
+	}
+
 	@Override
-	public boolean test(Statement s) {
+	public boolean accept(Statement s) {
 		String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
 		String object = null;
 		if(s.getObject().isURIResource()){
@@ -39,40 +51,6 @@ public class QuestionBasedStatementFilter implements Selector {
 		}
 		
 		return false;
-	}
-	
-	private boolean isSimiliar2QuestionWord(String s){
-		for(String word : questionWords){
-			if(areSimiliar(word, s)){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean areSimiliar(String s1, String s2){
-		float sim = metric.getSimilarity(s1, s2);
-		return sim >= threshold;
-	}
-
-	@Override
-	public boolean isSimple() {
-		return false;
-	}
-
-	@Override
-	public Resource getSubject() {
-		return null;
-	}
-
-	@Override
-	public Property getPredicate() {
-		return null;
-	}
-
-	@Override
-	public RDFNode getObject() {
-		return null;
 	}
 
 }
