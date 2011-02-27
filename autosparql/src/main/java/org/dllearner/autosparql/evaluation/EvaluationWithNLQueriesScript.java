@@ -272,13 +272,13 @@ public class EvaluationWithNLQueriesScript {
 		return synonyms;
 	}
 	
-	private Set<String> getResourcesBySPARQLQuery(String query){
+	private Set<String> getResourcesBySPARQLQuery(String query, String varName){
 		logger.info("Sending query...");
 		long startTime = System.currentTimeMillis();
 		Set<String> resources = new HashSet<String>();
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(ENDPOINT, query));
 		while(rs.hasNext()){
-			resources.add(rs.nextSolution().get("x0").asResource().getURI());
+			resources.add(rs.nextSolution().get(varName).asResource().getURI());
 		}
 		logger.info("Done in " + (System.currentTimeMillis()-startTime) + "ms");
 		return resources;
@@ -291,13 +291,12 @@ public class EvaluationWithNLQueriesScript {
 		Set<String> relatedResources;
 		List<String> relevantWords;
 		int i = 1;
-		for(String question : question2Answers.keySet()){question = "Give me all films with Tom Cruise!";
+		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
 			logger.info(getNewQuestionString(i++, question));
 			try {
-				logger.info("Evaluating question \"" + question + "\"...");
 				targetQuery = question2query.get(question);
 				logger.info("Target query: \n" + targetQuery);
-				answers = question2Answers.get(question);
+				answers = getResourcesBySPARQLQuery(targetQuery, "uri");//question2Answers.get(question);
 				logger.info("Answers (" + answers.size() + "): " + answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
@@ -380,7 +379,7 @@ public class EvaluationWithNLQueriesScript {
 					logger.info("Learned SPARQL query: \n" + learnedQuery);
 //					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
 					learnedQuery = "SELECT " + learnedQuery.substring(7);
-					learnedResources = getResourcesBySPARQLQuery(learnedQuery);
+					learnedResources = getResourcesBySPARQLQuery(learnedQuery, "x0");
 					logger.info("Number of resources in learned query: "
 							+ learnedResources.size());
 					if (answers.contains(example)) {
@@ -388,7 +387,7 @@ public class EvaluationWithNLQueriesScript {
 					} else {
 						negExamples.add(example);
 					}
-				} while (answers.equals(learnedResources));
+				} while (!answers.equals(learnedResources));
 				logger.info("Learned successfully query for question \""+ question + "\".");
 			} catch (TimeOutException e) {
 				e.printStackTrace();
