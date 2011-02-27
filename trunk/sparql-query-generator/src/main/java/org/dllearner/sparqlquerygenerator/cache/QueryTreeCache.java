@@ -11,6 +11,7 @@ import org.dllearner.sparqlquerygenerator.util.Filter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 public class QueryTreeCache {
 
@@ -46,8 +47,12 @@ public class QueryTreeCache {
 		factory.setObjectFilter(filter);
 	}
 	
-	public void setStatementFilter(Selector filter){
-		factory.setStatementSelector(filter);
+	public void setStatementFilter(com.hp.hpl.jena.util.iterator.Filter<Statement> filter){
+		factory.setStatementFilter(filter);
+	}
+	
+	public void setStatementSelector(Selector selector){
+		factory.setStatementSelector(selector);
 	}
 	
 	public void clear(){

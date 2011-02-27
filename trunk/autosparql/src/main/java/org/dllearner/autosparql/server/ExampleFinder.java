@@ -31,6 +31,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class ExampleFinder {
@@ -455,8 +456,12 @@ public class ExampleFinder {
 		queryTreeCache.setObjectFilter(filter);
 	}
 	
-	public void setStatementFilter(Selector filter){
+	public void setStatementFilter(com.hp.hpl.jena.util.iterator.Filter<Statement> filter){
 		queryTreeCache.setStatementFilter(filter);
+	}
+	
+	public void setStatementSelector(Selector selector){
+		queryTreeCache.setStatementSelector(selector);
 	}
 	
 	public String getCurrentQuery(){
