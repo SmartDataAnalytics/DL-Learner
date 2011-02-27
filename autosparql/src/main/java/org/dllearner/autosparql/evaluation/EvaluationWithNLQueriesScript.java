@@ -81,6 +81,8 @@ public class EvaluationWithNLQueriesScript {
 	private static Logger logger = Logger.getLogger(EvaluationWithNLQueriesScript.class);
 	
 	private static final boolean USE_SYNONYMS = false;
+	private static final boolean USE_WIKIPEDIA_SEARCH = false;
+	
 	private static final String SOLR_SERVER_URL = "http://139.18.2.164:8983/solr/dbpediaCore/";
 	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/dbpedia-train_cleaned.xml";
 	private static final String SCHEMA_FILE_PATH = "evaluation/dbpedia_schema.owl";
@@ -124,6 +126,7 @@ public class EvaluationWithNLQueriesScript {
 							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()), null, null, predicateFilters), selectCache, constructCache);
 			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
+			luceneSearch.setHitsPerPage(TOP_K);
 			wordNet = new WordnetQuery(WORDNET_DICTIONARY);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -295,6 +298,7 @@ public class EvaluationWithNLQueriesScript {
 				relevantWords = getRelevantWords(question);
 				exFinder.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
 //				exFinder.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
+				
 				//expand with synonyms
 				if(USE_SYNONYMS){
 					relevantWords.addAll(getSynonyms(relevantWords));
@@ -308,8 +312,11 @@ public class EvaluationWithNLQueriesScript {
 				logger.info("Rebuilt question string: " + question);
 				
 				//get examples
-//				examples = getResourcesByWikipedia(question);
-				examples = getResourcesByNLQueryWithLucene(question);
+				if(USE_WIKIPEDIA_SEARCH){
+					examples = getResourcesByWikipedia(question);
+				} else {
+					examples = getResourcesByNLQueryWithLucene(question);
+				}
 				
 				//get resources which are relevant for query and add them as filter for objects
 //				relatedResources = getResourcesByNLQuery(question.substring(0, question.length()-1));
