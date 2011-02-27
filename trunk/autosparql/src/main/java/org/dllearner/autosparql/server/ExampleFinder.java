@@ -11,6 +11,7 @@ import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
+import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.SPARQLQueryGeneratorCached;
@@ -97,7 +98,7 @@ public class ExampleFinder {
 //			logger.info("Fetching model for resource: " + resource);
 			model = modelCache.getModel(resource);
 			queryTree = queryTreeCache.getQueryTree(resource, model);
-			System.out.println(queryTree.getStringRepresentation());
+			System.out.println(TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 			posExampleTrees.add(queryTree);
 		}
 		for(String resource : negExamples){

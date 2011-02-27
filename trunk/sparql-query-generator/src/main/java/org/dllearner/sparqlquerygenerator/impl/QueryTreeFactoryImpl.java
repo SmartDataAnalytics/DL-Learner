@@ -128,7 +128,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 				resource2Statements.put(st.getSubject().toString(), statements);
 			}
 			statements.add(st);
-			if(st.getObject().isURIResource()){
+			if(st.getObject().isURIResource() && !resource2Statements.containsKey(st.getObject().asResource().getURI())){
 				fillMap(st.getObject().asResource(), model, resource2Statements);
 			}
 		}
