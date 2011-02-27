@@ -12,7 +12,7 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	
 	private Set<String> questionWords;
 	private AbstractStringMetric metric;
-	private double threshold = 0.5;
+	private double threshold = 0.3;
 	
 	int cnt = 0;
 	
