@@ -86,7 +86,8 @@ public class EvaluationWithNLQueriesScript {
 	private static final String SOLR_SERVER_URL = "http://139.18.2.164:8983/solr/dbpediaCore/";
 	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/dbpedia-train_cleaned.xml";
 	private static final String SCHEMA_FILE_PATH = "evaluation/dbpedia_schema.owl";
-	private static final String LUCENE_INDEX_DIRECTORY = "/opt/autosparql/index";
+//	private static final String LUCENE_INDEX_DIRECTORY = "/opt/autosparql/index";
+	private static final String LUCENE_INDEX_DIRECTORY = "/home/jl/hdd/other_large_files/index/";
 	private static final String WORDNET_DICTIONARY = "src/main/resources/de/simba/ner/dictionary";
 	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	
@@ -360,7 +361,8 @@ public class EvaluationWithNLQueriesScript {
 					// print learned query up to here
 					String learnedQuery = exFinder.getCurrentQuery();
 					logger.info("Learned SPARQL query: \n" + learnedQuery);
-					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
+//					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
+					learnedQuery = "SELECT " + learnedQuery.substring(7);
 					learnedResources = getResourcesBySPARQLQuery(learnedQuery);
 					logger.info("Number of resources in learned query: "
 							+ learnedResources.size());
