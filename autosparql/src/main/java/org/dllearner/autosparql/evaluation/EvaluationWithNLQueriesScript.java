@@ -61,6 +61,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.ExactMatchFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementSelector;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -193,6 +194,14 @@ public class EvaluationWithNLQueriesScript {
 		return resources;
 	}
 	
+	private List<String> getResourcesByNLQueryWithLucene(String question){
+		logger.info("Getting Top " + TOP_K + " resources related to question with Lucene...");
+		List<String> resources = luceneSearch.getResources(question);
+		logger.info("Got " + resources.size() + " resources:");
+		logger.info(resources);
+		return resources;
+	}
+	
 	private List<String> getRelevantWords(String question){
 		return qProcessor.getRelevantWords(question);
 //		Properties props = new Properties();
@@ -274,7 +283,7 @@ public class EvaluationWithNLQueriesScript {
 		Set<String> relatedResources;
 		List<String> relevantWords;
 		int i = 1;
-		for(String question : question2Answers.keySet()){
+		for(String question : question2Answers.keySet()){question = "Give me all films with Tom Cruise!";
 			logger.info(getNewQuestionString(i++, question));
 			try {
 				logger.info("Evaluating question \"" + question + "\"...");
@@ -285,6 +294,7 @@ public class EvaluationWithNLQueriesScript {
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
 				exFinder.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
+//				exFinder.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
 				//expand with synonyms
 				if(USE_SYNONYMS){
 					relevantWords.addAll(getSynonyms(relevantWords));
@@ -296,8 +306,11 @@ public class EvaluationWithNLQueriesScript {
 				}
 				question.trim();
 				logger.info("Rebuilt question string: " + question);
+				
 				//get examples
-				examples = getResourcesByWikipedia(question);//luceneSearch.getResources(question)
+//				examples = getResourcesByWikipedia(question);
+				examples = getResourcesByNLQueryWithLucene(question);
+				
 				//get resources which are relevant for query and add them as filter for objects
 //				relatedResources = getResourcesByNLQuery(question.substring(0, question.length()-1));
 //				relatedResources.addAll(getSchemaElementsByQuery(question.substring(0, question.length()-1)));

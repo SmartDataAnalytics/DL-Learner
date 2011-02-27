@@ -2,6 +2,7 @@ package org.dllearner.autosparql.server.search;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -36,7 +39,7 @@ public class LuceneSearch {
 			Directory dir = FSDirectory.open(new File(indexDirectory));//RAMDirectory();
 			searcher = new IndexSearcher(dir, true);
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			queryParser = new QueryParser(Version.LUCENE_30, "abstract", analyzer);
+			queryParser = new QueryParser(Version.LUCENE_30, "comment", analyzer);
 			collector = TopScoreDocCollector.create(hitsPerPage, true);
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
@@ -54,6 +57,7 @@ public class LuceneSearch {
 		try {
 			Query query = queryParser.parse(queryString);
 			searcher.search(query, collector);
+//			System.out.println(searcher.search(query, null, 10, new Sort(new SortField("pagerank", SortField.INT))));
 			ScoreDoc[] hits = collector.topDocs(offset).scoreDocs;
 			
 			for(ScoreDoc doc : hits) {
