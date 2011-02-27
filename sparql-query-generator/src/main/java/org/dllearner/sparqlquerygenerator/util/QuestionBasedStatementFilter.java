@@ -3,6 +3,8 @@ package org.dllearner.sparqlquerygenerator.util;
 import java.util.Set;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -11,14 +13,20 @@ import com.hp.hpl.jena.util.iterator.Filter;
 public class QuestionBasedStatementFilter extends Filter<Statement> {
 	
 	private Set<String> questionWords;
-	private AbstractStringMetric metric;
+	
+	private AbstractStringMetric qGramMetric;
+	private AbstractStringMetric levensteinMetric;
+	private AbstractStringMetric jaroWinklerMetric;
+	
 	private double threshold = 0.3;
 	
 	int cnt = 0;
 	
 	public QuestionBasedStatementFilter(Set<String> questionWords){
 		this.questionWords = questionWords;
-		metric = new QGramsDistance();
+		qGramMetric = new QGramsDistance();
+		levensteinMetric = new Levenshtein();
+		jaroWinklerMetric = new JaroWinkler();
 		
 	}
 
@@ -32,7 +40,10 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	}
 	
 	private boolean areSimiliar(String s1, String s2){//cnt++;System.out.println(cnt);
-		float sim = metric.getSimilarity(s1, s2);
+		float qSim = qGramMetric.getSimilarity(s1, s2);
+		float lSim = levensteinMetric.getSimilarity(s1, s2);
+		float jSim = jaroWinklerMetric.getSimilarity(s1, s2);
+		float sim = Math.max(Math.max(qSim, lSim), jSim);
 		return sim >= threshold;
 	}
 
@@ -51,6 +62,10 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 		}
 		
 		return false;
+	}
+	
+	public void setThreshold(double threshold){
+		this.threshold = threshold;
 	}
 
 }

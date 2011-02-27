@@ -5,17 +5,15 @@ import info.bliki.api.XMLPagesParser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -34,12 +32,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.lucene.analysis.StopAnalyzer;
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
-import org.apache.solr.analysis.StopFilterFactory;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -59,9 +51,7 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
-import org.dllearner.sparqlquerygenerator.util.ExactMatchFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
-import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementSelector;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -72,16 +62,11 @@ import com.hp.hpl.jena.query.ResultSet;
 
 import de.simba.ner.WordnetQuery;
 
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.Sentence;
-import edu.stanford.nlp.ling.TaggedWord;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-
 public class EvaluationWithNLQueriesScript {
 	private static Logger logger = Logger.getLogger(EvaluationWithNLQueriesScript.class);
 	
 	private static final boolean USE_SYNONYMS = false;
-	private static final boolean USE_WIKIPEDIA_SEARCH = false;
+	private static final boolean USE_WIKIPEDIA_SEARCH = true;
 	
 	private static final String SOLR_SERVER_URL = "http://139.18.2.164:8983/solr/dbpediaCore/";
 	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/dbpedia-train_cleaned.xml";
@@ -95,6 +80,8 @@ public class EvaluationWithNLQueriesScript {
 	private static final int NR_OF_NEG_START_EXAMPLES_COUNT = 3;
 	
 	private static final int TOP_K = 20;
+	
+	private static final double SIMILARITY_THRESHOLD = 0.5;
 	
 	
 	private Map<String, String> question2query = new Hashtable<String, String>();
@@ -122,13 +109,30 @@ public class EvaluationWithNLQueriesScript {
 			List<String> predicateFilters = new ArrayList<String>();
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-			exFinder = new ExampleFinder(new SPARQLEndpointEx(
-					new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), //new URL("http://lod.openlinksw.com/sparql"), 
-							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList()), null, null, predicateFilters), selectCache, constructCache);
-			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
+			//prefixes and baseURI to improve readability of trees
+			String baseURI = "http://dbpedia.org/resource/";
+			Map<String,String> prefixes = new HashMap<String,String>();
+			prefixes.put("dbo","http://dbpedia.org/ontology/");
+			prefixes.put("dbprop","http://dbpedia.org/property/");
+			prefixes.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
+			prefixes.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+			prefixes.put("skos","http://www.w3.org/2004/02/skos/core#");
+			prefixes.put("geo","http://www.w3.org/2003/01/geo/wgs84_pos#");
+			prefixes.put("georss","http://www.georss.org/georss/");
+			prefixes.put("owl","http://www.w3.org/2002/07/owl#");
+			prefixes.put("yago","http://dbpedia.org/class/yago/");
+			prefixes.put("cyc","http://sw.opencyc.org/concept/");
+			prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
+			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL("http://live.dbpedia.org/sparql"), //new URL("http://lod.openlinksw.com/sparql"), 
+							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
+//			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
 			luceneSearch.setHitsPerPage(TOP_K);
 			wordNet = new WordnetQuery(WORDNET_DICTIONARY);
+			
+			
+			
+			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -297,7 +301,9 @@ public class EvaluationWithNLQueriesScript {
 				logger.info("Answers (" + answers.size() + "): " + answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
-				exFinder.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
+				QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
+				filter.setThreshold(SIMILARITY_THRESHOLD);
+				exFinder.setStatementFilter(filter);
 //				exFinder.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
 				
 				//expand with synonyms
@@ -337,6 +343,17 @@ public class EvaluationWithNLQueriesScript {
 							negExamples.add(ex);
 						}
 					}
+				}
+				//if there are not enough positive examples in search we select some from the answer set which simulates manually addition of user
+				if(posExamples.size() < NR_OF_POS_START_EXAMPLES_COUNT){
+					logger.info("Found only " + posExamples.size() + " positive example(s) in search result. Adding more from the answer set...");
+					for(String answer : answers){
+						posExamples.add(answer);
+						if(posExamples.size() == NR_OF_POS_START_EXAMPLES_COUNT){
+							break;
+						}
+					}
+					
 				}
 				if(posExamples.isEmpty()){
 					logger.warn("Current search returned no positive example in the Top " + TOP_K + ".\n" +
