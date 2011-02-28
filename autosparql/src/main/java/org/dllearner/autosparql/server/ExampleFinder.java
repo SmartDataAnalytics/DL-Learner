@@ -409,8 +409,9 @@ public class ExampleFinder {
 			List<QueryTree<String>> negExamplesTrees){
 		logger.info("Making NBR...");
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
-//		lgg = lggGen.getLGG(posExamplesTrees);
-//		logger.info("LGG: \n" + lgg.getStringRepresentation());
+		lgg = lggGen.getLGG(posExamplesTrees);
+		logger.info("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(
+				lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		List<String> knownResources = new ArrayList<String>();
 		knownResources.addAll(posExamples);
 		knownResources.addAll(negExamples);
