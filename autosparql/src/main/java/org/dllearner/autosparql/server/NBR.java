@@ -978,6 +978,9 @@ public class NBR<N> {
     }
     
     private void limitEqualEdgesToLeafs(QueryTree<N> tree, int maxEqualEdgeCount){
+    	if(tree.getChildren().isEmpty()){
+    		return;
+    	}
     	Set<QueryTree<N>> parents = new HashSet<QueryTree<N>>();
     	for(QueryTree<N> leaf : tree.getLeafs()){
     		if(leaf.getUserObject().equals("?")){
