@@ -339,11 +339,14 @@ public class NBR<N> {
 		this.lgg = lgg;
 		this.negTrees = negTrees;
 		determiningNodeIds = getDeterminingNodeIds(lgg, negTrees);
-//		System.err.println(negTrees.get(0).getStringRepresentation());
 		logger.info("Computing next question...");
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
+		logger.info("Post LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
+				postLGG, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		logger.info("Post LGG(Query):\n" + postLGG.toSPARQLQueryString());
+		logger.info("Post LGG(#Instances):\n" + getAllResources(postLGG.toSPARQLQueryString()).size());
 //		logger.debug("Starting generalisation with tree:\n" + postLGG.getStringRepresentation());
 		limit = knownResources.size();
 		
@@ -425,6 +428,20 @@ public class NBR<N> {
 		return null;
 	}
 	
+	private SortedSet<String> getAllResources(String query){
+		SortedSet<String> resources = new TreeSet<String>();
+		query = "SELECT DISTINCT " + query.substring(7) + " LIMIT 1000";
+		String result = selectCache.executeSelectQuery(endpoint, query);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		String uri;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("x0").getURI();
+			resources.add(uri);
+		}
+		return resources;
+	}
 	
 	private QueryTree<N> getQueryTree(String resource){
 		Model model = modelCache.getModel(resource);
@@ -827,7 +844,7 @@ public class NBR<N> {
 	private QueryTree<N> getFilteredTree(QueryTree<N> tree){
 		nodeId = 0;
 		QueryTree<N> filteredTree = createFilteredTree(tree);
-		return filteredTree;
+		return tree;//filteredTree;
 	}
 	
 	private QueryTree<N> createFilteredTree(QueryTree<N> tree){
