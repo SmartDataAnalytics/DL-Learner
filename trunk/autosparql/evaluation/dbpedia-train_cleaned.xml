@@ -12,8 +12,8 @@ SELECT ?uri ?string
 WHERE
 { 
 	?uri  rdf:type yago:SchoolTypes .
-        OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+        OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -1624,8 +1624,8 @@ SELECT ?uri ?string
 WHERE 
 { 
 	?uri rdf:type yago:CapitalsInEurope.
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en")
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en")}
 }
 </query>
 <answers>
