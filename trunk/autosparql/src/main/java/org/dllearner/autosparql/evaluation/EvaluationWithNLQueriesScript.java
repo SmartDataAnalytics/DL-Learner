@@ -53,6 +53,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -84,7 +85,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	private static final int TOP_K = 20;
 	
-	private static final double SIMILARITY_THRESHOLD = 0.3;
+	private static final double SIMILARITY_THRESHOLD = 0.4;
 	
 	
 	private Map<String, String> question2query = new Hashtable<String, String>();
@@ -322,7 +323,10 @@ public class EvaluationWithNLQueriesScript {
 				relevantWords = getRelevantWords(question);
 				QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
 				filter.setThreshold(SIMILARITY_THRESHOLD);
+				QuestionBasedQueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
+				treeFilter.setThreshold(SIMILARITY_THRESHOLD);
 				exFinder.setStatementFilter(filter);
+				exFinder.setQueryTreeFilter(treeFilter);
 //				exFinder.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
 				
 				//expand with synonyms
