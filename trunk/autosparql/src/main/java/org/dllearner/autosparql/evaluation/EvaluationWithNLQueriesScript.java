@@ -50,6 +50,8 @@ import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 import org.w3c.dom.DOMException;
@@ -289,6 +291,17 @@ public class EvaluationWithNLQueriesScript {
 		return resources;
 	}
 	
+	private boolean LGGIsSolution(List<String> posExamples, Set<String> answers){
+		logger.info("Checking if LGG is already a solution...");
+		QueryTree<String> lgg = exFinder.computeLGG(posExamples);
+		String query = lgg.toSPARQLQueryString();
+		query = "SELECT DISTINCT " + query.substring(7);
+		Set<String> resources = getResourcesBySPARQLQuery(query, "x0");
+		boolean isSolution = resources.equals(answers);
+		logger.info(isSolution);
+		return isSolution;
+	}
+	
 	public void evaluate(){
 		String targetQuery;
 		Set<String> answers;
@@ -299,14 +312,12 @@ public class EvaluationWithNLQueriesScript {
 		int learnedQueries = 0;
 		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
 			logger.debug(getNewQuestionString(i++, question));
-			miniLogger.info("Question: " + question);
 			try {
 				targetQuery = question2query.get(question);
 				logger.debug("Target query: \n" + targetQuery);
-				miniLogger.info("Target SPARQL query:\n" + targetQuery);
 				answers = getResourcesBySPARQLQuery(targetQuery, "uri");//question2Answers.get(question);
 				logger.debug("Answers (" + answers.size() + "): " + answers);
-				miniLogger.info("Answers (#" + answers.size() + "): " + answers);
+				printStartingPosition(i, question, targetQuery, answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
 				QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
@@ -332,7 +343,7 @@ public class EvaluationWithNLQueriesScript {
 				} else {
 					examples = getResourcesByNLQueryWithLucene(question);
 				}
-				
+				miniLogger.info("AutoSPARQL: Should some of the following resources belong to query result?\n" + examples);
 				//get resources which are relevant for query and add them as filter for objects
 //				relatedResources = getResourcesByNLQuery(question.substring(0, question.length()-1));
 //				relatedResources.addAll(getSchemaElementsByQuery(question.substring(0, question.length()-1)));
@@ -344,22 +355,25 @@ public class EvaluationWithNLQueriesScript {
 				for(String ex : examples){
 					if(answers.contains(ex)){
 						if(posExamples.size() < NR_OF_POS_START_EXAMPLES_COUNT){
-							miniLogger.info("User: Select " + ex + " as positive example.");
+							miniLogger.info("User: YES, " + ex + ".");
 							posExamples.add(ex);
 						}
 					} else {
 						if(negExamples.size() < NR_OF_NEG_START_EXAMPLES_COUNT){
-							miniLogger.info("User: Select " + ex + " as negative example.");
+//							miniLogger.info("User: Select " + ex + " as negative example.");
 							negExamples.add(ex);
 						}
 					}
 				}
-				miniLogger.info("Found positive example in search: " + posExamples);
 				//if there are not enough positive examples in search we select some from the answer set which simulates manually addition of user
 				if(posExamples.size() < NR_OF_POS_START_EXAMPLES_COUNT){
 					logger.debug("Found only " + posExamples.size() + " positive example(s) in search result. Adding more from the answer set...");
+					miniLogger.info("AutoSPARQL: I need " + (NR_OF_POS_START_EXAMPLES_COUNT-posExamples.size())
+							+ " more positive example(s) before start with learning!");
 					for(String answer : answers){
-						posExamples.add(answer);
+						if(posExamples.add(answer)){
+							miniLogger.info("User: Choose " + answer + " as additional positive example.");
+						}
 						if(posExamples.size() == NR_OF_POS_START_EXAMPLES_COUNT){
 							break;
 						}
@@ -375,6 +389,12 @@ public class EvaluationWithNLQueriesScript {
 				logger.info("Starting negative example(s) (#" +negExamples.size() + "): " + negExamples);
 				
 				//start learning
+				miniLogger.info("AutoSPARQL: Started learning...");
+				if(LGGIsSolution(posExamples, answers)){
+					logger.info("Learned successful.");
+					miniLogger.info("Learning successful.");
+					continue;
+				}
 				Set<String> learnedResources;
 				String oldLearnedQuery = "";
 				boolean learningFailed = false;
@@ -436,6 +456,22 @@ public class EvaluationWithNLQueriesScript {
 				   "\n*****************************************************\n";
 		return s;
 	}
+	
+	private void printStartingPosition(int i, String question, String targetQuery, Set<String> answers){
+		String s = "*****************************************************\n" +
+		"*****************************************************\n" +
+		   "*                  " + i + ". QUESTION                      *\n       " +
+		   question + 
+		   "\n*****************************************************\n" + 
+		   "          TARGET SPARQL QUERY: \n" +
+		   targetQuery + 
+		   "\n*****************************************************\n" +
+		   "ANSWERS:\n" +
+		   answers +
+		   "\n*****************************************************\n" +
+		   "\n*****************************************************";
+			miniLogger.info(s);
+	}
 
 	/**
 	 * @param args
@@ -464,6 +500,7 @@ public class EvaluationWithNLQueriesScript {
 				layout, "log/mini.log", false);
 		fileAppender2.setThreshold(Level.INFO);
 		
+		Logger.getLogger("mini").removeAllAppenders();
 		Logger.getLogger("mini").addAppender(fileAppender2);
 		
 		
