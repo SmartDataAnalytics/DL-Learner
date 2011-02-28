@@ -407,11 +407,13 @@ public class ExampleFinder {
 	
 	private Example findExampleByNBR(List<QueryTree<String>> posExamplesTrees,
 			List<QueryTree<String>> negExamplesTrees){
-		logger.info("Making NBR...");
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 		lgg = lggGen.getLGG(posExamplesTrees);
-		logger.info("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(
+		logger.info("LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
 				lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		logger.info("LGG(Query):\n" + lgg.toSPARQLQueryString());
+		logger.info("LGG(#Instances):\n" + getResources(lgg.toSPARQLQueryString()).size());
+		logger.info("Making NBR...");
 		List<String> knownResources = new ArrayList<String>();
 		knownResources.addAll(posExamples);
 		knownResources.addAll(negExamples);
