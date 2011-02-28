@@ -291,7 +291,7 @@ public class EvaluationWithNLQueriesScript {
 		Set<String> relatedResources;
 		List<String> relevantWords;
 		int i = 1;
-		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
+		for(String question : question2Answers.keySet()){question = "Give me all films with Tom Cruise!";
 			logger.info(getNewQuestionString(i++, question));
 			try {
 				targetQuery = question2query.get(question);
