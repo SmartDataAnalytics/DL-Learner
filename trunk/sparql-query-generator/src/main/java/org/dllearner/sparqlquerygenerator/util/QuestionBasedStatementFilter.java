@@ -18,7 +18,7 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	private AbstractStringMetric levensteinMetric;
 	private AbstractStringMetric jaroWinklerMetric;
 	
-	private double threshold = 0.3;
+	private double threshold = 0.7;
 	
 	int cnt = 0;
 	
@@ -43,7 +43,8 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 		float qSim = qGramMetric.getSimilarity(s1, s2);
 		float lSim = levensteinMetric.getSimilarity(s1, s2);
 		float jSim = jaroWinklerMetric.getSimilarity(s1, s2);
-		float sim = Math.max(Math.max(qSim, lSim), jSim);
+		float sim = Math.max(qSim, lSim);
+//		sim = Math.max(sim, jSim);
 		return sim >= threshold;
 	}
 

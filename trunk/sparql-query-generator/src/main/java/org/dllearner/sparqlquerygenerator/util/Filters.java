@@ -56,7 +56,7 @@ public class Filters {
 		filters.add(FOAF.birthday.toString());
 		filters.add(FOAF.name.toString());
 		filters.add(FOAF.firstName.toString());
-		filters.add(FOAF.givenname.toString());
+//		filters.add(FOAF.givenname.toString());
 		
 		return filters;
 	}

@@ -81,7 +81,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	private static final int TOP_K = 20;
 	
-	private static final double SIMILARITY_THRESHOLD = 0.5;
+	private static final double SIMILARITY_THRESHOLD = 0.3;
 	
 	
 	private Map<String, String> question2query = new Hashtable<String, String>();
@@ -291,7 +291,8 @@ public class EvaluationWithNLQueriesScript {
 		Set<String> relatedResources;
 		List<String> relevantWords;
 		int i = 1;
-		for(String question : question2Answers.keySet()){question = "Give me all films with Tom Cruise!";
+		int learnedQueries = 0;
+		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
 			logger.info(getNewQuestionString(i++, question));
 			try {
 				targetQuery = question2query.get(question);
@@ -364,6 +365,8 @@ public class EvaluationWithNLQueriesScript {
 				
 				//start learning
 				Set<String> learnedResources;
+				String oldLearnedQuery = "";
+				boolean learningFailed = false;
 				do {
 					// compute new similiar example
 					logger.info("Computing similiar example...");
@@ -376,6 +379,10 @@ public class EvaluationWithNLQueriesScript {
 
 					// print learned query up to here
 					String learnedQuery = exFinder.getCurrentQuery();
+					if(oldLearnedQuery.equals(learnedQuery)){
+						learningFailed = true;
+						break;
+					}oldLearnedQuery = learnedQuery;
 					logger.info("Learned SPARQL query: \n" + learnedQuery);
 //					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
 					learnedQuery = "SELECT " + learnedQuery.substring(7);
@@ -388,7 +395,11 @@ public class EvaluationWithNLQueriesScript {
 						negExamples.add(example);
 					}
 				} while (!answers.equals(learnedResources));
-				logger.info("Learned successfully query for question \""+ question + "\".");
+				if(!learningFailed){
+					logger.info("Learned successfully query for question \""+ question + "\".");
+					learnedQueries++;
+				}
+				
 			} catch (TimeOutException e) {
 				e.printStackTrace();
 			} catch (SPARQLQueryException e) {
@@ -397,6 +408,7 @@ public class EvaluationWithNLQueriesScript {
 				logger.error("Something went wrong. Trying next question...", e);
 			}
 		}
+		logger.info("Learned " + learnedQueries + "/" + question2query.keySet().size() + " queries.");
 	}
 	
 	private String getNewQuestionString(int i, String question){
