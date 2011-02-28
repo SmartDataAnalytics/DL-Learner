@@ -83,6 +83,21 @@ public class ExampleFinder {
 //		queryGen = new SPARQLQueryGeneratorCachedImpl(new BruteForceNBRStrategy());
 	}
 	
+	public QueryTree<String> computeLGG(List<String> posExamples){
+		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
+		Model model;
+		QueryTree<String> queryTree;
+		for(String resource : posExamples){
+			model = modelCache.getModel(resource);
+			queryTree = queryTreeCache.getQueryTree(resource, model);
+			System.out.println("Querytree for " + resource + ":\n" + TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+			posExampleTrees.add(queryTree);
+		}
+		lgg = lggGen.getLGG(posExampleTrees);
+		System.out.println("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		return lgg;
+	}
+	
 	public Example findSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException, TimeOutException{
 		logger.info("Searching similiar example");
@@ -99,7 +114,7 @@ public class ExampleFinder {
 		for(String resource : posExamples){
 			model = modelCache.getModel(resource);
 			queryTree = queryTreeCache.getQueryTree(resource, model);
-			System.out.println("Querytree for " + resource + ":\n" + TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+//			System.out.println("Querytree for " + resource + ":\n" + TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 			posExampleTrees.add(queryTree);
 		}
 		for(String resource : negExamples){
@@ -393,21 +408,21 @@ public class ExampleFinder {
 			List<QueryTree<String>> negExamplesTrees){
 		logger.info("Making NBR...");
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
-		lgg = lggGen.getLGG(posExamplesTrees);
-		logger.info("LGG: \n" + lgg.getStringRepresentation());
+//		lgg = lggGen.getLGG(posExamplesTrees);
+//		logger.info("LGG: \n" + lgg.getStringRepresentation());
 		List<String> knownResources = new ArrayList<String>();
 		knownResources.addAll(posExamples);
 		knownResources.addAll(negExamples);
 		
 		Example example = null;
-		try {
-			example = findExampleByLGG(posExamplesTrees, negExamplesTrees);
-		} catch (SPARQLQueryException e1) {
-			e1.printStackTrace();
-		}
-		if(example != null){
-			return example;
-		}
+//		try {
+//			example = findExampleByLGG(posExamplesTrees, negExamplesTrees);
+//		} catch (SPARQLQueryException e1) {
+//			e1.printStackTrace();
+//		}
+//		if(example != null){
+//			return example;
+//		}
 		try {
 			String uri = nbrGen.getQuestion(lgg, negExamplesTrees, knownResources);
 			example = getExample(uri);
@@ -420,6 +435,7 @@ public class ExampleFinder {
 		return example;
 		
 	}
+	
 	
 	
 	private String getAngleBracketsString(String str){
