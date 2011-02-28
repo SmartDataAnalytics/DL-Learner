@@ -273,6 +273,10 @@ public class EvaluationWithNLQueriesScript {
 	}
 	
 	private Set<String> getResourcesBySPARQLQuery(String query, String varName){
+		if(query.equals("SELECT ?x0 WHERE {?x0 ?y ?z.}")){
+			return Collections.emptySet();
+		}
+		query = query + " LIMIT 1000";
 		logger.info("Sending query...");
 		long startTime = System.currentTimeMillis();
 		Set<String> resources = new HashSet<String>();
