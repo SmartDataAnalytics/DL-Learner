@@ -310,7 +310,7 @@ public class EvaluationWithNLQueriesScript {
 		List<String> relevantWords;
 		int i = 1;
 		int learnedQueries = 0;
-		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
+		for(String question : question2Answers.keySet()){question = "Give me all soccer clubs in the Premier League.";
 			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
@@ -395,6 +395,7 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("Learning successful.");
 					logger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
 					miniLogger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
+					learnedQueries++;
 					continue;
 				}
 				Set<String> learnedResources;
