@@ -270,8 +270,8 @@ public class ExampleFinder {
 	
 	private SortedSet<String> getResources(String query){
 		SortedSet<String> resources = new TreeSet<String>();
-		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(currentQuery, (posExamples.size()+negExamples.size()+1), true));
-		testedQueries.add(currentQuery);
+		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, (posExamples.size()+negExamples.size()+1), true));
+		testedQueries.add(query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
@@ -285,9 +285,9 @@ public class ExampleFinder {
 	
 	private SortedSet<String> getAllResources(String query){
 		SortedSet<String> resources = new TreeSet<String>();
-		String result = selectCache.executeSelectQuery(endpoint, 
-				getLimitedQuery(currentQuery, 1000, true));
-		testedQueries.add(currentQuery);
+		query = getLimitedQuery(query, 1000, true);System.err.println(query);
+		String result = selectCache.executeSelectQuery(endpoint, query);
+		testedQueries.add(query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
 		String uri;
 		QuerySolution qs;
