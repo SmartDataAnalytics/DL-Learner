@@ -311,13 +311,13 @@ public class EvaluationWithNLQueriesScript {
 		int i = 1;
 		int learnedQueries = 0;
 		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
-			logger.debug(getNewQuestionString(i++, question));
+			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
 				logger.debug("Target query: \n" + targetQuery);
 				answers = getResourcesBySPARQLQuery(targetQuery, "uri");//question2Answers.get(question);
 				logger.debug("Answers (" + answers.size() + "): " + answers);
-				printStartingPosition(i, question, targetQuery, answers);
+				printStartingPosition(i++, question, targetQuery, answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
 				QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
@@ -393,6 +393,8 @@ public class EvaluationWithNLQueriesScript {
 				if(LGGIsSolution(posExamples, answers)){
 					logger.info("Learned successful.");
 					miniLogger.info("Learning successful.");
+					logger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
+					miniLogger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
 					continue;
 				}
 				Set<String> learnedResources;
@@ -465,10 +467,7 @@ public class EvaluationWithNLQueriesScript {
 		   "\n*****************************************************\n" + 
 		   "          TARGET SPARQL QUERY: \n" +
 		   targetQuery + 
-		   "\n*****************************************************\n" +
-		   "ANSWERS:\n" +
-		   answers +
-		   "\n*****************************************************\n" +
+		   "\n*****************************************************" +
 		   "\n*****************************************************";
 			miniLogger.info(s);
 	}
