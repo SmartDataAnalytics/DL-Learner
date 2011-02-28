@@ -94,6 +94,7 @@ public class ExampleFinder {
 			posExampleTrees.add(queryTree);
 		}
 		lgg = lggGen.getLGG(posExampleTrees);
+		currentQuery = lgg.toSPARQLQueryString();
 		System.out.println("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		return lgg;
 	}
