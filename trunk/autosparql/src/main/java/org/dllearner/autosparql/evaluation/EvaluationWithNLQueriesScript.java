@@ -413,11 +413,11 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("AutoSPARQL: Should \"" + example + "\" belong to the query result?");
 					// print learned query up to here
 					String learnedQuery = exFinder.getCurrentQuery();
-					if(oldLearnedQuery.equals(learnedQuery)){
-						learningFailed = true;
-						logger.info("Aborting because learned again same query.");
-						break;
-					}oldLearnedQuery = learnedQuery;
+//					if(oldLearnedQuery.equals(learnedQuery)){
+//						learningFailed = true;
+//						logger.info("Aborting because learned again same query.");
+//						break;
+//					}oldLearnedQuery = learnedQuery;
 					logger.debug("Learned SPARQL query: \n" + learnedQuery);
 //					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
 					learnedQuery = "SELECT " + learnedQuery.substring(7);
