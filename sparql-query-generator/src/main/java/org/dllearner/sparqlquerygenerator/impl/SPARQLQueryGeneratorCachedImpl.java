@@ -112,9 +112,9 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 	@Override
 	public List<String> getSPARQLQueries(List<QueryTree<String>> posExamples,
 			boolean learnFilters) {
-		if(posExamples.size() > this.posQueryTrees.size()){
-			newPosExample = posExamples.get(posExamples.size()-1);
-		}
+//		if(posExamples.size() > this.posQueryTrees.size()){
+//			newPosExample = posExamples.get(posExamples.size()-1);
+//		}
 		this.posQueryTrees = posExamples;
 		this.negQueryTrees = new ArrayList<QueryTree<String>>();
 		
@@ -156,7 +156,7 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 	private void learnPosOnly(){
 		resultQueries.clear();
 		resultTrees.clear();
-		if(posQueryTrees.size() == 2 || newPosExample != null){
+//		if(posQueryTrees.size() == 2 || newPosExample != null){
 			if(logger.isDebugEnabled()){
 				logger.debug("Computing LGG ...");
 			}
@@ -164,11 +164,12 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 			Monitor monitor = MonitorFactory.getTimeMonitor("LGG monitor");
 			
 			monitor.start();
-			if(posQueryTrees.size() == 2){
-				lgg = lggGenerator.getLGG(posQueryTrees);
-			} else {
-				lgg = lggGenerator.getLGG(lgg, newPosExample);
-			}
+			lgg = lggGenerator.getLGG(posQueryTrees);
+//			if(posQueryTrees.size() == 2){
+//				lgg = lggGenerator.getLGG(posQueryTrees);
+//			} else {
+//				lgg = lggGenerator.getLGG(lgg, newPosExample);
+//			}
 			
 			monitor.stop();
 			
@@ -179,7 +180,7 @@ public class SPARQLQueryGeneratorCachedImpl implements SPARQLQueryGeneratorCache
 				logger.debug(lgg.getStringRepresentation());
 				logger.debug("LGG computation time: " + monitor.getTotal() + " ms");
 			}
-		}
+//		}
 		
 		resultQueries.add(lgg.toSPARQLQueryString(true));
 		resultTrees.add(lgg);
