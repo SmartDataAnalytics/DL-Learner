@@ -285,7 +285,7 @@ public class ExampleFinder {
 	
 	private SortedSet<String> getAllResources(String query){
 		SortedSet<String> resources = new TreeSet<String>();
-		query = getLimitedQuery(query, 1000, true);System.err.println(query);
+		query = getLimitedQuery(query, 1000, true);
 		String result = selectCache.executeSelectQuery(endpoint, query);
 		testedQueries.add(query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
