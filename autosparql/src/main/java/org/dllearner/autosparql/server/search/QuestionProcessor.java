@@ -56,7 +56,7 @@ public class QuestionProcessor {
 		List<String> words = new ArrayList<String>();
 		List<ArrayList<? extends HasWord>> sentences = tagger.tokenizeText(new BufferedReader(new StringReader(question)));
 		for (ArrayList<? extends HasWord> sentence : sentences) {
-		    ArrayList<TaggedWord> tSentence = tagger.tagSentence(sentence);
+		    ArrayList<TaggedWord> tSentence = tagger.tagSentence(sentence);System.out.println(tSentence);
 		    String nounPhrase = "";
 		    boolean firstWord = true;
 		    for(TaggedWord tWord : tSentence){
@@ -68,7 +68,7 @@ public class QuestionProcessor {
 		    		firstWord = false;
 		    	}
 		    	//if words belongs to noun phrase treat them as one single term
-		    	if(tWord.tag().equals("NNP")){
+		    	if(tWord.tag().equals("NNP") || tWord.tag().startsWith("NN")){
 		    		nounPhrase += " " + tWord.word();
 		    	} else {
 		    		if(!nounPhrase.isEmpty()){

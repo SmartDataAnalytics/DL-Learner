@@ -15,19 +15,22 @@ import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementSelector;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
 public class QueryTreeFilterEvaluation {
+	
+	private static double THRESHOLD = 0.4;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String question = "Give me all actors starring in Batman Begins.";//"Give me all European Capitals!";
-		String uri = "http://dbpedia.org/resource/Christian_Bale";//"http://dbpedia.org/resource/Vienna";
+		String question = "Give me all soccer clubs in the Premier League.";//"Give me all European Capitals!";
+		String uri = "http://dbpedia.org/resource/Fulham_F.C.";//"http://dbpedia.org/resource/Vienna";
 		
 		System.out.println("Question: \"" + question + "\"");
 		System.out.println("Resource: " + uri);
@@ -64,11 +67,16 @@ public class QueryTreeFilterEvaluation {
 		QueryTree<String> tree = treeFactory.getQueryTree(uri, model);
 		System.out.println("Tree without filtering:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, baseURI, prefixes));
 		
-//		treeFactory.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
-		treeFactory.setStatementFilter(new QuestionBasedStatementFilter(new HashSet<String>(relevantWords)));
+		QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
+		filter.setThreshold(THRESHOLD);
+		treeFactory.setStatementFilter(filter);
 		
 		QueryTree<String> filteredTree = treeFactory.getQueryTree(uri, model);
-		System.out.println("Tree with filtering:\n" + TreeHelper.getAbbreviatedTreeRepresentation(filteredTree, baseURI, prefixes));
+		System.out.println("Tree with filtering before creation:\n" + TreeHelper.getAbbreviatedTreeRepresentation(filteredTree, baseURI, prefixes));
+		
+//		QuestionBasedQueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
+//		filteredTree = treeFilter.getFilteredQueryTree(filteredTree);
+//		System.out.println("Tree with filtering after creation:\n" + TreeHelper.getAbbreviatedTreeRepresentation(filteredTree, baseURI, prefixes));
 
 	}
 

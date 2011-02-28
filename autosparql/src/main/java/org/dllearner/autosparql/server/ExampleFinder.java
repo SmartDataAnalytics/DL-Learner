@@ -29,6 +29,7 @@ import org.dllearner.sparqlquerygenerator.operations.nbr.NBRGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrategy;
 import org.dllearner.sparqlquerygenerator.util.Filter;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -62,6 +63,8 @@ public class ExampleFinder {
 	private LGGGenerator<String> lggGen;
 	private NBR<String> nbrGen;
 	
+	private QuestionBasedQueryTreeFilter treeFilter;
+	
 	private boolean makeAlwaysNBR = false;
 	
 	private static final int MAX_NBR_COMPUTING_TIME = 100;
@@ -94,10 +97,14 @@ public class ExampleFinder {
 			posExampleTrees.add(queryTree);
 		}
 		lgg = lggGen.getLGG(posExampleTrees);
+		if(treeFilter != null){
+			lgg = treeFilter.getFilteredQueryTree(lgg);
+		}
 		currentQuery = lgg.toSPARQLQueryString();
 		System.out.println("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		return lgg;
 	}
+	
 	
 	public Example findSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws SPARQLQueryException, TimeOutException{
@@ -425,6 +432,9 @@ public class ExampleFinder {
 			List<QueryTree<String>> negExamplesTrees){
 		LGGGenerator<String> lggGen = new LGGGeneratorImpl<String>();
 		lgg = lggGen.getLGG(posExamplesTrees);
+		if(treeFilter != null){
+			lgg = treeFilter.getFilteredQueryTree(lgg);
+		}
 		logger.info("LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
 				lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		logger.info("LGG(Query):\n" + lgg.toSPARQLQueryString());
@@ -540,6 +550,10 @@ public class ExampleFinder {
 	public void setStatementFilter(com.hp.hpl.jena.util.iterator.Filter<Statement> filter){
 		queryTreeCache.setStatementFilter(filter);
 		nbrGen.setStatementFilter(filter);
+	}
+	
+	public void setQueryTreeFilter(QuestionBasedQueryTreeFilter filter){
+		treeFilter = filter;
 	}
 	
 	public void setStatementSelector(Selector selector){
