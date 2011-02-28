@@ -64,6 +64,7 @@ import de.simba.ner.WordnetQuery;
 
 public class EvaluationWithNLQueriesScript {
 	private static Logger logger = Logger.getLogger(EvaluationWithNLQueriesScript.class);
+	private static Logger miniLogger = Logger.getLogger("mini");
 	
 	private static final boolean USE_SYNONYMS = false;
 	private static final boolean USE_WIKIPEDIA_SEARCH = true;
@@ -297,12 +298,15 @@ public class EvaluationWithNLQueriesScript {
 		int i = 1;
 		int learnedQueries = 0;
 		for(String question : question2Answers.keySet()){//question = "Give me all films with Tom Cruise!";
-			logger.info(getNewQuestionString(i++, question));
+			logger.debug(getNewQuestionString(i++, question));
+			miniLogger.info("Question: " + question);
 			try {
 				targetQuery = question2query.get(question);
-				logger.info("Target query: \n" + targetQuery);
+				logger.debug("Target query: \n" + targetQuery);
+				miniLogger.info("Target SPARQL query:\n" + targetQuery);
 				answers = getResourcesBySPARQLQuery(targetQuery, "uri");//question2Answers.get(question);
-				logger.info("Answers (" + answers.size() + "): " + answers);
+				logger.debug("Answers (" + answers.size() + "): " + answers);
+				miniLogger.info("Answers (#" + answers.size() + "): " + answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
 				QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
@@ -313,14 +317,14 @@ public class EvaluationWithNLQueriesScript {
 				//expand with synonyms
 				if(USE_SYNONYMS){
 					relevantWords.addAll(getSynonyms(relevantWords));
-					logger.info("Extended with synonyms: " + relevantWords);
+					logger.debug("Extended with synonyms: " + relevantWords);
 				}
 				question = "";
 				for(String word : relevantWords){
 					question += " " + word; 
 				}
 				question.trim();
-				logger.info("Rebuilt question string: " + question);
+				logger.debug("Rebuilt question string: " + question);
 				
 				//get examples
 				if(USE_WIKIPEDIA_SEARCH){
@@ -340,17 +344,20 @@ public class EvaluationWithNLQueriesScript {
 				for(String ex : examples){
 					if(answers.contains(ex)){
 						if(posExamples.size() < NR_OF_POS_START_EXAMPLES_COUNT){
+							miniLogger.info("User: Select " + ex + " as positive example.");
 							posExamples.add(ex);
 						}
 					} else {
 						if(negExamples.size() < NR_OF_NEG_START_EXAMPLES_COUNT){
+							miniLogger.info("User: Select " + ex + " as negative example.");
 							negExamples.add(ex);
 						}
 					}
 				}
+				miniLogger.info("Found positive example in search: " + posExamples);
 				//if there are not enough positive examples in search we select some from the answer set which simulates manually addition of user
 				if(posExamples.size() < NR_OF_POS_START_EXAMPLES_COUNT){
-					logger.info("Found only " + posExamples.size() + " positive example(s) in search result. Adding more from the answer set...");
+					logger.debug("Found only " + posExamples.size() + " positive example(s) in search result. Adding more from the answer set...");
 					for(String answer : answers){
 						posExamples.add(answer);
 						if(posExamples.size() == NR_OF_POS_START_EXAMPLES_COUNT){
@@ -373,43 +380,50 @@ public class EvaluationWithNLQueriesScript {
 				boolean learningFailed = false;
 				do {
 					// compute new similiar example
-					logger.info("Computing similiar example...");
+					logger.info("Computing similar example...");
 					long startTime = System.currentTimeMillis();
 					String example = exFinder.findSimilarExample(posExamples,
 							negExamples).getURI();
-					logger.info("Computed similiar example \"" + example
+					logger.debug("Computed similar example \"" + example
 							+ "\" in " + (System.currentTimeMillis() - startTime)
 							+ "ms");
-
+					miniLogger.info("AutoSPARQL: Should \"" + example + "\" belong to the query result?");
 					// print learned query up to here
 					String learnedQuery = exFinder.getCurrentQuery();
 					if(oldLearnedQuery.equals(learnedQuery)){
 						learningFailed = true;
+						logger.info("Aborting because learned again same query.");
 						break;
 					}oldLearnedQuery = learnedQuery;
-					logger.info("Learned SPARQL query: \n" + learnedQuery);
+					logger.debug("Learned SPARQL query: \n" + learnedQuery);
 //					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
 					learnedQuery = "SELECT " + learnedQuery.substring(7);
 					learnedResources = getResourcesBySPARQLQuery(learnedQuery, "x0");
-					logger.info("Number of resources in learned query: "
+					logger.debug("Number of resources in learned query: "
 							+ learnedResources.size());
 					if (answers.contains(example)) {
 						posExamples.add(example);
+						miniLogger.info("User: YES");
 					} else {
 						negExamples.add(example);
+						miniLogger.info("User: NO");
 					}
+					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
 					logger.info("Learned successfully query for question \""+ question + "\".");
+					miniLogger.info("Learning successful.");
 					learnedQueries++;
+				}else {
+					miniLogger.info("AutoSPARQL: Could not learn query.");
 				}
-				
 			} catch (TimeOutException e) {
 				e.printStackTrace();
 			} catch (SPARQLQueryException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
 				logger.error("Something went wrong. Trying next question...", e);
+				miniLogger.info("AutoSPARQL: Could not learn query.");
 			}
 		}
 		logger.info("Learned " + learnedQueries + "/" + question2query.keySet().size() + " queries.");
@@ -435,6 +449,8 @@ public class EvaluationWithNLQueriesScript {
 	public static void main(String[] args) throws TimeOutException, SPARQLQueryException, SolrServerException, ParserConfigurationException, SAXException, IOException {
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
+		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
+		
 		Logger.getRootLogger().removeAllAppenders();
 		Layout layout = new PatternLayout("%m%n");
 		ConsoleAppender appender = new ConsoleAppender(layout);
@@ -443,7 +459,14 @@ public class EvaluationWithNLQueriesScript {
 				layout, "log/evaluation.log", false);
 		fileAppender.setThreshold(Level.DEBUG);
 		Logger.getRootLogger().addAppender(fileAppender);
-		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
+		
+		FileAppender fileAppender2 = new FileAppender(
+				layout, "log/mini.log", false);
+		fileAppender2.setThreshold(Level.INFO);
+		
+		Logger.getLogger("mini").addAppender(fileAppender2);
+		
+		
 		
 		
 		new EvaluationWithNLQueriesScript().evaluate();
