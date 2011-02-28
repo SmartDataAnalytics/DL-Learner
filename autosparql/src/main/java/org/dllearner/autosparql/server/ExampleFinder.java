@@ -282,6 +282,22 @@ public class ExampleFinder {
 		}
 		return resources;
 	}
+	
+	private SortedSet<String> getAllResources(String query){
+		SortedSet<String> resources = new TreeSet<String>();
+		String result = selectCache.executeSelectQuery(endpoint, 
+				getLimitedQuery(currentQuery, 1000, true));
+		testedQueries.add(currentQuery);
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		String uri;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("x0").getURI();
+			resources.add(uri);
+		}
+		return resources;
+	}
 
 //	private Example findExampleByLGG(List<String> posExamples,
 //			List<String> negExamples) throws SPARQLQueryException{
@@ -412,7 +428,7 @@ public class ExampleFinder {
 		logger.info("LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
 				lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
 		logger.info("LGG(Query):\n" + lgg.toSPARQLQueryString());
-		logger.info("LGG(#Instances):\n" + getResources(lgg.toSPARQLQueryString()).size());
+		logger.info("LGG(#Instances):\n" + getAllResources(lgg.toSPARQLQueryString()).size());
 		logger.info("Making NBR...");
 		List<String> knownResources = new ArrayList<String>();
 		knownResources.addAll(posExamples);
@@ -523,6 +539,7 @@ public class ExampleFinder {
 	
 	public void setStatementFilter(com.hp.hpl.jena.util.iterator.Filter<Statement> filter){
 		queryTreeCache.setStatementFilter(filter);
+		nbrGen.setStatementFilter(filter);
 	}
 	
 	public void setStatementSelector(Selector selector){

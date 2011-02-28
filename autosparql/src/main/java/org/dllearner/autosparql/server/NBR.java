@@ -34,6 +34,8 @@ import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.util.iterator.Filter;
 
 public class NBR<N> {
 	
@@ -74,6 +76,10 @@ public class NBR<N> {
 		modelGen = new ModelGenerator(endpoint, new HashSet<String>(((SPARQLEndpointEx)endpoint).getPredicateFilters()), constructCache);
 		modelCache = new ModelCache(modelGen);
 		treeCache = new QueryTreeCache();
+	}
+	
+	public void setStatementFilter(Filter<Statement> filter){
+		treeCache.setStatementFilter(filter);
 	}
 	
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds){
