@@ -1,0 +1,5 @@
+http://example.com/foo#west6
+http://example.com/foo#west7
+http://example.com/foo#west8
+http://example.com/foo#west9
+http://example.com/foo#west10

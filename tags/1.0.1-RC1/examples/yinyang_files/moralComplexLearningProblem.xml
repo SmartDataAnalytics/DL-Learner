@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<LearningProblem 
+
+xmlns="http://www.di.uniba.it/learning"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.di.uniba.it/learning/../LearningProblem.xsd" 
+
+knowledgeBase="file:../moral_reasoner/moral_43instances_complex.owl" 
+positiveExampleSource="moralPositives.txt" 
+negativeExampleSource="moralNegatives.txt" 
+abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 
+learn="true" 
+normalize="true" 
+consistencyCheck="false"
+reasonerURL ="http://localhost:8081"
+
+
+>
+
+<Experiments/>
+<Namespaces>
+	<Namespace uri="http://localhost/foo#"></Namespace>
+</Namespaces>
+
+</LearningProblem>

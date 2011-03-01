@@ -1,0 +1,218 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w13_%C3%BCber">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>über</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w12_l%C3%A4uft"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w14_Lizenznehmer"/>
+    <j.0:hasLemma>über</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w10_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w9_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w11_Handel"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w7_Menschen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Menschen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w6_6000"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w8_besch%C3%A4ftigt"/>
+    <j.0:hasLemma>Mensch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w2_Produktion">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Produktion</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w1_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w3_sind"/>
+    <j.0:hasLemma>Produktion</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w9_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w8_besch%C3%A4ftigt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w10_der"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w12_l%C3%A4uft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>läuft</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w11_Handel"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w13_%C3%BCber"/>
+    <j.0:hasLemma>laufen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w5_etwa">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>etwa</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w4_weltweit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w6_6000"/>
+    <j.0:hasLemma>etwa</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w8_besch%C3%A4ftigt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>beschäftigt</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w7_Menschen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w9_%2C"/>
+    <j.0:hasLemma>beschäftigen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w14_Lizenznehmer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Lizenznehmer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w13_%C3%BCber"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w15_."/>
+    <j.0:hasLemma>Lizenznehmer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w1_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w0_In"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w2_Produktion"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w15_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w14_Lizenznehmer"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w0_In">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>In</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w1_der"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w3_sind">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sind</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w2_Produktion"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w4_weltweit"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w6_6000">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>6000</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w5_etwa"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w7_Menschen"/>
+    <j.0:hasLemma>6000</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w4_weltweit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>weltweit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w3_sind"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w5_etwa"/>
+    <j.0:hasLemma>weltweit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w3_sind"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w13_%C3%BCber"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w1_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w4_weltweit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w9_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w7_Menschen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w12_l%C3%A4uft"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w6_6000"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w11_Handel"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w5_etwa"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w10_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w2_Produktion"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s39598w0_In"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w0_In"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w14_Lizenznehmer"/>
+    <rdfs:label>In der Produktion sind weltweit etwa 6000 Menschen beschäftigt , der Handel läuft über Lizenznehmer .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w15_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s39598w8_besch%C3%A4ftigt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s39598w11_Handel">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Handel</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s39598"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s39598w10_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s39598w12_l%C3%A4uft"/>
+    <j.0:hasLemma>Handel</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+</rdf:RDF>

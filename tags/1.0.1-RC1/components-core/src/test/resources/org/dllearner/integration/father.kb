@@ -1,0 +1,16 @@
+BOTTOM = (male AND female).
+
+// persons
+male(markus).
+male(stefan).
+male(heinz).
+male(bernd).
+female(anna).
+female(gabi).
+female(michelle).
+
+// children
+hasChild(stefan,markus).
+hasChild(markus,anna).
+hasChild(bernd,gabi).
+hasChild(anna,heinz).

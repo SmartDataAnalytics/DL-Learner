@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://www.csc.liv.ac.uk/~luigi/ontologies/basicFamily#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.csc.liv.ac.uk/~luigi/ontologies/basicFamily">
+  <owl:Ontology rdf:about="">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An example ontology created by Matthew Horridge</owl:versionInfo>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Person"/>
+  <owl:Class rdf:ID="Female">
+    <rdfs:subClassOf rdf:resource="#Person"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Male">
+    <rdfs:subClassOf rdf:resource="#Person"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="hasChild">
+    <rdfs:range rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasParent">
+    <rdfs:range rdf:resource="#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasSibling">
+    <rdfs:range rdf:resource="#Person"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </owl:ObjectProperty>
+  <Male rdf:ID="NonnoLuigi">
+    <hasChild>
+      <Person rdf:ID="Nella">
+        <hasChild>
+          <Female rdf:ID="Giovanna">
+            <hasSibling>
+              <Person rdf:ID="Marisella">
+                <hasSibling rdf:resource="#Giovanna"/>
+                <rdf:type rdf:resource="#Female"/>
+                <hasParent rdf:resource="#Nella"/>
+                <hasParent>
+                  <Male rdf:ID="Mauro">
+                    <hasChild rdf:resource="#Marisella"/>
+                    <hasChild rdf:resource="#Giovanna"/>
+                    <hasSibling>
+                      <Male rdf:ID="Paolo">
+                        <rdf:type rdf:resource="#Person"/>
+                        <hasSibling>
+                          <Person rdf:ID="Emilia">
+                            <hasSibling rdf:resource="#Mauro"/>
+                            <rdf:type rdf:resource="#Female"/>
+                            <hasSibling>
+                              <Person rdf:ID="Miriam">
+                                <hasSibling rdf:resource="#Emilia"/>
+                                <hasSibling rdf:resource="#Mauro"/>
+                                <hasSibling rdf:resource="#Paolo"/>
+                                <rdf:type rdf:resource="#Female"/>
+                              </Person>
+                            </hasSibling>
+                            <hasSibling rdf:resource="#Paolo"/>
+                          </Person>
+                        </hasSibling>
+                        <hasSibling rdf:resource="#Miriam"/>
+                        <hasSibling rdf:resource="#Mauro"/>
+                      </Male>
+                    </hasSibling>
+                    <hasSibling rdf:resource="#Emilia"/>
+                    <hasSibling rdf:resource="#Miriam"/>
+                    <rdf:type rdf:resource="#Person"/>
+                  </Male>
+                </hasParent>
+              </Person>
+            </hasSibling>
+            <rdf:type rdf:resource="#Person"/>
+            <hasParent rdf:resource="#Nella"/>
+            <hasParent rdf:resource="#Mauro"/>
+          </Female>
+        </hasChild>
+        <hasChild rdf:resource="#Marisella"/>
+        <hasSibling>
+          <Person rdf:ID="Dino">
+            <rdf:type rdf:resource="#Male"/>
+            <hasChild>
+              <Person rdf:ID="Ombretta">
+                <hasSibling>
+                  <Person rdf:ID="Luigi">
+                    <rdf:type rdf:resource="#Male"/>
+                    <hasSibling rdf:resource="#Ombretta"/>
+                    <hasParent>
+                      <Female rdf:ID="Maria">
+                        <rdf:type rdf:resource="#Person"/>
+                        <hasChild rdf:resource="#Ombretta"/>
+                        <hasParent>
+                          <Male rdf:ID="Gianni">
+                            <hasChild rdf:resource="#Maria"/>
+                            <hasChild>
+                              <Female rdf:ID="Rosanna">
+                                <rdf:type rdf:resource="#Person"/>
+                                <hasChild>
+                                  <Female rdf:ID="Valentina">
+                                    <rdf:type rdf:resource="#Person"/>
+                                    <hasParent>
+                                      <Male rdf:ID="Francesco">
+                                        <hasChild>
+                                          <Female rdf:ID="Milly">
+                                            <hasParent rdf:resource="#Francesco"/>
+                                            <hasSibling>
+                                              <Person rdf:ID="Antonella">
+                                                <hasSibling rdf:resource="#Valentina"/>
+                                                <hasParent rdf:resource="#Rosanna"/>
+                                                <hasSibling rdf:resource="#Milly"/>
+                                                <hasParent rdf:resource="#Francesco"/>
+                                                <rdf:type rdf:resource="#Female"/>
+                                              </Person>
+                                            </hasSibling>
+                                            <rdf:type rdf:resource="#Person"/>
+                                            <hasParent rdf:resource="#Rosanna"/>
+                                            <hasSibling rdf:resource="#Valentina"/>
+                                          </Female>
+                                        </hasChild>
+                                        <hasChild rdf:resource="#Valentina"/>
+                                        <hasParent>
+                                          <Male rdf:ID="Girolamo">
+                                            <hasChild rdf:resource="#Francesco"/>
+                                            <hasChild>
+                                              <Male rdf:ID="Giuseppe">
+                                                <hasParent rdf:resource="#Girolamo"/>
+                                                <hasParent>
+                                                  <Female rdf:ID="Carmela">
+                                                    <hasChild rdf:resource="#Giuseppe"/>
+                                                    <hasChild rdf:resource="#Francesco"/>
+                                                  </Female>
+                                                </hasParent>
+                                                <hasSibling rdf:resource="#Francesco"/>
+                                              </Male>
+                                            </hasChild>
+                                          </Male>
+                                        </hasParent>
+                                        <hasParent rdf:resource="#Carmela"/>
+                                        <hasSibling rdf:resource="#Giuseppe"/>
+                                        <rdf:type rdf:resource="#Person"/>
+                                        <hasChild rdf:resource="#Antonella"/>
+                                      </Male>
+                                    </hasParent>
+                                    <hasSibling rdf:resource="#Antonella"/>
+                                    <hasParent rdf:resource="#Rosanna"/>
+                                    <hasSibling rdf:resource="#Milly"/>
+                                  </Female>
+                                </hasChild>
+                                <hasChild rdf:resource="#Milly"/>
+                                <hasChild rdf:resource="#Antonella"/>
+                                <hasSibling rdf:resource="#Maria"/>
+                              </Female>
+                            </hasChild>
+                          </Male>
+                        </hasParent>
+                        <hasChild rdf:resource="#Luigi"/>
+                        <hasSibling rdf:resource="#Rosanna"/>
+                        <hasChild>
+                          <Female rdf:ID="Serena">
+                            <hasParent rdf:resource="#Maria"/>
+                            <hasSibling rdf:resource="#Luigi"/>
+                            <hasParent rdf:resource="#Dino"/>
+                            <hasSibling rdf:resource="#Ombretta"/>
+                            <rdf:type rdf:resource="#Person"/>
+                          </Female>
+                        </hasChild>
+                        <hasParent>
+                          <Female rdf:ID="Dora">
+                            <hasChild rdf:resource="#Rosanna"/>
+                            <hasChild rdf:resource="#Maria"/>
+                          </Female>
+                        </hasParent>
+                      </Female>
+                    </hasParent>
+                    <hasSibling rdf:resource="#Serena"/>
+                    <hasParent rdf:resource="#Dino"/>
+                  </Person>
+                </hasSibling>
+                <rdf:type rdf:resource="#Female"/>
+                <hasParent rdf:resource="#Dino"/>
+                <hasSibling rdf:resource="#Serena"/>
+                <hasParent rdf:resource="#Maria"/>
+              </Person>
+            </hasChild>
+            <hasChild rdf:resource="#Luigi"/>
+            <hasChild rdf:resource="#Serena"/>
+            <hasSibling rdf:resource="#Nella"/>
+            <hasParent rdf:resource="#NonnoLuigi"/>
+            <hasParent>
+              <Female rdf:ID="NonnaLina">
+                <rdf:type rdf:resource="#Person"/>
+                <hasChild rdf:resource="#Nella"/>
+                <hasChild rdf:resource="#Dino"/>
+              </Female>
+            </hasParent>
+          </Person>
+        </hasSibling>
+        <hasParent rdf:resource="#NonnaLina"/>
+        <hasParent rdf:resource="#NonnoLuigi"/>
+        <rdf:type rdf:resource="#Female"/>
+      </Person>
+    </hasChild>
+    <hasChild rdf:resource="#Dino"/>
+    <rdf:type rdf:resource="#Person"/>
+    <hasSibling>
+      <Female rdf:ID="Anna">
+        <hasSibling rdf:resource="#NonnoLuigi"/>
+      </Female>
+    </hasSibling>
+  </Male>
+  <Male rdf:ID="Felice"/>
+  <Male rdf:ID="Isidoro">
+    <hasChild>
+      <Male rdf:ID="Luciano">
+        <hasChild>
+          <Male rdf:ID="Luca">
+            <hasParent rdf:resource="#Luciano"/>
+            <hasParent>
+              <Female rdf:ID="Lucrezia">
+                <hasChild rdf:resource="#Luca"/>
+              </Female>
+            </hasParent>
+          </Male>
+        </hasChild>
+        <hasParent rdf:resource="#Isidoro"/>
+      </Male>
+    </hasChild>
+  </Male>
+  <Male rdf:ID="Giggino">
+    <hasChild rdf:resource="#Felice"/>
+  </Male>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2 beta, Build 288)  http://protege.stanford.edu -->

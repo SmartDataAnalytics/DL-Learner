@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+  <!ENTITY foo "http://example.com/foo#">
+  <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+  <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+]>
+<rdf:RDF xml:base="http://example.com/foo"
+         xmlns:foo="&foo;"
+         xmlns:owl="&owl;"
+         xmlns:rdf="&rdf;">
+
+<!-- Ontology Information -->
+  <owl:Ontology rdf:about=""/>
+
+<!-- Classes -->
+  <owl:Class rdf:about="#car"/>
+  <owl:Class rdf:about="#closed"/>
+  <owl:Class rdf:about="#double"/>
+  <owl:Class rdf:about="#jagged"/>
+  <owl:Class rdf:about="#long"/>
+  <owl:Class rdf:about="#open_car"/>
+  <!--<owl:Class rdf:about="#shape"/>-->
+  <owl:Class rdf:about="#short"/>
+  <owl:Class rdf:about="#train"/>
+
+<!-- Object Properties -->
+  <owl:ObjectProperty rdf:about="#has_car"/>
+  <owl:ObjectProperty rdf:about="#load"/>
+  <owl:ObjectProperty rdf:about="#load_count"/>
+  <owl:ObjectProperty rdf:about="#wheels"/>
+  <owl:ObjectProperty rdf:about="#hasShape"/>
+
+<!-- Instances -->
+  <foo:car rdf:about="#car_101">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_102">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#two"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#long"/>
+    <rdf:type rdf:resource="#open_car"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_11">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#three"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#long"/>
+    <rdf:type rdf:resource="#open_car"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_12">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_13">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#hexagon"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#three"/>
+    <rdf:type rdf:resource="#long"/>
+    <rdf:type rdf:resource="#open_car"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_14">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_21">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_22">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_23">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#two"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_31">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_32">
+    <foo:hasShape rdf:resource="#hexagon"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_33">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#three"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#long"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_41">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_42">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#double"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_43">
+    <foo:hasShape rdf:resource="#elipse"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_44">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_51">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#double"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_52">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#three"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_53">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_61">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#three"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#long"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_62">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_71">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#double"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_72">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#triangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_73">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#zero"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#jagged"/>
+    <rdf:type rdf:resource="#long"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_81">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#three"/>
+    <rdf:type rdf:resource="#closed"/>
+    <rdf:type rdf:resource="#long"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_82">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_91">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_92">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#jagged"/>
+    <rdf:type rdf:resource="#long"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_93">
+    <foo:hasShape rdf:resource="#rectangle"/>
+    <foo:load rdf:resource="#rectangle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:car rdf:about="#car_94">
+    <foo:hasShape rdf:resource="#u_shaped"/>
+    <foo:load rdf:resource="#circle"/>
+    <foo:load_count rdf:resource="#one"/>
+    <foo:wheels rdf:resource="#two"/>
+    <rdf:type rdf:resource="#open_car"/>
+    <rdf:type rdf:resource="#short"/>
+  </foo:car>
+
+  <foo:shape rdf:about="#circle"/>
+  <foo:train rdf:about="#east1">
+    <foo:has_car rdf:resource="#car_11"/>
+    <foo:has_car rdf:resource="#car_12"/>
+    <foo:has_car rdf:resource="#car_13"/>
+    <foo:has_car rdf:resource="#car_14"/>
+  </foo:train>
+
+  <foo:train rdf:about="#east2">
+    <foo:has_car rdf:resource="#car_21"/>
+    <foo:has_car rdf:resource="#car_22"/>
+    <foo:has_car rdf:resource="#car_23"/>
+  </foo:train>
+
+  <foo:train rdf:about="#east3">
+    <foo:has_car rdf:resource="#car_31"/>
+    <foo:has_car rdf:resource="#car_32"/>
+    <foo:has_car rdf:resource="#car_33"/>
+  </foo:train>
+
+  <foo:train rdf:about="#east4">
+    <foo:has_car rdf:resource="#car_41"/>
+    <foo:has_car rdf:resource="#car_42"/>
+    <foo:has_car rdf:resource="#car_43"/>
+    <foo:has_car rdf:resource="#car_44"/>
+  </foo:train>
+
+  <foo:train rdf:about="#east5">
+    <foo:has_car rdf:resource="#car_51"/>
+    <foo:has_car rdf:resource="#car_52"/>
+    <foo:has_car rdf:resource="#car_53"/>
+  </foo:train>
+
+  <foo:shape rdf:about="#elipse"/>
+  <foo:shape rdf:about="#hexagon"/>
+  <owl:Thing rdf:about="#one"/>
+  <foo:shape rdf:about="#rectangle"/>
+  <owl:Thing rdf:about="#three"/>
+  <foo:shape rdf:about="#triangle"/>
+  <owl:Thing rdf:about="#two"/>
+  <foo:shape rdf:about="#u_shaped"/>
+  <foo:train rdf:about="#west10">
+    <foo:has_car rdf:resource="#car_101"/>
+    <foo:has_car rdf:resource="#car_102"/>
+  </foo:train>
+
+  <foo:train rdf:about="#west6">
+    <foo:has_car rdf:resource="#car_61"/>
+    <foo:has_car rdf:resource="#car_62"/>
+  </foo:train>
+
+  <foo:train rdf:about="#west7">
+    <foo:has_car rdf:resource="#car_71"/>
+    <foo:has_car rdf:resource="#car_72"/>
+    <foo:has_car rdf:resource="#car_73"/>
+  </foo:train>
+
+  <foo:train rdf:about="#west8">
+    <foo:has_car rdf:resource="#car_81"/>
+    <foo:has_car rdf:resource="#car_82"/>
+  </foo:train>
+
+  <foo:train rdf:about="#west9">
+    <foo:has_car rdf:resource="#car_91"/>
+    <foo:has_car rdf:resource="#car_92"/>
+    <foo:has_car rdf:resource="#car_93"/>
+    <foo:has_car rdf:resource="#car_94"/>
+  </foo:train>
+
+  <owl:Thing rdf:about="#zero"/>
+</rdf:RDF>

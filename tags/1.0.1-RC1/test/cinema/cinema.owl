@@ -1,0 +1,827 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.owl-ontologies.com/Ontology1224666651.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.owl-ontologies.com/Ontology1224666651.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Eastwood_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasForActor"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Actor rdf:ID="CLINT_EASTWOOD">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Clint Eastwood</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:ID="Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Vito_Chance">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="Brando_Movies"/>
+                </owl:someValuesFrom>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:ID="isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="De_Niro_Movie"/>
+                </owl:someValuesFrom>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+          <owl:Class rdf:ID="Comment"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Marlon Brando and Robert De Niro are the only two actors to win Oscars portraying the same character, Vito Corleone.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Adventure_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:hasValue>
+              <Genre rdf:ID="ADVENTURE">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Adventure</rdfs:label>
+              </Genre>
+            </owl:hasValue>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasForGenre"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#De_Niro_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Movie"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForActor"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Actor rdf:ID="ROBERT_DE_NIRO">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Robert De Niro</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="The_Shawshank_Redemption_IMDB">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >'The Shawshank Redemption' has the best rating in top 250 movies voted by users in the Internet Movie DataBase.</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="Darabont_Movie"/>
+                </owl:someValuesFrom>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="Robbins_Movie"/>
+                </owl:someValuesFrom>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="Freeman_Movie"/>
+                </owl:someValuesFrom>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+          <owl:Class rdf:about="#Comment"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Freeman_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Movie"/>
+          <owl:Restriction>
+            <owl:hasValue>
+              <Actor rdf:ID="MORGAN_FREEMAN">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Morgan Freeman</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForActor"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Genre"/>
+  <owl:Class rdf:about="#Robbins_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForActor"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Actor rdf:ID="TIM_ROBBINS">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Tim Robbins</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Most_Expensive">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Adventure_Movie"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Comment"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The most expensive movie was 'Pirates of the Caribbean: At World's End' in 2007 which cost $300,000,000.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sport_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Movie"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForGenre"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Genre rdf:ID="SPORT">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Sport</rdfs:label>
+              </Genre>
+            </owl:hasValue>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Highest_Grossing">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Titanic is the all-time highest-grossing film ($1,845,034,189).</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Romance_Movie"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Depp_Beginning">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Depp_Movie"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Depp starred in a lead role on the FOX TV television series, 21 Jump Street.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Burton_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Movie"/>
+          <owl:Restriction>
+            <owl:hasValue>
+              <Director rdf:ID="TIM_BURTON">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Tim Burton</rdfs:label>
+              </Director>
+            </owl:hasValue>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:ID="hasForDirector"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Darabont_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasForDirector"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Director rdf:ID="FRANK_DARABONT">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Frank Darabont</rdfs:label>
+              </Director>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Romance_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Movie"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForGenre"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Genre rdf:ID="ROMANCE">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Romance</rdfs:label>
+              </Genre>
+            </owl:hasValue>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Actor_Studio">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Al Pacino and Robert De Niro studied toguether at the famous Actors Studio in the 60s.</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="Pacino_Movie"/>
+                </owl:someValuesFrom>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+                <owl:someValuesFrom rdf:resource="#De_Niro_Movie"/>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Coppola_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasForDirector"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Director rdf:ID="FRANCIS_FORD_COPPOLA">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Francis Ford Coppola</rdfs:label>
+              </Director>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Freeman_award">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Freeman_Movie"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Comment"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Morgan Freeman is an Academy Award-winning American actor, film director and narrator.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Godfather_Novel">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The Godfather is a 1972 crime drama film based on the 1969 novel of the same name by Mario Puzo.</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Coppola_Movie"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Comment"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Brando_Refusal">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#Brando_Movies"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >At the 1973 Academy Awards Ceremony Brando refused to accept the Oscar for his performance in The Godfather.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Western_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Movie"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForGenre"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Genre rdf:ID="WESTERN">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Western</rdfs:label>
+              </Genre>
+            </owl:hasValue>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Burton_Job">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Burton_Movie"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Burton was then hired by the Walt Disney Studios as an animator apprentice.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Depp_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:hasValue>
+              <Actor rdf:ID="JOHNNY_DEPP">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Johnny Depp</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForActor"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Actor"/>
+  <owl:Class rdf:about="#Brando_Movies">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:hasValue>
+              <Actor rdf:ID="MARLON_BRANDO">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Marlon Brando</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForActor"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Director"/>
+  <owl:Class rdf:about="#Pacino_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasForActor"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Actor rdf:ID="AL_PACINO">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Al Pacino</rdfs:label>
+              </Actor>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Eastwood_Nominations">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#Eastwood_Movie"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Comment"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Eastwood has had a total of ten nominations for the Academy Awards for Best Director and Best Picture.</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Spaghetti_Western">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Spaghetti Western is a nickname for a broad sub-genre of Western film that emerged in the mid-1960s, so named because most were produced by Italian studios.</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="#Western_Movie"/>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="Leone_Movie"/>
+                </owl:someValuesFrom>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#isCommentOf"/>
+                </owl:onProperty>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Leone_Movie">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasForDirector"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <Director rdf:ID="SERGIO_LEONE">
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Sergio Leone</rdfs:label>
+              </Director>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Movie"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Johnny_Weissmüller">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Comment"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Sport_Movie"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#isCommentOf"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Before being 'Tarzan', Johnny Weissmüller was one of the world's best swimmers in the 1920s.</rdfs:label>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#hasForActor">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Cast :</rdfs:label>
+    <rdfs:domain rdf:resource="#Movie"/>
+    <rdfs:range rdf:resource="#Actor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#isCommentOf">
+    <rdfs:domain rdf:resource="#Comment"/>
+    <rdfs:range rdf:resource="#Movie"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#hasForGenre">
+    <rdfs:domain rdf:resource="#Movie"/>
+    <rdfs:range rdf:resource="#Genre"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Genre :</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:FunctionalProperty rdf:about="#hasForDirector">
+    <rdfs:range rdf:resource="#Director"/>
+    <rdfs:domain rdf:resource="#Movie"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Director :</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <Movie rdf:ID="EDWARD_SCISSORHANDS">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Edward Scissorhands</rdfs:label>
+    <hasForDirector rdf:resource="#TIM_BURTON"/>
+    <hasForActor rdf:resource="#JOHNNY_DEPP"/>
+    <hasForGenre rdf:resource="#ROMANCE"/>
+    <hasForGenre>
+      <Genre rdf:ID="DRAMA">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Drama</rdfs:label>
+      </Genre>
+    </hasForGenre>
+  </Movie>
+  <Movie rdf:ID="APOCALYPSE_NOW">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Apocalypse Now</rdfs:label>
+    <hasForActor rdf:resource="#MARLON_BRANDO"/>
+    <hasForDirector rdf:resource="#FRANCIS_FORD_COPPOLA"/>
+    <hasForGenre rdf:resource="#ADVENTURE"/>
+    <hasForGenre>
+      <Genre rdf:ID="ACTION">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Action</rdfs:label>
+      </Genre>
+    </hasForGenre>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre>
+      <Genre rdf:ID="WAR">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >War</rdfs:label>
+      </Genre>
+    </hasForGenre>
+  </Movie>
+  <Movie rdf:ID="SLEEPY_HOLLOW">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sleepy Hollow</rdfs:label>
+    <hasForGenre>
+      <Genre rdf:ID="HORROR">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Horror</rdfs:label>
+      </Genre>
+    </hasForGenre>
+    <hasForDirector rdf:resource="#TIM_BURTON"/>
+    <hasForActor rdf:resource="#JOHNNY_DEPP"/>
+  </Movie>
+  <Director rdf:ID="MARTIN_SCORSESE">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Martin Scorsese</rdfs:label>
+  </Director>
+  <Movie rdf:ID="HEAT">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Heat</rdfs:label>
+    <hasForDirector>
+      <Director rdf:ID="MICHAEL_MANN">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Michael Mann</rdfs:label>
+      </Director>
+    </hasForDirector>
+    <hasForGenre>
+      <Genre rdf:ID="THRILLER">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Thriller</rdfs:label>
+      </Genre>
+    </hasForGenre>
+    <hasForGenre>
+      <Genre rdf:ID="CRIME">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Crime</rdfs:label>
+      </Genre>
+    </hasForGenre>
+    <hasForGenre rdf:resource="#ACTION"/>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+    <hasForActor rdf:resource="#AL_PACINO"/>
+  </Movie>
+  <Movie rdf:ID="ONCE_UPON_A_TIME_IN_AMERICA">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Once Upon a Time in America</rdfs:label>
+    <hasForDirector rdf:resource="#SERGIO_LEONE"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#CRIME"/>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+  </Movie>
+  <Movie rdf:ID="THE_GODFATHER_PART_II">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The Godfather: Part II</rdfs:label>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#THRILLER"/>
+    <hasForDirector rdf:resource="#FRANCIS_FORD_COPPOLA"/>
+    <hasForActor rdf:resource="#AL_PACINO"/>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+  </Movie>
+  <Movie rdf:ID="THE_GOOD_THE_BAD_THE_UGLY">
+    <hasForDirector rdf:resource="#SERGIO_LEONE"/>
+    <hasForGenre rdf:resource="#WESTERN"/>
+    <hasForGenre rdf:resource="#ADVENTURE"/>
+    <hasForGenre rdf:resource="#ACTION"/>
+    <hasForActor rdf:resource="#CLINT_EASTWOOD"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The Good The Bad And The Ugly</rdfs:label>
+  </Movie>
+  <Genre rdf:ID="COMEDY">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Comedy</rdfs:label>
+  </Genre>
+  <Actor rdf:ID="SHARON_STONE">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sharon Stone</rdfs:label>
+  </Actor>
+  <Genre rdf:ID="MYSTERY">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mystery</rdfs:label>
+  </Genre>
+  <Movie rdf:ID="RAGING_BULL">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Raging Bull</rdfs:label>
+    <hasForDirector rdf:resource="#MARTIN_SCORSESE"/>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+    <hasForGenre rdf:resource="#SPORT"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+  </Movie>
+  <Movie rdf:ID="DON_JUAN_DEMARCO">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Don Juan DeMarco</rdfs:label>
+    <hasForActor rdf:resource="#MARLON_BRANDO"/>
+    <hasForActor rdf:resource="#JOHNNY_DEPP"/>
+    <hasForGenre rdf:resource="#COMEDY"/>
+    <hasForGenre rdf:resource="#ROMANCE"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+  </Movie>
+  <Director rdf:ID="MIKE_NEWELL">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mike Newell</rdfs:label>
+  </Director>
+  <Movie rdf:ID="CASINO">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Casino</rdfs:label>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+    <hasForActor rdf:resource="#SHARON_STONE"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#CRIME"/>
+    <hasForDirector rdf:resource="#MARTIN_SCORSESE"/>
+  </Movie>
+  <Movie rdf:ID="DONNIE_BRASCO">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Donnie Brasco</rdfs:label>
+    <hasForGenre rdf:resource="#THRILLER"/>
+    <hasForGenre rdf:resource="#CRIME"/>
+    <hasForActor rdf:resource="#JOHNNY_DEPP"/>
+    <hasForActor rdf:resource="#AL_PACINO"/>
+    <hasForDirector rdf:resource="#MIKE_NEWELL"/>
+  </Movie>
+  <Movie rdf:ID="CITIZEN_KANE">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Citizen Kane</rdfs:label>
+    <hasForDirector>
+      <Director rdf:ID="ORSON_WELLES">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Orson Welles</rdfs:label>
+      </Director>
+    </hasForDirector>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#MYSTERY"/>
+  </Movie>
+  <Movie rdf:ID="THE_SHAWSHANK_REDEMPTION">
+    <hasForActor rdf:resource="#MORGAN_FREEMAN"/>
+    <hasForActor rdf:resource="#TIM_ROBBINS"/>
+    <hasForDirector rdf:resource="#FRANK_DARABONT"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The Shawshank Redemption</rdfs:label>
+  </Movie>
+  <Movie rdf:ID="GOODFELLAS">
+    <hasForDirector rdf:resource="#MARTIN_SCORSESE"/>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#CRIME"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >GoodFellas</rdfs:label>
+  </Movie>
+  <Movie rdf:ID="THE_GODFATHER">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The Godfather</rdfs:label>
+    <hasForActor rdf:resource="#MARLON_BRANDO"/>
+    <hasForActor rdf:resource="#AL_PACINO"/>
+    <hasForDirector rdf:resource="#FRANCIS_FORD_COPPOLA"/>
+    <hasForGenre rdf:resource="#THRILLER"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+  </Movie>
+  <Movie rdf:ID="TAXI_DRIVER">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Taxi Driver</rdfs:label>
+    <hasForActor rdf:resource="#ROBERT_DE_NIRO"/>
+    <hasForDirector rdf:resource="#MARTIN_SCORSESE"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#CRIME"/>
+  </Movie>
+  <Movie rdf:ID="ED_WOOD">
+    <hasForActor rdf:resource="#JOHNNY_DEPP"/>
+    <hasForDirector rdf:resource="#TIM_BURTON"/>
+    <hasForGenre rdf:resource="#DRAMA"/>
+    <hasForGenre rdf:resource="#COMEDY"/>
+  </Movie>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3.1, Build 430)  http://protege.stanford.edu -->

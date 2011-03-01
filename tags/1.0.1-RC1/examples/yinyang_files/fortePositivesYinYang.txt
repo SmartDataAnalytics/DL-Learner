@@ -1,0 +1,24 @@
+// auskommentierte Beispiele würden zum Crash von YinYang führen
+http://localhost/foo#art
+http://localhost/foo#calvin
+http://localhost/foo#carlos
+http://localhost/foo#david
+http://localhost/foo#eric
+http://localhost/foo#fred
+http://localhost/foo#frederick
+// http://localhost/foo#george
+http://localhost/foo#harry
+http://localhost/foo#jack
+http://localhost/foo#james
+http://localhost/foo#jonas
+http://localhost/foo#karl
+http://localhost/foo#leon
+http://localhost/foo#mark
+http://localhost/foo#melvin
+http://localhost/foo#neil
+http://localhost/foo#nero
+// http://localhost/foo#owen
+// http://localhost/foo#paul
+http://localhost/foo#peter
+http://localhost/foo#umo
+// http://localhost/foo#walt

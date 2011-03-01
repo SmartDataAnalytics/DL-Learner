@@ -1,0 +1,552 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.1="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w12_Anla%C3%9F">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Anlaß</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w11_zum"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w13_ein"/>
+    <j.0:hasLemma>Anlaß</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w8_h%C3%A4lt">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>hält</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w7_sich"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w9_%2C"/>
+    <j.0:hasLemma>halten</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax508">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/coordinatedNounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PIS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveIndefinitePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax511">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax513"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax504">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/nounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w36_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w35_pr%C3%A4sent"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w18_einen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w17_wenigstens"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w19_Aufsatz"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/coordinatedNounPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#NounPhrase"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w34_Kan%C3%A4len">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kanälen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w33_privaten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w35_pr%C3%A4sent"/>
+    <j.0:hasLemma>Kanal</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w13_ein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ein</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w12_Anla%C3%9F"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w14_Buch"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax515">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w2_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w1_von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w3_Pariser"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w29_in">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>in</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w28_Talks"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w30_den"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax512">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax503">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w26_schwer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schwer</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w25_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w27_unterbietbaren"/>
+    <j.0:hasLemma>schwer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w3_Pariser">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Pariser</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w2_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w4_Intellektuellen"/>
+    <j.0:hasLemma>Pariser</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/coordinatedAdjectivePhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#Coordination"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w15_%28">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>(</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w14_Buch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w16_oder"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w10_schrieb">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schrieb</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w9_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w11_zum"/>
+    <j.0:hasLemma>schreiben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w20_%29">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>)</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w19_Aufsatz"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w21_und"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PRF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax507">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/nounPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w31_staatlichen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>staatlichen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w30_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w32_und"/>
+    <j.0:hasLemma>staatlich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w9_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w8_h%C3%A4lt"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w10_schrieb"/>
+    <j.0:hasLemma>--</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w33_privaten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>privaten</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w32_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w34_Kan%C3%A4len"/>
+    <j.0:hasLemma>privat</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w7_sich">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sich</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w6_auf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w8_h%C3%A4lt"/>
+    <j.0:hasLemma>sich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PRF"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax506">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/coordinatedAdjectivePhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax513">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w22_war">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>war</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w21_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w23_bei"/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w27_unterbietbaren">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>unterbietbaren</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w26_schwer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w28_Talks"/>
+    <j.0:hasLemma>unterbietbar</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax505"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w30_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w29_in"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w31_staatlichen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax509"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w23_bei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bei</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w22_war"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w24_einem"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax513"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w17_wenigstens">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wenigstens</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w16_oder"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w18_einen"/>
+    <j.0:hasLemma>wenigstens</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w0_Wer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Wer</rdfs:label>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w1_von"/>
+    <j.0:hasLemma>wer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PWS"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax507"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/adjectivePhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#AdjectivePhrase"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w32_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w31_staatlichen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w33_privaten"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax506"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w6_auf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>auf</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w5_etwas"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w7_sich"/>
+    <j.0:hasLemma>auf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w16_oder">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>oder</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w15_%28"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w17_wenigstens"/>
+    <j.0:hasLemma>oder</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax508"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w25_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w24_einem"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w26_schwer"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax502">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w28_Talks">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Talks</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w27_unterbietbaren"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w29_in"/>
+    <j.0:hasLemma>Talk</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w11_zum">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zum</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w10_schrieb"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w12_Anla%C3%9F"/>
+    <j.0:hasLemma>zu</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax502"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax505">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/adjectivePhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w24_einem">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>einem</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w23_bei"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w25_der"/>
+    <j.0:hasLemma>einer</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PIS"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax513"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax509">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax511"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax514">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w5_etwas">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>etwas</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w4_Intellektuellen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w6_auf"/>
+    <j.0:hasLemma>etwas</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PIS"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax510"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w19_Aufsatz">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Aufsatz</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w18_einen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w20_%29"/>
+    <j.0:hasLemma>Aufsatz</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax504"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PWS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveInterrogativePronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w35_pr%C3%A4sent">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>präsent</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w34_Kan%C3%A4len"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w36_."/>
+    <j.0:hasLemma>präsent</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax514"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w5_etwas"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w3_Pariser"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w19_Aufsatz"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w17_wenigstens"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w24_einem"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w0_Wer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w18_einen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w36_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w35_pr%C3%A4sent"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w6_auf"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w33_privaten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w34_Kan%C3%A4len"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w28_Talks"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w25_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w30_den"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w2_den"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s18365w0_Wer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w12_Anla%C3%9F"/>
+    <rdfs:label>Wer von den Pariser Intellektuellen etwas auf sich hält , schrieb zum Anlaß ein Buch ( oder wenigstens einen Aufsatz ) und war bei einem der schwer unterbietbaren Talks in den staatlichen und privaten Kanälen präsent .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w13_ein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w31_staatlichen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w22_war"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w32_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w27_unterbietbaren"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w21_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w16_oder"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w1_von"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w7_sich"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w23_bei"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w11_zum"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w20_%29"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w26_schwer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w8_h%C3%A4lt"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w4_Intellektuellen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w14_Buch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w10_schrieb"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w15_%28"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w9_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18365w29_in"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w14_Buch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Buch</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w13_ein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w15_%28"/>
+    <j.0:hasLemma>Buch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax503"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax510">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax512"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w4_Intellektuellen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Intellektuellen</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w3_Pariser"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w5_etwas"/>
+    <j.0:hasLemma>intellektuelle</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w1_von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>von</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w0_Wer"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w2_den"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365w21_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18365w20_%29"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18365w22_war"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax515"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18365syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18365syntax510"/>
+  </rdf:Description>
+</rdf:RDF>

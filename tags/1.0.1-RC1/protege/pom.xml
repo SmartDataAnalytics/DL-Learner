@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.dllearner</groupId>
+    <artifactId>protege</artifactId>
+    <packaging>jar</packaging>
+
+    <name>protege</name>
+    <url>http://aksw.org/Projects/DLLearner</url>
+
+    <parent>
+        <groupId>org.dllearner</groupId>
+        <artifactId>dllearner-parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-ext</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.protege.editor.core</groupId>
+            <artifactId>org.protege.editor.core.application</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.protege.editor.owl</groupId>
+            <artifactId>org.protege.editor.owl</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.browserlauncher2</groupId>
+            <artifactId>browserlauncher2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>looks</artifactId>
+        </dependency>
+    </dependencies>
+</project>

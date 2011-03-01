@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.dllearner</groupId>
+    <artifactId>interfaces</artifactId>
+    <packaging>jar</packaging>
+    <name>Interfaces: GUI, CLI, Web Service </name>
+    <url>http://aksw.org/Projects/DLLearner</url>
+    
+    <parent>
+        <groupId>org.dllearner</groupId>
+        <artifactId>dllearner-parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+    
+    <build>
+        <plugins>
+            <!--Surefire - for JUnits-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>org/dllearner/test/junit/OWLlinkTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+        </dependency>
+
+        <!--Added the dependency of the core tests so that they will be accessible from the tests in this component-->
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-core</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dllearner</groupId>
+            <artifactId>components-ext</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jamonapi</groupId>
+            <artifactId>jamon</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+</project>

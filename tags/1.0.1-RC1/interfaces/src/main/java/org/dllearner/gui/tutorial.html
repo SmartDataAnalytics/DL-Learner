@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<title>Quick Tutorial for DL-Learner GUI</title>
+	</head>
+	<body style="font-family: Verdana">
+		
+<h2>Quick Tutorial</h2>
+
+<p align=\"justify\">
+DL-Learner has a component based design to make it easier to 
+extend and use. There are four components corresponding to the 
+tabs you see: knowledge source, reasoner, learning problem, and 
+learning algorithm. There are various components available of 
+each type (selectable at the top of each tab). Each component 
+has configuration options associated with it (middle of the tab, 
+scrollable), which you can use to specify the settings for the 
+component.
+</p><br />
+				
+<p align=\"justify\">
+In order to create a learning problem, you have to choose and 
+configure all four types of components. The run tab plays a 
+special role: It is used to start the learning algorithm 
+and display statistical information.
+</p><br />
+			
+<p>
+<i>Example:</i><br />
+Suppose you want to learn the definition of a class in an existing ontology. In this case,
+you can proceed as follows:
+<ol>
+<li>In the tab "Knowledge Source", choose an OWL file containing your ontology.</li>
+<li>Click on the tab "Reasoner". We recommend to the defaults unchanged here, but you
+   are free to modify the settings and choose the reasoner you like.</li>
+<li>Click on the tab "Learning Problem". This may take a while, since the reasoner will now 
+   read the ontology you specified in step 1. Since you want to learn the definition of a class,
+   use the drop down box and select "Class Learning Problem". After this, set the value of 
+   the option "classToDescribe" to the desired class.</li>
+<li>Click on the "Learning Algorithm" tab. Here, you can select a learning algorithm and 
+   modify its settings. If you are unsure what to do, just stick with the default values.</li>
+<li>Click on the "Run" tab and press the "Start" button. The algorithm is now running
+   and the currently best solutions found are displayed in the panel below (using Manchester
+   OWL Syntax) along with some reasoning statistics. Depending on the learning algorithm
+   and settings, the run may not terminate (in reasonable time). In such a case you can use
+   the "Stop" button to gracefully stop the algorithm.</li>
+</ol>
+For explanations of components in each step, please consult the DL-Learner manual.
+</p><br />			
+				
+<p>
+<i>Tab heads explanation:</i><br />
+gray/disabled = cannot be configured yet (mandatory configuration values missing)<br />
+red = needs to be initialised<br />
+black = component has been initialised
+</p><br />
+				
+<p><i>Further references:</i><br />
+Homepage: <a href="http://dl-learner.org">http://dl-learner.org</a><br />
+DL-Learner Manual: <a href="http://dl-learner.org/files/dl-learner-manual.pdf">http://dl-learner.org/files/dl-learner-manual.pdf</a><br />
+DL-Learner Architecture: <a href="http://dl-learner.org/wiki/Architecture">http://dl-learner.org/wiki/Architecture</a>
+</p><br />
+
+<p>Please send questions to lehmann@informatik.uni-leipzig.de.</p>
+				
+	</body>
+</html>

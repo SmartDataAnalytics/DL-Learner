@@ -1,0 +1,113 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w4_zweimal">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zweimal</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s48009w3_t%C3%A4glich"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s48009w5_erschossen"/>
+    <j.0:hasLemma>zweimal</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w2_wird">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wird</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s48009w1_Nationalheld"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s48009w3_t%C3%A4glich"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w5_erschossen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>erschossen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s48009w4_zweimal"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s48009w6_."/>
+    <j.0:hasLemma>erschießen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w4_zweimal"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s48009w0_Der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w3_t%C3%A4glich"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w1_Nationalheld"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w0_Der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w2_wird"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w6_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s48009w5_erschossen"/>
+    <rdfs:label>Der Nationalheld wird täglich zweimal erschossen .</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w3_t%C3%A4glich">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>täglich</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s48009w2_wird"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s48009w4_zweimal"/>
+    <j.0:hasLemma>täglich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w0_Der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s48009w1_Nationalheld"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w1_Nationalheld">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Nationalheld</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s48009w0_Der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s48009w2_wird"/>
+    <j.0:hasLemma>Nationalheld</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s48009w6_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s48009"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s48009w5_erschossen"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+</rdf:RDF>

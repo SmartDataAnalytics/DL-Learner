@@ -1,0 +1,27 @@
+/** background knowledge ***/
+
+// male and female are disjoint
+BOTTOM = (male AND female).
+
+// role hierarchy
+Subrole(hasSon, hasChild).
+Subrole(hasDaughter, hasChild).
+
+// persons
+male(markus).
+male(stefan).
+male(heinz).
+male(bernd).
+male(franz).
+female(anna).
+female(gabi).
+female(michelle).
+
+// children
+hasSon(stefan,markus).
+hasDaughter(markus,anna).
+hasDaughter(bernd,gabi).
+hasDaughter(gabi,anna).
+hasSon(anna,heinz).
+hasSon(franz,heinz).
+hasDaughter(franz,michelle).

@@ -1,0 +1,79 @@
+parallelpipe = (brick OR wedge).
+freeStandingPillar = (pillar AND NOT EXISTS touches.TOP ).
+
+// disjoint classes
+(parallelpipe AND pillar) = BOTTOM.
+(construction AND pillar) = BOTTOM.
+(parallelpipe AND construction) = BOTTOM.
+
+construction(c1).
+construction(c2).
+construction(c3).
+construction(c4).
+construction(c5).
+
+pillar(p1).
+pillar(p2).
+pillar(p3).
+pillar(p4).
+pillar(p5).
+pillar(p6).
+pillar(p7).
+pillar(p8).
+pillar(p9).
+
+brick(a).
+brick(b).
+brick(c).
+
+wedge(d).
+wedge(e).
+
+OPDOMAIN(hasPillar) = construction.
+OPRANGE(hasPillar) = pillar.
+hasPillar(c1,p1).
+hasPillar(c1,p2).
+hasPillar(c2,p3).
+hasPillar(c2,p4).
+hasPillar(c3,p5).
+hasPillar(c3,p6).
+hasPillar(c4,p7).
+hasPillar(c4,p8).
+hasPillar(c5,p9).
+
+OPDOMAIN(hasParallelpipe) = construction.
+OPRANGE(hasParallelpipe) = parallelpipe.
+hasParallelpipe(c1,a).
+hasParallelpipe(c2,b).
+hasParallelpipe(c3,c).
+hasParallelpipe(c4,d).
+hasParallelpipe(c5,e).
+
+OPDOMAIN(supports) = pillar.
+OPRANGE(supports) = parallelpipe.
+supports(p1,a).
+supports(p2,a).
+supports(p5,c).
+supports(p6,c).
+supports(p7,d).
+supports(p8,d).
+supports(p9,e).
+
+OPDOMAIN(leftof) = pillar.
+OPRANGE(leftof) = pillar.
+leftof(p1,p2).
+leftof(p3,p4).
+leftof(p5,p6).
+leftof(p7,p8).
+
+OPDOMAIN(touches) = pillar.
+OPRANGE(touches) = pillar.
+touches(p5,p6).
+
+freeStandingPillar(p1).
+freeStandingPillar(p2).
+freeStandingPillar(p3).
+freeStandingPillar(p4).
+freeStandingPillar(p7).
+freeStandingPillar(p8).
+freeStandingPillar(p9).

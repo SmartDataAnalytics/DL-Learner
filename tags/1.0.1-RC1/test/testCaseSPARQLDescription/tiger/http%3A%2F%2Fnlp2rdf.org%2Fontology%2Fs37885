@@ -1,0 +1,72 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s37885w3_zugeschnitten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>zugeschnitten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s37885"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s37885w2_gr%C3%B6%C3%9Fer"/>
+    <j.0:hasLemma>zuschneiden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s37885w1_wird">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>wird</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s37885"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s37885w0_Umsatz"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s37885w2_gr%C3%B6%C3%9Fer"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s37885w0_Umsatz">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Umsatz</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s37885"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s37885w1_wird"/>
+    <j.0:hasLemma>Umsatz</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s37885">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <rdfs:label>Umsatz wird größer zugeschnitten</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s37885w0_Umsatz"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s37885w0_Umsatz"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s37885w1_wird"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s37885w2_gr%C3%B6%C3%9Fer"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s37885w3_zugeschnitten"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s37885w2_gr%C3%B6%C3%9Fer">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>größer</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s37885"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s37885w1_wird"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s37885w3_zugeschnitten"/>
+    <j.0:hasLemma>groß</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

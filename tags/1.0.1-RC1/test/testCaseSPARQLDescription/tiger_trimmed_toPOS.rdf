@@ -1,0 +1,1448 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY ontology "http://nlp2rdf.org/ontology/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY j.2 "http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#" >
+    <!ENTITY j.0 "http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#" >
+    <!ENTITY j.1 "http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#" >
+]>
+
+
+<rdf:RDF xmlns="file:/home/sebastian/work/workspace/DL-Learner-SVN/files/tiger_trimmed_toPOS.rdf#"
+     xml:base="file:/home/sebastian/work/workspace/DL-Learner-SVN/files/tiger_trimmed_toPOS.rdf"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:j.1="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:j.0="http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#"
+     xmlns:j.2="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#"
+     xmlns:ontology="http://nlp2rdf.org/ontology/">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/belongsToSentence -->
+
+    <owl:ObjectProperty rdf:about="&ontology;belongsToSentence"/>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/firstToken -->
+
+    <owl:ObjectProperty rdf:about="&ontology;firstToken"/>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/hasSentence -->
+
+    <owl:ObjectProperty rdf:about="&ontology;hasSentence"/>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/hasToken -->
+
+    <owl:ObjectProperty rdf:about="&ontology;hasToken">
+        <owl:inverseOf rdf:resource="&ontology;belongsToSentence"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/nextToken -->
+
+    <owl:ObjectProperty rdf:about="&ontology;nextToken">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <owl:inverseOf rdf:resource="&ontology;previousToken"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/previousToken -->
+
+    <owl:ObjectProperty rdf:about="&ontology;previousToken">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/hasLemma -->
+
+    <owl:DatatypeProperty rdf:about="&ontology;hasLemma"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Additional -->
+
+    <owl:Class rdf:about="&j.2;Additional">
+        <rdfs:subClassOf rdf:resource="&j.2;Tag"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The Additional contains &quot;non linguistic tags&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adjective -->
+
+    <owl:Class rdf:about="&j.2;Adjective">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are adjectives.
+
+An adjective is a word that is a member of a part of speech whose prototypical members designate properties and, less prototypically, states.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_ServletAdjektiv 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adposition -->
+
+    <owl:Class rdf:about="&j.2;Adposition">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are adpositions.
+
+An adposition is a more or less grammaticalized relator word that takes a noun phrase as a complement and forms with it an adposition phrase. Its meaning is the grammatical or semantic relation between the dependent noun phrase and whatever the adposition phrase depends on. For example:
+&#8220;to&#8220; in &#8222;He went to the races&#8220; or &#8222;with&#8220; in &#8222;He promised to help with whatever was the matter&#8220;.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Adposition 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb -->
+
+    <owl:Class rdf:about="&j.2;Adverb">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are adverbs e.g. &quot;schon&quot;, &quot;bald&quot;, &quot;doch&quot;.
+
+An adverb is a word that is a member of a part of speech whose prototypical members (by themselves) modify clauses.
+In many descriptions, any word with lexical content (i.e., other than grammatical particles) that isn&#8217;t clearly a noun, a verb or an adjective is put into the class of adverb. Semantically, forms that have been called adverbs cover an extremely wide range of concepts, hence they cannot be identified in terms of time-stability or any other well-defined semantic parameter.
+The unit modified by an adverb is typically a clause, but may be any other category (sentence, verb phrase, verb, nominal, adjective, adverb).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Adverb 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AdverbialInterrogativeRelativePronoun -->
+
+    <owl:Class rdf:about="&j.2;AdverbialInterrogativeRelativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;InterrogativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are adverbial interrogative relative pronouns, e.g. &quot;warum&quot;, &quot;wo&quot;, &quot;wann&quot;, &quot;worueber&quot;, &quot;wobei&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AnsweringParticle -->
+
+    <owl:Class rdf:about="&j.2;AnsweringParticle">
+        <rdfs:subClassOf rdf:resource="&j.2;Particle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are the answering particles, e.g. &quot;ja&quot;, &quot;nein&quot;, &quot;danke&quot;, &quot;bitte&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article -->
+
+    <owl:Class rdf:about="&j.2;Article">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are definite e.g. in German &quot;der&quot;, &quot;die&quot;, &quot;das&quot; or indefinite articles e.g.  in German &quot;ein&quot;, &quot;eine&quot;.
+
+An article is a highly grammaticalized determiner that expresses one or a few of the basic determinations (definite/indefinite, generic/specific, given/new).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Artikel 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective -->
+
+    <owl:Class rdf:about="&j.2;AttributiveAdjective">
+        <rdfs:subClassOf rdf:resource="&j.2;Adjective"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These can be e.g. the attributive adjectives (&quot;[das] grosse [Haus]&quot;), attributive used present participles (&quot;[das] lachende [Kind]&quot;), attributive used past participles (&quot;[der] gesuchte [Dieb]&quot;), ordinal numerals (&quot;[die] zweite [Besetzung]&quot;) or fractional numerals (&quot;[ein] dreiviertel [Liter Milch]&quot;).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveDemonstrativePronoun -->
+
+    <owl:Class rdf:about="&j.2;AttributiveDemonstrativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;DemonstrativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are attributive demonstrative pronouns, e.g. &quot;jener [Mensch]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithDeterminer -->
+
+    <owl:Class rdf:about="&j.2;AttributiveIndefinitePronounWithDeterminer">
+        <rdfs:subClassOf rdf:resource="&j.2;IndefinitePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >0LD 
+attributive indefinite pronouns, with determiner
+
+PIDAT is a contextual variant of PIAT, accordingly, both are grouped
+  together in TigerSTTS, but in ELM-DE, too:
+  http://www.ilc.cnr.it/EAGLES96/TT-rep/node49.html#SECTION000103000000000000000 
+=&gt; here, too</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are attributive indefinite pronouns with a determiner, e.g. &quot;[ein] wenig [Wasser]&quot;, &quot;[die] beiden [Brueder]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveIndefinitePronounWithoutDeterminer -->
+
+    <owl:Class rdf:about="&j.2;AttributiveIndefinitePronounWithoutDeterminer">
+        <rdfs:subClassOf rdf:resource="&j.2;IndefinitePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are attributive indefinite pronouns without a determiner, e.g. &quot;kein [Mensch]&quot;, &quot;irgendein [Glas]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveInterrogativePronoun -->
+
+    <owl:Class rdf:about="&j.2;AttributiveInterrogativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;InterrogativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are attributive interrogative pronouns, e.g. &quot;welche [Farbe]&quot;, &quot;wessen [Hut]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributivePossessivePronoun -->
+
+    <owl:Class rdf:about="&j.2;AttributivePossessivePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;PossessivePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are attributive possessive pronouns, e.g. &quot;mein [Buch]&quot;, &quot;deine [Mutter]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveRelativePronoun -->
+
+    <owl:Class rdf:about="&j.2;AttributiveRelativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;RelativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are attributive relative pronouns, e.g. &quot;[der Mann, ] dessen [Hund]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryImperative -->
+
+    <owl:Class rdf:about="&j.2;AuxiliaryImperative">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxilliaryVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the imperative  of an auxiliary verb, e.g. &quot;sei [ruhig !]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive -->
+
+    <owl:Class rdf:about="&j.2;AuxiliaryInfinitive">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxilliaryVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the infinitive form of an auxiliary verb, e.g.  &quot;werden&quot;, &quot;sein&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryPastParticiple -->
+
+    <owl:Class rdf:about="&j.2;AuxiliaryPastParticiple">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxilliaryVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the past participle of an auxiliary verb, e.g. &quot;gewesen&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxilliaryVerb -->
+
+    <owl:Class rdf:about="&j.2;AuxilliaryVerb">
+        <rdfs:subClassOf rdf:resource="&j.2;Verb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The German verbs &quot;haben&quot;, &quot;sein&quot; und &quot;werden&quot; will be marked as auxiliary verbs, whether they are used as main verbs or as auxiliary verbs within a sentence.
+
+An auxiliary is a strongly grammaticalized word - typically a verb -such that
+- it is the structural head of a periphrastic construction in which a non-finite form of a full lexical verb is the primary dependent,
+- that construction is part of the conjugation paradigm for full verbs of the language.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Auxiliar 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber -->
+
+    <owl:Class rdf:about="&j.2;CardinalNumber">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are cardinal numerals, e.g. &quot;zwei Manner, im Jahre 1994&quot;.
+
+A cardinal numeral is a numeral - most typically a noun 2 - which designates the cardinality of a set; i.e. it is used for counting and for expressing how many objects are referred to.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Kardinalzahlwort 14.05.07)
+
+
+Only for cardinal numerals there is a special word class defined within the numerals.
+Ordinal numerals, multiplicatives and fraction numbers are counted according to her distribution to the adjectives or nouns.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CircumpositionRightPart -->
+
+    <owl:Class rdf:about="&j.2;CircumpositionRightPart">
+        <rdfs:subClassOf rdf:resource="&j.2;Adposition"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the right part of a circumposition e.g. &quot;von jetzt an&quot;.
+The equalization with circumposition could be incomplete, because another definition of circumposition would describe that both parts belong together.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma -->
+
+    <owl:Class rdf:about="&j.2;Comma">
+        <rdfs:subClassOf rdf:resource="&j.2;SentenceInternalPunctuation"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the sentence punctuation mark for the comma &quot;$,&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun -->
+
+    <owl:Class rdf:about="&j.2;CommonNoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Noun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >0LD 
+appellative  &quot;Tisch, Herr, das Reisen&quot;
+		     NN&lt;ABK abbreviation
+		     NN&lt;ADJ substantiative adjective &quot;der Alte&quot;
+		     NN&lt;CARD cardinal numeral &quot;Hunderte&quot;
+		     NN&lt;FRACT fraction number &quot;ein Viertel&quot;
+		     NN&lt;ORD ordinal numeral &quot;ein Vierter&quot;
+		     NN&lt;VINF substantiative infinitive &quot;das Spielen&quot;
+		     NN&lt;VPART</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These can be e.g. common nouns (&quot;Tisch&quot;, &quot;Herr&quot;, &quot;Haus&quot;), sizes (&quot;Kilo&quot;, &quot;Meter&quot;), substantiative adjectives (&quot;der Alte&quot;), substantiative infinitives (&quot;[das] Spielen&quot;, &quot;[das] Reisen&quot;), substantiative participles (&quot;[das] Gewuenschte&quot;, &quot;[das] Gesuchte&quot;,), ordinal numerals ([der] Vierte).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ComparisonParticle -->
+
+    <owl:Class rdf:about="&j.2;ComparisonParticle">
+        <rdfs:subClassOf rdf:resource="&j.2;Conjunction"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are the comparison particles &quot;als&quot; and &quot;wie&quot;. They have only a mid-sentence use that means they are not followed by an Nominal Phrase or an Adverbial Phrase.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Conjunction -->
+
+    <owl:Class rdf:about="&j.2;Conjunction">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are conjunctions.
+
+A conjunction is a word that syntactically links words or larger constituents and expresses a relationship between them.
+Prototypically, a conjunction links two clauses. However, coordinative conjunctions may also link subclausal expressions.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Konjunktion 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction -->
+
+    <owl:Class rdf:about="&j.2;CoordinatingConjunction">
+        <rdfs:subClassOf rdf:resource="&j.2;Conjunction"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are co-ordinating (adjacent arranged) conjunctions &quot;und&quot;, &quot;oder&quot;, &quot;aber&quot;.
+
+A coordinative conjunction is a conjunction that coordinates two expressions.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet koordinierende Konjunktion 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#DemonstrativePronoun -->
+
+    <owl:Class rdf:about="&j.2;DemonstrativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are demonstrative pronouns.
+
+This is a pronoun with deictic function.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Demonstrativpronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb -->
+
+    <owl:Class rdf:about="&j.2;FiniteAuxiliaryVerb">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxilliaryVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are finite auxiliary verbs, e.g. &quot;[du] bist&quot;, &quot;[wir] werden&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb -->
+
+    <owl:Class rdf:about="&j.2;FiniteModalVerb">
+        <rdfs:subClassOf rdf:resource="&j.2;ModalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is a finite modal verb e.g. in German&quot;duerfen&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb -->
+
+    <owl:Class rdf:about="&j.2;FiniteVerb">
+        <rdfs:subClassOf rdf:resource="&j.2;LexicalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are finite verbs, e.g.  &quot;[du] gehst&quot;, &quot;[wir] kommen [an]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ForeignMaterial -->
+
+    <owl:Class rdf:about="&j.2;ForeignMaterial">
+        <rdfs:subClassOf rdf:resource="&j.2;Additional"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >0LD 
+The tag FM describes foreign material, e.g.  &quot;Er hat das mit _A big sh _ ubersetzt&quot;. Foreign words are written in capital letters if they were written with small letters The tag FM describes foreign material, e.g.  &quot;Er hat das mit _A big sh _ ubersetzt&quot;
+	    to distinguish from NN:
+		german flexion =&gt; NN
+		Foreign words are written in capital letters if they are written with a small letter in the original language and belong to the NN category.
+		z.B. die Contras</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The tag FM describes foreign material, e.g.  &quot;Er hat das mit _A big sh _ ubersetzt&quot;. Foreign words are written in capital letters if they were written in the original language with small letters and belong to the category of nouns (NN) , e.g. &quot;die Contras&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Imperative -->
+
+    <owl:Class rdf:about="&j.2;Imperative">
+        <rdfs:subClassOf rdf:resource="&j.2;LexicalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the imperative , e.g. &quot;komm !&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#IndefinitePronoun -->
+
+    <owl:Class rdf:about="&j.2;IndefinitePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are indefinite pronouns.
+
+This is a pronoun which belongs to a class whose members make indefinite reference. An indefinite pronoun may be specific or nonspecific. In the latter case, it may be generic.
+An indefinite pronoun may be negative.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Indefinitpronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive -->
+
+    <owl:Class rdf:about="&j.2;Infinitive">
+        <rdfs:subClassOf rdf:resource="&j.2;LexicalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are infinitives, e.g.  &quot;gehen&quot;, &quot;ankommen&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InfinitiveWithZu -->
+
+    <owl:Class rdf:about="&j.2;InfinitiveWithZu">
+        <rdfs:subClassOf rdf:resource="&j.2;LexicalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are infinitives with &quot;zu&quot;, e.g. &quot;anzukommen&quot;, &quot;loszulassen&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Interjection -->
+
+    <owl:Class rdf:about="&j.2;Interjection">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are interjections, e.g. &quot;mhm&quot;, &quot;ach&quot;, &quot;tja&quot;.
+
+An interjection is a particle 1 which may represent a sentence. Thus, it is not syntactically related to other sentence components.
+An interjection is typically brief, used most often as an exclamation or as part of an exclamation and typically expresses an emotional reaction, often with respect to an accompanying sentence. It may include a combination of sounds not otherwise found it the language.
+Examples in English are &#8222;psst!&#8220;, &#8222;ugh!&#8220;, &#8222;well, well!&#8220;, &#8222;yes&#8220;, &#8222;no&#8220;.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Interjektion 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#InterrogativePronoun -->
+
+    <owl:Class rdf:about="&j.2;InterrogativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are interrogative pronouns.
+
+An interrogative pronoun is a pronoun which is an interrogative pro-form.
+Examples in English are &quot;who&quot;, &quot;which&quot;.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Fragepronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Letter -->
+
+    <owl:Class rdf:about="&j.2;Letter">
+        <rdfs:subClassOf rdf:resource="&j.2;Additional"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#LexicalVerb -->
+
+    <owl:Class rdf:about="&j.2;LexicalVerb">
+        <rdfs:subClassOf rdf:resource="&j.2;Verb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are all other (i.e. neither VA nor VM) verb forms which can be classified as VV.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalInfinitive -->
+
+    <owl:Class rdf:about="&j.2;ModalInfinitive">
+        <rdfs:subClassOf rdf:resource="&j.2;ModalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the infinitive form of a modal verb, e.g. in German &quot;wollen&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalPastParticiple -->
+
+    <owl:Class rdf:about="&j.2;ModalPastParticiple">
+        <rdfs:subClassOf rdf:resource="&j.2;ModalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the past participle of a modal verb , e.g. in German &quot;[er hat] gekonnt&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ModalVerb -->
+
+    <owl:Class rdf:about="&j.2;ModalVerb">
+        <rdfs:subClassOf rdf:resource="&j.2;Verb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >0LD 
+These are modal verbs which include &quot;koennen, muessen, wollen, duerfen, moegen&quot; also the conjunctive forms of &quot;moegen, moechten&quot; and &quot;sollen&quot;.
+
+no category for modal verbs, thus not distinguished from non-aux verbs</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are modal verbs which include the German words &quot;koennen&quot;, &quot;muessen&quot;, &quot;wollen&quot;, &quot;duerfen&quot;, &quot;moegen&quot; also the conjunctive forms of &quot;moegen&quot;, &quot;moechten&quot; and &quot;sollen&quot;.
+
+A modal verb is a grammatical verb expressing modality.
+Modal verbs express both subjective and objective modality.
+An Example in English is &quot;must&quot;.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Modalverb 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NegationParticle -->
+
+    <owl:Class rdf:about="&j.2;NegationParticle">
+        <rdfs:subClassOf rdf:resource="&j.2;Particle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the negation particle &quot;nicht&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NonWords -->
+
+    <owl:Class rdf:about="&j.2;NonWords">
+        <rdfs:subClassOf rdf:resource="&j.2;Additional"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >0LD 
+non-words
+non-word, additional characters including &quot;D2XW3&quot;</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are non-words mostly bigger groups of numbers or combinations of letters and numbers which could not be related to CARD (cardinal numeral) or ADJA (attributive adjective), e.g. &quot;das Model DX3E&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Noun -->
+
+    <owl:Class rdf:about="&j.2;Noun">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are nouns.
+
+A noun is a word that is a member of a part of speech whose prototypical members designate physical objects.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Substantiv 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#POS -->
+
+    <owl:Class rdf:about="&j.2;POS">
+        <rdfs:subClassOf rdf:resource="&j.2;Tag"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The POS contains &quot;real POS-Tags&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Particle -->
+
+    <owl:Class rdf:about="&j.2;Particle">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are particles.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ParticleWithAdjective -->
+
+    <owl:Class rdf:about="&j.2;ParticleWithAdjective">
+        <rdfs:subClassOf rdf:resource="&j.2;Particle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are particles in combination with an adjective, e.g. &quot;am [schoensten]&quot;, or with an adverb, e.g. &quot;zu [schnell]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple -->
+
+    <owl:Class rdf:about="&j.2;PastParticiple">
+        <rdfs:subClassOf rdf:resource="&j.2;LexicalVerb"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are past participles, e.g. &quot;gegangen&quot;, &quot;angekommen&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun -->
+
+    <owl:Class rdf:about="&j.2;PersonalPronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are non-reflexive personal pronouns, e.g. in German &quot;ich&quot;, &quot;er&quot;, &quot;ihm&quot;, &quot;mich&quot;.
+
+A personal pronoun is a pronoun (a pro-substantive) that expresses person.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Personalpronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PossessivePronoun -->
+
+    <owl:Class rdf:about="&j.2;PossessivePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are possessive pronouns.
+
+This is a special type of pronoun used prototypically to indicate the possessor in an attributive possession relation. It typically has the inflectional categories of the adjective.
+The possessive pronoun is normally a modifier to a head noun that represents the possessum. It can also be used to indicate the subject or object relation for the nominalization of a verb or a nonfinite verb form.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Possessivpronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Postposition -->
+
+    <owl:Class rdf:about="&j.2;Postposition">
+        <rdfs:subClassOf rdf:resource="&j.2;Adposition"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are postpositions e.g. &quot;ihm zufolge&quot;, &quot;der Sache wegen&quot;.
+
+A postposition is an adposition that follows its complement.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Postposition 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective -->
+
+    <owl:Class rdf:about="&j.2;PredicativeAdjective">
+        <rdfs:subClassOf rdf:resource="&j.2;Adjective"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are adverbial (&quot;er faehrt schnell&quot;) or predicative (&quot;er ist schnell&quot;) adjectives. These can also be from nominals (&quot;[mir ist] angst&quot;), fraction numbers (&quot;halb [voll]&quot;), ordinal numerals (&quot;[zu] dritt&quot;), adverbial used present participles (&quot;[er kam] lachend [herein]&quot;) or adverbial used past participles (&quot;gebraucht [kaufen]&quot;, &quot;gekonnt [gespielt]&quot;).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition -->
+
+    <owl:Class rdf:about="&j.2;Preposition">
+        <rdfs:subClassOf rdf:resource="&j.2;Adposition"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are temporal, causal, modal and local prepositions, e.g. &quot;ohne&quot;, &quot;mit&quot;, &quot;waehrend&quot; or the left part of a circumposition &quot;um [der sache wegen]&quot;, &quot;von [heute an]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle -->
+
+    <owl:Class rdf:about="&j.2;PrepositionWithArticle">
+        <rdfs:subClassOf rdf:resource="&j.2;Adposition"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are prepositions with an article e.g. &quot;im Haus&quot;, &quot;zur Sache&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PronominalAdverb -->
+
+    <owl:Class rdf:about="&j.2;PronominalAdverb">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are the pronominal adverbs, e.g. in German &quot;daf&#252;r&quot;, &quot;dabei&quot;, &quot;deswegen&quot;, &quot;trotzdem&quot;.
+
+A pronominal adverb is a pro-form that belongs to an adverbial syntactic category.
+An Example in English is &#8222;there&#8220; in &#8222;If you&#8217;ll look on the table, you&#8217;ll find the book there.&#8220;
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Pronominaladverb 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Pronoun -->
+
+    <owl:Class rdf:about="&j.2;Pronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are the pronouns.
+
+A pronoun is a pro-form that belongs to a nominal syntactic category, The prototypical pronoun has the same distribution as an NP.
+Pronouns are free forms (as opposed to affixes) that fill the position of a noun phrase (or other nominal category) in a sentence.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Pronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun -->
+
+    <owl:Class rdf:about="&j.2;ProperNoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Noun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are proper names, e.g.  &quot;Hans&quot;, &quot;Hamburg&quot;, &quot;HSV&quot;.
+
+A proper name is a name of an individual (as opposed to a collective).
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Eigenname 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Punctuation -->
+
+    <owl:Class rdf:about="&j.2;Punctuation">
+        <rdfs:subClassOf rdf:resource="&j.2;Additional"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are punctuation marks which begin in STTS with $....</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ReflexivePronoun -->
+
+    <owl:Class rdf:about="&j.2;ReflexivePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are reflexive personal pronouns, e.g. &quot;sich&quot;, &quot;einander&quot;, &quot;dich&quot;, &quot;mir&quot;.
+
+A reflexive pronoun is a pronoun distinguished as having coreference with the subject, cf. &#8222;himself&#8220; in &#8222;He prides himself on his appearance&#8220;.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Reflexivpronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#RelativePronoun -->
+
+    <owl:Class rdf:about="&j.2;RelativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;Pronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are relative pronouns.
+
+A relative pronoun is a special pronoun which combines the functions of a plain relativizer and a clause internal pronoun that refers to the head of the relative clause.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Relativpronomen 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation -->
+
+    <owl:Class rdf:about="&j.2;SentenceFinalPunctuation">
+        <rdfs:subClassOf rdf:resource="&j.2;Punctuation"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The tag &quot;$.&quot; is used for sentence final punctuation e.g. &quot;. ? ! ; :&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceInternalPunctuation -->
+
+    <owl:Class rdf:about="&j.2;SentenceInternalPunctuation">
+        <rdfs:subClassOf rdf:resource="&j.2;Punctuation"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are other sentence medial punctuation marks not the comma.
+The tag &quot;$(&quot;  is used for e.g.  &quot;-, (, ), [ , ]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle -->
+
+    <owl:Class rdf:about="&j.2;SeparatedVerbalParticle">
+        <rdfs:subClassOf rdf:resource="&j.2;Particle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are separated additional verbal items, e.g. &quot;[er kommt] an&quot;, &quot;[er fahrt] rad&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunction -->
+
+    <owl:Class rdf:about="&j.2;SubordinatingConjunction">
+        <rdfs:subClassOf rdf:resource="&j.2;Conjunction"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are subordinating conjunctions.
+
+A subordinative conjunction is a conjunction that subordinates one clause to another.
+E.g. &#8220;when&#8220; in &#8222;Listen when I speak to you&#8220;.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet subordinierende Konjunktion 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithSentence -->
+
+    <owl:Class rdf:about="&j.2;SubordinatingConjunctionWithSentence">
+        <rdfs:subClassOf rdf:resource="&j.2;SubordinatingConjunction"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are subordinating conjunctions which mark the beginning of a finite subordinate clause, e.g.  &quot;weil&quot;, &quot;da&quot; , &quot;damit&quot;, &quot;wenn&quot;, &quot;ob&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithZu -->
+
+    <owl:Class rdf:about="&j.2;SubordinatingConjunctionWithZu">
+        <rdfs:subClassOf rdf:resource="&j.2;SubordinatingConjunction"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are subordinating conjunctions with &quot;zu&quot; and infinitive, e.g. &quot;anstatt zu fragen&quot;, &quot;um zu leben&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveDemonstrativePronoun -->
+
+    <owl:Class rdf:about="&j.2;SubstitutiveDemonstrativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;DemonstrativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are substitutive demonstrative pronouns, e.g. &quot;jener&quot;, &quot;dieser&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveIndefinitePronoun -->
+
+    <owl:Class rdf:about="&j.2;SubstitutiveIndefinitePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;IndefinitePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are substitutive indefinite pronouns, e.g. &quot;keiner&quot;, &quot;viele&quot;, &quot;man&quot;, &quot;niemand&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveInterrogativePronoun -->
+
+    <owl:Class rdf:about="&j.2;SubstitutiveInterrogativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;InterrogativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are substitutive interrogative pronouns, e.g. &quot;wer&quot;, &quot;was&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutivePossessivePronoun -->
+
+    <owl:Class rdf:about="&j.2;SubstitutivePossessivePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;PossessivePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are substitutive possessive pronouns, e.g. &quot;meins&quot;, &quot;deiner&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubstitutiveRelativePronoun -->
+
+    <owl:Class rdf:about="&j.2;SubstitutiveRelativePronoun">
+        <rdfs:subClassOf rdf:resource="&j.2;RelativePronoun"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are substitutive relative pronouns, e.g. &quot;[der Hund, ] der&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Tag -->
+
+    <owl:Class rdf:about="&j.2;Tag">
+        <rdfs:subClassOf rdf:resource="&j.0;Category"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >STTS Tags are organized according to main groups in Schiller et al.&#39;s little tag set (1999), without lexical and morphological information.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Truncated -->
+
+    <owl:Class rdf:about="&j.2;Truncated">
+        <rdfs:subClassOf rdf:resource="&j.2;Additional"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >0LD 
+first part of a composition 
+	&quot;An und Abreise&quot;
+
+impossible to link to anything more specific than residual</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The tag TRUNC describes parts of words which end with an hyphen. The hyphen substitutes a part of a following word which is linked with and/ or (&quot;und / oder&quot;). It is also called first part of a compound, e.g. &quot;An- und Abreise&quot; .</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Verb -->
+
+    <owl:Class rdf:about="&j.2;Verb">
+        <rdfs:subClassOf rdf:resource="&j.2;POS"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >These are verbs.
+
+A verb is a word that is a member of a part of speech whose prototypical members designate events and processes.
+(http://www.uni-erfurt.de/sprachwissenschaft/proxy.php?port=8080&amp;file=lido/servlet/Lido_Servlet Verb 14.05.07)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ZuWithInfinitive -->
+
+    <owl:Class rdf:about="&j.2;ZuWithInfinitive">
+        <rdfs:subClassOf rdf:resource="&j.2;Particle"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This is the particle &quot;zu&quot; which appears before an infinitive, e.g. &quot;zu [gehen]&quot;.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://nachhalt.sfb632.uni-potsdam.de/owl/system.owl#Category -->
+
+    <owl:Class rdf:about="&j.0;Category"/>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/ADJA -->
+
+    <owl:Class rdf:about="&ontology;ADJA">
+        <rdfs:subClassOf rdf:resource="&j.2;AttributiveAdjective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/ADJD -->
+
+    <owl:Class rdf:about="&ontology;ADJD">
+        <rdfs:subClassOf rdf:resource="&j.2;PredicativeAdjective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/ADV -->
+
+    <owl:Class rdf:about="&ontology;ADV">
+        <rdfs:subClassOf rdf:resource="&j.2;Adverb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/APPO -->
+
+    <owl:Class rdf:about="&ontology;APPO">
+        <rdfs:subClassOf rdf:resource="&j.2;Postposition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/APPR -->
+
+    <owl:Class rdf:about="&ontology;APPR">
+        <rdfs:subClassOf rdf:resource="&j.2;Preposition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/APPRART -->
+
+    <owl:Class rdf:about="&ontology;APPRART">
+        <rdfs:subClassOf rdf:resource="&j.2;PrepositionWithArticle"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/APZR -->
+
+    <owl:Class rdf:about="&ontology;APZR">
+        <rdfs:subClassOf rdf:resource="&j.2;CircumpositionRightPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/ART -->
+
+    <owl:Class rdf:about="&ontology;ART">
+        <rdfs:subClassOf rdf:resource="&j.2;Article"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/CARD -->
+
+    <owl:Class rdf:about="&ontology;CARD">
+        <rdfs:subClassOf rdf:resource="&j.2;CardinalNumber"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/FM -->
+
+    <owl:Class rdf:about="&ontology;FM">
+        <rdfs:subClassOf rdf:resource="&j.2;ForeignMaterial"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/ITJ -->
+
+    <owl:Class rdf:about="&ontology;ITJ">
+        <rdfs:subClassOf rdf:resource="&j.2;Interjection"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/KOKOM -->
+
+    <owl:Class rdf:about="&ontology;KOKOM">
+        <rdfs:subClassOf rdf:resource="&j.2;ComparisonParticle"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/KON -->
+
+    <owl:Class rdf:about="&ontology;KON">
+        <rdfs:subClassOf rdf:resource="&j.2;CoordinatingConjunction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/KOUI -->
+
+    <owl:Class rdf:about="&ontology;KOUI">
+        <rdfs:subClassOf rdf:resource="&j.2;SubordinatingConjunctionWithZu"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/KOUS -->
+
+    <owl:Class rdf:about="&ontology;KOUS">
+        <rdfs:subClassOf rdf:resource="&j.2;SubordinatingConjunctionWithSentence"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/NE -->
+
+    <owl:Class rdf:about="&ontology;NE">
+        <rdfs:subClassOf rdf:resource="&j.2;ProperNoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/NN -->
+
+    <owl:Class rdf:about="&ontology;NN">
+        <rdfs:subClassOf rdf:resource="&j.2;CommonNoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/NNE -->
+
+    <owl:Class rdf:about="&ontology;NNE">
+        <rdfs:subClassOf rdf:resource="&j.2;ProperNoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PDAT -->
+
+    <owl:Class rdf:about="&ontology;PDAT">
+        <rdfs:subClassOf rdf:resource="&j.2;AttributiveDemonstrativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PDS -->
+
+    <owl:Class rdf:about="&ontology;PDS">
+        <rdfs:subClassOf rdf:resource="&j.2;SubstitutiveDemonstrativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PIAT -->
+
+    <owl:Class rdf:about="&ontology;PIAT">
+        <rdfs:subClassOf rdf:resource="&j.2;AttributiveIndefinitePronounWithoutDeterminer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PIS -->
+
+    <owl:Class rdf:about="&ontology;PIS">
+        <rdfs:subClassOf rdf:resource="&j.2;SubstitutiveIndefinitePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PPER -->
+
+    <owl:Class rdf:about="&ontology;PPER">
+        <rdfs:subClassOf rdf:resource="&j.2;PersonalPronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PPOSAT -->
+
+    <owl:Class rdf:about="&ontology;PPOSAT">
+        <rdfs:subClassOf rdf:resource="&j.2;AttributivePossessivePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PPOSS -->
+
+    <owl:Class rdf:about="&ontology;PPOSS">
+        <rdfs:subClassOf rdf:resource="&j.2;SubstitutivePossessivePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PRELAT -->
+
+    <owl:Class rdf:about="&ontology;PRELAT">
+        <rdfs:subClassOf rdf:resource="&j.2;AttributiveRelativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PRELS -->
+
+    <owl:Class rdf:about="&ontology;PRELS">
+        <rdfs:subClassOf rdf:resource="&j.2;SubstitutiveRelativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PRF -->
+
+    <owl:Class rdf:about="&ontology;PRF">
+        <rdfs:subClassOf rdf:resource="&j.2;ReflexivePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PROAV -->
+
+    <owl:Class rdf:about="&ontology;PROAV">
+        <rdfs:subClassOf rdf:resource="&j.2;PronominalAdverb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PTKA -->
+
+    <owl:Class rdf:about="&ontology;PTKA">
+        <rdfs:subClassOf rdf:resource="&j.2;ParticleWithAdjective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PTKANT -->
+
+    <owl:Class rdf:about="&ontology;PTKANT">
+        <rdfs:subClassOf rdf:resource="&j.2;AnsweringParticle"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PTKNEG -->
+
+    <owl:Class rdf:about="&ontology;PTKNEG">
+        <rdfs:subClassOf rdf:resource="&j.2;NegationParticle"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PTKVZ -->
+
+    <owl:Class rdf:about="&ontology;PTKVZ">
+        <rdfs:subClassOf rdf:resource="&j.2;SeparatedVerbalParticle"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PTKZU -->
+
+    <owl:Class rdf:about="&ontology;PTKZU">
+        <rdfs:subClassOf rdf:resource="&j.2;ZuWithInfinitive"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PWAT -->
+
+    <owl:Class rdf:about="&ontology;PWAT">
+        <rdfs:subClassOf rdf:resource="&j.2;AttributiveInterrogativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PWAV -->
+
+    <owl:Class rdf:about="&ontology;PWAV">
+        <rdfs:subClassOf rdf:resource="&j.2;AdverbialInterrogativeRelativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/PWS -->
+
+    <owl:Class rdf:about="&ontology;PWS">
+        <rdfs:subClassOf rdf:resource="&j.2;SubstitutiveInterrogativePronoun"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/Sentence -->
+
+    <owl:Class rdf:about="&ontology;Sentence"/>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/TRUNC -->
+
+    <owl:Class rdf:about="&ontology;TRUNC">
+        <rdfs:subClassOf rdf:resource="&j.2;Truncated"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/Token -->
+
+    <owl:Class rdf:about="&ontology;Token"/>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VAFIN -->
+
+    <owl:Class rdf:about="&ontology;VAFIN">
+        <rdfs:subClassOf rdf:resource="&j.2;FiniteAuxiliaryVerb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VAIMP -->
+
+    <owl:Class rdf:about="&ontology;VAIMP">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxiliaryImperative"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VAINF -->
+
+    <owl:Class rdf:about="&ontology;VAINF">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxiliaryInfinitive"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VAPP -->
+
+    <owl:Class rdf:about="&ontology;VAPP">
+        <rdfs:subClassOf rdf:resource="&j.2;AuxiliaryPastParticiple"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VMFIN -->
+
+    <owl:Class rdf:about="&ontology;VMFIN">
+        <rdfs:subClassOf rdf:resource="&j.2;FiniteModalVerb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VMINF -->
+
+    <owl:Class rdf:about="&ontology;VMINF">
+        <rdfs:subClassOf rdf:resource="&j.2;ModalInfinitive"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VMPP -->
+
+    <owl:Class rdf:about="&ontology;VMPP">
+        <rdfs:subClassOf rdf:resource="&j.2;ModalPastParticiple"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VVFIN -->
+
+    <owl:Class rdf:about="&ontology;VVFIN">
+        <rdfs:subClassOf rdf:resource="&j.2;FiniteVerb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VVIMP -->
+
+    <owl:Class rdf:about="&ontology;VVIMP">
+        <rdfs:subClassOf rdf:resource="&j.2;Imperative"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VVINF -->
+
+    <owl:Class rdf:about="&ontology;VVINF">
+        <rdfs:subClassOf rdf:resource="&j.2;Infinitive"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VVIZU -->
+
+    <owl:Class rdf:about="&ontology;VVIZU">
+        <rdfs:subClassOf rdf:resource="&j.2;InfinitiveWithZu"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/VVPP -->
+
+    <owl:Class rdf:about="&ontology;VVPP">
+        <rdfs:subClassOf rdf:resource="&j.2;PastParticiple"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/XY -->
+
+    <owl:Class rdf:about="&ontology;XY">
+        <rdfs:subClassOf rdf:resource="&j.2;NonWords"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/comma_tag -->
+
+    <owl:Class rdf:about="&ontology;comma_tag">
+        <rdfs:subClassOf rdf:resource="&j.2;Comma"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/generalsentenceinternalpunctuation_tag -->
+
+    <owl:Class rdf:about="&ontology;generalsentenceinternalpunctuation_tag">
+        <rdfs:subClassOf rdf:resource="&j.2;SentenceInternalPunctuation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag -->
+
+    <owl:Class rdf:about="&ontology;sentencefinalpunctuation_tag">
+        <rdfs:subClassOf rdf:resource="&j.2;SentenceFinalPunctuation"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
+

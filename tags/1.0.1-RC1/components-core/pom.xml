@@ -1,0 +1,184 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.dllearner</groupId>
+    <artifactId>components-core</artifactId>
+    <packaging>jar</packaging>
+
+    <name>DL Learner Core Components</name>
+    <url>http://aksw.org/Projects/DLLearner</url>
+
+    <parent>
+        <groupId>org.dllearner</groupId>
+        <artifactId>dllearner-parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
+    <build>
+        <plugins>
+            <!--Surefire - for JUnits-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!--Uncomment this when the junits are independent of a runtime directory-->
+                    <!--<includes>-->
+                        <!--<include>org/dllearner/test/junit/*</include>-->
+                    <!--</includes>-->
+                    <excludes>
+                        <exclude>org/dllearner/test/*</exclude>
+                        <exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
+                        <!--This line excludes inner classes-->
+                        <exclude>**/*$*</exclude>
+                    </excludes>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
+            <!--Jar the tests up into a separate jar so other components tests' can leverage them-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+
+        <!--Spring Dependencies-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.core</artifactId>
+        </dependency>
+
+        <!-- THIS IS FROM THE UNIBAS REPO-->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi</artifactId>
+        </dependency>
+
+        <!-- THIS IS FROM THE UNIBAS REPO-->
+        <dependency>
+            <groupId>com.owldl</groupId>
+            <artifactId>pellet</artifactId>
+            <exclusions>
+        <exclusion>  <!-- declare the exclusion here -->
+          <groupId>org.mortbay.jetty</groupId>
+            <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+      </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!--Available via central, we use the latest with minor mods to DL Learner source (IE Dig related code)-->
+        <dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>jena</artifactId>
+        </dependency>
+
+        <!--SwingX is in central-->
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+        </dependency>
+
+
+        <!--JSON is in Central-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+
+
+
+         <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+        </dependency>
+
+
+         <!--Lucene is in Central-->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ini4j</groupId>
+            <artifactId>ini4j</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>xmlbeans</groupId>
+            <artifactId>xbean</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.factplusplus</groupId>
+            <artifactId>factpp-owlapi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.owlapi.owllink</groupId>
+            <artifactId>owllink</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.semanticweb.hermit</groupId>
+            <artifactId>hermit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jamonapi</groupId>
+            <artifactId>jamon</artifactId>
+        </dependency>
+
+        <!--JENA ARQ is in central - we use the latest-->
+        <dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>arq</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.dig</groupId>
+            <artifactId>dig-xmlbeans</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

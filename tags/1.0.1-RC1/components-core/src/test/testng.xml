@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<!--This tests all of our Core Tests that - Run this suite to make sure you didn't break anything -->
+<suite name="Components-Core Tests" verbose="1">
+
+    <!-- We assume all tests are unit tests and if they are higher level they will be put in the appropriate group -->
+    <!--All these tests that run here will be triggered on Hudson/Maven - if you want to exclude a test from team city you can
+        exclude it here or put it in a group that gets excluded - add the excludedGroups element to the surefire entry in the pom to achieve this -->
+    <test name="Unit Tester" annotations="JDK" verbose="1">
+        <packages>
+            <package name="org.dllearner.integration"/>
+            <package name="org.dllearner.test.sparql"/>
+        </packages>
+    </test>
+</suite>

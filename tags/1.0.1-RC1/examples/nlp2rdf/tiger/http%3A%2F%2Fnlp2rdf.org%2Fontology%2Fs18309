@@ -1,0 +1,72 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18309w1_Ulrich">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Ulrich</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18309w0_Von"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18309w2_Conrads"/>
+    <j.0:hasLemma>Ulrich</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18309syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18309w0_Von">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Von</rdfs:label>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s18309w1_Ulrich"/>
+    <j.0:hasLemma>von</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18309syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18309w2_Conrads">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Conrads</rdfs:label>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s18309w1_Ulrich"/>
+    <j.0:hasLemma>Conrads</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18309syntax500"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18309syntax500">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/properNoun"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18309syntax501"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18309">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <rdfs:label>Von Ulrich Conrads</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18309w0_Von"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s18309w0_Von"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18309w1_Ulrich"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s18309w2_Conrads"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s18309syntax501">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/prepositionalPhrase"/>
+    <j.0:isPartOfSyntaxTree rdf:resource="http://nlp2rdf.org/ontology/s18309"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/properNoun">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#SyntacticNode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/prepositionalPhrase">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/tiger-syntax.owl#PrepositionalPhrase"/>
+  </rdf:Description>
+</rdf:RDF>

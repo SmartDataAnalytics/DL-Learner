@@ -1,0 +1,2454 @@
+http://www.biopax.org/release/biopax-level2.owl
+#logical axioms: 343
+#classes: 42
+#object properties: 33
+#data properties: 37
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.ifomis.org/bfo/owl
+#logical axioms: 95
+#classes: 39
+#object properties: 0
+#data properties: 0
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.acl.icnet.uk/~mw/MDM0.73.owl
+#logical axioms: 878
+#classes: 196
+#object properties: 22
+#data properties: 3
+#individuals: 112
+classification time in ms: 406
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 31
+  http://acl/BMV#Tamoxifen
+    <http://acl/BMV#TamFgt5Yr>
+    <http://acl/BMV#Tam30mg>
+    <http://acl/BMV#TamD2Yr>
+    <http://acl/BMV#TamE5Yr>
+    <http://acl/BMV#TamA20mg>
+    <http://acl/BMV#TamC40mg>
+  http://acl/BMV#EarlyBreastCancer
+    <http://acl/BMV#ProtoERPosLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNPosStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage2BrCa>
+  http://acl/BMV#Outcomes
+    <http://acl/BMV#DecreasedBrCaDFS0.8>
+    <http://acl/BMV#IncreasedRiskGastricCa3.0>
+    <http://acl/BMV#IncreasedRiskGastricCa3.2>
+    <http://acl/BMV#DecreasedBrCaDFS0.5>
+    <http://acl/BMV#IncreasedBrCaDFSREF>
+    <http://acl/BMV#NoChangeRiskEndometrialAbnormality1>
+    <http://acl/BMV#IncreasedLumbarBMD1.012>
+    <http://acl/BMV#DecreasedRiskBrCa0.55>
+    <http://acl/BMV#DecreasedRiskBrCa0.6>
+    <http://acl/BMV#IncreasedOS1.2>
+    ... 50 more
+  http://acl/BMV#BiologicalLevels
+    <http://acl/BMV#PlasmaPlatelet>
+    <http://acl/BMV#PlasmaLDL>
+    <http://acl/BMV#LumbarBMDLevel>
+    <http://acl/BMV#PlasmaCholesterolInst>
+    <http://acl/BMV#RadialBMDLevel>
+    <http://acl/BMV#PlasmaFibrinogen>
+  http://acl/BMV#MedicalIntervention
+    <http://acl/BMV#TamFgt5Yr>
+    <http://acl/BMV#ProtoPFTChemoTam>
+    <http://acl/BMV#ProtoEarlyCMFTChemoTam>
+    <http://acl/BMV#ProtoPAFTChemoTam>
+    <http://acl/BMV#TamC40mg>
+    <http://acl/BMV#ProtoMFTChemoTam>
+    <http://acl/BMV#ProtoClonidine>
+    <http://acl/BMV#ProtoLateCMFTChemTam>
+    <http://acl/BMV#Tam30mg>
+    <http://acl/BMV#TamD2Yr>
+    ... 5 more
+  http://acl/BMV#ChangeRiskEndometrialAbnormality
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.4>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.0>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.53>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer4.1>
+    <http://acl/BMV#NoChangeRiskEndometrialAbnormality1>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer7.5>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.3>
+  http://acl/BMV#Abstract
+    <http://acl/BMV#ProtoEndoAbnormality>
+    <http://acl/BMV#ProtoEarlyCMFTChemoTam>
+    <http://acl/BMV#ProtoLNNeg>
+    <http://acl/BMV#IncreasedLumbarBMD1.012>
+    <http://acl/BMV#DecreasedRiskBrCa0.55>
+    <http://acl/BMV#PlasmaLDL>
+    <http://acl/BMV#DecreasedRiskBrCa0.6>
+    <http://acl/BMV#IncreasedOS1.2>
+    <http://acl/BMV#IncreasedOS1.1>
+    <http://acl/BMV#IncreasedRiskPersistentSideEffects2.3>
+    ... 102 more
+  http://acl/BMV#HormoneRARegimeTypes
+    <http://acl/BMV#TamFgt5Yr>
+    <http://acl/BMV#Tam30mg>
+    <http://acl/BMV#TamD2Yr>
+    <http://acl/BMV#TamE5Yr>
+    <http://acl/BMV#TamA20mg>
+    <http://acl/BMV#TamC40mg>
+  http://acl/BMV#IncreasedBrCaDFS
+    <http://acl/BMV#IncreasedBrCaDFS1.1>
+    <http://acl/BMV#IncreasedBrCaDFS1.2>
+    <http://acl/BMV#IncreasedBrCaDFS1.3>
+    <http://acl/BMV#IncreasedBrCaDFSREF>
+    <http://acl/BMV#IncreasedBrCaDFS1.05>
+    <http://acl/BMV#IncreasedBrCaDFS1.x>
+    <http://acl/BMV#IncreasedBrCaDFS1.5>
+    <http://acl/BMV#IncreasedBrCaDFS1.21>
+    <http://acl/BMV#IncreasedBrCaDFS1.7>
+  http://acl/BMV#IncreasedRiskEndometrialCancer
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.4>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.0>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.53>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer4.1>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer7.5>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.3>
+  http://acl/BMV#ChangeLumbarBMD
+    <http://acl/BMV#IncreasedLumbarBMD1.006>
+    <http://acl/BMV#DecreasedLumbarBMD0.986>
+    <http://acl/BMV#DecreasedLumbarBMD0.993>
+    <http://acl/BMV#IncreasedLumbarBMD1.008>
+    <http://acl/BMV#IncreasedLumbarBMD1.012>
+  http://acl/BMV#CancerTypes
+    <http://acl/BMV#ProtoERPosLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage1BrCa>
+    <http://acl/BMV#ProtoGastricCa>
+    <http://acl/BMV#ProtoColorectalCa>
+    <http://acl/BMV#ProtoERPosLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage1BrCa>
+    <http://acl/BMV#ProtoEndoCa>
+    <http://acl/BMV#ProtoERNegLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNPosStage2BrCa>
+    ... 2 more
+  http://acl/BMV#TherapeuticType
+    <http://acl/BMV#TamFgt5Yr>
+    <http://acl/BMV#ProtoPFTChemoTam>
+    <http://acl/BMV#ProtoEarlyCMFTChemoTam>
+    <http://acl/BMV#ProtoPAFTChemoTam>
+    <http://acl/BMV#TamC40mg>
+    <http://acl/BMV#ProtoMFTChemoTam>
+    <http://acl/BMV#ProtoClonidine>
+    <http://acl/BMV#ProtoLateCMFTChemTam>
+    <http://acl/BMV#Tam30mg>
+    <http://acl/BMV#TamD2Yr>
+    ... 5 more
+  http://acl/BMV#ChangeBrCaDFS
+    <http://acl/BMV#DecreasedBrCaDFS0.8>
+    <http://acl/BMV#IncreasedBrCaDFS1.1>
+    <http://acl/BMV#IncreasedBrCaDFS1.2>
+    <http://acl/BMV#DecreasedBrCaDFS0.5>
+    <http://acl/BMV#IncreasedBrCaDFS1.3>
+    <http://acl/BMV#IncreasedBrCaDFSREF>
+    <http://acl/BMV#IncreasedBrCaDFS1.05>
+    <http://acl/BMV#NoChangeBrCaDFS1>
+    <http://acl/BMV#IncreasedBrCaDFS1.x>
+    <http://acl/BMV#IncreasedBrCaDFS1.5>
+    ... 3 more
+  http://acl/BMV#AbsoluteRisk
+    <http://acl/BMV#RiskOvarianCyst0.06>
+    <http://acl/BMV#RiskCataracts0.14>
+    <http://acl/BMV#RiskEndometrialCa0.005>
+    <http://acl/BMV#RiskRetinopathy0.12>
+    <http://acl/BMV#RiskOvarianCyst0.11>
+    <http://acl/BMV#RiskEndometrialAbnormality3.9>
+  http://acl/BMV#BiologicalLevelBasedOutcomes
+    <http://acl/BMV#DecreasedLDL0.88>
+    <http://acl/BMV#IncreasedLumbarBMD1.006>
+    <http://acl/BMV#DecreasedPlasmaFibrinogenLevel0.85>
+    <http://acl/BMV#DecreasedLumbarBMD0.986>
+    <http://acl/BMV#NoChangeRadialBMD1.0>
+    <http://acl/BMV#DecreasedRadialBMD_NOS>
+    <http://acl/BMV#DecreasedLumbarBMD0.993>
+    <http://acl/BMV#DecreasedCholesterol0.88>
+    <http://acl/BMV#IncreasedLumbarBMD1.008>
+    <http://acl/BMV#DecreasedPlasmaPlateletCount0.92>
+    ... 2 more
+  http://acl/BMV#Risk
+    <http://acl/BMV#IncreasedRiskGastricCa3.0>
+    <http://acl/BMV#DecreasedBrCaDFS0.8>
+    <http://acl/BMV#DecreasedRiskHotFlushes0.8>
+    <http://acl/BMV#IncreasedRiskGastricCa3.2>
+    <http://acl/BMV#DecreasedBrCaDFS0.5>
+    <http://acl/BMV#IncreasedBrCaDFSREF>
+    <http://acl/BMV#DecreasedRiskFatalMI0.37>
+    <http://acl/BMV#RiskOvarianCyst0.11>
+    <http://acl/BMV#NoChangeRiskEndometrialAbnormality1>
+    <http://acl/BMV#IncreasedRiskCataracts1.14>
+    ... 33 more
+  http://acl/BMV#ChangeRiskEndometrialCancer
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.4>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.0>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.53>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer4.1>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer7.5>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.3>
+  http://acl/BMV#DiseaseTypes
+    <http://acl/BMV#ProtoEndoAbnormality>
+    <http://acl/BMV#ProtoVenousThrombosis>
+    <http://acl/BMV#ProtoERPosLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage2BrCa>
+    <http://acl/BMV#ProtoFatalMI>
+    <http://acl/BMV#ProtoEndoCa>
+    <http://acl/BMV#ProtoNonFatalMI>
+    <http://acl/BMV#ProtoERNegLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNPosStage1BrCa>
+    ... 10 more
+  http://acl/BMV#ChemoTamRegimeTypes
+    <http://acl/BMV#ProtoPFTChemoTam>
+    <http://acl/BMV#ProtoLateCMFTChemTam>
+    <http://acl/BMV#ProtoEarlyCMFTChemoTam>
+    <http://acl/BMV#ProtoPAFTChemoTam>
+    <http://acl/BMV#ProtoACT>
+    <http://acl/BMV#ProtoMFTChemoTam>
+  http://acl/BMV#ChangeBMD
+    <http://acl/BMV#IncreasedLumbarBMD1.006>
+    <http://acl/BMV#DecreasedLumbarBMD0.986>
+    <http://acl/BMV#NoChangeRadialBMD1.0>
+    <http://acl/BMV#DecreasedRadialBMD_NOS>
+    <http://acl/BMV#DecreasedLumbarBMD0.993>
+    <http://acl/BMV#IncreasedLumbarBMD1.008>
+    <http://acl/BMV#IncreasedLumbarBMD1.012>
+  http://acl/BMV#ChangesInRisk
+    <http://acl/BMV#IncreasedRiskGastricCa3.0>
+    <http://acl/BMV#DecreasedRiskHotFlushes0.8>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.4>
+    <http://acl/BMV#IncreasedRiskGastricCa3.2>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.0>
+    <http://acl/BMV#DecreasedRiskCardiacDisease0.68>
+    <http://acl/BMV#DecreasedRiskFatalMI0.37>
+    <http://acl/BMV#IncreasedRiskSideEffects23>
+    <http://acl/BMV#IncreasedRiskCataracts1.14>
+    <http://acl/BMV#NoChangeRiskEndometrialAbnormality1>
+    ... 12 more
+  http://acl/BMV#BreastAdenoCa
+    <http://acl/BMV#ProtoERPosLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNPosStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage2BrCa>
+  http://acl/BMV#DeltaRisk
+    <http://acl/BMV#IncreasedRiskGastricCa3.0>
+    <http://acl/BMV#DecreasedBrCaDFS0.8>
+    <http://acl/BMV#DecreasedRiskHotFlushes0.8>
+    <http://acl/BMV#IncreasedRiskGastricCa3.2>
+    <http://acl/BMV#DecreasedBrCaDFS0.5>
+    <http://acl/BMV#IncreasedBrCaDFSREF>
+    <http://acl/BMV#DecreasedRiskFatalMI0.37>
+    <http://acl/BMV#NoChangeRiskEndometrialAbnormality1>
+    <http://acl/BMV#IncreasedRiskCataracts1.14>
+    <http://acl/BMV#DecreasedRiskBrCa0.55>
+    ... 27 more
+  http://acl/BMV#References
+    <http://acl/BMV#PlasmaCholesterolInst>
+    <http://acl/BMV#ProtoERPos>
+    <http://acl/BMV#ProtoLNNeg>
+    <http://acl/BMV#RadialBMDLevel>
+    <http://acl/BMV#ProtoLNPos>
+    <http://acl/BMV#ProtoPRNeg>
+    <http://acl/BMV#ProtoStage4>
+    <http://acl/BMV#ProtoPRPos>
+    <http://acl/BMV#ProtoPostmenopausal>
+    <http://acl/BMV#PlasmaFibrinogen>
+    ... 9 more
+  http://acl/BMV#IncreasedRiskEndometrialAbnormality
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.4>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer6.0>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.53>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer4.1>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer7.5>
+    <http://acl/BMV#IncreasedRiskEndometrialCancer2.3>
+  http://acl/BMV#BreastCancer
+    <http://acl/BMV#ProtoERPosLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage1BrCa>
+    <http://acl/BMV#ProtoERNegLNNegStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage1BrCa>
+    <http://acl/BMV#ProtoERPosLNPosStage2BrCa>
+    <http://acl/BMV#ProtoERNegLNPosStage2BrCa>
+  http://acl/BMV#ChangesInSurvival
+    <http://acl/BMV#DecreasedBrCaDFS0.8>
+    <http://acl/BMV#IncreasedBrCaDFS1.1>
+    <http://acl/BMV#IncreasedBrCaDFS1.2>
+    <http://acl/BMV#DecreasedBrCaDFS0.5>
+    <http://acl/BMV#IncreasedBrCaDFS1.3>
+    <http://acl/BMV#IncreasedBrCaDFSREF>
+    <http://acl/BMV#IncreasedBrCaDFS1.05>
+    <http://acl/BMV#IncreasedCardiacDSS1.52>
+    <http://acl/BMV#IncreasedBrCaDFS1.x>
+    <http://acl/BMV#IncreasedBrCaDFS1.5>
+    ... 6 more
+  http://acl/BMV#ChangeOverallSurvival
+    <http://acl/BMV#IncreasedOS1.03>
+    <http://acl/BMV#IncreasedOS1.2>
+    <http://acl/BMV#IncreasedOS1.1>
+    <http://acl/BMV#ProtoNoChangeOS>
+    <http://acl/BMV#IncreasedOS1.02>
+  http://acl/BMV#MedicalThings
+    <http://acl/BMV#ProtoEndoAbnormality>
+    <http://acl/BMV#ProtoEarlyCMFTChemoTam>
+    <http://acl/BMV#ProtoLNNeg>
+    <http://acl/BMV#IncreasedLumbarBMD1.012>
+    <http://acl/BMV#DecreasedRiskBrCa0.55>
+    <http://acl/BMV#PlasmaLDL>
+    <http://acl/BMV#DecreasedRiskBrCa0.6>
+    <http://acl/BMV#IncreasedOS1.2>
+    <http://acl/BMV#IncreasedOS1.1>
+    <http://acl/BMV#IncreasedRiskPersistentSideEffects2.3>
+    ... 102 more
+  http://acl/BMV#AdjuvantTreatment
+    <http://acl/BMV#TamFgt5Yr>
+    <http://acl/BMV#ProtoPFTChemoTam>
+    <http://acl/BMV#ProtoEarlyCMFTChemoTam>
+    <http://acl/BMV#ProtoPAFTChemoTam>
+    <http://acl/BMV#TamC40mg>
+    <http://acl/BMV#ProtoMFTChemoTam>
+    <http://acl/BMV#ProtoLateCMFTChemTam>
+    <http://acl/BMV#Tam30mg>
+    <http://acl/BMV#TamD2Yr>
+    <http://acl/BMV#TamE5Yr>
+    ... 4 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl
+#logical axioms: 469
+#classes: 55
+#object properties: 14
+#data properties: 1
+#individuals: 1
+classification time in ms: 203
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://transontology.org/bhakti_gaudiya/bhakti.owl
+#logical axioms: 52
+#classes: 47
+#object properties: 2
+#data properties: 9
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/camera/camera.owl
+#logical axioms: 48
+#classes: 13
+#object properties: 7
+#data properties: 8
+#individuals: 2
+classification time in ms: 15
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.bltk.ru/OWL/camera2.owl
+#logical axioms: 351
+#classes: 38
+#object properties: 12
+#data properties: 53
+#individuals: 57
+Ontology is inconsistent. 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.owl-ontologies.com/Cardiology.owl
+ERROR: Could not load ontology.http://transontology.org/consciousness/consciousness1.owl
+#logical axioms: 119
+#classes: 30
+#object properties: 12
+#data properties: 0
+#individuals: 14
+classification time in ms: 47
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 1
+  http://www.owl-ontologies.com/unnamed.owl#PersonalityOfGodhead
+    <http://www.owl-ontologies.com/unnamed.owl#Krsna>
+    <http://www.owl-ontologies.com/unnamed.owl#LordAniruddha>
+    <http://www.owl-ontologies.com/unnamed.owl#Narayana>
+    <http://www.owl-ontologies.com/unnamed.owl#Balarama>
+    <http://www.owl-ontologies.com/unnamed.owl#KaranadakasayiVisnuOfOurBrahmanda>
+    <http://www.owl-ontologies.com/unnamed.owl#LordBaladeva>
+    <http://www.owl-ontologies.com/unnamed.owl#LordSankarsana>
+    <http://www.owl-ontologies.com/unnamed.owl#KsirodakasayiVisnuOfOurBrahmanda>
+    <http://www.owl-ontologies.com/unnamed.owl#GarbhodakasayiVisnuOfOurBrahmanda>
+    <http://www.owl-ontologies.com/unnamed.owl#LordPradyumna>
+    ... 1 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://on.cs.unibas.ch/owl/1.0/Context.owl
+#logical axioms: 54
+#classes: 9
+#object properties: 16
+#data properties: 7
+#individuals: 4
+classification time in ms: 47
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.nada.kth.se/%7Emehrana/Delegation.owl
+#logical axioms: 63
+#classes: 19
+#object properties: 20
+#data properties: 4
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
+#logical axioms: 239
+#classes: 349
+#object properties: 134
+#data properties: 38
+#individuals: 75
+classification time in ms: 2453
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 15
+  http://www.aktors.org/ontology/support#Intangible-Thing
+    <http://www.aktors.org/ontology/support#twentynine-day-duration>
+    <http://www.aktors.org/ontology/support#twentyeight-day-duration>
+    <http://www.aktors.org/ontology/portal#Permanent-Contract>
+    <http://www.aktors.org/ontology/portal#Learning-Research-Area>
+    <http://www.aktors.org/ontology/portal#Lady>
+    <http://www.aktors.org/ontology/support#twelve-month-duration>
+    <http://www.aktors.org/ontology/support#time-measure-day>
+    <http://www.aktors.org/ontology/portal#Miss>
+    <http://www.aktors.org/ontology/portal#Language-Engineering>
+    <http://www.aktors.org/ontology/portal#Adaptive-Hypermedia>
+    ... 65 more
+  http://www.aktors.org/ontology/support#Unit-Of-Measure
+    <http://www.aktors.org/ontology/support#time-measure-day>
+    <http://www.aktors.org/ontology/support#time-measure-hour>
+    <http://www.aktors.org/ontology/support#time-measure-second>
+    <http://www.aktors.org/ontology/support#time-measure-month>
+    <http://www.aktors.org/ontology/support#time-measure-minute>
+    <http://www.aktors.org/ontology/support#time-measure-year>
+  http://www.aktors.org/ontology/portal#Academic-Degree
+    <http://www.aktors.org/ontology/portal#BSc>
+    <http://www.aktors.org/ontology/portal#PhD>
+    <http://www.aktors.org/ontology/portal#MA>
+    <http://www.aktors.org/ontology/portal#DEng>
+    <http://www.aktors.org/ontology/portal#BA>
+    <http://www.aktors.org/ontology/portal#MSc>
+  http://www.aktors.org/ontology/portal#Award
+    <http://www.aktors.org/ontology/portal#BSc>
+    <http://www.aktors.org/ontology/portal#PhD>
+    <http://www.aktors.org/ontology/portal#MA>
+    <http://www.aktors.org/ontology/portal#DEng>
+    <http://www.aktors.org/ontology/portal#BA>
+    <http://www.aktors.org/ontology/portal#MSc>
+  http://www.aktors.org/ontology/portal#Degree
+    <http://www.aktors.org/ontology/portal#BSc>
+    <http://www.aktors.org/ontology/portal#PhD>
+    <http://www.aktors.org/ontology/portal#MA>
+    <http://www.aktors.org/ontology/portal#DEng>
+    <http://www.aktors.org/ontology/portal#BA>
+    <http://www.aktors.org/ontology/portal#MSc>
+  http://www.aktors.org/ontology/support#Time-Measure
+    <http://www.aktors.org/ontology/support#time-measure-day>
+    <http://www.aktors.org/ontology/support#time-measure-hour>
+    <http://www.aktors.org/ontology/support#time-measure-second>
+    <http://www.aktors.org/ontology/support#time-measure-month>
+    <http://www.aktors.org/ontology/support#time-measure-minute>
+    <http://www.aktors.org/ontology/support#time-measure-year>
+  http://www.aktors.org/ontology/portal#Appellation
+    <http://www.aktors.org/ontology/portal#Mrs>
+    <http://www.aktors.org/ontology/portal#Miss>
+    <http://www.aktors.org/ontology/portal#Dr>
+    <http://www.aktors.org/ontology/portal#Sir>
+    <http://www.aktors.org/ontology/portal#Mr>
+    <http://www.aktors.org/ontology/portal#Ms>
+    <http://www.aktors.org/ontology/portal#Lady>
+    <http://www.aktors.org/ontology/portal#Prof>
+  http://www.aktors.org/ontology/portal#Organization-Size
+    <http://www.aktors.org/ontology/portal#very-large-size>
+    <http://www.aktors.org/ontology/portal#micro-size>
+    <http://www.aktors.org/ontology/portal#small-size>
+    <http://www.aktors.org/ontology/portal#large-size>
+    <http://www.aktors.org/ontology/portal#medium-size>
+  http://www.aktors.org/ontology/support#Thing
+    <http://www.aktors.org/ontology/support#twentynine-day-duration>
+    <http://www.aktors.org/ontology/support#twentyeight-day-duration>
+    <http://www.aktors.org/ontology/portal#Permanent-Contract>
+    <http://www.aktors.org/ontology/portal#Learning-Research-Area>
+    <http://www.aktors.org/ontology/portal#Lady>
+    <http://www.aktors.org/ontology/support#twelve-month-duration>
+    <http://www.aktors.org/ontology/support#time-measure-day>
+    <http://www.aktors.org/ontology/portal#Miss>
+    <http://www.aktors.org/ontology/portal#Language-Engineering>
+    <http://www.aktors.org/ontology/portal#Email-Medium>
+    ... 66 more
+  http://www.aktors.org/ontology/support#Quantity
+    <http://www.aktors.org/ontology/support#twentynine-day-duration>
+    <http://www.aktors.org/ontology/support#seven-day-duration>
+    <http://www.aktors.org/ontology/support#twentyeight-day-duration>
+    <http://www.aktors.org/ontology/support#twentyfour-hour-duration>
+    <http://www.aktors.org/ontology/support#thirty-day-duration>
+    <http://www.aktors.org/ontology/support#thirtyone-day-duration>
+    <http://www.aktors.org/ontology/support#twelve-month-duration>
+  http://www.aktors.org/ontology/portal#Research-Area
+    <http://www.aktors.org/ontology/portal#Knowledge-Retrieval>
+    <http://www.aktors.org/ontology/portal#Knowledge-Lifecycle>
+    <http://www.aktors.org/ontology/portal#Knowledge-Acquisition>
+    <http://www.aktors.org/ontology/portal#Software-Visualization>
+    <http://www.aktors.org/ontology/portal#Learning-Research-Area>
+    <http://www.aktors.org/ontology/portal#Hypermedia>
+    <http://www.aktors.org/ontology/portal#Semantic-Web-Area>
+    <http://www.aktors.org/ontology/portal#Knowledge-Modelling>
+    <http://www.aktors.org/ontology/portal#Language-Engineering>
+    <http://www.aktors.org/ontology/portal#Adaptive-Hypermedia>
+    ... 22 more
+  http://www.aktors.org/ontology/support#Physical-Quantity
+    <http://www.aktors.org/ontology/support#twentynine-day-duration>
+    <http://www.aktors.org/ontology/support#seven-day-duration>
+    <http://www.aktors.org/ontology/support#twentyeight-day-duration>
+    <http://www.aktors.org/ontology/support#twentyfour-hour-duration>
+    <http://www.aktors.org/ontology/support#thirty-day-duration>
+    <http://www.aktors.org/ontology/support#thirtyone-day-duration>
+    <http://www.aktors.org/ontology/support#twelve-month-duration>
+  http://www.aktors.org/ontology/portal#Software-Status
+    <http://www.aktors.org/ontology/portal#Experimental-Version>
+    <http://www.aktors.org/ontology/portal#Beta-Version>
+    <http://www.aktors.org/ontology/portal#Released-Version>
+    <http://www.aktors.org/ontology/portal#Alpha-Version>
+    <http://www.aktors.org/ontology/portal#Broken-Version>
+  http://www.aktors.org/ontology/support#Duration
+    <http://www.aktors.org/ontology/support#twentynine-day-duration>
+    <http://www.aktors.org/ontology/support#seven-day-duration>
+    <http://www.aktors.org/ontology/support#twentyeight-day-duration>
+    <http://www.aktors.org/ontology/support#twentyfour-hour-duration>
+    <http://www.aktors.org/ontology/support#thirty-day-duration>
+    <http://www.aktors.org/ontology/support#thirtyone-day-duration>
+    <http://www.aktors.org/ontology/support#twelve-month-duration>
+  http://www.aktors.org/ontology/portal#Generic-Area-Of-Interest
+    <http://www.aktors.org/ontology/portal#Knowledge-Retrieval>
+    <http://www.aktors.org/ontology/portal#Knowledge-Lifecycle>
+    <http://www.aktors.org/ontology/portal#Knowledge-Acquisition>
+    <http://www.aktors.org/ontology/portal#Software-Visualization>
+    <http://www.aktors.org/ontology/portal#Learning-Research-Area>
+    <http://www.aktors.org/ontology/portal#Hypermedia>
+    <http://www.aktors.org/ontology/portal#Semantic-Web-Area>
+    <http://www.aktors.org/ontology/portal#Knowledge-Modelling>
+    <http://www.aktors.org/ontology/portal#Language-Engineering>
+    <http://www.aktors.org/ontology/portal#Adaptive-Hypermedia>
+    ... 22 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://education.state.mn.us/datadictionary/owl/Education.owl
+ERROR: Could not load ontology.http://www.csm.ornl.gov/%7E7lp/esg-owl/ESG1.1.owl
+#logical axioms: 398
+#classes: 37
+#object properties: 28
+#data properties: 35
+#individuals: 44
+classification time in ms: 63
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 4
+  http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#DateTimeEncoding
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#YYYY-MM-DDThh_mm_ssTZD>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#YYYY-MM-DD>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#YYYY-MM-DDThh_mmTZD>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#YYYY>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#YYYY-MM-DDThh_mm_ss.sTZD>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#YYYY-MM>
+  http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#SimulationStatus
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#stopped>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#running>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#restarted>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#completed>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#pending>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#failed>
+  http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#Calendar
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#xunits>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#none>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#all_leap>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#zunits>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#_365_days>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#_366_days>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#gregorian>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#_360_days>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#name>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#yunits>
+    ... 6 more
+  http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#SpaceCoverage
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#southLimit>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#xunits>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#downLimit>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#name>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#eastLimit>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#yunits>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#zunits>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#westLimit>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#resolution>
+    <http://www.csm.ornl.gov/~7lp/onto-library/esg1.1#northLimit>
+    ... 2 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/family.swrl.owl/family.swrl.owl
+#logical axioms: 182
+#classes: 29
+#object properties: 21
+#data properties: 12
+#individuals: 42
+classification time in ms: 75438
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 14
+  http://a.com/ontology#Nephew
+    <http://a.com/ontology#M10>
+    <http://a.com/ontology#M09>
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M03>
+  http://a.com/ontology#Woman
+    <http://a.com/ontology#F10>
+    <http://a.com/ontology#F08>
+    <http://a.com/ontology#F09>
+    <http://a.com/ontology#F04>
+    <http://a.com/ontology#F05>
+    <http://a.com/ontology#F06>
+    <http://a.com/ontology#F07>
+    <http://a.com/ontology#F01>
+    <http://a.com/ontology#F02>
+    <http://a.com/ontology#F03>
+    ... 1 more
+  http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Entity
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Minutes>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Hours>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Years>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Days>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Seconds>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Milliseconds>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Months>
+  http://a.com/ontology#Father
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M07>
+    <http://a.com/ontology#M08>
+    <http://a.com/ontology#M01>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#M04>
+  http://a.com/ontology#Child
+    <http://a.com/ontology#M10>
+    <http://a.com/ontology#M09>
+    <http://a.com/ontology#F09>
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#F05>
+    <http://a.com/ontology#F06>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#F02>
+    ... 3 more
+  http://a.com/ontology#Mother
+    <http://a.com/ontology#F10>
+    <http://a.com/ontology#F08>
+    <http://a.com/ontology#F04>
+    <http://a.com/ontology#F06>
+    <http://a.com/ontology#F07>
+    <http://a.com/ontology#F01>
+    <http://a.com/ontology#F03>
+  http://a.com/ontology#Daugther
+    <http://a.com/ontology#F09>
+    <http://a.com/ontology#F05>
+    <http://a.com/ontology#F06>
+    <http://a.com/ontology#F02>
+    <http://a.com/ontology#F03>
+  http://a.com/ontology#Sibling
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#F05>
+    <http://a.com/ontology#F06>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#F03>
+  http://a.com/ontology#Person
+    <http://a.com/ontology#M10>
+    <http://a.com/ontology#F10>
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M07>
+    <http://a.com/ontology#M08>
+    <http://a.com/ontology#M01>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#M04>
+    ... 11 more
+  http://a.com/ontology#Man
+    <http://a.com/ontology#M10>
+    <http://a.com/ontology#M09>
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M07>
+    <http://a.com/ontology#M08>
+    <http://a.com/ontology#M01>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#M04>
+    ... 1 more
+  http://a.com/ontology#Relative
+    <http://a.com/ontology#M10>
+    <http://a.com/ontology#F10>
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M07>
+    <http://a.com/ontology#M08>
+    <http://a.com/ontology#M01>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#M04>
+    ... 11 more
+  http://a.com/ontology#Parent
+    <http://a.com/ontology#F10>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M07>
+    <http://a.com/ontology#M08>
+    <http://a.com/ontology#M01>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#M04>
+    <http://a.com/ontology#F08>
+    <http://a.com/ontology#F04>
+    ... 5 more
+  http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Granularity
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Minutes>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Hours>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Years>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Days>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Seconds>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Milliseconds>
+    <http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#Months>
+  http://a.com/ontology#Son
+    <http://a.com/ontology#M10>
+    <http://a.com/ontology#M09>
+    <http://a.com/ontology#M05>
+    <http://a.com/ontology#M06>
+    <http://a.com/ontology#M02>
+    <http://a.com/ontology#M03>
+    <http://a.com/ontology#M04>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.fadyart.com/ontologies/data/Finance.owl
+#logical axioms: 16014
+#classes: 323
+#object properties: 247
+#data properties: 74
+#individuals: 2466
+Ontology is inconsistent. 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/generations/generations.owl
+#logical axioms: 38
+#classes: 18
+#object properties: 4
+#data properties: 0
+#individuals: 7
+classification time in ms: 31
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 1
+  http://www.owl-ontologies.com/generations.owl#Person
+    <http://www.owl-ontologies.com/generations.owl#Matthew>
+    <http://www.owl-ontologies.com/generations.owl#Peter>
+    <http://www.owl-ontologies.com/generations.owl#William>
+    <http://www.owl-ontologies.com/generations.owl#Gemma>
+    <http://www.owl-ontologies.com/generations.owl#Matt>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://i2geo.net/ontologies/current/GeoSkills.owl
+#logical axioms: 14968
+#classes: 614
+#object properties: 23
+#data properties: 21
+#individuals: 2619
+Ontology is inconsistent. 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/ka/ka.owl
+#logical axioms: 216
+#classes: 96
+#object properties: 60
+#data properties: 32
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/koala/koala.owl
+#logical axioms: 42
+#classes: 21
+#object properties: 4
+#data properties: 1
+#individuals: 6
+classification time in ms: 0
+#unsatisfiable classes: 3
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://lifeeventontology.googlepages.com/leo.owl
+#logical axioms: 358
+#classes: 33
+#object properties: 26
+#data properties: 14
+#individuals: 61
+classification time in ms: 31
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 7
+  http://www.owl-ontologies.com/2008/ZS.owl#Odlocba
+    <http://www.owl-ontologies.com/2008/ZS.owl#Odlocba_30>
+    <http://www.owl-ontologies.com/2008/ZS.owl#SingleCertificate>
+    <http://www.owl-ontologies.com/2008/ZS.owl#Odlocba_26>
+    <http://www.owl-ontologies.com/2008/ZS.owl#PassportForeign>
+    <http://www.owl-ontologies.com/2008/ZS.owl#IdentifikacijskiDokument>
+    <http://www.owl-ontologies.com/2008/ZS.owl#RojstniList>
+    <http://www.owl-ontologies.com/2008/ZS.owl#BirthCertificateInternational>
+  http://www.owl-ontologies.com/2008/ZS.owl#Storitev
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_016>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_019>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_018>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_013>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_DOC_017>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_DOC_015>
+    <http://www.owl-ontologies.com/2008/ZS.owl#PridobitevDovoljenjaZaPorokoMladoletnika>
+    <http://www.owl-ontologies.com/2008/ZS.owl#PrijavaPoroke>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_020>
+    <http://www.owl-ontologies.com/2008/ZS.owl#RegistracijaPoroke>
+    ... 3 more
+  http://www.owl-ontologies.com/2008/ZS.owl#ElementProcedure
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPRazdruzevalniIN_15>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPPodprocedura_15>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPPodprocedura_16>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_16>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_19>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_9>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPRazdruzevalniALI_14>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPZdruzevalniIN_4>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_11>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPZdruzevalniIN_5>
+    ... 25 more
+  http://www.owl-ontologies.com/2008/ZS.owl#Dokument
+    <http://www.owl-ontologies.com/2008/ZS.owl#Odlocba_30>
+    <http://www.owl-ontologies.com/2008/ZS.owl#SingleCertificate>
+    <http://www.owl-ontologies.com/2008/ZS.owl#Odlocba_26>
+    <http://www.owl-ontologies.com/2008/ZS.owl#PassportForeign>
+    <http://www.owl-ontologies.com/2008/ZS.owl#IdentifikacijskiDokument>
+    <http://www.owl-ontologies.com/2008/ZS.owl#RojstniList>
+    <http://www.owl-ontologies.com/2008/ZS.owl#BirthCertificateInternational>
+  http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_21>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_22>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_9>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_11>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_3>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_33>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_2>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_7>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_16>
+    <http://www.owl-ontologies.com/2008/ZS.owl#EPStoritev_5>
+    ... 2 more
+  http://www.owl-ontologies.com/2008/ZS.owl#StoritevNeznana
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_016>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_019>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_018>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_013>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_DOC_017>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_DOC_015>
+    <http://www.owl-ontologies.com/2008/ZS.owl#DummyPS_MPA_DOC_020>
+  http://www.owl-ontologies.com/2008/ZS.owl#StoritevJU
+    <http://www.owl-ontologies.com/2008/ZS.owl#PridobitevDovoljenjaZaPorokoMladoletnika>
+    <http://www.owl-ontologies.com/2008/ZS.owl#PrijavaPoroke>
+    <http://www.owl-ontologies.com/2008/ZS.owl#RegistracijaPoroke>
+    <http://www.owl-ontologies.com/2008/ZS.owl#StoritevJU_7>
+    <http://www.owl-ontologies.com/2008/ZS.owl#PritozbaNaPrijavoPoroke>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://mged.sourceforge.net/ontologies/MGEDOntology.owl
+#logical axioms: 1453
+#classes: 237
+#object properties: 85
+#data properties: 48
+#individuals: 697
+classification time in ms: 350938
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 80
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioMaterialCharacteristics
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genomic_region_amplification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#polysomy>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#wild_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_translocation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_sex>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#gene_knock_out>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_inversion>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mating_type_a>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#frozen_sample>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#fresh_sample>
+    ... 33 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MaterialType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nuclear_RNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#synthetic_RNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#protein>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#polyA_RNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_lysate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genomic_DNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#synthetic_DNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#molecular_mixture>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_part>
+    ... 8 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ProtocolPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#array_scanner>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#purify>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#median_log_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_global_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#oligo_synthesizer>
+    ... 74 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TechnologyType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_protein_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_ds_DNA_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_ss_PCR_amplicon_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_ss_oligo_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_antibody_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_colony_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#in_situ_oligo_features>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#SoftwareType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#liquid_handler_software>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#bioassay_data_transformation_software>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#feature_extraction_software>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#image_acquisition_software>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#array_manufacture_software>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clustering_software>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#operating_system>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#differential_expression_software>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioMolecularAnnotation
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#operon_identification_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#co-expression_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genotyping_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#binding_site_identification_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#tiling_path_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#comparative_genome_hybridization_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#RNA_stability_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#translational_bias_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#secreted_protein_identification_design>
+    ... 2 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#IndividualGeneticCharacteristics
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#diploid>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#polyploid>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#aneuploid>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#wild_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#haploid>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MethodologicalDesign
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#software_variation_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loop_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#normalization_testing_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#in_vitro_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hardware_variation_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#self_vs_self_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#replicate_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#dye_swap_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ex_vivo_design>
+    ... 9 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#InitialTimePoint
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#egg_laying>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#birth>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#germination>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#sowing>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hatching>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#coitus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#planting>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#eclosion>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#fertilization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#beginning_of_stage>
+    ... 1 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioSequencePackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#computational_feature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_sequence>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#antibody>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#RNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#experimental_and_computational_feature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#protein>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clone_of_unknown_source>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#experimental_feature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_basis_feature>
+    ... 1 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Database
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Yeasts_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Bacteria_and_Archaea_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Mammalian_Phenotype_Ontology>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NASC>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCI_compound_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAD_stage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#FMA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TAIR>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#FlyBase_developmental_stage_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#EMAP>
+    ... 42 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MeasurementPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_vol_per_vol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#activity_units_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#weeks>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ms>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#number_per_day>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nmol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#months>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#uM>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lux>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cfu_per_ml>
+    ... 75 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ArrayPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#glass>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chrome_border>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nylon>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_substrate_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#silicon>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#diameter_aberration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#displaced_feature_or_zone>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#missing_feature_or_zone>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#irregular_shape>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nitrocellulose>
+    ... 4 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ExperimentalProtocolType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#labeling>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#compound_based_treatment>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#purify>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#specified_biomaterial_action>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    ... 27 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#GeneticModification
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#gene_knock_out>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#gene_knock_in>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_substitution>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#induced_mutation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#transfection>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ExperimentDesignType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clinical_history_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#in_vitro_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#stimulus_or_stress_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#time_series_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#non-targeted_transgenic_variation_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#species_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#transcript_identification_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#injury_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#strain_or_line_design>
+    ... 47 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ExperimentPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clinical_history_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_line>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nutrients>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#light_duration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#water>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_translocation>
+    ... 226 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ExperimentalFactorCategory
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_line>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#atmosphere>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#median_log_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_global_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nutrients>
+    ... 152 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#LightUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#candela>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#microeinstein_per_minute_and_square_meter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lux>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lumen>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#candelas_per_square_meter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#microeinstein_per_second_and_square_meter>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DataType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#list_of_positive_floats>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#negative_float>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#date>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#string_datatype>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#list_of_nonnegative_integers>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nonnegative_integer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#list_of_nonpositive_integers>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nonnegative_float>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#list_of_integers>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#list_of_negative_floats>
+    ... 16 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ComplexAction
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#labeling>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#compound_based_treatment>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#purify>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#specified_biomaterial_action>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    ... 24 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#QuantityUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#umol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#count>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#molecules>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nmol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#fmol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#IU>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pmol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#amol>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BiologicalProperty
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#physiological_process_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_part_comparison_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#innate_behavior_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#sex_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#species_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#imprinting_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_component_comparison_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#strain_or_line_design>
+    ... 7 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Compound
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_633>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_660>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_546>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_680>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_488>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_532>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_430>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#_33P>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#_32P>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biotin>
+    ... 6 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DataTransformationProtocolType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lowess_global_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_scaled_group_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#quantile_normalization_protocol_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#median_log_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_global_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#replicate_analysis>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#linlog_transformation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_group_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#dye_swap_merge>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#flag_filter>
+    ... 9 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#AtomicAction
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#concentrate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#resuspend>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#place>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mix_by_pipette>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#change_temperature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#specified_biomaterial_action>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#add>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mix_by_vortex>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#remove>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spin>
+    ... 8 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioAssayPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#normalized_ratios>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#acrossBioAssay_mean_and_coefficient_of_variation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#GIF>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Affymetrix_DAT>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#normalized_intensities>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#signal>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PNG>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAS4_average_difference>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#averaged_intensity>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#filtered_data>
+    ... 21 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MGEDCoreOntology
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Yeasts_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clinical_history_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ms>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PCR_fail>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#date>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#light_duration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nutrients>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#number_per_day>
+    ... 658 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DevelopmentalStageDatabase
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAD_stage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#HUMAT>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TAIR_arabidopsis_development_ontology>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#FlyBase_developmental_stage_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#eVOC>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#EMAP>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MassUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ng>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mg>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ug>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pg>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#kg>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#g>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#fg>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ArrayDesignPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_surface_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#species_specific_design_element_group_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#experimental_design_element_group_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ellipsoid_feature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_ss_PCR_amplicon_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mixed_design_element_group_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spotted_ss_oligo_features>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#aminosilane>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#rectangular_feature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#in_situ_oligo_features>
+    ... 8 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DescriptionPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Yeasts_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#curated_nucleic_acid_sequence_feature_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Bacteria_and_Archaea_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Mammalian_Phenotype_Ontology>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#primary_protein_structure_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NASC>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nucleic_acid_primary_sequence_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCI_compound_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#computed_amino_acid_sequence_feature_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAD_stage>
+    ... 80 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NormalizationDescriptionType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#median_log_centering>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mean_log_centering>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#linear_regression_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lowess_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#iterative_mean_log_centering>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#quantile_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#linlog_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#flip-dye_consistency>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ratio_statistics_normalization>
+    ... 1 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MGEDOntology
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Yeasts_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clinical_history_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ms>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PCR_fail>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#date>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#light_duration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nutrients>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#number_per_day>
+    ... 672 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MGEDExtendedOntology
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#intramuscular_injection>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#oral_gavage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#intraperitoneal_injection>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#double_stranded>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#in_medium>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#intravenous>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#frozen_storage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#single_stranded>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#subcutaneous>
+    ... 5 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PerturbationalDesign
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#injury_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pathogenicity_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#disease_state_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_experiment_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#growth_condition_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#stimulus_or_stress_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#stimulated_design_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#dose_response_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#non-targeted_transgenic_variation_design>
+    ... 3 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TimeUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#weeks>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ms>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#us>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#seconds>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#half-life>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#minutes>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#days>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#years>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#months>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hours>
+    ... 1 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioSourceType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#agar_stab>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#frozen_sample>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#fresh_sample>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#paraffin_sample>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#freeze_dried_sample>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#urine>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Scale
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#log_base_2>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#log_base_e>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unscaled>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#linear_scale>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#log_base_10>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Sex
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mating_type_a>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#F>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mating_type_h_minus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#F_minus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mixed_sex>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#female>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mating_type_alpha>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mating_type_h_plus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hermaphrodite>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_sex>
+    ... 2 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#FamilyRelationship
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#grandmother>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#sister>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#son>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#granddaughter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mother>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#daughter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#aunt>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#father>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#brother>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#grandfather>
+    ... 3 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CellLineDatabase
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CLDB_Human_and_Animal_Cell_Line>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ATCC_Cultures>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_HLA_typed_B_Cell_lines>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Human_and_Animal_Cell_lines>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Hybridomas>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ImageFormat
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#JPEG>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TIFF>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#GIF>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Affymetrix_DAT>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PNG>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#EnvironmentalHistory
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#soil>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#semisolid>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#environmental_history_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#agar>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#liquid>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#LabelCompound
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_633>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_660>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_546>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_680>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_488>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_532>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_430>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#_33P>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#_32P>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biotin>
+    ... 6 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ControlType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_spike_calibration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_buffer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_hybridization_quality>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_biosequence>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_unknown_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_empty>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_reporter_size>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_genomic_DNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_label>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DistanceUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cm>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#m>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#um>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mm>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nm>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#A>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioMaterialPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#coitus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#synthetic_RNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_translocation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#behavioral_stimulus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#remove>
+    ... 123 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MethodologicalFactorCategory
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#purify>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#median_log_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_global_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_group_normalization>
+    ... 48 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Roles
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biosequence_provider>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#data_coder>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#consortium_member>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#funder>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hardware_manufacturer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#investigator>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#software_manufacturer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#data_analyst>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#submitter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#consultant>
+    ... 5 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Unit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_vol_per_vol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#activity_units_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#weeks>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ms>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#number_per_day>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nmol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#months>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#uM>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lux>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cfu_per_ml>
+    ... 75 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DerivedBioAssayType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#normalized_ratios>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#acrossBioAssay_mean_and_coefficient_of_variation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#normalized_intensities>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#signal>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAS4_average_difference>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#averaged_intensity>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#filtered_data>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAS5_signal>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clustered_data>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Affymetrix_average_difference>
+    ... 16 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BioMaterialCharacteristicCategory
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_line>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#clinical_information>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#age>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#disease_state>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#developmental_stage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#individual_genetic_characteristic>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#tumor_grading>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#sex>
+    ... 10 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#QualityControlDescriptionType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#real_time_PCR_quality_control>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#peer_review_quality_control>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription_PCR_quality_control>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#spike_quality_control>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#technical_replicate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biological_replicate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#dye_swap_quality_control>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DatabaseEntryType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biological_resource_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#amino_acid_primary_sequence_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#curated_nucleic_acid_sequence_feature_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#bibliographic_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#function_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#curated_amino_acid_sequence_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#phylogeny_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#primary_protein_structure_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pedigree_record>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#computed_protein_structure_record>
+    ... 11 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Action
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#purify>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mix_by_pipette>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#change_temperature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#sacrifice>
+    ... 40 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DefectType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#missing_feature_or_zone>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#irregular_shape>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#heavy_background>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#diameter_aberration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#not_uniform>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#displaced_feature_or_zone>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DeprecatedTerms
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#trisomy>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#circadian_rhythm_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#predicted_gene>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ctDNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PCR_primer_forward>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#behavior_design>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#bedding>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#snRNA_gene>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mtDNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#gene>
+    ... 46 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#BiologicalFactorCategory
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#organism_status>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_line>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_translocation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#behavioral_stimulus>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#remove>
+    ... 116 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#OrganismPartDatabase
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#openGALEN>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MAD_stage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#FMA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCI_organism_part_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TAIR_arabidopsis_anatomy_ontology>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#FlyBase_organism_part_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CellML>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CBIL_CV>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Adult_Mouse_Anatomy>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#eVOC>
+    ... 2 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DesignElementPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_spike_calibration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_biosequence>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PCR_fail>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#is_contaminated>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#not_sequence_verified>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_reporter_size>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_genomic_DNA>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#PCR>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#short_oligo>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#control_hybridization_quality>
+    ... 7 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DiseaseStateDatabase
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MTB_Database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#UMLS>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#WebRENI>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MESH>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCI_disease_state_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#eVOC>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ICD-9-CM>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TDMS>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#MGEDOntologyVersion
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#version_1.2.0>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#version_1.3.1>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#version_1.3.0>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#version_1.1.7>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#version_1.1.8>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#version_1.1.9>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#DeliveryMethod
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#intramuscular_injection>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#oral_gavage>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#intraperitoneal_injection>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#in_medium>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ad_libitum>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#subcutaneous>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#feeding>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#intravenous>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ChromosomalAberrationClassification
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genomic_region_amplification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_inversion>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_deletion>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#polysomy>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_insertion>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_translocation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#oligosomy>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#chromosomal_duplication>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#StrainOrLineDatabase
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Yeasts_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Bacteria_and_Archaea_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCBI_taxonomy>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ATCC_Cultures>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#JAX_mouse_strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCI_strain_or_line_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#GRAMENE>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TAIR>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CABRI_Filamentous_Fungi_Strains>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NASC>
+    ... 1 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CellTypeDatabase
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NCI_cell_type_database>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cell_ontology>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#CBIL_CV>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#TAIR>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#eVOC>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#AuditAndSecurityPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biosequence_provider>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#data_coder>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#consortium_member>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#funder>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hardware_manufacturer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#investigator>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#software_manufacturer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#data_analyst>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#submitter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#consultant>
+    ... 5 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ConcentrationUnitOther
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#x_times>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cells_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_purity>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_confluence>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mOsm_per_kg_H2O>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ml_per_kg>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pH>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pfu_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mg_per_kg_per_day>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cfu_per_ml>
+    ... 2 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ProtocolType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#genetic_modification>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#harvest>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#purify>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#reverse_transcription>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#starvation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#median_log_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_global_normalization>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#inoculate>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#preservation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#loess_group_normalization>
+    ... 48 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#VolumeUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#dl>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#fl>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pl>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nl>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#L>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cc>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ul>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ml>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#RadiationUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Rad>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#dpm>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Rem>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cpm>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Ci>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#R>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#NodeValueType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pearson_correlation_coefficient>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#uncentered_Pearson_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#french_railway_distance>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Spearmans_rank_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Pearson_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Euclidean_distance>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#jackknife_Pearson_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#manhattan_distance>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cosine_distance>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#EnvironmentalFactorCategory
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#media>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#atmosphere>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#relative_humidity>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#temperature>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#light_duration>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nutrients>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#barrier_facility>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#light_intensity>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#population_density>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#water>
+    ... 1 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#ConcentrationUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_vol_per_vol>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cells_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_confluence>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#percent_weight_per_weight>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#M>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#uM>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#mg_per_kg_per_day>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cfu_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pfu_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#gram_percent>
+    ... 15 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#SubstrateType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#glass>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nylon>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#unknown_substrate_type>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#silicon>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#nitrocellulose>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#OtherUnit
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Rad>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#activity_units_per_ml>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#U_per_week>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#micromole_per_second_and_square_meter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#number_per_day>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cpm>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#lux>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#microeinstein_per_second_and_square_meter>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Ci>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#R>
+    ... 8 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#OntologyEntry
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_633>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_660>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_546>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_680>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_488>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_532>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#alexa_430>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#_33P>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#_32P>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#biotin>
+    ... 6 more
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#HigherLevelAnalysisPackage
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#pearson_correlation_coefficient>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#uncentered_Pearson_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#french_railway_distance>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Spearmans_rank_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Pearson_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Euclidean_distance>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#jackknife_Pearson_correlation>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#manhattan_distance>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#cosine_distance>
+  http://mged.sourceforge.net/ontologies/MGEDOntology.owl#HardwareType
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#array_scanner>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#waterbath>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#wash_station>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#vortexer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#oligo_synthesizer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#thermal_cycler>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#arrayer>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#heating_block>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#hybridization_station>
+    <http://mged.sourceforge.net/ontologies/MGEDOntology.owl#centrifuge>
+    ... 9 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://ise.icu.ac.kr/Ontologies/office-env1.owl
+ERROR: Could not load ontology.http://ise.icu.ac.kr/Ontologies/office-env2.owl
+ERROR: Could not load ontology.http://www.tssg.org/public/ontologies/omg/mof/2004/MOF.owl
+#logical axioms: 62
+#classes: 66
+#object properties: 142
+#data properties: 6
+#individuals: 20
+classification time in ms: 47
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.tssg.org/public/ontologies/omg/qvt/2005/QVT.owl
+#logical axioms: 62
+#classes: 150
+#object properties: 227
+#data properties: 6
+#individuals: 30
+classification time in ms: 187
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl
+#logical axioms: 62
+#classes: 124
+#object properties: 132
+#data properties: 27
+#individuals: 27
+classification time in ms: 125
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 2
+  http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#OWLRestrictionKind
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isMinCardinalityRestriction>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isSomeValuesFromRestriction>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isCardinalityRestriction>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isMaxCardinalityRestriction>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isAllValuesFromRestriction>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isHasValueRestriction>
+  http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#OWLClassKind
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isIntersectionClass>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isUnionClass>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isEnumeratedClass>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isOWLRestrictionClass>
+    <http://www.tssg.org/public/ontologies/omg/odm/2006/OWLFull.owl#isComplementClass>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl
+#logical axioms: 105
+#classes: 60
+#object properties: 14
+#data properties: 1
+#individuals: 21
+classification time in ms: 359
+#unsatisfiable classes: 1
+#classes with min. 5 individuals: 4
+  http://cohse.semanticweb.org/ontologies/people#pet
+    <http://cohse.semanticweb.org/ontologies/people#Rex>
+    <http://cohse.semanticweb.org/ontologies/people#Fido>
+    <http://cohse.semanticweb.org/ontologies/people#Dewey>
+    <http://cohse.semanticweb.org/ontologies/people#Tibbs>
+    <http://cohse.semanticweb.org/ontologies/people#Huey>
+    <http://cohse.semanticweb.org/ontologies/people#Tom>
+    <http://cohse.semanticweb.org/ontologies/people#Louie>
+  http://cohse.semanticweb.org/ontologies/people#animal
+    <http://cohse.semanticweb.org/ontologies/people#Fred>
+    <http://cohse.semanticweb.org/ontologies/people#Fluffy>
+    <http://cohse.semanticweb.org/ontologies/people#Joe>
+    <http://cohse.semanticweb.org/ontologies/people#Tom>
+    <http://cohse.semanticweb.org/ontologies/people#Louie>
+    <http://cohse.semanticweb.org/ontologies/people#Flossie>
+    <http://cohse.semanticweb.org/ontologies/people#Rex>
+    <http://cohse.semanticweb.org/ontologies/people#Minnie>
+    <http://cohse.semanticweb.org/ontologies/people#Fido>
+    <http://cohse.semanticweb.org/ontologies/people#Dewey>
+    ... 6 more
+  http://cohse.semanticweb.org/ontologies/people#person
+    <http://cohse.semanticweb.org/ontologies/people#Minnie>
+    <http://cohse.semanticweb.org/ontologies/people#Joe>
+    <http://cohse.semanticweb.org/ontologies/people#Fred>
+    <http://cohse.semanticweb.org/ontologies/people#Kevin>
+    <http://cohse.semanticweb.org/ontologies/people#Walt>
+    <http://cohse.semanticweb.org/ontologies/people#Mick>
+  http://cohse.semanticweb.org/ontologies/people#pet_owner
+    <http://cohse.semanticweb.org/ontologies/people#Minnie>
+    <http://cohse.semanticweb.org/ontologies/people#Joe>
+    <http://cohse.semanticweb.org/ontologies/people#Fred>
+    <http://cohse.semanticweb.org/ontologies/people#Walt>
+    <http://cohse.semanticweb.org/ontologies/people#Mick>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://swap.uib.es/ontologies/performance.owl
+ERROR: Could not load ontology.http://philosurfical.open.ac.uk/ontology/philosurfical.owl
+#logical axioms: 1465
+#classes: 377
+#object properties: 313
+#data properties: 0
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.aifb.uni-karlsruhe.de/Forschungsgruppen/BIK/wi2007/PNOntology.owl
+ERROR: Could not load ontology.http://mav.inf.uth.gr/SWS4HPSC/software/sao/saontology/view/SaOn.owl
+ERROR: Could not load ontology.http://protege.cim3.net/file/pub/ontologies/shuttle/shuttle-crew-ont.owl
+#logical axioms: 87
+#classes: 50
+#object properties: 54
+#data properties: 17
+#individuals: 40
+classification time in ms: 172
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 2
+  http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+    owl:versionIRI
+    owl:incompatibleWith
+    owl:imports
+    owl:priorVersion
+    owl:backwardCompatibleWith
+  http://www.w3.org/2002/07/owl#OntologyProperty
+    owl:versionIRI
+    owl:incompatibleWith
+    owl:imports
+    owl:priorVersion
+    owl:backwardCompatibleWith
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.loria.fr/%7Ecoulet/ontology/snpontology/version1.3/snpontology_full.owl
+#logical axioms: 279
+#classes: 113
+#object properties: 62
+#data properties: 12
+#individuals: 1
+classification time in ms: 19062
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.articulatesoftware.com/SUMO.owl
+ERROR: Could not load ontology.http://www.uv.es/%7Eagentes/SVECore.owl
+#logical axioms: 135
+#classes: 22
+#object properties: 11
+#data properties: 23
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.uv.es/%7Eagentes/DSOBar.owl
+ERROR: Could not load ontology.http://protege.cim3.net/file/pub/ontologies/tambis/tambis-full.owl
+#logical axioms: 596
+#classes: 395
+#object properties: 100
+#data properties: 1
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://www.bltk.ru/OWL/tourism.owl
+#logical axioms: 418
+#classes: 78
+#object properties: 26
+#data properties: 27
+#individuals: 47
+Ontology is inconsistent. 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/travel/travel.owl
+#logical axioms: 93
+#classes: 35
+#object properties: 6
+#data properties: 4
+#individuals: 14
+classification time in ms: 47
+#unsatisfiable classes: 1
+#classes with min. 5 individuals: 1
+  http://www.owl-ontologies.com/travel.owl#Destination
+    <http://www.owl-ontologies.com/travel.owl#BondiBeach>
+    <http://www.owl-ontologies.com/travel.owl#Cairns>
+    <http://www.owl-ontologies.com/travel.owl#Warrumbungles>
+    <http://www.owl-ontologies.com/travel.owl#Canberra>
+    <http://www.owl-ontologies.com/travel.owl#BlueMountains>
+    <http://www.owl-ontologies.com/travel.owl#Coonabarabran>
+    <http://www.owl-ontologies.com/travel.owl#Sydney>
+    <http://www.owl-ontologies.com/travel.owl#CapeYork>
+    <http://www.owl-ontologies.com/travel.owl#Woomera>
+    <http://www.owl-ontologies.com/travel.owl#CurrawongBeach>
+    ... 1 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://lsi.ugr.es/joseluisgs/videojuegos.owl
+#logical axioms: 517
+#classes: 115
+#object properties: 12
+#data properties: 0
+#individuals: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
+#logical axioms: 657
+#classes: 138
+#object properties: 16
+#data properties: 1
+#individuals: 206
+classification time in ms: 25235
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 41
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Wine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    ... 44 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CaliforniaWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PageMillWineryCabernetSauvignon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEstatePinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaPetiteSyrah>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLaneCabernetFranc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaOldVinesRed>
+    ... 14 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#SweetFruit
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#GamayGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#ThompsonSeedless>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PinotNoirGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SangioveseGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Peaches>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SauvignonBlancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PetiteVerdotGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Bananas>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetFrancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetSauvignonGrape>
+    ... 11 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Chardonnay
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEdnaValleyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDeMeursaultMeursault>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CortonMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Zinfandel
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ElyseZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaZinfandel>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineTaste
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Full>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Delicate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Light>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Strong>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Dry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Moderate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Strong>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Dry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Delicate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Sweet>
+    ... 9 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SauvignonBlanc
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StonleighSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ClosDeLaPoussieSancerre>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SelaksSauvignonBlanc>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineBody
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Full>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Medium>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Light>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Medium>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Full>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Light>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Fish
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Swordfish>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Scrod>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Halibut>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Tuna>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Flounder>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#AmericanWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PageMillWineryCabernetSauvignon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEstatePinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaPetiteSyrah>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StGenevieveTexasWhite>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLaneCabernetFranc>
+    ... 15 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineDescriptor
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Rose>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Red>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Full>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Red>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Delicate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Light>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#White>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Strong>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Dry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Moderate>
+    ... 15 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhiteNonSweetWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ClosDeLaPoussieSancerre>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StGenevieveTexasWhite>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEdnaValleyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CongressSpringsSemillon>
+    ... 12 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Fruit
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#GamayGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#ThompsonSeedless>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PinotNoirGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SangioveseGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Peaches>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SauvignonBlancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PetiteVerdotGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Bananas>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetFrancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetSauvignonGrape>
+    ... 11 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineFlavor
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Delicate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Delicate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Moderate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Strong>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Moderate>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Strong>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FrenchWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMorgonBeaujolais>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauLafiteRothschildPauillac>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ClosDeVougeotCotesDOr>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ClosDeLaPoussieSancerre>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#RoseDAnjou>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDeMeursaultMeursault>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SevreEtMaineMuscadet>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMargaux>
+    ... 3 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Seafood
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Mussels>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Clams>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Crab>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Oysters>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Swordfish>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Scrod>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Halibut>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Tuna>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Flounder>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Lobster>
+    ... 1 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#PotableLiquid
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    ... 44 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#TableWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMorgonBeaujolais>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaOldVinesRed>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    ... 34 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#RedTableWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMorgonBeaujolais>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaOldVinesRed>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauLafiteRothschildPauillac>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SeanThackreySiriusPetiteSyrah>
+    ... 16 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#DryWhiteWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StGenevieveTexasWhite>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEdnaValleyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CongressSpringsSemillon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamChardonnay>
+    ... 9 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SweetWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SelaksIceWine>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#TaylorPort>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossRothermelTrochenbierenausleseRiesling>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#ConsumableThing
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Chicken>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CongressSpringsSemillon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Duck>
+    ... 93 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Shellfish
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Mussels>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Clams>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Crab>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Oysters>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Lobster>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetSauvignon
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PageMillWineryCabernetSauvignon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SantaCruzMountainVineyardCabernetSauvignon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauLafiteRothschildPauillac>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanCabernetSauvignon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaCabernetSauvignon>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhiteTableWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StGenevieveTexasWhite>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEdnaValleyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CongressSpringsSemillon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamChardonnay>
+    ... 9 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Wine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhitehallLanePrimavera>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    ... 44 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineColor
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Rose>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#White>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Red>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Red>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Rose>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#White>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#RedWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMorgonBeaujolais>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaOldVinesRed>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauLafiteRothschildPauillac>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SeanThackreySiriusPetiteSyrah>
+    ... 17 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Winery
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Mountadam>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Taylor>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PageMillWinery>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#McGuinnesso>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StGenevieve>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Corbans>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#DAnjou>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ClosDeVougeot>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchem>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Forman>
+    ... 34 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#DryWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMorgonBeaujolais>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaOldVinesRed>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    ... 34 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineGrape
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#GamayGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PinotNoirGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SangioveseGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SauvignonBlancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PetiteVerdotGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetFrancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetSauvignonGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#RieslingGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MerlotGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CheninBlancGrape>
+    ... 7 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WineSugar
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Dry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Sweet>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#OffDry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Dry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Sweet>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#OffDry>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FullBodiedWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEstatePinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#FormanChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#TaylorPort>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossRothermelTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SantaCruzMountainVineyardCabernetSauvignon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauLafiteRothschildPauillac>
+    ... 7 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#DryRedWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauMorgonBeaujolais>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauChevalBlancStEmilion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel1998>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiClassico>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#LaneTannerPinotNoir>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MariettaOldVinesRed>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CotturiZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauLafiteRothschildPauillac>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SaucelitoCanyonZinfandel>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SeanThackreySiriusPetiteSyrah>
+    ... 16 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#Region
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MedocRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SantaCruzMountainsRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SouthAustraliaRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SancerreRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#GermanyRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChiantiRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BourgogneRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#AustralianRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PortugalRegion>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#AlsaceRegion>
+    ... 27 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Grape
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#GamayGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#ThompsonSeedless>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PinotNoirGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SangioveseGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SauvignonBlancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PetiteVerdotGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetFrancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetSauvignonGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#RieslingGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MerlotGrape>
+    ... 8 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Meat
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Veal>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#BeefCurry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#RoastBeef>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Pork>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#GarlickyRoast>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Steak>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SemillonOrSauvignonBlanc
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CongressSpringsSemillon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StonleighSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ClosDeLaPoussieSancerre>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SelaksSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#KalinCellarsSemillon>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#RedMeat
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Veal>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#BeefCurry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#RoastBeef>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#GarlickyRoast>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Steak>
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#EdibleThing
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Clams>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Pie>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Halibut>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Chicken>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Duck>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#BeefCurry>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetFrancGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CabernetSauvignonGrape>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Oysters>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/food#Cheese>
+    ... 40 more
+  http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#WhiteWine
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CorbansPrivateBinSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#SchlossVolradTrochenbierenausleseRiesling>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#BancroftChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PulignyMontrachetWhiteBurgundy>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#ChateauDYchemSauterne>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountEdenVineyardEdnaValleyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#PeterMccoyChardonnay>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#CongressSpringsSemillon>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#StonleighSauvignonBlanc>
+    <http://www.w3.org/TR/2003/CR-owl-guide-20030818/wine#MountadamChardonnay>
+    ... 16 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://abulaish.com/Wood_Ontology/woodontology.xml
+#logical axioms: 150
+#classes: 47
+#object properties: 7
+#data properties: 9
+#individuals: 25
+classification time in ms: 47
+#unsatisfiable classes: 0
+#classes with min. 5 individuals: 5
+  http://www.owl-ontologies.com/unnamed.owl#SoftWood
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_11>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_10>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_8>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_9>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_1>
+  http://www.owl-ontologies.com/unnamed.owl#Wood
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_4>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_11>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_3>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_10>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_6>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_8>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_7>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_9>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_0>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_1>
+    ... 1 more
+  http://www.owl-ontologies.com/unnamed.owl#HardWood
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_4>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_3>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_6>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_7>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_0>
+  http://www.w3.org/2002/07/owl#Class
+    <http://www.owl-ontologies.com/unnamed.owl#Finishing>
+    <http://www.owl-ontologies.com/unnamed.owl#United_States_Region>
+    <http://www.owl-ontologies.com/unnamed.owl#North_Eastern_America_Region>
+    <http://www.owl-ontologies.com/unnamed.owl#Western_America_Region>
+    <http://www.owl-ontologies.com/unnamed.owl#Water_Stain>
+    <http://www.owl-ontologies.com/unnamed.owl#Tracheid>
+    <http://www.owl-ontologies.com/unnamed.owl#Fiber_tracheid>
+    <http://www.owl-ontologies.com/unnamed.owl#Chemical>
+    <http://www.owl-ontologies.com/unnamed.owl#South_Eastern_America_Region>
+    <http://www.owl-ontologies.com/unnamed.owl#Staining>
+    ... 3 more
+  http://www.owl-ontologies.com/unnamed.owl#Natural_thing
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_4>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_11>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_3>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_10>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_6>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_8>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_7>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_9>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_0>
+    <http://www.owl-ontologies.com/unnamed.owl#wood_Instance_1>
+    ... 1 more
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+http://drtc.isibang.ac.in/%7Ebisu/ontology/instOntology.owl
+#logical axioms: 524
+#classes: 51
+#object properties: 23
+#data properties: 23
+#individuals: 76
+Ontology is inconsistent. 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+#axioms 	 #classes 	 #inds. 	 #ob.prop. 	 #da.prop. classif. time(ms) 	 url 
+343	42	33	37	http://www.biopax.org/release/biopax-level2.owl	
+95	39	0	0	http://www.ifomis.org/bfo/owl	
+878	196	22	3	http://www.acl.icnet.uk/~mw/MDM0.73.owl	
+469	55	14	1	http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl	
+52	47	2	9	http://transontology.org/bhakti_gaudiya/bhakti.owl	
+48	13	7	8	http://protege.cim3.net/file/pub/ontologies/camera/camera.owl	
+351	38	12	53	http://www.bltk.ru/OWL/camera2.owl	
+119	30	12	0	http://transontology.org/consciousness/consciousness1.owl	
+54	9	16	7	http://on.cs.unibas.ch/owl/1.0/Context.owl	
+63	19	20	4	http://www.nada.kth.se/%7Emehrana/Delegation.owl	
+239	349	134	38	http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl	
+398	37	28	35	http://www.csm.ornl.gov/%7E7lp/esg-owl/ESG1.1.owl	
+182	29	21	12	http://protege.cim3.net/file/pub/ontologies/family.swrl.owl/family.swrl.owl	
+16014	323	247	74	http://www.fadyart.com/ontologies/data/Finance.owl	
+38	18	4	0	http://protege.cim3.net/file/pub/ontologies/generations/generations.owl	
+14968	614	23	21	http://i2geo.net/ontologies/current/GeoSkills.owl	
+216	96	60	32	http://protege.cim3.net/file/pub/ontologies/ka/ka.owl	
+42	21	4	1	http://protege.cim3.net/file/pub/ontologies/koala/koala.owl	
+358	33	26	14	http://lifeeventontology.googlepages.com/leo.owl	
+1453	237	85	48	http://mged.sourceforge.net/ontologies/MGEDOntology.owl	
+62	66	142	6	http://www.tssg.org/public/ontologies/omg/mof/2004/MOF.owl	
+62	150	227	6	http://www.tssg.org/public/ontologies/omg/qvt/2005/QVT.owl	
+62	124	132	27	http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl	
+105	60	14	1	http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl	
+1465	377	313	0	http://philosurfical.open.ac.uk/ontology/philosurfical.owl	
+87	50	54	17	http://protege.cim3.net/file/pub/ontologies/shuttle/shuttle-crew-ont.owl	
+279	113	62	12	http://www.loria.fr/%7Ecoulet/ontology/snpontology/version1.3/snpontology_full.owl	
+135	22	11	23	http://www.uv.es/%7Eagentes/SVECore.owl	
+596	395	100	1	http://protege.cim3.net/file/pub/ontologies/tambis/tambis-full.owl	
+418	78	26	27	http://www.bltk.ru/OWL/tourism.owl	
+93	35	6	4	http://protege.cim3.net/file/pub/ontologies/travel/travel.owl	
+517	115	12	0	http://lsi.ugr.es/joseluisgs/videojuegos.owl	
+657	138	16	1	http://protege.cim3.net/file/pub/ontologies/wine/wine.owl	
+150	47	7	9	http://abulaish.com/Wood_Ontology/woodontology.xml	
+524	51	23	23	http://drtc.isibang.ac.in/%7Ebisu/ontology/instOntology.owl	
+
+0	 - 	http://www.loria.fr/%7Ecoulet/ontology/snpontology/version1.3/snpontology_full.owl
+0	 - 	http://www.tssg.org/public/ontologies/omg/mof/2004/MOF.owl
+0	 - 	http://protege.cim3.net/file/pub/ontologies/camera/camera.owl
+0	 - 	http://www.tssg.org/public/ontologies/omg/qvt/2005/QVT.owl
+0	 - 	http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl
+0	 - 	http://on.cs.unibas.ch/owl/1.0/Context.owl
+0	 - 	http://protege.cim3.net/file/pub/ontologies/koala/koala.owl
+1	 - 	http://protege.cim3.net/file/pub/ontologies/generations/generations.owl
+1	 - 	http://protege.cim3.net/file/pub/ontologies/travel/travel.owl
+1	 - 	http://transontology.org/consciousness/consciousness1.owl
+2	 - 	http://protege.cim3.net/file/pub/ontologies/shuttle/shuttle-crew-ont.owl
+2	 - 	http://www.tssg.org/public/ontologies/omg/odm/2006/odm_2006_04_03_kludge.owl
+4	 - 	http://www.csm.ornl.gov/%7E7lp/esg-owl/ESG1.1.owl
+4	 - 	http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl
+5	 - 	http://abulaish.com/Wood_Ontology/woodontology.xml
+7	 - 	http://lifeeventontology.googlepages.com/leo.owl
+14	 - 	http://protege.cim3.net/file/pub/ontologies/family.swrl.owl/family.swrl.owl
+15	 - 	http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
+31	 - 	http://www.acl.icnet.uk/~mw/MDM0.73.owl
+41	 - 	http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
+80	 - 	http://mged.sourceforge.net/ontologies/MGEDOntology.owl
+Inconsistent ontologies:
+http://drtc.isibang.ac.in/%7Ebisu/ontology/instOntology.owl
+http://i2geo.net/ontologies/current/GeoSkills.owl
+http://www.fadyart.com/ontologies/data/Finance.owl
+http://www.bltk.ru/OWL/tourism.owl
+http://www.bltk.ru/OWL/camera2.owl
+Incohaerent ontologies(#unsatisfiable classes):
+http://protege.cim3.net/file/pub/ontologies/people.pets/people+pets.owl(1)
+http://protege.cim3.net/file/pub/ontologies/koala/koala.owl(3)
+http://protege.cim3.net/file/pub/ontologies/travel/travel.owl(1)

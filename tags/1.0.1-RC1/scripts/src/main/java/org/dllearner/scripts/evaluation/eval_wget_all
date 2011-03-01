@@ -1,0 +1,15 @@
+# downloads all ontologies locally into /ontologies folder
+cd ontologies
+wget http://db0.aksw.org/downloads/Finance.owl
+wget -O Economy.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://reliant.teknowledge.com/DAML/Economy.owl&format=RDF/XML
+wget -O Transportation.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://reliant.teknowledge.com/DAML/Transportation.owl&format=RDF/XML
+wget -O SC.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://www.mindswap.org/ontologies/SC.owl&format=RDF/XML
+wget -O earthrealm.owl http://owl.cs.manchester.ac.uk/repository/download?ontology=http://sweet.jpl.nasa.gov/1.1/earthrealm.owl&format=RDF/XML
+wget http://www.acl.icnet.uk/~mw/MDM0.73.owl
+wget http://protege.cim3.net/file/pub/ontologies/wine/wine.owl
+wget http://mged.sourceforge.net/ontologies/MGEDOntology.owl
+wget http://protege.cim3.net/file/pub/ontologies/family.swrl.owl/family.swrl.owl
+wget http://www.ecs.soton.ac.uk/%7Eaoj04r/resist.owl
+wget -O leo.owl http://lifeeventontology.googlepages.com/leo.owl
+wget http://abulaish.com/Wood_Ontology/woodontology.xml
+cd ..

@@ -1,0 +1,96 @@
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs1330");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs1430");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs15769");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs19571");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs20018");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs2134");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs23811");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs24345");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs25161");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs29437");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs33590");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs36798");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs37782");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs43333");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs43655");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs44147");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs46747");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs48054");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs50146");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs9128");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs10413");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs10715");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs11104");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs1236");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs1253");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs14738");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs1914");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs26290");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs28997");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs3529");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs35962");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs36400");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs38900");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs41529");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs43624");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs46234");
+import("tiger/http%3A%2F%2Fnlp2rdf.org%2Fontology%2Fs8516");
+import("tiger_trimmed_toPOS.rdf");
+
+
+
+
++"http://nlp2rdf.org/ontology/s1330"
++"http://nlp2rdf.org/ontology/s1430"
++"http://nlp2rdf.org/ontology/s15769"
++"http://nlp2rdf.org/ontology/s19571"
++"http://nlp2rdf.org/ontology/s20018"
++"http://nlp2rdf.org/ontology/s2134"
++"http://nlp2rdf.org/ontology/s23811"
++"http://nlp2rdf.org/ontology/s24345"
++"http://nlp2rdf.org/ontology/s25161"
++"http://nlp2rdf.org/ontology/s29437"
++"http://nlp2rdf.org/ontology/s33590"
++"http://nlp2rdf.org/ontology/s36798"
++"http://nlp2rdf.org/ontology/s37782"
++"http://nlp2rdf.org/ontology/s43333"
++"http://nlp2rdf.org/ontology/s43655"
++"http://nlp2rdf.org/ontology/s44147"
++"http://nlp2rdf.org/ontology/s46747"
++"http://nlp2rdf.org/ontology/s48054"
++"http://nlp2rdf.org/ontology/s50146"
++"http://nlp2rdf.org/ontology/s9128"
+-"http://nlp2rdf.org/ontology/s10413"
+-"http://nlp2rdf.org/ontology/s10715"
+-"http://nlp2rdf.org/ontology/s11104"
+-"http://nlp2rdf.org/ontology/s1236"
+-"http://nlp2rdf.org/ontology/s1253"
+-"http://nlp2rdf.org/ontology/s14738"
+-"http://nlp2rdf.org/ontology/s1914"
+-"http://nlp2rdf.org/ontology/s26290"
+-"http://nlp2rdf.org/ontology/s28997"
+-"http://nlp2rdf.org/ontology/s3529"
+-"http://nlp2rdf.org/ontology/s35962"
+-"http://nlp2rdf.org/ontology/s36400"
+-"http://nlp2rdf.org/ontology/s38900"
+-"http://nlp2rdf.org/ontology/s41529"
+-"http://nlp2rdf.org/ontology/s43624"
+-"http://nlp2rdf.org/ontology/s46234"
+-"http://nlp2rdf.org/ontology/s8516"
+
+
+/**
+Good:
+SELECT DISTINCT ?subject  { 
+?subject a <http://nlp2rdf.org/ontology/Sentence> . 
+?subject <http://nlp2rdf.org/ontology/hasToken> ?object0. 
+?object0 a <http://nlp2rdf.org/ontology/VVPP> . 
+?subject <http://nlp2rdf.org/ontology/hasToken> ?object1. 
+?object1 <http://nlp2rdf.org/ontology/hasLemma>  "werden"  
+ } 
+Bad:
+SELECT DISTINCT ?subject  { 
+?subject a <http://nlp2rdf.org/ontology/Sentence> . 
+?subject <http://nlp2rdf.org/ontology/hasToken> ?object0. 
+?object0 a <http://nlp2rdf.org/ontology/VVPP>  
+ } **/

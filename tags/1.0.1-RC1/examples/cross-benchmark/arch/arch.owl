@@ -1,0 +1,362 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY foo "http://localhost/foo#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://localhost/foo#"
+     xml:base="http://localhost/foo"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:foo="http://localhost/foo#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://localhost/foo#hasParallelpipe -->
+
+    <owl:ObjectProperty rdf:about="&foo;hasParallelpipe">
+        <rdfs:range rdf:resource="&foo;parallelpipe"/>
+        <rdfs:domain rdf:resource="&foo;construction"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost/foo#hasPillar -->
+
+    <owl:ObjectProperty rdf:about="&foo;hasPillar">
+        <rdfs:domain rdf:resource="&foo;construction"/>
+        <rdfs:range rdf:resource="&foo;pillar"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost/foo#leftof -->
+
+    <owl:ObjectProperty rdf:about="&foo;leftof">
+        <rdfs:domain rdf:resource="&foo;pillar"/>
+        <rdfs:range rdf:resource="&foo;pillar"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost/foo#supports -->
+
+    <owl:ObjectProperty rdf:about="&foo;supports">
+        <rdfs:range rdf:resource="&foo;parallelpipe"/>
+        <rdfs:domain rdf:resource="&foo;pillar"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost/foo#touches -->
+
+    <owl:ObjectProperty rdf:about="&foo;touches">
+        <rdfs:domain rdf:resource="&foo;pillar"/>
+        <rdfs:range rdf:resource="&foo;pillar"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://localhost/foo#brick -->
+
+    <owl:Class rdf:about="&foo;brick"/>
+    
+
+
+    <!-- http://localhost/foo#construction -->
+
+    <owl:Class rdf:about="&foo;construction"/>
+    
+
+
+    <!-- http://localhost/foo#freeStandingPillar -->
+
+    <owl:Class rdf:about="&foo;freeStandingPillar">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&foo;pillar"/>
+                    <owl:Class>
+                        <owl:complementOf>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="&foo;touches"/>
+                                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
+                            </owl:Restriction>
+                        </owl:complementOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost/foo#parallelpipe -->
+
+    <owl:Class rdf:about="&foo;parallelpipe">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&foo;wedge"/>
+                    <rdf:Description rdf:about="&foo;brick"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost/foo#pillar -->
+
+    <owl:Class rdf:about="&foo;pillar"/>
+    
+
+
+    <!-- http://localhost/foo#wedge -->
+
+    <owl:Class rdf:about="&foo;wedge"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Nothing -->
+
+    <owl:Class rdf:about="&owl;Nothing">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&foo;pillar"/>
+                    <rdf:Description rdf:about="&foo;parallelpipe"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&foo;construction"/>
+                    <rdf:Description rdf:about="&foo;parallelpipe"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&foo;construction"/>
+                    <rdf:Description rdf:about="&foo;pillar"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://localhost/foo#a -->
+
+    <foo:brick rdf:about="&foo;a"/>
+    
+
+
+    <!-- http://localhost/foo#b -->
+
+    <foo:brick rdf:about="&foo;b"/>
+    
+
+
+    <!-- http://localhost/foo#c -->
+
+    <foo:brick rdf:about="&foo;c"/>
+    
+
+
+    <!-- http://localhost/foo#c1 -->
+
+    <foo:construction rdf:about="&foo;c1">
+        <foo:hasParallelpipe rdf:resource="&foo;a"/>
+        <foo:hasPillar rdf:resource="&foo;p2"/>
+        <foo:hasPillar rdf:resource="&foo;p1"/>
+    </foo:construction>
+    
+
+
+    <!-- http://localhost/foo#c2 -->
+
+    <foo:construction rdf:about="&foo;c2">
+        <foo:hasPillar rdf:resource="&foo;p3"/>
+        <foo:hasParallelpipe rdf:resource="&foo;b"/>
+        <foo:hasPillar rdf:resource="&foo;p4"/>
+    </foo:construction>
+    
+
+
+    <!-- http://localhost/foo#c3 -->
+
+    <foo:construction rdf:about="&foo;c3">
+        <foo:hasPillar rdf:resource="&foo;p5"/>
+        <foo:hasParallelpipe rdf:resource="&foo;c"/>
+        <foo:hasPillar rdf:resource="&foo;p6"/>
+    </foo:construction>
+    
+
+
+    <!-- http://localhost/foo#c4 -->
+
+    <foo:construction rdf:about="&foo;c4">
+        <foo:hasParallelpipe rdf:resource="&foo;d"/>
+        <foo:hasPillar rdf:resource="&foo;p8"/>
+        <foo:hasPillar rdf:resource="&foo;p7"/>
+    </foo:construction>
+    
+
+
+    <!-- http://localhost/foo#c5 -->
+
+    <foo:construction rdf:about="&foo;c5">
+        <foo:hasPillar rdf:resource="&foo;p9"/>
+        <foo:hasParallelpipe rdf:resource="&foo;e"/>
+    </foo:construction>
+    
+
+
+    <!-- http://localhost/foo#d -->
+
+    <foo:wedge rdf:about="&foo;d"/>
+    
+
+
+    <!-- http://localhost/foo#e -->
+
+    <foo:wedge rdf:about="&foo;e"/>
+    
+
+
+    <!-- http://localhost/foo#p1 -->
+
+    <foo:pillar rdf:about="&foo;p1">
+        <rdf:type rdf:resource="&foo;freeStandingPillar"/>
+        <foo:supports rdf:resource="&foo;a"/>
+        <foo:leftof rdf:resource="&foo;p2"/>
+    </foo:pillar>
+    
+
+
+    <!-- http://localhost/foo#p2 -->
+
+    <foo:pillar rdf:about="&foo;p2">
+        <rdf:type rdf:resource="&foo;freeStandingPillar"/>
+        <foo:supports rdf:resource="&foo;a"/>
+    </foo:pillar>
+    
+
+
+    <!-- http://localhost/foo#p3 -->
+
+    <foo:freeStandingPillar rdf:about="&foo;p3">
+        <rdf:type rdf:resource="&foo;pillar"/>
+        <foo:leftof rdf:resource="&foo;p4"/>
+    </foo:freeStandingPillar>
+    
+
+
+    <!-- http://localhost/foo#p4 -->
+
+    <foo:freeStandingPillar rdf:about="&foo;p4">
+        <rdf:type rdf:resource="&foo;pillar"/>
+    </foo:freeStandingPillar>
+    
+
+
+    <!-- http://localhost/foo#p5 -->
+
+    <foo:pillar rdf:about="&foo;p5">
+        <foo:supports rdf:resource="&foo;c"/>
+        <foo:touches rdf:resource="&foo;p6"/>
+        <foo:leftof rdf:resource="&foo;p6"/>
+    </foo:pillar>
+    
+
+
+    <!-- http://localhost/foo#p6 -->
+
+    <foo:pillar rdf:about="&foo;p6">
+        <foo:supports rdf:resource="&foo;c"/>
+    </foo:pillar>
+    
+
+
+    <!-- http://localhost/foo#p7 -->
+
+    <foo:freeStandingPillar rdf:about="&foo;p7">
+        <rdf:type rdf:resource="&foo;pillar"/>
+        <foo:leftof rdf:resource="&foo;p8"/>
+        <foo:supports rdf:resource="&foo;d"/>
+    </foo:freeStandingPillar>
+    
+
+
+    <!-- http://localhost/foo#p8 -->
+
+    <foo:freeStandingPillar rdf:about="&foo;p8">
+        <rdf:type rdf:resource="&foo;pillar"/>
+        <foo:supports rdf:resource="&foo;d"/>
+    </foo:freeStandingPillar>
+    
+
+
+    <!-- http://localhost/foo#p9 -->
+
+    <foo:freeStandingPillar rdf:about="&foo;p9">
+        <rdf:type rdf:resource="&foo;pillar"/>
+        <foo:supports rdf:resource="&foo;e"/>
+    </foo:freeStandingPillar>
+</rdf:RDF>

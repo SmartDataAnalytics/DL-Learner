@@ -1,0 +1,215 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w4_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w3_Wahl"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w5_Vorstands"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w10_Dienstag">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Dienstag</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w9_heutigen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w11_kann"/>
+    <j.0:hasLemma>Dienstag</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w11_kann">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>kann</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w10_Dienstag"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w12_es"/>
+    <j.0:hasLemma>können</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w15_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w14_werden"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w7_SPD-Bundestagsfraktion">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>SPD-Bundestagsfraktion</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w6_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w8_am"/>
+    <j.0:hasLemma>SPD-Bundestagsfraktion</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w13_spannend">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>spannend</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w12_es"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w14_werden"/>
+    <j.0:hasLemma>spannend</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w14_werden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w13_spannend"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w15_."/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PPER">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PersonalPronoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w2_turnusgem%C3%A4%C3%9Fen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>turnusgemäßen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w1_der"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w3_Wahl"/>
+    <j.0:hasLemma>turnusgemäß</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w3_Wahl"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w7_SPD-Bundestagsfraktion"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w9_heutigen"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s50417w0_Bei"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w0_Bei"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w8_am"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w5_Vorstands"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w13_spannend"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w4_des"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w15_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w10_Dienstag"/>
+    <rdfs:label>Bei der turnusgemäßen Wahl des Vorstands der SPD-Bundestagsfraktion am heutigen Dienstag kann es spannend werden .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w1_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w6_der"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w12_es"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w2_turnusgem%C3%A4%C3%9Fen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w11_kann"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s50417w14_werden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w9_heutigen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>heutigen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w8_am"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w10_Dienstag"/>
+    <j.0:hasLemma>heutig</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w0_Bei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Bei</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w1_der"/>
+    <j.0:hasLemma>bei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w8_am">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>am</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w7_SPD-Bundestagsfraktion"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w9_heutigen"/>
+    <j.0:hasLemma>an</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w5_Vorstands">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Vorstands</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w4_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w6_der"/>
+    <j.0:hasLemma>Vorstand</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w1_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w0_Bei"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w2_turnusgem%C3%A4%C3%9Fen"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AuxiliaryInfinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w3_Wahl">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Wahl</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w2_turnusgem%C3%A4%C3%9Fen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w4_des"/>
+    <j.0:hasLemma>Wahl</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w6_der">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>der</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w5_Vorstands"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w7_SPD-Bundestagsfraktion"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s50417w12_es">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>es</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s50417"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s50417w11_kann"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s50417w13_spannend"/>
+    <j.0:hasLemma>es</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PPER"/>
+  </rdf:Description>
+</rdf:RDF>

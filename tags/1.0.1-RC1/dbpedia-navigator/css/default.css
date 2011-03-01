@@ -1,0 +1,384 @@
+/**
+  * Main DBpedia Navigator Style Sheet.
+  *
+  * @author: Norman Heino
+  * @author: Jens Lehmann
+  */
+
+/* remove browser specific margins */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font: 85%/1.2 "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+p {
+	margin: 8px 0;
+}
+
+h1 {
+	margin: 0.2em;
+}
+
+h2 {
+	margin: 0.1em;
+}
+
+/*
+ * Main site structure
+ */
+
+#Loading {
+	color: #666;
+	font-size: 85%;
+}
+
+#wrapper {
+	/*position: relative;*/
+	max-width: 100%;
+	padding: 1%;
+/*	padding: 15px; */
+/*	margin: 15px;*/
+}
+
+#content {
+	/*margin: 0 19em;*/
+	overflow: hidden;
+	/*width: 10%;*/
+	width: 63%; 
+	float: left;
+	margin-left: 3px;
+	margin-right: 3px; 
+/*	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	padding: 0 5px;*/
+}
+
+/*
+ * Side bars are positioned absolutely due to several reasons:
+ * (1)Internet Explorer has problems displaying float elements, 
+ * (2) the content's position in html is irrelevant, 
+ * (3) positioning the content div is more straightforward.
+ */
+#leftSidebar {
+	/* position: absolute; */
+	width: 18%;
+	min-width: 150px;
+	float: left;
+}
+
+#rightSidebar {
+	/* position: absolute; */
+	/*float: right;*/
+	width: 18%;
+	min-width: 150px;
+	float: left;
+	/*top: 15px;
+	right: 15px;*/
+}
+
+/*
+ * sidebar content (boxes)
+ */
+
+.box {
+	color: #666;
+	margin-bottom: 20px;
+	border: 1px solid #bbb;
+	font-size: 85%;
+}
+
+/*.box td {
+	font-size: 100%;
+}*/
+
+.box .boxtitle {
+	color: #666;
+	background-color: #eee;
+	padding: 3px 0.4em;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.box .boxtitle .boxtitle_string {
+	width: 80%;
+	overflow: hidden;
+/*	display: none;*/
+}
+
+.box .boxcontent {
+	padding: 0.6em;
+	border-top: 1px solid #bbb;
+}
+
+/* restrict content of certain boxes */
+.box#predicates .boxcontent, 
+.box#classes .boxcontent {
+	overflow: hidden;
+}
+
+.box p {
+	margin: 0 2px 4px 0;
+}
+
+.box ul, .box ol {
+	margin: 0px;
+/*	padding-left: 15px;*/
+	list-style-position: inside;
+}
+
+.box ul.no_bullet, .box ul.no_bullet {
+	list-style-type: none;
+}
+
+.box ul li.horizontal, .box ol li.horizontal, 
+.box ul.horizontal,    .box ol.horizontal {
+	display: inline;
+}
+
+.box a.title_switch {
+	position: absolute;
+	right: 0.5em;
+	margin: auto 0;
+	color: #666;
+	border: 1px solid #bbb;
+	width: 1em;
+	height: 1em;
+	background-color: #fff;
+	text-align: center;
+}
+
+.box a.title_switch:hover {
+	color: #02a;
+	text-decoration: none;
+	background-color: #eee;
+}
+
+.box hr {
+	margin: 0.5em 0;
+	border: none;
+	border-top: 1px dotted #bbb;
+	height: 0;
+}
+
+.box#classes .boxcontent a {
+	display: block;
+}
+
+.box input {
+	width: auto;
+}
+
+.box td input {
+	width: 100%;
+}
+
+.box img.rating {
+	position: relative;
+	top: 1px;
+}
+
+.hidden {
+	display: none;
+}
+
+
+/*
+ * Links
+ */
+
+a, a:link, a:visited {
+	color: #02a;
+	text-decoration: none;
+	/* cursor: pointer; */
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+
+/*
+ * Tabs
+ */
+
+/* all the tabs */
+.tabs {
+	float: left;
+	width: 100%;
+	background: #fff url("../images/tabs_back.png") repeat-x bottom;
+}
+
+.tabs ul {
+	list-style: none;
+}
+
+.tabs li {
+	float: left;
+	margin-right: 1px;
+}
+
+.tabs a {
+	display: block;
+	margin-top: 1px;
+	padding: 0.35em 1.35em;
+	background-image: url("../images/tab_back.png");
+	background-repeat: repeat-x;
+	background-color: #cbcbcb;
+	border: 1px solid #bbb;
+}
+
+.tabs a:hover {
+	background: #fff;
+	text-decoration: none;
+}
+
+.tabs a.current {
+	background: #fff;
+	border-bottom: 1px solid #fff;
+}
+
+/* horizontal line underneath the tabs */
+#tab-line {
+	height: 1em;
+	clear: both;
+}
+
+#instances {
+	float: right;
+}
+
+.selected {
+	background-color: #bde; /*#b4d5fe;*/
+}
+
+.button {
+	border: solid black 1px;
+	padding: 0px 1px;
+	background-color: #eee;
+}
+
+img {
+	border: none;
+}
+
+/*
+ * Layer
+ */
+#layer {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background-image: url("../images/black_50.png");
+	background-repeat: repeat;
+	z-index: 98;
+}
+
+#layerContent {
+	margin-top: 100px;
+	margin: auto;
+	width: 500px;
+	height: 300px;
+	background-color: #ffb;
+	border: 2px solid #bbb;
+	z-index: 99;
+}
+
+/*
+ * Buttons
+ */
+input.button {
+	border: 1px solid #bbb; 
+	color: #666;
+	background-color: #eee;
+	padding: 3px 0.4em;
+	font-weight: bold;
+	white-space: nowrap;
+	font-size: 85%;
+}
+
+input.button:hover {
+	border-left:1px solid #ffffff;
+	border-top:1px solid #ffffff;
+	border-right:1px solid #848484;
+	border-bottom:1px solid #848484;
+}
+
+.titletable{
+	width:100%;
+	color: #666;
+	background-color: #eee;
+	padding: 0.1em 0.4em;
+	font-weight: bold;
+	font-size: 100%;
+	white-space: nowrap;
+}
+
+.titletable input.button{
+	width:auto;
+}
+
+.titletable td.left{
+	text-align:left;
+}
+
+.titletable td.right{
+	text-align:right;
+}
+
+.box .boxtitlewithbutton {
+	color: #666;
+	background-color: #eee;
+	padding: 0em 0.4em;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+#search {
+	text-align:center;
+}
+
+#label {
+	margin-bottom: 0.1em;
+}
+
+#article {
+	min-height: 500px;
+}
+
+#credits {
+	border: none;
+}
+
+#positivesboxtitle {
+	/*color: black;*/
+	background-color: lightgreen;
+}
+
+#negativesboxtitle {
+	/*color: black;*/
+	background-color: #ee6666;
+}
+
+#ArticleTitle {
+	font-size: 150%;
+	color:black;
+}
+
+#footer {
+	clear: both;
+	text-align: center;
+}
+
+#todo {
+	padding: 15px;
+	margin: 10px;
+}
+
+#redirectedFrom {
+	color: #666;
+	font-size: 85%;
+}

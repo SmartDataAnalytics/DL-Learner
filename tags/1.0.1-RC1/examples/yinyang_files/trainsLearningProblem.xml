@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LearningProblem 
+
+	xmlns="http://www.di.uniba.it/learning" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.di.uniba.it/learning/ ../LearningProblem.xsd" 
+
+	knowledgeBase="file:../trains/trains.owl" 
+	positiveExampleSource="trainsPositives.txt" 
+	negativeExampleSource="trainsNegatives.txt" 
+	abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 
+	learn="true" 
+	normalize="true" 
+	consistencyCheck="true"
+	reasonerURL ="http://localhost:8081" >
+	<Experiments/>
+	<Namespaces>
+		<Namespace uri="http://example.com/foo#"></Namespace>
+	</Namespaces>
+	
+</LearningProblem>

@@ -1,0 +1,56 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/XY">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#NonWords"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27289w2_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27289"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27289w1_M%C3%9CNCHEN"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27289w0_tma">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>tma</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27289"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27289w1_M%C3%9CNCHEN"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/XY"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#ProperNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27289">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <rdfs:label>tma MÜNCHEN .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27289w0_tma"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s27289w0_tma"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27289w1_M%C3%9CNCHEN"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s27289w2_."/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s27289w1_M%C3%9CNCHEN">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>MÜNCHEN</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s27289"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s27289w0_tma"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s27289w2_."/>
+    <j.0:hasLemma>München</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NE"/>
+  </rdf:Description>
+</rdf:RDF>

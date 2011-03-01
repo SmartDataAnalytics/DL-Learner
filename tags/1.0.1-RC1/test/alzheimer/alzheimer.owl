@@ -1,0 +1,2285 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://dl-learner.org/alzheimer#"
+     xml:base="http://dl-learner.org/alzheimer"
+     xmlns:alzheimer="http://dl-learner.org/alzheimer#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:CH2="http://dl-learner.org/alzheimer#CH2&#8211;"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://dl-learner.org/alzheimer"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsNrOfReplacementsInMiddleRing -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsNrOfReplacementsInMiddleRing"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsReplacedAtPosition -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsReplacedAtPosition"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsReplacedBy -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsReplacedBy"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsReplacedByFirst -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsReplacedByFirst"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsReplacedBySecond -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsReplacedBySecond"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsReplacedByThird -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsReplacedByThird"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsReplacedWith -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsReplacedWith"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsRingReplacedAtPosition -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsRingReplacedAtPosition"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#getsRingReplacementAt -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#getsRingReplacementAt"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hasFlex -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#hasFlex"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hasNrOfAlkylSubstitutions -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#hasNrOfAlkylSubstitutions"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hasPolatisation -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#hasPolatisation"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hasRingStructure -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#hasRingStructure"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hasSigma -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#hasSigma"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hasSize -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#hasSize"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreater -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreater"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterFlex -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterFlex"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterHAcceptor -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterHAcceptor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterHDonor -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterHDonor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterPiAcceptor -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterPiAcceptor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterPiDonor -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterPiDonor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterPolar -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterPolar"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterSigma -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterSigma"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isGreaterSize -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isGreaterSize"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isHAcceptor -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isHAcceptor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isHDoner -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isHDoner"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isPiAcceptor -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isPiAcceptor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isPiDoner -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isPiDoner"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#isPolarisable -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#isPolarisable"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#nrOfSubstitutionsInRing -->
+
+    <owl:ObjectProperty rdf:about="http://dl-learner.org/alzheimer#nrOfSubstitutionsInRing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Drug -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#Drug"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Flex -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#Flex"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#HAcceptor -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#HAcceptor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#HDonor -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#HDonor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#PiAcceptor -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#PiAcceptor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#PiDonor -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#PiDonor"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Polar -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#Polar"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Sigma -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#Sigma"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Size -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#Size"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Substituent -->
+
+    <owl:Class rdf:about="http://dl-learner.org/alzheimer#Substituent"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#(Aromatic-Ring)2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#(CH3)2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#(CH3)2"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#(CH3)3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#(CH3)3"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#0"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#1">
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#2">
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#3">
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#4">
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <isGreater rdf:resource="http://dl-learner.org/alzheimer#3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#5"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#6"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#7"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#Aromatic-Ring -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#CH2&#8211;CH3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#CH3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#CH3"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#N(CH3)2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#N(CH3)2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Substituent"/>
+        <hasFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isHDoner rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isPiDoner rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <hasPolatisation rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isPolarisable rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <hasSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <hasSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#a1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#a1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#aa1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#aa1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#ch3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#ch3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#b1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#b1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#7"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#bb1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#bb1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#ch3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#c1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#c1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#cc1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#cc1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#cf3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#cf3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Substituent"/>
+        <hasFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isHDoner rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isPiDoner rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <hasPolatisation rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isPolarisable rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <hasSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <hasSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#ch3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#ch3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Substituent"/>
+        <hasFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isHDoner rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isPiDoner rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <hasPolatisation rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isPolarisable rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <hasSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <hasSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#cl -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#cl">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Substituent"/>
+        <hasFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isHDoner rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isPiDoner rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <hasPolatisation rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isPolarisable rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <hasSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <hasSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#d1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#d1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#dd1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#dd1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#e1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#e1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#ee1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#ee1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#f -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#f">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Substituent"/>
+        <hasFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isHDoner rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isPiDoner rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <hasPolatisation rdf:resource="http://dl-learner.org/alzheimer#polar5"/>
+        <isPolarisable rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <hasSigma rdf:resource="http://dl-learner.org/alzheimer#sigma5"/>
+        <hasSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#f1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#f1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#ff1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#ff1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#5"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#5"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#5"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex3"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex3"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex4"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex3"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex4"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex5"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex3"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex4"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex5"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex6"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#flex9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#flex9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Flex"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex0"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex2"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex3"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex4"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex5"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex6"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex7"/>
+        <isGreaterFlex rdf:resource="http://dl-learner.org/alzheimer#flex8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#g1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#g1">
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#h"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h1">
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc3"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc3"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc4"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc3"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc4"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc5"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc3"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc4"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc5"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc6"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_acc9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_acc9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HAcceptor"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc0"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc2"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc3"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc4"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc5"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc6"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc7"/>
+        <isGreaterHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don3"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don3"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don4"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don3"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don4"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don5"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don3"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don4"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don5"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don6"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#h_don9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#h_don9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#HDonor"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don1"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don2"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don3"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don4"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don5"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don6"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don7"/>
+        <isGreaterHDonor rdf:resource="http://dl-learner.org/alzheimer#h_don8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#hh1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#hh1">
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#i1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#i1">
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#ii1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#ii1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#j1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#j1">
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)2"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#N(CH3)2"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#N(CH3)2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#jj1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#jj1">
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#k1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#k1">
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)2"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#kk1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#kk1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#l1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#l1">
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsReplacedByThird rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#o"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#o"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#ll1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#ll1">
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#6"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cf3"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#m1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#m1">
+        <getsReplacedByThird rdf:resource="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#n1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#n1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <getsReplacedByThird rdf:resource="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#normal -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#normal"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#o -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#o"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#o1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#o1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <getsReplacedByThird rdf:resource="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(Aromatic-Ring)2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#(CH3)3"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#CH2&#8211;CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#och3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#och3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Substituent"/>
+        <hasFlex rdf:resource="http://dl-learner.org/alzheimer#flex1"/>
+        <isHAcceptor rdf:resource="http://dl-learner.org/alzheimer#h_acc1"/>
+        <isHDoner rdf:resource="http://dl-learner.org/alzheimer#h_don0"/>
+        <isPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isPiDoner rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <hasPolatisation rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isPolarisable rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <hasSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <hasSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#p1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#p1">
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#0"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <hasRingStructure rdf:resource="http://dl-learner.org/alzheimer#normal"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc3"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc3"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc4"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc3"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc4"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc5"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc3"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc4"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc5"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc6"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_acc9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_acc9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiAcceptor"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc0"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc1"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc2"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc3"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc4"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc5"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc6"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc7"/>
+        <isGreaterPiAcceptor rdf:resource="http://dl-learner.org/alzheimer#pi_acc8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don3"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don3"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don4"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don3"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don4"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don5"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don3"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don4"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don5"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don6"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#pi_don9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#pi_don9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#PiDonor"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don0"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don1"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don2"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don3"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don4"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don5"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don6"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don7"/>
+        <isGreaterPiDonor rdf:resource="http://dl-learner.org/alzheimer#pi_don8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar5"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar5"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar6"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polar9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polar9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Polar"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar5"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar6"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar7"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polar8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari0"/>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari1">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari2">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari3">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari4">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari5">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari6">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari7">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari5"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari8">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari5"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari6"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#polari9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#polari9">
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari0"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari1"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari2"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari3"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari4"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari5"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari6"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari7"/>
+        <isGreaterPolar rdf:resource="http://dl-learner.org/alzheimer#polari8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#q1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#q1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#r1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#r1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#s1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#s1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#cl"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma4"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma4"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma5"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma4"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma5"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma6"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#sigma9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#sigma9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Sigma"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma0"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma1"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma2"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma3"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma4"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma5"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma6"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma7"/>
+        <isGreaterSigma rdf:resource="http://dl-learner.org/alzheimer#sigma8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size0 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size0">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size2 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size2">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size3 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size3">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size4 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size4">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size5 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size5">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size3"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size6 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size6">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size3"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size4"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size7 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size7">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size3"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size4"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size5"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size8 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size8">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size3"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size4"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size5"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size6"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#size9 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#size9">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Size"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size0"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size1"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size2"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size3"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size4"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size5"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size6"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size7"/>
+        <isGreaterSize rdf:resource="http://dl-learner.org/alzheimer#size8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#t1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#t1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#u1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#u1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#v1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#v1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#f"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#f"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#w1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#w1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#x1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#x1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#y1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#y1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#4"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#och3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/alzheimer#z1 -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/alzheimer#z1">
+        <rdf:type rdf:resource="http://dl-learner.org/alzheimer#Drug"/>
+        <hasNrOfAlkylSubstitutions rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <nrOfSubstitutionsInRing rdf:resource="http://dl-learner.org/alzheimer#1"/>
+        <getsRingReplacedAtPosition rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsNrOfReplacementsInMiddleRing rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsRingReplacementAt rdf:resource="http://dl-learner.org/alzheimer#2"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBySecond rdf:resource="http://dl-learner.org/alzheimer#Aromatic-Ring"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedByFirst rdf:resource="http://dl-learner.org/alzheimer#CH3"/>
+        <getsReplacedBy rdf:resource="http://dl-learner.org/alzheimer#ch3"/>
+        <getsReplacedWith rdf:resource="http://dl-learner.org/alzheimer#ch3"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.0.0.1413) http://owlapi.sourceforge.net -->
+

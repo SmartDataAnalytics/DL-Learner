@@ -1,0 +1,246 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/TRUNC">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Truncated"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w10_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w9_k%C3%B6nnen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w11_werden"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w5_Kinder">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Kinder</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w4_kleiner"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w6_unbeschwerte"/>
+    <j.0:hasLemma>Kind</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVINF">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Infinitive"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w3_Eltern">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Eltern</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w2_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w4_kleiner"/>
+    <j.0:hasLemma>Eltern</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w14_F%C3%BCnfj%C3%A4hrige"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w0_Damit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w4_kleiner"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w17_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w7_Urlaubstage"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w3_Eltern"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w2_die"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s31994w0_Damit"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w9_k%C3%B6nnen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w16_betreut"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w1_auch"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w8_verleben"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w10_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w6_unbeschwerte"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w13_bis"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w12_Drei-"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w11_werden"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w15_tags%C3%BCber"/>
+    <rdfs:label>Damit auch die Eltern kleiner Kinder unbeschwerte Urlaubstage verleben können , werden Drei- bis Fünfjährige tagsüber betreut .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s31994w5_Kinder"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w12_Drei-">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Drei-</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w11_werden"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w13_bis"/>
+    <j.0:hasLemma>drei</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/TRUNC"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w16_betreut">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>betreut</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w15_tags%C3%BCber"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w17_."/>
+    <j.0:hasLemma>betreuen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w1_auch">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>auch</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w0_Damit"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w2_die"/>
+    <j.0:hasLemma>auch</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KOUS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithSentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w14_F%C3%BCnfj%C3%A4hrige">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Fünfjährige</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w13_bis"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w15_tags%C3%BCber"/>
+    <j.0:hasLemma>fünfjährige</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w4_kleiner">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>kleiner</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w3_Eltern"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w5_Kinder"/>
+    <j.0:hasLemma>klein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w15_tags%C3%BCber">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>tagsüber</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w14_F%C3%BCnfj%C3%A4hrige"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w16_betreut"/>
+    <j.0:hasLemma>tagsüber</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w8_verleben">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>verleben</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w7_Urlaubstage"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w9_k%C3%B6nnen"/>
+    <j.0:hasLemma>verleben</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVINF"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w11_werden">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>werden</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w10_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w12_Drei-"/>
+    <j.0:hasLemma>werden</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VMFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteModalVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w9_k%C3%B6nnen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>können</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w8_verleben"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w10_%2C"/>
+    <j.0:hasLemma>können</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VMFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w2_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w1_auch"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w3_Eltern"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w13_bis">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>bis</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w12_Drei-"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w14_F%C3%BCnfj%C3%A4hrige"/>
+    <j.0:hasLemma>bis</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w17_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w16_betreut"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w7_Urlaubstage">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Urlaubstage</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w6_unbeschwerte"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w8_verleben"/>
+    <j.0:hasLemma>Urlaubstag</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w6_unbeschwerte">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>unbeschwerte</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s31994w5_Kinder"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w7_Urlaubstage"/>
+    <j.0:hasLemma>unbeschwert</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s31994w0_Damit">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Damit</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s31994"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s31994w1_auch"/>
+    <j.0:hasLemma>damit</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KOUS"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,428 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://nlp2rdf.org/ontology/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJA">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#AttributiveAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/CARD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CardinalNumber"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w20_um">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>um</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w19_Monaten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w21_vier"/>
+    <j.0:hasLemma>um</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPR">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Preposition"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/comma_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Comma"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Token">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w31_Prozent">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Prozent</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w30_f%C3%BCnf"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w32_gefallen"/>
+    <j.0:hasLemma>Prozent</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w18_neun">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>neun</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w17_ersten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w19_Monaten"/>
+    <j.0:hasLemma>neun</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w28_um">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>um</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w27_Quartal"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w29_gut"/>
+    <j.0:hasLemma>um</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SentenceFinalPunctuation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w29_gut">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gut</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w28_um"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w30_f%C3%BCnf"/>
+    <j.0:hasLemma>gut</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w0_Eine">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Eine</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w1_kurzfristige"/>
+    <j.0:hasLemma>ein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w26_dritten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>dritten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w25_im"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w27_Quartal"/>
+    <j.0:hasLemma>dritter</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVPP">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PastParticiple"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w33_sei">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>sei</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w32_gefallen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w34_."/>
+    <j.0:hasLemma>sein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VAFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w2_Umkehr">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Umkehr</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w1_kurzfristige"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w3_des"/>
+    <j.0:hasLemma>Umkehr</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w3_des">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>des</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w2_Umkehr"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w4_Trends"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w4_Trends">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Trends</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w3_des"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w5_schlie%C3%9Ft"/>
+    <j.0:hasLemma>Trend</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w10_da">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>da</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w9_%2C"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w11_die"/>
+    <j.0:hasLemma>da</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KOUS"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VVFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w7_Organisation">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Organisation</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w6_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w8_aus"/>
+    <j.0:hasLemma>Organisation</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w5_schlie%C3%9Ft">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>schließt</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w4_Trends"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w6_die"/>
+    <j.0:hasLemma>schließen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVFIN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w15_in">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>in</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w14_Bauleistungen"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w16_den"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w34_.">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>.</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w33_sei"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/sentencefinalpunctuation_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w27_Quartal">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Quartal</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w26_dritten"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w28_um"/>
+    <j.0:hasLemma>Quartal</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w9_%2C">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>,</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w8_aus"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w10_da"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/comma_tag"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/PTKVZ">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SeparatedVerbalParticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w25_im">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>im</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w24_allein"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w26_dritten"/>
+    <j.0:hasLemma>in</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPRART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w32_gefallen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>gefallen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w31_Prozent"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w33_sei"/>
+    <j.0:hasLemma>fallen</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/VVPP"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w12_Nachfrage">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Nachfrage</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w11_die"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w13_nach"/>
+    <j.0:hasLemma>Nachfrage</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KON">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CoordinatingConjunction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADJD">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PredicativeAdjective"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w19_Monaten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Monaten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w18_neun"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w20_um"/>
+    <j.0:hasLemma>Monat</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w24_allein">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>allein</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w23_und"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w25_im"/>
+    <j.0:hasLemma>allein</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w17_ersten">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>ersten</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w16_den"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w18_neun"/>
+    <j.0:hasLemma>erster</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/KOUS">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#SubordinatingConjunctionWithSentence"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w30_f%C3%BCnf">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>fünf</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w29_gut"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w31_Prozent"/>
+    <j.0:hasLemma>fünf</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Article"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/NN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#CommonNoun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w16_den">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>den</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w15_in"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w17_ersten"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/APPRART">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#PrepositionWithArticle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w1_kurzfristige">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>kurzfristige</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w0_Eine"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w2_Umkehr"/>
+    <j.0:hasLemma>kurzfristig</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ADJA"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940">
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w4_Trends"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w2_Umkehr"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w26_dritten"/>
+    <j.0:firstToken rdf:resource="http://nlp2rdf.org/ontology/s36940w0_Eine"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w27_Quartal"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w5_schlie%C3%9Ft"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w13_nach"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w8_aus"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w17_ersten"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w23_und"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w21_vier"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w33_sei"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w34_."/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w32_gefallen"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w18_neun"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w31_Prozent"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w28_um"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w10_da"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w15_in"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w0_Eine"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w16_den"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w19_Monaten"/>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Sentence"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w12_Nachfrage"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w20_um"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w24_allein"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w29_gut"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w30_f%C3%BCnf"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w7_Organisation"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w14_Bauleistungen"/>
+    <rdfs:label>Eine kurzfristige Umkehr des Trends schließt die Organisation aus , da die Nachfrage nach Bauleistungen in den ersten neun Monaten um vier Prozent und allein im dritten Quartal um gut fünf Prozent gefallen sei .</rdfs:label>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w22_Prozent"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w1_kurzfristige"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w25_im"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w9_%2C"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w6_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w11_die"/>
+    <j.0:hasToken rdf:resource="http://nlp2rdf.org/ontology/s36940w3_des"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w11_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w10_da"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w12_Nachfrage"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w13_nach">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>nach</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w12_Nachfrage"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w14_Bauleistungen"/>
+    <j.0:hasLemma>nach</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/APPR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w22_Prozent">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Prozent</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w21_vier"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w23_und"/>
+    <j.0:hasLemma>Prozent</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/VAFIN">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#FiniteAuxiliaryVerb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w14_Bauleistungen">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>Bauleistungen</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w13_nach"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w15_in"/>
+    <j.0:hasLemma>Bauleistung</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/NN"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w21_vier">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>vier</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w20_um"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w22_Prozent"/>
+    <j.0:hasLemma>vier</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/CARD"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w6_die">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>die</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w5_schlie%C3%9Ft"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w7_Organisation"/>
+    <j.0:hasLemma>der</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/ART"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/ADV">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://nachhalt.sfb632.uni-potsdam.de/owl/stts.owl#Adverb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/Sentence">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w23_und">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>und</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w22_Prozent"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w24_allein"/>
+    <j.0:hasLemma>und</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/KON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://nlp2rdf.org/ontology/s36940w8_aus">
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/Token"/>
+    <rdfs:label>aus</rdfs:label>
+    <j.0:belongsToSentence rdf:resource="http://nlp2rdf.org/ontology/s36940"/>
+    <j.0:previousToken rdf:resource="http://nlp2rdf.org/ontology/s36940w7_Organisation"/>
+    <j.0:nextToken rdf:resource="http://nlp2rdf.org/ontology/s36940w9_%2C"/>
+    <j.0:hasLemma>aus</j.0:hasLemma>
+    <rdf:type rdf:resource="http://nlp2rdf.org/ontology/PTKVZ"/>
+  </rdf:Description>
+</rdf:RDF>
