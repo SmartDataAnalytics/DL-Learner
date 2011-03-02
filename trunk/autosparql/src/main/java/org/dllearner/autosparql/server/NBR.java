@@ -547,7 +547,7 @@ public class NBR<N> {
 			boolean containsNoSequence = false;
 			for(List<QueryTreeChange> seq : noSequences){
 				if(genTree.getChanges().containsAll(seq)){
-					System.err.println("Skipping sequence from queue " + genTree.getChanges() + " because it contains NO sequence" + seq);
+					logger.info("Skipping sequence from queue " + genTree.getChanges() + " because it contains NO sequence" + seq);
 					containsNoSequence = true;
 					break;
 				}
