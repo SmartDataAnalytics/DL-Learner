@@ -465,7 +465,7 @@ public class NBR<N> {
 		logger.debug(getQueueLogInfo(queue));
 		
 		GeneralisedQueryTree<N> tree1;
-		QueryTree<N> tree2;
+		GeneralisedQueryTree<N> tree2;
 		GeneralisedQueryTree<N> tmp;
 		List<GeneralisedQueryTree<N>> gens;
 		List<GeneralisedQueryTree<N>> neededGeneralisations;
@@ -511,15 +511,15 @@ public class NBR<N> {
 			int index = neededGeneralisations.size()-1;
 			if(coversNegTree){
 				if(index == -1){
-					tree2 = tmp.getQueryTree();
+					tree2 = tmp;
 				}
-				tree2 = neededGeneralisations.get(index--).getQueryTree();
+				tree2 = neededGeneralisations.get(index--);
 			} else {
-				tree2 = tmp.getQueryTree();
+				tree2 = tmp;
 			}
 			
 //			QueryTree<N> newTree = getNewResource(tree2, knownResources);
-			String newResource = getNewResource2(fSparql(lgg, neededGeneralisations.get(index).getChanges()), knownResources);
+			String newResource = getNewResource2(fSparql(lgg, tree2.getChanges()), knownResources);
 			if(isTerminationCriteriaReached()){
 				throw new TimeOutException(maxExecutionTimeInSeconds);
 			}
