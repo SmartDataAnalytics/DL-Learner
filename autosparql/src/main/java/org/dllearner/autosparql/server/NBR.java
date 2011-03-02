@@ -1339,7 +1339,6 @@ public class NBR<N> {
     					uri = (String) object;
     					filters.add("?x" + child.getId() + "!=<" + uri + ">");
         				child.setUserObject((N)"?");
-        				object = "?x" + child.getId();
     				} else {
     					removed = true;
     					triples.append("OPTIONAL{").append(subject).
@@ -1349,11 +1348,13 @@ public class NBR<N> {
     				}
     				
     			}
-        		if(((String)object).startsWith("http://")){
-        				object = "<" + object + ">";
+    			object = child.getUserObject();
+    			boolean objectIsResource = !object.equals("?");
+        		if(!objectIsResource){
+        			object = "?x" + child.getId();
+        		} else if(((String)object).startsWith("http://")){
+        			object = "<" + object + ">";
         		}
-        			
-        		boolean objectIsResource = !child.getUserObject().equals("?");
         		if(!removed){
         			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		}
