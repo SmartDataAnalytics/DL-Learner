@@ -79,7 +79,10 @@ public class EvaluationWithNLQueriesScript {
 	private static final String LUCENE_INDEX_DIRECTORY = "/home/jl/hdd/other_large_files/index/";
 	private static final String WORDNET_DICTIONARY = "src/main/resources/de/simba/ner/dictionary";
 	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
-	private static final String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";//"http://live.dbpedia.org/sparql"
+//	private static final String ENDPOINT_URL = "http://lod.openlinksw.com/sparql";
+	private static final String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";
+//	private static final String ENDPOINT_URL = "http://live.dbpedia.org/sparql";
+	
 	
 	private static final int NR_OF_POS_START_EXAMPLES_COUNT = 3;
 	private static final int NR_OF_NEG_START_EXAMPLES_COUNT = 3;
@@ -320,7 +323,7 @@ public class EvaluationWithNLQueriesScript {
 		List<String> relevantWords;
 		int i = 1;
 		int learnedQueries = 0;
-		for(String question : question2Answers.keySet()){question = "Give me all soccer clubs in the Premier League.";
+		for(String question : question2Answers.keySet()){//question = "Give me all soccer clubs in the Premier League.";
 			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
@@ -448,7 +451,7 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
-					logger.info("Learned successful.");
+					logger.info("Learning successful.");
 					logger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
 					miniLogger.info("Learning successful.");
 					miniLogger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
