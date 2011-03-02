@@ -70,6 +70,9 @@ private Set<String> questionWords;
 	}
 	
 	private boolean areSimiliar(String s1, String s2){//cnt++;System.out.println(cnt);
+		if(s1.toLowerCase().contains(s2.toLowerCase()) || s2.toLowerCase().contains(s1.toLowerCase())){
+			return true;
+		}
 		float qSim = qGramMetric.getSimilarity(s1, s2);
 		float lSim = levensteinMetric.getSimilarity(s1, s2);
 //		float jSim = jaroWinklerMetric.getSimilarity(s1, s2);

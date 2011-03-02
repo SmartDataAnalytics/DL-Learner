@@ -79,13 +79,14 @@ public class EvaluationWithNLQueriesScript {
 	private static final String LUCENE_INDEX_DIRECTORY = "/home/jl/hdd/other_large_files/index/";
 	private static final String WORDNET_DICTIONARY = "src/main/resources/de/simba/ner/dictionary";
 	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
+	private static final String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";//"http://live.dbpedia.org/sparql"
 	
 	private static final int NR_OF_POS_START_EXAMPLES_COUNT = 3;
 	private static final int NR_OF_NEG_START_EXAMPLES_COUNT = 3;
 	
 	private static final int TOP_K = 20;
 	
-	private static final double SIMILARITY_THRESHOLD = 0.4;
+	private static final double SIMILARITY_THRESHOLD = 0.5;
 	
 	
 	private Map<String, String> question2query = new Hashtable<String, String>();
@@ -127,7 +128,7 @@ public class EvaluationWithNLQueriesScript {
 			prefixes.put("yago","http://dbpedia.org/class/yago/");
 			prefixes.put("cyc","http://sw.opencyc.org/concept/");
 			prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
-			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL("http://live.dbpedia.org/sparql"), //new URL("http://lod.openlinksw.com/sparql"), 
+			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL(ENDPOINT_URL), //new URL("http://lod.openlinksw.com/sparql"), 
 							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
 //			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
@@ -284,7 +285,15 @@ public class EvaluationWithNLQueriesScript {
 		logger.info("Sending query...");
 		long startTime = System.currentTimeMillis();
 		Set<String> resources = new HashSet<String>();
-		ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(ENDPOINT, query));
+		SparqlEndpoint e = null;
+		try {
+			e = new SparqlEndpoint(new URL(ENDPOINT_URL),
+			Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList());
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(e, query));
 		while(rs.hasNext()){
 			resources.add(rs.nextSolution().get(varName).asResource().getURI());
 		}
@@ -299,7 +308,7 @@ public class EvaluationWithNLQueriesScript {
 		query = "SELECT DISTINCT " + query.substring(7);
 		Set<String> resources = getResourcesBySPARQLQuery(query, "x0");
 		boolean isSolution = resources.equals(answers);
-		logger.info(isSolution);
+		logger.info("LGG is already solution:" + isSolution);
 		return isSolution;
 	}
 	
@@ -311,7 +320,7 @@ public class EvaluationWithNLQueriesScript {
 		List<String> relevantWords;
 		int i = 1;
 		int learnedQueries = 0;
-		for(String question : question2Answers.keySet()){question = "Give me all soccer clubs in the Premier League.";
+		for(String question : question2Answers.keySet()){//question = "Give me all soccer clubs in the Premier League.";
 			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
@@ -394,18 +403,18 @@ public class EvaluationWithNLQueriesScript {
 				
 				//start learning
 				miniLogger.info("AutoSPARQL: Started learning...");
-				if(LGGIsSolution(posExamples, answers)){
-					logger.info("Learned successful.");
-					miniLogger.info("Learning successful.");
-					logger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
-					miniLogger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
-					learnedQueries++;
-					continue;
-				}
+				boolean hasToCheckIfLGGIsSolution = true;
 				Set<String> learnedResources;
 				String oldLearnedQuery = "";
 				boolean learningFailed = false;
+				
 				do {
+					if(hasToCheckIfLGGIsSolution){
+						if(LGGIsSolution(posExamples, answers)){
+							hasToCheckIfLGGIsSolution = false;
+							break;
+						}
+					}
 					// compute new similiar example
 					logger.info("Computing similar example...");
 					long startTime = System.currentTimeMillis();
@@ -431,6 +440,7 @@ public class EvaluationWithNLQueriesScript {
 					if (answers.contains(example)) {
 						posExamples.add(example);
 						miniLogger.info("User: YES");
+						hasToCheckIfLGGIsSolution = true;
 					} else {
 						negExamples.add(example);
 						miniLogger.info("User: NO");
@@ -438,10 +448,13 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
-					logger.info("Learned successfully query for question \""+ question + "\".");
+					logger.info("Learned successful.");
+					logger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
 					miniLogger.info("Learning successful.");
+					miniLogger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
 					learnedQueries++;
 				}else {
+					logger.info("Could not learn query.");
 					miniLogger.info("AutoSPARQL: Could not learn query.");
 				}
 			} catch (TimeOutException e) {
@@ -450,7 +463,7 @@ public class EvaluationWithNLQueriesScript {
 				e.printStackTrace();
 			} catch (Exception e) {
 				logger.error("Something went wrong. Trying next question...", e);
-				miniLogger.info("AutoSPARQL: Could not learn query.");
+				miniLogger.info("AutoSPARQL: Could not learn query.", e);
 			}
 		}
 		logger.info("Learned " + learnedQueries + "/" + question2query.keySet().size() + " queries.");
@@ -494,6 +507,7 @@ public class EvaluationWithNLQueriesScript {
 		Logger.getRootLogger().removeAllAppenders();
 		Layout layout = new PatternLayout("%m%n");
 		ConsoleAppender appender = new ConsoleAppender(layout);
+		appender.setThreshold(Level.DEBUG);
 		Logger.getRootLogger().addAppender(appender);
 		FileAppender fileAppender = new FileAppender(
 				layout, "log/evaluation.log", false);

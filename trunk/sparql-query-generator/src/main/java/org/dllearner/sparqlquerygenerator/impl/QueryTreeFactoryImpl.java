@@ -32,6 +32,7 @@ import org.dllearner.sparqlquerygenerator.QueryTreeFactory;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
 import org.dllearner.sparqlquerygenerator.util.Filter;
 import org.dllearner.sparqlquerygenerator.util.Filters;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 import org.dllearner.sparqlquerygenerator.util.ZeroFilter;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -92,6 +93,15 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 			return createTreeOptimized(model.getResource(example), model);
 		}
 	}
+	
+	@Override
+	public QueryTreeImpl<String> getQueryTree(String example, Model model, int maxEdges) {
+		if(keepFilter == null){
+			return createTree(model.getResource(example), model);
+		} else {
+			return createTreeOptimized(model.getResource(example), model, maxEdges);
+		}
+	}
 
 	@Override
 	public QueryTreeImpl<String> getQueryTree(Resource example, Model model) {
@@ -101,6 +111,46 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	@Override
 	public QueryTreeImpl<String> getQueryTree(String example) {
 		return new QueryTreeImpl<String>(example);
+	}
+	
+	private QueryTreeImpl<String> createTreeOptimized(Resource s, Model model, int maxEdges){
+		nodeId = 0;
+		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
+		
+		fillMap(s, model, resource2Statements);	
+	
+		QuestionBasedStatementFilter filter = (QuestionBasedStatementFilter)keepFilter;
+		Set<Statement> statements;
+		int diff = valueCount(resource2Statements) - maxEdges;
+		main:while(diff > 0){
+			double oldThreshold = filter.getThreshold();
+			statements = filter.getStatementsBelowThreshold(oldThreshold+0.1);
+			for(SortedSet<Statement> set : resource2Statements.values()){
+				for(Statement st : statements){
+					if(set.remove(st)){
+						diff--;
+						if(diff == 0){
+							break main;
+						}
+					}
+				}
+			}
+		}
+		
+		
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
+		fillTree(tree, resource2Statements);
+				
+		tree.setUserObject("?");
+		return tree;
+	}
+	
+	private int valueCount(SortedMap<String, SortedSet<Statement>> map){
+		int cnt = 0;
+		for(SortedSet<Statement> statements : map.values()){
+			cnt += statements.size();
+		}
+		return cnt;
 	}
 	
 	private QueryTreeImpl<String> createTreeOptimized(Resource s, Model model){

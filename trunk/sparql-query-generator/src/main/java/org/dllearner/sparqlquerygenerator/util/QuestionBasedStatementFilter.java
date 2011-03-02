@@ -1,5 +1,9 @@
 package org.dllearner.sparqlquerygenerator.util;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
@@ -17,8 +21,11 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	private AbstractStringMetric qGramMetric;
 	private AbstractStringMetric levensteinMetric;
 	private AbstractStringMetric jaroWinklerMetric;
+	private I_Sub substringMetric;
 	
 	private double threshold = 0.4;
+	
+	private Map<Statement, Double> statement2Similarity = new HashMap<Statement, Double>();
 	
 	int cnt = 0;
 	
@@ -27,25 +34,42 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 		qGramMetric = new QGramsDistance();
 		levensteinMetric = new Levenshtein();
 		jaroWinklerMetric = new JaroWinkler();
+		substringMetric = new I_Sub();
 		
 	}
 
-	private boolean isSimiliar2QuestionWord(String s){
+	private boolean isSimiliar2QuestionWord(String s, Statement st){
 		for(String word : questionWords){
-			if(areSimiliar(word, s)){
+			if(areSimiliar(word, s, st)){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean areSimiliar(String s1, String s2){//cnt++;System.out.println(cnt);
+	private boolean areSimiliar(String s1, String s2, Statement st){//cnt++;System.out.println(cnt);
 		float qSim = qGramMetric.getSimilarity(s1, s2);
 		float lSim = levensteinMetric.getSimilarity(s1, s2);
 //		float jSim = jaroWinklerMetric.getSimilarity(s1, s2);
+		double subSim = substringMetric.score(s1, s2, true);
 		float sim = Math.max(qSim, lSim);
+		sim = Math.max(sim, Double.valueOf(subSim).floatValue());
+		
 //		sim = Math.max(sim, jSim);
-		return sim >= threshold;
+		if(sim >= threshold){
+			statement2Similarity.put(st, Double.valueOf(sim));
+			return true;
+		}
+		return false;
+	}
+	
+	private String getFragment(String uri){
+		int i = uri.lastIndexOf("#");
+		if(i > 0){
+			return uri.substring(i+1);
+		} else {
+			return uri.substring(uri.lastIndexOf("/")+1);
+		}
 	}
 
 	@Override
@@ -54,11 +78,11 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 		String object = null;
 		if(s.getObject().isURIResource()){
 			object = s.getObject().asResource().getURI();
-			object = object.substring(object.lastIndexOf("/")+1);
+			object = getFragment(s.getObject().asResource().getURI());
 		} else if(s.getObject().isLiteral()){
 			object = s.getObject().asLiteral().getLexicalForm();
 		}
-		if(isSimiliar2QuestionWord(object) || isSimiliar2QuestionWord(predicate)){
+		if(isSimiliar2QuestionWord(object, s) || isSimiliar2QuestionWord(predicate, s)){
 			return true;
 		}
 		
@@ -67,6 +91,20 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	
 	public void setThreshold(double threshold){
 		this.threshold = threshold;
+	}
+	
+	public double getThreshold(){
+		return threshold;
+	}
+	
+	public Set<Statement> getStatementsBelowThreshold(double threshold){
+		Set<Statement> statements = new HashSet<Statement>();
+		for(Entry<Statement, Double> entry : statement2Similarity.entrySet()){
+			if(entry.getValue().doubleValue() < threshold){
+				statements.add(entry.getKey());
+			}
+		}
+		return statements;
 	}
 
 }
