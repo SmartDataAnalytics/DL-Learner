@@ -24,7 +24,7 @@ public class QuestionProcessor {
 		      "for", "he",  "if", "in", "into", "is", "it", "me",
 		      "no", "not", "of", "on", "or", "she", "such",
 		      "that", "the", "their", "then", "there", "these",
-		      "they", "this", "to", "was", "will", "with"
+		      "they", "this", "to", "was", "were", "which", "will", "with"
 		    );
 	
 	public QuestionProcessor(){
@@ -47,7 +47,9 @@ public class QuestionProcessor {
 		logger.info("After removed stop words: " + words);
 		//stem words
 		words = getStemmedWords(words);
+		removeStopWords(words);
 		logger.info("After stemming: " + words);
+		
 		
 		return words;
 	}
