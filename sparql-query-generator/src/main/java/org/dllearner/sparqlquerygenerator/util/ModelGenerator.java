@@ -151,26 +151,26 @@ public class ModelGenerator {
 	
 	
 	private Model getModelChunked(String resource){
-		logger.debug("Resource: " + resource);
+//		logger.debug("Resource: " + resource);
 		String query = makeConstructQueryOptional(resource, CHUNK_SIZE, 0, predicateFilters);
-		logger.debug("Sending SPARQL query ...");
-		logger.debug("Query:\n" + query.toString());
+//		logger.debug("Sending SPARQL query ...");
+//		logger.debug("Query:\n" + query.toString());
 		queryMonitor.start();
 		Model all = ModelFactory.createDefaultModel();
 		try {
 			Model model = cache.executeConstructQuery(endpoint, query);
-			logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
+//			logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
 			all.add(model);
 			queryMonitor.stop();
 			int i = 1;
 			while(model.size() != 0){
 				query = makeConstructQueryOptional(resource, CHUNK_SIZE, i * CHUNK_SIZE, predicateFilters);
-				logger.debug("Sending SPARQL query ...");
-				logger.debug("Query:\n" + query.toString());
+//				logger.debug("Sending SPARQL query ...");
+//				logger.debug("Query:\n" + query.toString());
 				queryMonitor.start();
 				model = cache.executeConstructQuery(endpoint, query);
 				queryMonitor.stop();
-				logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
+//				logger.debug("Got " + model.size() + " new triple in " + queryMonitor.getLastValue() + "ms.");
 				all.add(model);
 				i++;
 			}
