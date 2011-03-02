@@ -1329,38 +1329,33 @@ public class NBR<N> {
     		for(QueryTree<N> child : tree.getChildren()){
         		predicate = tree.getEdge(child);
         		object = child.getUserObject();
-        		boolean objectIsResource = !object.equals("?");
+        		
         		boolean addFilter = false;
         		boolean removed = false;
         		String uri = null;
-        		if(!objectIsResource){
-        			object = "?x" + child.getId();
-        		} else if(((String)object).startsWith("http://")){
-        			QueryTreeChange c = getChange(changes, child.getId());
-        			if(c != null){
-        				if(c.getType() == ChangeType.REPLACE_LABEL){
-        					uri = (String) object;
-            				child.setUserObject((N)"?");
-            				object = "?x" + child.getId();
-            				addFilter = true;
-        				} else {
-        					removed = true;
-        					triples.append("OPTIONAL{").append(subject).
-        					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
-        					filters.add("!BOUND(?x" + child.getId() + ")");
-        					child.getParent().removeChild((QueryTreeImpl<N>) child);
-        				}
-        				
-        			} else {
+        		QueryTreeChange c = getChange(changes, child.getId());
+    			if(c != null){
+    				if(c.getType() == ChangeType.REPLACE_LABEL){
+    					uri = (String) object;
+    					filters.add("?x" + child.getId() + "!=<" + uri + ">");
+        				child.setUserObject((N)"?");
+        				object = "?x" + child.getId();
+    				} else {
+    					removed = true;
+    					triples.append("OPTIONAL{").append(subject).
+    					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
+    					filters.add("!BOUND(?x" + child.getId() + ")");
+    					child.getParent().removeChild((QueryTreeImpl<N>) child);
+    				}
+    				
+    			}
+        		if(((String)object).startsWith("http://")){
         				object = "<" + object + ">";
-        			}
-        			
         		}
+        			
+        		boolean objectIsResource = !child.getUserObject().equals("?");
         		if(!removed){
         			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
-        		}
-        		if(addFilter){
-        			filters.add("?x" + child.getId() + "!=<" + uri + ">");
         		}
         		if(!objectIsResource){
         			buildSPARQLQueryString(child, changes, triples, filters);
@@ -1368,6 +1363,59 @@ public class NBR<N> {
         	}
     	}
     }
+    
+//    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> filters){
+//    	Object subject = null;
+//    	if(tree.getUserObject().equals("?")){
+//    		subject = "?x" + tree.getId();
+//    	} else {
+//    		subject = "<" + tree.getUserObject() + ">";
+//    	}
+//    	Object predicate;
+//    	Object object;
+//    	if(!tree.isLeaf()){
+//    		for(QueryTree<N> child : tree.getChildren()){
+//        		predicate = tree.getEdge(child);
+//        		object = child.getUserObject();
+//        		boolean objectIsResource = !object.equals("?");
+//        		boolean addFilter = false;
+//        		boolean removed = false;
+//        		String uri = null;
+//        		if(!objectIsResource){
+//        			object = "?x" + child.getId();
+//        		} else if(((String)object).startsWith("http://")){
+//        			QueryTreeChange c = getChange(changes, child.getId());
+//        			if(c != null){
+//        				if(c.getType() == ChangeType.REPLACE_LABEL){
+//        					uri = (String) object;
+//            				child.setUserObject((N)"?");
+//            				object = "?x" + child.getId();
+//            				addFilter = true;
+//        				} else {
+//        					removed = true;
+//        					triples.append("OPTIONAL{").append(subject).
+//        					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
+//        					filters.add("!BOUND(?x" + child.getId() + ")");
+//        					child.getParent().removeChild((QueryTreeImpl<N>) child);
+//        				}
+//        				
+//        			} else {
+//        				object = "<" + object + ">";
+//        			}
+//        			
+//        		}
+//        		if(!removed){
+//        			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
+//        		}
+//        		if(addFilter){
+//        			filters.add("?x" + child.getId() + "!=<" + uri + ">");
+//        		}
+//        		if(!objectIsResource){
+//        			buildSPARQLQueryString(child, changes, triples, filters);
+//        		}
+//        	}
+//    	}
+//    }
     
     private QueryTreeChange getChange(List<QueryTreeChange> changes, int nodeId){
     	QueryTreeChange change = null;
