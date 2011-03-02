@@ -1,9 +1,15 @@
 package org.dllearner.sparqlquerygenerator.util;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+
+import com.hp.hpl.jena.rdf.model.Statement;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
@@ -16,15 +22,17 @@ private Set<String> questionWords;
 	
 	private AbstractStringMetric qGramMetric;
 	private AbstractStringMetric levensteinMetric;
-	private AbstractStringMetric jaroWinklerMetric;
+	private I_Sub substringMetric;
 	
 	private double threshold = 0.4;
+	private int topK = 3;
+	private double topKSumThreshold = 0.8;
 	
 	public QuestionBasedQueryTreeFilter(Set<String> questionWords){
 		this.questionWords = questionWords;
 		qGramMetric = new QGramsDistance();
 		levensteinMetric = new Levenshtein();
-		jaroWinklerMetric = new JaroWinkler();
+		substringMetric = new I_Sub();
 	}
 	
 	public QueryTree<String> getFilteredQueryTree(QueryTree<String> tree){
@@ -56,8 +64,46 @@ private Set<String> questionWords;
 			if(areSimiliar(word, s)){
 				return true;
 			}
+		} 
+		return isSimlarWithSubstringMetrik(s);
+	}
+	
+	private boolean areSimiliar(String s1, String s2){
+		return (qGramMetric.getSimilarity(s1, s2) >= threshold) || 
+		(levensteinMetric.getSimilarity(s1, s2) >= threshold);
+	}
+	
+	private boolean isSimlarWithSubstringMetrik(String s){
+		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		for(String word : questionWords){
+			double v = substringMetric.score(word, s, true);
+			if(v >= threshold){
+				return true;
+			} else {
+				values.add(Double.valueOf(v));
+			}
+		} 
+		double sum = 0;
+		for(Double v : getTopK(values)){
+			if(v >= 0){
+				sum += v;
+			}
+			
 		}
-		return false;
+		return sum >= topKSumThreshold;
+	}
+	
+	private Set<Double> getTopK(SortedSet<Double> values){
+		Set<Double> top = new HashSet<Double>();
+		int k = 0;
+		for(Double v : values){
+			if(k == topK){
+				break;
+			}
+			top.add(v);
+			k++;
+		}
+		return top;
 	}
 	
 	private String getFragment(String uri){
@@ -69,16 +115,5 @@ private Set<String> questionWords;
 		}
 	}
 	
-	private boolean areSimiliar(String s1, String s2){//cnt++;System.out.println(cnt);
-		if(s1.toLowerCase().contains(s2.toLowerCase()) || s2.toLowerCase().contains(s1.toLowerCase())){
-			return true;
-		}
-		float qSim = qGramMetric.getSimilarity(s1, s2);
-		float lSim = levensteinMetric.getSimilarity(s1, s2);
-//		float jSim = jaroWinklerMetric.getSimilarity(s1, s2);
-		float sim = Math.max(qSim, lSim);
-//		sim = Math.max(sim, jSim);
-		return sim >= threshold;
-	}
 
 }
