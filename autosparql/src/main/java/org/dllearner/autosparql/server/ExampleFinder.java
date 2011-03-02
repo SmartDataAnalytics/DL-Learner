@@ -99,6 +99,8 @@ public class ExampleFinder {
 				queryTree.addChild(new QueryTreeImpl<String>("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>"), "http://dbpedia.org/ontology/seasonNumber");
 			} else if(id == 14){
 				queryTree.addChild(new QueryTreeImpl<String>("\"Electronic Arts\"@en"), "http://dbpedia.org/property/publisher");
+			} else if(id == 15){
+				queryTree.addChild(new QueryTreeImpl<String>("\"Dana\"@en"), "http://xmlns.com/foaf/0.1/givenName");
 			}
 			System.out.println("Querytree for " + resource + ":\n" + TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 			posExampleTrees.add(queryTree);
