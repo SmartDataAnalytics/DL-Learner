@@ -472,7 +472,8 @@ public class NBR<N> {
 		while(!queue.isEmpty()){
 			neededGeneralisations = new ArrayList<GeneralisedQueryTree<N>>();
 			logger.debug("Selecting first tree from queue");
-			tree1 = queue.remove(0);
+//			tree1 = queue.remove(0);
+			tree1 = getGeneralisedQueryTreeNotContainingNoSequence(queue);
 			tmp = tree1;
 			
 			if(logger.isDebugEnabled()){
@@ -493,7 +494,8 @@ public class NBR<N> {
 					}
 					break;
 				}
-				tmp = gens.remove(0);
+//				tmp = gens.remove(0);
+				tmp = getGeneralisedQueryTreeNotContainingNoSequence(gens);
 				neededGeneralisations.add(tmp);
 				if(logger.isDebugEnabled()){
 					logger.debug("Changes: " + tmp.getChanges());
@@ -508,6 +510,9 @@ public class NBR<N> {
 		
 			int index = neededGeneralisations.size()-1;
 			if(coversNegTree){
+				if(index == -1){
+					tree2 = tmp.getQueryTree();
+				}
 				tree2 = neededGeneralisations.get(index--).getQueryTree();
 			} else {
 				tree2 = tmp.getQueryTree();
@@ -533,6 +538,25 @@ public class NBR<N> {
 			}
 		}
 		return null;
+	}
+	
+	private GeneralisedQueryTree<N> getGeneralisedQueryTreeNotContainingNoSequence(List<GeneralisedQueryTree<N>> queue){
+		GeneralisedQueryTree<N> genTree;
+		for(int i = 0; i < queue.size(); i++){
+			genTree = queue.get(i);
+			boolean containsNoSequence = false;
+			for(List<QueryTreeChange> seq : noSequences){
+				if(genTree.getChanges().containsAll(seq)){
+					System.err.println("Skipping sequence from queue " + genTree.getChanges() + " because it contains NO sequence" + seq);
+					containsNoSequence = true;
+					break;
+				}
+			}
+			if(!containsNoSequence){
+				return queue.remove(i);
+			}
+		}
+		return queue.remove(0);
 	}
 	
 	private boolean userAnsweredWithNo(){
