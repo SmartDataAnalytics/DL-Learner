@@ -308,12 +308,10 @@ public class NBR<N> {
 	
 	
 	public String getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
-		return computeQuestionOptimized(lgg, negTrees, knownResources);
-	}
-	
-	public String getQuestionBetterPerformance(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
+//		return computeQuestionOptimized(lgg, negTrees, knownResources);
 		return computeQuestionBetterPerformance(lgg, negTrees, knownResources);
 	}
+	
 	
 	private Example computeQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		lgg = getFilteredTree(lgg);
@@ -421,7 +419,7 @@ public class NBR<N> {
 			if(isTerminationCriteriaReached()){
 				throw new TimeOutException(maxExecutionTimeInSeconds);
 			}
-			fSparql(postLGG, tmp.getChanges());
+			
 			logger.debug("New resource before binary search: " + newResource);
 			if(!(newResource == null)){
 				logger.debug("binary search for most specific query returning a resource - start");
@@ -516,7 +514,7 @@ public class NBR<N> {
 			}
 			
 //			QueryTree<N> newTree = getNewResource(tree2, knownResources);
-			String newResource = getNewResource(tree2, knownResources);
+			String newResource = getNewResource2(fSparql(lgg, neededGeneralisations.get(index).getChanges()), knownResources);
 			if(isTerminationCriteriaReached()){
 				throw new TimeOutException(maxExecutionTimeInSeconds);
 			}
@@ -556,7 +554,7 @@ public class NBR<N> {
 		return resources;
 	}
 	
-	private QueryTree<N> getQueryTree(String resource){System.err.println(resource);
+	private QueryTree<N> getQueryTree(String resource){
 		Model model = modelCache.getModel(resource);
 		QueryTree<String> tree = treeCache.getQueryTree(resource, model);
 		return getFilteredTree((QueryTree<N>) tree);
@@ -600,8 +598,9 @@ public class NBR<N> {
 		
 //		QueryTree<N> t = getNewResource(trees.get(testIndex), knownResources);
 		String t = null;
+		GeneralisedQueryTree<N> genTree = trees.get(testIndex);
 		try {
-			t = getNewResource(trees.get(testIndex).getQueryTree(), knownResources);
+			t = getNewResource2(fSparql(lgg, genTree.getChanges()), knownResources);
 		} catch (HTTPException e) {
 			throw new TimeOutException(maxExecutionTimeInSeconds);
 		}
@@ -940,6 +939,48 @@ public class NBR<N> {
 		return resources;
 	}
 	
+	private SortedSet<String> getResources(String query, int limit, int offset){
+		SortedSet<String> resources = new TreeSet<String>();
+		this.query = query;
+		if(logger.isDebugEnabled()){
+			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset));
+		}
+		
+		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, limit, offset));
+		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
+		String uri;
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			uri = qs.getResource("x0").getURI();
+			resources.add(uri);
+		}
+		
+		return resources;
+	}
+	
+	private String getNewResource2(String query, List<String> knownResources){
+		int i = 0;
+		int chunkSize = 40;
+		SortedSet<String> foundResources;
+		QueryTree<N> newTree;
+		int foundSize;
+		do{
+			foundResources = getResources(query, chunkSize, chunkSize * i);
+			foundSize = foundResources.size();
+			foundResources.removeAll(knownResources);
+			for(String resource : foundResources){
+				newTree = getQueryTree(resource);
+				if(!newTree.isSubsumedBy(lgg)){
+					return resource;
+				}
+			}
+			i++;
+		} while(foundSize == chunkSize);
+		logger.debug("Found no resource which would modify the LGG");
+		return null;
+	}
+	
 	private String getNewResource(QueryTree<N> tree, List<String> knownResources){
 		int i = 0;
 		int chunkSize = 40;
@@ -952,7 +993,6 @@ public class NBR<N> {
 			foundResources.removeAll(knownResources);
 			for(String resource : foundResources){
 				newTree = getQueryTree(resource);
-				System.out.println(TreeHelper.getAbbreviatedTreeRepresentation(newTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 				if(!newTree.isSubsumedBy(lgg)){
 					return resource;
 				}
@@ -1216,8 +1256,6 @@ public class NBR<N> {
     		query.append(")\n");
     	}
     	query.append("}");
-    	query.append(" LIMIT ").append(limit);
-    	System.err.println("fSparql: \n" + query.toString());
     	return query.toString();
     	
     }

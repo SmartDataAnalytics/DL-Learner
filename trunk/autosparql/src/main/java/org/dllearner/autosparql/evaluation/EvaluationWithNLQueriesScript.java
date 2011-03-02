@@ -86,7 +86,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	private static final int TOP_K = 20;
 	
-	private static final double SIMILARITY_THRESHOLD = 0.5;
+	private static final double SIMILARITY_THRESHOLD = 0.6;
 	
 	
 	private Map<String, String> question2query = new Hashtable<String, String>();
@@ -320,7 +320,7 @@ public class EvaluationWithNLQueriesScript {
 		List<String> relevantWords;
 		int i = 1;
 		int learnedQueries = 0;
-		for(String question : question2Answers.keySet()){//question = "Give me all soccer clubs in the Premier League.";
+		for(String question : question2Answers.keySet()){question = "Give me all soccer clubs in the Premier League.";
 			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
@@ -411,9 +411,9 @@ public class EvaluationWithNLQueriesScript {
 				do {
 					if(hasToCheckIfLGGIsSolution){
 						if(LGGIsSolution(posExamples, answers)){
-							hasToCheckIfLGGIsSolution = false;
 							break;
 						}
+						hasToCheckIfLGGIsSolution = false;
 					}
 					// compute new similiar example
 					logger.info("Computing similar example...");
