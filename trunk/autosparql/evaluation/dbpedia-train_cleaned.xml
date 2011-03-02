@@ -2083,14 +2083,10 @@ Which birds are there in the United States?
 PREFIX yago: &lt;http://dbpedia.org/class/yago/&gt;
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
-SELECT ?uri ?string
+SELECT ?uri
 WHERE 
 {
 	?uri rdf:type yago:BirdsOfTheUnitedStates.
-	?uri rdfs:label ?label.
-        FILTER (lang(?label) = "en") .
-        OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
 }
 </query>
 <answers>
