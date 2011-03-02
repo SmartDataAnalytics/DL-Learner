@@ -395,7 +395,7 @@ public class NBR<N> {
 					break;
 				}
 				tmp = gens.remove(0);
-				neededGeneralisations.add(tmp.getQueryTree());
+				
 				if(logger.isDebugEnabled()){
 					logger.debug("Changes: " + tmp.getChanges());
 				}
@@ -404,6 +404,8 @@ public class NBR<N> {
 				coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
 				if(coversNegTree) {
 					logger.debug("covers negative tree");
+				} else {
+					neededGeneralisations.add(tmp.getQueryTree());
 				}
 			}
 		
@@ -496,7 +498,7 @@ public class NBR<N> {
 				}
 //				tmp = gens.remove(0);
 				tmp = getGeneralisedQueryTreeNotContainingNoSequence(gens);
-				neededGeneralisations.add(tmp);
+				
 				if(logger.isDebugEnabled()){
 					logger.debug("Changes: " + tmp.getChanges());
 				}
@@ -504,7 +506,9 @@ public class NBR<N> {
 				logger.debug(getQueueLogInfo(queue));
 				coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
 				if(coversNegTree) {
-					logger.debug("covers negative tree");
+					logger.debug("covers negative tree by changes " + tmp.getChanges());
+				} else {
+					neededGeneralisations.add(tmp);
 				}
 			}
 		
@@ -1263,6 +1267,7 @@ public class NBR<N> {
     }
     
     private String fSparql(QueryTree<N> tree, List<QueryTreeChange> changes){
+    	logger.info("fSparql uses:" + changes);
     	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();

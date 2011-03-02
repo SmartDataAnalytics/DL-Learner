@@ -21,7 +21,7 @@ public class QuestionProcessor {
 	private MaxentTagger tagger;
 	private final List<String> stopWords = Arrays.asList(
 		      "a", "all", "an", "and", "are", "as", "at", "be", "but", "by",
-		      "for", "he",  "if", "in", "into", "is", "it", "me",
+		      "for", "has", "have", "he",  "if", "in", "into", "is", "it", "me",
 		      "no", "not", "of", "on", "or", "she", "such",
 		      "that", "the", "their", "then", "there", "these",
 		      "they", "this", "to", "was", "were", "which", "will", "with"
