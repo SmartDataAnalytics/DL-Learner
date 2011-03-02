@@ -44,7 +44,7 @@ public class NBR<N> {
 	
 	private volatile boolean stop = false;
 	private boolean isRunning;
-	private int maxExecutionTimeInSeconds = 1000;
+	private int maxExecutionTimeInSeconds = 10000;
 	private long startTime;
 	
 	private ExtractionDBCache selectCache;
