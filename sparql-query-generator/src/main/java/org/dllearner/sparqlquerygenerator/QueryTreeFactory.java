@@ -36,6 +36,8 @@ public interface QueryTreeFactory<N> {
 	
 	QueryTreeImpl<N> getQueryTree(String example, Model model);
 	
+	QueryTreeImpl<N> getQueryTree(String example, Model model, int maxEdges);
+	
 	QueryTreeImpl<N> getQueryTree(Resource example, Model model);
 	
 	QueryTreeImpl<N> getQueryTree(String example);

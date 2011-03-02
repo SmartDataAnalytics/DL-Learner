@@ -29,6 +29,7 @@ import org.dllearner.sparqlquerygenerator.cache.ModelCache;
 import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
+import org.dllearner.sparqlquerygenerator.util.Filters;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
 import com.hp.hpl.jena.query.QuerySolution;
@@ -62,7 +63,9 @@ public class NBR<N> {
 	private List<QueryTree<N>> negTrees;
 	private List<Integer> determiningNodeIds;
 	
-	
+	private List<List<QueryTreeChange>> noSequences;
+	private List<QueryTreeChange> lastSequence;
+	private int negExamplesCount = -1;
 	
 	private LastQueryTreeChangeComparator comparator = new LastQueryTreeChangeComparator();
 	
@@ -76,6 +79,8 @@ public class NBR<N> {
 		modelGen = new ModelGenerator(endpoint, new HashSet<String>(((SPARQLEndpointEx)endpoint).getPredicateFilters()), constructCache);
 		modelCache = new ModelCache(modelGen);
 		treeCache = new QueryTreeCache();
+		
+		noSequences = new ArrayList<List<QueryTreeChange>>();
 	}
 	
 	public void setStatementFilter(Filter<Statement> filter){
@@ -306,6 +311,10 @@ public class NBR<N> {
 		return computeQuestionOptimized(lgg, negTrees, knownResources);
 	}
 	
+	public String getQuestionBetterPerformance(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
+		return computeQuestionBetterPerformance(lgg, negTrees, knownResources);
+	}
+	
 	private Example computeQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources){
 		lgg = getFilteredTree(lgg);
 		logger.info(lgg.getStringRepresentation());
@@ -412,6 +421,7 @@ public class NBR<N> {
 			if(isTerminationCriteriaReached()){
 				throw new TimeOutException(maxExecutionTimeInSeconds);
 			}
+			fSparql(postLGG, tmp.getChanges());
 			logger.debug("New resource before binary search: " + newResource);
 			if(!(newResource == null)){
 				logger.debug("binary search for most specific query returning a resource - start");
@@ -426,6 +436,109 @@ public class NBR<N> {
 			}
 		}
 		return null;
+	}
+	
+	private String computeQuestionBetterPerformance(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
+		startTime = System.currentTimeMillis();
+		this.lgg = lgg;
+		this.negTrees = negTrees;
+		if(userAnsweredWithNo()){
+			noSequences.add(lastSequence);
+		}
+		negExamplesCount = negTrees.size();
+		determiningNodeIds = getDeterminingNodeIds(lgg, negTrees);
+		logger.info("Computing next question...");
+		postLGG = getFilteredTree(lgg);
+		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
+		postGen.simplifyTree(postLGG, negTrees);
+		logger.info("Post LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
+				postLGG, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		logger.info("Post LGG(Query):\n" + postLGG.toSPARQLQueryString());
+		logger.info("Post LGG(#Instances):\n" + getAllResources(postLGG.toSPARQLQueryString()).size());
+//		logger.debug("Starting generalisation with tree:\n" + postLGG.getStringRepresentation());
+		limit = knownResources.size();
+		
+		List<GeneralisedQueryTree<N>> queue = null;
+		if(generalizeSortedByNegatives){
+			queue = getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG), negTrees);
+		} else {
+			queue = getAllowedGeneralisationsSorted(new GeneralisedQueryTree<N>(postLGG));
+		}
+		logger.debug(getQueueLogInfo(queue));
+		
+		GeneralisedQueryTree<N> tree1;
+		QueryTree<N> tree2;
+		GeneralisedQueryTree<N> tmp;
+		List<GeneralisedQueryTree<N>> gens;
+		List<GeneralisedQueryTree<N>> neededGeneralisations;
+		while(!queue.isEmpty()){
+			neededGeneralisations = new ArrayList<GeneralisedQueryTree<N>>();
+			logger.debug("Selecting first tree from queue");
+			tree1 = queue.remove(0);
+			tmp = tree1;
+			
+			if(logger.isDebugEnabled()){
+				logger.debug("Changes: " + tmp.getChanges());
+			}
+			boolean coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
+			neededGeneralisations.add(tmp);
+			logger.debug("covers negative tree: " + coversNegTree);
+			while(!coversNegTree){
+				if(generalizeSortedByNegatives){
+					gens = getAllowedGeneralisationsSortedByMatrix(tmp, negTrees);
+				} else {
+					gens = getAllowedGeneralisationsSorted(tmp);
+				}
+				if(gens.isEmpty()){
+					if(logger.isDebugEnabled()){
+						logger.debug("Couldn't create a generalisation which covers a negative tree.");
+					}
+					break;
+				}
+				tmp = gens.remove(0);
+				neededGeneralisations.add(tmp);
+				if(logger.isDebugEnabled()){
+					logger.debug("Changes: " + tmp.getChanges());
+				}
+				queue.addAll(0, gens);
+				logger.debug(getQueueLogInfo(queue));
+				coversNegTree = coversNegativeTree(tmp.getQueryTree(), negTrees);
+				if(coversNegTree) {
+					logger.debug("covers negative tree");
+				}
+			}
+		
+			int index = neededGeneralisations.size()-1;
+			if(coversNegTree){
+				tree2 = neededGeneralisations.get(index--).getQueryTree();
+			} else {
+				tree2 = tmp.getQueryTree();
+			}
+			
+//			QueryTree<N> newTree = getNewResource(tree2, knownResources);
+			String newResource = getNewResource(tree2, knownResources);
+			if(isTerminationCriteriaReached()){
+				throw new TimeOutException(maxExecutionTimeInSeconds);
+			}
+			fSparql(postLGG, tmp.getChanges());
+			logger.debug("New resource before binary search: " + newResource);
+			if(!(newResource == null)){
+				logger.debug("binary search for most specific query returning a resource - start");
+				newResource = findMostSpecificResourceTree2(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
+				logger.debug("binary search for most specific query returning a resource - completed");
+				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
+				return newResource;
+			} else {
+				if(logger.isDebugEnabled()){
+					logger.debug("Query result contains no new resources. Trying next tree from queue...");
+				}
+			}
+		}
+		return null;
+	}
+	
+	private boolean userAnsweredWithNo(){
+		return (negExamplesCount != -1) && (negTrees.size() > negExamplesCount);
 	}
 	
 	private SortedSet<String> getAllResources(String query){
@@ -443,7 +556,7 @@ public class NBR<N> {
 		return resources;
 	}
 	
-	private QueryTree<N> getQueryTree(String resource){
+	private QueryTree<N> getQueryTree(String resource){System.err.println(resource);
 		Model model = modelCache.getModel(resource);
 		QueryTree<String> tree = treeCache.getQueryTree(resource, model);
 		return getFilteredTree((QueryTree<N>) tree);
@@ -477,6 +590,36 @@ public class NBR<N> {
 			return findMostSpecificResourceTree(trees,knownResources,low,testIndex);
 		}
 	}
+	
+	private String findMostSpecificResourceTree2(List<GeneralisedQueryTree<N>> trees, List<String> knownResources, int low, int high) throws TimeOutException {
+//		if(low==high) {
+//			return low;
+//		}
+		int testIndex = low + (high-low)/2;
+		// perform SPARQL query
+		
+//		QueryTree<N> t = getNewResource(trees.get(testIndex), knownResources);
+		String t = null;
+		try {
+			t = getNewResource(trees.get(testIndex).getQueryTree(), knownResources);
+		} catch (HTTPException e) {
+			throw new TimeOutException(maxExecutionTimeInSeconds);
+		}
+		if(isTerminationCriteriaReached()){
+			throw new TimeOutException(maxExecutionTimeInSeconds);
+		}
+		if(testIndex == high){
+			lastSequence = trees.get(testIndex).getChanges();
+			return t;
+		}
+		if(t == null) {
+			return findMostSpecificResourceTree2(trees,knownResources,testIndex+1,high);
+		} else {
+			return findMostSpecificResourceTree2(trees,knownResources,low,testIndex);
+		}
+	}
+	
+	
 	
 //	private Queue<QueryTree<N>> gen(QueryTree<N> tree){
 //		Queue<QueryTree<N>> gens = new LinkedList<QueryTree<N>>();
@@ -809,6 +952,7 @@ public class NBR<N> {
 			foundResources.removeAll(knownResources);
 			for(String resource : foundResources){
 				newTree = getQueryTree(resource);
+				System.out.println(TreeHelper.getAbbreviatedTreeRepresentation(newTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
 				if(!newTree.isSubsumedBy(lgg)){
 					return resource;
 				}
@@ -1052,6 +1196,124 @@ public class NBR<N> {
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
     	result = totalTimeNeeded >= maxMilliSeconds;
     	return result;
+    }
+    
+    private String fSparql(QueryTree<N> tree, List<QueryTreeChange> changes){
+    	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
+    	StringBuilder query = new StringBuilder();
+    	StringBuilder triples = new StringBuilder();
+    	List<String> filters = new ArrayList<String>();
+    	query.append("SELECT DISTINCT ?x0 WHERE{\n");
+//    	buildSPARQLQueryString(copy, triples);
+    	buildSPARQLQueryString(copy, changes, triples, filters);
+    	query.append(triples.toString());
+    	if(filters.size() > 0){
+    		query.append("FILTER(");
+    		for(int i = 0; i < filters.size()-1; i++){
+    			query.append("(").append(filters.get(i)).append(") || ");
+    		}
+    		query.append("(").append(filters.get(filters.size()-1)).append(")");
+    		query.append(")\n");
+    	}
+    	query.append("}");
+    	query.append(" LIMIT ").append(limit);
+    	System.err.println("fSparql: \n" + query.toString());
+    	return query.toString();
+    	
+    }
+    
+    private void buildSPARQLQueryString(QueryTree<N> tree, StringBuilder triples){
+    	Object subject = null;
+    	if(tree.getUserObject().equals("?")){
+    		subject = "?x" + tree.getId();
+    	} else {
+    		subject = "<" + tree.getUserObject() + ">";
+    	}
+    	Object predicate;
+    	Object object;
+    	if(!tree.isLeaf()){
+    		for(QueryTree<N> child : tree.getChildren()){
+        		predicate = tree.getEdge(child);
+        		object = child.getUserObject();
+        		boolean objectIsResource = !object.equals("?");
+        		if(!objectIsResource){
+        			object = "?x" + child.getId();
+        		} else if(((String)object).startsWith("http://")){
+        			object = "<" + object + ">";
+        		}
+        		triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
+        		if(!objectIsResource){
+        			buildSPARQLQueryString(child, triples);
+        		}
+        	}
+    	}
+    }
+    
+    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> filters){
+    	Object subject = null;
+    	if(tree.getUserObject().equals("?")){
+    		subject = "?x" + tree.getId();
+    	} else {
+    		subject = "<" + tree.getUserObject() + ">";
+    	}
+    	Object predicate;
+    	Object object;
+    	if(!tree.isLeaf()){
+    		for(QueryTree<N> child : tree.getChildren()){
+        		predicate = tree.getEdge(child);
+        		object = child.getUserObject();
+        		boolean objectIsResource = !object.equals("?");
+        		boolean addFilter = false;
+        		boolean removed = false;
+        		String uri = null;
+        		if(!objectIsResource){
+        			object = "?x" + child.getId();
+        		} else if(((String)object).startsWith("http://")){
+        			QueryTreeChange c = getChange(changes, child.getId());
+        			if(c != null){
+        				if(c.getType() == ChangeType.REPLACE_LABEL){
+        					uri = (String) object;
+            				child.setUserObject((N)"?");
+            				object = "?x" + child.getId();
+            				addFilter = true;
+        				} else {
+        					removed = true;
+        					triples.append("OPTIONAL{").append(subject).
+        					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
+        					filters.add("!BOUND(?x" + child.getId() + ")");
+        					child.getParent().removeChild((QueryTreeImpl<N>) child);
+        				}
+        				
+        			} else {
+        				object = "<" + object + ">";
+        			}
+        			
+        		}
+        		if(!removed){
+        			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
+        		}
+        		if(addFilter){
+        			filters.add("?x" + child.getId() + "!=<" + uri + ">");
+        		}
+        		if(!objectIsResource){
+        			buildSPARQLQueryString(child, changes, triples, filters);
+        		}
+        	}
+    	}
+    }
+    
+    private QueryTreeChange getChange(List<QueryTreeChange> changes, int nodeId){
+    	QueryTreeChange change = null;
+    	for(QueryTreeChange c : changes){
+    		if(c.getNodeId() == nodeId){
+    			if(c.getType() == ChangeType.REMOVE_NODE){
+    				return c;
+    			} else {
+    				change = c;
+    			}
+    		}
+    	}
+    	return change;
     }
 
 }
