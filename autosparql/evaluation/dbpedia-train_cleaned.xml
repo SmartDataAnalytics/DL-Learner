@@ -1297,8 +1297,8 @@ WHERE
 {
 	?uri rdf:type onto:Software .
         ?uri prop:publisher "Electronic Arts"@en .
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -1489,8 +1489,8 @@ WHERE
 {
 	?uri onto:series res:The_Sopranos  .
         ?uri onto:seasonNumber 1 .
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -4511,8 +4511,8 @@ WHERE
 	?uri a foaf:Person.
         ?uri rdf:type onto:Person.        
         ?uri foaf:givenName "Dana"@en.
-        OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en")    
+        OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en")    }
 }
 </query>
 <answers>
@@ -4921,8 +4921,8 @@ WHERE
 	?uri rdf:type onto:Film .
         ?uri onto:producer ?producer .
         ?producer rdfs:label "Hal Roach"@en .
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -8985,8 +8985,8 @@ WHERE
 {
 	?uri rdf:type yago:CapitalsInEurope .
         ?uri rdf:type yago:HostCitiesOfTheSummerOlympicGames .
-        OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+        OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -9091,8 +9091,8 @@ WHERE
       ?uri rdf:type onto:Person .
       ?uri onto:birthPlace ?city .
       ?city rdfs:label "Heraklion"@en
-      OPTIONAL {?uri rdfs:label ?string .}
-      FILTER (lang(?string) = "en")
+      OPTIONAL {?uri rdfs:label ?string .
+      FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -9205,8 +9205,8 @@ WHERE
 	?uri rdf:type onto:Book .
         ?uri onto:author ?author .
         ?author foaf:name "Danielle Steel"@en .
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -9541,8 +9541,8 @@ WHERE
 { 
 	?uri  a                     onto:Organisation  .
         ?uri  onto:foundationPlace  res:California    .
-        OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+        OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -10959,8 +10959,8 @@ WHERE
 {
 	?uri rdf:type onto:Film.
 	?uri prop:starring res:Tom_Cruise.
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en") 
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -11049,8 +11049,8 @@ WHERE
 	?uri a foaf:Person.
         ?uri rdf:type onto:Person.        
         ?uri foaf:givenName "Jimmy"@en   .
-        OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en")     
+        OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en")     }
 }
 </query>
 <answers>
@@ -13851,8 +13851,8 @@ WHERE
         ?company  onto:foundationPlace  res:California    .
         ?uri  onto:developer        ?company                                    .
         ?uri  a                     onto:Software .
-	OPTIONAL {?uri rdfs:label ?string .}
-        FILTER (lang(?string) = "en")
+	OPTIONAL {?uri rdfs:label ?string .
+        FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
@@ -14442,8 +14442,8 @@ SELECT ?uri ?string
 WHERE
 { 
    ?uri onto:league resource:Premier_League . 
-   OPTIONAL {?uri rdfs:label ?string .}
-   FILTER (lang(?string) = "en")
+   OPTIONAL {?uri rdfs:label ?string .
+   FILTER (lang(?string) = "en") }
 }
 </query>
 <answers>
