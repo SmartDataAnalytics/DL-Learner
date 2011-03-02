@@ -1337,7 +1337,12 @@ public class NBR<N> {
     			if(c != null){
     				if(c.getType() == ChangeType.REPLACE_LABEL){
     					uri = (String) object;
-    					filters.add("?x" + child.getId() + "!=<" + uri + ">");
+    					if(((String)child.getUserObject()).contains("^^") || ((String)child.getUserObject()).contains("@")){
+    						filters.add("?x" + child.getId() + "!=" + uri);
+    					} else {
+    						filters.add("?x" + child.getId() + "!=<" + uri + ">");
+    					}
+    					
         				child.setUserObject((N)"?");
     				} else {
     					removed = true;
