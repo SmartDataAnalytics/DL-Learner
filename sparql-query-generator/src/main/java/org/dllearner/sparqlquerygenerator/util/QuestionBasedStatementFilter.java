@@ -1,10 +1,13 @@
 package org.dllearner.sparqlquerygenerator.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
@@ -25,6 +28,9 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	
 	private double threshold = 0.4;
 	
+	private int topK = 3;
+	private double topKSumThreshold = 0.8;
+	
 	private Map<Statement, Double> statement2Similarity = new HashMap<Statement, Double>();
 	
 	int cnt = 0;
@@ -43,25 +49,48 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 			if(areSimiliar(word, s, st)){
 				return true;
 			}
-		}
-		return false;
+		} 
+		return isSimlarWithSubstringMetrik(s);
 	}
 	
-	private boolean areSimiliar(String s1, String s2, Statement st){//cnt++;System.out.println(cnt);
-		float qSim = qGramMetric.getSimilarity(s1, s2);
-		float lSim = levensteinMetric.getSimilarity(s1, s2);
-//		float jSim = jaroWinklerMetric.getSimilarity(s1, s2);
-		double subSim = substringMetric.score(s1, s2, true);
-		float sim = Math.max(qSim, lSim);
-		sim = Math.max(sim, Double.valueOf(subSim).floatValue());
-		
-//		sim = Math.max(sim, jSim);
-		if(sim >= threshold){
-			statement2Similarity.put(st, Double.valueOf(sim));
-			return true;
-		}
-		return false;
+	private boolean areSimiliar(String s1, String s2, Statement st){
+		return (qGramMetric.getSimilarity(s1, s2) >= threshold) || 
+		(levensteinMetric.getSimilarity(s1, s2) >= threshold);
 	}
+	
+	private boolean isSimlarWithSubstringMetrik(String s){
+		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		for(String word : questionWords){
+			double v = substringMetric.score(word, s, true);
+			if(v >= threshold){
+				return true;
+			} else {
+				values.add(Double.valueOf(v));
+			}
+		} 
+		double sum = 0;
+		for(Double v : getTopK(values)){
+			if(v >= 0){
+				sum += v;
+			}
+			
+		}
+		return sum >= topKSumThreshold;
+	}
+	
+	private Set<Double> getTopK(SortedSet<Double> values){
+		Set<Double> top = new HashSet<Double>();
+		int k = 0;
+		for(Double v : values){
+			if(k == topK){
+				break;
+			}
+			top.add(v);
+			k++;
+		}
+		return top;
+	}
+	
 	
 	private String getFragment(String uri){
 		int i = uri.lastIndexOf("#");
