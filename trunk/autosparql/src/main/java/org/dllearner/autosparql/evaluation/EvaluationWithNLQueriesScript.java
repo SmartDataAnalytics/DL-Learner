@@ -556,7 +556,6 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("Learning successful.");
 					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
 					learnedQueries++;
-					System.exit(0);
 				}else {
 					logger.info("Could not learn query.");
 					miniLogger.info("AutoSPARQL: Could not learn query.");
