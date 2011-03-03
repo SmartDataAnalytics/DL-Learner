@@ -37,7 +37,9 @@ public class PostLGG<N> {
 	}
 	
 	public void simplifyTree(QueryTree<N> tree, List<QueryTree<N>> negTrees){
-		
+		if(tree.getChildren().isEmpty()){
+			return;
+		}
 		if(logger.isDebugEnabled()){
 			logger.debug("Making post LGG simplification");
 			logger.debug("LGG:\n" + TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
