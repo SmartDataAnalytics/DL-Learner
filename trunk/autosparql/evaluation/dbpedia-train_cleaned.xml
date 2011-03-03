@@ -4508,8 +4508,7 @@ PREFIX onto: &lt;http://dbpedia.org/ontology/&gt;
 SELECT DISTINCT ?uri ?string
 WHERE 
 {
-	?uri a foaf:Person.
-        ?uri rdf:type onto:Person.        
+	?uri a foaf:Person.      
         ?uri foaf:givenName "Dana"@en.
         OPTIONAL {?uri rdfs:label ?string .
         FILTER (lang(?string) = "en")    }
