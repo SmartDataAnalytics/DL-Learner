@@ -175,7 +175,7 @@ public class EvaluationWithNLQueriesScript {
 					"id, question, target_query, learned, learned_query, " +
 					"start_examples_from_search, examples_needed_total, examples_needed_pos, examples_needed_neg, " + 
 					"time_total, time_lgg, time_nbr, time_queries) " +
-					"VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+					"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
