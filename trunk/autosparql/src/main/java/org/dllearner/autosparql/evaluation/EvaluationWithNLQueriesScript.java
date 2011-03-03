@@ -10,6 +10,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,6 +61,7 @@ import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
+import org.ini4j.IniFile;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,6 +69,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.query.ResultSet;
+import com.jamonapi.MonitorFactory;
 
 import de.simba.ner.WordnetQuery;
 
@@ -108,6 +116,8 @@ public class EvaluationWithNLQueriesScript {
 	
 	private QuestionProcessor qProcessor = new QuestionProcessor();
 	
+	private PreparedStatement ps;
+	
 	
 	public EvaluationWithNLQueriesScript(){
 		try {
@@ -138,7 +148,7 @@ public class EvaluationWithNLQueriesScript {
 			luceneSearch.setHitsPerPage(TOP_K);
 			wordNet = new WordnetQuery(WORDNET_DICTIONARY);
 			
-			
+			initDBConnection();
 			
 			
 		} catch (MalformedURLException e) {
@@ -146,6 +156,57 @@ public class EvaluationWithNLQueriesScript {
 		}
 		
 		readQueries();
+	}
+	
+	private void initDBConnection(){
+		try {
+			String iniFile = "settings.ini";
+			Preferences prefs = new IniFile(new File(iniFile));
+			String dbServer = prefs.node("database").get("server", null);
+			String dbName = "autosparql";
+			String dbUser = prefs.node("database").get("user", null);
+			String dbPass = prefs.node("database").get("pass", null);
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			String url =
+			    "jdbc:mysql://"+dbServer+"/"+dbName;
+			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
+			ps = conn.prepareStatement("INSERT INTO evaluation (" +
+					"id, question, target_query, learned, learned_query, " +
+					"start_examples_from_search, examples_needed" + 
+					"time_total, time_lgg, time_nbr, time_queries) " +
+					"VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void write2DB(
+			int id, String question, String targetQuery, boolean learned, String learnedQuery, int posExamplesFromSearch, int examplesNeeded,
+			double totalTime, double lggTime, double nbrTime, double queryTime){
+		try {
+			ps.setInt(1, id);
+			ps.setString(2, question);
+			ps.setString(3, targetQuery);
+			ps.setBoolean(4, learned);
+			ps.setString(5, learnedQuery);
+			ps.setInt(6, posExamplesFromSearch);
+			ps.setInt(7, examplesNeeded);
+			ps.setDouble(8, totalTime);
+			ps.setDouble(9, lggTime);
+			ps.setDouble(10, nbrTime);
+			ps.setDouble(11, queryTime);
+			
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("Error while writing to DB.",e);
+			e.printStackTrace();
+		}
+		
 	}
 	
 	private void readQueries(){
@@ -316,20 +377,47 @@ public class EvaluationWithNLQueriesScript {
 	}
 	
 	public void evaluate(){
+		int id; 
 		String targetQuery;
+		boolean learned; 
+		String learnedQuery; 
+		int posExamplesFromSearch; 
+		int examplesNeeded;
+		double totalTime; 
+		double lggTime; 
+		double nbrTime; 
+		double queryTime;
+		
 		Set<String> answers;
 		List<String> examples;
 		Set<String> relatedResources;
 		List<String> relevantWords;
+		String prunedQuestion;
 		int i = 1;
 		int learnedQueries = 0;
 		for(String question : question2Answers.keySet()){//question = "Give me all soccer clubs in the Premier League.";
-			logger.debug(getNewQuestionString(i, question));
+			id = i; 
+			targetQuery = "";
+			learned = false; 
+			learnedQuery = ""; 
+			posExamplesFromSearch = 0; 
+			examplesNeeded = 0;
+			totalTime = 0; 
+			lggTime = 0; 
+			nbrTime = 0; 
+			queryTime = 0;
+			MonitorFactory.getTimeMonitor("Query").reset();
+			MonitorFactory.getTimeMonitor("LGG").reset();
+			MonitorFactory.getTimeMonitor("NBR").reset();
+			
+			
+			logger.debug(getNewQuestionString(i, question));if(i==15){i++;continue;};
 			try {
 				targetQuery = question2query.get(question);
 				logger.debug("Target query: \n" + targetQuery);
 				answers = getResourcesBySPARQLQuery(targetQuery, "uri");//question2Answers.get(question);
 				logger.debug("Answers (" + answers.size() + "): " + answers);
+				exFinder.setQuestionId(i);
 				printStartingPosition(i++, question, targetQuery, answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
@@ -339,6 +427,7 @@ public class EvaluationWithNLQueriesScript {
 				treeFilter.setThreshold(SIMILARITY_THRESHOLD);
 				exFinder.setStatementFilter(filter);
 				exFinder.setQueryTreeFilter(treeFilter);
+				
 //				exFinder.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
 				
 				//expand with synonyms
@@ -346,18 +435,18 @@ public class EvaluationWithNLQueriesScript {
 					relevantWords.addAll(getSynonyms(relevantWords));
 					logger.debug("Extended with synonyms: " + relevantWords);
 				}
-				question = "";
+				prunedQuestion = "";
 				for(String word : relevantWords){
-					question += " " + word; 
+					prunedQuestion += " " + word; 
 				}
-				question.trim();
-				logger.debug("Rebuilt question string: " + question);
+				prunedQuestion.trim();
+				logger.debug("Rebuilt question string: " + prunedQuestion);
 				
 				//get examples
 				if(USE_WIKIPEDIA_SEARCH){
-					examples = getResourcesByWikipedia(question);
+					examples = getResourcesByWikipedia(prunedQuestion);
 				} else {
-					examples = getResourcesByNLQueryWithLucene(question);
+					examples = getResourcesByNLQueryWithLucene(prunedQuestion);
 				}
 				miniLogger.info("AutoSPARQL: Should some of the following resources belong to query result?\n" + examples);
 				//get resources which are relevant for query and add them as filter for objects
@@ -381,6 +470,7 @@ public class EvaluationWithNLQueriesScript {
 						}
 					}
 				}
+				posExamplesFromSearch = posExamples.size();
 				//if there are not enough positive examples in search we select some from the answer set which simulates manually addition of user
 				if(posExamples.size() < NR_OF_POS_START_EXAMPLES_COUNT){
 					logger.debug("Found only " + posExamples.size() + " positive example(s) in search result. Adding more from the answer set...");
@@ -408,7 +498,6 @@ public class EvaluationWithNLQueriesScript {
 				miniLogger.info("AutoSPARQL: Started learning...");
 				boolean hasToCheckIfLGGIsSolution = true;
 				Set<String> learnedResources;
-				String oldLearnedQuery = "";
 				boolean learningFailed = false;
 				
 				do {
@@ -418,7 +507,7 @@ public class EvaluationWithNLQueriesScript {
 						}
 						hasToCheckIfLGGIsSolution = false;
 					}
-					// compute new similiar example
+					// compute new similar example
 					logger.info("Computing similar example...");
 					long startTime = System.currentTimeMillis();
 					String example = exFinder.findSimilarExample(posExamples,
@@ -428,15 +517,10 @@ public class EvaluationWithNLQueriesScript {
 							+ "ms");
 					miniLogger.info("AutoSPARQL: Should \"" + example + "\" belong to the query result?");
 					// print learned query up to here
-					String learnedQuery = exFinder.getCurrentQuery();
-//					if(oldLearnedQuery.equals(learnedQuery)){
-//						learningFailed = true;
-//						logger.info("Aborting because learned again same query.");
-//						break;
-//					}oldLearnedQuery = learnedQuery;
-					logger.debug("Learned SPARQL query: \n" + learnedQuery);
-//					learnedQuery = "SELECT DISTINCT " + learnedQuery.substring(7);
-					learnedQuery = "SELECT " + learnedQuery.substring(7);
+					String currentQuery = exFinder.getCurrentQuery();
+
+					logger.debug("Learned SPARQL query: \n" + currentQuery);
+					learnedQuery = "SELECT " + currentQuery.substring(7);
 					learnedResources = getResourcesBySPARQLQuery(learnedQuery, "x0");
 					logger.debug("Number of resources in learned query: "
 							+ learnedResources.size());
@@ -448,18 +532,27 @@ public class EvaluationWithNLQueriesScript {
 						negExamples.add(example);
 						miniLogger.info("User: NO");
 					}
-					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
+					miniLogger.info("Current learned SPARQL query:\n" + currentQuery);
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
+					learned = true;
+					examplesNeeded = posExamples.size()+negExamples.size();
+					learnedQuery = exFinder.getCurrentQuery();
+					lggTime = MonitorFactory.getTimeMonitor("LGG").getTotal();
+					nbrTime = MonitorFactory.getTimeMonitor("NBR").getTotal();
+					queryTime = MonitorFactory.getTimeMonitor("Query").getTotal();
+					totalTime = lggTime + nbrTime + queryTime;
 					logger.info("Learning successful.");
-					logger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
+					logger.info("Learned SPARQL query:\n" + learnedQuery);
 					miniLogger.info("Learning successful.");
-					miniLogger.info("Learned SPARQL query:\n" + exFinder.getCurrentQuery());
+					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
 					learnedQueries++;
 				}else {
 					logger.info("Could not learn query.");
 					miniLogger.info("AutoSPARQL: Could not learn query.");
 				}
+				write2DB(id, question, targetQuery, learned, learnedQuery, 
+						posExamplesFromSearch, examplesNeeded, totalTime, lggTime, nbrTime, queryTime);
 			} catch (TimeOutException e) {
 				e.printStackTrace();
 			} catch (SPARQLQueryException e) {
