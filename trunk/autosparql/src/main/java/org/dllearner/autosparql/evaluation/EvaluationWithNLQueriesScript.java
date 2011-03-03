@@ -400,7 +400,7 @@ public class EvaluationWithNLQueriesScript {
 		String prunedQuestion;
 		int i = 1;
 		int learnedQueries = 0;
-		for(String question : question2Answers.keySet()){if(i!=5){i++;continue;};//question = "Give me all soccer clubs in the Premier League.";
+		for(String question : question2Answers.keySet()){if(i==6 || i==15){i++;continue;};//question = "Give me all soccer clubs in the Premier League.";
 			id = i; 
 			targetQuery = "";
 			learned = false; 
@@ -418,7 +418,7 @@ public class EvaluationWithNLQueriesScript {
 			MonitorFactory.getTimeMonitor("NBR").reset();
 			
 			
-			logger.debug(getNewQuestionString(i, question));if(i==6 || i==15){i++;continue;};
+			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
 				logger.debug("Target query: \n" + targetQuery);
