@@ -89,7 +89,7 @@ public class EvaluationWithNLQueriesScript {
 	private static final String WORDNET_DICTIONARY = "src/main/resources/de/simba/ner/dictionary";
 	private static final SparqlEndpoint ENDPOINT = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 //	private static final String ENDPOINT_URL = "http://lod.openlinksw.com/sparql";
-	private static final String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";
+	private static  String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";
 //	private static final String ENDPOINT_URL = "http://live.dbpedia.org/sparql";
 	
 	
@@ -144,7 +144,7 @@ public class EvaluationWithNLQueriesScript {
 			prefixes.put("yago","http://dbpedia.org/class/yago/");
 			prefixes.put("cyc","http://sw.opencyc.org/concept/");
 			prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
-			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL(ENDPOINT_URL), //new URL("http://lod.openlinksw.com/sparql"), 
+			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL(ENDPOINT_URL),
 							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
 //			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
@@ -177,7 +177,7 @@ public class EvaluationWithNLQueriesScript {
 			    "jdbc:mysql://"+dbServer+"/"+dbName;
 			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
 			ps = conn.prepareStatement("INSERT INTO evaluation (" +
-					"id, question, target_query, learned, learned_query, " +
+					"id, question, target_query, learned, learned_query, triple_pattern_count, " +
 					"start_examples_from_search, examples_needed_total, examples_needed_pos, examples_needed_neg, " + 
 					"time_total, time_lgg, time_nbr, time_queries) " +
 					"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -191,7 +191,7 @@ public class EvaluationWithNLQueriesScript {
 	}
 	
 	private void write2DB(
-			int id, String question, String targetQuery, boolean learned, String learnedQuery, 
+			int id, String question, String targetQuery, boolean learned, String learnedQuery, int triplePatternCount, 
 			int posExamplesFromSearch, int examplesNeededTotal, int examplesNeededPos, int examplesNeededNeg,
 			double totalTime, double lggTime, double nbrTime, double queryTime){
 		try {
@@ -200,14 +200,15 @@ public class EvaluationWithNLQueriesScript {
 			ps.setString(3, targetQuery);
 			ps.setBoolean(4, learned);
 			ps.setString(5, learnedQuery);
-			ps.setInt(6, posExamplesFromSearch);
-			ps.setInt(7, examplesNeededTotal);
-			ps.setInt(8, examplesNeededPos);
-			ps.setInt(9, examplesNeededNeg);
-			ps.setDouble(10, totalTime);
-			ps.setDouble(11, lggTime);
-			ps.setDouble(12, nbrTime);
-			ps.setDouble(13, queryTime);
+			ps.setInt(6, triplePatternCount);
+			ps.setInt(7, posExamplesFromSearch);
+			ps.setInt(8, examplesNeededTotal);
+			ps.setInt(9, examplesNeededPos);
+			ps.setInt(10, examplesNeededNeg);
+			ps.setDouble(11, totalTime);
+			ps.setDouble(12, lggTime);
+			ps.setDouble(13, nbrTime);
+			ps.setDouble(14, queryTime);
 			
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -397,6 +398,7 @@ public class EvaluationWithNLQueriesScript {
 		String targetQuery;
 		boolean learned; 
 		String learnedQuery; 
+		int triplePatterCount;
 		int posExamplesFromSearch; 
 		int examplesNeededTotal;
 		int examplesNeededPos;
@@ -417,11 +419,12 @@ public class EvaluationWithNLQueriesScript {
 		Monitor lggMon = MonitorFactory.getTimeMonitor("LGG");
 		Monitor nbrMon = MonitorFactory.getTimeMonitor("NBR");
 		Monitor queryMon = MonitorFactory.getTimeMonitor("Query");
-		for(String question : question2Answers.keySet()){if(i==11 || i==15){i++;continue;};//question = "Give me all soccer clubs in the Premier League.";
+		for(String question : question2Answers.keySet()){if(i==11){i++;continue;};//question = "Give me all soccer clubs in the Premier League.";
 			id = i; 
 			targetQuery = "";
 			learned = false; 
 			learnedQuery = ""; 
+			triplePatterCount = 0;
 			posExamplesFromSearch = 0; 
 			examplesNeededTotal = 0;
 			examplesNeededPos = 0;
@@ -434,6 +437,36 @@ public class EvaluationWithNLQueriesScript {
 			lggMon.reset();
 			nbrMon.reset();
 			queryMon.reset();
+			
+			//workaround for question 15, because db0 returns no resources
+			if(i==15){
+				List<String> predicateFilters = new ArrayList<String>();
+				predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+				predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+				//prefixes and baseURI to improve readability of trees
+				String baseURI = "http://dbpedia.org/resource/";
+				Map<String,String> prefixes = new HashMap<String,String>();
+				prefixes.put("dbo","http://dbpedia.org/ontology/");
+				prefixes.put("dbprop","http://dbpedia.org/property/");
+				prefixes.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
+				prefixes.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+				prefixes.put("skos","http://www.w3.org/2004/02/skos/core#");
+				prefixes.put("geo","http://www.w3.org/2003/01/geo/wgs84_pos#");
+				prefixes.put("georss","http://www.georss.org/georss/");
+				prefixes.put("owl","http://www.w3.org/2002/07/owl#");
+				prefixes.put("yago","http://dbpedia.org/class/yago/");
+				prefixes.put("cyc","http://sw.opencyc.org/concept/");
+				prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
+				try {
+					exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL("http://live.dbpedia.org/sparql"), 
+							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+				ENDPOINT_URL = "http://live.dbpedia.org/sparql";
+			}
+			
+			
 			
 			overallMon.start();
 			logger.debug(getNewQuestionString(i, question));
@@ -565,20 +598,25 @@ public class EvaluationWithNLQueriesScript {
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
 					overallMon.stop();
+					exFinder.getLGGInstances(posExamples);
 					learned = true;
 					examplesNeededPos = posExamples.size();
 					examplesNeededNeg = negExamples.size();
 					examplesNeededTotal = examplesNeededPos + examplesNeededNeg;
 					learnedQuery = exFinder.getCurrentQuery();
+					triplePatterCount = exFinder.getCurrentQueryTree().getTriplePatternCount();
+					
 					lggTime = lggMon.getTotal();
 					nbrTime = nbrMon.getTotal();
-					queryTime = queryMon.getTotal();
-					totalTime = lggTime + nbrTime + queryTime;
+					totalTime = overallMon.getLastValue();
+					queryTime = totalTime - lggTime - nbrTime;//queryMon.getTotal();
+					
 					logger.info("Learning successful.");
-					logger.info("Needed " + overallMon.getLastValue() + "ms.");
+					logger.info("Needed " + totalTime + "ms.");
 					logger.info("Learned SPARQL query:\n" + learnedQuery);
 					miniLogger.info("Learning successful.");
 					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
+					System.err.println(exFinder.getCurrentQueryTree().getTriplePatternCount());
 					learnedQueries++;
 				}else {
 					overallMon.stop();
@@ -586,7 +624,7 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("AutoSPARQL: Could not learn query.");
 				}
 				if(WRITE2DATABASE){
-					write2DB(id, question, targetQuery, learned, learnedQuery, 
+					write2DB(id, question, targetQuery, learned, learnedQuery, triplePatterCount,
 							posExamplesFromSearch, examplesNeededTotal, examplesNeededPos, examplesNeededNeg, 
 							totalTime, lggTime, nbrTime, queryTime);
 				}

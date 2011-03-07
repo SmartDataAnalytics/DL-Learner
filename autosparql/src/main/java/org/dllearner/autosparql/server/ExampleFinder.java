@@ -96,6 +96,7 @@ public class ExampleFinder {
 		if(treeFilter != null){
 			lgg = treeFilter.getFilteredQueryTree(lgg);
 		}
+		currentQueryTree = lgg;
 		currentQuery = lgg.toSPARQLQueryString();
 		if(logger.isInfoEnabled()){
 			logger.info("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
