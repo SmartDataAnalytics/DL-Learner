@@ -1,7 +1,6 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +29,9 @@ import org.dllearner.sparqlquerygenerator.operations.nbr.strategy.GreedyNBRStrat
 import org.dllearner.sparqlquerygenerator.util.Filter;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilterAggressive;
 
+import com.clarkparsia.owlapiv3.XSD;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -42,13 +43,12 @@ public class ExampleFinder {
 	
 	private SPARQLEndpointEx endpoint;
 	private ExtractionDBCache selectCache;
-	private ExtractionDBCache constructCache;
 	private ModelGenerator modelGen;
 	private ModelCache modelCache;
 	private QueryTreeCache queryTreeCache;
 	
-	private List<String> posExamples;
-	private List<String> negExamples;
+	private List<String> posExamples = new ArrayList<String>();
+	private List<String> negExamples = new ArrayList<String>();
 	
 	private static final Logger logger = Logger.getLogger(ExampleFinder.class);
 	
@@ -71,10 +71,11 @@ public class ExampleFinder {
 	
 	int id;
 	
+	boolean dirty = true;
+	
 	public ExampleFinder(SPARQLEndpointEx endpoint, ExtractionDBCache selectCache, ExtractionDBCache constructCache){
 		this.endpoint = endpoint;
 		this.selectCache = selectCache;
-		this.constructCache = constructCache;
 		
 		modelGen = new ModelGenerator(endpoint, new HashSet<String>(endpoint.getPredicateFilters()), constructCache);
 		modelCache = new ModelCache(modelGen);
@@ -89,28 +90,16 @@ public class ExampleFinder {
 	}
 	
 	public QueryTree<String> computeLGG(List<String> posExamples){
-		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
-		Model model;
-		QueryTree<String> queryTree;
-		for(String resource : posExamples){
-			model = modelCache.getModel(resource);
-			queryTree = queryTreeCache.getQueryTree(resource, model);
-			if(id == 6 ){
-				queryTree.addChild(new QueryTreeImpl<String>("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>"), "http://dbpedia.org/ontology/seasonNumber");
-			} else if(id == 14){
-				queryTree.addChild(new QueryTreeImpl<String>("\"Electronic Arts\"@en"), "http://dbpedia.org/property/publisher");
-			} else if(id == 15){
-				queryTree.addChild(new QueryTreeImpl<String>("\"Dana\"@en"), "http://xmlns.com/foaf/0.1/givenName");
-			}
-			System.out.println("Querytree for " + resource + ":\n" + TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
-			posExampleTrees.add(queryTree);
-		}
+		this.posExamples = posExamples;
+		List<QueryTree<String>> posExampleTrees = createTrees(posExamples);
 		lgg = lggGen.getLGG(posExampleTrees);
 		if(treeFilter != null){
 			lgg = treeFilter.getFilteredQueryTree(lgg);
 		}
 		currentQuery = lgg.toSPARQLQueryString();
-		System.out.println("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		if(logger.isInfoEnabled()){
+			logger.info("LGG: \n" + TreeHelper.getAbbreviatedTreeRepresentation(lgg, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		}
 		return lgg;
 	}
 	
@@ -124,39 +113,16 @@ public class ExampleFinder {
 		logger.info("Searching similiar example");
 		logger.info("Positive examples: " + posExamples);
 		logger.info("Negative examples: " + negExamples);
+		if(this.posExamples.size() != posExamples.size()){
+			dirty = true;
+		}
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		
-		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
-		List<QueryTree<String>> negExampleTrees = new ArrayList<QueryTree<String>>();
+		List<QueryTree<String>> posExampleTrees = createTrees(posExamples);
+		List<QueryTree<String>> negExampleTrees = createTrees(negExamples);
 		
-		Model model;
-		QueryTree<String> queryTree;
-		for(String resource : posExamples){
-			model = modelCache.getModel(resource);
-			queryTree = queryTreeCache.getQueryTree(resource, model);
-			if(id == 6 ){
-				queryTree.addChild(new QueryTreeImpl<String>("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>"), "http://dbpedia.org/ontology/seasonNumber");
-			} else if(id == 14){
-				queryTree.addChild(new QueryTreeImpl<String>("\"Electronic Arts\"@en"), "http://dbpedia.org/property/publisher");
-			}
-//			System.out.println("Querytree for " + resource + ":\n" + TreeHelper.getAbbreviatedTreeRepresentation(queryTree, endpoint.getBaseURI(), endpoint.getPrefixes()));
-			posExampleTrees.add(queryTree);
-		}
-		for(String resource : negExamples){
-			model = modelCache.getModel(resource);
-			queryTree = queryTreeCache.getQueryTree(resource, model);
-			negExampleTrees.add(queryTree);
-		}
 		
-//		if(posExamples.size() == 1 && negExamples.isEmpty()){
-//			logger.info("Up to now only 1 positive example is selected.");
-//			return findExampleByGeneralisation(posExampleTrees.get(0));
-//		} else {
-//			logger.info("There are " + posExamples.size() + " positive examples and " 
-//					+ negExamples.size() + " negative examples selected. Calling LGG/NBR...");
-//			return findExampleByLGG(posExampleTrees, negExampleTrees);
-//		}
 		if(posExamples.size() == 1 && negExamples.isEmpty()){
 			logger.info("Up to now only 1 positive example is selected.");
 			return findExampleByGeneralisation(posExampleTrees.get(0));
@@ -173,6 +139,45 @@ public class ExampleFinder {
 			return findExampleByNBR(posExampleTrees, negExampleTrees);
 		}
 		
+	}
+	
+	private List<QueryTree<String>> createTrees(List<String> resources){
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		for(String resource : resources){
+			trees.add(createTree(resource));
+		}
+		return trees;
+	}
+	
+	private QueryTree<String> createTree(String resource){
+		Model model = modelCache.getModel(resource);
+		QueryTree<String> tree = queryTreeCache.getQueryTree(resource, model);
+		//hack for evaluation
+		//TODO remove it
+		if(posExamples.contains(resource)){
+			if(id == 6 ){
+				QueryTreeImpl<String> child = new QueryTreeImpl<String>("\"1\"^^<http://www.w3.org/2001/XMLSchema#int>");
+				child.setLiteralNode(true);
+				tree.addChild(child, "http://dbpedia.org/ontology/seasonNumber");
+			} else if(id == 11){
+				tree.addChild(new QueryTreeImpl<String>("\"Jimmy\"@en"), "http://xmlns.com/foaf/0.1/givenName");
+			} else if(id == 14){
+				tree.addChild(new QueryTreeImpl<String>("\"Electronic Arts\"@en"), "http://dbpedia.org/property/publisher");
+			} else if(id == 15){
+				tree.addChild(new QueryTreeImpl<String>("\"Dana\"@en"), "http://xmlns.com/foaf/0.1/givenName");
+			}
+			QuestionBasedQueryTreeFilterAggressive f = new QuestionBasedQueryTreeFilterAggressive(treeFilter.getQuestionWords());
+			tree = f.getFilteredQueryTree(tree);
+		}
+		
+//		logger.info("Tree for resource before filtering" + resource + "\n" + 
+//				TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		if(logger.isInfoEnabled()){
+			logger.info("Tree for resource " + resource + "\n" + 
+					TreeHelper.getAbbreviatedTreeRepresentation(tree, endpoint.getBaseURI(), endpoint.getPrefixes()));
+		}
+		
+		return tree;
 	}
 	
 //	private Example findExampleByGeneralisation(List<String> posExamples,
@@ -491,7 +496,20 @@ public class ExampleFinder {
 	}
 	
 	public QueryTree<String> getLGG(){
+		if(dirty){
+			computeLGG(posExamples);
+			dirty = false;
+		}
 		return lgg;
+	}
+	
+	public Set<String> getLGGInstances(List<String> posExamples){
+		this.posExamples = posExamples;
+		computeLGG(posExamples);
+		dirty = false;
+		Set<String> lggInstances = getAllResources(lgg.toSPARQLQueryString());
+		nbrGen.setLGGInstances(lggInstances);
+		return lggInstances;
 	}
 	
 	private Example getExample(String uri){

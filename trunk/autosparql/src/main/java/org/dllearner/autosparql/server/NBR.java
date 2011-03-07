@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,14 +30,16 @@ import org.dllearner.sparqlquerygenerator.cache.ModelCache;
 import org.dllearner.sparqlquerygenerator.cache.QueryTreeCache;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
 import org.dllearner.sparqlquerygenerator.datastructures.impl.QueryTreeImpl;
-import org.dllearner.sparqlquerygenerator.util.Filters;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
+import org.openrdf.vocabulary.RDF;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.Filter;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class NBR<N> {
 	
@@ -44,7 +47,7 @@ public class NBR<N> {
 	
 	private volatile boolean stop = false;
 	private boolean isRunning;
-	private int maxExecutionTimeInSeconds = 10000;
+	private int maxExecutionTimeInSeconds = 10000000;
 	private long startTime;
 	
 	private ExtractionDBCache selectCache;
@@ -66,8 +69,11 @@ public class NBR<N> {
 	private List<List<QueryTreeChange>> noSequences;
 	private List<QueryTreeChange> lastSequence;
 	private int negExamplesCount = -1;
+	private Set<String> lggInstances;
 	
 	private LastQueryTreeChangeComparator comparator = new LastQueryTreeChangeComparator();
+	
+	private Monitor mon = MonitorFactory.getTimeMonitor("NBR");
 	
 	private static final Logger logger = Logger.getLogger(NBR.class);
 	
@@ -309,7 +315,14 @@ public class NBR<N> {
 	
 	public String getQuestion(QueryTree<N> lgg, List<QueryTree<N>> negTrees, List<String> knownResources) throws TimeOutException{
 //		return computeQuestionOptimized(lgg, negTrees, knownResources);
-		return computeQuestionBetterPerformance(lgg, negTrees, knownResources);
+		mon.start();
+		String question = computeQuestionBetterPerformance(lgg, negTrees, knownResources);
+		mon.stop();
+		return question;
+	}
+	
+	public void setLGGInstances(Set<String> instances){
+		this.lggInstances = instances;
 	}
 	
 	
@@ -451,18 +464,20 @@ public class NBR<N> {
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen = new PostLGG<N>((SPARQLEndpointEx) endpoint);
 		postGen.simplifyTree(postLGG, negTrees);
-		logger.info("Post LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
-				postLGG, endpoint.getBaseURI(), endpoint.getPrefixes()));
-		logger.info("Post LGG(Query):\n" + postLGG.toSPARQLQueryString());
-		logger.info("Post LGG(#Instances):\n" + getAllResources(postLGG.toSPARQLQueryString()).size());
-//		logger.debug("Starting generalisation with tree:\n" + postLGG.getStringRepresentation());
+		if(logger.isDebugEnabled()){
+			logger.debug("Post LGG(Tree): \n" + TreeHelper.getAbbreviatedTreeRepresentation(
+					postLGG, endpoint.getBaseURI(), endpoint.getPrefixes()));
+			logger.debug("Post LGG(Query):\n" + postLGG.toSPARQLQueryString());
+			logger.debug("Post LGG(#Instances):\n" + getAllResources(postLGG.toSPARQLQueryString()).size());
+		}
+		
 		limit = knownResources.size();
 		
 		List<GeneralisedQueryTree<N>> queue = null;
 		if(generalizeSortedByNegatives){
 			queue = getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG), negTrees);
 		} else {
-			queue = getAllowedGeneralisationsSorted(new GeneralisedQueryTree<N>(postLGG));
+			queue = getAllowedGeneralisationsSorted2(new GeneralisedQueryTree<N>(postLGG));
 		}
 		logger.debug(getQueueLogInfo(queue));
 		
@@ -488,7 +503,7 @@ public class NBR<N> {
 				if(generalizeSortedByNegatives){
 					gens = getAllowedGeneralisationsSortedByMatrix(tmp, negTrees);
 				} else {
-					gens = getAllowedGeneralisationsSorted(tmp);
+					gens = getAllowedGeneralisationsSorted2(tmp);
 				}
 				if(gens.isEmpty()){
 					if(logger.isDebugEnabled()){
@@ -527,10 +542,15 @@ public class NBR<N> {
 			if(isTerminationCriteriaReached()){
 				throw new TimeOutException(maxExecutionTimeInSeconds);
 			}
-			fSparql(postLGG, tmp.getChanges());
 			logger.debug("New resource before binary search: " + newResource);
 			if(!(newResource == null)){
 				logger.debug("binary search for most specific query returning a resource - start");
+				List<QueryTreeChange> firstChanges = new ArrayList<QueryTreeChange>(neededGeneralisations.get(0).getChanges());
+				while(firstChanges.size() > 1){
+					firstChanges.remove(firstChanges.size()-1);
+					neededGeneralisations.add(0, new GeneralisedQueryTree<N>(getTreeByChanges(lgg, firstChanges), firstChanges));
+					firstChanges = new ArrayList<QueryTreeChange>(firstChanges);
+				}
 				newResource = findMostSpecificResourceTree2(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
 				logger.debug("binary search for most specific query returning a resource - completed");
 				// TODO: probably the corresponding tree, which resulted in the resource, should also be returned
@@ -785,6 +805,23 @@ public class NBR<N> {
 		return gens;
 	}
 	
+	private List<GeneralisedQueryTree<N>> getAllowedGeneralisationsSorted2(GeneralisedQueryTree<N> tree){
+		List<GeneralisedQueryTree<N>> gens = getAllowedGeneralisations(tree);
+		Iterator<GeneralisedQueryTree<N>> it = gens.iterator();
+		GeneralisedQueryTree<N> t;
+		while(it.hasNext()){
+			t = it.next();
+			for(List<QueryTreeChange> changes : noSequences){
+				if(t.getChanges().contains(changes)){
+					it.remove();
+					break;
+				}
+			}
+		}
+		Collections.sort(gens, comparator);	
+		return gens;
+	}
+	
 	/**
 	 * Computing the allowed generalisations, i.e. we traverse the tree from the root depths first. For the current considered node n 
 	 * if the label of the parent node is a "?" and n is a resource node, we can replace it with "?", and if the current node n is a "?"
@@ -988,24 +1025,33 @@ public class NBR<N> {
 	}
 	
 	private String getNewResource2(String query, List<String> knownResources){
-		int i = 0;
-		int chunkSize = 40;
 		SortedSet<String> foundResources;
-		QueryTree<N> newTree;
-		int foundSize;
-		do{
-			foundResources = getResources(query, chunkSize, chunkSize * i);
-			foundSize = foundResources.size();
-			foundResources.removeAll(knownResources);
-			for(String resource : foundResources){
-				newTree = getQueryTree(resource);
-				if(!newTree.isSubsumedBy(lgg)){
-					return resource;
-				}
-			}
-			i++;
-		} while(foundSize == chunkSize);
-		logger.debug("Found no resource which would modify the LGG");
+//		int i = 0;
+//		int chunkSize = 40;
+//		QueryTree<N> newTree;
+//		int foundSize;
+//		do{
+//			foundResources = getResources(query, chunkSize, chunkSize * i);
+//			foundSize = foundResources.size();
+//			foundResources.removeAll(knownResources);
+//			for(String resource : foundResources){System.err.println(resource);
+//				newTree = getQueryTree(resource);
+//				if(!newTree.isSubsumedBy(lgg)){mon.stop();System.err.println(mon.getLastValue());
+//					return resource;
+//				}
+//			}
+//			i++;
+//		} while(foundSize == chunkSize);
+		foundResources = getResources(query, lggInstances.size()+1, 0);
+		foundResources.removeAll(knownResources);
+		foundResources.removeAll(lggInstances);
+		if(!foundResources.isEmpty()){
+//			System.err.println(foundResources.first());
+			return foundResources.first();
+		}
+		if(logger.isDebugEnabled()){
+			logger.debug("Found no resource which would modify the LGG");
+		}
 		return null;
 	}
 	
@@ -1019,7 +1065,7 @@ public class NBR<N> {
 			foundResources = getResources(tree, chunkSize, chunkSize * i);
 			foundSize = foundResources.size();
 			foundResources.removeAll(knownResources);
-			for(String resource : foundResources){
+			for(String resource : foundResources){System.err.println(resource);
 				newTree = getQueryTree(resource);
 				if(!newTree.isSubsumedBy(lgg)){
 					return resource;
@@ -1271,11 +1317,15 @@ public class NBR<N> {
     	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();
+    	List<String> optionals = new ArrayList<String>();
     	List<String> filters = new ArrayList<String>();
     	query.append("SELECT DISTINCT ?x0 WHERE{\n");
 //    	buildSPARQLQueryString(copy, triples);
-    	buildSPARQLQueryString(copy, changes, triples, filters);
+    	buildSPARQLQueryString(copy, changes, triples, optionals, filters);
     	query.append(triples.toString());
+    	for(String optional : optionals){
+    		query.append("OPTIONAL{").append(optional + "}\n");
+    	}
     	if(filters.size() > 0){
     		query.append("FILTER(");
     		for(int i = 0; i < filters.size()-1; i++){
@@ -1316,7 +1366,7 @@ public class NBR<N> {
     	}
     }
     
-    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> filters){
+    private void buildSPARQLQueryString(QueryTree<N> tree, List<QueryTreeChange> changes, StringBuilder triples, List<String> optionals, List<String> filters){
     	Object subject = null;
     	if(tree.getUserObject().equals("?")){
     		subject = "?x" + tree.getId();
@@ -1346,9 +1396,12 @@ public class NBR<N> {
         				child.setUserObject((N)"?");
     				} else {
     					removed = true;
-    					triples.append("OPTIONAL{").append(subject).
-    					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
-    					filters.add("!BOUND(?x" + child.getId() + ")");
+    					if(!predicate.equals(RDF.TYPE)){
+	    					optionals.add(subject + " <" + predicate + "> ?x" + child.getId());
+	//    					triples.append("OPTIONAL{").append(subject).
+	//    					append(" <").append(predicate).append("> ").append("?x").append(child.getId()).append("}\n");
+	    					filters.add("!BOUND(?x" + child.getId() + ")");
+    					}
     					child.getParent().removeChild((QueryTreeImpl<N>) child);
     				}
     				
@@ -1364,7 +1417,7 @@ public class NBR<N> {
         			triples.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		}
         		if(!objectIsResource){
-        			buildSPARQLQueryString(child, changes, triples, filters);
+        			buildSPARQLQueryString(child, changes, triples, optionals, filters);
         		}
         	}
     	}
@@ -1422,6 +1475,20 @@ public class NBR<N> {
 //        	}
 //    	}
 //    }
+    
+    private QueryTree<N> getTreeByChanges(QueryTree<N> originalTree, List<QueryTreeChange> changes){
+    	QueryTree<N> copy = new QueryTreeImpl<N>(originalTree);
+    	QueryTree<N> node;
+    	for(QueryTreeChange change : changes){
+    		node = copy.getNodeById(change.getNodeId());
+    		if(change.getType() == ChangeType.REPLACE_LABEL){
+    			node.setUserObject((N)"?");
+    		} else {
+    			node.getParent().removeChild((QueryTreeImpl<N>) node);
+    		}
+    	}
+    	return copy;
+    }
     
     private QueryTreeChange getChange(List<QueryTreeChange> changes, int nodeId){
     	QueryTreeChange change = null;

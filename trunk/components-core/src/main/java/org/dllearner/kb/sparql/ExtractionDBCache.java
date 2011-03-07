@@ -105,7 +105,6 @@ public class ExtractionDBCache {
 	}
 	
 	public Model executeConstructQuery(SparqlEndpoint endpoint, String query, int maxExecutionTimeInSeconds) throws SQLException, UnsupportedEncodingException {
-		mon.start();
 		byte[] md5 = md5(query);		
 //		Timestamp currTS = new Timestamp(new java.util.Date().getTime());
 		PreparedStatement ps=conn.prepareStatement("SELECT * FROM QUERY_CACHE WHERE QUERYHASH=? LIMIT 1");
@@ -131,6 +130,7 @@ public class ExtractionDBCache {
 //			System.out.println(Helper.prettyPrintNanoSeconds(runTime, true, true));			
 			return readModel;
 		} else {
+			mon.start();
 //			System.out.println("Posing new query");
 			
 //			String endpoint = "http://139.18.2.37:8890/sparql";
@@ -178,7 +178,7 @@ public class ExtractionDBCache {
 		
 		try {
 			
-			mon.start();
+			
 		byte[] md5 = md5(query);		
 		PreparedStatement ps=conn.prepareStatement("SELECT * FROM QUERY_CACHE WHERE QUERYHASH=? LIMIT 1");
 		ps.setBytes(1, md5);
@@ -192,6 +192,7 @@ public class ExtractionDBCache {
 			Clob clob = rs.getClob("TRIPLES");
 			return clob.getSubString(1, (int) clob.length());
 		} else {
+			mon.start();
 //			System.out.println("no-cache");
 			ExtendedQueryEngineHTTP queryExecution = new ExtendedQueryEngineHTTP(endpoint.getURL().toString(), query);
 			queryExecution.setTimeOut(maxExecutionTimeInSeconds * 1000);

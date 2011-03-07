@@ -20,7 +20,7 @@ public class QuestionProcessor {
 	
 	private MaxentTagger tagger;
 	private final List<String> stopWords = Arrays.asList(
-		      "a", "all", "an", "and", "are", "as", "at", "be", "but", "by",
+		      "a", "all", "an", "and", "are", "as", "at", "be", "but", "by", "do",
 		      "for", "has", "have", "he",  "if", "in", "into", "is", "it", "me",
 		      "no", "not", "of", "on", "or", "she", "such",
 		      "that", "the", "their", "then", "there", "these",
@@ -61,6 +61,7 @@ public class QuestionProcessor {
 		    ArrayList<TaggedWord> tSentence = tagger.tagSentence(sentence);System.out.println(tSentence);
 		    String nounPhrase = "";
 		    boolean firstWord = true;
+		    String phraseTag = "";
 		    for(TaggedWord tWord : tSentence){
 		    	//ignore first word if it is a verb
 		    	if(firstWord){
@@ -69,8 +70,23 @@ public class QuestionProcessor {
 		    		}
 		    		firstWord = false;
 		    	}
-		    	//if words belongs to noun phrase treat them as one single term
-		    	if(tWord.tag().equals("NNP") || tWord.tag().startsWith("NN")){
+		    	if(tWord.tag().startsWith("NNP")){
+		    		if(phraseTag.equals("NN")){
+		    			if(!nounPhrase.isEmpty()){
+			    			words.add(nounPhrase.trim());
+			    			nounPhrase = "";
+			    		}
+		    		} 
+		    		phraseTag = "NNP";
+		    		nounPhrase += " " + tWord.word();
+		    	} else if(tWord.tag().equals("NN") || tWord.tag().equals("NNS")){
+		    		if(phraseTag.equals("NNP")){
+		    			if(!nounPhrase.isEmpty()){
+			    			words.add(nounPhrase.trim());
+			    			nounPhrase = "";
+			    		}
+		    		} 
+		    		phraseTag = "NN";
 		    		nounPhrase += " " + tWord.word();
 		    	} else {
 		    		if(!nounPhrase.isEmpty()){
@@ -82,6 +98,19 @@ public class QuestionProcessor {
 		    			words.add(tWord.word());
 		    		}
 		    	}
+//		    	//if words belongs to noun phrase treat them as one single term
+//		    	if(tWord.tag().equals("NNP") || tWord.tag().startsWith("NN")){
+//		    		nounPhrase += " " + tWord.word();
+//		    	} else {
+//		    		if(!nounPhrase.isEmpty()){
+//		    			words.add(nounPhrase.trim());
+//		    			nounPhrase = "";
+//		    		}
+//		    		//ignore punctuation signs
+//		    		if(!tWord.tag().equals(".")){
+//		    			words.add(tWord.word());
+//		    		}
+//		    	}
 		    	
 		    }
 		    if(!nounPhrase.isEmpty()){

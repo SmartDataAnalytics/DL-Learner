@@ -57,7 +57,6 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGenerator;
 import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
@@ -69,6 +68,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.query.ResultSet;
+import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 import de.simba.ner.WordnetQuery;
@@ -82,6 +82,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	private static final String SOLR_SERVER_URL = "http://139.18.2.164:8983/solr/dbpediaCore/";
 	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/dbpedia-train_cleaned.xml";
+//	private static final String QUERY_ANSWERS_FILE_PATH = "evaluation/config_cleaned.xml";
 	private static final String SCHEMA_FILE_PATH = "evaluation/dbpedia_schema.owl";
 //	private static final String LUCENE_INDEX_DIRECTORY = "/opt/autosparql/index";
 	private static final String LUCENE_INDEX_DIRECTORY = "/home/jl/hdd/other_large_files/index/";
@@ -118,6 +119,8 @@ public class EvaluationWithNLQueriesScript {
 	
 	private PreparedStatement ps;
 	
+	private static final boolean WRITE2DATABASE = false;
+	
 	
 	public EvaluationWithNLQueriesScript(){
 		try {
@@ -148,7 +151,9 @@ public class EvaluationWithNLQueriesScript {
 			luceneSearch.setHitsPerPage(TOP_K);
 			wordNet = new WordnetQuery(WORDNET_DICTIONARY);
 			
-//			initDBConnection();
+			if(WRITE2DATABASE){
+				initDBConnection();
+			}
 			
 			
 		} catch (MalformedURLException e) {
@@ -368,12 +373,20 @@ public class EvaluationWithNLQueriesScript {
 		return resources;
 	}
 	
+//	private boolean LGGIsSolution(List<String> posExamples, Set<String> answers){
+//		logger.info("Checking if LGG is already a solution...");
+//		QueryTree<String> lgg = exFinder.computeLGG(posExamples);
+//		String query = lgg.toSPARQLQueryString();
+//		query = "SELECT DISTINCT " + query.substring(7);
+//		Set<String> resources = getResourcesBySPARQLQuery(query, "x0");
+//		boolean isSolution = resources.equals(answers);
+//		logger.info("LGG is already solution:" + isSolution);
+//		return isSolution;
+//	}
+	
 	private boolean LGGIsSolution(List<String> posExamples, Set<String> answers){
 		logger.info("Checking if LGG is already a solution...");
-		QueryTree<String> lgg = exFinder.computeLGG(posExamples);
-		String query = lgg.toSPARQLQueryString();
-		query = "SELECT DISTINCT " + query.substring(7);
-		Set<String> resources = getResourcesBySPARQLQuery(query, "x0");
+		Set<String> resources = exFinder.getLGGInstances(posExamples);
 		boolean isSolution = resources.equals(answers);
 		logger.info("LGG is already solution:" + isSolution);
 		return isSolution;
@@ -400,7 +413,11 @@ public class EvaluationWithNLQueriesScript {
 		String prunedQuestion;
 		int i = 1;
 		int learnedQueries = 0;
-		for(String question : question2Answers.keySet()){if(i==6 || i==15){i++;continue;};//question = "Give me all soccer clubs in the Premier League.";
+		Monitor overallMon = MonitorFactory.getTimeMonitor("Overall");
+		Monitor lggMon = MonitorFactory.getTimeMonitor("LGG");
+		Monitor nbrMon = MonitorFactory.getTimeMonitor("NBR");
+		Monitor queryMon = MonitorFactory.getTimeMonitor("Query");
+		for(String question : question2Answers.keySet()){if(i==11 || i==15){i++;continue;};//question = "Give me all soccer clubs in the Premier League.";
 			id = i; 
 			targetQuery = "";
 			learned = false; 
@@ -413,11 +430,12 @@ public class EvaluationWithNLQueriesScript {
 			lggTime = 0; 
 			nbrTime = 0; 
 			queryTime = 0;
-			MonitorFactory.getTimeMonitor("Query").reset();
-			MonitorFactory.getTimeMonitor("LGG").reset();
-			MonitorFactory.getTimeMonitor("NBR").reset();
+			overallMon.reset();
+			lggMon.reset();
+			nbrMon.reset();
+			queryMon.reset();
 			
-			
+			overallMon.start();
 			logger.debug(getNewQuestionString(i, question));
 			try {
 				targetQuery = question2query.get(question);
@@ -428,6 +446,10 @@ public class EvaluationWithNLQueriesScript {
 				printStartingPosition(i++, question, targetQuery, answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
+				if(i==7){
+					relevantWords.add("1");
+				}
+				
 				QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
 				filter.setThreshold(SIMILARITY_THRESHOLD);
 				QuestionBasedQueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
@@ -542,32 +564,39 @@ public class EvaluationWithNLQueriesScript {
 					miniLogger.info("Current learned SPARQL query:\n" + currentQuery);
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
+					overallMon.stop();
 					learned = true;
 					examplesNeededPos = posExamples.size();
 					examplesNeededNeg = negExamples.size();
 					examplesNeededTotal = examplesNeededPos + examplesNeededNeg;
 					learnedQuery = exFinder.getCurrentQuery();
-					lggTime = MonitorFactory.getTimeMonitor("LGG").getTotal();
-					nbrTime = MonitorFactory.getTimeMonitor("NBR").getTotal();
-					queryTime = MonitorFactory.getTimeMonitor("Query").getTotal();
+					lggTime = lggMon.getTotal();
+					nbrTime = nbrMon.getTotal();
+					queryTime = queryMon.getTotal();
 					totalTime = lggTime + nbrTime + queryTime;
 					logger.info("Learning successful.");
+					logger.info("Needed " + overallMon.getLastValue() + "ms.");
 					logger.info("Learned SPARQL query:\n" + learnedQuery);
 					miniLogger.info("Learning successful.");
 					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
 					learnedQueries++;
 				}else {
+					overallMon.stop();
 					logger.info("Could not learn query.");
 					miniLogger.info("AutoSPARQL: Could not learn query.");
 				}
-				write2DB(id, question, targetQuery, learned, learnedQuery, 
-						posExamplesFromSearch, examplesNeededTotal, examplesNeededPos, examplesNeededNeg, 
-						totalTime, lggTime, nbrTime, queryTime);
+				if(WRITE2DATABASE){
+					write2DB(id, question, targetQuery, learned, learnedQuery, 
+							posExamplesFromSearch, examplesNeededTotal, examplesNeededPos, examplesNeededNeg, 
+							totalTime, lggTime, nbrTime, queryTime);
+				}
+				
 			} catch (TimeOutException e) {
 				e.printStackTrace();
 			} catch (SPARQLQueryException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
+				overallMon.stop();
 				logger.error("Something went wrong. Trying next question...", e);
 				miniLogger.info("AutoSPARQL: Could not learn query.", e);
 			}
@@ -608,7 +637,8 @@ public class EvaluationWithNLQueriesScript {
 	public static void main(String[] args) throws TimeOutException, SPARQLQueryException, SolrServerException, ParserConfigurationException, SAXException, IOException {
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
-		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
+		Logger.getLogger(NBR.class).setLevel(Level.OFF);
+		Logger.getLogger(ExampleFinder.class).setLevel(Level.OFF);
 		
 		Logger.getRootLogger().removeAllAppenders();
 		Layout layout = new PatternLayout("%m%n");
