@@ -125,4 +125,6 @@ public interface QueryTree<N> {
     
     String toSPARQLQueryString(boolean filtered);
     
+    int getTriplePatternCount();
+    
 }
