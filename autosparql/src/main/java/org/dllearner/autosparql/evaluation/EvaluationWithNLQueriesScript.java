@@ -94,7 +94,7 @@ public class EvaluationWithNLQueriesScript {
 	
 	
 	private static final int NR_OF_POS_START_EXAMPLES_COUNT = 3;
-	private static final int NR_OF_NEG_START_EXAMPLES_COUNT = 3;
+	private static final int NR_OF_NEG_START_EXAMPLES_COUNT = 1;
 	
 	private static final int TOP_K = 20;
 	
