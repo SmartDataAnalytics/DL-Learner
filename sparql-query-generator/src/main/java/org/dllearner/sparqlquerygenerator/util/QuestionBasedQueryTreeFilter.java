@@ -41,6 +41,10 @@ private Set<String> questionWords;
 		return copy;
 	}
 	
+	public Set<String> getQuestionWords(){
+		return questionWords;
+	}
+	
 	public void setThreshold(double threshold){
 		this.threshold = threshold;
 	}

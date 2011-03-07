@@ -120,6 +120,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		}
 		
 		QueryTree<N> lgg = new QueryTreeImpl<N>(tree1.getUserObject());
+		lgg.setLiteralNode(tree1.isLiteralNode());
 		
 //		if(!lgg.getUserObject().equals(tree2.getUserObject())){
 //			lgg.setUserObject((N)"?");

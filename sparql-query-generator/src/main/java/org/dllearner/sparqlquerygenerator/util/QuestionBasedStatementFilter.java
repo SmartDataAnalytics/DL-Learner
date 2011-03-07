@@ -14,6 +14,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.Filter;
 
@@ -32,6 +33,8 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 	private double topKSumThreshold = 0.8;
 	
 	private Map<Statement, Double> statement2Similarity = new HashMap<Statement, Double>();
+	
+	private Map<RDFNode, Boolean> cache = new HashMap<RDFNode, Boolean>();
 	
 	int cnt = 0;
 	
@@ -103,20 +106,79 @@ public class QuestionBasedStatementFilter extends Filter<Statement> {
 
 	@Override
 	public boolean accept(Statement s) {
-		String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
-		String object = null;
-		if(s.getObject().isURIResource()){
-			object = s.getObject().asResource().getURI();
-			object = getFragment(s.getObject().asResource().getURI());
-		} else if(s.getObject().isLiteral()){
-			object = s.getObject().asLiteral().getLexicalForm();
+		Boolean similarPredicate = cache.get(s.getPredicate());
+		Boolean similarObject = cache.get(s.getObject());
+		if(similarPredicate != null && similarObject != null){
+			return similarPredicate || similarObject;
+		} else if(similarPredicate == null && similarObject != null){
+			if(similarObject){
+				return true;
+			} else {
+				String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
+				if (isSimiliar2QuestionWord(predicate, s)){
+					cache.put(s.getPredicate(), Boolean.valueOf(true));
+					return true;
+				} else {
+					cache.put(s.getPredicate(), Boolean.valueOf(false));
+					return false;
+				}
+			}
+		} else if(similarPredicate != null && similarObject == null){
+			if(similarPredicate){
+				return true;
+			} else {
+				String object = null;
+				if(s.getObject().isURIResource()){
+					object = s.getObject().asResource().getURI();
+					object = getFragment(s.getObject().asResource().getURI());
+				} else if(s.getObject().isLiteral()){
+					object = s.getObject().asLiteral().getLexicalForm();
+				}
+				if(isSimiliar2QuestionWord(object, s)){
+					cache.put(s.getObject(), Boolean.valueOf(true));
+					return true;
+				} else {
+					cache.put(s.getObject(), Boolean.valueOf(false));
+					return false;
+				}
+			}
+		} else {
+			String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
+			if (isSimiliar2QuestionWord(predicate, s)){
+				cache.put(s.getPredicate(), Boolean.valueOf(true));
+				return true;
+			} else {
+				cache.put(s.getPredicate(), Boolean.valueOf(false));
+			}
+			String object = null;
+			if(s.getObject().isURIResource()){
+				object = s.getObject().asResource().getURI();
+				object = getFragment(s.getObject().asResource().getURI());
+			} else if(s.getObject().isLiteral()){
+				object = s.getObject().asLiteral().getLexicalForm();
+			}
+			if(isSimiliar2QuestionWord(object, s)){
+				cache.put(s.getObject(), Boolean.valueOf(true));
+				return true;
+			} else {
+				cache.put(s.getObject(), Boolean.valueOf(false));
+			}
+			return false;
 		}
-		if(isSimiliar2QuestionWord(object, s) || isSimiliar2QuestionWord(predicate, s)){
-			return true;
-		}
-		
-		return false;
 	}
+	
+//	@Override
+//	public boolean accept(Statement s) {
+//		String predicate = s.getPredicate().getURI().substring(s.getPredicate().getURI().lastIndexOf("/"));
+//		String object = null;
+//		if(s.getObject().isURIResource()){
+//			object = s.getObject().asResource().getURI();
+//			object = getFragment(s.getObject().asResource().getURI());
+//		} else if(s.getObject().isLiteral()){
+//			object = s.getObject().asLiteral().getLexicalForm();
+//		}
+//		return isSimiliar2QuestionWord(predicate, s) || isSimiliar2QuestionWord(object, s);
+//	}
 	
 	public void setThreshold(double threshold){
 		this.threshold = threshold;
