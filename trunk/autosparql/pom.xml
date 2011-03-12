@@ -137,13 +137,6 @@
 		<!-- Jars for SIMBA stuff from Axel -->
 
 		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>3.0.3</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>uk.ac.shef.wit</groupId>
 			<artifactId>simmetrics</artifactId>
 			<version>1.6.2</version>
@@ -232,6 +225,34 @@
 			<groupId>org.openrdf</groupId>
 			<artifactId>sesame</artifactId>
 			<version>1.2.7</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-lucene-analyzers</artifactId>
+			<version>1.3.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-common</artifactId>
+			<version>1.3.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr.solr</groupId>
+			<artifactId>solr-parent</artifactId>
+			<version>1.4.1</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>2.9.4</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

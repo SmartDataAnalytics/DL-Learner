@@ -43,12 +43,12 @@ public class DBpediaSchemaIndex {
 	
 	public DBpediaSchemaIndex(String schemaFile){
 		dir = new RAMDirectory();
-		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_29);
 		try {
 			writer = new IndexWriter(dir, analyzer, MaxFieldLength.UNLIMITED);
 			createIndex(schemaFile);
 			searcher = new IndexSearcher(dir, true);
-			queryParser = new QueryParser(Version.LUCENE_30, "label", analyzer);
+			queryParser = new QueryParser(Version.LUCENE_29, "label", analyzer);
 			collector = TopScoreDocCollector.create(hitsPerPage, true);
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
