@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,18 +14,24 @@ import java.sql.SQLException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.util.Version;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrInputField;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.CoreDescriptor;
+import org.apache.solr.core.SolrConfig;
+import org.apache.solr.core.SolrCore;
 import org.ini4j.IniFile;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
@@ -32,38 +39,61 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
+import org.xml.sax.SAXException;
 
-public class DBpediaLuceneIndexCreator {
+public class DBpediaSolrIndexCreator {
 	
 	public static final String imageProperty = "http://dbpedia.org/ontology/thumbnail";
 	public static final String labelProperty = "http://www.w3.org/2000/01/rdf-schema#label";
 	public static final String abstractProperty = "http://www.w3.org/2000/01/rdf-schema#comment";
 	
-	private Document doc = new Document();
-	private Field uriField = new Field("uri", "", Field.Store.YES, Field.Index.NO);
-	private Field labelField = new Field("label", "", Field.Store.YES, Field.Index.ANALYZED);
-	private Field commentField = new Field("comment", "", Field.Store.YES, Field.Index.ANALYZED);
-	private Field imageURLField = new Field("imageURL", "", Field.Store.YES, Field.Index.NO);
-	private NumericField pagerankField = new NumericField("pagerank");
-	
-	private IndexWriter writer;
+	private SolrInputField uriField = new SolrInputField("uri");
+	private SolrInputField labelField = new SolrInputField("label");
+	private SolrInputField commentField = new SolrInputField("comment");
+	private SolrInputField imageURLField = new SolrInputField("imageURL");
+	private SolrInputField pagerankField = new SolrInputField("pagerank");
 	
 	private PreparedStatement ps;
 	
-	public DBpediaLuceneIndexCreator(String indexDirectory){
+	private SolrInputDocument doc;
+	private SolrServer solr;
+	
+	public DBpediaSolrIndexCreator(){
 		try {
-			Directory dir = FSDirectory.open(new File(indexDirectory));
-			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_29);
-			writer = new IndexWriter(dir, analyzer, MaxFieldLength.UNLIMITED);
+			solr = getEmbeddedSolrServer();
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
 		} catch (LockObtainFailedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
 		}
 		initDocument();
 		connect2Database();
+	}
+	
+	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
+		CommonsHttpSolrServer solr = new CommonsHttpSolrServer("http://localhost:8983/solr/crawler");
+		solr.setRequestWriter(new BinaryRequestWriter());
+		return solr;
+	}
+	
+	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
+		File root = new File("/opt/solr");
+		CoreContainer coreContainer = new CoreContainer();
+		SolrConfig config = new SolrConfig(root + "/dbpedia",
+				"solrconfig.xml", null);
+		CoreDescriptor coreName = new CoreDescriptor(coreContainer,
+				"crawler", root + "/solr");
+		SolrCore core = new SolrCore("dbpedia", root
+				+ "/dbpedia/data", config, null, coreName);
+		coreContainer.register(core, false);
+		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, "dbpedia");
+		return solr;
 	}
 	
 	public void createIndex(String dataFile){
@@ -98,19 +128,17 @@ public class DBpediaLuceneIndexCreator {
 					abstr = "";
 					imageURL = "";
 					cnt++;
-					if(cnt == 100){
+					if(cnt % 100000 == 0){
 						try {
-							writer.close();
-						} catch (CorruptIndexException e) {
-							// TODO Auto-generated catch block
+							solr.commit();
+							System.out.println(cnt);
+						}  catch (IOException e) {
 							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
+						} catch (SolrServerException e) {
 							e.printStackTrace();
 						}
-						System.exit(0);
 					}
-					System.out.println(cnt);
+					
 				}
 				if(stmt.getPredicate().stringValue().equals(labelProperty)){
 					label = stmt.getObject().stringValue();
@@ -134,37 +162,54 @@ public class DBpediaLuceneIndexCreator {
 		try {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
 			
-			writer.close();
+			solr.commit();
 		} catch (RDFParseException e) {
 			e.printStackTrace();
 		} catch (RDFHandlerException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (CorruptIndexException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void printTestSearch(){
+		System.out.println("Searching");
+		try {
+			ModifiableSolrParams params = new ModifiableSolrParams();
+			params.set("q", "January");
+			params.set("rows", 10);
+			params.set("start", 0);
+			QueryResponse response = solr.query(params);
+			for(SolrDocument d : response.getResults()){
+				System.out.println(d.get("uri"));
+			}
+		} catch (SolrServerException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void initDocument(){
-		doc.add(uriField);
-		doc.add(labelField);
-		doc.add(commentField);
-		doc.add(imageURLField);
-		doc.add(pagerankField);
+		doc = new SolrInputDocument();
+		doc.put("uri", uriField);
+		doc.put("label", labelField);
+		doc.put("comment", commentField);
+		doc.put("imageURL", imageURLField);
+		doc.put("pagerank", pagerankField);
 	}
 	
 	private void write2Index(String uri, String label, String comment, String imageURL, int pagerank){
-		uriField.setValue(uri);
-		labelField.setValue(label);
-		commentField.setValue(comment);
-		imageURLField.setValue(imageURL);
-		pagerankField.setIntValue(pagerank);
+		uriField.setValue(uri, 1.0f);
+		labelField.setValue(label, 1.0f);
+		commentField.setValue(comment, 1.0f);
+		imageURLField.setValue(imageURL, 1.0f);
+		pagerankField.setValue(pagerank, 1.0f);
 		try {
-			writer.addDocument(doc);
-		} catch (CorruptIndexException e) {
+			solr.add(doc);
+		}  catch (SolrServerException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -215,15 +260,14 @@ public class DBpediaLuceneIndexCreator {
 	 */
 	public static void main(String[] args) {
 
-		if(args.length != 2){
-			System.out.println("Usage: DBpediaLuceneIndexCreator <dataFile> <indexDirectory>");
+		if(args.length != 1){
+			System.out.println("Usage: DBpediaSolrIndexCreator <dataFile> ");
 			System.exit(0);
 		}
 		
 		String dataFile = args[0];
-		String indexDirectory = args[1];
 		
-		new DBpediaLuceneIndexCreator(indexDirectory).createIndex(dataFile);
+		new DBpediaSolrIndexCreator().createIndex(dataFile);
 		
 		
 

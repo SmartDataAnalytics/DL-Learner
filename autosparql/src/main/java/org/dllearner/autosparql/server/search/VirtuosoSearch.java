@@ -13,7 +13,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-public class VirtuosoSearch {
+public class VirtuosoSearch implements Search{
 	
 	private static Logger logger = Logger.getLogger(VirtuosoSearch.class);
 	

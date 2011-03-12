@@ -24,7 +24,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.dllearner.autosparql.client.model.Example;
 
-public class LuceneSearch {
+public class LuceneSearch implements Search{
 	
 	private static Logger logger = Logger.getLogger(LuceneSearch.class);
 	
@@ -38,8 +38,8 @@ public class LuceneSearch {
 		try {
 			Directory dir = FSDirectory.open(new File(indexDirectory));//RAMDirectory();
 			searcher = new IndexSearcher(dir, true);
-			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			queryParser = new QueryParser(Version.LUCENE_30, "comment", analyzer);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_29);
+			queryParser = new QueryParser(Version.LUCENE_29, "comment", analyzer);
 			collector = TopScoreDocCollector.create(hitsPerPage, true);
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
