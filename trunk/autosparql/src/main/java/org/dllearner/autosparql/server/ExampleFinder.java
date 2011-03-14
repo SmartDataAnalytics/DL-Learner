@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.exception.TimeOutException;
+import org.dllearner.autosparql.server.search.QuestionProcessor;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.server.util.TreeHelper;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -30,8 +31,8 @@ import org.dllearner.sparqlquerygenerator.util.Filter;
 import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
 import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilterAggressive;
+import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 
-import com.clarkparsia.owlapiv3.XSD;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -69,7 +70,9 @@ public class ExampleFinder {
 	
 	private static final int MAX_NBR_COMPUTING_TIME = 100;
 	
-	int id;
+	int id = -1;
+	
+	private String question;
 	
 	boolean dirty = true;
 	
@@ -106,6 +109,16 @@ public class ExampleFinder {
 	
 	public void setQuestionId(int id){
 		this.id = id;
+	}
+	
+	public void setQuestion(String question){
+		this.question = question;
+		QuestionProcessor qp = new QuestionProcessor();
+		List<String> relevantWords = qp.getRelevantWords(question);
+		QuestionBasedStatementFilter stmtFilter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
+		treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
+		queryTreeCache.setStatementFilter(stmtFilter);
+		nbrGen.setStatementFilter(stmtFilter);
 	}
 	
 	
@@ -300,7 +313,7 @@ public class ExampleFinder {
 	}
 	
 	private SortedSet<String> getResources(String query){
-		SortedSet<String> resources = new TreeSet<String>();
+		SortedSet<String> resources = new TreeSet<String>();System.err.println(query);
 		String result = selectCache.executeSelectQuery(endpoint, getLimitedQuery(query, (posExamples.size()+negExamples.size()+1), true));
 		testedQueries.add(query);
 		ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(result);
@@ -442,7 +455,7 @@ public class ExampleFinder {
 		lgg = queryGen.getLastLGG();
 		currentQuery = lgg.toSPARQLQueryString();
 		currentQueryTree = lgg;
-		SortedSet<String> resources = getResources(getLimitedQuery(currentQuery, posExamplesTrees.size()+negExamplesTrees.size(), true));
+		SortedSet<String> resources = getResources(currentQuery);
 		for(String r : resources){
 			if(!posExamples.contains(r) && !negExamples.contains(r)){
 				return getExample(r);

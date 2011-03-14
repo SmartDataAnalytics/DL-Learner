@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.core.SolrCore;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
@@ -38,6 +39,9 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private String baseDir;
 	private String cacheDir;
+	private String solrURL;
+	
+	private String question;
 	
 	public SPARQLServiceImpl(){
 		super();
@@ -57,6 +61,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			Ini ini = new Ini(is);
 			baseDir = ini.get("baseDir").get("path");
 			cacheDir = ini.get("cacheDir").get("path");
+			solrURL = ini.get("solrURL").get("url");
 		} catch (Exception e){
 			e.printStackTrace();
 		} 
@@ -85,6 +90,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public PagingLoadResult<Example> getQueryResult(String query,
 			PagingLoadConfig config) throws AutoSPARQLException {
 		logger.info("Searching for " + query + "(" + getSession().getId() + ")");
+		getAutoSPARQLSession().setQuestion(query);
 		return getAutoSPARQLSession().getQueryResult(query, config);
 	}
 
@@ -92,7 +98,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public Example getNextQueryResult(String query)
 			throws AutoSPARQLException {
 		logger.info("Searching for " + query + "(" + getSession().getId() + ")");
-		System.out.println(getAutoSPARQLSession());
 		return getAutoSPARQLSession().getNextQueryResult(query);
 	}
 	
@@ -118,6 +123,12 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			throw new AutoSPARQLException(e);
 		}
 	}
+	
+	@Override
+	public void setQuestion(String question) throws AutoSPARQLException{
+		logger.info("Set question " + question + "(" + getSession().getId() + ")");
+		this.question = question;
+	}
 
 	@Override
 	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
@@ -142,13 +153,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public String getCurrentQuery() throws AutoSPARQLException {
+	public String getCurrentSPARQLQuery() throws AutoSPARQLException {
 		return getAutoSPARQLSession().getCurrentQuery();
 	}
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
 //		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
-		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir), getServletContext().getRealPath(""));
+		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir),
+				getServletContext().getRealPath(""), solrURL);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	

@@ -26,13 +26,15 @@ public interface SPARQLService extends RemoteService{
 	
 	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;
 	
-	String getCurrentQuery() throws AutoSPARQLException;
+	String getCurrentSPARQLQuery() throws AutoSPARQLException;
 	
 	void setEndpoint(Endpoint endpoint) throws AutoSPARQLException;
 	
 	List<Endpoint> getEndpoints() throws AutoSPARQLException;
 	
 	String getMessage();
+	
+	void setQuestion(String question) throws AutoSPARQLException;
 	
 	/**
      * Utility class to get the RPC Async interface from client-side code

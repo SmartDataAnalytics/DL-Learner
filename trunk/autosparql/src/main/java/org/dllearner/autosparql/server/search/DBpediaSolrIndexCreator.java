@@ -46,6 +46,7 @@ public class DBpediaSolrIndexCreator {
 	public static final String imageProperty = "http://dbpedia.org/ontology/thumbnail";
 	public static final String labelProperty = "http://www.w3.org/2000/01/rdf-schema#label";
 	public static final String abstractProperty = "http://www.w3.org/2000/01/rdf-schema#comment";
+	public static final String redirectProperty = "http://dbpedia.org/ontology/wikiPageRedirects";
 	
 	private SolrInputField uriField = new SolrInputField("uri");
 	private SolrInputField labelField = new SolrInputField("label");
@@ -57,6 +58,7 @@ public class DBpediaSolrIndexCreator {
 	
 	private SolrInputDocument doc;
 	private SolrServer solr;
+	private CoreContainer coreContainer;
 	
 	public DBpediaSolrIndexCreator(){
 		try {
@@ -77,22 +79,22 @@ public class DBpediaSolrIndexCreator {
 	}
 	
 	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
-		CommonsHttpSolrServer solr = new CommonsHttpSolrServer("http://localhost:8983/solr/crawler");
+		CommonsHttpSolrServer solr = new CommonsHttpSolrServer("http://localhost:8983/solr/dbpedia");
 		solr.setRequestWriter(new BinaryRequestWriter());
 		return solr;
 	}
 	
 	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
 		File root = new File("/opt/solr");
-		CoreContainer coreContainer = new CoreContainer();
-		SolrConfig config = new SolrConfig(root + "/dbpedia",
+		coreContainer = new CoreContainer();
+		SolrConfig config = new SolrConfig(root + "/dbpedia2",
 				"solrconfig.xml", null);
 		CoreDescriptor coreName = new CoreDescriptor(coreContainer,
-				"crawler", root + "/solr");
-		SolrCore core = new SolrCore("dbpedia", root
-				+ "/dbpedia/data", config, null, coreName);
+				"dbpedia2", root + "/solr");
+		SolrCore core = new SolrCore("dbpedia2", root
+				+ "/dbpedia2/data", config, null, coreName);
 		coreContainer.register(core, false);
-		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, "dbpedia");
+		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, "dbpedia2");
 		return solr;
 	}
 	
@@ -108,6 +110,7 @@ public class DBpediaSolrIndexCreator {
 			String abstr = "";
 			int pageRank = 0;
 			String newURI;
+			boolean skip = false;
 			@Override
 			public void startRDF() throws RDFHandlerException {}
 			
@@ -121,12 +124,15 @@ public class DBpediaSolrIndexCreator {
 				
 				newURI = stmt.getSubject().stringValue();
 				if(!newURI.equals(uri)){
-					write2Index(uri, label, abstr, imageURL, pageRank);
+					if(!skip){
+						write2Index(uri, label, abstr, imageURL, pageRank);
+					}
 					uri = newURI;
 					pageRank = getPageRank(uri);
 					label = "";
 					abstr = "";
 					imageURL = "";
+					skip = false;
 					cnt++;
 					if(cnt % 100000 == 0){
 						try {
@@ -146,6 +152,8 @@ public class DBpediaSolrIndexCreator {
 					abstr = stmt.getObject().stringValue();
 				} else if(stmt.getPredicate().stringValue().equals(imageProperty)){
 					imageURL = stmt.getObject().stringValue();
+				} else if(stmt.getPredicate().stringValue().equals(redirectProperty)){
+					skip = true;
 				}
 				
 				
@@ -163,6 +171,8 @@ public class DBpediaSolrIndexCreator {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
 			
 			solr.commit();
+			solr.optimize();
+			coreContainer.shutdown();
 		} catch (RDFParseException e) {
 			e.printStackTrace();
 		} catch (RDFHandlerException e) {

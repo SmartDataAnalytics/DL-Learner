@@ -7,6 +7,7 @@ import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.InfoPanel;
 import org.dllearner.autosparql.client.widget.InteractivePanel;
+import org.dllearner.autosparql.client.widget.RelatedResourcesPanel;
 import org.dllearner.autosparql.client.widget.ResultPanel;
 import org.dllearner.autosparql.client.widget.SearchPanel;
 
@@ -36,6 +37,7 @@ public class QueryView extends View {
 	private InteractivePanel interactivePanel;
 	private ResultPanel resultPanel;
 	private InfoPanel infoPanel;
+	private RelatedResourcesPanel relatedResourcesPanel;
 	
 	private LayoutContainer dummyPanel;
 	
@@ -55,16 +57,19 @@ public class QueryView extends View {
 	    mainPanel.add(vPanel, new RowData(0.3, 1, new Margins(0, 5, 0, 0)));
 	    
 	    dummyPanel = new LayoutContainer(new FitLayout());
-	    vPanel.add(dummyPanel, new RowData(1, 0.2, new Margins(0, 0, 10, 0)));
+	    vPanel.add(dummyPanel, new RowData(1, 0.4, new Margins(0, 0, 10, 0)));
 	    
 //	    infoPanel = new InfoPanel();
 //	    dummyPanel.add(infoPanel);
 	    
+	    relatedResourcesPanel = new RelatedResourcesPanel();
+	    dummyPanel.add(relatedResourcesPanel);
+	    
 	    interactivePanel = new InteractivePanel();
-	    dummyPanel.add(interactivePanel);
+//	    dummyPanel.add(interactivePanel);
 	    
 	    searchPanel = new SearchPanel();
-	    vPanel.add(searchPanel, new RowData(1, 0.8, new Margins(5, 0, 0, 0)));
+	    vPanel.add(searchPanel, new RowData(1, 0.6, new Margins(5, 0, 0, 0)));
 	   
 	    vPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 	    mainPanel.add(vPanel, new RowData(0.7, 1, new Margins(0, 0, 0, 5)));
@@ -141,7 +146,7 @@ public class QueryView extends View {
 	}
 	
 	private void showInteractivePanel(){
-		dummyPanel.remove(infoPanel);
+		dummyPanel.remove(relatedResourcesPanel);
 		dummyPanel.add(interactivePanel);
 		dummyPanel.layout();
 	}
@@ -181,6 +186,7 @@ public class QueryView extends View {
 //					});
 //		}
 		if (examplesPanel.getPositiveExamplesURIs().size() >= 2) {
+			showInteractivePanel();
 			interactivePanel.mask("Searching...");
 			SPARQLService.Util.getInstance().getSimilarExample(
 					examplesPanel.getPositiveExamplesURIs(),
@@ -208,26 +214,27 @@ public class QueryView extends View {
 						}
 					});
 		} else {
-			onShowNextResourceRelatedToQuery();
+//			onShowNextResourceRelatedToQuery();
 		}
 	}
 	
 	private void onShowNextResourceRelatedToQuery(){
-		interactivePanel.mask("Computing examples related to query...");
-	      SPARQLService.Util.getInstance().getNextQueryResult((String)Registry.get("Query"), new AsyncCallback<Example>() {
-						
-						@Override
-						public void onSuccess(Example result) {
-							interactivePanel.setExample(result);
-							interactivePanel.unmask();
-						}
-						
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-							
-						}
-					});
+//		interactivePanel.mask("Computing examples related to query...");
+//	      SPARQLService.Util.getInstance().getNextQueryResult((String)Registry.get("Query"), new AsyncCallback<Example>() {
+//						
+//						@Override
+//						public void onSuccess(Example result) {
+//							interactivePanel.setExample(result);
+//							interactivePanel.unmask();
+//						}
+//						
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							// TODO Auto-generated method stub
+//							
+//						}
+//					});
+		relatedResourcesPanel.search((String)Registry.get("Query"));
 	}
 	
 	private void onRemoveExample(Example example, Example.Type type){

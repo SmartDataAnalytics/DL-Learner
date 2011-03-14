@@ -155,7 +155,7 @@ public class ResultPanel extends ContentPanel {
 	}
 	
 	private void updateQuery(){
-		SPARQLService.Util.getInstance().getCurrentQuery(new AsyncCallback<String>() {
+		SPARQLService.Util.getInstance().getCurrentSPARQLQuery(new AsyncCallback<String>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

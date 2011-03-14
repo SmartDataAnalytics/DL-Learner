@@ -12,6 +12,7 @@ import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dllearner.autosparql.client.model.Example;
 
@@ -20,6 +21,7 @@ public class SolrSearch implements Search{
 	private CommonsHttpSolrServer server;
 	
 	private int hitsPerPage = 10;
+	private int lastTotalHits = 0;
 	
 	public SolrSearch(String solrServerURL){
 		try {
@@ -45,8 +47,10 @@ public class SolrSearch implements Search{
 			params.set("rows", hitsPerPage);
 			params.set("start", offset);
 			response = server.query(params);
-			for(SolrDocument d : response.getResults()){
-				resources.add((String) d.get("id"));
+			SolrDocumentList docList = response.getResults();
+			lastTotalHits = (int) docList.getNumFound();
+			for(SolrDocument d : docList){
+				resources.add((String) d.get("uri"));
 			}
 		} catch (SolrServerException e) {
 			e.printStackTrace();
@@ -68,11 +72,14 @@ public class SolrSearch implements Search{
 			params.set("q", queryString);
 			params.set("rows", hitsPerPage);
 			params.set("start", offset);
+//			params.set("sort", "score+desc,pagerank+desc");
 			response = server.query(params);
+			SolrDocumentList docList = response.getResults();
+			lastTotalHits = (int) docList.getNumFound();
 			Example example;
-			for(SolrDocument d : response.getResults()){
-				example = new Example((String) d.get("id"), (String) d.get("label"),
-						"", (String) d.get("description"));
+			for(SolrDocument d : docList){
+				example = new Example((String) d.get("uri"), (String) d.get("label"),
+						(String) d.get("imageURL"), (String) d.get("comment"));
 				resources.add(example);
 			}
 		} catch (SolrServerException e) {
@@ -83,8 +90,7 @@ public class SolrSearch implements Search{
 
 	@Override
 	public int getTotalHits(String queryString) {
-		// TODO Auto-generated method stub
-		return 0;
+		return lastTotalHits;
 	}
 
 	@Override
