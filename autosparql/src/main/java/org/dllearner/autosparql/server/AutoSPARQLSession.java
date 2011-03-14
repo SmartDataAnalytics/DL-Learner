@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.search.Search;
+import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -32,18 +34,24 @@ public class AutoSPARQLSession {
 	private ExtractionDBCache constructCache;
 	private ExtractionDBCache selectCache;
 	private ExampleFinder exampleFinder;
+	private Search nlpSearch;
 	
 	private String servletContextPath;
 	
 	
-	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath){
+	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath, String solrURL){
 		this.endpoint = endpoint;
 		this.servletContextPath = servletContextPath;
 		
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SPARQLSearch(selectCache, servletContextPath);
+		nlpSearch = new SolrSearch(solrURL);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
+	}
+	
+	public void setQuestion(String question){
+		exampleFinder.setQuestion(question);
 	}
 	
 	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException{
@@ -51,8 +59,8 @@ public class AutoSPARQLSession {
 			int limit = config.getLimit();
 			int offset = config.getOffset();
 			
-			List<Example> searchResult = search.searchForKeyword(searchTerm, endpoint, limit, offset);
-			int totalLength = search.count(searchTerm, endpoint);
+			List<Example> searchResult = nlpSearch.getExamples(searchTerm, offset);
+			int totalLength = nlpSearch.getTotalHits(searchTerm);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
 			result.setOffset(offset);
@@ -71,8 +79,8 @@ public class AutoSPARQLSession {
 			int limit = config.getLimit();
 			int offset = config.getOffset();
 			
-			List<Example> searchResult = search.searchForQuery(query, endpoint, limit, offset);
-			int totalLength = 100;//search.count(searchTerm, endpoint);
+			List<Example> searchResult = nlpSearch.getExamples(query, offset);
+			int totalLength = nlpSearch.getTotalHits(query);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
 			result.setOffset(offset);
@@ -87,9 +95,10 @@ public class AutoSPARQLSession {
 
 	public Example getNextQueryResult(String query)
 			throws AutoSPARQLException {System.out.println("Getting next resource for query " + query);
-		Example result = search.getNextQueryResult(query, endpoint);
-		exampleFinder.setObjectFilter(new ExactMatchFilter(new HashSet<String>(search.getAllQueryRelatedResources())));
-		return result;
+			return nlpSearch.getExamples(query).get(0);
+//		Example result = search.getNextQueryResult(query, endpoint);
+//		exampleFinder.setObjectFilter(new ExactMatchFilter(new HashSet<String>(search.getAllQueryRelatedResources())));
+//		return result;
 	}
 	
 	public Example getSimilarExample(List<String> posExamples,
@@ -160,6 +169,7 @@ public class AutoSPARQLSession {
 			throw new AutoSPARQLException(e);
 		}
 	}
+	
 	
 	private String modifyQuery(String query){
 		String newQuery = query.replace("SELECT ?x0 WHERE {", 

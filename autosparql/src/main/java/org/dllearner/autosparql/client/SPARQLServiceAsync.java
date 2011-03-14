@@ -2,7 +2,6 @@ package org.dllearner.autosparql.client;
 
 import java.util.List;
 
-import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 
@@ -27,12 +26,14 @@ public interface SPARQLServiceAsync
     
     void getCurrentQueryResult(PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);
     
-    void getCurrentQuery(AsyncCallback<String> callback);
+    void getCurrentSPARQLQuery(AsyncCallback<String> callback);
     
     void setEndpoint(Endpoint endpoint, AsyncCallback<Void> callback);
 	
 	void getEndpoints(AsyncCallback<List<Endpoint>> callback);
 	
 	void getMessage(AsyncCallback<String> callback);
+	
+	void setQuestion(String question, AsyncCallback<Void> callback);
     
 }
