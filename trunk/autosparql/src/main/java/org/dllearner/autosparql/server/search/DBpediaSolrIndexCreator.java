@@ -16,6 +16,8 @@ import java.util.prefs.Preferences;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggerFactory;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrServer;
@@ -39,6 +41,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
+import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
 public class DBpediaSolrIndexCreator {
@@ -59,6 +62,8 @@ public class DBpediaSolrIndexCreator {
 	private SolrInputDocument doc;
 	private SolrServer solr;
 	private CoreContainer coreContainer;
+	
+	private static final String CORE_NAME = "dbpedia3";
 	
 	public DBpediaSolrIndexCreator(){
 		try {
@@ -87,14 +92,14 @@ public class DBpediaSolrIndexCreator {
 	private SolrServer getEmbeddedSolrServer() throws ParserConfigurationException, IOException, SAXException{
 		File root = new File("/opt/solr");
 		coreContainer = new CoreContainer();
-		SolrConfig config = new SolrConfig(root + "/dbpedia2",
+		SolrConfig config = new SolrConfig(root + File.separator + CORE_NAME,
 				"solrconfig.xml", null);
 		CoreDescriptor coreName = new CoreDescriptor(coreContainer,
-				"dbpedia2", root + "/solr");
-		SolrCore core = new SolrCore("dbpedia2", root
-				+ "/dbpedia2/data", config, null, coreName);
+				CORE_NAME, root + "/solr");
+		SolrCore core = new SolrCore(CORE_NAME, root
+				+ File.separator + CORE_NAME + "/data", config, null, coreName);
 		coreContainer.register(core, false);
-		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, "dbpedia2");
+		EmbeddedSolrServer solr = new EmbeddedSolrServer(coreContainer, CORE_NAME);
 		return solr;
 	}
 	
@@ -123,6 +128,7 @@ public class DBpediaSolrIndexCreator {
 				}
 				
 				newURI = stmt.getSubject().stringValue();
+				
 				if(!newURI.equals(uri)){
 					if(!skip){
 						write2Index(uri, label, abstr, imageURL, pageRank);
@@ -152,7 +158,7 @@ public class DBpediaSolrIndexCreator {
 					abstr = stmt.getObject().stringValue();
 				} else if(stmt.getPredicate().stringValue().equals(imageProperty)){
 					imageURL = stmt.getObject().stringValue();
-				} else if(stmt.getPredicate().stringValue().equals(redirectProperty)){
+				} else if(stmt.getPredicate().stringValue().equals(redirectProperty) || stmt.getSubject().stringValue().startsWith("http://upload.")){
 					skip = true;
 				}
 				
@@ -269,7 +275,7 @@ public class DBpediaSolrIndexCreator {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.WARN);
 		if(args.length != 1){
 			System.out.println("Usage: DBpediaSolrIndexCreator <dataFile> ");
 			System.exit(0);
