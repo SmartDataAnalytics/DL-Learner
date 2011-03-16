@@ -1,5 +1,0 @@
-(define-fuzzy-concept fuzzyBigSize right-shoulder(0.0, 850.0, 700.0, 750.0) )
-(define-fuzzy-concept size800 crisp(0,850,725,725))
-(define-concept BigSizeItem (and Item (some hasSize fuzzyBigSize)))
-(instance item3 (and Item (some hasSize size800)) 1.0 )
-(min-instance? item3 BigSizeItem)
