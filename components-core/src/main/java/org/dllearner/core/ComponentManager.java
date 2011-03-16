@@ -83,7 +83,6 @@ public final class ComponentManager {
             "org.dllearner.kb.OWLAPIOntology",
 //reasoners
             "org.dllearner.reasoning.OWLAPIReasoner",
-            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
             "org.dllearner.reasoning.DIGReasoner",
             "org.dllearner.reasoning.FastRetrievalReasoner",
             "org.dllearner.reasoning.FastInstanceChecker",
@@ -103,7 +102,6 @@ public final class ComponentManager {
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.celoe.CELOE",
-            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE", //added by Josue
             "org.dllearner.algorithms.isle.ISLE"
 
      } ));

@@ -1,3 +1,0 @@
-(instance umberto Minor)
-(max-instance? umberto Minor)
-
