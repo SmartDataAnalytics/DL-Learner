@@ -1,0 +1,18 @@
+(define-modifier very linear-modifier(0.8))
+
+(define-fuzzy-concept eq243 crisp(0,400,200,200))
+(define-fuzzy-concept geq300 crisp(0,400,300,400)) #(josue) =? (define-fuzzy-concept geq300 crisp(0,400,300,400))
+(define-fuzzy-concept seinciestosSpeed crisp(0,400,300,300))
+
+(define-fuzzy-concept High right-shoulder(0,400,180,250))
+
+(define-concept SportCar (and Car (some speed (very High)))) 
+
+
+(instance ferrari (and Car (some speed geq300)) 1)
+(instance audi (and Car (some speed eq243)) 1)
+(instance seiscientos (and Car (some speed seinciestosSpeed)) 1)
+
+(min-instance? ferrari SportCar)
+(min-instance? audi SportCar)
+(min-instance? seiscientos SportCar)

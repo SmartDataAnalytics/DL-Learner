@@ -31,6 +31,7 @@ import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
+import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.refinement.ROLearner;
@@ -49,6 +50,7 @@ import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 
 /**
  * Contains mappings from component classes to strings.
@@ -90,6 +92,7 @@ public class ConfMapper {
 		knowledgeSourceMapping.put("sparql", SparqlKnowledgeSource.class);
 		reasonerMapping.put("digReasoner", DIGReasoner.class);
 		reasonerMapping.put("owlAPIReasoner", OWLAPIReasoner.class);
+		reasonerMapping.put("fuzzyOwlAPIReasoner", FuzzyOWLAPIReasoner.class); // added by Josue
 		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
 		reasonerMapping.put("fastRetrievalReasoner", FastRetrievalReasoner.class);
 		learningProblemMapping.put("posNegLPStandard", PosNegLPStandard.class);
@@ -105,6 +108,7 @@ public class ConfMapper {
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
 		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);
+		learningAlgorithmMapping.put("fuzzyCeloe", FuzzyCELOE.class); // added by Josue
 		
 		// you do not need to edit anything below
 		

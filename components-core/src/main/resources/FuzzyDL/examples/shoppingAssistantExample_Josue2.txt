@@ -1,0 +1,18 @@
+# KB
+(define-fuzzy-concept item_1_price crisp(0,4,1.00001,1.00001))
+
+(define-fuzzy-concept CheapPrice left-shoulder(0,4,1.0,1.5))
+(define-fuzzy-concept MeduimPrice trapezoidal(0,4,1.0,1.5,2.5,3.0))
+(define-fuzzy-concept ExpensivePrice right-shoulder(0,4,2.5,3.0))
+
+(define-concept CheapItem (and Item (some hasPrice CheapPrice))) 
+(define-concept MediumPriceItem (and Item (some hasPrice MeduimPrice))) 
+(define-concept ExpensiveItem (and Item (some hasPrice ExpensivePrice))) 
+
+
+(instance item1 (and Item (some hasPrice item_1_price)) 1)
+
+# queries
+(min-instance? item1 CheapItem)
+(min-instance? item1 MediumPriceItem)
+(min-instance? item1 ExpensiveItem)
