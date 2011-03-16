@@ -1,0 +1,95 @@
+######################################
+### fuzzy shopping assistant example 
+### autor: Josue Iglesias        
+### NOTES:
+### - this can be further complicated (as in ex.#4 in http://gaia.isti.cnr.it/~straccia/software/fuzzyDL/fuzzyDL.html)
+######################################
+
+# general modifiers definition
+(define-modifier very linear-modifier(0.8))
+(define-modifier aBit linear-modifier(0.8))
+
+# crisp concepts definition
+## particular product prices definition (euro)
+(define-fuzzy-concept product_1_price crisp(0,500,20.5,20.5))
+(define-fuzzy-concept product_2_price crisp(0,500,21.5,21.5))
+(define-fuzzy-concept product_3_price crisp(0,500,30.5,30.5))
+## particular product sizes definition (gr.)
+(define-fuzzy-concept product_1_size crisp(0,500,300,300))
+(define-fuzzy-concept product_2_size crisp(0,500,450,450))
+(define-fuzzy-concept product_3_size crisp(0,500,500,500))
+
+# fuzzy concepts definition
+## about products' price
+(define-fuzzy-concept ExpensivePrice right-shoulder(0,500,20,40))
+(define-fuzzy-concept CheapPrice left-shoulder(0,500,20,40))
+## about products' size
+(define-fuzzy-concept BigSize right-shoulder(0,500,350,500))
+(define-fuzzy-concept SmallSize left-shoulder(0,500,350,500))
+## about buyer's preferences
+(define-fuzzy-concept BuyerProductPrice left-shoulder(0,500,22,30))
+(define-fuzzy-concept BuyerProductSize right-shoulder(0,1000,400,1000))
+
+# concepts definition
+## about products' price
+(define-concept VeryExpensiveProduct (and Product (some hasPrice (very ExpensivePrice)))) 
+(define-concept AbitExpensiveProduct (and Product (some hasPrice (aBit ExpensivePrice)))) 
+(define-concept VeryCheapProduct (and Product (some hasPrice (very CheapPrice)))) 
+(define-concept AbitCheapProduct (and Product (some hasPrice (aBit CheapPrice))))
+## about products' size
+(define-concept VeryBigProduct (and Product (some hasSize (very BigSize)))) 
+(define-concept AbitBigProduct (and Product (some hasSize (aBit BigSize))))
+(define-concept VerySmallProduct (and Product (some hasSize (very SmallSize)))) 
+(define-concept AbitSmallProduct (and Product (some hasSize (aBit SmallSize))))
+## about buyer's preferences
+(define-concept BuyerProductPricePreference (and Product (some hasPrice BuyerProductPrice))) 
+(define-concept BuyerProductSizePreference (and Product (some hasSize BuyerProductSize))) 
+(define-concept BuyerProductPriority (w-sum (0.6 BuyerProductPricePreference) (0.4 BuyerProductSizePreference))) 
+## about product classes ??
+(define-concept Product_1_class (and Product (some hasPrice product_1_price) (some hasSize product_1_size)))
+(define-concept Product_2_class (and Product (some hasPrice product_2_price) (some hasSize product_2_size)))
+(define-concept Product_3_class (and Product (some hasPrice product_3_price) (some hasSize product_3_size)))
+
+# properties configuration (if no configuration needed, properties don't need to be declared)
+(functional hasPrice)
+(functional hasSize)
+
+# instances definition
+## particular products definition (note that products' price/size could be fuzzy ... -how?-)
+(instance product_1 (and Product (some hasPrice product_1_price) (some hasSize product_1_size)) 1)
+(instance product_2 (and Product (some hasPrice product_2_price) (some hasSize product_2_size)) 1)
+(instance product_3 (and Product (some hasPrice product_3_price) (some hasSize product_3_size)) 1)
+
+# fuzzy queries
+# 1) instance membership degree
+(min-instance? product_1 VeryExpensiveProduct)
+(min-instance? product_1 AbitExpensiveProduct)
+(min-instance? product_1 VeryCheapProduct)
+(min-instance? product_1 AbitCheapProduct)
+(min-instance? product_1 VeryBigProduct)
+(min-instance? product_1 AbitBigProduct)
+(min-instance? product_1 VerySmallProduct)
+(min-instance? product_1 AbitSmallProduct)
+# ... the same can be applied for product_N ...
+
+# 2) concept subsumption degree
+## regarding products' price
+(min-subs? VeryExpensiveProduct AbitExpensiveProduct)
+(min-subs? AbitExpensiveProduct VeryExpensiveProduct)
+(min-subs? AbitExpensiveProduct AbitCheapProduct)
+## regarding products' size
+(min-subs? VeryBigProduct AbitBigProduct)
+(min-subs? AbitBigProduct VeryBigProduct)
+(min-subs? AbitBigProduct AbitSmallProduct)
+# ... more queries in this sense can be done ...
+
+# 3) concept satisfiability
+(max-sat? (and AbitCheapProduct AbitExpensiveProduct))
+(max-sat? (and AbitSmallProduct AbitBigProduct))
+(max-sat? (and BuyerProductPriority Product_1_class)) 
+(max-sat? (and BuyerProductPriority Product_2_class)) 
+(max-sat? (and BuyerProductPriority Product_3_class)) 
+
+# ... more queries in this sense can be done ...
+(show-concrete-fillers hasPrice hasSize) # this shows more information about everything stated in this document (above or below)
+
