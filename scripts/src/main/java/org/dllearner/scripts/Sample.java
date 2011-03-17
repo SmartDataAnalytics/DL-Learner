@@ -33,7 +33,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -132,7 +132,7 @@ public class Sample {
 		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
 		// learning algorithm
-		LearningAlgorithm la = cm.learningAlgorithm(OCEL.class, lp, r);
+		AbstractCELA la = cm.learningAlgorithm(OCEL.class, lp, r);
 		cm.applyConfigEntry(la, "useAllConstructor", false);
 		cm.applyConfigEntry(la, "useExistsConstructor", true);
 		cm.applyConfigEntry(la, "useCardinalityRestrictions", false);

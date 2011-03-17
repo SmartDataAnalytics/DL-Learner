@@ -32,7 +32,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -64,7 +64,7 @@ public class Config {
 	private ReasonerComponent reasoner;
 //	private ReasonerComponent rs;
 	private LearningProblem lp;
-	private LearningAlgorithm la;
+	private AbstractCELA la;
 
 	// stores which components need to be initialised (either
 	// because they have not been initialiased or previous components
@@ -92,7 +92,7 @@ public class Config {
 	 * @param lp
 	 * @param la
 	 */
-	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, LearningProblem lp, LearningAlgorithm la) {
+	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, LearningProblem lp, AbstractCELA la) {
 		super();
 		this.cm = cm;
 		this.source = source;
@@ -320,7 +320,7 @@ public class Config {
 	 * 
 	 * @return LearningAlgorithm
 	 */
-	public LearningAlgorithm getLearningAlgorithm() {
+	public AbstractCELA getLearningAlgorithm() {
 		return this.la;
 	}
 
@@ -332,7 +332,7 @@ public class Config {
 	 * by GUI).
 	 * @return A learning algorithm instance.
 	 */
-	public LearningAlgorithm newLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
+	public AbstractCELA newLearningAlgorithm(Class<? extends AbstractCELA> clazz)
 			throws LearningProblemUnsupportedException {
 		la = cm.learningAlgorithm(clazz, lp, reasoner);
 		return la;
@@ -346,7 +346,7 @@ public class Config {
 	 * by GUI).
 	 * @return A learning algorithm instance.
 	 */
-	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
+	public AbstractCELA changeLearningAlgorithm(Class<? extends AbstractCELA> clazz)
 			throws LearningProblemUnsupportedException {
 		la = cm.learningAlgorithm(clazz, lp, reasoner);
 		needsInit[3] = true;		
@@ -490,7 +490,7 @@ public class Config {
 				gui
 						.setStatusMessage("All mandatory options filled in. You can continue to the learning algorithm tab.");
 			}
-		} else if (component instanceof LearningAlgorithm) {
+		} else if (component instanceof AbstractCELA) {
 			needsInit[3] = true;
 			if (isEnabled[3]) {
 				gui

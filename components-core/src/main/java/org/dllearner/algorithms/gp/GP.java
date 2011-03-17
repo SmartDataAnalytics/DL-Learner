@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.hybridgp.Psi;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.GPConfigurator;
@@ -55,7 +55,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class GP extends LearningAlgorithm {
+public class GP extends AbstractCELA {
 	
 	private GPConfigurator configurator;
 	@Override

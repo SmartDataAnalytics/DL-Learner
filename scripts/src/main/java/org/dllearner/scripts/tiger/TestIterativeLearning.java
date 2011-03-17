@@ -23,7 +23,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ComponentPool;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -520,7 +520,7 @@ public class TestIterativeLearning {
 			FastInstanceChecker rc = _getFastInstanceChecker(ex);
 			PosNegLPStandard lp = ComponentFactory
 					.getPosNegLPStandard(rc, ex.getPosTrain(), ex.getNegTrain());
-			LearningAlgorithm la = _getROLLearner(lp, rc, config, ex, iteration);
+			AbstractCELA la = _getROLLearner(lp, rc, config, ex, iteration);
 			lp.init();
 			la.init();
 			initTimeKBandReasoner.stop();
@@ -625,7 +625,7 @@ public class TestIterativeLearning {
 		}
 	}
 
-	private static LearningAlgorithm _getROLLearner(LearningProblem lp, ReasonerComponent rc,
+	private static AbstractCELA _getROLLearner(LearningProblem lp, ReasonerComponent rc,
 			IteratedConfig config, Examples ex, int iteration) throws Exception {
 
 		int maxExecutionTime = config.maxExecutionTime;

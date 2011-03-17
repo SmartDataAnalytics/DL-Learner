@@ -30,7 +30,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.Configurator;
@@ -83,7 +83,7 @@ import org.dllearner.utilities.owl.DescriptionMinimizer;
  * @author Jens Lehmann
  *
  */
-public class ELLearningAlgorithmDisjunctive extends LearningAlgorithm {
+public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithmDisjunctive.class);	
 	private ELLearningAlgorithmDisjunctiveConfigurator configurator;

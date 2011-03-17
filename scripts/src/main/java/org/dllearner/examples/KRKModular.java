@@ -18,7 +18,7 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -249,7 +249,7 @@ public class KRKModular {
 		System.out.println(neg);
 		
 		ComponentManager cm = ComponentManager.getInstance();
-		LearningAlgorithm la = null;
+		AbstractCELA la = null;
 		try {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(new KBFile(kb));

@@ -2,7 +2,7 @@ package org.dllearner.utilities.learn;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.Cache;
@@ -24,7 +24,7 @@ public class LearnSPARQLConfiguration extends LearnConfiguration {
 	
 
 	@Override
-	public void applyConfigEntries(ComponentManager cm, KnowledgeSource ks, LearningProblem lp, ReasonerComponent rs, LearningAlgorithm la) {
+	public void applyConfigEntries(ComponentManager cm, KnowledgeSource ks, LearningProblem lp, ReasonerComponent rs, AbstractCELA la) {
 		try {
 			super.applyConfigEntries(cm, ks, lp, rs, la);
 			// KNOWLEDGESOURCE

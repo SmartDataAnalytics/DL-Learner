@@ -33,7 +33,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
@@ -75,7 +75,7 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
-public class CELOE extends LearningAlgorithm {
+public class CELOE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);
 	private CELOEConfigurator configurator;

@@ -8,7 +8,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -47,7 +47,7 @@ public class ClassCastExceptionTest {
 		lp.init();
 		
 		// create the learning algorithm
-		LearningAlgorithm la = null;
+		AbstractCELA la = null;
 		try {
 			la = cm.learningAlgorithm(CELOE.class, lp, reasoner);
 			cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", 2);

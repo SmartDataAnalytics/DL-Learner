@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.GPUtilities;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
@@ -48,7 +48,7 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
-public class RandomGuesser extends LearningAlgorithm {
+public class RandomGuesser extends AbstractCELA {
 
 	private RandomGuesserConfigurator configurator;
 	@Override

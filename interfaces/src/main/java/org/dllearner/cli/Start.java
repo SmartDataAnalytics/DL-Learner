@@ -48,7 +48,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
@@ -104,7 +104,7 @@ public class Start {
 	private static ConfMapper confMapper = new ConfMapper();
 	
 	private Set<KnowledgeSource> sources;
-	private LearningAlgorithm la;
+	private AbstractCELA la;
 	private LearningProblem lp;
 	private ReasonerComponent rc;
 
@@ -309,7 +309,7 @@ public class Start {
 		// step 4: detect learning algorithm
 		Monitor laMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningAlgorithm").start();
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
-		Class<? extends LearningAlgorithm> laClass;
+		Class<? extends AbstractCELA> laClass;
 		if(algorithmOption != null) {
 			laClass = confMapper.getLearningAlgorithmClass(algorithmOption.getStringValue());
 			if(laClass == null) {
@@ -869,7 +869,7 @@ public class Start {
 		return sources;
 	}	
 	
-	public LearningAlgorithm getLearningAlgorithm() {
+	public AbstractCELA getLearningAlgorithm() {
 		return la;
 	}
 

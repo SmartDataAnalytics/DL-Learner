@@ -14,7 +14,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
@@ -42,7 +42,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 
-public class ROLearner extends LearningAlgorithm {
+public class ROLearner extends AbstractCELA {
 	
 	private ROLearnerConfigurator configurator;
 	@Override
@@ -51,7 +51,7 @@ public class ROLearner extends LearningAlgorithm {
 	}
 	
 	private static Logger logger = Logger
-	.getLogger(LearningAlgorithm.class);	
+	.getLogger(AbstractCELA.class);	
 	
 	private String logLevel = CommonConfigOptions.logLevelDefault;
 	

@@ -27,7 +27,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.Configurator;
@@ -51,7 +51,7 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
  * @author Jens Lehmann
  *
  */
-public class ELLearningAlgorithm extends LearningAlgorithm {
+public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
 	private ELLearningAlgorithmConfigurator configurator;
@@ -65,7 +65,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	private long treeStartTime;
 	
 	// a set with limited size (currently the ordering is defined in the class itself)
-	private EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
+	private EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;

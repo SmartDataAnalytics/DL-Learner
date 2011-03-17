@@ -36,7 +36,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
@@ -111,7 +111,7 @@ public class CrossValidation {
 		this(file, folds, leaveOneOut, null);
 	}
 			
-	public CrossValidation(File file, int folds, boolean leaveOneOut, LearningAlgorithm la) {		
+	public CrossValidation(File file, int folds, boolean leaveOneOut, AbstractCELA la) {		
 		
 		DecimalFormat df = new DecimalFormat();	
 		ComponentManager cm = ComponentManager.getInstance();

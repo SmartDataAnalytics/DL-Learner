@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -113,7 +113,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			selectableComponents.remove(ProtegeReasoner.class);
 		} else if (panelClass == LearningProblem.class) {
 			selectableComponents.addAll(config.getComponentManager().getLearningProblems());
-		} else if (panelClass == LearningAlgorithm.class) {
+		} else if (panelClass == AbstractCELA.class) {
 //			selectableComponents.addAll(config.getComponentManager().getLearningAlgorithms());
 			selectableComponents.addAll(config.getComponentManager().getApplicableLearningAlgorithms(config.getLearningProblem().getClass()));
 		}
@@ -193,7 +193,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			currentComponent = config.getReasoner();
 		} else if (panelClass == LearningProblem.class) {
 			currentComponent = config.getLearningProblem();
-		} else if (panelClass == LearningAlgorithm.class) {
+		} else if (panelClass == AbstractCELA.class) {
 			currentComponent = config.getLearningAlgorithm();
 		}
 		// select component without sending an event;
@@ -219,7 +219,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	 */
 	public void panelActivated() {
 		// hook method, which does nothing yet
-		if(panelClass.equals(LearningAlgorithm.class)) {
+		if(panelClass.equals(AbstractCELA.class)) {
 			// update selectable components
 			selectableComponents.clear();
 			selectableComponents.addAll(config.getComponentManager().getApplicableLearningAlgorithms(config.getLearningProblem().getClass()));
@@ -246,9 +246,9 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			newComponent = config.newReasoner((Class<ReasonerComponent>) clazz);
 		} else if (LearningProblem.class.isAssignableFrom(clazz)) {
 			newComponent = config.newLearningProblem((Class<LearningProblem>) clazz);
-		} else if (LearningAlgorithm.class.isAssignableFrom(clazz)) {
+		} else if (AbstractCELA.class.isAssignableFrom(clazz)) {
 			try {
-				newComponent = config.newLearningAlgorithm((Class<LearningAlgorithm>) clazz);
+				newComponent = config.newLearningAlgorithm((Class<AbstractCELA>) clazz);
 			} catch (LearningProblemUnsupportedException e) {
 				// TODO status message
 				e.printStackTrace();
@@ -267,9 +267,9 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			newComponent = config.changeReasoner((Class<ReasonerComponent>) clazz);
 		} else if (LearningProblem.class.isAssignableFrom(clazz)) {
 			newComponent = config.changeLearningProblem((Class<LearningProblem>) clazz);
-		} else if (LearningAlgorithm.class.isAssignableFrom(clazz)) {
+		} else if (AbstractCELA.class.isAssignableFrom(clazz)) {
 			try {
-				newComponent = config.changeLearningAlgorithm((Class<LearningAlgorithm>) clazz);
+				newComponent = config.changeLearningAlgorithm((Class<AbstractCELA>) clazz);
 			} catch (LearningProblemUnsupportedException e) {
 				// TODO status message
 				e.printStackTrace();

@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
@@ -57,7 +57,7 @@ import org.dllearner.learningproblems.ScorePosNeg;
  * @author Jens Lehmann
  *
  */
-public class BruteForceLearner extends LearningAlgorithm {
+public class BruteForceLearner extends AbstractCELA {
 	
 	private BruteForceLearnerConfigurator configurator;
 	@Override

@@ -34,7 +34,7 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ISLEConfigurator;
@@ -71,7 +71,7 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
-public class ISLE extends LearningAlgorithm {
+public class ISLE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(CELOE.class);
 	private ISLEConfigurator configurator;

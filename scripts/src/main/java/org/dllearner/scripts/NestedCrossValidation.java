@@ -40,7 +40,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
@@ -230,7 +230,7 @@ public class NestedCrossValidation {
 					LearningProblem lpIn = start.getLearningProblem();
 					cm.applyConfigEntry(lpIn, "positiveExamples", Datastructures.individualSetToStringSet(posEx));
 					cm.applyConfigEntry(lpIn, "negativeExamples", Datastructures.individualSetToStringSet(negEx));
-					LearningAlgorithm laIn = start.getLearningAlgorithm();
+					AbstractCELA laIn = start.getLearningAlgorithm();
 					cm.applyConfigEntry(laIn, parameter, (double)currParaValue);
 					
 					lpIn.init();
@@ -304,7 +304,7 @@ public class NestedCrossValidation {
 			LearningProblem lpOut = start.getLearningProblem();
 			cm.applyConfigEntry(lpOut, "positiveExamples", Datastructures.individualListToStringSet(posLists.get(currOuterFold).getTrainList()));
 			cm.applyConfigEntry(lpOut, "negativeExamples", Datastructures.individualListToStringSet(negLists.get(currOuterFold).getTrainList()));
-			LearningAlgorithm laOut = start.getLearningAlgorithm();
+			AbstractCELA laOut = start.getLearningAlgorithm();
 			cm.applyConfigEntry(laOut, parameter, (double)bestPara);
 			
 			lpOut.init();

@@ -34,7 +34,7 @@ import java.util.TreeSet;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -216,7 +216,7 @@ public final class ConfigJavaGenerator {
 
 		}
 
-		for (Class<? extends LearningAlgorithm> component : cm
+		for (Class<? extends AbstractCELA> component : cm
 				.getLearningAlgorithms()) {
 
 			COMPONENT_FACTORY_IMPORTS.add(component.getCanonicalName());
