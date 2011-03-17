@@ -30,7 +30,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.OCELConfigurator;
@@ -81,7 +81,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class OCEL extends LearningAlgorithm {
+public class OCEL extends AbstractCELA {
 	
 	private OCELConfigurator configurator;
 	@Override

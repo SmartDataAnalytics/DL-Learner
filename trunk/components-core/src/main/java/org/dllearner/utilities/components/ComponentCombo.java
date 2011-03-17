@@ -27,7 +27,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -50,7 +50,7 @@ public class ComponentCombo {
 	private Set<KnowledgeSource> sources;
 	private ReasonerComponent reasoner;
 	private LearningProblem problem;
-	private LearningAlgorithm algorithm;
+	private AbstractCELA algorithm;
 	
 	/**
 	 * Builds a component combination object from the specified components. 
@@ -59,7 +59,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */
-	public ComponentCombo(KnowledgeSource source, ReasonerComponent reasoner, LearningProblem problem, LearningAlgorithm algorithm) {
+	public ComponentCombo(KnowledgeSource source, ReasonerComponent reasoner, LearningProblem problem, AbstractCELA algorithm) {
 		this(getSourceSet(source), reasoner, problem, algorithm);
 	}	
 	
@@ -70,7 +70,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */	
-	public ComponentCombo(Set<KnowledgeSource> sources, ReasonerComponent reasoner, LearningProblem problem, LearningAlgorithm algorithm) {
+	public ComponentCombo(Set<KnowledgeSource> sources, ReasonerComponent reasoner, LearningProblem problem, AbstractCELA algorithm) {
 		this.sources = sources;
 		this.reasoner = reasoner;
 		this.problem = problem;
@@ -144,7 +144,7 @@ public class ComponentCombo {
 	/**
 	 * @return the algorithm
 	 */
-	public LearningAlgorithm getAlgorithm() {
+	public AbstractCELA getAlgorithm() {
 		return algorithm;
 	}	
 	

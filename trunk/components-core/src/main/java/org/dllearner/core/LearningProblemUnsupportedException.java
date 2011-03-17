@@ -33,12 +33,12 @@ public class LearningProblemUnsupportedException extends Exception {
 
 	private static final long serialVersionUID = 177919265073997460L;
 
-	public LearningProblemUnsupportedException(Class<? extends LearningProblem> problemClass, Class<? extends LearningAlgorithm> algorithmClass) {
+	public LearningProblemUnsupportedException(Class<? extends LearningProblem> problemClass, Class<? extends AbstractCELA> algorithmClass) {
 		super("Warning: No suitable constructor registered for algorithm "
 				+ algorithmClass.getName() + " and problem " + problemClass.getClass().getName() + ".");		
 	}
 	
-	public LearningProblemUnsupportedException(Class<? extends LearningProblem> problemClass, Class<? extends LearningAlgorithm> algorithmClass, Collection<Class<? extends LearningProblem>> supportedProblems) {
+	public LearningProblemUnsupportedException(Class<? extends LearningProblem> problemClass, Class<? extends AbstractCELA> algorithmClass, Collection<Class<? extends LearningProblem>> supportedProblems) {
 		super("Warning: No suitable constructor registered for algorithm "
 				+ algorithmClass.getName() + " and problem " + problemClass.getClass().getName()
 				+ ". Registered constructors for " + algorithmClass.getName() + ": "

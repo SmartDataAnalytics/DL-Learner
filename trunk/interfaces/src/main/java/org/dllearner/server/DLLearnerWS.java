@@ -45,7 +45,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -291,11 +291,11 @@ public class DLLearnerWS {
 	@WebMethod
 	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException, LearningProblemUnsupportedException {
 		ClientState state = getState(id);
-		Class<? extends LearningAlgorithm> laClass = confMapper.getLearningAlgorithmClass(component);
+		Class<? extends AbstractCELA> laClass = confMapper.getLearningAlgorithmClass(component);
 		if(laClass == null)
 			throw new UnknownComponentException(component);
 		
-		LearningAlgorithm la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasonerComponent());
+		AbstractCELA la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasonerComponent());
 		return state.setLearningAlgorithm(la);
 	}
 	

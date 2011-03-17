@@ -36,7 +36,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
@@ -68,7 +68,7 @@ public class ConfMapper {
 	private static Map<String,Class<? extends KnowledgeSource>> knowledgeSourceMapping = new TreeMap<String,Class<? extends KnowledgeSource>>();
 	private static Map<String,Class<? extends ReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponent>>();
 	private static Map<String,Class<? extends LearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends LearningProblem>>();
-	private static Map<String,Class<? extends LearningAlgorithm>> learningAlgorithmMapping = new TreeMap<String,Class<? extends LearningAlgorithm>>();
+	private static Map<String,Class<? extends AbstractCELA>> learningAlgorithmMapping = new TreeMap<String,Class<? extends AbstractCELA>>();
 	private static TreeMap<String,Class<? extends Component>> componentMapping = new TreeMap<String,Class<? extends Component>>();		
 	private static HashMap<Class<? extends Component>, String> inverseMapping = new HashMap<Class<? extends Component>, String>();		
 	
@@ -127,7 +127,7 @@ public class ConfMapper {
 		componentTypeMapping.put("import", KnowledgeSource.class);
 		componentTypeMapping.put("reasoner", ReasonerComponent.class);
 		componentTypeMapping.put("problem", LearningProblem.class);
-		componentTypeMapping.put("algorithm", LearningAlgorithm.class);
+		componentTypeMapping.put("algorithm", AbstractCELA.class);
 		
 		// you do not need to edit anything below
 		// build inverse mapping
@@ -148,7 +148,7 @@ public class ConfMapper {
 		return learningProblemMapping.get(confString);
 	}
 	
-	public Class<? extends LearningAlgorithm> getLearningAlgorithmClass(String confString) {
+	public Class<? extends AbstractCELA> getLearningAlgorithmClass(String confString) {
 		return learningAlgorithmMapping.get(confString);
 	}
 	

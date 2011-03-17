@@ -30,7 +30,7 @@ import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.options.ConfigEntry;
@@ -112,9 +112,9 @@ public class ConfigSave {
 		
 		// learning algorithm
 		out.println("\n// learning algorithm");
-		LearningAlgorithm la = config.getLearningAlgorithm();
+		AbstractCELA la = config.getLearningAlgorithm();
 		if (la != null) {
-			String typeString = confMapper.getComponentTypeString(LearningAlgorithm.class);
+			String typeString = confMapper.getComponentTypeString(AbstractCELA.class);
 			String componentString = confMapper.getComponentString(la.getClass());
 			out.println(typeString + " = " + componentString + ";");			
 			

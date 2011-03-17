@@ -19,7 +19,7 @@
  */
 package org.dllearner.core.options;
 
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 
 
 
@@ -193,7 +193,7 @@ public final class CommonConfigOptions {
 	public static IntegerConfigOption maxNrOfResults(int defaultValue) {
 		IntegerConfigOption opt = new IntegerConfigOption("maxNrOfResults", "Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).", defaultValue);
 		opt.setLowerLimit(1);
-		opt.setUpperLimit(LearningAlgorithm.MAX_NR_OF_RESULTS);
+		opt.setUpperLimit(AbstractCELA.MAX_NR_OF_RESULTS);
 		return opt;
 	}
 	

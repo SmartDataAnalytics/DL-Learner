@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 
@@ -28,7 +28,7 @@ public class LearnConfiguration {
 	public boolean replaceSearchTree = true;
 	
 	
-	public void applyConfigEntries(ComponentManager cm, KnowledgeSource ks, LearningProblem lp, ReasonerComponent rs, LearningAlgorithm la) {
+	public void applyConfigEntries(ComponentManager cm, KnowledgeSource ks, LearningProblem lp, ReasonerComponent rs, AbstractCELA la) {
 		try {
 			
 			// LEARNINGALGORITHM

@@ -25,7 +25,7 @@ import org.dllearner.core.Component;
 import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.options.ConfigOption;
@@ -89,7 +89,7 @@ public class DocumentationGenerator {
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
 		for(Class<? extends Component> component : cm.getLearningAlgorithms()) {
-			doc += getComponentConfigString(component, LearningAlgorithm.class);
+			doc += getComponentConfigString(component, AbstractCELA.class);
 		}
 		
 		Files.createFile(file, doc);

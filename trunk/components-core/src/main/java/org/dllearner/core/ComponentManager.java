@@ -72,7 +72,7 @@ public final class ComponentManager {
 	private static Collection<Class<? extends KnowledgeSource>> knowledgeSources;
 	private static Collection<Class<? extends ReasonerComponent>> reasonerComponents;
 	private static Collection<Class<? extends LearningProblem>> learningProblems;
-	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
+	private static Collection<Class<? extends AbstractCELA>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
 	@Deprecated
     private static String componentsFile = "org/dllearner/components.ini";
@@ -111,8 +111,8 @@ public final class ComponentManager {
 	private static Map<Class<? extends Component>, String> componentNames;
 	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
-	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
-	private static Map<Class<? extends LearningProblem>, Collection<Class<? extends LearningAlgorithm>>> problemAlgorithmsMapping;
+	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
+	private static Map<Class<? extends LearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
 	
 	// list of default values of config options
 //	private static Map<ConfigOption<?>,Object> configOptionDefaults;
@@ -143,8 +143,8 @@ public final class ComponentManager {
 		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
 		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
 		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
-		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithm>>(classComparator);
-		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>>(
+		learningAlgorithms = new TreeSet<Class<? extends AbstractCELA>>(classComparator);
+		algorithmProblemsMapping = new TreeMap<Class<? extends AbstractCELA>, Collection<Class<? extends LearningProblem>>>(
 				classComparator);		
 
 		// create classes from strings
@@ -160,8 +160,8 @@ public final class ComponentManager {
 					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
 				} else if (LearningProblem.class.isAssignableFrom(component)) {
 					learningProblems.add((Class<? extends LearningProblem>) component);
-				} else if (LearningAlgorithm.class.isAssignableFrom(component)) {
-					Class<? extends LearningAlgorithm> learningAlgorithmClass = (Class<? extends LearningAlgorithm>) component;
+				} else if (AbstractCELA.class.isAssignableFrom(component)) {
+					Class<? extends AbstractCELA> learningAlgorithmClass = (Class<? extends AbstractCELA>) component;
 					learningAlgorithms.add(learningAlgorithmClass);
 					Collection<Class<? extends LearningProblem>> problems = (Collection<Class<? extends LearningProblem>>) invokeStaticMethod(
 							learningAlgorithmClass, "supportedLearningProblems");
@@ -447,7 +447,7 @@ public final class ComponentManager {
 	 * @throws LearningProblemUnsupportedException Thrown when the learning problem and
 	 * the learning algorithm are not compatible.
 	 */
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasonerComponent rs) throws LearningProblemUnsupportedException {
+	public <T extends AbstractCELA> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasonerComponent rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass)) {
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
@@ -661,9 +661,9 @@ public final class ComponentManager {
 	 * @param learningProblem A learning problem type.
 	 * @return The set of learning algorithms applicable for this learning problem.
 	 */
-	public List<Class<? extends LearningAlgorithm>> getApplicableLearningAlgorithms(Class<? extends LearningProblem> learningProblem) {
-		List<Class<? extends LearningAlgorithm>> algorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-		for(Entry<Class<? extends LearningProblem>,Collection<Class<? extends LearningAlgorithm>>> entry : problemAlgorithmsMapping.entrySet()) {
+	public List<Class<? extends AbstractCELA>> getApplicableLearningAlgorithms(Class<? extends LearningProblem> learningProblem) {
+		List<Class<? extends AbstractCELA>> algorithms = new LinkedList<Class<? extends AbstractCELA>>();
+		for(Entry<Class<? extends LearningProblem>,Collection<Class<? extends AbstractCELA>>> entry : problemAlgorithmsMapping.entrySet()) {
 			Class<? extends LearningProblem> prob = entry.getKey();
 			if(prob.isAssignableFrom(learningProblem)) {
 				algorithms.addAll(entry.getValue());
@@ -679,8 +679,8 @@ public final class ComponentManager {
 	 * @return the components A list of learning algorithm classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */
-	public List<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
-		return new LinkedList<Class<? extends LearningAlgorithm>>(learningAlgorithms);
+	public List<Class<? extends AbstractCELA>> getLearningAlgorithms() {
+		return new LinkedList<Class<? extends AbstractCELA>>(learningAlgorithms);
 	}
 	
 	
@@ -696,11 +696,11 @@ public final class ComponentManager {
 	 *  Retuns a list of all instanciated and registered LearningAlgorithm 
 	 * @return Currently active learning algorithms.
 	 */
-	public List<LearningAlgorithm> getLiveLearningAlgorithms(){
-		List<LearningAlgorithm> list = new ArrayList<LearningAlgorithm>();
+	public List<AbstractCELA> getLiveLearningAlgorithms(){
+		List<AbstractCELA> list = new ArrayList<AbstractCELA>();
 		for (Component component : cm.getLiveComponents()) {
-			if(component instanceof LearningAlgorithm){
-				list.add((LearningAlgorithm) component);
+			if(component instanceof AbstractCELA){
+				list.add((AbstractCELA) component);
 			}
 			
 		}

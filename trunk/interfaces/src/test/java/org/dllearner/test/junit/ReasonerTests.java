@@ -38,7 +38,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Axiom;
@@ -351,7 +351,7 @@ public class ReasonerTests {
 		Start start;
 		FastInstanceChecker reasoner;
 		LearningProblem lp;
-		LearningAlgorithm la;
+		AbstractCELA la;
 		KnowledgeSource ks;
 		
 		for(File conf : getTestConfigFiles()){

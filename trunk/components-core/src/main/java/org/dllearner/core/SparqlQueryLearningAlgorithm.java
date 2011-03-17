@@ -20,11 +20,11 @@
 package org.dllearner.core;
 
 /**
- * Basic interface for all DL-Learner learning algorithms.
+ * Basic interface for algorithms learning SPARQL queries.
  * 
  * @author Jens Lehmann
  *
  */
-public interface LearningAlgorithm {
+public interface SparqlQueryLearningAlgorithm extends LearningAlgorithm {
 
 }

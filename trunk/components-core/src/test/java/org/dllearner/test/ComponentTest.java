@@ -28,7 +28,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -78,7 +78,7 @@ public class ComponentTest {
 		lp.init();
 		
 		// create the learning algorithm
-		LearningAlgorithm la = null;
+		AbstractCELA la = null;
 		try {
 			la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
 			la.init();

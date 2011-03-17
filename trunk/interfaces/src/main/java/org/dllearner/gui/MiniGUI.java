@@ -42,7 +42,7 @@ import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
@@ -179,7 +179,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 			
 			// try the refinement operator based learning algorithm to solve
 			// the problem
-			LearningAlgorithm la = null;
+			AbstractCELA la = null;
 			try {
 				la = cm.learningAlgorithm(ROLearner.class, lp, rs);
 			} catch (LearningProblemUnsupportedException e1) {

@@ -28,7 +28,7 @@ import java.util.Set;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
@@ -56,7 +56,7 @@ public class ClientState {
 	
 	private ReasonerComponent reasonerComponent;
 	
-	private LearningAlgorithm learningAlgorithm;
+	private AbstractCELA learningAlgorithm;
 
 	private Random rand=new Random();
 	
@@ -179,14 +179,14 @@ public class ClientState {
 	/**
 	 * @return the learningAlgorithm
 	 */
-	public LearningAlgorithm getLearningAlgorithm() {
+	public AbstractCELA getLearningAlgorithm() {
 		return learningAlgorithm;
 	}
 
 	/**
 	 * @param learningAlgorithm the learningAlgorithm to set
 	 */
-	public int setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
+	public int setLearningAlgorithm(AbstractCELA learningAlgorithm) {
 		this.learningAlgorithm = learningAlgorithm;
 		return generateComponentID(learningAlgorithm);
 	}

@@ -44,7 +44,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.OCELConfigurator;
@@ -674,13 +674,13 @@ public class SemanticBibleComparison {
 		
 	}
 	
-	public static LearningAlgorithm getLearningAlgorithm(){
+	public static AbstractCELA getLearningAlgorithm(){
 		ComponentManager cm =ComponentManager.getInstance();
 		
 		List<Component> comp = cm.getLiveComponents();
 		for (Component component : comp) {
-			if(component instanceof LearningAlgorithm){
-				return (LearningAlgorithm) component;
+			if(component instanceof AbstractCELA){
+				return (AbstractCELA) component;
 			}
 			
 		}

@@ -9,7 +9,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -53,7 +53,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	private ComponentManager cm;
 	private LearningProblem lp;
-	private LearningAlgorithm la;
+	private AbstractCELA la;
 	private ProtegeReasoner reasoner;
 	private KnowledgeSource ks;
 	
