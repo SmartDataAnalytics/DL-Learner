@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithm.qtl.util.ModelGenerator;
+import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
+import org.dllearner.algorithm.tbsl.search.SolrSearch;
 import org.dllearner.algorithm.tbsl.sparql.Query;
 import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
-import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
-import org.dllearner.sparqlquerygenerator.util.ModelGenerator.Strategy;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -222,8 +222,8 @@ public class SPARQLTemplateBasedLearner {
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"), 
 				Collections.<String>singletonList("http://dbpedia.org"), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
-		learner.learnSPARQLQueries("Give me all countries in Europe");
-//		learner.learnSPARQLQueries("Give me all soccer clubs in Premier League");
+//		learner.learnSPARQLQueries("Give me all countries in Europe");
+		learner.learnSPARQLQueries("Give me all soccer clubs in Premier League");
 
 	}
 
