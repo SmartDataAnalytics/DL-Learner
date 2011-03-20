@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -111,7 +112,7 @@ public class QueryProcessor {
             result = getNNs(buffer);
             //read strings
             //stem words
-            result = getStemmedWords(result);
+//            result = getStemmedWords(result);
 
         } catch (Exception e) {
             e.printStackTrace();

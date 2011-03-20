@@ -44,22 +44,21 @@ import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
+import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilter;
+import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
+import org.dllearner.algorithm.qtl.operations.Generalisation;
+import org.dllearner.algorithm.qtl.operations.NBR;
+import org.dllearner.algorithm.qtl.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.server.ExampleFinder;
-import org.dllearner.autosparql.server.Generalisation;
-import org.dllearner.autosparql.server.NBR;
 import org.dllearner.autosparql.server.exception.TimeOutException;
 import org.dllearner.autosparql.server.search.DBpediaSchemaIndex;
 import org.dllearner.autosparql.server.search.LuceneSearch;
 import org.dllearner.autosparql.server.search.QuestionProcessor;
-import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.operations.lgg.LGGGeneratorImpl;
-import org.dllearner.sparqlquerygenerator.util.QuestionBasedQueryTreeFilter;
-import org.dllearner.sparqlquerygenerator.util.QuestionBasedStatementFilter;
 import org.ini4j.IniFile;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -144,8 +143,8 @@ public class EvaluationWithNLQueriesScript {
 			prefixes.put("yago","http://dbpedia.org/class/yago/");
 			prefixes.put("cyc","http://sw.opencyc.org/concept/");
 			prefixes.put("foaf","http://xmlns.com/foaf/0.1/");
-			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL(ENDPOINT_URL),
-							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
+//			exFinder = new ExampleFinder(new SPARQLEndpointEx(new URL(ENDPOINT_URL),
+//							Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList(), null, baseURI, prefixes, predicateFilters), selectCache, constructCache);
 //			schemaIndex = new DBpediaSchemaIndex(SCHEMA_FILE_PATH);
 			luceneSearch = new LuceneSearch(LUCENE_INDEX_DIRECTORY);
 			luceneSearch.setHitsPerPage(TOP_K);
@@ -387,10 +386,11 @@ public class EvaluationWithNLQueriesScript {
 	
 	private boolean LGGIsSolution(List<String> posExamples, Set<String> answers){
 		logger.info("Checking if LGG is already a solution...");
-		Set<String> resources = exFinder.getLGGInstances(posExamples);
-		boolean isSolution = resources.equals(answers);
-		logger.info("LGG is already solution:" + isSolution);
-		return isSolution;
+//		Set<String> resources = exFinder.getLGGInstances(posExamples);
+//		boolean isSolution = resources.equals(answers);
+//		logger.info("LGG is already solution:" + isSolution);
+//		return isSolution;
+		return false;
 	}
 	
 	public void evaluate(){
@@ -440,7 +440,7 @@ public class EvaluationWithNLQueriesScript {
 			
 			//workaround for question 15, because db0 returns no resources
 			if(i==15){
-				List<String> predicateFilters = new ArrayList<String>();
+				Set<String> predicateFilters = new HashSet<String>();
 				predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 				predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 				//prefixes and baseURI to improve readability of trees
@@ -475,7 +475,6 @@ public class EvaluationWithNLQueriesScript {
 				logger.debug("Target query: \n" + targetQuery);
 				answers = getResourcesBySPARQLQuery(targetQuery, "uri");//question2Answers.get(question);
 				logger.debug("Answers (" + answers.size() + "): " + answers);
-				exFinder.setQuestionId(i);
 				printStartingPosition(i++, question, targetQuery, answers);
 				//preprocess question to extract only relevant words and set them as filter for statements
 				relevantWords = getRelevantWords(question);
@@ -487,8 +486,8 @@ public class EvaluationWithNLQueriesScript {
 				filter.setThreshold(SIMILARITY_THRESHOLD);
 				QuestionBasedQueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
 				treeFilter.setThreshold(SIMILARITY_THRESHOLD);
-				exFinder.setStatementFilter(filter);
-				exFinder.setQueryTreeFilter(treeFilter);
+//				exFinder.setStatementFilter(filter);
+//				exFinder.setQueryTreeFilter(treeFilter);
 				
 //				exFinder.setStatementSelector(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords)));
 				
@@ -598,13 +597,13 @@ public class EvaluationWithNLQueriesScript {
 				} while (!answers.equals(learnedResources));
 				if(!learningFailed){
 					overallMon.stop();
-					exFinder.getLGGInstances(posExamples);
+//					exFinder.getLGGInstances(posExamples);
 					learned = true;
 					examplesNeededPos = posExamples.size();
 					examplesNeededNeg = negExamples.size();
 					examplesNeededTotal = examplesNeededPos + examplesNeededNeg;
 					learnedQuery = exFinder.getCurrentQuery();
-					triplePatterCount = exFinder.getCurrentQueryTree().getTriplePatternCount();
+//					triplePatterCount = exFinder.getCurrentQueryTree().getTriplePatternCount();
 					
 					lggTime = lggMon.getTotal();
 					nbrTime = nbrMon.getTotal();
@@ -616,7 +615,7 @@ public class EvaluationWithNLQueriesScript {
 					logger.info("Learned SPARQL query:\n" + learnedQuery);
 					miniLogger.info("Learning successful.");
 					miniLogger.info("Learned SPARQL query:\n" + learnedQuery);
-					System.err.println(exFinder.getCurrentQueryTree().getTriplePatternCount());
+//					System.err.println(exFinder.getCurrentQueryTree().getTriplePatternCount());
 					learnedQueries++;
 				}else {
 					overallMon.stop();
@@ -631,9 +630,11 @@ public class EvaluationWithNLQueriesScript {
 				
 			} catch (TimeOutException e) {
 				e.printStackTrace();
-			} catch (SPARQLQueryException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
+			} 
+//			catch (SPARQLQueryException e) {
+//				e.printStackTrace();
+//			} 
+			catch (Exception e) {
 				overallMon.stop();
 				logger.error("Something went wrong. Trying next question...", e);
 				miniLogger.info("AutoSPARQL: Could not learn query.", e);
@@ -675,7 +676,7 @@ public class EvaluationWithNLQueriesScript {
 	public static void main(String[] args) throws TimeOutException, SPARQLQueryException, SolrServerException, ParserConfigurationException, SAXException, IOException {
 		Logger.getLogger(Generalisation.class).setLevel(Level.OFF);
 		Logger.getLogger(LGGGeneratorImpl.class).setLevel(Level.OFF);
-		Logger.getLogger(NBR.class).setLevel(Level.OFF);
+		Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
 		Logger.getLogger(ExampleFinder.class).setLevel(Level.OFF);
 		
 		Logger.getRootLogger().removeAllAppenders();

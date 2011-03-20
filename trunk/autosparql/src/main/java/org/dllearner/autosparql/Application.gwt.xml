@@ -4,6 +4,7 @@
 	<!-- Inherit the core Web Toolkit stuff. -->
 	<inherits name='com.google.gwt.user.User' />
 
+	<set-property name="user.agent" value="gecko1_8"/>
 	<!-- inherit css based theme -->
 	<inherits name='com.google.gwt.user.theme.standard.Standard' />
 

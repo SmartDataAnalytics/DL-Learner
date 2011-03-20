@@ -36,6 +36,9 @@ public interface SPARQLService extends RemoteService{
 	
 	void setQuestion(String question) throws AutoSPARQLException;
 	
+	void setExamples(List<String> posExamples,
+			List<String> negExamples);
+	
 	/**
      * Utility class to get the RPC Async interface from client-side code
      */

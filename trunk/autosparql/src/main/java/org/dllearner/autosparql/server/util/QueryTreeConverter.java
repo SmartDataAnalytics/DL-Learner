@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
+import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 
 public class QueryTreeConverter {
 	

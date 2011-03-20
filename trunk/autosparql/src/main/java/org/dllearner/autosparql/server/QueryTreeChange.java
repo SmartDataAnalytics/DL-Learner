@@ -12,6 +12,9 @@ public class QueryTreeChange {
 	
 	private ChangeType type;
 	
+	private String object;
+	private String edge;
+	
 	public QueryTreeChange(int nodeId, ChangeType type){
 		this.nodeId = nodeId;
 		this.type = type;
@@ -25,6 +28,22 @@ public class QueryTreeChange {
 		return type;
 	}
 	
+	public String getObject() {
+		return object;
+	}
+
+	public void setObject(String object) {
+		this.object = object;
+	}
+
+	public String getEdge() {
+		return edge;
+	}
+
+	public void setEdge(String edge) {
+		this.edge = edge;
+	}
+
 	@Override
 	public String toString() {
 //		return "nodeId" + (type==ChangeType.REPLACE_LABEL ? "Replace" : "Remove");
