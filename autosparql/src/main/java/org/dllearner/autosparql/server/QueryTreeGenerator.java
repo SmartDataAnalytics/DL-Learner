@@ -3,14 +3,13 @@ package org.dllearner.autosparql.server;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
-import org.dllearner.sparqlquerygenerator.datastructures.QueryTree;
-import org.dllearner.sparqlquerygenerator.impl.QueryTreeFactoryImpl;
+import org.dllearner.algorithm.qtl.datastructures.QueryTree;
+import org.dllearner.algorithm.qtl.impl.QueryTreeFactoryImpl;
+import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 
 public class QueryTreeGenerator {
 	

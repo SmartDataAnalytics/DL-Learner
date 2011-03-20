@@ -6,20 +6,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.search.DefaultSimilarity;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -35,53 +30,53 @@ import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.CoreDescriptor;
 import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
-import org.ini4j.IniFile;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
-import org.slf4j.Logger;
+import org.openrdf.vocabulary.RDFS;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.xml.sax.SAXException;
 
-public class DBpediaSolrIndexCreator {
+public class DBpediaPropertiesSolrIndexCreator {
 	
-	public static final String imageProperty = "http://dbpedia.org/ontology/thumbnail";
 	public static final String labelProperty = "http://www.w3.org/2000/01/rdf-schema#label";
 	public static final String abstractProperty = "http://www.w3.org/2000/01/rdf-schema#comment";
-	public static final String redirectProperty = "http://dbpedia.org/ontology/wikiPageRedirects";
 	
 	private SolrInputField uriField = new SolrInputField("uri");
 	private SolrInputField labelField = new SolrInputField("label");
 	private SolrInputField commentField = new SolrInputField("comment");
-	private SolrInputField imageURLField = new SolrInputField("imageURL");
-	private SolrInputField pagerankField = new SolrInputField("pagerank");
-	
-	private PreparedStatement ps;
 	
 	private SolrInputDocument doc;
 	private SolrServer solr;
 	private CoreContainer coreContainer;
 	
-	private static final String CORE_NAME = "dbpedia3";
+	private static final String CORE_NAME = "dbpedia_properties";
 	
-	public DBpediaSolrIndexCreator(){
-		try {
-			solr = getEmbeddedSolrServer();
-		} catch (CorruptIndexException e) {
-			e.printStackTrace();
-		} catch (LockObtainFailedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		}
-		initDocument();
-		connect2Database();
+	public DBpediaPropertiesSolrIndexCreator(){
+//		try {
+//			solr = getEmbeddedSolrServer();
+//		} catch (CorruptIndexException e) {
+//			e.printStackTrace();
+//		} catch (LockObtainFailedException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ParserConfigurationException e) {
+//			e.printStackTrace();
+//		} catch (SAXException e) {
+//			e.printStackTrace();
+//		}
+//		initDocument();
 	}
 	
 	private SolrServer getRemoteSolrServer() throws MalformedURLException, SolrServerException{
@@ -104,7 +99,18 @@ public class DBpediaSolrIndexCreator {
 		return solr;
 	}
 	
-	public void createIndex(String dataFile){
+	public void createIndex(List<String> dataFiles){
+		for(String file : dataFiles){
+			if(file.endsWith(".nt")){
+				createIndexFromNTriplesFile(file);
+			} else if(file.endsWith(".owl")){
+				createIndexFromOWLFile(file);
+			}
+		}
+		coreContainer.shutdown();
+	}
+	
+	public void createIndexFromNTriplesFile(String dataFile){
 		RDFFormat format = RDFFormat.NTRIPLES;
 		RDFParser parser = Rio.createParser(format);
 		parser.setRDFHandler(new RDFHandler() {
@@ -112,11 +118,8 @@ public class DBpediaSolrIndexCreator {
 			int cnt = 1;
 			String uri = "";
 			String label = "";
-			String imageURL = "";
-			String abstr = "";
-			int pageRank = 0;
+			String comment = "";
 			String newURI;
-			boolean skip = false;
 			@Override
 			public void startRDF() throws RDFHandlerException {}
 			
@@ -124,22 +127,16 @@ public class DBpediaSolrIndexCreator {
 			public void handleStatement(org.openrdf.model.Statement stmt) throws RDFHandlerException {
 				if(first){
 					uri = stmt.getSubject().stringValue();
-					pageRank = getPageRank(uri);
 					first = false;
 				}
 				
 				newURI = stmt.getSubject().stringValue();
 				
 				if(!newURI.equals(uri)){
-					if(!skip){
-						write2Index(uri, label, abstr, imageURL, pageRank);
-					}
+					write2Index(uri, label, comment);
 					uri = newURI;
-					pageRank = getPageRank(uri);
 					label = "";
-					abstr = "";
-					imageURL = "";
-					skip = false;
+					comment = "";
 					cnt++;
 					if(cnt % 100000 == 0){
 						try {
@@ -153,15 +150,11 @@ public class DBpediaSolrIndexCreator {
 					}
 					
 				}
-				if(stmt.getPredicate().stringValue().equals(labelProperty)){
+				if(stmt.getPredicate().stringValue().equals(RDFS.LABEL)){
 					label = stmt.getObject().stringValue();
-				} else if(stmt.getPredicate().stringValue().equals(abstractProperty)){
-					abstr = stmt.getObject().stringValue();
-				} else if(stmt.getPredicate().stringValue().equals(imageProperty)){
-					imageURL = stmt.getObject().stringValue();
-				} else if(stmt.getPredicate().stringValue().equals(redirectProperty) || stmt.getSubject().stringValue().startsWith("http://upload.")){
-					skip = true;
-				}
+				} else if(stmt.getPredicate().stringValue().equals(RDFS.COMMENT)){
+					comment = stmt.getObject().stringValue();
+				} 
 				
 				
 				
@@ -178,7 +171,6 @@ public class DBpediaSolrIndexCreator {
 			parser.parse(new BufferedInputStream(new FileInputStream(dataFile)), "http://dbpedia.org");
 			solr.commit();
 			solr.optimize();
-			coreContainer.shutdown();
 		} catch (RDFParseException e) {
 			e.printStackTrace();
 		} catch (RDFHandlerException e) {
@@ -188,6 +180,46 @@ public class DBpediaSolrIndexCreator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void createIndexFromOWLFile(String owlFile){
+		try {
+			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+			OWLAnnotationProperty labelProperty = man.getOWLDataFactory().getRDFSLabel();
+			OWLAnnotationProperty commentProperty = man.getOWLDataFactory().getRDFSComment();
+			OWLOntology ont = man.loadOntologyFromOntologyDocument(new File(owlFile));
+			String uri = "";
+			String label = "";
+			String comment = "";
+			Set<OWLEntity> properties = new HashSet<OWLEntity>();
+			properties.addAll(ont.getObjectPropertiesInSignature());
+			properties.addAll(ont.getDataPropertiesInSignature());
+			for(OWLEntity prop : properties){
+				uri = prop.toStringID();
+				label = "";
+				comment = "";
+				for(OWLAnnotation lab : prop.getAnnotations(ont, labelProperty)){
+					if(lab.getValue() instanceof OWLLiteral){
+						OWLLiteral lit = (OWLLiteral)lab.getValue();
+						if(lit.hasLang("en")){
+							label = lit.getLiteral();
+						}
+					}
+					
+				}
+				for(OWLAnnotation com : prop.getAnnotations(ont, commentProperty)){
+					if(com.getValue() instanceof OWLLiteral){
+						OWLLiteral lit = (OWLLiteral)com.getValue();
+						if(lit.hasLang("en")){
+							comment = lit.getLiteral();
+						}
+					}
+				}
+				write2Index(uri, label, comment);
+			}
+		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
 	}
@@ -213,77 +245,40 @@ public class DBpediaSolrIndexCreator {
 		doc.put("uri", uriField);
 		doc.put("label", labelField);
 		doc.put("comment", commentField);
-		doc.put("imageURL", imageURLField);
-		doc.put("pagerank", pagerankField);
 	}
 	
-	private void write2Index(String uri, String label, String comment, String imageURL, int pagerank){
-		uriField.setValue(uri, 1.0f);
-		labelField.setValue(label, 1.0f);
-		commentField.setValue(comment, 1.0f);
-		imageURLField.setValue(imageURL, 1.0f);
-		pagerankField.setValue(pagerank, 1.0f);
-		try {
-			solr.add(doc);
-		}  catch (SolrServerException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void write2Index(String uri, String label, String comment){
+		System.out.println(uri);System.out.println(label);System.out.println(comment);
+//		uriField.setValue(uri, 1.0f);
+//		labelField.setValue(label, 1.0f);
+//		commentField.setValue(comment, 1.0f);
+//		try {
+//			solr.add(doc);
+//		}  catch (SolrServerException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
-	private int getPageRank(String uri){
-		int pageRank = 0;
-		
-		try {
-			ps.setString(1, uri);
-			ResultSet rs = ps.executeQuery();
-			if(rs.next()){
-				pageRank = rs.getInt("rank");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return pageRank;
-	}
 	
-	private void connect2Database(){
-		try {
-			String iniFile = "settings.ini";
-			Preferences prefs = new IniFile(new File(iniFile));
-			String dbServer = prefs.node("database").get("server", null);
-			String dbName = "pagerank";//prefs.node("database").get("name", null);
-			String dbUser = prefs.node("database").get("user", null);
-			String dbPass = prefs.node("database").get("pass", null);
-			
-			Class.forName("com.mysql.jdbc.Driver");
-			String url =
-	            "jdbc:mysql://"+dbServer+"/"+dbName;
-			Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-			ps = conn.prepareStatement("SELECT rank from pagerank WHERE uri = ?");
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.WARN);
-		if(args.length != 1){
-			System.out.println("Usage: DBpediaSolrIndexCreator <dataFile> ");
+		if(args.length == 0){
+			System.out.println("Usage: DBpediaSolrPropertiesIndexCreator <dataFile_1> ...<dataFile_n> ");
 			System.exit(0);
 		}
 		
-		String dataFile = args[0];
+		List<String> dataFiles = new ArrayList<String>();
+		for(int i = 0; i < args.length; i++){
+			dataFiles.add(args[i]);
+		}
 		
-		new DBpediaSolrIndexCreator().createIndex(dataFile);
+		new DBpediaPropertiesSolrIndexCreator().createIndex(dataFiles);
 		
 		
 

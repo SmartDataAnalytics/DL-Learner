@@ -1,19 +1,17 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.search.Search;
 import org.dllearner.autosparql.server.search.SolrSearch;
-import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.sparqlquerygenerator.util.ExactMatchFilter;
 
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -21,8 +19,6 @@ import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
-import de.simba.ner.QueryProcessor;
 
 public class AutoSPARQLSession {
 	
@@ -33,10 +29,13 @@ public class AutoSPARQLSession {
 	private SPARQLSearch search;
 	private ExtractionDBCache constructCache;
 	private ExtractionDBCache selectCache;
+//	private ExampleFinder exampleFinder;
 	private ExampleFinder exampleFinder;
 	private Search nlpSearch;
 	
 	private String servletContextPath;
+	
+	private List<String> topKResources;
 	
 	
 	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath, String solrURL){
@@ -47,6 +46,7 @@ public class AutoSPARQLSession {
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SPARQLSearch(selectCache, servletContextPath);
 		nlpSearch = new SolrSearch(solrURL);
+//		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 	}
 	
@@ -59,7 +59,7 @@ public class AutoSPARQLSession {
 			int limit = config.getLimit();
 			int offset = config.getOffset();
 			
-			List<Example> searchResult = nlpSearch.getExamples(searchTerm, offset);
+			List<Example> searchResult = nlpSearch.getExamples("label:" + getQuotedString(searchTerm), offset);
 			int totalLength = nlpSearch.getTotalHits(searchTerm);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
@@ -80,6 +80,12 @@ public class AutoSPARQLSession {
 			int offset = config.getOffset();
 			
 			List<Example> searchResult = nlpSearch.getExamples(query, offset);
+			if(offset == 0){
+				topKResources = new ArrayList<String>();
+				for(Example ex : searchResult){
+					topKResources.add(ex.getURI());
+				}
+			}
 			int totalLength = nlpSearch.getTotalHits(query);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
@@ -106,7 +112,9 @@ public class AutoSPARQLSession {
 		logger.info("Retrieving similiar example");
 		logger.info("Pos examples: " + posExamples);
 		logger.info("Neg examples: " + negExamples);
-		
+		if(negExamples.isEmpty()){
+			negExamples = getIntermediateNegativeExamples(posExamples);
+		}
 		try {
 			Example example = exampleFinder.findSimilarExample(posExamples, negExamples);
 			return example;
@@ -162,7 +170,7 @@ public class AutoSPARQLSession {
 	}
 	
 	public String getCurrentQuery() throws AutoSPARQLException {
-		try{
+		try{logger.info("Current QUERY: " + exampleFinder.getCurrentQuery());
 			return exampleFinder.getCurrentQueryHTML();
 		} catch (Exception e){
 			logger.error(e);
@@ -170,6 +178,25 @@ public class AutoSPARQLSession {
 		}
 	}
 	
+	public void setExamples(List<String> posExamples,
+			List<String> negExamples){
+		exampleFinder.setExamples(posExamples, negExamples);
+	}
+	
+	private List<String> getIntermediateNegativeExamples(List<String> posExamples){
+		List<String> negExamples = new ArrayList<String>();
+		for(String resource : topKResources){
+			if(!posExamples.contains(resource)){
+				negExamples.add(resource);
+				break;
+			}
+		}
+		return negExamples;
+	}
+	
+	private String getQuotedString(String str){
+		return "\"" + str + "\"";
+	}
 	
 	private String modifyQuery(String query){
 		String newQuery = query.replace("SELECT ?x0 WHERE {", 

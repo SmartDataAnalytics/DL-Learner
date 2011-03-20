@@ -21,10 +21,9 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.sparqlquerygenerator.util.ModelGenerator;
 
-import com.clarkparsia.pellet.sparqldl.engine.QueryEngine;
 import com.google.common.base.Joiner;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;

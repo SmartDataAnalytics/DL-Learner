@@ -35,5 +35,8 @@ public interface SPARQLServiceAsync
 	void getMessage(AsyncCallback<String> callback);
 	
 	void setQuestion(String question, AsyncCallback<Void> callback);
+	
+	void setExamples(List<String> posExamples,
+			List<String> negExamples, AsyncCallback<Void> callback);
     
 }

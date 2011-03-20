@@ -43,6 +43,8 @@ public class QueryView extends View {
 	
 	private LayoutContainer mainPanel;
 	
+	private boolean interactiveMode = false;
+	
 	public QueryView(Controller controller) {
 		super(controller);
 	}
@@ -146,6 +148,7 @@ public class QueryView extends View {
 	}
 	
 	private void showInteractivePanel(){
+		interactiveMode = true;
 		dummyPanel.remove(relatedResourcesPanel);
 		dummyPanel.add(interactivePanel);
 		dummyPanel.layout();
@@ -186,7 +189,27 @@ public class QueryView extends View {
 //					});
 //		}
 		if (examplesPanel.getPositiveExamplesURIs().size() >= 2) {
-			showInteractivePanel();
+			SPARQLService.Util.getInstance().setExamples(examplesPanel.getPositiveExamplesURIs(),
+					examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							System.err.println("Error");
+							
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							System.err.println("Refresh");
+							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+									examplesPanel.getNegativeExamplesUris());
+							
+						}
+					});
+			
+			if(!interactiveMode){
+				showInteractivePanel();
+			}
 			interactivePanel.mask("Searching...");
 			SPARQLService.Util.getInstance().getSimilarExample(
 					examplesPanel.getPositiveExamplesURIs(),
@@ -197,8 +220,8 @@ public class QueryView extends View {
 						public void onSuccess(Example result) {
 							interactivePanel.unmask();
 							interactivePanel.setExample(result);
-							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-									examplesPanel.getNegativeExamplesUris());
+//							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+//									examplesPanel.getNegativeExamplesUris());
 						}
 
 						@Override

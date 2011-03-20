@@ -2,11 +2,11 @@ package org.dllearner.autosparql.server.search;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -56,6 +56,39 @@ public class SolrSearch implements Search{
 			e.printStackTrace();
 		}
 		return resources;
+	}
+	
+	public Map<String, Float> getResourcesWithScores(String queryString) {
+		return getResourcesWithScores(queryString, hitsPerPage);
+	}
+	
+	public Map<String, Float> getResourcesWithScores(String queryString, int limit) {
+		return getResourcesWithScores(queryString, limit, 0);
+	}
+	
+	public Map<String, Float> getResourcesWithScores(String queryString, int limit, int offset) {
+		Map<String, Float> resource2ScoreMap = new HashMap<String, Float>();
+		
+		QueryResponse response;
+		try {
+			SolrQuery query = new SolrQuery();
+		    query.setQuery(queryString);
+		    query.setRows(hitsPerPage);
+		    query.setStart(offset);
+		    query.addField("score");
+		    query.addSortField("score", SolrQuery.ORDER.desc);
+		    query.addSortField( "pagerank", SolrQuery.ORDER.desc );
+		    
+			response = server.query(query);
+			SolrDocumentList docList = response.getResults();
+			lastTotalHits = (int) docList.getNumFound();
+			for(SolrDocument d : docList){
+				resource2ScoreMap.put((String) d.get("uri"), (Float) d.get("score"));
+			}
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
+		return resource2ScoreMap;
 	}
 
 	@Override

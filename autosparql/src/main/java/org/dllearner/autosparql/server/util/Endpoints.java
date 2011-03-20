@@ -5,12 +5,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
+
+import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 
 public class Endpoints {
 	
@@ -44,7 +47,7 @@ public class Endpoints {
 			List<String> namedGraphURIs = endpointConf.getList("namedGraphURI");
 			List<String> predicateFilters = endpointConf.getList("predicateFilters.predicate");
 			
-			return new SPARQLEndpointEx(url, Collections.singletonList(defaultGraphURI), namedGraphURIs, label, prefix, predicateFilters);
+			return new SPARQLEndpointEx(url, Collections.singletonList(defaultGraphURI), namedGraphURIs, label, prefix, new HashSet<String>(predicateFilters));
 		} catch (MalformedURLException e) {
 			System.err.println("Could not parse URL from SPARQL endpoint.");
 			e.printStackTrace();
@@ -64,7 +67,23 @@ public class Endpoints {
 			List<String> predicateFilters = new ArrayList<String>();
 			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
 			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(url, defaultGraphURIs, namedGraphURIs, "label", "prefix", predicateFilters);
+			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(url, defaultGraphURIs, namedGraphURIs, "label", "prefix", new HashSet<String>(predicateFilters));
+			return endpoint;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static SPARQLEndpointEx getDB0Endpoint(){
+		try {
+			URL url = new URL("http://db0.aksw.org:8999/sparql");
+			List<String> defaultGraphURIs = Collections.singletonList("http://dbpedia.org");
+			List<String> namedGraphURIs = Collections.emptyList();
+			List<String> predicateFilters = new ArrayList<String>();
+			predicateFilters.add("http://dbpedia.org/ontology/wikiPageWikiLink");
+			predicateFilters.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			SPARQLEndpointEx endpoint = new SPARQLEndpointEx(url, defaultGraphURIs, namedGraphURIs, "label", "prefix", new HashSet<String>(predicateFilters));
 			return endpoint;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

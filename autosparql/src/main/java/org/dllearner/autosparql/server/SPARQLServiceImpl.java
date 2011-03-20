@@ -1,6 +1,5 @@
 package org.dllearner.autosparql.server;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +9,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.apache.solr.core.SolrCore;
+import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.util.Endpoints;
-import org.dllearner.autosparql.server.util.SPARQLEndpointEx;
 import org.ini4j.Ini;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -113,6 +111,15 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		return getAutoSPARQLSession().getCurrentQueryResult(config);
 	}
 	
+	public void setExamples(List<String> posExamples,
+			List<String> negExamples){
+		try{
+			getAutoSPARQLSession().setExamples(posExamples, negExamples);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void setEndpoint(Endpoint endpoint) throws AutoSPARQLException{
 		logger.info("Set new endpoint " + endpoint.getLabel() + "(" + getSession().getId() + ")");
@@ -153,7 +160,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public String getCurrentSPARQLQuery() throws AutoSPARQLException {
+	public String getCurrentSPARQLQuery() throws AutoSPARQLException {logger.info("Current QUERY: " + getAutoSPARQLSession().getCurrentQuery());
 		return getAutoSPARQLSession().getCurrentQuery();
 	}
 	
