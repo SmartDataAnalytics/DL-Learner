@@ -1,0 +1,9 @@
+Package: dl-learner-components-core
+Version: 1.0.0
+Section: misc
+Priority: optional
+Architecture: all
+Depends: openjdk-6-jre | sun-java6-jre
+Maintainer: Jens Lehmann <lehmann@informatik.uni-leipzig.de>
+Description: This is a package that contains the core components of the dl-learner.
+Distribution: development
