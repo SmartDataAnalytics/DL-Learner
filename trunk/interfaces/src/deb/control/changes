@@ -1,0 +1,4 @@
+ * DL-Learner GUI for loading, saving, and modifying configuration files    
+release distribution=staging, date=20:13 13.10.2008,version=0.7,urgency=low,by=Jens Lehmann <lehmann@informatik.uni-leipzig.de>
+ * initial release
+release distribution=staging, date=20:13 31.08.2007,version=0.6,urgency=low,by=Jens Lehmann <lehmann@informatik.uni-leipzig.de>
