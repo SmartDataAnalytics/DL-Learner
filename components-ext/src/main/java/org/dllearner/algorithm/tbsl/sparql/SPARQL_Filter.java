@@ -40,6 +40,14 @@ public class SPARQL_Filter
 		terms.add(new SPARQL_Pair(term, o, t));
 	}
 	
+	public Set<SPARQL_Pair> getTerms(){
+		return terms;
+	}
+	
+	public boolean isAnd(){
+		return and;
+	}
+	
 	@Override
 	public boolean equals(Object obj)
 	{

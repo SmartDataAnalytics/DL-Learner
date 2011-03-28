@@ -135,27 +135,6 @@ public class SlotBuilder {
 		return false;
 	}
 	
-	private List<Pair<String,String>> extractNominalPhrases(List<Pair<String,String>> tokenPOSpairs){
-		List<Pair<String,String>> test = new ArrayList<Pair<String,String>>();
-		
-		String nounPhrase = "";
-		String phraseTag = "";
-		for(Pair<String,String> pair : tokenPOSpairs){
-			if(pair.snd.startsWith("NNP")){
-				if(phraseTag.equals("NN")){
-					
-				}
-				phraseTag = "NNP";
-	    		nounPhrase += " " + pair.snd;
-			} else if(pair.snd.startsWith("NN")){
-				
-			} else {
-				test.add(pair);
-			}
-		}
-		
-		
-		return test;
-	}
+
 
 }

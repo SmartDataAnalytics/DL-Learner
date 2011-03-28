@@ -3,6 +3,8 @@ package org.dllearner.algorithm.tbsl.templator;
 import java.util.ArrayList;
 import java.util.List;
 
+import scala.actors.threadpool.Arrays;
+
 import edu.smu.tspell.wordnet.*;
 
 public class WordNet {
@@ -42,6 +44,25 @@ public class WordNet {
 			}
 		}
 		return synonyms;
+	}
+	
+	public List<String> getHypernyms(String s) {
+		
+		List<String> hypernyms = new ArrayList<String>();
+		
+		Synset[] synsets = database.getSynsets(s);
+		Synset[] hypsets = {};
+		for(int i = 0; i < synsets.length; i++){
+			if(synsets[i].getType() == SynsetType.NOUN){
+				hypsets = ((NounSynset)synsets[i]).getHypernyms();
+			} else if(synsets[i].getType() == SynsetType.VERB){
+				hypsets = ((VerbSynset)synsets[i]).getHypernyms();
+			}
+			for(Synset hypset : hypsets){
+				hypernyms.addAll(Arrays.asList(hypset.getWordForms()));
+			}
+		}
+		return hypernyms;
 	}
 	
 	public List<String> getAttributes(String s) {

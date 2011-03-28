@@ -15,6 +15,10 @@ public class SPARQL_Value {
 	public void setIsVariable(boolean b) {
 		isVariable = b;
 	}
+	
+	public boolean isVariable(){
+		return isVariable;
+	}
 
 	public SPARQL_Value(String name) {
 		super();

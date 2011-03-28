@@ -61,11 +61,19 @@ public class SolrSearch implements Search{
 		return getResourcesWithScores(queryString, hitsPerPage);
 	}
 	
-	public Map<String, Float> getResourcesWithScores(String queryString, int limit) {
-		return getResourcesWithScores(queryString, limit, 0);
+	public Map<String, Float> getResourcesWithScores(String queryString, boolean sorted) {
+		return getResourcesWithScores(queryString, hitsPerPage);
 	}
 	
-	public Map<String, Float> getResourcesWithScores(String queryString, int limit, int offset) {
+	public Map<String, Float> getResourcesWithScores(String queryString, int limit) {
+		return getResourcesWithScores(queryString, limit, 0, false);
+	}
+	
+	public Map<String, Float> getResourcesWithScores(String queryString, int limit, boolean sorted) {
+		return getResourcesWithScores(queryString, limit, 0, sorted);
+	}
+	
+	public Map<String, Float> getResourcesWithScores(String queryString, int limit, int offset, boolean sorted) {
 		Map<String, Float> resource2ScoreMap = new HashMap<String, Float>();
 		
 		QueryResponse response;
@@ -75,9 +83,10 @@ public class SolrSearch implements Search{
 		    query.setRows(hitsPerPage);
 		    query.setStart(offset);
 		    query.addField("score");
-		    query.addSortField("score", SolrQuery.ORDER.desc);
-		    query.addSortField( "pagerank", SolrQuery.ORDER.desc );
-		    
+		    if(sorted){
+		    	 query.addSortField("score", SolrQuery.ORDER.desc);
+				    query.addSortField( "pagerank", SolrQuery.ORDER.desc );
+		    }
 			response = server.query(query);
 			SolrDocumentList docList = response.getResults();
 			lastTotalHits = (int) docList.getNumFound();

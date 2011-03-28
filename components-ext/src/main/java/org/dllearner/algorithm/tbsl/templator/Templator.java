@@ -62,7 +62,7 @@ public class Templator {
         p.parse(tagged,g);
         
         if (p.getDerivationTrees().isEmpty()) {
-            p.clear(g,p.getTemps());
+//            p.clear(g,p.getTemps());
             System.out.println("'" + s + "' could not be parsed.");
         }
 

@@ -321,8 +321,48 @@ class GrammarFilter {
 				System.out.println("Look at that, " + s + " has no POS tag!"); // DEBUG
 			}
 		}
-		
+		result = extractNominalPhrases(result);
 		return result;
+	}
+	
+	private static List<Pair<String,String>> extractNominalPhrases(List<Pair<String,String>> tokenPOSpairs){
+		List<Pair<String,String>> test = new ArrayList<Pair<String,String>>();
+		
+		String nounPhrase = "";
+		String phraseTag = "";
+		for(Pair<String,String> pair : tokenPOSpairs){
+			if(pair.snd.startsWith("NNP")){
+				if(phraseTag.equals("NN")){
+					if(!nounPhrase.isEmpty()){
+						test.add(new Pair<String, String>(phraseTag.trim(), "NN"));
+						nounPhrase = "";
+					}
+				}
+				phraseTag = "NNP";
+	    		nounPhrase += " " + pair.fst;
+			} else if(pair.snd.startsWith("NN")){
+				if(phraseTag.equals("NNP")){
+					if(!nounPhrase.isEmpty()){
+						test.add(new Pair<String, String>(phraseTag.trim(), "NNP"));
+						nounPhrase = "";
+					}
+				}
+				phraseTag = "NN";
+	    		nounPhrase += " " + pair.fst;
+			} else {
+				if(!nounPhrase.isEmpty()){
+	    			test.add(new Pair<String, String>(nounPhrase.trim(), phraseTag));
+	    			nounPhrase = "";
+	    		}
+				test.add(pair);
+			}
+		}
+		if(!nounPhrase.isEmpty()){
+			test.add(new Pair<String, String>(nounPhrase.trim(), phraseTag));
+			nounPhrase = "";
+		}
+		
+		return test;
 	}
 
 }
