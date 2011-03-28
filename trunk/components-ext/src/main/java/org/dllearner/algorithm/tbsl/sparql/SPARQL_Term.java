@@ -5,7 +5,6 @@ public class SPARQL_Term extends SPARQL_Value {
 	SPARQL_OrderBy orderBy;
 	SPARQL_Aggregate aggregate;
 	SPARQL_Term as = null;
-	private boolean isVariable = false;
 	
 	public SPARQL_Term(String name) {
 		super(name);
@@ -18,7 +17,7 @@ public class SPARQL_Term extends SPARQL_Value {
 		this.name = name.replace("?","").replace("!","");
 		orderBy = SPARQL_OrderBy.NONE;
 		aggregate = SPARQL_Aggregate.NONE;
-		isVariable = b;
+		setIsVariable(b);
 	}
 	
 	public SPARQL_Term(String name, SPARQL_Aggregate aggregate) {
@@ -28,17 +27,13 @@ public class SPARQL_Term extends SPARQL_Value {
 	public SPARQL_Term(String name, SPARQL_Aggregate aggregate,boolean b,SPARQL_Term t) {
 		super(name);
 		this.aggregate = aggregate;
-		isVariable = b;
+		setIsVariable(b);
 		as = t;
 	}
 	
 	public SPARQL_Term(String name, SPARQL_OrderBy orderBy) {
 		super(name);
 		this.orderBy = orderBy;
-	}
-	
-	public void setIsVariable(boolean b) {
-		isVariable = b;
 	}
 	
 	@Override
@@ -86,7 +81,7 @@ public class SPARQL_Term extends SPARQL_Value {
 			else
 				return "DESC(?"+name.toLowerCase()+")";
 		}
-		if (isVariable) {
+		if (isVariable()) {
 			return "?"+name.toLowerCase();
 		}
 		else {

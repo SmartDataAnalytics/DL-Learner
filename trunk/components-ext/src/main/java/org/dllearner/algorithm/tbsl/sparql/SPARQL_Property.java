@@ -3,8 +3,6 @@ package org.dllearner.algorithm.tbsl.sparql;
 public class SPARQL_Property extends SPARQL_Value {
 	
 	private SPARQL_Prefix prefix = null;
-	private boolean isVariable = false;
-	
 
 	public SPARQL_Property(String name) {
 		super();
@@ -17,10 +15,6 @@ public class SPARQL_Property extends SPARQL_Value {
 		this.prefix = prefix;
 	}
 	
-	public void setIsVariable(boolean b) {
-		isVariable = b;
-	}
-
 	public SPARQL_Prefix getPrefix() {
 		return prefix;
 	}
@@ -31,7 +25,7 @@ public class SPARQL_Property extends SPARQL_Value {
 	
 	@Override
 	public String toString() {
-		if (isVariable) {
+		if (isVariable()) {
 			return "?" + name;
 		}
 		if (prefix == null) {
