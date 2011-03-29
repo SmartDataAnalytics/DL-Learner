@@ -54,7 +54,8 @@ public class Templator {
 		
         DUDE2UDRS_Converter d2u = new DUDE2UDRS_Converter();
         DRS2SPARQL_Converter d2s = new DRS2SPARQL_Converter();
-		
+		boolean clearAgain = true;
+        
 	    s = Preprocessor.normalize(s);
         String tagged = tagger.tag(s);
         System.out.println("Tagged input: " + tagged);
@@ -62,7 +63,8 @@ public class Templator {
         p.parse(tagged,g);
         
         if (p.getDerivationTrees().isEmpty()) {
-//            p.clear(g,p.getTemps());
+            p.clear(g,p.getTemps());
+            clearAgain = false;
             System.out.println("'" + s + "' could not be parsed.");
         }
 
@@ -99,7 +101,9 @@ public class Templator {
             }
         }
 
-        p.clear(g,p.getTemps());
+        if (clearAgain) {
+        	p.clear(g,p.getTemps());
+        }
         System.gc();
         
         return templates;
