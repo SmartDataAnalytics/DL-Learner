@@ -23,6 +23,15 @@ public class TrainAndTestSet {
 	public String[] getTestset() {
 		return testset;
 	}
+	
+	public TrainAndTestSet (String pdbID) {
+		String[] pdbIDs = {pdbID};
+		this.trainset = pdbIDs;
+	}
+	
+	public TrainAndTestSet (String[] pdbIDs) {
+		this.trainset = pdbIDs;
+	}
 
 
 	public TrainAndTestSet (int setsize) {
@@ -50,8 +59,8 @@ public class TrainAndTestSet {
 			}
 			
 			// lets create Train- and Testset
-			this.trainset = this.create_set(setsize, linenr);
-			this.testset = this.create_set(setsize, linenr);
+			this.trainset = this.createSet(setsize, linenr);
+			this.testset = this.createSet(setsize, linenr);
 		
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -108,7 +117,7 @@ public class TrainAndTestSet {
 	*/
 	
 	//creates Sets of PDB IDs equal to setsize
-	private String [] create_set(int setsize, int linenr){
+	private String [] createSet(int setsize, int linenr){
 		String [] set = new String [setsize];
 		if (this.setentries == null) {
 			this.setentries = new HashMap<Integer,String>(2*setsize);
