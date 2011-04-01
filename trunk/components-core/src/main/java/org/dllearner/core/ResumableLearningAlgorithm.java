@@ -19,24 +19,27 @@
  */
 package org.dllearner.core;
 
-import java.util.List;
-
 /**
- * Basic interface for algorithms learning SPARQL queries.
- * 
- * TODO: Check whether it is necessary to have a "real" SPARQL query class instead of 
- * only a string.
+ * Interface for learning algorithms, which can be paused and later continued.
  * 
  * @author Jens Lehmann
  *
  */
-public interface SparqlQueryLearningAlgorithm extends LearningAlgorithm {
+public interface ResumableLearningAlgorithm {
 
 	/**
-	 * @see #getCurrentlyBestEvaluatedDescriptions(int)
-	 * @param nrOfDescriptions Limit for the number or returned descriptions.
-	 * @return The best SPARQL queries found by the learning algorithm so far.
+	 * Pauses the algorithm (not all algorithms need to implement
+	 * this operation).
 	 */
-	public List<String> getCurrentlyBestDescriptions(int nrOfDescriptions);
+	public void pause();	
+	
+	/**
+	 * Resumes the algorithm (not all algorithms need to implement
+	 * this operation). You can use this method to continue
+	 * an algorithm run even after a termination criterion has been
+	 * reached. It will run until paused, stopped, or terminated
+	 * again.
+	 */
+	public void resume();
 	
 }

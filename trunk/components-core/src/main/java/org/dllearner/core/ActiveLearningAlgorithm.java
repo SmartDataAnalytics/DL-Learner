@@ -19,24 +19,20 @@
  */
 package org.dllearner.core;
 
-import java.util.List;
 
 /**
- * Basic interface for algorithms learning SPARQL queries.
- * 
- * TODO: Check whether it is necessary to have a "real" SPARQL query class instead of 
- * only a string.
+ * Active Learning algorithms are those, which can use feedback from an oracle.
  * 
  * @author Jens Lehmann
  *
  */
-public interface SparqlQueryLearningAlgorithm extends LearningAlgorithm {
+public interface ActiveLearningAlgorithm {
 
 	/**
-	 * @see #getCurrentlyBestEvaluatedDescriptions(int)
-	 * @param nrOfDescriptions Limit for the number or returned descriptions.
-	 * @return The best SPARQL queries found by the learning algorithm so far.
+	 * In order to separate/hide the implementation of an oracle from the active learning algorithm itself,
+	 * an oracle object is passed to the algorithm.
+	 * @param oracle The oracle to be used by the learning algorithm.
 	 */
-	public List<String> getCurrentlyBestDescriptions(int nrOfDescriptions);
+	public void setOracle(Oracle oracle);
 	
 }

@@ -308,24 +308,6 @@ public class BruteForceLearner extends AbstractCELA {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#pause()
-	 */
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningAlgorithm#resume()
-	 */
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
 	 */
 	@Override

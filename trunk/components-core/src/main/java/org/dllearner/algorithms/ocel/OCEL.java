@@ -487,18 +487,6 @@ public class OCEL extends AbstractCELA {
 		return algorithm.getStartNode();
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public void pause() {
-		// TODO: not implemented
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void resume() {
-		// TODO: not implemented
-	}
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
 	 */
