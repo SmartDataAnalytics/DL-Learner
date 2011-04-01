@@ -19,24 +19,29 @@
  */
 package org.dllearner.core;
 
-import java.util.List;
-
 /**
- * Basic interface for algorithms learning SPARQL queries.
  * 
- * TODO: Check whether it is necessary to have a "real" SPARQL query class instead of 
- * only a string.
+ * Interface for algorithms, which can be stopped and checked whether they are
+ * running. This allows learning algorithms to be run in separate threads or
+ * be terminated by the user.
  * 
  * @author Jens Lehmann
  *
  */
-public interface SparqlQueryLearningAlgorithm extends LearningAlgorithm {
+public interface StoppableLearningAlgorithm extends LearningAlgorithm {
 
 	/**
-	 * @see #getCurrentlyBestEvaluatedDescriptions(int)
-	 * @param nrOfDescriptions Limit for the number or returned descriptions.
-	 * @return The best SPARQL queries found by the learning algorithm so far.
+	 * Stops the algorithm gracefully. A stopped algorithm cannot be resumed anymore.
+	 * Use this method for cleanup and freeing memory.
 	 */
-	public List<String> getCurrentlyBestDescriptions(int nrOfDescriptions);
+	public abstract void stop();
+	
+	/**
+	 * Returns whether the learning algorithm is running. Implementation
+	 * should use a boolean status variable in their implementations of
+	 * the start and resume methods.
+	 * @return True if the algorithm is running, false otherwise.
+	 */
+	public abstract boolean isRunning();
 	
 }

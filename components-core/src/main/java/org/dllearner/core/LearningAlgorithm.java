@@ -19,6 +19,7 @@
  */
 package org.dllearner.core;
 
+
 /**
  * Basic interface for all DL-Learner learning algorithms.
  * 
@@ -27,4 +28,10 @@ package org.dllearner.core;
  */
 public interface LearningAlgorithm {
 
+	/**
+	 * Starts the algorithm. It runs until paused, stopped, or
+	 * a termination criterion has been reached.
+	 */
+	public abstract void start();	
+	
 }

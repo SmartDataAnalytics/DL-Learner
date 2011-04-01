@@ -39,10 +39,14 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * may require addition reasoner queries, because the learning
  * algorithms usually use but do not necessarily store this information.
  * 
+ * Changes (March/April 2011): Learning algorithms no longer have to use
+ * this class, but it still serves as a prototypical template for class
+ * expression learning algorithms.
+ * 
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractCELA extends Component {
+public abstract class AbstractCELA extends Component implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -102,42 +106,7 @@ public abstract class AbstractCELA extends Component {
 	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
-	
-	/**
-	 * Starts the algorithm. It runs until paused, stopped, or
-	 * a termination criterion has been reached.
-	 */
-	public abstract void start();
-	
-	/**
-	 * Pauses the algorithm (not all algorithms need to implement
-	 * this operation).
-	 */
-	public void pause() { };	
-	
-	/**
-	 * Resumes the algorithm (not all algorithms need to implement
-	 * this operation). You can use this method to continue
-	 * an algorithm run even after a termination criterion has been
-	 * reached. It will run until paused, stopped, or terminated
-	 * again.
-	 */
-	public void resume() { };
-	
-	/**
-	 * Stops the algorithm gracefully. A stopped algorithm cannot be resumed anymore.
-	 * Use this method for cleanup and freeing memory.
-	 */
-	public abstract void stop();
-	
-	/**
-	 * Returns whether the learning algorithm is running. Implementation
-	 * should use a boolean status variable in their implementations of
-	 * the start and resume methods.
-	 * @return True if the algorithm is running, false otherwise.
-	 */
-	public abstract boolean isRunning();
-	
+		
 	/**
 	 * Every algorithm must be able to return the score of the
 	 * best solution found.
