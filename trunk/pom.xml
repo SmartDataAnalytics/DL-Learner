@@ -271,7 +271,7 @@
 
             <dependency>
                 <groupId>org.aksw.commons</groupId>
-                <artifactId>commons</artifactId>
+                <artifactId>sparql</artifactId>
                 <version>${aksw.version}</version>
             </dependency>
 
