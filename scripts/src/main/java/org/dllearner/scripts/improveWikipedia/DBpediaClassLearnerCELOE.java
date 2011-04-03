@@ -50,6 +50,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  *
  */
 public class DBpediaClassLearnerCELOE {
+    //SparqlEndpoint  se ;
 
 	public DBpediaClassLearnerCELOE() {
 		// OPTIONAL: if you want to do some case distinctions in the learnClass method, you could add
@@ -104,5 +105,10 @@ public class DBpediaClassLearnerCELOE {
 		KB kb = dcl.learnAllClasses(classesToLearn);
 		kb.export(new File("/dev/null"), OntologyFormat.RDF_XML); // TODO: pick appropriate place to save ontology
 	}
+
+
+    public Set<String> getInstances(){
+        return null;
+    }
 	
 }
