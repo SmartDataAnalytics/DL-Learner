@@ -275,6 +275,12 @@
                 <version>${aksw.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.aksw.commons</groupId>
+                <artifactId>util</artifactId>
+                <version>${aksw.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>net.sourceforge.secondstring</groupId>

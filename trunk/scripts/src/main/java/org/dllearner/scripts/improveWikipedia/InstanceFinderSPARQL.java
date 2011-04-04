@@ -43,15 +43,14 @@ public class InstanceFinderSPARQL {
         logger.debug("retrieving random instances ");
         String query = "SELECT ?subject { ?subject <" + RDF.type + "> <" + OWL.Thing + "> } ";
 
-        ResultSet r = se.executeSelect(query);
+        //ResultSet r = se.executeSelect(query);
 
 
         //fromRandom = sparqltasks.queryAsSet(sparqlQueryString, variable);
         //fromRandom.removeAll(fullPositiveSet);
         //logger.debug("|-negExample size from random: " + fromRandom.size());
+
     }
-
-
     private SPARQLTasks sparqltasks;
 
     private SortedSet<String> filterClasses;
@@ -61,16 +60,10 @@ public class InstanceFinderSPARQL {
     private SortedSet<String> fromRelated = new TreeSet<String>();
     private SortedSet<String> fromNearbyClasses = new TreeSet<String>();
     private SortedSet<String> fromSuperclasses = new TreeSet<String>();
-    ;
     private SortedSet<String> fromParallelClasses = new TreeSet<String>();
-    ;
     private SortedSet<String> fromRandom = new TreeSet<String>();
-    ;
     private SortedSet<String> fromDomain = new TreeSet<String>();
-    ;
     private SortedSet<String> fromRange = new TreeSet<String>();
-    ;
-
     static int poslimit = 10;
     static int neglimit = 20;
 
