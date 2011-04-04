@@ -115,19 +115,23 @@ public class DBpediaClassLearnerCELOE {
         SparqlKnowledgeSource ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
         ks.getConfigurator().setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
         ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO: probably the official endpoint is too slow?
-
+        ks.init();
+        
         ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
-
+        rc.init();
+        
         PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
         lp.getConfigurator().setAccuracyMethod("fMeasure");
         lp.getConfigurator().setUseApproximations(false);
-
+        lp.init();
+        
         CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
         CELOEConfigurator cc = la.getConfigurator();
         cc.setMaxExecutionTimeInSeconds(100);
         cc.setNoisePercentage(20);
         // TODO: set more options as needed
-
+        la.init();
+        
         // to write the above configuration in a conf file (optional)
         Config cf = new Config(cm, ks, rc, lp, la);
         new ConfigSave(cf).saveFile(new File("/dev/null"));

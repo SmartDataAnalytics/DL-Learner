@@ -167,7 +167,7 @@ public final class CommonConfigOptions {
 	}	
 	
 	public static BooleanConfigOption useDoubleDatatypes() {
-		return new BooleanConfigOption("useDoubleDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useDoubleDatatypesDefault);
+		return new BooleanConfigOption("useDoubleDatatypes", "specifies whether double datatypes are used in the learning algorothm",useDoubleDatatypesDefault);
 	}	
 	
 	public static BooleanConfigOption useStringDatatypes() {
