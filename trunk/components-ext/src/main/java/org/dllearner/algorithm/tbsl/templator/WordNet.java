@@ -1,9 +1,8 @@
 package org.dllearner.algorithm.tbsl.templator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import scala.actors.threadpool.Arrays;
 
 import edu.smu.tspell.wordnet.*;
 
