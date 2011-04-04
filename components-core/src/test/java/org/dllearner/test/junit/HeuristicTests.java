@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -43,8 +44,6 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
-
-import scala.actors.threadpool.Arrays;
 
 /**
  * Tests for various heuristics employed in learning problems.
@@ -295,7 +294,7 @@ public class HeuristicTests {
 		problem.init();		
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	private static void configurePosNegStandardLP(PosNegLPStandard problem, Individual[] positiveExamples, Individual[] negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
 		Set<Individual> s1 = new TreeSet<Individual>(Arrays.asList(positiveExamples));
 		Set<Individual> s2 = new TreeSet<Individual>(Arrays.asList(negativeExamples));
