@@ -22,77 +22,147 @@ package org.dllearner.scripts.improveWikipedia;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.aksw.commons.sparql.core.ResultSetRenderer;
 import org.aksw.commons.sparql.core.SparqlEndpoint;
+import org.aksw.commons.sparql.core.SparqlTemplate;
 import org.apache.log4j.Logger;
+import org.apache.velocity.VelocityContext;
+import org.dllearner.algorithm.tbsl.learning.SPARQLTemplateBasedLearner;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.owl.OWLVocabulary;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class InstanceFinderSPARQL {
 
     // LOGGER: ComponentManager
     private static Logger logger = Logger.getLogger(InstanceFinderSPARQL.class);
 
-
-    public static void randomInstances(Set<String> blacklist, SparqlEndpoint se) {
-        logger.debug("retrieving random instances ");
-        String query = "SELECT ?subject { ?subject <" + RDF.type + "> <" + OWL.Thing + "> } ";
-
-        //ResultSet r = se.executeSelect(query);
-
-
-        //fromRandom = sparqltasks.queryAsSet(sparqlQueryString, variable);
-        //fromRandom.removeAll(fullPositiveSet);
-        //logger.debug("|-negExample size from random: " + fromRandom.size());
-
-    }
-    private SPARQLTasks sparqltasks;
-
-    private SortedSet<String> filterClasses;
-
-    private SortedSet<String> fullPositiveSet;
-
-    private SortedSet<String> fromRelated = new TreeSet<String>();
-    private SortedSet<String> fromNearbyClasses = new TreeSet<String>();
-    private SortedSet<String> fromSuperclasses = new TreeSet<String>();
-    private SortedSet<String> fromParallelClasses = new TreeSet<String>();
-    private SortedSet<String> fromRandom = new TreeSet<String>();
-    private SortedSet<String> fromDomain = new TreeSet<String>();
-    private SortedSet<String> fromRange = new TreeSet<String>();
-    static int poslimit = 10;
-    static int neglimit = 20;
-
-
     /**
-     * takes as input a full positive set to make sure no negatives are added as positives
+     * query is SELECT ?subject { ?subject rdf:type owl:Thing  } LIMIT 100
      *
-     * @param fullPositiveSet
-     * @param st
+     * @param blacklist      instances removed from the returned set
+     * @param sparqlEndpoint
+     * @param limit          if <= 0, 100 will be used
+     * @return a set of uris
      */
-    public InstanceFinderSPARQL(
-            SortedSet<String> fullPositiveSet,
-            SPARQLTasks st, SortedSet<String> filterClasses) {
-        super();
-        this.fullPositiveSet = new TreeSet<String>();
-        this.fullPositiveSet.addAll(fullPositiveSet);
-        this.sparqltasks = st;
-        this.filterClasses = filterClasses;
+    public static Set<String> arbitraryInstances(Set<String> blacklist, SparqlEndpoint sparqlEndpoint, int limit) {
+        String query = "SELECT ?subject { ?subject <" + RDF.type + "> <" + OWL.Thing + "> } " + ((limit > 0) ? "LIMIT " + limit : " LIMIT 100");
+        ResultSet r = sparqlEndpoint.executeSelect(query);
+        Set<String> s = ResultSetRenderer.asStringSet(r);
+        s.removeAll(blacklist);
+        logger.debug("retrieving " + s.size() + " random instances ");
+        return s;
     }
 
 
     /**
-     * see <code>  getNegativeExamples(int neglimit, boolean stable )</code>
+     * TODO refactor
+     * makes neg ex from related instances, that take part in a role R(pos,neg)
+     * filters all objects, that don't use the given namespace
      *
-     * @param neglimit
+     * @param instances
      */
-    public SortedSet<String> getNegativeExamples(int neglimit) {
-        return getNegativeExamples(neglimit, false);
+    public static void relatedInstances(Set<String> instances, Set<String> blacklist, Set<String> allowedProperties, SparqlEndpoint sparqlEndpoint) {
+        /*public void makeNegativeExamplesFromRelatedInstances(SortedSet<String> instances,
+                                                            String objectNamespace) {
+           logger.debug("making examples from related instances");
+           for (String oneInstance : instances) {
+               //makeNegativeExamplesFromRelatedInstances(oneInstance, objectNamespace);
+           }
+           logger.debug("|-negExample size from related: " + fromRelated.size());
+       } */
+        /*String query = "SELECT * { " + "<" + oneInstance + "> " + "?p ?object.}"
+               + "FILTER (REGEX(str(?object), '" + objectnamespace + "')).\n" + "}";
+       // SortedSet<String> result = new TreeSet<String>();
+
+       String SPARQLquery = "SELECT * WHERE { \n" + "<" + oneInstance + "> " + "?p ?object. \n"
+               + "FILTER (REGEX(str(?object), '" + objectnamespace + "')).\n" + "}";
+
+       fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "object"));
+       fromRelated.removeAll(fullPositiveSet);
+        */
     }
+
+
+    /**
+     * TODO document
+     * @param instances this will serve as a blacklist also
+     */
+    public static Set<String> findInstancesWithSimilarClasses(Set<String> instances,
+                                                              int limit, SparqlEndpoint sparqlEndpoint) {
+        Set<String> classes = new HashSet<String>();
+        Set<String> ret = new HashSet<String>();
+        for (String instance : instances) {
+            try {
+               SparqlTemplate st = new SparqlTemplate(0);
+                //st.addFilter(sparqlEndpoint.like());
+                VelocityContext vc = new VelocityContext();
+                vc.put("instance", instance);
+                vc.put("limit", limit);
+                String query = SparqlTemplate.classesOfInstance(vc);
+                classes.addAll(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query)));
+            } catch (Exception e) {
+                logger.warn("ignoring SPARQLQuery failure geClasses for " + instance);
+            }
+
+        }
+        System.out.println(classes);
+        System.exit(0);
+
+        logger.debug("retrieved " + classes.size() + " classes");
+
+
+        for (String oneClass : classes) {
+            logger.debug(oneClass);
+            try {
+                VelocityContext vc = new VelocityContext();
+                vc.put("class", oneClass);
+                vc.put("limit", limit);
+                String query = SparqlTemplate.classesOfInstance(vc);
+                ret.addAll(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query)));
+            } catch (Exception e) {
+                logger.warn("ignoring SPARQLQuery failure classesOfInstance for " + oneClass);
+            }
+        }
+
+        ret.removeAll(instances);
+        return ret;
+
+        // superClasses.add(concept.replace("\"", ""));
+        // logger.debug("before"+superClasses);
+        // superClasses = dbpediaGetSuperClasses( superClasses, 4);
+        // logger.debug("getting negExamples from "+superClasses.size()+"
+        // superclasses");
+
+        /*for (String oneClass : classes) {
+            logger.debug(oneClass);
+            // rsc = new
+            // JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
+            try {
+                this.fromParallelClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\"" + oneClass
+                        + "\"", sparqlResultLimit));
+            } catch (Exception e) {
+                logger.warn("ignoring SPARQLQuery failure, see log/sparql.txt");
+            }
+        }
+
+        for (String instance : positiveSet) {
+            try {
+                classes.addAll(sparqltasks.getClassesForInstance(instance, sparqlResultLimit));
+
+            }
+            logger.debug("getting negExamples from " + classes.size() + " parallel classes");
+
+
+            fromParallelClasses.removeAll(fullPositiveSet);
+            logger.debug("|-neg Example size from parallelclass: " + fromParallelClasses.size());
+           */
+    }
+
+
+
+
 
     /**
      * aggregates all collected neg examples
@@ -102,7 +172,10 @@ public class InstanceFinderSPARQL {
      * @param neglimit size of negative Example set, 0 means all, which can be quite large several thousands
      * @param stable   decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
      */
-    public SortedSet<String> getNegativeExamples(int neglimit, boolean stable) {
+    /*public SortedSet<String> getNegativeExamples
+    (
+            int neglimit,
+            boolean stable) {
         SortedSet<String> negatives = new TreeSet<String>();
         negatives.addAll(fromNearbyClasses);
         negatives.addAll(fromParallelClasses);
@@ -124,60 +197,22 @@ public class InstanceFinderSPARQL {
         }
         logger.debug("neg Example size after shrinking: " + negatives.size());
         return negatives;
-    }
+    }  */
 
-
-    public void makeNegativeExamplesFromRandomInstances() {
-        logger.debug("making random examples ");
-        String variable = "subject";
-        String sparqlQueryString = "SELECT ?" + variable + " WHERE {" +
-                "?" + variable + " <" + OWLVocabulary.RDF_TYPE + ">" + " ?o" +
-                "}";
-
-        fromRandom = sparqltasks.queryAsSet(sparqlQueryString, variable);
-        fromRandom.removeAll(fullPositiveSet);
-        logger.debug("|-negExample size from random: " + fromRandom.size());
-    }
-
-    /**
-     * makes neg ex from related instances, that take part in a role R(pos,neg)
-     * filters all objects, that don't use the given namespace
-     *
-     * @param instances
-     * @param objectNamespace
-     */
-    public void makeNegativeExamplesFromRelatedInstances(SortedSet<String> instances,
-                                                         String objectNamespace) {
-        logger.debug("making examples from related instances");
-        for (String oneInstance : instances) {
-            makeNegativeExamplesFromRelatedInstances(oneInstance, objectNamespace);
-        }
-        logger.debug("|-negExample size from related: " + fromRelated.size());
-    }
-
-    private void makeNegativeExamplesFromRelatedInstances(String oneInstance, String objectnamespace) {
-        // SortedSet<String> result = new TreeSet<String>();
-
-        String SPARQLquery = "SELECT * WHERE { \n" + "<" + oneInstance + "> " + "?p ?object. \n"
-                + "FILTER (REGEX(str(?object), '" + objectnamespace + "')).\n" + "}";
-
-        fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "object"));
-        fromRelated.removeAll(fullPositiveSet);
-
-    }
 
     // keep a while may still be needed
     /*public void dbpediaMakeNegativeExamplesFromRelatedInstances(String subject) {
-         // SortedSet<String> result = new TreeSet<String>();
+        // SortedSet<String> result = new TreeSet<String>();
 
-         String SPARQLquery = "SELECT * WHERE { \n" + "<" + subject + "> " + "?p ?o. \n"
-                 + "FILTER (REGEX(str(?o), 'http://dbpedia.org/resource/')).\n"
-                 + "FILTER (!REGEX(str(?p), 'http://www.w3.org/2004/02/skos'))\n" + "}";
+        String SPARQLquery = "SELECT * WHERE { \n" + "<" + subject + "> " + "?p ?o. \n"
+                + "FILTER (REGEX(str(?o), 'http://dbpedia.org/resource/')).\n"
+                + "FILTER (!REGEX(str(?p), 'http://www.w3.org/2004/02/skos'))\n" + "}";
 
-         this.fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "o"));
+        this.fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "o"));
 
-     }*/
+    }*/
 
+   /*
     public void makeNegativeExamplesFromNearbyClasses(SortedSet<String> positiveSet, int sparqlResultLimit) {
         SortedSet<String> classes = new TreeSet<String>();
         Iterator<String> instanceIter = positiveSet.iterator();
@@ -220,53 +255,7 @@ public class InstanceFinderSPARQL {
         this.fromNearbyClasses.removeAll(fullPositiveSet);
     }
 
-    /**
-     * makes negEx from classes, the posEx belong to.
-     * Gets all Classes from PosEx, gets Instances from these Classes, returns all
-     *
-     * @param positiveSet
-     * @param sparqlResultLimit
      */
-    public void makeNegativeExamplesFromParallelClasses(SortedSet<String> positiveSet, int sparqlResultLimit) {
-        makeNegativeExamplesFromClassesOfInstances(positiveSet, sparqlResultLimit);
-    }
-
-    private void makeNegativeExamplesFromClassesOfInstances(SortedSet<String> positiveSet,
-                                                            int sparqlResultLimit) {
-        logger.debug("making neg Examples from parallel classes");
-        SortedSet<String> classes = new TreeSet<String>();
-        // superClasses.add(concept.replace("\"", ""));
-        // logger.debug("before"+superClasses);
-        // superClasses = dbpediaGetSuperClasses( superClasses, 4);
-        // logger.debug("getting negExamples from "+superClasses.size()+"
-        // superclasses");
-
-        for (String instance : positiveSet) {
-            try {
-                classes.addAll(sparqltasks.getClassesForInstance(instance, sparqlResultLimit));
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("ignoring SPARQLQuery failure, see log/sparql.txt");
-            }
-        }
-        logger.debug("getting negExamples from " + classes.size() + " parallel classes");
-        for (String oneClass : classes) {
-            logger.debug(oneClass);
-            // rsc = new
-            // JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
-            try {
-                this.fromParallelClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\"" + oneClass
-                        + "\"", sparqlResultLimit));
-            } catch (Exception e) {
-                logger.warn("ignoring SPARQLQuery failure, see log/sparql.txt");
-            }
-        }
-
-        fromParallelClasses.removeAll(fullPositiveSet);
-        logger.debug("|-neg Example size from parallelclass: " + fromParallelClasses.size());
-
-    }
-
 
     /**
      * it gets the first class of an arbitrary  instance and queries the superclasses of it,
@@ -276,7 +265,7 @@ public class InstanceFinderSPARQL {
      * @param positiveSet
      * @param sparqlResultSetLimit
      */
-    public void makeNegativeExamplesFromSuperClassesOfInstances(SortedSet<String> positiveSet,
+   /* public void makeNegativeExamplesFromSuperClassesOfInstances(SortedSet<String> positiveSet,
                                                                 int sparqlResultSetLimit) {
         SortedSet<String> classes = new TreeSet<String>();
         Iterator<String> instanceIter = positiveSet.iterator();
@@ -291,13 +280,14 @@ public class InstanceFinderSPARQL {
     public void makeNegativeExamplesFromSuperClasses(String concept, int sparqlResultSetLimit) {
         makeNegativeExamplesFromSuperClasses(concept, sparqlResultSetLimit, 2);
     }
-
+    */
     /**
      * if pos ex derive from one class, then neg ex are taken from a superclass
      *
      * @param concept
      * @param sparqlResultSetLimit
      */
+    /*
     public void makeNegativeExamplesFromSuperClasses(String concept, int sparqlResultSetLimit, int depth) {
 
         concept = concept.replaceAll("\"", "");
@@ -331,4 +321,5 @@ public class InstanceFinderSPARQL {
         fromRange.removeAll(fullPositiveSet);
         logger.debug("|-neg Example size from Range: " + fromRange.size());
     }
+    */
 }
