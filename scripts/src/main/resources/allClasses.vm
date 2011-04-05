@@ -1,0 +1,2 @@
+#parse("org/aksw/commons/sparqltemplates/prefix.vm")
+SELECT ?classes #parse("org/aksw/commons/sparqltemplates/from.vm") {  ?classes rdf:type owl:Class.  #parse("org/aksw/commons/sparqltemplates/filter.vm") } #parse("org/aksw/commons/sparqltemplates/limit.vm")
