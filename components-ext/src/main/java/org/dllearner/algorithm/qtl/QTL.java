@@ -77,9 +77,11 @@ public class QTL {
 		negExampleTrees.addAll(getQueryTrees(negExamples));
 		
 		lgg = lggGenerator.getLGG(posExampleTrees);
+		System.out.println(lgg.getStringRepresentation());
 		if(queryTreeFilter != null){
 			lgg = queryTreeFilter.getFilteredQueryTree(lgg);
 		}
+		System.out.println(lgg.getStringRepresentation());
 		
 		if(coversNegativeQueryTree(lgg)){
 			throw new QTLException("Could not learn SPARQL query. Reason: LGG covers negative tree.");

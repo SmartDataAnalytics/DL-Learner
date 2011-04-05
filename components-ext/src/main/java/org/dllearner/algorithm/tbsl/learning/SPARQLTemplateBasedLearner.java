@@ -23,6 +23,7 @@ import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -36,7 +37,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-public class SPARQLTemplateBasedLearner {
+public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 	
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner.class);
 	private Monitor mon = MonitorFactory.getTimeMonitor("stbl");
@@ -84,9 +85,11 @@ public class SPARQLTemplateBasedLearner {
 		modelGenenerator = new ModelGenerator(endpoint, predicateFilters);
 	}
 	
-	public void learnSPARQLQueries(String question){
+	public void setQuestion(String question){
 		this.question = question;
-		
+	}
+	
+	private void learnSPARQLQueries(){
 		//generate SPARQL query templates
 		logger.info("Generating SPARQL query templates...");
 		mon.start();
@@ -365,13 +368,19 @@ public class SPARQLTemplateBasedLearner {
 	 * @throws MalformedURLException 
 	 */
 	public static void main(String[] args) throws MalformedURLException {
+		String question = "Give me all soccer clubs in Premier League";//Give me all countries in Europe
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"), 
 				Collections.<String>singletonList("http://dbpedia.org"), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
-//		learner.learnSPARQLQueries("Give me all countries in Europe");
-		learner.learnSPARQLQueries("Give me all soccer clubs in Premier League");
+		learner.setQuestion(question);
+		learner.start();
 
+	}
+
+	@Override
+	public void start() {
+		learnSPARQLQueries();
 	}
 	
 
