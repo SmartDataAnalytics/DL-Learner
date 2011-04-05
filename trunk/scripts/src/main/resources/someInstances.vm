@@ -1,0 +1,5 @@
+#parse("org/aksw/commons/sparqltemplates/prefix.vm")
+SELECT ?instances #parse("org/aksw/commons/sparqltemplates/from.vm") {
+    ?instances rdf:type owl:Thing .
+     #parse("org/aksw/commons/sparqltemplates/filter.vm")
+} #parse("org/aksw/commons/sparqltemplates/limit.vm")
