@@ -1,0 +1,7 @@
+#parse("org/aksw/commons/sparqltemplates/prefix.vm")
+SELECT ?sub #parse("org/aksw/commons/sparqltemplates/from.vm") {
+    <$class> rdfs:subClassOf ?super .
+    ?sub rdfs:subClassOf ?super .
+    Filter (?sub != <$class>) .
+    #parse("org/aksw/commons/sparqltemplates/filter.vm")
+} #parse("org/aksw/commons/sparqltemplates/limit.vm")
