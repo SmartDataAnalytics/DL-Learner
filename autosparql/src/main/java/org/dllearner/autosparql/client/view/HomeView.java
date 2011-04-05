@@ -6,6 +6,8 @@ import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Endpoint;
+import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
+import org.dllearner.autosparql.client.widget.StoredSPARQLQueriesPanel;
 
 import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -41,6 +43,7 @@ public class HomeView extends View {
 	private HtmlContainer sidecontent;
 
 	private TextField<String> queryField;
+	
 	
 	public HomeView(Controller controller) {
 		super(controller);
@@ -143,15 +146,38 @@ public class HomeView extends View {
                 		  "<h2>Warning! The AutoSPARQL service is currently under construction. We are working on it and will hopfully reactivate it soon.</h2>"+
 //                    "<h2>Watch the Screencast</h2>"+
 //                    "<object width=\"400\" height=\"233\"><param name=\"allowfullscreen\" value=\"true\" /><param name=\"allowscriptaccess\" value=\"always\" /><param name=\"movie\" value=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" /><embed src=\"http://vimeo.com/moogaloop.swf?clip_id=1878254&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=1&amp;color=00ADEF&amp;fullscreen=1&amp;autoplay=0&amp;loop=0\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" allowscriptaccess=\"always\" width=\"400\" height=\"233\"></embed></object>"+
-                    "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span></a></p>"
+                    "<p>powered by<br/><a href=\"http://dl-learner.org\"><span class=hideme>DL-Learner</span><span id=dllearnerlogo></span><span id=storedqueries></span></a></p>"
                         );
 
                 sidecontent.add(new Image("dl-learner_logo.gif"), "#dllearnerlogo");
+                
+                SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallback<List<StoredSPARQLQuery>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+					@Override
+					public void onSuccess(List<StoredSPARQLQuery> result) {
+						for(StoredSPARQLQuery query : result){
+							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.HOME);
+							link.addClickListener(new ClickListener() {
+								
+								@Override
+								public void onClick(Widget sender) {
+									// TODO Auto-generated method stub
+									
+								}
+							});
+							sidecontent.add(link, "#storedqueries");
+							
+						}container.layout();
+					}
+				});
 
                 // put page together
                 page.add(intro, ".teaser");
                 page.add(maincontent, ".contentcol1");
                 page.add(sidecontent, ".contentcol2");
+                
 
                 // add page to gwt container
                 container.add(page);
@@ -171,6 +197,8 @@ public class HomeView extends View {
 				"<p>Research Group: <a href=\"http://aksw.org/Groups/MOLE\">MOLE</a>@<a href=\"http://aksw.org\">AKSW</a>@<a href=\"http://www.zv.uni-leipzig.de/en/\">University of Leipzig</a></p>" +
 				"<p>powered by <a href=\"http://dl-learner.org\">DL-Learner</a> [LOGO]</p>");*/
 		//container.add(infos);
+                
+                
 	}
 	
 	private ComboBox<Endpoint> createEndpointSelector(){

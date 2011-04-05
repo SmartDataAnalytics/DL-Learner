@@ -6,6 +6,7 @@ import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
@@ -38,6 +39,12 @@ public interface SPARQLService extends RemoteService{
 	
 	void setExamples(List<String> posExamples,
 			List<String> negExamples);
+	
+	List<StoredSPARQLQuery> getSavedSPARQLQueries();
+	
+	void saveSPARQLQuery()  throws AutoSPARQLException;
+	
+	String loadSPARQLQuery(String question);
 	
 	/**
      * Utility class to get the RPC Async interface from client-side code

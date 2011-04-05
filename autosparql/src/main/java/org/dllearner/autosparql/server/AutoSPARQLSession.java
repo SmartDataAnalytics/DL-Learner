@@ -7,9 +7,11 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
+import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.server.search.Search;
 import org.dllearner.autosparql.server.search.SolrSearch;
+import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
 
@@ -26,16 +28,16 @@ public class AutoSPARQLSession {
 	
 	private SPARQLEndpointEx endpoint;
 	
-	private SPARQLSearch search;
 	private ExtractionDBCache constructCache;
 	private ExtractionDBCache selectCache;
-//	private ExampleFinder exampleFinder;
 	private ExampleFinder exampleFinder;
 	private Search nlpSearch;
 	
 	private String servletContextPath;
 	
 	private List<String> topKResources;
+	
+	private String question;
 	
 	
 	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath, String solrURL){
@@ -44,13 +46,12 @@ public class AutoSPARQLSession {
 		
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
-		search = new SPARQLSearch(selectCache, servletContextPath);
 		nlpSearch = new SolrSearch(solrURL);
-//		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 	}
 	
 	public void setQuestion(String question){
+		this.question = question;
 		exampleFinder.setQuestion(question);
 	}
 	
@@ -170,7 +171,7 @@ public class AutoSPARQLSession {
 	}
 	
 	public String getCurrentQuery() throws AutoSPARQLException {
-		try{logger.info("Current QUERY: " + exampleFinder.getCurrentQuery());
+		try{
 			return exampleFinder.getCurrentQueryHTML();
 		} catch (Exception e){
 			logger.error(e);
@@ -181,6 +182,10 @@ public class AutoSPARQLSession {
 	public void setExamples(List<String> posExamples,
 			List<String> negExamples){
 		exampleFinder.setExamples(posExamples, negExamples);
+	}
+	
+	public void saveSPARQLQuery(Store store) throws AutoSPARQLException{
+		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), new Endpoint(0, endpoint.getLabel()));
 	}
 	
 	private List<String> getIntermediateNegativeExamples(List<String> posExamples){

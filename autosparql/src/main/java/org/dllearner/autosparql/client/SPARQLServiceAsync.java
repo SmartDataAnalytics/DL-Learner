@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
@@ -38,5 +39,11 @@ public interface SPARQLServiceAsync
 	
 	void setExamples(List<String> posExamples,
 			List<String> negExamples, AsyncCallback<Void> callback);
+	
+	void saveSPARQLQuery(AsyncCallback<Void> callback);
+	
+	void loadSPARQLQuery(String question, AsyncCallback<String> callback);
+	
+	void getSavedSPARQLQueries(AsyncCallback<List<StoredSPARQLQuery>> callback);
     
 }

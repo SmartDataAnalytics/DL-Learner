@@ -13,11 +13,14 @@ import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoader;
 import com.extjs.gxt.ui.client.data.RpcProxy;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
-import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
@@ -43,6 +46,8 @@ public class ResultPanel extends ContentPanel {
 	private TabItem queryTab;
 	private TabItem graphTab;
 	
+	private Button saveButton;
+	
  
 	public ResultPanel(){
 		setLayout(new RowLayout(Orientation.HORIZONTAL));
@@ -58,9 +63,19 @@ public class ResultPanel extends ContentPanel {
 		
 		add(mainPanel, new RowData(1, 1));
 		
+		saveButton = new Button("Save");
+		saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				onSave();
+			}
+		});
+		add(saveButton);
+		
 		createResultGrid();
 		createQueryTab();
-		createGraphTab();
+//		createGraphTab();
 	}
 	
 	private void createResultGrid(){
@@ -165,11 +180,27 @@ public class ResultPanel extends ContentPanel {
 
 			@Override
 			public void onSuccess(String result) {
-				queryTab.removeAll();System.out.println("Current query:\n" + result);
+				queryTab.removeAll();
 				queryTab.addText("<pre class=\"resultquery add-padding\"><code>"+result+"</code></pre>");
 				queryTab.layout();
 			}
 		});
 		
+	}
+	
+	private void onSave(){
+		SPARQLService.Util.getInstance().saveSPARQLQuery(new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				
+			}
+		});
 	}
 }

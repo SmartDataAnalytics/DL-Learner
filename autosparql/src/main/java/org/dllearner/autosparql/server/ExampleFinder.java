@@ -19,8 +19,10 @@ import org.dllearner.autosparql.server.search.QuestionProcessor;
 import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.openrdf.vocabulary.RDFS;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
 public class ExampleFinder {
@@ -47,6 +49,7 @@ public class ExampleFinder {
 		this.selectCache = selectCache;
 		
 		qtl = new QTL(endpoint, selectCache);
+		qtl.setMaxExecutionTimeInSeconds(1000);
 		resourceIndex = new SolrSearch("http://139.18.2.173:8080/apache-solr-1.4.1/dbpedia_resources");
 	}
 	
@@ -105,7 +108,30 @@ public class ExampleFinder {
 	}
 	
 	private Example getExample(String uri){
-		return resourceIndex.getExamples("uri:\"" + uri + "\"").get(0);
+		List<Example> examples = resourceIndex.getExamples("uri:\"" + uri + "\"");
+		if(examples.isEmpty()){
+			return getExampleFromSPARQLEndpoint(uri);
+		} else {
+			return resourceIndex.getExamples("uri:\"" + uri + "\"").get(0);
+		}
+	}
+	
+	private Example getExampleFromSPARQLEndpoint(String uri){
+		String query = "SELECT ?label ?comment ?imageURL WHERE {" +
+			getAngleBracketsString(uri) + getAngleBracketsString(RDFS.LABEL) + "?label.FILTER(LANGMATCHES(LANG(?label), 'en'))" +
+			"OPTIONAL{" + getAngleBracketsString(uri) + getAngleBracketsString(RDFS.COMMENT) + "?comment.FILTER(LANGMATCHES(LANG(?comment), 'en'))}" +
+			"OPTIONAL{" + getAngleBracketsString(uri) + getAngleBracketsString("http://dbpedia.org/ontology/thumbnail") + "?imageURL.}" +
+					"}";
+		System.out.println(query);
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, query));
+		QuerySolution qs = rs.next();
+		String label = qs.getLiteral("label").getLexicalForm();
+		String comment = qs.getLiteral("comment").getLexicalForm();
+		String imageURL = qs.getResource("imageURL").getURI();
+		
+		return new Example(uri, label, imageURL, comment);
+		
+		
 	}
 	
 	public String encodeHTML(String s) {
