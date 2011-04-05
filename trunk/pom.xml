@@ -26,7 +26,6 @@
         <module>scripts</module>
         <module>protege</module>
         <module>evalplugin</module>
-        <module>sparql-query-generator</module>
         <module>autosparql</module>
     </modules>
 
