@@ -154,7 +154,7 @@ public class QueryView extends View {
 		dummyPanel.layout();
 	}
 	
-	private void onAddExample(Example example, Example.Type type){
+	private void onAddExample(Example example, final Example.Type type){
 		if(type == Example.Type.POSITIVE){
 			examplesPanel.addPositiveExample(example);
 		} else {
@@ -194,16 +194,15 @@ public class QueryView extends View {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							System.err.println("Error");
-							
+							MessageBox.alert("Error", caught.getMessage(), null);
 						}
 
 						@Override
 						public void onSuccess(Void result) {
-							System.err.println("Refresh");
-							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-									examplesPanel.getNegativeExamplesUris());
-							
+							if(type == Example.Type.POSITIVE){
+								resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+										examplesPanel.getNegativeExamplesUris());
+							}
 						}
 					});
 			

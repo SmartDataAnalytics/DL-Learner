@@ -11046,7 +11046,6 @@ SELECT DISTINCT ?uri ?string
 WHERE 
 {
 	?uri a foaf:Person.
-        ?uri rdf:type onto:Person.        
         ?uri foaf:givenName "Jimmy"@en   .
         OPTIONAL {?uri rdfs:label ?string .
         FILTER (lang(?string) = "en")     }

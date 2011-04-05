@@ -36,9 +36,9 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 public class QueryTreeFilterEvaluation {
 	
 	private static double THRESHOLD = 0.6;
-//	private static String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";
+	private static String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";
 //	private static String ENDPOINT_URL = "http://lod.openlinksw.com/sparql";
-	private static String ENDPOINT_URL = "http://live.dbpedia.org/sparql";
+//	private static String ENDPOINT_URL = "http://live.dbpedia.org/sparql";
 	
 
 	/**
@@ -52,8 +52,8 @@ public class QueryTreeFilterEvaluation {
 //		String uri = "http://dbpedia.org/resource/University_of_California,_Berkeley";//"http://dbpedia.org/resource/Fulham_F.C.";//"http://dbpedia.org/resource/Vienna";
 //		String question = "In which states of Germany reigns the political party CDU?";
 //		String uri = "http://dbpedia.org/resource/Thuringia";
-		String question = "Which people have as their given name Jimmy?";
-		String uri = "http://dbpedia.org/resource/Jimmy_Coogan";
+		String question = "films with starring Brad Pitt?";
+		String uri = "http://dbpedia.org/resource/Interview_with_the_Vampire:_The_Vampire_Chronicles";
 		System.out.println("Question: \"" + question + "\"");
 		System.out.println("Resource: " + uri);
 		

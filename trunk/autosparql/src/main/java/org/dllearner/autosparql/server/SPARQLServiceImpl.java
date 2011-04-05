@@ -15,6 +15,9 @@ import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
+import org.dllearner.autosparql.server.store.SimpleFileStore;
+import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.autosparql.server.util.Endpoints;
 import org.ini4j.Ini;
 
@@ -31,7 +34,12 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private static final String AUTOSPARQL_SESSION = "autosparql_session";
 	
+	private static final String SPARQL_QUERIES_FILE = "queries.txt";
+	
 	private List<SPARQLEndpointEx> endpoints;
+	private List<StoredSPARQLQuery> storedSPARQLQueries;
+	
+	private Store store;
 	
 	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
 	
@@ -50,6 +58,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		super.init(config);
 		String configPath = config.getInitParameter("configPath");
 		loadConfig(configPath);
+		loadSPARQLQueriesFromFile();
 	}
 	
 	private void loadConfig(String path){
@@ -160,7 +169,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public String getCurrentSPARQLQuery() throws AutoSPARQLException {logger.info("Current QUERY: " + getAutoSPARQLSession().getCurrentQuery());
+	public String getCurrentSPARQLQuery() throws AutoSPARQLException {
 		return getAutoSPARQLSession().getCurrentQuery();
 	}
 	
@@ -183,6 +192,28 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	@Override
 	public String getMessage() {
 		return "";
+	}
+
+	@Override
+	public void saveSPARQLQuery() throws AutoSPARQLException{
+		logger.info("Saving SPARQL query(" + getSession().getId() + ")");
+		getAutoSPARQLSession().saveSPARQLQuery(store);
+	}
+
+	@Override
+	public List<StoredSPARQLQuery> getSavedSPARQLQueries() {
+		return store.getStoredSPARQLQueries();
+	}
+
+	@Override
+	public String loadSPARQLQuery(String question) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private void loadSPARQLQueriesFromFile(){
+		store = new SimpleFileStore(SPARQL_QUERIES_FILE);
+		storedSPARQLQueries = store.getStoredSPARQLQueries();
 	}
 
 	
