@@ -29,9 +29,6 @@
 		<dependency>
 			<groupId>com.jamonapi</groupId>
 			<artifactId>jamon</artifactId>
-			<version>2.7</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
@@ -86,5 +83,18 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>jena</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>arq</artifactId>
+		</dependency>
+		 <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+            </dependency>
 	</dependencies>
 </project>
