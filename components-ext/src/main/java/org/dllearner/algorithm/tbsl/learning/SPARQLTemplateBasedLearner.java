@@ -23,7 +23,9 @@ import org.dllearner.algorithm.tbsl.sparql.Slot;
 import org.dllearner.algorithm.tbsl.sparql.SlotType;
 import org.dllearner.algorithm.tbsl.sparql.Template;
 import org.dllearner.algorithm.tbsl.templator.Templator;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.ActiveLearningAlgorithm;
+import org.dllearner.core.Oracle;
+import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -37,7 +39,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
+public class SPARQLTemplateBasedLearner implements ActiveLearningAlgorithm, SparqlQueryLearningAlgorithm{
 	
 	private static final Logger logger = Logger.getLogger(SPARQLTemplateBasedLearner.class);
 	private Monitor mon = MonitorFactory.getTimeMonitor("stbl");
@@ -45,7 +47,9 @@ public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 	private static final int TOP_K = 5;
 	private static final String SOLR_SERVER_URL = "http://139.18.2.173:8080/apache-solr-1.4.1";
 	private static final int RECURSION_DEPTH = 2;
+	
 	private boolean USE_LUCENE_RANKING = true;
+	private boolean useRemoteEndpointValidation = true;
 	
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
 	private ExtractionDBCache cache = new ExtractionDBCache("cache");
@@ -58,7 +62,9 @@ public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 	
 	private String question;
 	
+	private Oracle oracle;
 	
+	private Map<String, List<String>> learnedSPARQLQueries;
 	
 	
 	public SPARQLTemplateBasedLearner(){
@@ -89,13 +95,21 @@ public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 		this.question = question;
 	}
 	
-	private void learnSPARQLQueries(){
+	public void setUseRemoteEndpointValidation(boolean useRemoteEndpointValidation){
+		this.useRemoteEndpointValidation = useRemoteEndpointValidation;
+	}
+	
+	public void learnSPARQLQueries() throws NoTemplateFoundException{
+		learnedSPARQLQueries = new HashMap<String, List<String>>();
 		//generate SPARQL query templates
 		logger.info("Generating SPARQL query templates...");
 		mon.start();
 		Set<Template> templates = templateGenerator.buildTemplates(question);
 		mon.stop();
 		logger.info("Done in " + mon.getLastValue() + "ms.");
+		if(templates.isEmpty()){
+			throw new NoTemplateFoundException();
+		}
 		logger.info("Templates:");
 		for(Template t : templates){
 			logger.info(t);
@@ -109,11 +123,12 @@ public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 			sparqlQueryCandidates = getSPARQLQueryCandidates(templates);
 		}
 		
-		//test candidates on remote endpoint
-		validateAgainstRemoteEndpoint(sparqlQueryCandidates);
-		
-		//test candidates on local model
-		validateAgainstLocalModel(sparqlQueryCandidates);
+		//test candidates
+		if(useRemoteEndpointValidation){ //on remote endpoint
+			validateAgainstRemoteEndpoint(sparqlQueryCandidates);
+		} else {//on local model
+			validateAgainstLocalModel(sparqlQueryCandidates);
+		}
 		
 	}
 	
@@ -309,6 +324,9 @@ public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 		for(String query : queries){
 			logger.info("Testing query:\n" + query);
 			List<String> results = getResultFromRemoteEndpoint(query);
+			if(!results.isEmpty()){
+				learnedSPARQLQueries.put(query, results);
+			}
 			logger.info("Result: " + results);
 		}
 		mon.stop();
@@ -366,22 +384,33 @@ public class SPARQLTemplateBasedLearner implements LearningAlgorithm{
 	/**
 	 * @param args
 	 * @throws MalformedURLException 
+	 * @throws NoTemplateFoundException 
 	 */
-	public static void main(String[] args) throws MalformedURLException {
-		String question = "Give me all soccer clubs in Premier League";//Give me all countries in Europe
+	public static void main(String[] args) throws MalformedURLException, NoTemplateFoundException {
+		String question = "Give me all countries in Europe";//Give me all soccer clubs in Premier League";
 		SPARQLTemplateBasedLearner learner = new SPARQLTemplateBasedLearner();
-		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://db0.aksw.org:8999/sparql"), 
+		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"), 
 				Collections.<String>singletonList("http://dbpedia.org"), Collections.<String>emptyList());
 		learner.setEndpoint(endpoint);
 		learner.setQuestion(question);
-		learner.start();
+		learner.learnSPARQLQueries();
 
 	}
 
 	@Override
 	public void start() {
-		learnSPARQLQueries();
 	}
+
+	@Override
+	public List<String> getCurrentlyBestSPARQLQueries(int nrOfSPARQLQueries) {
+		return new ArrayList<String>(learnedSPARQLQueries.keySet());
+	}
+
+	@Override
+	public void setOracle(Oracle oracle) {
+		this.oracle = oracle;
+	}
+
 	
 
 }
