@@ -1,0 +1,253 @@
+<?xml version="1.0" ?>
+<dataset id="dbpedia-test">
+<question id="23">
+<string>
+Which presidents of the United States had more than three children?
+</string>
+</question>
+<question id="3">
+<string>
+Give me the official websites of actors of the television show Charmed.
+</string>
+</question>
+<question id="37">
+<string>
+Who is the daughter of Bill Clinton married to?
+</string>
+</question>
+<question id="43">
+<string>
+Which river does the Brooklyn Bridge cross?
+</string>
+</question>
+<question id="21">
+<string>
+How many monarchical countries are there in Europe?
+</string>
+</question>
+<question id="7">
+<string>
+Where did Abraham Lincoln die?
+</string>
+</question>
+<question id="10">
+<string>
+Is the wife of President Obama called Michelle?
+</string>
+</question>
+<question id="28">
+<string>
+Which states of Germany are governed by the Social Democratic Party?
+</string>
+</question>
+<question id="39">
+<string>
+Which U.S. states possess gold minerals?
+</string>
+</question>
+<question id="50">
+<string>
+In which country does the Nile start?
+</string>
+</question>
+<question id="44">
+<string>
+Which locations have more than two caves?
+</string>
+</question>
+<question id="30">
+<string>
+Is proinsulin a protein?
+</string>
+</question>
+<question id="12">
+<string>
+Which classis does the Millepede belong to?
+</string>
+</question>
+<question id="49">
+<string>
+How tall is Claudia Schiffer?
+</string>
+</question>
+<question id="33">
+<string>
+Who created Goofy?
+</string>
+</question>
+<question id="4">
+<string>
+Give me the capitals of all U.S. states.
+</string>
+</question>
+<question id="18">
+<string>
+Give me all cities in New Jersey with more than 100000 inhabitants.
+</string>
+</question>
+<question id="31">
+<string>
+Which museum exhibits The Scream by Munch?
+</string>
+</question>
+<question id="35">
+<string>
+Is Egypts largest city also its capital?
+</string>
+</question>
+<question id="27">
+<string>
+What is the revenue of IBM?
+</string>
+</question>
+<question id="38">
+<string>
+Which states border Utah?
+</string>
+</question>
+<question id="13">
+<string>
+In which country is the Limerick Lake?
+</string>
+</question>
+<question id="32">
+<string>
+Which television shows were created by Walt Disney?
+</string>
+</question>
+<question id="45">
+<string>
+Which mountain is the highest after the Annapurna?
+</string>
+</question>
+<question id="29">
+<string>
+In which films directed by Garry Marshall was Julia Roberts starring?
+</string>
+</question>
+<question id="42">
+<string>
+Which bridges are of the same type as the Manhattan Bridge?
+</string>
+</question>
+<question id="14">
+<string>
+Was U.S. president Jackson involved in a war?
+</string>
+</question>
+<question id="20">
+<string>
+Which European countries are a constitutional monarchy?
+</string>
+</question>
+<question id="40">
+<string>
+Who is the author of WikiLeaks?
+</string>
+</question>
+<question id="17">
+<string>
+Which state of the United States of America has the highest density?
+</string>
+</question>
+<question id="19">
+<string>
+What is the currency of the Czech Republic?
+</string>
+</question>
+<question id="22">
+<string>
+Which countries in the European Union adopted the Euro?
+</string>
+</question>
+<question id="11">
+<string>
+What is the area code of Berlin?
+</string>
+</question>
+<question id="9">
+<string>
+Which countries have more than two official languages?
+</string>
+</question>
+<question id="16">
+<string>
+Who is the owner of Universal Studios?
+</string>
+</question>
+<question id="34">
+<string>
+Through which countries does the Yenisei river flow?
+</string>
+</question>
+<question id="48">
+<string>
+When did Germany join the EU?
+</string>
+</question>
+<question id="36">
+<string>
+Which monarchs of the United Kingdom were married to a German?
+</string>
+</question>
+<question id="8">
+<string>
+When was the Battle of Gettysburg?
+</string>
+</question>
+<question id="24">
+<string>
+What is the highest mountain in Germany?
+</string>
+</question>
+<question id="26">
+<string>
+Give me all soccer clubs in Spain.
+</string>
+</question>
+<question id="5">
+<string>
+What are the official languages of the Philippines?
+</string>
+</question>
+<question id="6">
+<string>
+Who is the mayor of New York City?
+</string>
+</question>
+<question id="41">
+<string>
+Who designed the Brooklyn Bridge?
+</string>
+</question>
+<question id="2">
+<string>
+Which telecommunications organizations are located in Belgium?
+</string>
+</question>
+<question id="15">
+<string>
+What is the profession of Frank Herbert?
+</string>
+</question>
+<question id="46">
+<string>
+What is the highest place of Karakoram?
+</string>
+</question>
+<question id="25">
+<string>
+Give me the homepage of Forbes.
+</string>
+</question>
+<question id="1">
+<string>
+Which companies are in the computer software industry?
+</string>
+</question>
+<question id="47">
+<string>
+What did Bruce Carver die from?
+</string>
+</question>
+</dataset>
