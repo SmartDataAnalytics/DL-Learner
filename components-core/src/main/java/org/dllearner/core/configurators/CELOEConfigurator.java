@@ -20,6 +20,7 @@
 
 package org.dllearner.core.configurators;
 
+import java.util.Set;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
@@ -137,7 +138,7 @@ public boolean getUseBooleanDatatypes() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "useBooleanDatatypes") ;
 }
 /**
-* useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* useDoubleDatatypes specifies whether double datatypes are used in the learning algorothm.
 * mandatory: false| reinit necessary: true
 * default value: true
 * @return boolean 
@@ -271,6 +272,26 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "re
 public double getExpansionPenaltyFactor() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "expansionPenaltyFactor") ;
 }
+/**
+* allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
+* default value: null
+* @return Set(String) 
+**/
+@SuppressWarnings("unchecked")
+public Set<String> getAllowedConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "allowedConcepts") ;
+}
+/**
+* ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
+* default value: null
+* @return Set(String) 
+**/
+@SuppressWarnings("unchecked")
+public Set<String> getIgnoredConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "ignoredConcepts") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -354,7 +375,7 @@ ComponentManager.getInstance().applyConfigEntry(cELOE, "useBooleanDatatypes", us
 reinitNecessary = true;
 }
 /**
-* @param useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* @param useDoubleDatatypes specifies whether double datatypes are used in the learning algorothm.
 * mandatory: false| reinit necessary: true
 * default value: true
 **/
@@ -486,6 +507,24 @@ reinitNecessary = true;
 **/
 public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "expansionPenaltyFactor", expansionPenaltyFactor);
+reinitNecessary = true;
+}
+/**
+* @param allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
+* default value: null
+**/
+public void setAllowedConcepts(Set<String> allowedConcepts) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "allowedConcepts", allowedConcepts);
+reinitNecessary = true;
+}
+/**
+* @param ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
+* default value: null
+**/
+public void setIgnoredConcepts(Set<String> ignoredConcepts) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "ignoredConcepts", ignoredConcepts);
 reinitNecessary = true;
 }
 
