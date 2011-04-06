@@ -137,7 +137,7 @@ public boolean getUseBooleanDatatypes() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(iSLE,  "useBooleanDatatypes") ;
 }
 /**
-* useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* useDoubleDatatypes specifies whether double datatypes are used in the learning algorothm.
 * mandatory: false| reinit necessary: true
 * default value: true
 * @return boolean 
@@ -300,7 +300,7 @@ ComponentManager.getInstance().applyConfigEntry(iSLE, "useBooleanDatatypes", use
 reinitNecessary = true;
 }
 /**
-* @param useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* @param useDoubleDatatypes specifies whether double datatypes are used in the learning algorothm.
 * mandatory: false| reinit necessary: true
 * default value: true
 **/

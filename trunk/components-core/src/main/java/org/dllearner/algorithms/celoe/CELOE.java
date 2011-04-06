@@ -38,6 +38,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.CELOEConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
@@ -183,7 +184,9 @@ public class CELOE extends AbstractCELA {
 		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
 		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", "log/searchTree.txt"));
 		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));
-		options.add(new DoubleConfigOption("expansionPenaltyFactor","heuristic penalty per syntactic construct used (lower = finds more complex expression, but might miss simple ones)", 0.1));	
+		options.add(new DoubleConfigOption("expansionPenaltyFactor","heuristic penalty per syntactic construct used (lower = finds more complex expression, but might miss simple ones)", 0.1));
+		options.add(CommonConfigOptions.allowedConcepts());
+		options.add(CommonConfigOptions.ignoredConcepts());
 		return options;
 	}
 	
@@ -193,9 +196,26 @@ public class CELOE extends AbstractCELA {
 	
 	@Override
 	public void init() throws ComponentInitException {
+		
+		// compute used concepts/roles from allowed/ignored
+		// concepts/roles
+		Set<NamedClass> usedConcepts;
+		Set<NamedClass> allowedConcepts = CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
+		Set<NamedClass> ignoredConcepts = CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
+		if(allowedConcepts != null) {
+			// sanity check to control if no non-existing concepts are in the list
+			Helper.checkConcepts(reasoner, allowedConcepts);
+			usedConcepts = allowedConcepts;
+		} else if(ignoredConcepts != null) {
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+		} else {
+			usedConcepts = Helper.computeConcepts(reasoner);
+		}
+		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
-		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
+//		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
+		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
 		heuristic = new OEHeuristicRuntime(configurator);

@@ -75,7 +75,7 @@ public Set<String> getNegativeExamples() {
 return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegLPStandard,  "negativeExamples") ;
 }
 /**
-* useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
+* useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED..
 * mandatory: false| reinit necessary: true
 * default value: false
 * @return boolean 
@@ -93,7 +93,7 @@ public double getPercentPerLenghtUnit() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStandard,  "percentPerLenghtUnit") ;
 }
 /**
-* useMultiInstanceChecks See UseMultiInstanceChecks enum..
+* useMultiInstanceChecks See UseMultiInstanceChecks enum. - NO LONGER FULLY SUPPORTED..
 * mandatory: false| reinit necessary: true
 * default value: twoChecks
 * @return String 
@@ -146,7 +146,7 @@ public void setNegativeExamples(Set<String> negativeExamples) {
 ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "negativeExamples", negativeExamples);
 }
 /**
-* @param useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
+* @param useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED..
 * mandatory: false| reinit necessary: true
 * default value: false
 **/
@@ -164,7 +164,7 @@ ComponentManager.getInstance().applyConfigEntry(posNegLPStandard, "percentPerLen
 reinitNecessary = true;
 }
 /**
-* @param useMultiInstanceChecks See UseMultiInstanceChecks enum..
+* @param useMultiInstanceChecks See UseMultiInstanceChecks enum. - NO LONGER FULLY SUPPORTED..
 * mandatory: false| reinit necessary: true
 * default value: twoChecks
 **/
