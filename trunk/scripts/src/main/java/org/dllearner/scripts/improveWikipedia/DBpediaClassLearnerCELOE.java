@@ -55,6 +55,7 @@ import java.util.*;
 public class DBpediaClassLearnerCELOE {
 
     public static String endpointurl = "http://139.18.2.96:8910/sparql";
+    public static int examplesize = 20;
 
     private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DBpediaClassLearnerCELOE.class);
 
@@ -84,15 +85,15 @@ public class DBpediaClassLearnerCELOE {
     }
 
     public Description learnClass(String classToLearn) throws Exception {
-        SortedSet<String> posEx = new TreeSet<String> (getPosEx(classToLearn));
+        SortedSet<String> posEx = new TreeSet<String>(getPosEx(classToLearn));
         logger.info("Found " + posEx.size() + " positive examples");
         if (posEx.isEmpty()) {
             return null;
         }
-        SortedSet<String> negEx =  new TreeSet<String> (getNegEx(classToLearn, posEx));
+        SortedSet<String> negEx = new TreeSet<String>(getNegEx(classToLearn, posEx));
 
-        posEx = SetManipulation.fuzzyShrink(posEx, 100);
-        negEx = SetManipulation.fuzzyShrink(negEx, 100);
+        posEx = SetManipulation.fuzzyShrink(posEx, examplesize);
+        negEx = SetManipulation.fuzzyShrink(negEx, examplesize);
 
         SortedSet<Individual> posExamples = Helper.getIndividualSet(posEx);
         SortedSet<Individual> negExamples = Helper.getIndividualSet(negEx);
@@ -106,18 +107,15 @@ public class DBpediaClassLearnerCELOE {
         ks.getConfigurator().setUrl(new URL(endpointurl));
         ks.getConfigurator().setUseLits(false);
         ks.getConfigurator().setUseCacheDatabase(true);
-         ks.getConfigurator().setRecursionDepth(2);
-         ks.getConfigurator().setSaveExtractedFragment(true);
-         ks.getConfigurator().setPredList( new HashSet<String> (Arrays.asList(new String[]{
-                 "http://dbpedia.org/property/wikiPageUsesTemplate",
-                 "http://dbpedia.org/ontology/wikiPageExternalLink",
-                 "http://dbpedia.org/property/wordnet_type",
-         "http://www.w3.org/2002/07/owl#sameAs"})));
+        ks.getConfigurator().setRecursionDepth(2);
+        ks.getConfigurator().setSaveExtractedFragment(true);
+        ks.getConfigurator().setPredList(new HashSet<String>(Arrays.asList(new String[]{
+                "http://dbpedia.org/property/wikiPageUsesTemplate",
+                "http://dbpedia.org/ontology/wikiPageExternalLink",
+                "http://dbpedia.org/property/wordnet_type",
+                "http://www.w3.org/2002/07/owl#sameAs"})));
 
-         ks.getConfigurator().setObjList(new HashSet<String> (Arrays.asList(new String[]{"http://dbpedia.org/class/yago/","http://dbpedia.org/resource/Category:"})));
-
-
-
+        ks.getConfigurator().setObjList(new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/class/yago/", "http://dbpedia.org/resource/Category:", classToLearn})));
 
 
         ks.init();
@@ -138,6 +136,7 @@ public class DBpediaClassLearnerCELOE {
         cc.setUseCardinalityRestrictions(false);
         cc.setUseHasValueConstructor(true);
         cc.setNoisePercentage(20);
+
         la.init();
 
         // to write the above configuration in a conf file (optional)
@@ -146,11 +145,11 @@ public class DBpediaClassLearnerCELOE {
 
         la.start();
 
-
+         cm.freeAllComponents();
         return la.getCurrentlyBestDescription();
     }
 
-    public static void main(String args[]) throws LearningProblemUnsupportedException, IOException {
+    public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, Exception{
 
         DBpediaClassLearnerCELOE dcl = new DBpediaClassLearnerCELOE();
         Set<String> classesToLearn = dcl.getClasses();
@@ -159,8 +158,8 @@ public class DBpediaClassLearnerCELOE {
         kb.export(new File("result.owl"), OntologyFormat.RDF_XML);
     }
 
-    public Set<String> getClasses() {
-        SparqlTemplate st = new SparqlTemplate("allClasses.vm");
+    public Set<String> getClasses() throws Exception{
+        SparqlTemplate st = SparqlTemplate.getInstance("allClasses.vm");
         st.setLimit(0);
         st.addFilter(sparqlEndpoint.like("classes", new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/ontology/"}))));
         VelocityContext vc = st.getVelocityContext();
@@ -168,8 +167,8 @@ public class DBpediaClassLearnerCELOE {
         return new HashSet<String>(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query)));
     }
 
-    public Set<String> getPosEx(String clazz) {
-        SparqlTemplate st = new SparqlTemplate("instancesOfClass.vm");
+    public Set<String> getPosEx(String clazz) throws Exception {
+        SparqlTemplate st = SparqlTemplate.getInstance("instancesOfClass.vm");
         st.setLimit(0);
         VelocityContext vc = st.getVelocityContext();
         System.out.println(clazz);
@@ -179,11 +178,11 @@ public class DBpediaClassLearnerCELOE {
     }
 
 
-    public String selectClass(String clazz, Set<String> posEx) {
+    public String selectClass(String clazz, Set<String> posEx) throws Exception{
         Map<String, Integer> m = new HashMap<String, Integer>();
 
         for (String pos : posEx) {
-            SparqlTemplate st = new SparqlTemplate("directClassesOfInstance.vm");
+            SparqlTemplate st = SparqlTemplate.getInstance("directClassesOfInstance.vm");
             st.setLimit(0);
             st.addFilter(sparqlEndpoint.like("classes", new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/ontology/"}))));
             VelocityContext vc = st.getVelocityContext();
@@ -210,12 +209,12 @@ public class DBpediaClassLearnerCELOE {
         return maxClass;
     }
 
-    public Set<String> getNegEx(String clazz, Set<String> posEx) {
+    public Set<String> getNegEx(String clazz, Set<String> posEx) throws Exception{
         Set<String> negEx = new HashSet<String>();
         String targetClass = getParallelClass(clazz);
         if (targetClass != null) {
 
-            SparqlTemplate st = new SparqlTemplate("instancesOfClass.vm");
+            SparqlTemplate st = SparqlTemplate.getInstance("instancesOfClass.vm");
             st.setLimit(0);
             VelocityContext vc = st.getVelocityContext();
             vc.put("class", targetClass);
@@ -224,7 +223,7 @@ public class DBpediaClassLearnerCELOE {
             negEx.addAll(new HashSet<String>(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query))));
         } else {
 
-            SparqlTemplate st = new SparqlTemplate("someInstances.vm");
+            SparqlTemplate st = SparqlTemplate.getInstance("someInstances.vm");
             st.setLimit(posEx.size() + 100);
             VelocityContext vc = st.getVelocityContext();
             String query = st.getQuery();
@@ -237,8 +236,8 @@ public class DBpediaClassLearnerCELOE {
     }
 
 
-    public String getParallelClass(String clazz) {
-        SparqlTemplate st = new SparqlTemplate("parallelClass.vm");
+    public String getParallelClass(String clazz) throws Exception{
+        SparqlTemplate st =  SparqlTemplate.getInstance("parallelClass.vm");
         st.setLimit(0);
         VelocityContext vc = st.getVelocityContext();
         vc.put("class", clazz);
