@@ -33,10 +33,13 @@ import java.util.List;
 public interface SparqlQueryLearningAlgorithm extends LearningAlgorithm {
 
 	/**
-	 * @see #getCurrentlyBestEvaluatedDescriptions(int)
-	 * @param nrOfDescriptions Limit for the number or returned descriptions.
+	 * @param nrOfSPARQLQueries Limit for the number or returned SPARQL queries.
 	 * @return The best SPARQL queries found by the learning algorithm so far.
 	 */
-	public List<String> getCurrentlyBestDescriptions(int nrOfDescriptions);
+	public List<String> getCurrentlyBestSPARQLQueries(int nrOfSPARQLQueries);
+	
+	public String getBestSPARQLQuery();
+	
+	
 	
 }
