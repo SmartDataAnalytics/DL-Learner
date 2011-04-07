@@ -26,7 +26,7 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
-public interface ActiveLearningAlgorithm {
+public interface ActiveLearningAlgorithm extends LearningAlgorithm {
 
 	/**
 	 * In order to separate/hide the implementation of an oracle from the active learning algorithm itself,
