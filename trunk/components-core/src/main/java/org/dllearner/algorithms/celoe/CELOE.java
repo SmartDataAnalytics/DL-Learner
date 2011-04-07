@@ -200,8 +200,8 @@ public class CELOE extends AbstractCELA {
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
 		Set<NamedClass> usedConcepts;
-		Set<NamedClass> allowedConcepts = CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
-		Set<NamedClass> ignoredConcepts = CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
+		Set<NamedClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
+		Set<NamedClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list
 			Helper.checkConcepts(reasoner, allowedConcepts);
