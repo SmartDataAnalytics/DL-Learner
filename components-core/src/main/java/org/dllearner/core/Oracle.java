@@ -30,6 +30,9 @@ import org.dllearner.core.owl.Individual;
  * an automatic method, which means that the implementation of an oracle can
  * reach from simple checks to more complex user interaction processes.
  * 
+ * Usually, an oracle should be instantiated by passing a learning problem
+ * to its constructor.
+ * 
  * @author Jens Lehmann
  *
  */
@@ -61,5 +64,5 @@ public interface Oracle {
 	 *
 	 */
 	public List<Double> classifyIndividuals(List<Individual> individuals);
-		
+	
 }
