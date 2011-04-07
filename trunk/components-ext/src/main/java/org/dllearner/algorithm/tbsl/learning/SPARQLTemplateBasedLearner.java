@@ -411,6 +411,11 @@ public class SPARQLTemplateBasedLearner implements ActiveLearningAlgorithm, Spar
 		this.oracle = oracle;
 	}
 
+	@Override
+	public String getBestSPARQLQuery() {
+		return null;
+	}
+
 	
 
 }
