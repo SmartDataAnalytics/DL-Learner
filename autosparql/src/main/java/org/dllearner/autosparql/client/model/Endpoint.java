@@ -11,8 +11,7 @@ public class Endpoint extends BaseModel{
 	public Endpoint(){
 	}
 	
-	public Endpoint(int id, String label){
-		set("id", id);
+	public Endpoint(String label){
 		set("label", label);
 	}
 	
@@ -20,8 +19,17 @@ public class Endpoint extends BaseModel{
 		return get("label");
 	}
 	
-	public int getID(){
-		return (Integer)get("id");
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Endpoint) || obj == null){
+			return false;
+		}
+		return obj == this || ((Endpoint)obj).getLabel().equals(this.getLabel());
 	}
-
+	
+	@Override
+	public int hashCode() {
+		return 37+getLabel().hashCode();
+	}
+	
 }

@@ -27,6 +27,8 @@ public interface SPARQLServiceAsync
     
     void getCurrentQueryResult(PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);
     
+    void getSPARQLQueryResult(String query, PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);
+    
     void getCurrentSPARQLQuery(AsyncCallback<String> callback);
     
     void setEndpoint(Endpoint endpoint, AsyncCallback<Void> callback);
@@ -42,7 +44,7 @@ public interface SPARQLServiceAsync
 	
 	void saveSPARQLQuery(AsyncCallback<Void> callback);
 	
-	void loadSPARQLQuery(String question, AsyncCallback<String> callback);
+	void loadSPARQLQuery(StoredSPARQLQuery query, AsyncCallback<Void> callback);
 	
 	void getSavedSPARQLQueries(AsyncCallback<List<StoredSPARQLQuery>> callback);
     

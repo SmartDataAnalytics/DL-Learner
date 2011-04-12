@@ -50,6 +50,19 @@ public class AutoSPARQLSession {
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 	}
 	
+	public AutoSPARQLSession(String cacheDir, String servletContextPath, String solrURL){
+		this.servletContextPath = servletContextPath;
+		
+		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
+		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
+		nlpSearch = new SolrSearch(solrURL);
+		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
+	}
+	
+	public void setEndpoint(SPARQLEndpointEx endpoint){
+		this.endpoint = endpoint;
+	}
+	
 	public void setQuestion(String question){
 		this.question = question;
 		exampleFinder.setQuestion(question);
@@ -125,6 +138,49 @@ public class AutoSPARQLSession {
 			throw new SPARQLQueryException(exampleFinder.getCurrentQueryHTML());
 		}
 	}
+	
+	public PagingLoadResult<Example> getSPARQLQueryResult(String query,
+			PagingLoadConfig config) throws AutoSPARQLException{
+		logger.info("Retrieving results for SPARQL query.");
+		List<Example> queryResult = new ArrayList<Example>();
+		
+		logger.info("SPARQL query:\n");
+		logger.info(query);
+		int limit = config.getLimit();
+		int offset = config.getOffset();
+		int totalLength = 10;
+		
+		try {
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, getCountQuery(query)));
+			totalLength = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(query + " OFFSET " + offset)));
+			
+			String uri;
+			String label = "";
+			String imageURL = "";
+			String comment = "";
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				uri = qs.getResource("x0").getURI();
+				label = qs.getLiteral("label").getLexicalForm();
+				queryResult.add(new Example(uri, label, imageURL, comment));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
+		result.setOffset(offset);
+		result.setTotalLength(totalLength);
+		
+		return result;
+	}
 
 	public PagingLoadResult<Example> getCurrentQueryResult(
 			PagingLoadConfig config) throws SPARQLQueryException {
@@ -185,7 +241,7 @@ public class AutoSPARQLSession {
 	}
 	
 	public void saveSPARQLQuery(Store store) throws AutoSPARQLException{
-		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), new Endpoint(0, endpoint.getLabel()));
+		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), new Endpoint(endpoint.getLabel()));
 	}
 	
 	private List<String> getIntermediateNegativeExamples(List<String> posExamples){
