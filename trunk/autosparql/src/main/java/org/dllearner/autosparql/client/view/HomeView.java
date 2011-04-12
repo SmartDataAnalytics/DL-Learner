@@ -157,13 +157,13 @@ public class HomeView extends View {
 					}
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
-						for(StoredSPARQLQuery query : result){
-							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.HOME);
+						for(final StoredSPARQLQuery query : result){
+							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.LOADQUERY);
 							link.addClickListener(new ClickListener() {
 								
 								@Override
 								public void onClick(Widget sender) {
-									// TODO Auto-generated method stub
+									Registry.register("query", query);
 									
 								}
 							});
@@ -230,7 +230,7 @@ public class HomeView extends View {
 	    	
 			@Override
 			public void selectionChanged(SelectionChangedEvent<Endpoint> se) {
-				Registry.register("ENDPOINT", se.getSelectedItem().get("label"));
+				Registry.register("ENDPOINT", se.getSelectedItem().getLabel());
 				SPARQLService.Util.getInstance().setEndpoint(se.getSelectedItem(), new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {

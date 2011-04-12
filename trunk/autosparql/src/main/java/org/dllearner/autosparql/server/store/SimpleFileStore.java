@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQuerySavingFailedException;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
+import org.dllearner.autosparql.server.util.HTMLUtils;
 import org.dllearner.utilities.Files;
 
 /**
@@ -56,7 +57,7 @@ public class SimpleFileStore implements Store {
 	}
 
 	private void put(String question, String query, Endpoint endpoint) {
-		StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, endpoint);
+		StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint);
 		question2QueryMap.put(question, storedQuery);
 		saveMap();
 	}

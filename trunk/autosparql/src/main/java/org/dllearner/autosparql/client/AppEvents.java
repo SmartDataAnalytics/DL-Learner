@@ -7,6 +7,8 @@ public class AppEvents {
 	public static final EventType NavHome = new EventType();
 	
 	public static final EventType NavQuery = new EventType();
+	
+	public static final EventType NavLoadedQuery = new EventType();
 
 	public static final EventType Init = new EventType();
 

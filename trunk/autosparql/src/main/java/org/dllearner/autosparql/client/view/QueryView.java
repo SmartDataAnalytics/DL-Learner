@@ -217,6 +217,7 @@ public class QueryView extends View {
 
 						@Override
 						public void onSuccess(Example result) {
+							System.out.println("RESULT: " + result);
 							interactivePanel.unmask();
 							interactivePanel.setExample(result);
 //							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 

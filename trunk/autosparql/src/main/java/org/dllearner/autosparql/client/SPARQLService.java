@@ -11,6 +11,7 @@ import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -26,6 +27,8 @@ public interface SPARQLService extends RemoteService{
 	Example getSimilarExample(List<String> posExamples, List<String> negExamples) throws SPARQLQueryException;
 	
 	PagingLoadResult<Example> getCurrentQueryResult(PagingLoadConfig config) throws SPARQLQueryException;
+	
+	PagingLoadResult<Example> getSPARQLQueryResult(String query, PagingLoadConfig config) throws AutoSPARQLException;
 	
 	String getCurrentSPARQLQuery() throws AutoSPARQLException;
 	
@@ -44,7 +47,7 @@ public interface SPARQLService extends RemoteService{
 	
 	void saveSPARQLQuery()  throws AutoSPARQLException;
 	
-	String loadSPARQLQuery(String question);
+	void loadSPARQLQuery(StoredSPARQLQuery query);
 	
 	/**
      * Utility class to get the RPC Async interface from client-side code

@@ -250,9 +250,6 @@
         <dependency>
             <groupId>org.dllearner</groupId>
             <artifactId>components-ext</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.aksw.commons</groupId>
@@ -267,6 +264,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
+                <version>2.1.0</version>
                 <executions>
                     <execution>
                         <configuration>
@@ -305,95 +303,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>install-stanford-postagger</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/stanford-postagger-2010-05-21.jar</file>
-                            <groupId>edu.stanford</groupId>
-                            <artifactId>postagger</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <createChecksum>true</createChecksum>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-LBJ2Library</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/LBJ2Library.jar</file>
-                            <groupId>lbj</groupId>
-                            <artifactId>library</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <createChecksum>true</createChecksum>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-LBJ2</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/LBJ2.jar</file>
-                            <groupId>lbj</groupId>
-                            <artifactId>core</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <createChecksum>true</createChecksum>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-LBJ2Ner</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/LbjNerTagger.jar</file>
-                            <groupId>lbj</groupId>
-                            <artifactId>ner</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <createChecksum>true</createChecksum>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-jaws</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/jaws-bin.jar</file>
-                            <groupId>jaws</groupId>
-                            <artifactId>core</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <createChecksum>true</createChecksum>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -2,6 +2,7 @@ package org.dllearner.autosparql.client;
 
 import org.dllearner.autosparql.client.controller.ApplicationController;
 import org.dllearner.autosparql.client.controller.HomeController;
+import org.dllearner.autosparql.client.controller.LoadedQueryController;
 import org.dllearner.autosparql.client.controller.QueryController;
 
 import com.extjs.gxt.ui.client.GXT;
@@ -33,6 +34,7 @@ public class Application
 	  dispatcher.addController(new ApplicationController());
 	  dispatcher.addController(new HomeController());
 	  dispatcher.addController(new QueryController());
+	  dispatcher.addController(new LoadedQueryController());
 	  
 	  
 //	  String initToken = History.getToken();
@@ -59,6 +61,8 @@ public class Application
 				Dispatcher.forwardEvent(AppEvents.NavHome);
 			} else if(historyToken.equals(HistoryTokens.QUERY)){
 				Dispatcher.forwardEvent(AppEvents.NavQuery);
+			} else if(historyToken.equals(HistoryTokens.LOADQUERY)){
+				Dispatcher.forwardEvent(AppEvents.NavLoadedQuery);
 			}
 		}
 		

@@ -1,11 +1,16 @@
 package org.dllearner.autosparql.server;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -39,6 +44,8 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	private List<SPARQLEndpointEx> endpoints;
 	private List<StoredSPARQLQuery> storedSPARQLQueries;
 	
+	private Map<Endpoint, SPARQLEndpointEx> endpointsMap;
+	
 	private Store store;
 	
 	private static final Logger logger = Logger.getLogger(SPARQLServiceImpl.class);
@@ -59,6 +66,14 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		String configPath = config.getInitParameter("configPath");
 		loadConfig(configPath);
 		loadSPARQLQueriesFromFile();
+		loadEndpoints();
+	}
+	@Override
+	protected void service(HttpServletRequest arg0, HttpServletResponse arg1)
+			throws ServletException, IOException {
+		System.out.println("SESSION ID after get: " + arg0.getSession().getId());
+		// TODO Auto-generated method stub
+		super.service(arg0, arg1);
 	}
 	
 	private void loadConfig(String path){
@@ -76,6 +91,24 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private String getPath(){
 		return getRootPath() + "org/dllearner/autosparql/public/endpoints.xml";
+	}
+	
+	private void loadEndpoints(){
+		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
+		try {
+			List<SPARQLEndpointEx> endpoints = new Endpoints(getServletContext().getRealPath("app/endpoints.xml")).getEndpoints();
+			
+			endpointsMap = new HashMap<Endpoint, SPARQLEndpointEx>();
+			
+			for(SPARQLEndpointEx endpoint : endpoints){
+				logger.info("Loaded endpoint: " + endpoint);
+				endpointsMap.put(new Endpoint(endpoint.getLabel()), endpoint);
+			}
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+		}
+			
 	}
 	
 	private String getRootPath(){
@@ -133,7 +166,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	public void setEndpoint(Endpoint endpoint) throws AutoSPARQLException{
 		logger.info("Set new endpoint " + endpoint.getLabel() + "(" + getSession().getId() + ")");
 		try {
-			createNewAutoSPARQLSession(endpoints.get(endpoint.getID()));
+			createNewAutoSPARQLSession(endpointsMap.get(endpoint));
 		} catch (Exception e) {
 			logger.error(e);
 			throw new AutoSPARQLException(e);
@@ -148,19 +181,19 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 
 	@Override
 	public List<Endpoint> getEndpoints() throws AutoSPARQLException{
-		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
+//		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
 		try {
-			if(endpoints == null){
-				endpoints = new Endpoints(getServletContext().getRealPath("app/endpoints.xml")).getEndpoints();
-			}
-			List<Endpoint> endpoints = new ArrayList<Endpoint>();
-			
-			for(SPARQLEndpointEx endpoint : this.endpoints){
-				logger.info("Loaded endpoint: " + endpoint);
-				endpoints.add(new Endpoint(this.endpoints.indexOf(endpoint), endpoint.getLabel()));
-			}
-			
-			return endpoints;
+//			if(endpoints == null){
+//				endpoints = new Endpoints(getServletContext().getRealPath("app/endpoints.xml")).getEndpoints();
+//			}
+//			List<Endpoint> endpoints = new ArrayList<Endpoint>();
+//			
+//			for(SPARQLEndpointEx endpoint : this.endpoints){
+//				logger.info("Loaded endpoint: " + endpoint);
+//				endpoints.add(new Endpoint(this.endpoints.indexOf(endpoint), endpoint.getLabel()));
+//			}
+//			
+			return new ArrayList<Endpoint>(endpointsMap.keySet());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -185,7 +218,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		return (AutoSPARQLSession) getSession().getAttribute(AUTOSPARQL_SESSION);
 	}
 	
-	private HttpSession getSession(){
+	private HttpSession getSession(){System.out.println("SESSION ID: " + getThreadLocalRequest().getSession().getId());
 		return getThreadLocalRequest().getSession();
 	}
 
@@ -206,14 +239,20 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public String loadSPARQLQuery(String question) {
-		// TODO Auto-generated method stub
-		return null;
+	public void loadSPARQLQuery(StoredSPARQLQuery query) {
+		System.out.println(endpointsMap.get(query.getEndpoint()));
+		createNewAutoSPARQLSession(endpointsMap.get(query.getEndpoint()));
 	}
 	
 	private void loadSPARQLQueriesFromFile(){
 		store = new SimpleFileStore(SPARQL_QUERIES_FILE);
 		storedSPARQLQueries = store.getStoredSPARQLQueries();
+	}
+
+	@Override
+	public PagingLoadResult<Example> getSPARQLQueryResult(String query,
+			PagingLoadConfig config) throws AutoSPARQLException {
+		return getAutoSPARQLSession().getSPARQLQueryResult(query, config);
 	}
 
 	
