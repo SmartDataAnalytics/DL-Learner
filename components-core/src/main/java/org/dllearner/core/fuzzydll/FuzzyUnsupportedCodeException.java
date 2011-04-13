@@ -22,7 +22,7 @@ package org.dllearner.core.fuzzydll;
 /**
  * Exception indicating that ...
  * 
- * @author Josué
+ * @author Josue
  *
  */
 public class FuzzyUnsupportedCodeException extends Exception {
