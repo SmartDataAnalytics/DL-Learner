@@ -27,6 +27,7 @@ import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
+import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.isle.ISLE;
 import org.dllearner.algorithms.ocel.OCEL;
@@ -43,12 +44,14 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLPStrict;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.PelletReasoner;
 import org.dllearner.reasoning.ProtegeReasoner;
+import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 
 /**
 * automatically generated, do not edit manually.
@@ -138,6 +141,14 @@ return ProtegeReasonerConfigurator.getProtegeReasoner(knowledgeSource);
 }
 
 /**
+* @param knowledgeSource see KnowledgeSource
+* @return a component ready for initialization FuzzyOWLAPIReasoner
+**/
+public static FuzzyOWLAPIReasoner getFuzzyOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource)  {
+return FuzzyOWLAPIReasonerConfigurator.getFuzzyOWLAPIReasoner(knowledgeSource);
+}
+
+/**
 * @param classToDescribe class of which a description should be learned
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization ClassLearningProblem
@@ -173,6 +184,17 @@ return PosNegLPStrictConfigurator.getPosNegLPStrict(reasoningService, positiveEx
 **/
 public static PosOnlyLP getPosOnlyLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
 return PosOnlyLPConfigurator.getPosOnlyLP(reasoningService, positiveExamples);
+}
+
+/**
+* @param fuzzyExamples fuzzy examples
+* @param positiveExamples positive examples
+* @param negativeExamples negative examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization FuzzyPosNegLPStandard
+**/
+public static FuzzyPosNegLPStandard getFuzzyPosNegLPStandard(ReasonerComponent reasoningService, Set<Object> fuzzyExamples, Set<String> positiveExamples, Set<String> negativeExamples)  {
+return FuzzyPosNegLPStandardConfigurator.getFuzzyPosNegLPStandard(reasoningService, fuzzyExamples, positiveExamples, negativeExamples);
 }
 
 /**
@@ -223,6 +245,16 @@ return ELLearningAlgorithmConfigurator.getELLearningAlgorithm(learningProblem, r
 **/
 public static ELLearningAlgorithmDisjunctive getELLearningAlgorithmDisjunctive(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return ELLearningAlgorithmDisjunctiveConfigurator.getELLearningAlgorithmDisjunctive(learningProblem, reasoningService);
+}
+
+/**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization FuzzyCELOE
+**/
+public static FuzzyCELOE getFuzzyCELOE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return FuzzyCELOEConfigurator.getFuzzyCELOE(learningProblem, reasoningService);
 }
 
 /**

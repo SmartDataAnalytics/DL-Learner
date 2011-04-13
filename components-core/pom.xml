@@ -71,8 +71,8 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
+       </plugins>
+   </build>
 
     <dependencies>
 
@@ -195,6 +195,17 @@
             <artifactId>h2</artifactId>
         </dependency>
 
+    <dependency>
+      <groupId>fuzzydll</groupId>
+      <artifactId>fuzzydl</artifactId>
+      <version>1.0</version>
+    </dependency>
+    
+        <dependency>
+      <groupId>fuzzydll</groupId>
+      <artifactId>fuzzyowl2fuzzydlparser</artifactId>
+      <version>1.0</version>
+    </dependency>
 
     </dependencies>
 </project>

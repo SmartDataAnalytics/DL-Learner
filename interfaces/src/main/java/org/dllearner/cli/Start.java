@@ -73,6 +73,7 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
+import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 import org.dllearner.confparser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.confparser.ParseException;
@@ -294,11 +295,13 @@ public class Start {
 			lpClass = PosNegLPStandard.class;
 		}
 		lp = cm.learningProblem(lpClass, rc);
-		if(lpClass == PosNegLPStandard.class || lpClass == PosOnlyLP.class) {
+		// changed by Josue
+		if(lpClass == PosNegLPStandard.class || lpClass == PosOnlyLP.class || lpClass == FuzzyPosNegLPStandard.class) {
 			SortedSet<String> posExamples = parser.getPositiveExamples();
 			cm.applyConfigEntry(lp, "positiveExamples", posExamples);
 		}
-		if(lpClass == PosNegLPStandard.class) {
+		// changed by Josue
+		if(lpClass == PosNegLPStandard.class || lpClass == FuzzyPosNegLPStandard.class) {
 			SortedSet<String> negExamples = parser.getNegativeExamples();
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 		}
