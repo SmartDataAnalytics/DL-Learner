@@ -23,9 +23,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.options.fuzzydll.FuzzyExample;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
@@ -57,6 +59,15 @@ public class CommonConfigMappings {
 		SortedSet<ObjectProperty> set = new TreeSet<ObjectProperty>();
 		for(String atomicRole : atomicRoles){
 			set.add(new ObjectProperty(atomicRole));
+		}
+		return set;
+	}
+	
+	// added by Josue
+	public static SortedSet<FuzzyIndividual> getFuzzyIndividualSet(Set<FuzzyExample> examples) {
+		SortedSet<FuzzyIndividual> set = new TreeSet<FuzzyIndividual>();
+		for(FuzzyExample example : examples){
+			set.add(new FuzzyIndividual(example.getExampleName(), example.getFuzzyDegree()));
 		}
 		return set;
 	}

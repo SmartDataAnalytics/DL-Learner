@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -17,16 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
-
-import org.dllearner.core.fuzzydll.FuzzyIndividualReasoner;
+package org.dllearner.core.fuzzydll;
 
 /**
- * List of available reasoning/query methods.
+ * Exception indicating that ...
  * 
- * @author Jens Lehmann
+ * @author Josué
  *
  */
-public interface Reasoner extends BaseReasoner, SchemaReasoner, IndividualReasoner, FuzzyIndividualReasoner {
+public class FuzzyUnsupportedCodeException extends Exception {
+	
+	public FuzzyUnsupportedCodeException() {
+		super();
+	}	
+	
+	public FuzzyUnsupportedCodeException(String message) {
+		super(message);
+	}
 
 }

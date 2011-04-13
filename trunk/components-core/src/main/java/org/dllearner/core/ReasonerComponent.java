@@ -39,6 +39,7 @@ import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
@@ -1213,4 +1214,28 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return str;
 	}
 	
+	/**************************************************************
+	 * FUZZY EXTENSIONS
+	 **************************************************************/
+	
+	@Override
+	public double hasTypeFuzzyMembership(Description description, FuzzyIndividual individual) {
+		reasoningStartTimeTmp = System.nanoTime();
+		double result = -1;
+		try {
+			result = hasTypeFuzzyMembershipImpl(description, individual);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+		nrOfInstanceChecks++;
+		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
+		instanceCheckReasoningTimeNs += reasoningDurationTmp;
+		overallReasoningTimeNs += reasoningDurationTmp;
+		return result;		
+	}
+
+	protected double hasTypeFuzzyMembershipImpl(Description concept, FuzzyIndividual individual)
+	throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 }
