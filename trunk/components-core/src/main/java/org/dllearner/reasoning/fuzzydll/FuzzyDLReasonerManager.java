@@ -16,13 +16,8 @@ import fuzzydll.fuzzyowl2fuzzydlparser.FuzzyOwl2toFuzzyDL;
 
 public class FuzzyDLReasonerManager {
 
-	private static final String AUXFUZZYKBFILENAME = "/Users/josue/Documents/PhD/AKSW/DL_Learner/workspace/dllearner-parent/components-core/src/main/resources/FuzzyDL/examples/output/auxFuzzyKBfileName.fuzzyDL.txt";
-	private static final String AUXFUZZYKBFILENAME_MANUALLYMODIFIED = "/Users/josue/Documents/PhD/AKSW/DL_Learner/workspace/dllearner-parent/components-core/src/main/resources/FuzzyDL/examples/output/auxFuzzyKBfileName_manuallyModified.fuzzyDL.txt";
-	private static final String AUXNOFUZZYKBFILENAME_MANUALLYMODIFIED = "/Users/josue/Documents/PhD/AKSW/DL_Learner/workspace/dllearner-parent/components-core/src/main/resources/FuzzyDL/examples/output/auxNoFuzzyKBfileName_manuallyModified.fuzzyDL.txt";
-	private static final String AUXNOFUZZYKBFILENAME_MANUALLYMODIFIED_NOPREFIX = "/Users/josue/Documents/PhD/AKSW/DL_Learner/workspace/dllearner-parent/components-core/src/main/resources/FuzzyDL/examples/output/auxNoFuzzyKBfileName_manuallyModified_noPrefix.fuzzyDL.txt";
-	private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "/Users/josue/Documents/PhD/AKSW/DL_Learner/workspace/dllearner-parent/components-core/src/main/resources/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
+	private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
 	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
-	private static String AUX = "/Users/josue/Documents/PhD/AKSW/DL_Learner/workspace/dllearner-parent/components-core/src/main/resources/FuzzyDL/examples/output/kk.fuzzyDL.txt";
 	private static String CONFIG_FILENAME = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/CONFIG";
 	
 	private Solution queryResult;
