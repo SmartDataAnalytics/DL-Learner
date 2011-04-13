@@ -507,7 +507,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	 */
 	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
 		
-		// double crispAccuracy = crispAccuracy(description, noise);
+		double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
 		// if (crispAccuracy == -1) return -1;
 		
@@ -538,7 +538,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			// double crispAccuracy = crispAccuracy(description, noise);
 //		}
 		
-		double crispAccuracy = fuzzyAccuracy;
+		crispAccuracy = fuzzyAccuracy;
 		
 		if (crispAccuracy != fuzzyAccuracy) {
 			System.err.println("***********************************************");
@@ -574,6 +574,27 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	}
 
 	public double getFMeasureOrTooWeakExact(Description description, double noise) {
+		
+		// added by Josue
+		// fuzzy F-measure
+		double coveredMembershipDegree = 0;
+		double totalMembershipDegree = 0;
+		double invertedCoveredMembershipDegree = 0;
+
+		for (FuzzyIndividual ind: fuzzyExamples) {
+			coveredMembershipDegree += reasoner.hasTypeFuzzyMembership(description, ind) * ind.getBeliefDegree();
+			totalMembershipDegree += ind.getBeliefDegree();
+			invertedCoveredMembershipDegree += (1 - ind.getBeliefDegree()) * (1 - reasoner.hasTypeFuzzyMembership(description, ind));
+		}
+		double fuzzyRecall = totalMembershipDegree == 0 ? 0 :coveredMembershipDegree/totalMembershipDegree;
+		// TODO this is like this??? not sure
+		if(fuzzyRecall < 1 - noise) {
+			return -1;
+		}
+		double fuzzyPrecision = (coveredMembershipDegree + invertedCoveredMembershipDegree) == 0 ? 0: coveredMembershipDegree / (coveredMembershipDegree + invertedCoveredMembershipDegree);
+		double fuzzyFmeasure = Heuristics.getFScore(fuzzyRecall, fuzzyPrecision);		
+		
+		// crisp F-measure
 		int additionalInstances = 0;
 		for(Individual ind : negativeExamples) {
 			if(reasoner.hasType(description, ind)) {
@@ -597,7 +618,20 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 		
 //		return getFMeasure(recall, precision);
-		return Heuristics.getFScore(recall, precision);		
+		double crispFmeasure = Heuristics.getFScore(recall, precision);
+		
+		crispFmeasure = fuzzyFmeasure;
+		
+		if (crispFmeasure != fuzzyFmeasure) {
+			System.err.println("************************");
+			System.err.println("* crispFmeasuer = " + crispFmeasure);
+			System.err.println("* fuzzyFmeasuer = " + fuzzyFmeasure);
+			System.err.println("************************");
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
+		}
+
+		return crispFmeasure;
 	}
 	
 	// instead of using the standard operation, we use optimisation
