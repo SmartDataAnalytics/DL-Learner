@@ -55,7 +55,7 @@ import java.util.*;
 public class DBpediaClassLearnerCELOE {
 
     public static String endpointurl = "http://139.18.2.96:8910/sparql";
-    public static int examplesize = 20;
+    public static int examplesize = 30;
 
     private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DBpediaClassLearnerCELOE.class);
 
@@ -66,15 +66,27 @@ public class DBpediaClassLearnerCELOE {
         // parameters to the constructure e.g. YAGO_
     }
 
+    public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, Exception {
+
+        DBpediaClassLearnerCELOE dcl = new DBpediaClassLearnerCELOE();
+        Set<String> classesToLearn = dcl.getClasses();
+
+        KB kb = dcl.learnAllClasses(classesToLearn);
+        kb.export(new File("result.owl"), OntologyFormat.RDF_XML);
+    }
+
+
     public KB learnAllClasses(Set<String> classesToLearn) {
         KB kb = new KB();
         for (String classToLearn : classesToLearn) {
             try {
                 Description d = learnClass(classToLearn);
                 if (d == null) {
-                    continue;
+                    logger.error("Description was null, continueing");
+                    //continue;
                 }
                 kb.addAxiom(new EquivalentClassesAxiom(new NamedClass(classToLearn), d));
+                kb.export(new File("result_partial.owl"), OntologyFormat.RDF_XML);
                 System.out.println(d);
             } catch (Exception e) {
                 logger.warn("", e);
@@ -107,7 +119,8 @@ public class DBpediaClassLearnerCELOE {
         ks.getConfigurator().setUrl(new URL(endpointurl));
         ks.getConfigurator().setUseLits(false);
         ks.getConfigurator().setUseCacheDatabase(true);
-        ks.getConfigurator().setRecursionDepth(2);
+        ks.getConfigurator().setRecursionDepth(1);
+        ks.getConfigurator().setCloseAfterRecursion(true);
         ks.getConfigurator().setSaveExtractedFragment(true);
         ks.getConfigurator().setPredList(new HashSet<String>(Arrays.asList(new String[]{
                 "http://dbpedia.org/property/wikiPageUsesTemplate",
@@ -115,7 +128,9 @@ public class DBpediaClassLearnerCELOE {
                 "http://dbpedia.org/property/wordnet_type",
                 "http://www.w3.org/2002/07/owl#sameAs"})));
 
-        ks.getConfigurator().setObjList(new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/class/yago/", "http://dbpedia.org/resource/Category:", classToLearn})));
+        ks.getConfigurator().setObjList(new HashSet<String>(Arrays.asList(new String[]{
+                "http://dbpedia.org/class/yago/", "" +
+                "http://dbpedia.org/resource/Category:"})));
 
 
         ks.init();
@@ -124,19 +139,23 @@ public class DBpediaClassLearnerCELOE {
         rc.init();
 
         PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
-        lp.getConfigurator().setAccuracyMethod("fMeasure");
+        lp.setPositiveExamples(posExamples);
+        lp.setNegativeExamples(negExamples);
+        lp.getConfigurator().setAccuracyMethod("fmeasure");
         lp.getConfigurator().setUseApproximations(false);
         lp.init();
+
 
         CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
         CELOEConfigurator cc = la.getConfigurator();
         cc.setMaxExecutionTimeInSeconds(100);
+
         cc.setUseNegation(false);
         cc.setUseAllConstructor(false);
         cc.setUseCardinalityRestrictions(false);
         cc.setUseHasValueConstructor(true);
         cc.setNoisePercentage(20);
-
+        cc.setIgnoredConcepts(new HashSet<String>(Arrays.asList(new String[]{classToLearn})));
         la.init();
 
         // to write the above configuration in a conf file (optional)
@@ -145,20 +164,13 @@ public class DBpediaClassLearnerCELOE {
 
         la.start();
 
-         cm.freeAllComponents();
+        cm.freeAllComponents();
         return la.getCurrentlyBestDescription();
     }
 
-    public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, Exception{
 
-        DBpediaClassLearnerCELOE dcl = new DBpediaClassLearnerCELOE();
-        Set<String> classesToLearn = dcl.getClasses();
-
-        KB kb = dcl.learnAllClasses(classesToLearn);
-        kb.export(new File("result.owl"), OntologyFormat.RDF_XML);
-    }
-
-    public Set<String> getClasses() throws Exception{
+    //gets all DBpedia Classes
+    public Set<String> getClasses() throws Exception {
         SparqlTemplate st = SparqlTemplate.getInstance("allClasses.vm");
         st.setLimit(0);
         st.addFilter(sparqlEndpoint.like("classes", new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/ontology/"}))));
@@ -177,8 +189,15 @@ public class DBpediaClassLearnerCELOE {
         return new HashSet<String>(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query)));
     }
 
-
-    public String selectClass(String clazz, Set<String> posEx) throws Exception{
+    /**
+     * gets all direct classes of all instances and has a look, what the most common is
+     *
+     * @param clazz
+     * @param posEx
+     * @return
+     * @throws Exception
+     */
+    public String selectClass(String clazz, Set<String> posEx) throws Exception {
         Map<String, Integer> m = new HashMap<String, Integer>();
 
         for (String pos : posEx) {
@@ -209,9 +228,19 @@ public class DBpediaClassLearnerCELOE {
         return maxClass;
     }
 
-    public Set<String> getNegEx(String clazz, Set<String> posEx) throws Exception{
+    /**
+     * gets instances of a class or random instances
+     *
+     * @param clazz
+     * @param posEx
+     * @return
+     * @throws Exception
+     */
+
+    public Set<String> getNegEx(String clazz, Set<String> posEx) throws Exception {
         Set<String> negEx = new HashSet<String>();
         String targetClass = getParallelClass(clazz);
+        logger.info("using class for negatives: " + targetClass);
         if (targetClass != null) {
 
             SparqlTemplate st = SparqlTemplate.getInstance("instancesOfClass.vm");
@@ -236,8 +265,8 @@ public class DBpediaClassLearnerCELOE {
     }
 
 
-    public String getParallelClass(String clazz) throws Exception{
-        SparqlTemplate st =  SparqlTemplate.getInstance("parallelClass.vm");
+    public String getParallelClass(String clazz) throws Exception {
+        SparqlTemplate st = SparqlTemplate.getInstance("parallelClass.vm");
         st.setLimit(0);
         VelocityContext vc = st.getVelocityContext();
         vc.put("class", clazz);
