@@ -81,13 +81,13 @@ public class DBpediaClassLearnerCELOE {
         for (String classToLearn : classesToLearn) {
             try {
                 Description d = learnClass(classToLearn);
-                if (d == null) {
-                    logger.error("Description was null, continueing");
-                    //continue;
+                if (d == null || d.toKBSyntaxString().equals(new Thing().toKBSyntaxString()) ) {
+                    logger.error("Description was "+d+", continueing");
+                    continue;
                 }
                 kb.addAxiom(new EquivalentClassesAxiom(new NamedClass(classToLearn), d));
                 kb.export(new File("result_partial.owl"), OntologyFormat.RDF_XML);
-                System.out.println(d);
+                System.out.println("DESCRIPTION: "+d);
             } catch (Exception e) {
                 logger.warn("", e);
             }
@@ -203,7 +203,7 @@ public class DBpediaClassLearnerCELOE {
         for (String pos : posEx) {
             SparqlTemplate st = SparqlTemplate.getInstance("directClassesOfInstance.vm");
             st.setLimit(0);
-            st.addFilter(sparqlEndpoint.like("classes", new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/ontology/"}))));
+            st.addFilter(sparqlEndpoint.like("direct", new HashSet<String>(Arrays.asList(new String[]{"http://dbpedia.org/ontology/"}))));
             VelocityContext vc = st.getVelocityContext();
             vc.put("instance", pos);
             String query = st.getQuery();
@@ -271,8 +271,8 @@ public class DBpediaClassLearnerCELOE {
         VelocityContext vc = st.getVelocityContext();
         vc.put("class", clazz);
         String query = st.getQuery();
-        Set<String> negEx = new HashSet<String>(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query)));
-        for (String s : negEx) {
+        Set<String> parClasses = new HashSet<String>(ResultSetRenderer.asStringSet(sparqlEndpoint.executeSelect(query)));
+        for (String s : parClasses) {
             return s;
         }
         return null;
