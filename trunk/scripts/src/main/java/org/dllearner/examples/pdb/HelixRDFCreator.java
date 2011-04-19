@@ -28,6 +28,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -39,6 +40,8 @@ import com.dumontierlab.pdb2rdf.model.PdbRdfModel;
 import com.dumontierlab.pdb2rdf.parser.PdbXmlParser;
 import com.dumontierlab.pdb2rdf.util.Pdb2RdfInputIterator;
 import com.dumontierlab.pdb2rdf.util.PdbsIterator;
+
+import edu.stanford.nlp.io.EncodingPrintWriter.out;
 
 
 public class HelixRDFCreator {
@@ -98,6 +101,7 @@ public class HelixRDFCreator {
 			 * amino acid of every chain, they are returned within a ResIterator
 			 */
 			ResIterator niter = getFirstAA(trainmodel);
+			ResIterator riter = getFirstAA(trainmodel);
 		
 			/*
 			 * we add some distance Information to our model
@@ -110,7 +114,15 @@ public class HelixRDFCreator {
 			 */
 			createPositivesAndNegatives(niter, trainmodel);
 		//} while(positives.size() > 100 && negatives.size() > 100);
-		
+
+			
+		SimpleDateFormat df = new SimpleDateFormat("_yyyy_MM_dd_HH_mm");
+		String date = df.format(new Date());
+		String rdffile = "Helixtrainer" + date + ".rdf";
+		String arfffile = "Helixtrainer" + date + ".arff";
+		String filename = saveDir + rdffile;
+
+		createArffFile(date, arfffile, trainmodel, sets, riter);
 		/*
 		 * remove all triples that contain information about begin and end of helices
 		 */
@@ -121,10 +133,6 @@ public class HelixRDFCreator {
 		Resource residue = ResourceFactory.createResource("http://bio2rdf.org/pdb:Residue");
 		trainmodel = removeStatementsWithObject(trainmodel, residue);
 		
-		SimpleDateFormat df = new SimpleDateFormat("_yyyy_MM_dd_HH:mm");
-		String date = df.format(new Date());
-		String rdffile= "Helixtrainer" + date + ".rdf";
-		String filename = saveDir + rdffile;
 
 		try
     	{
@@ -150,18 +158,20 @@ public class HelixRDFCreator {
     	/*
     	 * load RDF file and perform learn algorithm for every .conf-file
     	 */
+
     	
+    	/*
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		cm.applyConfigEntry(ks, "url","file://" + filename );
+		ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class);
+		rc.init();
+		*/
+    	/*
     	Start start = null;
     	Iterator<Resource> aa = confFilePerResidue.keySet().iterator(); 
 		while ( aa.hasNext() ){
 			Resource nextRes = aa.next();
-			/*
-			ComponentManager cm = ComponentManager.getInstance();
-    		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-    		cm.applyConfigEntry(ks, "url","file://" + filename );
-    		ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class);
-			rc.init();
-    		*/
 			System.out.println(confFilePerResidue.get(nextRes).getAbsolutePath());
     		try{
         		start = new Start(confFilePerResidue.get(nextRes));
@@ -178,7 +188,7 @@ public class HelixRDFCreator {
             Description d = start.getLearningAlgorithm().getCurrentlyBestDescription(); 	
             System.out.println(d.toKBSyntaxString());
 		}
-		
+		*/
 	}
 
 	private static PdbRdfModel getRdfModelForIds(String[] pdbIDs) {
@@ -506,5 +516,137 @@ public class HelixRDFCreator {
     	{
     		System.err.println("OutputStream konnte nicht geschlossen werden!");
     	}
+	}
+	
+	private static void createArffFile(String date, String arfffile, PdbRdfModel model, TrainAndTestSet sets, ResIterator riter){
+		String arffname = saveDir + "pdb" + date + ".arff";
+		
+		
+		
+		String relation = "@RELATION ";
+		for (int i = 0; i < sets.getTrainset().length ; i++){
+			System.out.println("Element " + i + "= " + sets.getTrainset()[i]);
+			relation += sets.getTrainset()[i];
+		}
+		
+		/*
+		 * ATTRIBUTEs 
+		 */
+		
+		// Integer declaring Position in chain
+		String attrPosInChain = "@ATTRIBUTE position_in_chain NUMERIC\n";
+		// Helix = 1 Other = 0
+		String attrHelix = "@ATTRIBUTE in_helix NUMERIC\n";
+		//  Hydrophilic = 0 Hydrophobic = 1 Very_hydrophobic = 2
+		String attrHydrophob = "@ATTRIBUTE hydrophob NUMERIC\n";
+		// Negative = -1 Neutral = 0 Positive = 1
+		String attrCharge = "@ATTRIBUTE charge NUMERIC\n";
+		// Large = 2 Small = 1 Tiny = 0.5 
+		String attrSize = "@ATTRIBUTE size NUMERIC\n";
+		// Aliphatic = 0 Aromatic = 1
+		String attrAromaticity = "@ATTRIBUTE aromaticity NUMERIC\n";
+		// Donor = 1 Donor/Acceptor = 0 Acceptor = -1
+		String attrHydrogenbonding = "@ATTRIBUTE hydrogen_bonding NUMERIC\n";
+		
+		String attribute = attrPosInChain + attrHelix + attrHydrophob +
+			attrCharge + attrSize + attrAromaticity + attrHydrogenbonding + "\n"; 
+		
+		String data = "@DATA\n";
+		
+		HashMap<Resource, String> resdata = new HashMap<Resource, String>(30); 
+		resdata.put(ala, new String("2,0,0.5,?,?\n"));
+		resdata.put(cys, new String("1,0,1,?,0\n"));
+		resdata.put(asp, new String("0,-1,1,?,-1\n"));
+		resdata.put(glu, new String("0,-1,2,?,-1\n"));
+		resdata.put(phe, new String("2,0,2,1,?\n"));
+		resdata.put(gly, new String("2,0,0.5,?,?\n"));
+		resdata.put(his, new String("1,1,2,1,1\n"));
+		resdata.put(ile, new String("2,0,2,0,?\n"));
+		resdata.put(lys, new String("1,1,2,?,1\n"));
+		resdata.put(leu, new String("2,0,2,0,?\n"));
+		resdata.put(met, new String("2,0,2,?,?\n"));
+		resdata.put(asn, new String("0,0,1,?,0\n"));
+		resdata.put(pro, new String("?,0,1,?,?\n"));
+		resdata.put(gln, new String("0,0,2,?,0\n"));
+		resdata.put(arg, new String("0,1,2,?,1\n"));
+		resdata.put(ser, new String("0,0,0.5,?,0\n"));
+		resdata.put(thr, new String("1,0,1,?,0,\n"));
+		resdata.put(val, new String("2,0,1,0,?\n"));
+		resdata.put(trp, new String("1,0,2,1,1\n"));
+		resdata.put(tyr, new String("1,0,2,1,0\n"));
+		resdata.put(sel, new String("?,?,?,?,\n"));
+		
+		
+		// Properties i have to check for while going through the AA-chain
+		Property iib = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "isImmediatelyBefore");
+		Property ba = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "beginsAt");
+		Property ea = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "endsAt");
+		
+		Property type = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
+		
+		// every element in riter stands for a AA-chain start
+		// every first amino acid indicates a new AA-chain 
+		while (riter.hasNext()) {
+			// Initialization of variables needed
+			int i = 0;
+			Resource aaOne = riter.nextResource();
+			Resource currentaa  = aaOne;
+			Resource nextaa = aaOne;
+			boolean inHelix = false;
+			System.out.println(currentaa.getURI());
+			// look if there is a next AA
+			do {
+				++i;
+				System.out.print(i + " ");
+				//looks weird, but is needed to enter loop even for the last AA which does not have a iib-Property
+				currentaa = nextaa;
+				NodeIterator resType = model.listObjectsOfProperty(currentaa,type);
+				
+				// die Guten ins Töpfchen ...
+				// if we get an non-empty iterator for pdb:beginsAt the next AAs are within a AA-helix
+				if(model.listResourcesWithProperty(ba, currentaa).hasNext() && !inHelix ){
+					inHelix = true;
+				}
+				// die Schlechten ins Kröpfchen
+				// if we get an non-empty iterator for pdb:endsAt and are already within a AA-helix
+				// the AAs AFTER the current ones aren't within a helix
+				if (model.listResourcesWithProperty(ea, currentaa).hasNext() && inHelix){
+					inHelix = false;
+				}
+				// get next AA if there is one
+				if (model.listObjectsOfProperty(currentaa, iib).hasNext()){
+					nextaa = model.getProperty(currentaa, iib).getResource();
+				}
+				
+				// add current amino acid to positives or negatives set
+				while(resType.hasNext()){
+					Resource aaType = resType.next().asResource();
+					System.out.println(aaType.getURI());
+					if (resdata.get(aaType) != null){
+						if (inHelix){
+							data += i + "," + 1 + "," + resdata.get(aaType);
+						} else {
+							data += i + "," + 0 + "," + resdata.get(aaType);
+						}
+					}
+				}
+				
+			} while (currentaa.hasProperty(iib)) ;
+		}
+			
+		try{
+			PrintStream out = new PrintStream (new File(arffname));
+			out.println(relation);
+			out.print(attribute);
+			out.print(data);
+			out.close();
+			
+		} catch (FileNotFoundException e ) {
+    		System.err.println("Datei " + arffname + "konnte nicht angelegt werden!");
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 }
