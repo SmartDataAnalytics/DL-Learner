@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.view;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.autosparql.client.AppEvents;
@@ -17,6 +18,10 @@ import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoader;
 import com.extjs.gxt.ui.client.data.RpcProxy;
+import com.extjs.gxt.ui.client.event.ColumnModelEvent;
+import com.extjs.gxt.ui.client.event.EventType;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
@@ -46,6 +51,8 @@ public class LoadedQueryView  extends View {
 	
 	private Grid<Example> grid;
 	private ListStore<Example> store;
+	
+	private List<String> properties;
 
 	public LoadedQueryView(Controller controller) {
 		super(controller);
@@ -61,6 +68,8 @@ public class LoadedQueryView  extends View {
 		mainPanel.add(queryField, new RowData(1, -1));
 		
 		createResultGrid();
+		
+		properties = new ArrayList<String>();
 	}
 
 	@Override
@@ -98,7 +107,8 @@ public class LoadedQueryView  extends View {
 			@Override
 			protected void load(Object loadConfig,
 					AsyncCallback<PagingLoadResult<Example>> callback) {
-				SPARQLService.Util.getInstance().getSPARQLQueryResult(query, (PagingLoadConfig) loadConfig, callback);
+				SPARQLService.Util.getInstance().getSPARQLQueryResultWithProperties(query, properties, (PagingLoadConfig) loadConfig, callback);
+//				SPARQLService.Util.getInstance().getSPARQLQueryResult(query, (PagingLoadConfig) loadConfig, callback);
 			}
 		};
 		
@@ -146,8 +156,9 @@ public class LoadedQueryView  extends View {
 
 			@Override
 			public void onSuccess(Void result) {
-				loader.load();
 				loadProperties();
+				loader.load();
+				
 			}
 		});
 		
@@ -166,7 +177,7 @@ public class LoadedQueryView  extends View {
 			}
 
 			@Override
-			public void onSuccess(Set<String> properties) {System.out.println(properties);
+			public void onSuccess(Set<String> properties) {
 				createColumns(properties);
 			}
 		});
@@ -188,10 +199,33 @@ public class LoadedQueryView  extends View {
 			c.setHeader(property);
 			c.setSortable(true);
 			c.setHidden(true);
+			c.setWidth(100);
 			columns.add(c);
 		}
+		final ColumnModel cm = new ColumnModel(columns);
+		cm.addListener(Events.HiddenChange, new Listener<ColumnModelEvent>() {
+		      public void handleEvent(ColumnModelEvent e) {
+		          if (grid.isViewReady()) {
+		            EventType type = e.getType();
+		            if (type == Events.HiddenChange) {
+		            	updateProperties(cm);
+		            }
+		          }
+		      }
+		});
+		grid.reconfigure(store, cm);
 		
-		grid.reconfigure(store, new ColumnModel(columns));
+		
+	}
+	
+	private void updateProperties(ColumnModel cm) {
+		properties = new ArrayList<String>();
+		for (ColumnConfig c : cm.getColumns()) {
+			if (!c.isHidden()) {
+				properties.add(c.getId());
+			}
+		}
+		loader.load();
 		
 	}
 	
