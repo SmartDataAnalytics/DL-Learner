@@ -8,7 +8,7 @@ import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 
 public interface Store{
 
-	public void saveSPARQLQuery(String question, String query, Endpoint endpoint) throws SPARQLQuerySavingFailedException;
+	public void saveSPARQLQuery(String question, String query, String endpoint) throws SPARQLQuerySavingFailedException;
 
 	public List<StoredSPARQLQuery> getStoredSPARQLQueries();
 

@@ -23,6 +23,9 @@ public class SimpleFileStore implements Store {
 	private Map<String, StoredSPARQLQuery> question2QueryMap = null;
 	private String filename;
 	
+	public SimpleFileStore(){
+	}
+	
 	public SimpleFileStore(String filename){
 		this.filename = filename;
 		init();
@@ -48,7 +51,7 @@ public class SimpleFileStore implements Store {
 		return new ArrayList<StoredSPARQLQuery>(question2QueryMap.values());
 	}
 
-	public void saveSPARQLQuery(String question, String query, Endpoint endpoint) throws SPARQLQuerySavingFailedException{
+	public void saveSPARQLQuery(String question, String query, String endpoint) throws SPARQLQuerySavingFailedException{
 		put(question, query, endpoint);
 	}
 
@@ -56,7 +59,7 @@ public class SimpleFileStore implements Store {
 		query.setHitCount(query.getHitCount() + 1);
 	}
 
-	private void put(String question, String query, Endpoint endpoint) {
+	private void put(String question, String query, String endpoint) {
 		StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint);
 		question2QueryMap.put(question, storedQuery);
 		saveMap();

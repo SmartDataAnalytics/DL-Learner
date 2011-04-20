@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client;
 
 import java.util.List;
+import java.util.Set;
 
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
@@ -47,5 +48,7 @@ public interface SPARQLServiceAsync
 	void loadSPARQLQuery(StoredSPARQLQuery query, AsyncCallback<Void> callback);
 	
 	void getSavedSPARQLQueries(AsyncCallback<List<StoredSPARQLQuery>> callback);
+	
+	void getProperties(String query, AsyncCallback<Set<String>> callback);
     
 }

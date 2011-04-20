@@ -9,14 +9,14 @@ public class StoredSPARQLQuery implements Serializable{
 	private String question;
 	private String query;
 	private String queryHTML;
-	private Endpoint endpoint;
+	private String endpoint;
 	
 	private int hitCount = 0;
 	
 	public StoredSPARQLQuery(){
 	}
 	
-	public StoredSPARQLQuery(String question, String query, String queryHTML, Endpoint endpoint){
+	public StoredSPARQLQuery(String question, String query, String queryHTML, String endpoint){
 		this.question = question;
 		this.query = query;
 		this.endpoint = endpoint;
@@ -54,12 +54,17 @@ public class StoredSPARQLQuery implements Serializable{
 		this.hitCount = hitCount;
 	}
 
-	public Endpoint getEndpoint() {
+	public String getEndpoint() {
 		return endpoint;
 	}
 
-	public void setEndpoint(Endpoint endpoint) {
+	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
+	}
+	
+	@Override
+	public String toString() {
+		return question + "@" + endpoint + ":\n" + query;
 	}
 
 }

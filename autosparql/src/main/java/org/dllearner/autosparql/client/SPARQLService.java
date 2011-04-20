@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client;
 
 import java.util.List;
+import java.util.Set;
 
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
@@ -11,7 +12,6 @@ import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -43,11 +43,13 @@ public interface SPARQLService extends RemoteService{
 	void setExamples(List<String> posExamples,
 			List<String> negExamples);
 	
-	List<StoredSPARQLQuery> getSavedSPARQLQueries();
+	List<StoredSPARQLQuery> getSavedSPARQLQueries() throws AutoSPARQLException;
 	
 	void saveSPARQLQuery()  throws AutoSPARQLException;
 	
 	void loadSPARQLQuery(StoredSPARQLQuery query);
+	
+	Set<String> getProperties(String query) throws AutoSPARQLException;
 	
 	/**
      * Utility class to get the RPC Async interface from client-side code
