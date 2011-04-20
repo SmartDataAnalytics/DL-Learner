@@ -266,6 +266,13 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		logger.info("Retrieving results for SPARQL query(" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getSPARQLQueryResult(query, config);
 	}
+	
+	@Override
+	public PagingLoadResult<Example> getSPARQLQueryResultWithProperties(String query, List<String> properties,
+			PagingLoadConfig config) throws AutoSPARQLException {
+		logger.info("Retrieving results for SPARQL query(" + getSession().getId() + ")");
+		return getAutoSPARQLSession().getSPARQLQueryResultWithProperties(query, properties, config);
+	}
 
 	@Override
 	public Set<String> getProperties(String query) throws AutoSPARQLException {

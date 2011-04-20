@@ -51,6 +51,9 @@ public interface SPARQLService extends RemoteService{
 	
 	Set<String> getProperties(String query) throws AutoSPARQLException;
 	
+	PagingLoadResult<Example> getSPARQLQueryResultWithProperties(String query, List<String> properties,
+			PagingLoadConfig config) throws AutoSPARQLException ;
+	
 	/**
      * Utility class to get the RPC Async interface from client-side code
      */
