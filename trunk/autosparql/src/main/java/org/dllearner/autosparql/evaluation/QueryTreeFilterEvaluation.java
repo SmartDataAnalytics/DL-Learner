@@ -14,6 +14,7 @@ import org.dllearner.algorithm.qtl.QueryTreeFactory;
 import org.dllearner.algorithm.qtl.datastructures.QueryTree;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilterAggressive;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
+import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementSelector;
 import org.dllearner.algorithm.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithm.qtl.util.ModelGenerator;
 import org.dllearner.algorithm.qtl.util.ModelGenerator.Strategy;
@@ -36,9 +37,8 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 public class QueryTreeFilterEvaluation {
 	
 	private static double THRESHOLD = 0.6;
-	private static String ENDPOINT_URL = "http://db0.aksw.org:8999/sparql";
 //	private static String ENDPOINT_URL = "http://lod.openlinksw.com/sparql";
-//	private static String ENDPOINT_URL = "http://live.dbpedia.org/sparql";
+	private static String ENDPOINT_URL = "http://live.dbpedia.org/sparql";
 	
 
 	/**
@@ -116,6 +116,7 @@ public class QueryTreeFilterEvaluation {
 		
 		QuestionBasedStatementFilter filter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
 		filter.setThreshold(THRESHOLD);
+		System.out.println(model.listStatements(new QuestionBasedStatementSelector(new HashSet<String>(relevantWords))).toList());
 		treeFactory.setStatementFilter(filter);
 		
 		mon.start();

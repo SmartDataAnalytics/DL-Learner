@@ -1,16 +1,15 @@
 package org.dllearner.autosparql.server;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -25,12 +24,18 @@ import org.dllearner.autosparql.server.store.SimpleFileStore;
 import org.dllearner.autosparql.server.store.Store;
 import org.dllearner.autosparql.server.util.Endpoints;
 import org.ini4j.Ini;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLService{
+	
+	enum SessionKeywords{
+		AUTOSPARQL_SESSION
+	}
 
 	/**
 	 * 
@@ -41,7 +46,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	private static final String SPARQL_QUERIES_FILE = "queries.txt";
 	
-	private List<SPARQLEndpointEx> endpoints;
 	private List<StoredSPARQLQuery> storedSPARQLQueries;
 	
 	private Map<Endpoint, SPARQLEndpointEx> endpointsMap;
@@ -58,22 +62,22 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public SPARQLServiceImpl(){
 		super();
+		java.util.logging.Logger.getLogger("org.apache.solr").setLevel(Level.WARNING);
 	}
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("autosparql.xml", "autosparql-session.xml");
+		AutoSPARQLConfig aConfig = (AutoSPARQLConfig) ctx.getBean("autosparqlconfig");
+		AutoSPARQLSession aSession = (AutoSPARQLSession) ctx.getBean("autosparql.session");
+		
 		String configPath = config.getInitParameter("configPath");
 		loadConfig(configPath);
-		loadSPARQLQueriesFromFile();
 		loadEndpoints();
-	}
-	@Override
-	protected void service(HttpServletRequest arg0, HttpServletResponse arg1)
-			throws ServletException, IOException {
-		System.out.println("SESSION ID after get: " + arg0.getSession().getId());
-		// TODO Auto-generated method stub
-		super.service(arg0, arg1);
+		loadSPARQLQueriesFromFile();
+		
 	}
 	
 	private void loadConfig(String path){
@@ -89,10 +93,6 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		} 
 	}
 	
-	private String getPath(){
-		return getRootPath() + "org/dllearner/autosparql/public/endpoints.xml";
-	}
-	
 	private void loadEndpoints(){
 		logger.info("Loading endpoints from file: " + getServletContext().getRealPath("app/endpoints.xml"));
 		try {
@@ -101,7 +101,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			endpointsMap = new HashMap<Endpoint, SPARQLEndpointEx>();
 			
 			for(SPARQLEndpointEx endpoint : endpoints){
-				logger.info("Loaded endpoint: " + endpoint);
+				logger.debug("Loaded endpoint: " + endpoint);
 				endpointsMap.put(new Endpoint(endpoint.getLabel()), endpoint);
 			}
 		}catch (Exception e) {
@@ -155,6 +155,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	
 	public void setExamples(List<String> posExamples,
 			List<String> negExamples){
+		logger.info("Setting positive and negative examples(" + getSession().getId() + ")");
 		try{
 			getAutoSPARQLSession().setExamples(posExamples, negExamples);
 		} catch (Exception e){
@@ -169,6 +170,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 			createNewAutoSPARQLSession(endpointsMap.get(endpoint));
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw new AutoSPARQLException(e);
 		}
 	}
@@ -207,18 +209,18 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 	
 	private void createNewAutoSPARQLSession(SPARQLEndpointEx endpoint){
-//		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
+		logger.info("Creating new AutoSPARQL user session object(" + getSession().getId() + ")");
+		System.out.println(getSession().getId());
 		AutoSPARQLSession session = new AutoSPARQLSession(endpoint, getServletContext().getRealPath(cacheDir),
 				getServletContext().getRealPath(""), solrURL);
 		getSession().setAttribute(AUTOSPARQL_SESSION, session);
 	}
 	
 	private AutoSPARQLSession getAutoSPARQLSession(){
-//		logger.info("Loading AutoSPARQL user session object form HTTPSession(" + getSession().getId() + ")");
 		return (AutoSPARQLSession) getSession().getAttribute(AUTOSPARQL_SESSION);
 	}
 	
-	private HttpSession getSession(){System.out.println("SESSION ID: " + getThreadLocalRequest().getSession().getId());
+	private HttpSession getSession(){
 		return getThreadLocalRequest().getSession();
 	}
 
@@ -234,25 +236,41 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public List<StoredSPARQLQuery> getSavedSPARQLQueries() {
-		return store.getStoredSPARQLQueries();
+	public List<StoredSPARQLQuery> getSavedSPARQLQueries() throws AutoSPARQLException{
+		try {
+			return store.getStoredSPARQLQueries();
+		} catch (Exception e) {
+			logger.error("Error while getting stored SPARQL queries from server.", e);
+			throw new AutoSPARQLException(e);
+		}
 	}
 
 	@Override
 	public void loadSPARQLQuery(StoredSPARQLQuery query) {
-		System.out.println(endpointsMap.get(query.getEndpoint()));
-		createNewAutoSPARQLSession(endpointsMap.get(query.getEndpoint()));
+		createNewAutoSPARQLSession(endpointsMap.get(new Endpoint(query.getEndpoint())));
 	}
 	
 	private void loadSPARQLQueriesFromFile(){
-		store = new SimpleFileStore(SPARQL_QUERIES_FILE);
-		storedSPARQLQueries = store.getStoredSPARQLQueries();
+		logger.info("Loading stored SPARQL queries");
+		try {
+			store = new SimpleFileStore(SPARQL_QUERIES_FILE);
+			storedSPARQLQueries = store.getStoredSPARQLQueries();
+		} catch (Exception e) {
+			logger.error("Error while loading stored SPARQL queries.", e);
+		}
 	}
 
 	@Override
 	public PagingLoadResult<Example> getSPARQLQueryResult(String query,
 			PagingLoadConfig config) throws AutoSPARQLException {
+		logger.info("Retrieving results for SPARQL query(" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getSPARQLQueryResult(query, config);
+	}
+
+	@Override
+	public Set<String> getProperties(String query) throws AutoSPARQLException {
+		logger.info("Loading properties (" + getSession().getId() + ")");
+		return getAutoSPARQLSession().getProperties(query);
 	}
 
 	

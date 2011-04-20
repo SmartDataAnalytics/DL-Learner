@@ -11,6 +11,7 @@ import org.dllearner.algorithm.qtl.QTL;
 import org.dllearner.algorithm.qtl.exception.QTLException;
 import org.dllearner.algorithm.qtl.filters.QueryTreeFilter;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilter;
+import org.dllearner.algorithm.qtl.filters.QuestionBasedQueryTreeFilterAggressive;
 import org.dllearner.algorithm.qtl.filters.QuestionBasedStatementFilter;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
@@ -59,7 +60,9 @@ public class ExampleFinder {
 		QuestionProcessor qp = new QuestionProcessor();
 		List<String> relevantWords = qp.getRelevantWords(question);
 		QuestionBasedStatementFilter stmtFilter = new QuestionBasedStatementFilter(new HashSet<String>(relevantWords));
-		QueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
+		stmtFilter.setThreshold(0.6);
+//		QueryTreeFilter treeFilter = new QuestionBasedQueryTreeFilter(new HashSet<String>(relevantWords));
+		QuestionBasedQueryTreeFilterAggressive treeFilter = new QuestionBasedQueryTreeFilterAggressive(new HashSet<String>(relevantWords));
 		qtl.addStatementFilter(stmtFilter);
 		qtl.addQueryTreeFilter(treeFilter);
 	}

@@ -3,6 +3,7 @@ package org.dllearner.autosparql.client.view;
 import java.util.List;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.AsyncCallbackEx;
 import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Endpoint;
@@ -103,9 +104,7 @@ public class HomeView extends View {
 				
 				@Override
 				public void onClick(Widget sender) {
-					System.out.println(queryField.getValue());
 					Registry.register("Query", queryField.getValue());
-					System.out.println(Registry.get("Query"));
 					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
 
 						@Override
@@ -151,10 +150,7 @@ public class HomeView extends View {
 
                 sidecontent.add(new Image("dl-learner_logo.gif"), "#dllearnerlogo");
                 
-                SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallback<List<StoredSPARQLQuery>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-					}
+                SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallbackEx<List<StoredSPARQLQuery>>() {
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
 						for(final StoredSPARQLQuery query : result){

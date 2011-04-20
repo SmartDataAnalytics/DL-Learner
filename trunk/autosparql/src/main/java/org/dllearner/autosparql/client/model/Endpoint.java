@@ -1,9 +1,11 @@
 package org.dllearner.autosparql.client.model;
 
 
+import java.io.Serializable;
+
 import com.extjs.gxt.ui.client.data.BaseModel;
 
-public class Endpoint extends BaseModel{
+public class Endpoint extends BaseModel implements Serializable{
 	
 	
 	private static final long serialVersionUID = -3347290446256124889L;
@@ -24,12 +26,16 @@ public class Endpoint extends BaseModel{
 		if(!(obj instanceof Endpoint) || obj == null){
 			return false;
 		}
-		return obj == this || ((Endpoint)obj).getLabel().equals(this.getLabel());
+		if(obj == this){
+			return true;
+		}
+		Endpoint other = (Endpoint)obj;
+		return other.getLabel().equals(this.getLabel());
 	}
 	
 	@Override
 	public int hashCode() {
-		return 37+getLabel().hashCode();
+		return getLabel().hashCode();
 	}
 	
 }

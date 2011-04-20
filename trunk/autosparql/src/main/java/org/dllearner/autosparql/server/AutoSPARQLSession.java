@@ -1,14 +1,19 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.aksw.commons.sparql.core.ResultSetRenderer;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
-import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.server.cache.SPARQLQueryCache;
 import org.dllearner.autosparql.server.search.Search;
 import org.dllearner.autosparql.server.search.SolrSearch;
 import org.dllearner.autosparql.server.store.Store;
@@ -19,6 +24,7 @@ import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -31,7 +37,10 @@ public class AutoSPARQLSession {
 	private ExtractionDBCache constructCache;
 	private ExtractionDBCache selectCache;
 	private ExampleFinder exampleFinder;
-	private Search nlpSearch;
+	
+	private Search search;
+	private Store store;
+	private SPARQLQueryCache cache;
 	
 	private String servletContextPath;
 	
@@ -39,6 +48,8 @@ public class AutoSPARQLSession {
 	
 	private String question;
 	
+	public AutoSPARQLSession(){
+	}
 	
 	public AutoSPARQLSession(SPARQLEndpointEx endpoint, String cacheDir, String servletContextPath, String solrURL){
 		this.endpoint = endpoint;
@@ -46,7 +57,7 @@ public class AutoSPARQLSession {
 		
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
-		nlpSearch = new SolrSearch(solrURL);
+		search = new SolrSearch(solrURL);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 	}
 	
@@ -55,7 +66,7 @@ public class AutoSPARQLSession {
 		
 		constructCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/construct-cache");
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
-		nlpSearch = new SolrSearch(solrURL);
+		search = new SolrSearch(solrURL);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
 	}
 	
@@ -68,13 +79,25 @@ public class AutoSPARQLSession {
 		exampleFinder.setQuestion(question);
 	}
 	
+	public void setStore(Store store){
+		this.store = store;
+	}
+	
+	public void setSearch(Search search){
+		this.search = search;
+	}
+	
+	public void setCache(SPARQLQueryCache cache){
+		this.cache = cache;
+	}
+	
 	public PagingLoadResult<Example> getSearchResult(String searchTerm, PagingLoadConfig config) throws AutoSPARQLException{
 		try {
 			int limit = config.getLimit();
 			int offset = config.getOffset();
 			
-			List<Example> searchResult = nlpSearch.getExamples("label:" + getQuotedString(searchTerm), offset);
-			int totalLength = nlpSearch.getTotalHits(searchTerm);
+			List<Example> searchResult = search.getExamples("label:" + getQuotedString(searchTerm), offset);
+			int totalLength = search.getTotalHits(searchTerm);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
 			result.setOffset(offset);
@@ -93,14 +116,14 @@ public class AutoSPARQLSession {
 			int limit = config.getLimit();
 			int offset = config.getOffset();
 			
-			List<Example> searchResult = nlpSearch.getExamples(query, offset);
+			List<Example> searchResult = search.getExamples(query, offset);
 			if(offset == 0){
 				topKResources = new ArrayList<String>();
 				for(Example ex : searchResult){
 					topKResources.add(ex.getURI());
 				}
 			}
-			int totalLength = nlpSearch.getTotalHits(query);
+			int totalLength = search.getTotalHits(query);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
 			result.setOffset(offset);
@@ -114,8 +137,8 @@ public class AutoSPARQLSession {
 	}
 
 	public Example getNextQueryResult(String query)
-			throws AutoSPARQLException {System.out.println("Getting next resource for query " + query);
-			return nlpSearch.getExamples(query).get(0);
+			throws AutoSPARQLException {
+			return search.getExamples(query).get(0);
 //		Example result = search.getNextQueryResult(query, endpoint);
 //		exampleFinder.setObjectFilter(new ExactMatchFilter(new HashSet<String>(search.getAllQueryRelatedResources())));
 //		return result;
@@ -139,9 +162,32 @@ public class AutoSPARQLSession {
 		}
 	}
 	
+	public Set<String> getProperties(String query) throws AutoSPARQLException{
+		Set<String> properties = new TreeSet<String>();
+		
+		String queryTriples = query.substring(18, query.length()-1);
+		
+		String newQuery = "SELECT DISTINCT(?p) WHERE {" + queryTriples + "?x0 ?p ?o.}";
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(
+				selectCache.executeSelectQuery(endpoint, newQuery));
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(qs.getResource("p").getURI());
+		}
+		
+		Iterator<String> it = properties.iterator();
+		while(it.hasNext()){
+			String p = it.next();
+			if(!p.startsWith("http://dbpedia.org/ontology")){
+				it.remove();
+			}
+		}
+		return properties;
+	}
+	
 	public PagingLoadResult<Example> getSPARQLQueryResult(String query,
 			PagingLoadConfig config) throws AutoSPARQLException{
-		logger.info("Retrieving results for SPARQL query.");
 		List<Example> queryResult = new ArrayList<Example>();
 		
 		logger.info("SPARQL query:\n");
@@ -241,7 +287,7 @@ public class AutoSPARQLSession {
 	}
 	
 	public void saveSPARQLQuery(Store store) throws AutoSPARQLException{
-		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), new Endpoint(endpoint.getLabel()));
+		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), endpoint.getLabel());
 	}
 	
 	private List<String> getIntermediateNegativeExamples(List<String> posExamples){

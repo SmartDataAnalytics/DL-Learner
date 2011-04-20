@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.algorithm.qtl.QTL;
 import org.dllearner.algorithm.qtl.operations.NBR;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.server.util.Endpoints;
@@ -13,11 +14,12 @@ import org.junit.Test;
 
 public class ExampleFinderTest {
 	
-	private static final SPARQLEndpointEx endpoint = Endpoints.getDB0Endpoint();
+	private static final SPARQLEndpointEx endpoint = Endpoints.getDBPediaAKSWEndpoint();
 	
 	@Test
 	public void test1(){
 		try {
+			Logger.getLogger(QTL.class).setLevel(Level.DEBUG);
 			Logger.getLogger(NBR.class).setLevel(Level.DEBUG);
 			ExampleFinder f = new ExampleFinder(endpoint, new ExtractionDBCache("select-cache"), new ExtractionDBCache("construct-cache"));
 			
@@ -25,12 +27,13 @@ public class ExampleFinderTest {
 //			
 //			List<String> posExamples = new ArrayList<String>();
 //			posExamples.add("http://dbpedia.org/resource/Manchester_United_F.C.");
-//			posExamples.add("http://dbpedia.org/resource/Liverpool_F.C.");
-//			posExamples.add("http://dbpedia.org/resource/Burnley_F.C.");
+//			posExamples.add("http://dbpedia.org/resource/Chelsea_F.C.");
+////			posExamples.add("http://dbpedia.org/resource/Burnley_F.C.");
 //			
 //			List<String> negExamples = new ArrayList<String>();
-//			negExamples.add("http://dbpedia.org/resource/Barnsley_F.C.");
-//			negExamples.add("http://dbpedia.org/resource/Harchester_United_F.C.");
+//			negExamples.add("http://dbpedia.org/resource/Southern_Premier_Soccer_League");
+////			negExamples.add("http://dbpedia.org/resource/Barnsley_F.C.");
+////			negExamples.add("http://dbpedia.org/resource/Harchester_United_F.C.");
 			
 			f.setQuestion("films with starring Brad Pitt");
 			
@@ -39,7 +42,7 @@ public class ExampleFinderTest {
 			posExamples.add("http://dbpedia.org/resource/Megamind");
 			
 			List<String> negExamples = new ArrayList<String>();
-			negExamples.add("http://dbpedia.org/resource/The_Tree_of_Life_%28film%29");
+			negExamples.add("http://dbpedia.org/resource/Die_Hard");
 			
 			System.out.println(f.findSimilarExample(posExamples, negExamples));
 		} catch (Exception e) {
