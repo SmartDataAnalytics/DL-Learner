@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
@@ -50,7 +51,7 @@ public interface SPARQLServiceAsync
 	
 	void getSavedSPARQLQueries(AsyncCallback<List<StoredSPARQLQuery>> callback);
 	
-	void getProperties(String query, AsyncCallback<Set<String>> callback);
+	void getProperties(String query, AsyncCallback<Map<String, String>> callback);
 	
 	void getSPARQLQueryResultWithProperties(String query, List<String> properties,
 			PagingLoadConfig config, AsyncCallback<PagingLoadResult<Example>> callback);

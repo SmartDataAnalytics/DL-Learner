@@ -16,5 +16,6 @@
 	<!-- Specify the application specific style sheet. -->
 	<stylesheet src='gxt/css/gxt-all.css' />
 	<stylesheet src='Application.css' />
+	<inherits name="com.google.gwt.junit.JUnit"/>
 
 </module>

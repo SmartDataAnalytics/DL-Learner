@@ -205,10 +205,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>components-ext</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>org.aksw.commons</groupId>
@@ -234,6 +230,10 @@
 			<version>3.0.5.RELEASE</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.dllearner</groupId>
+			<artifactId>components-ext</artifactId>
 		</dependency>
 	</dependencies>
 
