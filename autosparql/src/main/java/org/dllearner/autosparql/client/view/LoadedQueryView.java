@@ -2,6 +2,8 @@ package org.dllearner.autosparql.client.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.dllearner.autosparql.client.AppEvents;
@@ -18,23 +20,35 @@ import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoader;
 import com.extjs.gxt.ui.client.data.RpcProxy;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ColumnModelEvent;
 import com.extjs.gxt.ui.client.event.EventType;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
 import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.extjs.gxt.ui.client.widget.menu.CheckMenuItem;
+import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -52,7 +66,9 @@ public class LoadedQueryView  extends View {
 	private Grid<Example> grid;
 	private ListStore<Example> store;
 	
-	private List<String> properties;
+	private List<String> visibleProperties = new ArrayList<String>();
+	
+	private Button propertiesButton;
 
 	public LoadedQueryView(Controller controller) {
 		super(controller);
@@ -67,9 +83,9 @@ public class LoadedQueryView  extends View {
 	    queryField = new HTML();
 		mainPanel.add(queryField, new RowData(1, -1));
 		
-		createResultGrid();
+		Component resultPanel = createResultPanel();
+		mainPanel.add(resultPanel, new RowData(1, 1));
 		
-		properties = new ArrayList<String>();
 	}
 
 	@Override
@@ -100,14 +116,33 @@ public class LoadedQueryView  extends View {
 		return out.toString();
 	}
 	
-	private void createResultGrid(){
-		LayoutContainer gridPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
+	private Component createResultPanel(){
+		ContentPanel resultPanel = new ContentPanel();
+		resultPanel.setLayout(new FitLayout());
+		resultPanel.setHeading("Result");
+		
+		ToolBar topToolbar = new ToolBar();
+		resultPanel.setTopComponent(topToolbar);
+		
+		propertiesButton = new SplitButton("Show more...", new SelectionListener<ButtonEvent>() {
+			
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		Menu menu = new Menu();
+		propertiesButton.setMenu(menu);
+		topToolbar.add(propertiesButton);
+		
+//		LayoutContainer gridPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 		RpcProxy<PagingLoadResult<Example>> proxy = new RpcProxy<PagingLoadResult<Example>>() {
 
 			@Override
 			protected void load(Object loadConfig,
 					AsyncCallback<PagingLoadResult<Example>> callback) {
-				SPARQLService.Util.getInstance().getSPARQLQueryResultWithProperties(query, properties, (PagingLoadConfig) loadConfig, callback);
+				SPARQLService.Util.getInstance().getSPARQLQueryResultWithProperties(query, visibleProperties, (PagingLoadConfig) loadConfig, callback);
 //				SPARQLService.Util.getInstance().getSPARQLQueryResult(query, (PagingLoadConfig) loadConfig, callback);
 			}
 		};
@@ -138,9 +173,13 @@ public class LoadedQueryView  extends View {
 		grid.setLoadMask(true);
 		grid.getView().setEmptyText("");
 
-		gridPanel.add(grid, new RowData(1, 1));
-		gridPanel.add(toolbar, new RowData(1, -1));
-		mainPanel.add(gridPanel, new RowData(1, 1));
+		resultPanel.add(grid);
+		resultPanel.setBottomComponent(toolbar);
+//		gridPanel.add(grid, new RowData(1, 1));
+//		gridPanel.add(toolbar, new RowData(1, -1));
+//		mainPanel.add(gridPanel, new RowData(1, 1));
+		
+		return resultPanel;
 	}
 	
 	
@@ -168,7 +207,7 @@ public class LoadedQueryView  extends View {
 	}
 	
 	private void loadProperties(){
-		SPARQLService.Util.getInstance().getProperties(query, new AsyncCallback<Set<String>>() {
+		SPARQLService.Util.getInstance().getProperties(query, new AsyncCallback<Map<String, String>>() {
 
 			@Override
 			public void onFailure(Throwable arg0) {
@@ -177,13 +216,41 @@ public class LoadedQueryView  extends View {
 			}
 
 			@Override
-			public void onSuccess(Set<String> properties) {
-				createColumns(properties);
+			public void onSuccess(Map<String, String> properties) {
+				createMenu(properties);
 			}
 		});
 	}
 	
-	private void createColumns(Set<String> properties){
+	private void createMenu(Map<String, String> properties){
+		createColumns(properties);
+		
+		Menu menu = new Menu();
+		CheckMenuItem item;
+		for(final Entry<String, String> entry : properties.entrySet()){
+			final String propertyURI = entry.getKey();
+			String propertyLabel = entry.getValue();
+			item = new CheckMenuItem(propertyLabel);
+			item.setHideOnClick(false);
+			item.addSelectionListener(new SelectionListener<MenuEvent>() {
+		        public void componentSelected(MenuEvent ce) {
+			          if(visibleProperties.contains(propertyURI)){
+			        	  visibleProperties.remove(propertyURI);
+			        	  grid.getColumnModel().getColumnById(propertyURI).setHidden(true);
+			          } else {
+			        	  visibleProperties.add(propertyURI);
+			        	  grid.getColumnModel().getColumnById(propertyURI).setHidden(false);
+			          }
+			          loader.load();
+			        }
+			      });
+			menu.add(item);
+		}
+		propertiesButton.setMenu(menu);
+		
+	}
+	
+	private void createColumns(Map<String, String> properties){
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 		
 		ColumnConfig c = new ColumnConfig();		
@@ -193,13 +260,13 @@ public class LoadedQueryView  extends View {
 		c.setSortable(true);
 		columns.add(c);
 		
-		for(String property : properties){
+		for(Entry<String, String> entry : properties.entrySet()){
 			c = new ColumnConfig();
-			c.setId(property);
-			c.setHeader(property);
+			c.setId(entry.getKey());
+			c.setHeader(entry.getValue());
 			c.setSortable(true);
 			c.setHidden(true);
-			c.setWidth(100);
+			c.setWidth(200);
 			columns.add(c);
 		}
 		final ColumnModel cm = new ColumnModel(columns);
@@ -219,10 +286,10 @@ public class LoadedQueryView  extends View {
 	}
 	
 	private void updateProperties(ColumnModel cm) {
-		properties = new ArrayList<String>();
+		visibleProperties = new ArrayList<String>();
 		for (ColumnConfig c : cm.getColumns()) {
 			if (!c.isHidden()) {
-				properties.add(c.getId());
+				visibleProperties.add(c.getId());
 			}
 		}
 		loader.load();

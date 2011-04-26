@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
@@ -49,7 +50,7 @@ public interface SPARQLService extends RemoteService{
 	
 	void loadSPARQLQuery(StoredSPARQLQuery query);
 	
-	Set<String> getProperties(String query) throws AutoSPARQLException;
+	Map<String, String> getProperties(String query) throws AutoSPARQLException;
 	
 	PagingLoadResult<Example> getSPARQLQueryResultWithProperties(String query, List<String> properties,
 			PagingLoadConfig config) throws AutoSPARQLException ;

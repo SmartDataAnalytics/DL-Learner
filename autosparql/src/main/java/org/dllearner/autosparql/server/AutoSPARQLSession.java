@@ -2,15 +2,14 @@ package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.aksw.commons.sparql.core.ResultSetRenderer;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
 import org.dllearner.autosparql.client.exception.AutoSPARQLException;
@@ -166,28 +165,31 @@ public class AutoSPARQLSession {
 		}
 	}
 	
-	public Set<String> getProperties(String query) throws AutoSPARQLException{
-		Set<String> properties = new TreeSet<String>();
+	public Map<String, String> getProperties(String query) throws AutoSPARQLException{
+		Map<String, String> property2LabelMap = new TreeMap<String, String>();
 		
 		String queryTriples = query.substring(18, query.length()-1);
 		
-		String newQuery = "SELECT DISTINCT(?p) WHERE {" + queryTriples + "?x0 ?p ?o.}";
+		String newQuery = "SELECT DISTINCT ?p ?label WHERE {" + queryTriples + "?x0 ?p ?o. " +
+				"?p <" + RDFS.label + "> ?label. FILTER(LANGMATCHES(LANG(?label), 'en'))} " +
+				"LIMIT 1000";
+		System.out.println(newQuery);
 		ResultSet rs = SparqlQuery.convertJSONtoResultSet(
 				selectCache.executeSelectQuery(endpoint, newQuery));
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			properties.add(qs.getResource("p").getURI());
+			property2LabelMap.put(qs.getResource("p").getURI(), qs.getLiteral("label").getLexicalForm());
 		}
 		
-		Iterator<String> it = properties.iterator();
+		Iterator<String> it = property2LabelMap.keySet().iterator();
 		while(it.hasNext()){
-			String p = it.next();
-			if(!p.startsWith("http://dbpedia.org/ontology")){
+			String uri = it.next();
+			if(!uri.startsWith("http://dbpedia.org/ontology")){
 				it.remove();
 			}
 		}
-		return properties;
+		return property2LabelMap;
 	}
 	
 	public PagingLoadResult<Example> getSPARQLQueryResult(String query,
@@ -253,6 +255,7 @@ public class AutoSPARQLSession {
 		for(String property : properties){
 			var2URIMap.put(property.substring(property.lastIndexOf("/")+1), property);
 		}
+		var2URIMap.put("label", RDFS.label.toString());
 		
 		String queryTriples = query.substring(18, query.length()-1);
 		
@@ -266,6 +269,7 @@ public class AutoSPARQLSession {
 		for(Entry<String, String> entry : var2URIMap.entrySet()){
 			newQuery.append("?x0 <").append(entry.getValue()).append("> ?").append(entry.getKey()).append(".\n");
 		}
+		newQuery.append("FILTER(LANGMATCHES(LANG(?label),'en'))");
 		newQuery.append("}");
 		System.out.println("Query with properties:\n" + newQuery.toString());
 		try {
@@ -281,7 +285,7 @@ public class AutoSPARQLSession {
 			while(rs.hasNext()){
 				qs = rs.next();
 				uri = qs.getResource("x0").getURI();
-//				label = qs.getLiteral("label").getLexicalForm();
+				label = qs.getLiteral("label").getLexicalForm();
 				example = new Example(uri, label, imageURL, comment);
 				example.setAllowNestedValues(false);
 				for(Entry<String, String> entry : var2URIMap.entrySet()){

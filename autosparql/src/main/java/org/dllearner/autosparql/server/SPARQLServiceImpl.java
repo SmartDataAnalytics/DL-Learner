@@ -275,7 +275,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 	}
 
 	@Override
-	public Set<String> getProperties(String query) throws AutoSPARQLException {
+	public Map<String, String> getProperties(String query) throws AutoSPARQLException {
 		logger.info("Loading properties (" + getSession().getId() + ")");
 		return getAutoSPARQLSession().getProperties(query);
 	}
