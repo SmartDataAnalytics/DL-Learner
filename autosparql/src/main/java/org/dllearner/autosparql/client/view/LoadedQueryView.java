@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.dllearner.autosparql.client.AppEvents;
 import org.dllearner.autosparql.client.SPARQLService;
@@ -20,7 +19,6 @@ import com.extjs.gxt.ui.client.data.PagingLoadConfig;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoader;
 import com.extjs.gxt.ui.client.data.RpcProxy;
-import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ColumnModelEvent;
 import com.extjs.gxt.ui.client.event.EventType;
@@ -30,6 +28,7 @@ import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
 import com.extjs.gxt.ui.client.mvc.Controller;
+import com.extjs.gxt.ui.client.mvc.Dispatcher;
 import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -84,7 +83,18 @@ public class LoadedQueryView  extends View {
 		mainPanel.add(queryField, new RowData(1, -1));
 		
 		Component resultPanel = createResultPanel();
-		mainPanel.add(resultPanel, new RowData(1, 1));
+		mainPanel.add(resultPanel, new RowData(1, 0.8));
+		
+		Button editButton = new Button("Edit");
+		editButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				Dispatcher.forwardEvent(new AppEvent(AppEvents.NavQuery));
+				
+			}
+		});
+		mainPanel.add(editButton);
 		
 	}
 
@@ -143,7 +153,6 @@ public class LoadedQueryView  extends View {
 			protected void load(Object loadConfig,
 					AsyncCallback<PagingLoadResult<Example>> callback) {
 				SPARQLService.Util.getInstance().getSPARQLQueryResultWithProperties(query, visibleProperties, (PagingLoadConfig) loadConfig, callback);
-//				SPARQLService.Util.getInstance().getSPARQLQueryResult(query, (PagingLoadConfig) loadConfig, callback);
 			}
 		};
 		
@@ -157,7 +166,6 @@ public class LoadedQueryView  extends View {
 		
 		ArrayList<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 		
-		
 		ColumnConfig c = new ColumnConfig();		
 		c = new ColumnConfig();
 		c.setId("label");
@@ -168,16 +176,12 @@ public class LoadedQueryView  extends View {
 		ColumnModel cm = new ColumnModel(columns);
 		
 		grid = new Grid<Example>(store, cm);
-//		grid.setHideHeaders(true);
 		grid.setAutoExpandColumn("label");
 		grid.setLoadMask(true);
 		grid.getView().setEmptyText("");
 
 		resultPanel.add(grid);
 		resultPanel.setBottomComponent(toolbar);
-//		gridPanel.add(grid, new RowData(1, 1));
-//		gridPanel.add(toolbar, new RowData(1, -1));
-//		mainPanel.add(gridPanel, new RowData(1, 1));
 		
 		return resultPanel;
 	}
@@ -216,7 +220,7 @@ public class LoadedQueryView  extends View {
 			}
 
 			@Override
-			public void onSuccess(Map<String, String> properties) {
+			public void onSuccess(Map<String, String> properties) {System.out.println(properties);
 				createMenu(properties);
 			}
 		});
@@ -234,12 +238,13 @@ public class LoadedQueryView  extends View {
 			item.setHideOnClick(false);
 			item.addSelectionListener(new SelectionListener<MenuEvent>() {
 		        public void componentSelected(MenuEvent ce) {
+		        	ColumnModel cm = grid.getColumnModel();
 			          if(visibleProperties.contains(propertyURI)){
 			        	  visibleProperties.remove(propertyURI);
-			        	  grid.getColumnModel().getColumnById(propertyURI).setHidden(true);
+			        	  cm.setHidden(cm.getIndexById(propertyURI), true);
 			          } else {
 			        	  visibleProperties.add(propertyURI);
-			        	  grid.getColumnModel().getColumnById(propertyURI).setHidden(false);
+			        	  cm.setHidden(cm.getIndexById(propertyURI), false);
 			          }
 			          loader.load();
 			        }

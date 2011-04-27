@@ -104,7 +104,7 @@ public class HomeView extends View {
 				
 				@Override
 				public void onClick(Widget sender) {
-					Registry.register("Query", queryField.getValue());
+					Registry.register("QUERY_TITLE", queryField.getValue());
 					SPARQLService.Util.getInstance().setQuestion(queryField.getValue(), new AsyncCallback<Void>() {
 
 						@Override
@@ -160,6 +160,8 @@ public class HomeView extends View {
 								@Override
 								public void onClick(Widget sender) {
 									Registry.register("query", query);
+									Registry.register("QUERY_TITLE", query.getQuestion());
+									Registry.register("ENDPOINT", query.getEndpoint());
 									
 								}
 							});
