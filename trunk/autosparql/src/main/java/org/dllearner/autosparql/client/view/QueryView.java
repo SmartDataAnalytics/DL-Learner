@@ -217,7 +217,6 @@ public class QueryView extends View {
 
 						@Override
 						public void onSuccess(Example result) {
-							System.out.println("RESULT: " + result);
 							interactivePanel.unmask();
 							interactivePanel.setExample(result);
 //							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
@@ -257,7 +256,7 @@ public class QueryView extends View {
 //							
 //						}
 //					});
-		relatedResourcesPanel.search((String)Registry.get("Query"));
+		relatedResourcesPanel.search((String)Registry.get("QUERY_TITLE"));
 	}
 	
 	private void onRemoveExample(Example example, Example.Type type){

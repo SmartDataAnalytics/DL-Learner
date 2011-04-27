@@ -74,7 +74,7 @@ public class ApplicationView extends View {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
 		sb.append("<div id=demo-header-title>looks for</div>");
-		sb.append("<div id=demo-header-query>\"").append(Registry.get("Query")).append("\"</div>");
+		sb.append("<div id=demo-header-query>\"").append(Registry.get("QUERY_TITLE")).append("\"</div>");
 		sb.append("<div id=demo-header-endpoint>@ ").append(endpoint).append("</div>");
 
 		headerPanel = new HtmlContainer(sb.toString());
@@ -95,7 +95,8 @@ public class ApplicationView extends View {
 //		LayoutContainer c1 = new LayoutContainer(new RowLayout(Orientation.HORIZONTAL));
 //		c1.add(headerPanel, new RowData(-1, 1));c1.add(tF, new RowData(1, 1));
 //		c.add(c1, new RowData(1, 1));
-		north.add(headerPanel);Registry.register("View", this);
+		north.add(headerPanel);
+		Registry.register("View", this);
 
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 50);
 		data.setMargins(new Margins());
@@ -107,7 +108,7 @@ public class ApplicationView extends View {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
 		sb.append("<div id=demo-header-title>looks for</div>");
-		sb.append("<div id=demo-header-query>\"").append(Registry.get("Query")).append("\"</div>");
+		sb.append("<div id=demo-header-query>\"").append(Registry.get("QUERY_TITLE")).append("\"</div>");
 		sb.append("<div id=demo-header-endpoint>@ ").append(Registry.get("ENDPOINT")).append("</div>");
 		headerPanel.setHtml(sb.toString());
 		headerPanel.repaint();

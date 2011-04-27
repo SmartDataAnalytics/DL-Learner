@@ -6,9 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithm.qtl.util.SPARQLEndpointEx;
@@ -51,6 +49,11 @@ public class AutoSPARQLSession {
 	
 	private String question;
 	
+	private Map<String, String> property2LabelMap;
+	
+	private Map<String, Map<String, String>> propertiesCache;
+	private int currentQueryResultSize = -1;
+	
 	public AutoSPARQLSession(){
 	}
 	
@@ -62,6 +65,9 @@ public class AutoSPARQLSession {
 		selectCache = new ExtractionDBCache(cacheDir + "/" + endpoint.getPrefix() + "/select-cache");
 		search = new SolrSearch(solrURL);
 		exampleFinder = new ExampleFinder(endpoint, selectCache, constructCache);
+		
+		property2LabelMap = new TreeMap<String, String>();
+		propertiesCache = new HashMap<String, Map<String,String>>();
 	}
 	
 	public AutoSPARQLSession(String cacheDir, String servletContextPath, String solrURL){
@@ -166,7 +172,7 @@ public class AutoSPARQLSession {
 	}
 	
 	public Map<String, String> getProperties(String query) throws AutoSPARQLException{
-		Map<String, String> property2LabelMap = new TreeMap<String, String>();
+		property2LabelMap = new TreeMap<String, String>();
 		
 		String queryTriples = query.substring(18, query.length()-1);
 		
@@ -244,62 +250,104 @@ public class AutoSPARQLSession {
 		int offset = config.getOffset();
 		int totalLength = 10;
 		
-		try {
-			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, getCountQuery(query)));
-			totalLength = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(currentQueryResultSize == -1){
+			try {
+				ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, getCountQuery(query)));
+				currentQueryResultSize = rs.next().getLiteral(rs.getResultVars().get(0)).getInt();
+			} catch (Exception e) {
+				e.printStackTrace();
+				currentQueryResultSize = 10;
+			}
 		}
+		totalLength = currentQueryResultSize;
 		
-		Map<String, String> var2URIMap = new HashMap<String, String>(properties.size()); 
-		for(String property : properties){
-			var2URIMap.put(property.substring(property.lastIndexOf("/")+1), property);
+		List<String> propertiesToDo = new ArrayList<String>(properties);
+		for(Map<String, String> prop2Value : propertiesCache.values()){
+			propertiesToDo.removeAll(prop2Value.keySet());
 		}
-		var2URIMap.put("label", RDFS.label.toString());
-		
-		String queryTriples = query.substring(18, query.length()-1);
-		
-		StringBuilder newQuery = new StringBuilder();
-		newQuery.append("SELECT DISTINCT ?x0 ");
-		for(String var : var2URIMap.keySet()){
-			newQuery.append("?").append(var).append(" ");
-		}
-		newQuery.append("{");
-		newQuery.append(queryTriples);
-		for(Entry<String, String> entry : var2URIMap.entrySet()){
-			newQuery.append("?x0 <").append(entry.getValue()).append("> ?").append(entry.getKey()).append(".\n");
-		}
-		newQuery.append("FILTER(LANGMATCHES(LANG(?label),'en'))");
-		newQuery.append("}");
-		System.out.println("Query with properties:\n" + newQuery.toString());
-		try {
-			ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(newQuery + " OFFSET " + offset)));
+		if(propertiesToDo.size() > 0){
+			Map<String, String> var2URIMap = new HashMap<String, String>(propertiesToDo.size()); 
+			for(String property : propertiesToDo){
+				var2URIMap.put(property2LabelMap.get(property).replace(" ", "_"), property);
+			}
 			
-			String uri;
-			String label = "";
-			String imageURL = "";
-			String comment = "";
-			QuerySolution qs;
-			Example example;
-			RDFNode object;
-			while(rs.hasNext()){
-				qs = rs.next();
-				uri = qs.getResource("x0").getURI();
-				label = qs.getLiteral("label").getLexicalForm();
-				example = new Example(uri, label, imageURL, comment);
-				example.setAllowNestedValues(false);
-				for(Entry<String, String> entry : var2URIMap.entrySet()){
-					object = qs.get(entry.getKey());
-					if(object.isURIResource()){
-						example.set(entry.getValue(), object.asResource().getURI());
-					} else if(object.isLiteral()){
-						example.set(entry.getValue(), object.asLiteral().getLexicalForm());
+			String queryTriples = query.substring(18, query.length()-1);
+			
+			StringBuilder newQuery = new StringBuilder();
+			newQuery.append("SELECT DISTINCT ?x0 ?label ");
+			for(String var : var2URIMap.keySet()){
+				newQuery.append("?").append(var).append(" ");
+				newQuery.append("?").append(var).append("_label ");
+			}
+			newQuery.append("{");
+			newQuery.append(queryTriples);
+			newQuery.append("?x0 <").append(RDFS.label).append("> ?label.\n");
+			for(Entry<String, String> entry : var2URIMap.entrySet()){
+				newQuery.append("OPTIONAL{?x0 <").append(entry.getValue()).append("> ?").append(entry.getKey()).append(".}\n");
+			}
+			for(Entry<String, String> entry : var2URIMap.entrySet()){
+				newQuery.append("OPTIONAL{?").append(entry.getKey()).append(" <").append(RDFS.label).append("> ?").append(entry.getKey()).append("_label.\n");
+				newQuery.append("FILTER(LANGMATCHES(LANG(?" + entry.getKey() + "_label),'en'))}\n");
+			}
+			newQuery.append("FILTER(LANGMATCHES(LANG(?label),'en'))");
+			newQuery.append("}");
+			System.out.println("Query with properties:\n" + newQuery.toString());
+			try {
+				ResultSetRewindable rs = SparqlQuery.convertJSONtoResultSet(selectCache.executeSelectQuery(endpoint, modifyQuery(newQuery + " OFFSET " + offset)));
+				
+				String uri;
+				String label = "";
+				QuerySolution qs;
+				RDFNode object;
+				while(rs.hasNext()){
+					qs = rs.next();
+					uri = qs.getResource("x0").getURI();
+					label = qs.getLiteral("label").getLexicalForm();
+					Map<String, String> properties2Value = propertiesCache.get(uri);
+					if(properties2Value == null){
+						properties2Value = new HashMap<String, String>();
+						properties2Value.put("label", label);
+						propertiesCache.put(uri, properties2Value);
+					} 
+					
+					String value;
+					String property;
+					for(Entry<String, String> entry : var2URIMap.entrySet()){
+						value = "";
+						property = entry.getValue();
+						
+						object = qs.get(entry.getKey() + "_label");
+						if(object == null){
+							object = qs.get(entry.getKey());
+						}
+						if(object != null){
+							if(object.isURIResource()){
+								value = object.asResource().getURI();
+							} else if(object.isLiteral()){
+								value = object.asLiteral().getLexicalForm();
+							}
+						}
+						String oldValue = properties2Value.get(property);
+						if(oldValue != null){
+							value = oldValue + ", " + value;
+						}
+						properties2Value.put(property, value);
 					}
 				}
-				queryResult.add(example);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		
+		Example example;
+		for(Entry<String, Map<String, String>> uri2PropertyValues : propertiesCache.entrySet()){
+			example = new Example();
+			example.setAllowNestedValues(false);
+			example.set("uri", uri2PropertyValues.getKey());
+			for(Entry<String, String> property2Value : uri2PropertyValues.getValue().entrySet()){
+				example.set(property2Value.getKey(), property2Value.getValue());
+			}
+			queryResult.add(example);
 		}
 		
 		PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(queryResult);
