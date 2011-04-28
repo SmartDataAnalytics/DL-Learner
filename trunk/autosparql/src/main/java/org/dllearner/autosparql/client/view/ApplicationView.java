@@ -54,7 +54,7 @@ public class ApplicationView extends View {
 		  super.initialize();
 	  }
 
-	  private void initUI() {System.out.println("init ApplicationView");
+	  private void initUI() {
 	    viewport = new Viewport();
 	    viewport.setLayout(new BorderLayout());
 
@@ -106,13 +106,11 @@ public class ApplicationView extends View {
 	
 	public void updateHeader(){
 		StringBuffer sb = new StringBuffer();
-		sb.append("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
+		sb.append("<span id=demo-header-logo></span><div id=demo-header-title>AutoSPARQL</div>");
 		sb.append("<div id=demo-header-title>looks for</div>");
 		sb.append("<div id=demo-header-query>\"").append(Registry.get("QUERY_TITLE")).append("\"</div>");
 		sb.append("<div id=demo-header-endpoint>@ ").append(Registry.get("ENDPOINT")).append("</div>");
 		headerPanel.setHtml(sb.toString());
-		headerPanel.repaint();
-//		viewport.repaint();
 	}
 
 	  private void createCenter() {

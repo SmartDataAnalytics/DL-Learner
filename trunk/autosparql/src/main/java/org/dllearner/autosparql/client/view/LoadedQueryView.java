@@ -34,6 +34,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.HtmlContainer;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.SplitButton;
@@ -85,7 +86,12 @@ public class LoadedQueryView  extends View {
 		mainPanel.add(queryField, new RowData(1, -1));
 		
 		Component resultPanel = createResultPanel();
-		mainPanel.add(resultPanel, new RowData(1, 0.8));
+		mainPanel.add(resultPanel, new RowData(1, 0.7));
+		
+		LayoutContainer con = new LayoutContainer();
+		final HtmlContainer htmlCon = new HtmlContainer("<span id=demo-header-logo></div><div id=demo-header-title>AutoSPARQL</div>");
+		con.add(htmlCon);
+		mainPanel.add(con);
 		
 		Button editButton = new Button("Edit");
 		editButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -94,12 +100,12 @@ public class LoadedQueryView  extends View {
 			public void componentSelected(ButtonEvent ce) {
 				AppEvent event = new AppEvent(AppEvents.EditQuery);
 				event.setData("STORED_QUERY", storedQuery);
-				Dispatcher.forwardEvent(event);
+				htmlCon.setHtml("NEU");
+//				Dispatcher.forwardEvent(event);
 				
 			}
 		});
 		mainPanel.add(editButton);
-		
 	}
 
 	@Override

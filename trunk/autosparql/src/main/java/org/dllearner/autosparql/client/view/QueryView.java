@@ -199,12 +199,16 @@ public class QueryView extends View {
 		} else {
 			examplesPanel.addNegativeExample(example);
 		}
+		refresh();
+	}
+	
+	private void refresh(){
 		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
 			interactivePanel.mask("Searching...");
 			SPARQLService.Util.getInstance().getSimilarExample(
 					examplesPanel.getPositiveExamplesURIs(),
 					examplesPanel.getNegativeExamplesUris(),
-					new AsyncCallback<Example>() {
+					new AsyncCallbackEx<Example>() {
 
 						@Override
 						public void onSuccess(Example result) {
@@ -214,17 +218,6 @@ public class QueryView extends View {
 									examplesPanel.getNegativeExamplesUris());
 						}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							String details = caught.getMessage();
-							if (caught instanceof SPARQLQueryException) {
-								details = "An error occured while sending the following query:\n"
-										+ ((SPARQLQueryException) caught)
-												.getQuery();
-							}
-							MessageBox.alert("Error", details, null);
-
-						}
 					});
 		}
 	}
