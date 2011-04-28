@@ -156,7 +156,7 @@ public class ExampleFinder {
 			example = examples.get(0);
 		}
 		examplesCache.put(uri, example);
-		System.out.println("CACHE:" + examplesCache);
+		
 		return example;
 	}
 	
