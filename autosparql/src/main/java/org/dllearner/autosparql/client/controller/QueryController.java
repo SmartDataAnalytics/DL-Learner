@@ -15,6 +15,7 @@ public class QueryController extends Controller {
 	
 	public QueryController(){
 		registerEventTypes(AppEvents.NavQuery);
+		registerEventTypes(AppEvents.EditQuery);
 		registerEventTypes(AppEvents.AddPosExample);
 		registerEventTypes(AppEvents.AddNegExample);
 		registerEventTypes(AppEvents.AddExample);
@@ -29,7 +30,10 @@ public class QueryController extends Controller {
 		if (type == AppEvents.NavQuery) {
 			((ApplicationView)Registry.get("View")).updateHeader();
 			forwardToView(queryView, event);
-		} else if(type == AppEvents.AddPosExample){
+		} if (type == AppEvents.EditQuery) {
+			((ApplicationView)Registry.get("View")).updateHeader();
+			forwardToView(queryView, event);
+		}else if(type == AppEvents.AddPosExample){
 			forwardToView(queryView, event);
 		} else if(type == AppEvents.AddPosExample){
 			forwardToView(queryView, event);

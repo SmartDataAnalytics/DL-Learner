@@ -1,9 +1,11 @@
 package org.dllearner.autosparql.client.view;
 
 import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.AsyncCallbackEx;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.exception.SPARQLQueryException;
 import org.dllearner.autosparql.client.model.Example;
+import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import org.dllearner.autosparql.client.widget.ExamplesPanel;
 import org.dllearner.autosparql.client.widget.InfoPanel;
 import org.dllearner.autosparql.client.widget.InteractivePanel;
@@ -85,7 +87,7 @@ public class QueryView extends View {
 	
 	@Override
 	protected void handleEvent(AppEvent event) {
-		if (event.getType() == AppEvents.NavQuery) {System.out.println("Go to QueryView");
+		if (event.getType() == AppEvents.NavQuery) {
 		      LayoutContainer wrapper = (LayoutContainer) Registry.get(ApplicationView.CENTER_PANEL);
 		      wrapper.removeAll();
 		      wrapper.add(mainPanel);
@@ -94,34 +96,25 @@ public class QueryView extends View {
 		      RootPanel.get().removeStyleName("home_view");
 		      onShowNextResourceRelatedToQuery();
 		      return;
-		} else if(event.getType() == AppEvents.AddPosExample){
-			examplesPanel.addPositiveExample((Example) event.getData());
-			if(examplesPanel.getPositiveExamples().size() == 1 && examplesPanel.getNegativeExamples().isEmpty()){
-				askForSwitchingToInteractiveMode();
-				SPARQLService.Util.getInstance().getSimilarExample(
-						examplesPanel.getPositiveExamplesURIs(),
-						examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Example>() {
-							
-							@Override
-							public void onSuccess(Example result) {
-								interactivePanel.setExample(result);
-							}
-							
-							@Override
-							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-								
-							}
-						});
-			}
+		} else if (event.getType() == AppEvents.EditQuery) {
+			showInteractivePanel();
+		      LayoutContainer wrapper = (LayoutContainer) Registry.get(ApplicationView.CENTER_PANEL);
+		      wrapper.removeAll();
+		      wrapper.add(mainPanel);
+		      wrapper.layout();
+		      RootPanel.get().addStyleName("query_view");
+		      RootPanel.get().removeStyleName("home_view");
+		      StoredSPARQLQuery storedQuery = (StoredSPARQLQuery)event.getData("STORED_QUERY");
+		      onLoadStoredSPARQLQuery(storedQuery);
+		      return;
 		} else if(event.getType() == AppEvents.AddExample){
 			Example example = event.getData("example");
 			Example.Type type = event.getData("type");
 			onAddExample(example, type);
-		} else if(event.getType() == AppEvents.AddNegExample){
-			examplesPanel.addNegativeExample((Example) event.getData());
 		} else if(event.getType() == AppEvents.RemoveExample){
-			
+			Example example = event.getData("example");
+			Example.Type type = event.getData("type");
+			onRemoveExample(example, type);
 		} else if(event.getType() == AppEvents.ShowInteractiveMode){
 			showInteractivePanel();
 		} else if(event.getType() == AppEvents.UpdateResultTable){
@@ -160,42 +153,9 @@ public class QueryView extends View {
 		} else {
 			examplesPanel.addNegativeExample(example);
 		}
-//		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
-//			interactivePanel.mask("Searching...");
-//			SPARQLService.Util.getInstance().getSimilarExample(
-//					examplesPanel.getPositiveExamplesURIs(),
-//					examplesPanel.getNegativeExamplesUris(),
-//					new AsyncCallback<Example>() {
-//
-//						@Override
-//						public void onSuccess(Example result) {
-//							interactivePanel.unmask();
-//							interactivePanel.setExample(result);
-//							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-//									examplesPanel.getNegativeExamplesUris());
-//						}
-//
-//						@Override
-//						public void onFailure(Throwable caught) {
-//							String details = caught.getMessage();
-//							if (caught instanceof SPARQLQueryException) {
-//								details = "An error occured while sending the following query:\n"
-//										+ ((SPARQLQueryException) caught)
-//												.getQuery();
-//							}
-//							MessageBox.alert("Error", details, null);
-//
-//						}
-//					});
-//		}
 		if (examplesPanel.getPositiveExamplesURIs().size() >= 2) {
 			SPARQLService.Util.getInstance().setExamples(examplesPanel.getPositiveExamplesURIs(),
-					examplesPanel.getNegativeExamplesUris(), new AsyncCallback<Void>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							MessageBox.alert("Error", caught.getMessage(), null);
-						}
+					examplesPanel.getNegativeExamplesUris(), new AsyncCallbackEx<Void>() {
 
 						@Override
 						public void onSuccess(Void result) {
@@ -213,7 +173,7 @@ public class QueryView extends View {
 			SPARQLService.Util.getInstance().getSimilarExample(
 					examplesPanel.getPositiveExamplesURIs(),
 					examplesPanel.getNegativeExamplesUris(),
-					new AsyncCallback<Example>() {
+					new AsyncCallbackEx<Example>() {
 
 						@Override
 						public void onSuccess(Example result) {
@@ -223,17 +183,6 @@ public class QueryView extends View {
 //									examplesPanel.getNegativeExamplesUris());
 						}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							String details = caught.getMessage();
-							if (caught instanceof SPARQLQueryException) {
-								details = "An error occured while sending the following query:\n"
-										+ ((SPARQLQueryException) caught)
-												.getQuery();
-							}
-							MessageBox.alert("Error", details, null);
-
-						}
 					});
 		} else {
 //			onShowNextResourceRelatedToQuery();
@@ -241,21 +190,6 @@ public class QueryView extends View {
 	}
 	
 	private void onShowNextResourceRelatedToQuery(){
-//		interactivePanel.mask("Computing examples related to query...");
-//	      SPARQLService.Util.getInstance().getNextQueryResult((String)Registry.get("Query"), new AsyncCallback<Example>() {
-//						
-//						@Override
-//						public void onSuccess(Example result) {
-//							interactivePanel.setExample(result);
-//							interactivePanel.unmask();
-//						}
-//						
-//						@Override
-//						public void onFailure(Throwable caught) {
-//							// TODO Auto-generated method stub
-//							
-//						}
-//					});
 		relatedResourcesPanel.search((String)Registry.get("QUERY_TITLE"));
 	}
 	
@@ -293,6 +227,12 @@ public class QueryView extends View {
 						}
 					});
 		}
+	}
+	
+	private void onLoadStoredSPARQLQuery(StoredSPARQLQuery query) {
+		examplesPanel.addPositiveExamples(query.getPositiveExamples());
+		examplesPanel.addNegativeExamples(query.getNegativeExamples());
+		interactivePanel.setExample(query.getLastSuggestedExample());
 	}
 
 }
