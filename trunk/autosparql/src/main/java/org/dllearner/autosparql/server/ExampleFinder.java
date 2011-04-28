@@ -1,8 +1,10 @@
 package org.dllearner.autosparql.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -28,20 +30,21 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 
 public class ExampleFinder {
 	
+	private static final Logger logger = Logger.getLogger(ExampleFinder.class);
+	
 	private SPARQLEndpointEx endpoint;
 	private ExtractionDBCache selectCache;
+	private QTL qtl;
+	private SolrSearch resourceIndex;
 	
 	private List<String> posExamples = new ArrayList<String>();
 	private List<String> negExamples = new ArrayList<String>();
 	
-	private static final Logger logger = Logger.getLogger(ExampleFinder.class);
-	
-	private String currentQuery;
-	
-	private QTL qtl;
-	private SolrSearch resourceIndex;
-	
 	private String question;
+	private String currentQuery;
+	private Example lastSuggestedExample;
+	
+	private Map<String, Example> examplesCache;
 	
 	boolean dirty = true;
 	
@@ -52,6 +55,8 @@ public class ExampleFinder {
 		qtl = new QTL(endpoint, selectCache);
 		qtl.setMaxExecutionTimeInSeconds(1000);
 		resourceIndex = new SolrSearch("http://139.18.2.173:8080/apache-solr-1.4.1/dbpedia_resources");
+		
+		examplesCache = new HashMap<String, Example>();
 	}
 	
 	
@@ -70,6 +75,8 @@ public class ExampleFinder {
 	
 	public Example findSimilarExample(List<String> posExamples,
 			List<String> negExamples) throws AutoSPARQLException{
+		this.posExamples = posExamples;
+		this.negExamples = negExamples;
 		logger.info("Searching similiar example");
 		logger.info("Positive examples: " + posExamples);
 		logger.info("Negative examples: " + negExamples);
@@ -80,8 +87,9 @@ public class ExampleFinder {
 		} catch(QTLException e){
 			throw new AutoSPARQLException(e);
 		}
+		lastSuggestedExample = getExample(resource);
 		
-		return getExample(resource);
+		return lastSuggestedExample;
 	}
 	
 	public void setExamples(List<String> posExamples,
@@ -89,6 +97,35 @@ public class ExampleFinder {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		qtl.setExamples(posExamples, negExamples);
+	}
+	
+	public List<String> getPositiveExamples(){
+		return this.posExamples;
+	}
+	
+	public List<String> getNegativeExamples(){
+		return this.negExamples;
+	}
+	
+//	public List<Example> getPositiveExamples(){
+//		System.out.println("CACHE:" + examplesCache);
+//		List<Example> examples = new ArrayList<Example>();
+//		for(String uri : posExamples){
+//			examples.add(examplesCache.get(uri));
+//		}
+//		return examples;
+//	}
+//	
+//	public List<Example> getNegativeExamples(){
+//		List<Example> examples = new ArrayList<Example>();
+//		for(String uri : negExamples){
+//			examples.add(examplesCache.get(uri));
+//		}
+//		return examples;
+//	}
+	
+	public Example getLastSuggestedExample(){
+		return lastSuggestedExample;
 	}
 	
 	
@@ -112,11 +149,15 @@ public class ExampleFinder {
 	
 	private Example getExample(String uri){
 		List<Example> examples = resourceIndex.getExamples("uri:\"" + uri + "\"");
+		Example example;
 		if(examples.isEmpty()){
-			return getExampleFromSPARQLEndpoint(uri);
+			example = getExampleFromSPARQLEndpoint(uri);
 		} else {
-			return resourceIndex.getExamples("uri:\"" + uri + "\"").get(0);
+			example = examples.get(0);
 		}
+		examplesCache.put(uri, example);
+		System.out.println("CACHE:" + examplesCache);
+		return example;
 	}
 	
 	private Example getExampleFromSPARQLEndpoint(String uri){

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dllearner.autosparql.client.exception.SPARQLQuerySavingFailedException;
-import org.dllearner.autosparql.client.model.Endpoint;
+import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import org.dllearner.autosparql.server.util.HTMLUtils;
 import org.dllearner.utilities.Files;
@@ -47,20 +47,23 @@ public class SimpleFileStore implements Store {
 		}
 	}
 
+	@Override
 	public List<StoredSPARQLQuery> getStoredSPARQLQueries() {
 		return new ArrayList<StoredSPARQLQuery>(question2QueryMap.values());
 	}
 
-	public void saveSPARQLQuery(String question, String query, String endpoint) throws SPARQLQuerySavingFailedException{
-		put(question, query, endpoint);
+	@Override
+	public void saveSPARQLQuery(String question, String query, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample) throws SPARQLQuerySavingFailedException{
+		put(question, query, endpoint, posExamples, negExamples, lastSuggestedExample);
 	}
 
+	@Override
 	public void incrementHitCount(StoredSPARQLQuery query) {
 		query.setHitCount(query.getHitCount() + 1);
 	}
 
-	private void put(String question, String query, String endpoint) {
-		StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint);
+	private void put(String question, String query, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample) {
+		StoredSPARQLQuery storedQuery = new StoredSPARQLQuery(question, query, HTMLUtils.encodeHTML(query), endpoint, posExamples, negExamples, lastSuggestedExample);
 		question2QueryMap.put(question, storedQuery);
 		saveMap();
 	}

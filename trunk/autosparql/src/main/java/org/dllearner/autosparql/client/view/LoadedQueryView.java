@@ -68,6 +68,8 @@ public class LoadedQueryView  extends View {
 	private List<String> visibleProperties = new ArrayList<String>();
 	
 	private Button propertiesButton;
+	
+	private StoredSPARQLQuery storedQuery;
 
 	public LoadedQueryView(Controller controller) {
 		super(controller);
@@ -90,7 +92,9 @@ public class LoadedQueryView  extends View {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				Dispatcher.forwardEvent(new AppEvent(AppEvents.NavQuery));
+				AppEvent event = new AppEvent(AppEvents.EditQuery);
+				event.setData("STORED_QUERY", storedQuery);
+				Dispatcher.forwardEvent(event);
 				
 			}
 		});
@@ -107,8 +111,8 @@ public class LoadedQueryView  extends View {
 	      wrapper.layout();
 	      RootPanel.get().addStyleName("query_view");
 	      RootPanel.get().removeStyleName("home_view");
-	      StoredSPARQLQuery query = ((StoredSPARQLQuery)Registry.get("query"));
-	      onLoadSPARQLQuery(query);
+	      storedQuery = ((StoredSPARQLQuery)Registry.get("query"));
+	      onLoadSPARQLQuery(storedQuery);
 		}
 		
 	}

@@ -270,12 +270,20 @@ public class ExamplesPanel extends ContentPanel {
 		posExamplesStore.add(example);
 	}
 	
+	public void addPositiveExamples(List<Example> examples){
+		posExamplesStore.add(examples);
+	}
+	
 	public void removePositiveExample(Example example){
 		posExamplesStore.remove(example);
 	}
 	
 	public void addNegativeExample(Example example){
 		negExamplesStore.add(example);
+	}
+	
+	public void addNegativeExamples(List<Example> examples){
+		negExamplesStore.add(examples);
 	}
 	
 	public void removeNegativeExample(Example example){

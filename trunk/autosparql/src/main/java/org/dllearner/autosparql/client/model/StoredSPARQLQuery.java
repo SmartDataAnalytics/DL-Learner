@@ -1,6 +1,7 @@
 package org.dllearner.autosparql.client.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class StoredSPARQLQuery implements Serializable{
 	
@@ -10,16 +11,22 @@ public class StoredSPARQLQuery implements Serializable{
 	private String query;
 	private String queryHTML;
 	private String endpoint;
+	private List<Example> posExamples;
+	private List<Example> negExamples;
+	private Example lastSuggestedExample;
 	
 	private int hitCount = 0;
 	
 	public StoredSPARQLQuery(){
 	}
 	
-	public StoredSPARQLQuery(String question, String query, String queryHTML, String endpoint){
+	public StoredSPARQLQuery(String question, String query, String queryHTML, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample){
 		this.question = question;
 		this.query = query;
 		this.endpoint = endpoint;
+		this.posExamples = posExamples;
+		this.negExamples = negExamples;
+		this.lastSuggestedExample = lastSuggestedExample;
 	}
 	
 	public String getQuestion() {
@@ -62,6 +69,18 @@ public class StoredSPARQLQuery implements Serializable{
 		this.endpoint = endpoint;
 	}
 	
+	public List<Example> getPositiveExamples() {
+		return posExamples;
+	}
+
+	public List<Example> getNegativeExamples() {
+		return negExamples;
+	}
+	
+	public Example getLastSuggestedExample() {
+		return lastSuggestedExample;
+	}
+
 	@Override
 	public String toString() {
 		return question + "@" + endpoint + ":\n" + query;

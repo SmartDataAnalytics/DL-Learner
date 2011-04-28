@@ -7,7 +7,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.dllearner.autosparql.client.exception.SPARQLQuerySavingFailedException;
-import org.dllearner.autosparql.client.model.Endpoint;
+import org.dllearner.autosparql.client.model.Example;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +26,7 @@ public class DBStore implements Store{
 	}
 
 	@Override
-	public void saveSPARQLQuery(String question, String query, String endpoint)
+	public void saveSPARQLQuery(String question, String query, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample)
 			throws SPARQLQuerySavingFailedException {
 		String sqlQuery = "INSERT INTO SPARQL_QUERY_STORE(QUESTION, QUERY, ENDPOINT, HITCOUNT) VALUES(?, ?, ?, ?) ";
 		jdbcTemplate.update(sqlQuery, question, query, endpoint, Integer.valueOf(0));

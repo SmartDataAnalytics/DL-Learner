@@ -54,6 +54,8 @@ public class AutoSPARQLSession {
 	private Map<String, Map<String, String>> propertiesCache;
 	private int currentQueryResultSize = -1;
 	
+	private Map<String, Example> examplesCache;
+	
 	public AutoSPARQLSession(){
 	}
 	
@@ -68,6 +70,7 @@ public class AutoSPARQLSession {
 		
 		property2LabelMap = new TreeMap<String, String>();
 		propertiesCache = new HashMap<String, Map<String,String>>();
+		examplesCache = new HashMap<String, Example>();
 	}
 	
 	public AutoSPARQLSession(String cacheDir, String servletContextPath, String solrURL){
@@ -106,6 +109,9 @@ public class AutoSPARQLSession {
 			int offset = config.getOffset();
 			
 			List<Example> searchResult = search.getExamples("label:" + getQuotedString(searchTerm), offset);
+			for(Example example : searchResult){
+				examplesCache.put(example.getURI(), example);
+			}
 			int totalLength = search.getTotalHits(searchTerm);
 			
 			PagingLoadResult<Example> result = new BasePagingLoadResult<Example>(searchResult);
@@ -126,6 +132,9 @@ public class AutoSPARQLSession {
 			int offset = config.getOffset();
 			
 			List<Example> searchResult = search.getExamples(query, offset);
+			for(Example example : searchResult){
+				examplesCache.put(example.getURI(), example);
+			}
 			if(offset == 0){
 				topKResources = new ArrayList<String>();
 				for(Example ex : searchResult){
@@ -415,8 +424,16 @@ public class AutoSPARQLSession {
 		exampleFinder.setExamples(posExamples, negExamples);
 	}
 	
-	public void saveSPARQLQuery(Store store) throws AutoSPARQLException{
-		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), endpoint.getLabel());
+	public void saveSPARQLQuery(Store store) throws AutoSPARQLException {
+		List<Example> posExamples = new ArrayList<Example>();
+		for(String uri : exampleFinder.getPositiveExamples()){
+			posExamples.add(examplesCache.get(uri));
+		}
+		List<Example> negExamples = new ArrayList<Example>();
+		for(String uri : exampleFinder.getNegativeExamples()){
+			negExamples.add(examplesCache.get(uri));
+		}
+		store.saveSPARQLQuery(question, exampleFinder.getCurrentQuery(), endpoint.getLabel(), posExamples, negExamples, exampleFinder.getLastSuggestedExample());
 	}
 	
 	private List<String> getIntermediateNegativeExamples(List<String> posExamples){
