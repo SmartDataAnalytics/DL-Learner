@@ -41,17 +41,13 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
  * @author Jens Lehmann
  *
  */
-public class FuzzyDLLTest {
+public class FuzzyDLLTest_Trains {
 	
 	String[] posEx = {
-			"http://example.com/foodItems.owl#item0.99-100",
-			"http://example.com/foodItems.owl#item1.00-110",
-			"http://example.com/foodItems.owl#item1.15-100",
-			"http://example.com/foodItems.owl#item1.20-100"
+			"http://www.example.com/fuzzyTrains.owl#east1"
 	};
 	String[] negEx = {
-			"http://example.com/foodItems.owl#item1.50-250",
-			"http://example.com/foodItems.owl#item3.75-800"
+			"http://www.example.com/fuzzyTrains.owl#west6"
 	};
 	
 	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
@@ -82,7 +78,7 @@ public class FuzzyDLLTest {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/foodItems_v1.owl"));
+		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/noFuzzyTrains_v1.2.owl"));
 		ks.init();
 
 		//ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
@@ -115,7 +111,7 @@ public class FuzzyDLLTest {
 	}
 	
 	public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, ComponentInitException {
-		FuzzyDLLTest test = new FuzzyDLLTest();
+		FuzzyDLLTest_Trains test = new FuzzyDLLTest_Trains();
 		test.learn();
 	}
 	

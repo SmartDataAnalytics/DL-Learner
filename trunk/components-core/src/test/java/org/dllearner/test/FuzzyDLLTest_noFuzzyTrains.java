@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -32,7 +34,9 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.options.fuzzydll.FuzzyExample;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 
 /**
@@ -41,17 +45,13 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
  * @author Jens Lehmann
  *
  */
-public class FuzzyDLLTest {
+public class FuzzyDLLTest_noFuzzyTrains {
 	
 	String[] posEx = {
-			"http://example.com/foodItems.owl#item0.99-100",
-			"http://example.com/foodItems.owl#item1.00-110",
-			"http://example.com/foodItems.owl#item1.15-100",
-			"http://example.com/foodItems.owl#item1.20-100"
+			"http://www.example.com/fuzzyTrains.owl#east1"
 	};
 	String[] negEx = {
-			"http://example.com/foodItems.owl#item1.50-250",
-			"http://example.com/foodItems.owl#item3.75-800"
+			"http://www.example.com/fuzzyTrains.owl#west6"
 	};
 	
 	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
@@ -82,22 +82,23 @@ public class FuzzyDLLTest {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/foodItems_v1.owl"));
+		// ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/fuzzyTrains_v1.0.owl"));
+		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/noFuzzyTrains_v1.2.owl"));
 		ks.init();
 
-		//ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
-		ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
+		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
+		//ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.init();
 		
-		FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
-		//PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
+		//FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
+		PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
 		lp.getConfigurator().setPositiveExamples(positiveExamples);
 		lp.getConfigurator().setNegativeExamples(negativeExamples);
-		lp.getConfigurator().setFuzzyExamples(fuzzyExamples);
+		//lp.getConfigurator().setFuzzyExamples(fuzzyExamples);
 		lp.init();
 		
-		FuzzyCELOE fc = cm.learningAlgorithm(FuzzyCELOE.class, lp, rc);
-		//CELOE fc = cm.learningAlgorithm(CELOE.class, lp, rc);
+		//FuzzyCELOE fc = cm.learningAlgorithm(FuzzyCELOE.class, lp, rc);
+		CELOE fc = cm.learningAlgorithm(CELOE.class, lp, rc);
 //		Set<String> kkkkkkkkkk = new TreeSet<String>();
 //		kkkkkkkkkk.add("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
 //		fc.getConfigurator().setAllowedConcepts(kkkkkkkkkk);
@@ -115,7 +116,7 @@ public class FuzzyDLLTest {
 	}
 	
 	public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, ComponentInitException {
-		FuzzyDLLTest test = new FuzzyDLLTest();
+		FuzzyDLLTest_noFuzzyTrains test = new FuzzyDLLTest_noFuzzyTrains();
 		test.learn();
 	}
 	
