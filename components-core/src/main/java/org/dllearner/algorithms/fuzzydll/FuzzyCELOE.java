@@ -54,6 +54,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLP;
 import org.dllearner.learningproblems.fuzzydll.FuzzyPosNegLPStandard;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RefinementOperator;
@@ -308,9 +309,13 @@ public class FuzzyCELOE extends AbstractCELA implements FuzzyClassExpressionLear
 			}				
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
-		} else if(learningProblem instanceof PosNegLP) {
+		// changed by Josue
+		} else if (learningProblem instanceof PosNegLP) {
 			examples = Helper.union(((PosNegLP)learningProblem).getPositiveExamples(),((PosNegLP)learningProblem).getNegativeExamples());
+		} else if (learningProblem instanceof FuzzyPosNegLP) {
+			examples = Helper.union(((FuzzyPosNegLP)learningProblem).getPositiveExamples(),((FuzzyPosNegLP)learningProblem).getNegativeExamples());
 		}
+		
 	}
 
 	@Override

@@ -73,6 +73,8 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	private boolean useOldDIGOptions = false;
 	
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
+
+	private int errorIndex = 0;
 	
 	@Override
 	public FuzzyPosNegLPStandardConfigurator getConfigurator() {
@@ -506,10 +508,10 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
-		
+				
 		double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
-		// if (crispAccuracy == -1) return -1;
+		if (crispAccuracy == -1) return -1;
 		
 		// BEGIN
 		// added by Josue
@@ -527,27 +529,17 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 		double fuzzyAccuracy = descriptionMembership / (double)fuzzyExamples.size();
 		
-		// double fuzzyAccuracy = (posMembership + (negativeExamples.size() - negMembership)) / (double) allExamples.size();
-		// END
-		
-//		if(useFMeasure) {
-//			double recall = (positiveExamples.size() - notCoveredPos) / (double) positiveExamples.size();
-//			double precision = (positiveExamples.size() - notCoveredPos) / (double) (allExamples.size() - notCoveredPos - notCoveredNeg);
-//			return getFMeasure(recall, precision);
-//		} else {
-			// double crispAccuracy = crispAccuracy(description, noise);
-//		}
-		
-		crispAccuracy = fuzzyAccuracy;
-		
 		if (crispAccuracy != fuzzyAccuracy) {
 			System.err.println("***********************************************");
-			System.err.println("*     (crispAccuracy[" + crispAccuracy + "] != fuzzyAccuracy)[" + fuzzyAccuracy + "]        *");
+			System.err.println("* " + (errorIndex++));
+			System.err.println("* (crispAccuracy[" + crispAccuracy + "] != fuzzyAccuracy[" + fuzzyAccuracy + "])");
+			System.err.println("* DESC: " + description);
 			System.err.println("***********************************************");
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();		}
+//			Scanner sc = new Scanner(System.in);
+//			sc.nextLine();
+		}
 		
-		return crispAccuracy;
+		return fuzzyAccuracy;
 	}
 
 	// added by Josue
@@ -581,6 +573,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double totalMembershipDegree = 0;
 		double invertedCoveredMembershipDegree = 0;
 
+		// TODO to optimize
 		for (FuzzyIndividual ind: fuzzyExamples) {
 			coveredMembershipDegree += reasoner.hasTypeFuzzyMembership(description, ind) * ind.getBeliefDegree();
 			totalMembershipDegree += ind.getBeliefDegree();
@@ -620,7 +613,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		return getFMeasure(recall, precision);
 		double crispFmeasure = Heuristics.getFScore(recall, precision);
 		
-		crispFmeasure = fuzzyFmeasure;
+		// crispFmeasure = fuzzyFmeasure;
 		
 		if (crispFmeasure != fuzzyFmeasure) {
 			System.err.println("************************");
@@ -631,7 +624,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			sc.nextLine();
 		}
 
-		return crispFmeasure;
+		return fuzzyFmeasure;
 	}
 	
 	// instead of using the standard operation, we use optimisation
