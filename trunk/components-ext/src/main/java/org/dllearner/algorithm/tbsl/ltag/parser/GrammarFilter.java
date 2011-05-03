@@ -27,11 +27,11 @@ class GrammarFilter {
 	final static String[] NAMED_Strings = {"named", "called"};
 	final static String NAME_PREDICATE = "SLOT.pred:title_name";
 	
-	static ParseGrammar filter(String taggeduserinput,LTAGLexicon grammar,List<Integer> temps) {
+	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps) {
 	
 		SlotBuilder slotbuilder = new SlotBuilder();
 		
-		List<String> input = getWordList(taggeduserinput);
+		List<String> input = getWordList(taggedinput);
 		input.add(0,"#");  // This is important. Don't mess with the parser!
 		
 		ParseGrammar parseG = new ParseGrammar(input.size());
@@ -167,10 +167,30 @@ class GrammarFilter {
 		}
 		System.out.println("unknown words:  " + unknownWords);
 		
-		List<Pair<String,String>> buildSlotFor = preprocess(taggeduserinput,unknownWords);	
+		List<Pair<String,String>> buildSlotFor = new ArrayList<Pair<String,String>>();
+		
+		// remove known parts 
+		String newtaggedstring = "";
+		String[] condensedparts = taggedinput.split(" ");
+		for (String part : condensedparts) {
+			if (unknownWords.contains(part.substring(0,part.indexOf("/")).toLowerCase())) {
+				newtaggedstring += part + " ";
+			}
+		}
+		newtaggedstring = newtaggedstring.trim();		
+		// build token-POStag-pairs 
+		String[] newparts = newtaggedstring.trim().split(" ");
+		for (String s : newparts) {
+			if (s.contains("/")) {
+				buildSlotFor.add(new Pair<String,String>(s.trim().substring(0,s.indexOf("/")),s.trim().substring(s.indexOf("/")+1)));
+			} else {
+				System.out.println("Oh no, " + s + " has no POS tag!"); // DEBUG
+			}
+		}
+		buildSlotFor = Preprocessor.condenseNominalPhrases(buildSlotFor);	
 		System.out.println("build slot for: " + buildSlotFor + "\n");
 			
-		List<String[]> entries = slotbuilder.build(taggeduserinput,buildSlotFor);
+		List<String[]> entries = slotbuilder.build(taggedinput,buildSlotFor);
 				
 		try {	
 				for (String[] entry : entries) {
@@ -266,103 +286,6 @@ class GrammarFilter {
 		}
 		
 		return result;
-	}
-	
-	private static List<Pair<String,String>> preprocess(String taggedstring,List<String> unknownwords) {
-				
-		List<Pair<String,String>> result = new ArrayList<Pair<String,String>>();
-		
-		if (unknownwords.isEmpty()) {
-			return result;
-		}
-		
-		/* condense newtaggedstring: x/RBR adj/JJ > adj/JJR, x/RBS adj/JJ > adj/JJS */ 
-		String condensedstring = taggedstring;
-		
-		String compAdjPattern = "[a-zA-Z_0-9]+/RBR.[a-zA-Z_0-9]+/JJ";
-		String superAdjPattern = "[a-zA-Z_0-9]+/RBS.[a-zA-Z_0-9]+/JJ";
-		String howAdjPattern = "[a-zA-Z_0-9]+/WRB.[a-zA-Z_0-9]+/JJ"; 
-		
-		if (condensedstring.matches(".*" + compAdjPattern + ".*")) {
-			int begin = condensedstring.indexOf("RBR") + 4;
-			int end = begin + condensedstring.substring(condensedstring.indexOf("RBR")).indexOf("/JJ") - 4;
-			String adj = condensedstring.substring(begin,end);
-			condensedstring = condensedstring.replaceFirst(compAdjPattern,adj+"/JJR");
-		}
-		if (condensedstring.matches(".*" + superAdjPattern + ".*")) {
-			int begin = condensedstring.indexOf("RBS") + 4;
-			int end = begin + condensedstring.substring(condensedstring.indexOf("RBS")).indexOf("/JJ") - 4;
-			String adj = condensedstring.substring(begin,end);
-			condensedstring = condensedstring.replaceFirst(superAdjPattern,adj+"/JJS");
-		}
-		if (condensedstring.matches(".*" + howAdjPattern + ".*")) {
-			int begin = condensedstring.indexOf("WRB") + 4;
-			int end = begin + condensedstring.substring(condensedstring.indexOf("WRB")).indexOf("/JJ") - 4;
-			String adj = condensedstring.substring(begin,end);
-			condensedstring = condensedstring.replaceFirst(howAdjPattern,adj+"/JJH");
-		}
-		
-		/* remove known parts */
-		String newtaggedstring = "";
-		String[] condensedparts = condensedstring.split(" ");
-		for (String part : condensedparts) {
-			if (unknownwords.contains(part.substring(0,part.indexOf("/")).toLowerCase())) {
-				newtaggedstring += part + " ";
-			}
-		}
-		newtaggedstring = newtaggedstring.trim();
-		
-		/* build token-POStag-pairs */
-		String[] newparts = newtaggedstring.trim().split(" ");
-		for (String s : newparts) {
-			if (s.contains("/")) {
-				result.add(new Pair<String,String>(s.trim().substring(0,s.indexOf("/")),s.trim().substring(s.indexOf("/")+1)));
-			} else {
-				System.out.println("Look at that, " + s + " has no POS tag!"); // DEBUG
-			}
-		}
-		result = extractNominalPhrases(result);
-		return result;
-	}
-	
-	private static List<Pair<String,String>> extractNominalPhrases(List<Pair<String,String>> tokenPOSpairs){
-		List<Pair<String,String>> test = new ArrayList<Pair<String,String>>();
-		
-		String nounPhrase = "";
-		String phraseTag = "";
-		for(Pair<String,String> pair : tokenPOSpairs){
-			if(pair.snd.startsWith("NNP")){
-				if(phraseTag.equals("NN")){
-					if(!nounPhrase.isEmpty()){
-						test.add(new Pair<String, String>(phraseTag.trim(), "NN"));
-						nounPhrase = "";
-					}
-				}
-				phraseTag = "NNP";
-	    		nounPhrase += " " + pair.fst;
-			} else if(pair.snd.startsWith("NN")){
-				if(phraseTag.equals("NNP")){
-					if(!nounPhrase.isEmpty()){
-						test.add(new Pair<String, String>(phraseTag.trim(), "NNP"));
-						nounPhrase = "";
-					}
-				}
-				phraseTag = "NN";
-	    		nounPhrase += " " + pair.fst;
-			} else {
-				if(!nounPhrase.isEmpty()){
-	    			test.add(new Pair<String, String>(nounPhrase.trim(), phraseTag));
-	    			nounPhrase = "";
-	    		}
-				test.add(pair);
-			}
-		}
-		if(!nounPhrase.isEmpty()){
-			test.add(new Pair<String, String>(nounPhrase.trim(), phraseTag));
-			nounPhrase = "";
-		}
-		
-		return test;
 	}
 
 }

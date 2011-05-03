@@ -16,7 +16,7 @@ public class WordNet {
 		
 	}
 	public WordNet() {
-		path = "src/main/resources/tbsl/dictionary/";
+		path = "src/main/resources/tbsl/dict/";
 	}
 	
 	public void setWordNetPath(String s) {
@@ -68,11 +68,14 @@ public class WordNet {
 		
 		List<String> result = new ArrayList<String>();
 		
-		Synset synset = database.getSynsets(s)[0];
-		if (synset.getType().equals(SynsetType.ADJECTIVE)) {
-			NounSynset[] attributes = ((AdjectiveSynset) synset).getAttributes();
-			for (int i = 0; i < attributes.length; i++) {
-				result.add(attributes[i].getWordForms()[0]);
+		Synset[] synsets = database.getSynsets(s);
+		if (synsets.length > 0) {
+			Synset synset = synsets[0];
+			if (synset.getType().equals(SynsetType.ADJECTIVE)) {
+				NounSynset[] attributes = ((AdjectiveSynset) synset).getAttributes();
+				for (int i = 0; i < attributes.length; i++) {
+					result.add(attributes[i].getWordForms()[0]);
+				}
 			}
 		}
 		

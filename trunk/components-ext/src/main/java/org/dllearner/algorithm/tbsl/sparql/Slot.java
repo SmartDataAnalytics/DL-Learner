@@ -14,11 +14,13 @@ public class Slot {
 		anchor = a;
 		type = SlotType.UNSPEC; 
 		words = ws;
+		replaceUnderscores();
 	}
 	public Slot(String a,SlotType t,List<String> ws) {
 		anchor = a;
 		type = t;
 		words = ws;
+		replaceUnderscores();
 	}
 	
 	public void setSlotType(SlotType st) {
@@ -36,14 +38,25 @@ public class Slot {
 		anchor = s;
 	}
 	
-	public List<String> getWords(){
+	public List<String> getWords() {
 		return words;
+	}
+	public void setWords(List<String> ws) {
+		words = ws;
 	}
 	
 	public void replaceReferent(String ref1,String ref2) {
 		if (anchor.equals(ref1)) {
 			anchor = ref2;
 		}
+	}
+	
+	public void replaceUnderscores() {
+		ArrayList<String> newWords = new ArrayList<String>();
+		for (String w : words) {
+			newWords.add(w.replaceAll("_"," "));
+		}
+		words = newWords;
 	}
 	
 	public String toString() {
