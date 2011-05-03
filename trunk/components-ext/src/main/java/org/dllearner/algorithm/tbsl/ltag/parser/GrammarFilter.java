@@ -25,7 +25,6 @@ import org.dllearner.algorithm.tbsl.templator.SlotBuilder;
 class GrammarFilter {
 
 	final static String[] NAMED_Strings = {"named", "called"};
-	final static String NAME_PREDICATE = "SLOT.pred:title_name";
 	
 	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps) {
 	
@@ -100,10 +99,10 @@ class GrammarFilter {
 
 					try {
 
-						TreeNode tree = c.construct("(DP NUM:'" + token + "' NP[noun])");
+						TreeNode tree = c.construct("NUM:'" + token + "'");
 
 						int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), 
-								Collections.singletonList("<x,l1,<<e,t>,t>,[l1:[ x | count(x,c), equal(c," + token + ")]],[(l2,x,noun,<e,t>)],[l2=l1],[]>"));
+								Collections.singletonList("<x,l1,e,[l1:[ x | equal(x," + token + ")]],[],[],[]>"));
 						add(parseG, tree, gid-1, localID);
 						localID++;
 						
@@ -230,8 +229,9 @@ class GrammarFilter {
 						rawNames += "DP:'" + split[i] + "' ";
 					}
 					semName = semName.substring(1);
-					out.add(new Pair<String,String>("(NP NP* ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<e,t>,[ l1:[ | " + NAME_PREDICATE + "(x,'" + semName + "') ] ], [],[],[]>"));
-					out.add(new Pair<String,String>("(DP DP* ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<<e,t>,t>,[ l1:[ | " + NAME_PREDICATE + "(x,'" + semName + "') ] ], [],[],[]>"));
+					out.add(new Pair<String,String>("(NP NP* ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<e,t>,[ l1:[ | SLOT_title(x,'" + semName + "') ] ], [],[],[ SLOT_title/PROPERTY/title^name ]>"));
+					out.add(new Pair<String,String>("(DP DP* ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<<e,t>,t>,[ l1:[ | SLOT_title(x,'" + semName + "') ] ], [],[],[ SLOT_title/PROPERTY/title^name ]>"));
+					out.add(new Pair<String,String>("(ADJ ADJ:'"+ w +"' " + rawNames + ")", "<x,l1,<e,t>,[ l1:[ | SLOT_title(x,'" + semName + "') ] ], [],[],[ SLOT_title/PROPERTY/title^name ]>"));
 					
 					return out;
 					
