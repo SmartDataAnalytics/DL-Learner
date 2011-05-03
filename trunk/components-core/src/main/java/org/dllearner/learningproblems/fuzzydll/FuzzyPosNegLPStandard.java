@@ -511,7 +511,10 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				
 		double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
-		if (crispAccuracy == -1) return -1;
+		if (crispAccuracy == -1) {
+			System.out.println("crisp return -1");
+			// return -1;
+		}
 		
 		// BEGIN
 		// added by Josue
@@ -520,14 +523,19 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		double negMembership = 0;
 		double descriptionMembership = 0;
 		
-		//System.out.println("d: " + description);
-		//System.out.println();
+		System.out.println("noise = " + noise);
 		
+		int individualCounter = fuzzyExamples.size();
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
 			descriptionMembership += reasoner.hasTypeFuzzyMembership(description, fuzzyExample);
+			individualCounter--;
+			if ((descriptionMembership + individualCounter) / fuzzyExamples.size() < noise)
+				return -1;
 		}
 		
 		double fuzzyAccuracy = descriptionMembership / (double)fuzzyExamples.size();
+		
+		
 		
 		if (crispAccuracy != fuzzyAccuracy) {
 			System.err.println("***********************************************");

@@ -1,6 +1,9 @@
 package org.dllearner.reasoning.fuzzydll;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Scanner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -26,6 +29,7 @@ public class FuzzyDLReasonerManager {
 
 	private FuzzyOwl2toFuzzyDL fuzzyFileParser;
 	private int auxCounter = 0;
+	private FileOutputStream errorFile;
 
 	public FuzzyDLReasonerManager(String ontologyFile) throws Exception {
 		queryResult = null;
@@ -40,6 +44,8 @@ public class FuzzyDLReasonerManager {
 		OWLAPI_fuzzyDLObjectParser.setParsingFuzzyKB(fuzzyFileParser, fuzzyKB);
 		
 		solveKB();
+		
+		errorFile = new FileOutputStream("errorFile.txt");
 	}
 
 	private void solveKB() {
@@ -71,21 +77,25 @@ public class FuzzyDLReasonerManager {
 			Individual fIndividual = fuzzyKB.getIndividual(shortFormParser.getShortForm((OWLEntity) i));
 			Concept fConcept = OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(oce);
 			
-			// added by Josue
-			// this if is to jump a fuzyDL's bug
-			if (!fConcept.toString().equalsIgnoreCase("SOME_hasCar_SOME_hasLoad_*top*") &&
-					!fConcept.toString().equalsIgnoreCase("SOME_hasCar_ALL_hasLoad_*top*") &&
-					!fConcept.toString().equalsIgnoreCase("SOME_hasCar_(LongCar)_OR_(ShortCar)") &&
-					!fConcept.toString().equalsIgnoreCase("(Car)_OR_(SOME_hasCar_*top*)") &&
-					!fConcept.toString().equalsIgnoreCase("(Load)_OR_(SOME_hasCar_*top*)") &&
-					!fConcept.toString().equalsIgnoreCase("(Train)_OR_(SOME_hasCar_*top*)") &&
-					!fConcept.toString().equalsIgnoreCase("(Train)_AND_(SOME_hasCar_SOME_hasLoad_*top*)") &&
-					!fConcept.toString().equalsIgnoreCase("(Train)_AND_(SOME_hasCar_ALL_hasLoad_*top*)") &&
-					!fConcept.toString().equalsIgnoreCase("(Train)_AND_(SOME_hasCar_LongCar)") &&
-					!fConcept.toString().equalsIgnoreCase("(Train)_AND_(SOME_hasCar_(LongCar)_OR_(ShortCar))") &&
-					!fConcept.toString().equalsIgnoreCase("(Train)_AND_(SOME_hasCar_*top*)") &&
-					!fConcept.toString().equalsIgnoreCase("SOME_hasCar_LongCar")) {
-
+			try {
+				errorFile.write(fConcept.toString().getBytes());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+//			try {
+//				fuzzyKB.saveToFile("file.txt");
+//				Parser parser = new Parser(new FileInputStream("file.txt"));
+//				parser.Start();
+//				fuzzyKB = parser.getKB();
+//			} catch (Exception e1) {
+//				e1.printStackTrace();
+//			}
+			
+			if (fConcept.toString().equalsIgnoreCase("SOME_hasFirstCar_SOME_inFrontOf_LongCar"))
+					System.err.println(fConcept);
+			
 			System.err.println(fConcept);
 			
 			Query q = new MinInstanceQuery(fConcept, fIndividual);
@@ -101,14 +111,24 @@ public class FuzzyDLReasonerManager {
 					sc.nextLine();
 					// System.exit(0);
 				}
-			} catch (FuzzyOntologyException e) {
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+					errorFile.write(" 1".getBytes());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+			try {
+				errorFile.write("\n".getBytes());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+			
 			return (1 - Math.abs(truthDegree - queryResult.getSolution()));
-		}
-		System.err.println("* " + fConcept);
-		return 0;
 	}
 
 	public KnowledgeBase getFuzzyKB() {
