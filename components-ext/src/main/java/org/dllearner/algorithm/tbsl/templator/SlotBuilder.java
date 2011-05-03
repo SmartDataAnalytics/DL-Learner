@@ -11,7 +11,7 @@ public class SlotBuilder {
 	private WordNet wordnet;
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
-	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","VPREP"};
+	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP"};
 	private String[] preps = {"IN"};
 	
 	public SlotBuilder() {
@@ -52,8 +52,9 @@ public class SlotBuilder {
 				words.add(token); 
 				words.addAll(wordnet.getBestSynonyms(token));
 				
+				String tokenfluent = token.replaceAll(" ","");
 				String slotX = "x/" + type + "/";
-				String slotP = "SLOT_" + token + "/" + type + "/";
+				String slotP = "SLOT_" + tokenfluent + "/" + type + "/";
 				for (Iterator<String> i = words.iterator(); i.hasNext();) {
 					String next = i.next().replaceAll(" ","_");
 					slotX += next; slotP += next;
@@ -72,12 +73,12 @@ public class SlotBuilder {
 					/* DP */
 					String[] dpEntry = {token,
 							"(DP (NP " + treetoken + "))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + token + "(x) ] ],[],[],[" + slotP + "]>"};
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotP + "]>"};
 					result.add(dpEntry);
 					/* NP */
 					String[] npEntry = {token,
 							"(NP " + treetoken + ")",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x) ] ],[],[],[" + slotP + "]>"};
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x) ] ],[],[],[" + slotP + "]>"};
 					result.add(npEntry);	
 				} 
 				else if (pos.equals("NNP") || pos.equals("NNPS")) {
@@ -94,17 +95,17 @@ public class SlotBuilder {
 				else if (pos.equals("NPREP")) {
 					/* DP */
 					String[] dpEntry1a = {token,
-							"(DP (NP " + treetoken + " P:'of' DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + token + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]>"};
+							"(DP (NP " + treetoken + " DP[pobj]))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]>"};
 					String[] dpEntry1b = {token,
-							"(DP (NP " + treetoken + " P:'of' DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + token + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
+							"(DP (NP " + treetoken + " DP[pobj]))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
 					String[] dpEntry2a = {token,
-							"(DP DET[det] (NP " + treetoken + " P:'of' DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + token + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "]>"};
+							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "]>"};
 					String[] dpEntry2b = {token,
-							"(DP DET[det] (NP " + treetoken + " P:'of' DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + token + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
+							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
 					result.add(dpEntry1a);
 					result.add(dpEntry1b);
 					result.add(dpEntry2a);
@@ -146,6 +147,16 @@ public class SlotBuilder {
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					result.add(passEntry);
+				}
+				else if (pos.equals("GERUNDIN")) {
+					String[] gerundinEntry1 = {token,
+							"(NP NP* V:'" + token + "' DP[obj]))",
+							"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[" + slot + "]>"};
+					String[] gerundinEntry2 = {token,
+							"(ADJ V:'" + token + "' DP[obj]))",
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,obj,<<e,t>,t>)],[ l2=l1 ],[" + slot + "]>"};
+					result.add(gerundinEntry1);
+					result.add(gerundinEntry2);
 				}
 				else if (pos.equals("VPREP")) {
 					String[] passEntry = {token,

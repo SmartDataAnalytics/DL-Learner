@@ -56,6 +56,7 @@ public class Preprocessor {
 		Pattern passpartPattern = Pattern.compile("\\s((\\w+)/VBN.by/IN)");
 		Pattern vpassPattern    = Pattern.compile("\\s(\\w+/VBD.(\\w+)/VBN)");
 		Pattern vpassinPattern  = Pattern.compile("\\s((\\w+)/VPASS.\\w+/IN)");
+		Pattern gerundinPattern = Pattern.compile("\\s((\\w+)/((VBG)|(VBN)).\\w+/IN)");
 		Pattern vprepPattern    = Pattern.compile("\\s((\\w+)/V[A-Z]+\\s\\w+/IN)");
 		
 		m = compAdjPattern.matcher(condensedstring); 
@@ -93,6 +94,10 @@ public class Preprocessor {
 		m = vpassinPattern.matcher(condensedstring);
 		while (m.find()) {
 			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/VPASSIN");
+		}
+		m = gerundinPattern.matcher(condensedstring);
+		while (m.find()) {
+			condensedstring = condensedstring.replaceFirst(m.group(1),m.group(2)+"/GERUNDIN");
 		}
 		m = vprepPattern.matcher(condensedstring);
 		while (m.find()) {
