@@ -18,8 +18,8 @@ import fuzzydll.fuzzyowl2fuzzydlparser.*;
 
 public class FuzzyDLReasonerManager {
 
-	private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
-	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
+	// private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
+	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
 	private static String CONFIG_FILENAME = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/CONFIG";
 
 	private Solution queryResult;
