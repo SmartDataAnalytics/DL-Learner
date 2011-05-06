@@ -11,7 +11,7 @@ public class SlotBuilder {
 	private WordNet wordnet;
 	private String[] noun = {"NN","NNS","NNP","NNPS","NPREP"};
 	private String[] adjective = {"JJ","JJR","JJS","JJH"};
-	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP"};
+	private String[] verb = {"VB","VBD","VBG","VBN","VBP","VBZ","PASSIVE","PASSPART","VPASS","VPASSIN","GERUNDIN","VPREP","WHEN","WHERE"};
 	private String[] preps = {"IN"};
 	
 	public SlotBuilder() {
@@ -50,7 +50,9 @@ public class SlotBuilder {
 				}
 				List<String> words = new ArrayList<String>();
 				words.add(token); 
-				words.addAll(wordnet.getBestSynonyms(token));
+				if (!pos.equals("NNP") && !pos.equals("NNPS")) {
+					words.addAll(wordnet.getBestSynonyms(token));
+				}
 				
 				String tokenfluent = token.replaceAll(" ","");
 				String slotX = "x/" + type + "/";
@@ -125,10 +127,14 @@ public class SlotBuilder {
 					}
 				}
 				if (pos.equals("PASSIVE")) {
-					String[] passEntry = {token,
+					String[] passEntry1 = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
-					result.add(passEntry);
+					String[] passEntry2 = {token,
+							"(S DP[wh] (VP DP[dp] V:'" + token + "'))",
+							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(y,x) ] ],[(l2,x,wh,<<e,t>,t>),(l3,y,dp,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
+					result.add(passEntry1);
+					result.add(passEntry2);
 				}
 				else if (pos.equals("PASSPART")) {
 					String[] passpartEntry = {token,
@@ -164,7 +170,7 @@ public class SlotBuilder {
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
 					result.add(passEntry);
 				}
-				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP")) {
+				else if (pos.equals("VBD") || pos.equals("VBZ") || pos.equals("VBP") || pos.equals("VB")) {
 					String[] vEntry = {token,
 							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
 							"<x,l1,t,[ l1:[|], l4:[ | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ],[" + slot + "]>"};
@@ -175,6 +181,32 @@ public class SlotBuilder {
 							"(NP NP* (VP V:'" + token + "' DP[dp]))",
 							"<x,l1,t,[ l1:[ | SLOT_" + token + "(x,y) ] ],[(l2,y,dp,<<e,t>,t>)],[ l2=l1 ],[" + slot + "]>"};
 					result.add(gerEntry);
+				}
+				else if (pos.equals("WHEN")) {
+					String dateSlot = "SLOT_" + token + "/PROPERTY/" + token + "Date";
+					String tokenSlot = "SLOT_" + token + "/PROPERTY/" + token;
+					String[] whenEntry1 = {token,
+							"(S DP[subj] (VP V:'" + token + "'))",
+							"<x,l1,t,[ l1:[ ?y | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>)],[ l2=l1 ],[ " + dateSlot + " ]>"};
+					String[] whenEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
+							"<x,l1,t,[ l1:[|], l4:[ ?z | SLOT_" + token + "(x,y), SLOT_date(x,z) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ]," +
+									"[" + tokenSlot + ", SLOT_date/PROPERTY/date ]>"};
+					result.add(whenEntry1);
+					result.add(whenEntry2);
+				}
+				else if (pos.equals("WHERE")) {
+					String placeSlot = "SLOT_" + token + "/PROPERTY/" + token + "Place";
+					String tokenSlot = "SLOT_" + token + "/PROPERTY/" + token;
+					String[] whereEntry1 = {token,
+							"(S DP[subj] (VP V:'" + token + "'))",
+							"<x,l1,t,[ l1:[ ?y | SLOT_" + token + "(x,y) ] ],[(l2,x,subj,<<e,t>,t>)],[ l2=l1 ],[ " + placeSlot + " ]>"};
+					String[] whereEntry2 = {token,
+							"(S DP[subj] (VP V:'" + token + "' DP[obj]))",
+							"<x,l1,t,[ l1:[|], l4:[ ?z | SLOT_" + token + "(x,y), SLOT_place(x,z) ] ],[(l2,x,subj,<<e,t>,t>),(l3,y,obj,<<e,t>,t>)],[ l2<l1,l3<l1,l4<scope(l2),l4<scope(l3) ]," +
+									"[" + tokenSlot + ", SLOT_place/PROPERTY/place ]>"};
+					result.add(whereEntry1);
+					result.add(whereEntry2);
 				}
 				
 			}

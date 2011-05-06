@@ -20,6 +20,7 @@ public class POStagger {
 	}
 	public POStagger() throws IOException, ClassNotFoundException {
 		taggermodel = "src/main/resources/tbsl/models/bidirectional-distsim-wsj-0-18.tagger";
+		//taggermodel = "src/main/resources/tbsl/models/left3words-wsj-0-18.tagger";
 		tagger = new MaxentTagger(taggermodel);
 	}
 	
