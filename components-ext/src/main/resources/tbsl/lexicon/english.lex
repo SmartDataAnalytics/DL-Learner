@@ -1,12 +1,6 @@
 
-// TEST
-//------
-
-	mushrooms || (NP N:'mushrooms') ||  <x,l1,<e,t>,[ l1:[ | mushroom(x) ] ], [],[],[]>
-
-
 // TO BE
-// --------
+// ------
 
 	is  || (S DP[subject] (VP V:'is' DP[object]))  || <x, l1, t, [ l1:[ | ], l2:[ | x=y ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
 	is  || (S DP[subject] (VP V:'is' ADJ[comp]))   || <x, l1, t, [ l1:[ | x=y ]], [ (l2,x,subject,<<e,t>,t>), (l3,y,comp,<e,t>) ], [  l2=l1, l3=l2 ],[]>
@@ -24,6 +18,18 @@
 
 	is there || (S V:'is' C:'there' DP[dp]) || <x, l1, t, [ l1:[ | ] ], [ (l2,x,dp,<<e,t>,t>) ], [ l2=l1 ],[]>
 
+// TO BE: YES/NO QUESTIONS
+
+	is   || (S V:'is' DP[subject] DP[object])   || <x, l1, t, [ l1:[ | ], l2:[ | x=y ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	is   || (S V:'is' DP[subject] ADJ[comp])    || <x, l1, t, [ l1:[ | x=y ]], [ (l2,x,subject,<<e,t>,t>), (l3,y,comp,<e,t>) ], [  l2=l1, l3=l2 ],[]>
+	was  || (S V:'was' DP[subject] DP[object])  || <x, l1, t, [ l1:[ | ], l2:[ | x=y ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	was  || (S V:'was' DP[subject] ADJ[comp])   || <x, l1, t, [ l1:[ | x=y ]], [ (l2,x,subject,<<e,t>,t>), (l3,y,comp,<e,t>) ], [  l2=l1, l3=l2 ],[]>
+	are  || (S V:'are' DP[subject] DP[object])  || <x, l1, t, [ l1:[ | ], l2:[ | x=y ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	are  || (S V:'are' DP[subject] ADJ[comp])   || <x, l1, t, [ l1:[ | x=y ]], [ (l2,x,subject,<<e,t>,t>), (l3,y,comp,<e,t>) ], [  l2=l1, l3=l2 ],[]>
+	were || (S V:'were' DP[subject] DP[object]) || <x, l1, t, [ l1:[ | ], l2:[ | x=y ] ], [ (l3,x,subject,<<e,t>,t>), (l4,y,object,<<e,t>,t>) ], [  l3<l1, l4<l1, l2<scope(l3), l2<scope(l4) ],[]>
+	were || (S V:'were' DP[subject] ADJ[comp])  || <x, l1, t, [ l1:[ | x=y ]], [ (l2,x,subject,<<e,t>,t>), (l3,y,comp,<e,t>) ], [  l2=l1, l3=l2 ],[]>
+
+	did || (S V:'did' S*) || <x,l1,t,[ l1:[|] ],[],[],[]>  
 
 // IMPERATIVES
 // ---------------------
@@ -80,18 +86,23 @@
 	more than || (DP DET:'more' DET:'than' NUM[num] NP[np]) || <x,l1,<<e,t>,t>,[ l1:[ c | count(y,c), greater(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
 	less than || (DP DET:'less' DET:'than' NUM[num] NP[np]) || <x,l1,<<e,t>,t>,[ l1:[ c | count(y,c), less(c,z) ] ],[(l2,y,np,<e,t>),(l3,z,num,e)],[l2=l1,l3=l1],[]>
 
+
 	
 // EMPTY STUFF 
+// ------------
 
 	also || (VP ADV:'also' VP*) || <x,l1,t,[ l1:[|] ],[],[],[]>
+	
 
 // WH WORDS
 // --------
 
-	what || (DP WH:'what') || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
-	which || (DP WH:'which') || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
+	what     || (DP WH:'what')      || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
+	which    || (DP WH:'which')     || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>
 	how many || (DP WH:'how' ADJ:'many' NP[noun]) || <y, l1, <<e,t>,t>, [ l1:[ | l2:[ y | ] HOWMANY y l3:[|] ] ], [ (l4,y,noun,<e,t>) ], [ l4=l2 ],[]>
-	who || (DP WH:'who') || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>	
+	who      || (DP WH:'who')       || <x, l1, <<e,t>,t>, [ l1:[ ?x | ] ], [], [], []>	
+	when     || (S WH:'when' S[s])  || <x, l1, <<e,t>,t>, [ l1:[ ?x | SLOT_p(y,x) ] ], [(l2,y,s,t)], [l2=l1], [ SLOT_p/PROPERTY/date ]> 
+	where    || (S WH:'where' S[s]) || <x, l1, <<e,t>,t>, [ l1:[ ?x | SLOT_p(y,x) ] ], [(l2,y,s,t)], [l2=l1], [ SLOT_p/PROPERTY/place ]>
 	
 	
 // NEGATION 
@@ -104,7 +115,7 @@
    do not || (VP V:'do' NEG:'not' VP*) || <x,l2,t,[ l1:[ | NOT l2:[|] ] ],[],[],[]>	
 
 
-// CONJUNCTION
+// COORDINATION
 // ------------
 
 	and || (S S* CC:'and' S[s]) || <x,l1,t,[l1:[|]],[(l2,y,s,t)],[l1=l2],[]>
@@ -112,6 +123,8 @@
 	and || (NP NP* CC:'and' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	and || (VP VP* CC:'and' VP[vp]) || -
 	and || (ADJ ADJ* CC:'and' ADJ[adj]) || -
+	
+	as well as || (NP NP* CC:'as' CC:'well' CC:'as' NP[np]) || <x,l1,<e,t>,[l1:[|]],[(l2,y,np,<e,t>)],[l1=l2],[]>
 	
 	or || (S S* CC:'or' S[2]) || -
 	or || (DP DP* CC:'or' DP[2]) || -
