@@ -59,10 +59,12 @@ public class Templator {
 	    s = Preprocessor.normalize(s);
         String tagged = tagger.tag(s);
         System.out.println("Tagged input: " + tagged);
-        tagged = Preprocessor.condense(tagged);
-		System.out.println("Preprocessed: " + tagged);
         
-        p.parse(tagged,g);
+		String newtagged = Preprocessor.condenseNominals(tagged);
+        newtagged = Preprocessor.condense(newtagged);
+		System.out.println("Preprocessed: " + newtagged);
+        
+        p.parse(newtagged,g);
         
         if (p.getDerivationTrees().isEmpty()) {
             p.clear(g,p.getTemps());

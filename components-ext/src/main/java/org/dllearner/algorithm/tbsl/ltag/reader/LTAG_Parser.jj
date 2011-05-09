@@ -21,13 +21,13 @@ options {
 
 PARSER_BEGIN(LTAGTreeParser)
 
-package ltag.reader;
+package org.dllearner.algorithm.tbsl.ltag.reader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import ltag.data.*;
-import ltag.agreement.*;
+import org.dllearner.algorithm.tbsl.ltag.data.*;
+import org.dllearner.algorithm.tbsl.ltag.agreement.*;
 
 public class LTAGTreeParser {
 
@@ -200,7 +200,7 @@ Feature Feat() :
    }
 }
 
-TOKEN: {<WORD: (["a"-"z"]|["0"-"9"]|["?"]|["-"]|["!"]|[","]|[";"]|["."]|[":"]|["/"])+>}
+TOKEN: {<WORD: (["a"-"z"]|["0"-"9"]|["?"]|["-"]|["_"]|["!"]|[","]|[";"]|["."]|[":"]|["/"])+>}
 
 TOKEN: {<CATEGORY: (["A"-"Z"])+>}
 

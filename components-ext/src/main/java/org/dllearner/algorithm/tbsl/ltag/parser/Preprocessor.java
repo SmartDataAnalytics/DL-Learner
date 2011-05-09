@@ -132,20 +132,19 @@ public class Preprocessor {
 		return condensedstring;
 	}
 
-	public static List<Pair<String,String>> condenseNominalPhrases(List<Pair<String,String>> tokenPOSpairs) {
+	public static String condenseNominals(String s) {
 		
-		List<Pair<String,String>> out = new ArrayList<Pair<String,String>>();
-
-		String flat = "";
-		for (Pair<String,String> p : tokenPOSpairs) {
-			flat += " " + p.fst.trim() + "/" + p.snd.trim();
-		}
-		flat = flat.trim();
+		String flat = s;
 		
 		Matcher m;
-		Pattern nnpPattern = Pattern.compile("\\s?((\\w+)/NNP[S]?\\s(\\w+))/NNP[S]?");
-		Pattern nnPattern  = Pattern.compile("\\s?((\\w+)/NN[S]?\\s(\\w+))/NN[S]?");
+		Pattern nnpPattern   = Pattern.compile("\\s?((\\w+)/NNP[S]?\\s(\\w+))/NNP[S]?(\\W|$)");
+		Pattern nnPattern    = Pattern.compile("\\s?((\\w+)/NN[S]?\\s(\\w+))/NN[S]?(\\W|$)");
+		Pattern nnnnpPattern = Pattern.compile("\\s?((\\w+)/NNP[S]?)\\s(\\w+)/NN[S]?(\\W|$)");
 		
+		m = nnpPattern.matcher(flat);
+		while (m.find()) {
+			flat = flat.replaceFirst(m.group(1),m.group(2) + "_" + m.group(3));
+		}
 		m = nnpPattern.matcher(flat);
 		while (m.find()) {
 			flat = flat.replaceFirst(m.group(1),m.group(2) + "_" + m.group(3));
@@ -154,15 +153,11 @@ public class Preprocessor {
 		while (m.find()) {
 			flat = flat.replaceFirst(m.group(1),m.group(2) + "_" + m.group(3));
 		}
-		
-		System.out.println("NNP stuff: " + flat);
-		
-		String[] flatParts = flat.split(" ");
-		for (String part : flatParts) {
-			System.out.println(part);
-			out.add(new Pair<String,String>(part.substring(0,part.indexOf("/")).replaceAll("_"," "), part.substring(part.indexOf("/")+1)));
+		m = nnnnpPattern.matcher(flat);
+		while (m.find()) {
+			flat = flat.replaceFirst(m.group(1),m.group(2) + "/JJ");
 		}
-
-		return out;
+		
+		return flat;
 	}
 }

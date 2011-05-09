@@ -108,10 +108,18 @@ public class SlotBuilder {
 					String[] dpEntry2b = {token,
 							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
 							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
+					String[] npEntry1 = {token,
+							"(NP " + treetoken + " DP[pobj])",
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]>"};
+					String[] npEntry2 = {token,
+							"(NP " + treetoken + " DP[pobj])",
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
 					result.add(dpEntry1a);
 					result.add(dpEntry1b);
 					result.add(dpEntry2a);
 					result.add(dpEntry2b);
+					result.add(npEntry1);
+					result.add(npEntry2);
 				}
 						
 			}

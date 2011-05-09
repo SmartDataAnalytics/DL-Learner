@@ -27,10 +27,10 @@ class GrammarFilter {
 	final static String[] NAMED_Strings = {"named", "called"};
 	
 	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps) {
-	
+		
 		SlotBuilder slotbuilder = new SlotBuilder();
 		
-		List<String> input = getWordList(taggedinput);
+		List<String> input = getWordList(taggedinput.trim());
 		input.add(0,"#");  // This is important. Don't mess with the parser!
 		
 		ParseGrammar parseG = new ParseGrammar(input.size());
@@ -75,7 +75,7 @@ class GrammarFilter {
 					
 					for (Pair<String,String> p : named) {
 						try {
-							TreeNode tree = c.construct(p.getFirst());
+							TreeNode tree = c.construct(p.getFirst().replaceAll("_"," "));
 							
 							int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), Collections.singletonList(p.getSecond()));
 							add(parseG, tree, gid-1, localID);
@@ -176,7 +176,7 @@ class GrammarFilter {
 				newtaggedstring += part + " ";
 			}
 		}
-		newtaggedstring = newtaggedstring.trim();		
+		
 		// build token-POStag-pairs 
 		String[] newparts = newtaggedstring.trim().split(" ");
 		for (String s : newparts) {
@@ -185,8 +185,7 @@ class GrammarFilter {
 			} else {
 				System.out.println("Oh no, " + s + " has no POS tag!"); // DEBUG
 			}
-		}
-		buildSlotFor = Preprocessor.condenseNominalPhrases(buildSlotFor);	
+		}	
 		System.out.println("build slot for: " + buildSlotFor + "\n");
 			
 		List<String[]> entries = slotbuilder.build(taggedinput,buildSlotFor);
@@ -282,8 +281,10 @@ class GrammarFilter {
 		List<String> result = new ArrayList<String>();
 		
 		for (String s : string.split(" ")) {
-			result.add(s.substring(0,s.indexOf("/")));
+				result.add(s.substring(0,s.indexOf("/")));
 		}
+		
+		System.out.println("Word list: " + result);
 		
 		return result;
 	}
