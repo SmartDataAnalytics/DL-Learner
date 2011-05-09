@@ -2,15 +2,10 @@
 package org.dllearner.algorithm.tbsl.ltag.reader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import org.dllearner.algorithm.tbsl.ltag.agreement.Feature;
-import org.dllearner.algorithm.tbsl.ltag.data.Category;
-import org.dllearner.algorithm.tbsl.ltag.data.FootNode;
-import org.dllearner.algorithm.tbsl.ltag.data.SubstNode;
-import org.dllearner.algorithm.tbsl.ltag.data.TerminalNode;
-import org.dllearner.algorithm.tbsl.ltag.data.Tree;
-import org.dllearner.algorithm.tbsl.ltag.data.TreeNode;
+import org.dllearner.algorithm.tbsl.ltag.data.*;
+import org.dllearner.algorithm.tbsl.ltag.agreement.*;
 
 public class LTAGTreeParser implements LTAGTreeParserConstants {
 

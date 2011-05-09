@@ -54,7 +54,7 @@ public class TemplateGenerationTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-test-questions.xml");
+		File file = new File("src/main/resources/tbsl/evaluation/dbpedia-train.xml");
 		List<String> questions = readQuestions(file);
 		
 		Templator templateGenerator = new Templator();
