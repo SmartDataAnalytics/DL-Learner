@@ -4,6 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Scanner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -18,7 +21,7 @@ import fuzzydll.fuzzyowl2fuzzydlparser.*;
 
 public class FuzzyDLReasonerManager {
 
-	// private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
+	private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/examples/output/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
 	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
 	private static String CONFIG_FILENAME = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/CONFIG";
 
@@ -45,7 +48,7 @@ public class FuzzyDLReasonerManager {
 		
 		solveKB();
 		
-		errorFile = new FileOutputStream("errorFile.txt");
+		  errorFile = new FileOutputStream("errorFile.txt");
 	}
 
 	private void solveKB() {
@@ -77,27 +80,6 @@ public class FuzzyDLReasonerManager {
 			Individual fIndividual = fuzzyKB.getIndividual(shortFormParser.getShortForm((OWLEntity) i));
 			Concept fConcept = OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(oce);
 			
-			try {
-				errorFile.write(fConcept.toString().getBytes());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-//			try {
-//				fuzzyKB.saveToFile("file.txt");
-//				Parser parser = new Parser(new FileInputStream("file.txt"));
-//				parser.Start();
-//				fuzzyKB = parser.getKB();
-//			} catch (Exception e1) {
-//				e1.printStackTrace();
-//			}
-			
-			if (fConcept.toString().equalsIgnoreCase("SOME_hasFirstCar_SOME_inFrontOf_LongCar"))
-					System.err.println(fConcept);
-			
-			System.err.println(fConcept);
-			
 			Query q = new MinInstanceQuery(fConcept, fIndividual);
 
 			try {
@@ -112,20 +94,19 @@ public class FuzzyDLReasonerManager {
 					// System.exit(0);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				// e.printStackTrace();
 				try {
-					errorFile.write(" 1".getBytes());
+					errorFile.write(fIndividual.toString().getBytes());
+					errorFile.write("\n".getBytes());
+					errorFile.write(fConcept.toString().getBytes());
+					errorFile.write("\n".getBytes());
+					errorFile.write(getStackTrace(e).getBytes());
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			}
-			
-			try {
-				errorFile.write("\n".getBytes());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+//				Scanner sc = new Scanner(System.in);
+//				sc.nextLine();		
 			}
 			
 			return (1 - Math.abs(truthDegree - queryResult.getSolution()));
@@ -134,4 +115,14 @@ public class FuzzyDLReasonerManager {
 	public KnowledgeBase getFuzzyKB() {
 		return fuzzyKB;
 	}
+	
+    public static String getStackTrace(Throwable t)
+    {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        t.printStackTrace(pw);
+        pw.flush();
+        sw.flush();
+        return sw.toString();
+    }
 }
