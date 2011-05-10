@@ -508,12 +508,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
-				
+		
+		System.out.println(errorIndex++);
+
 		double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
 		if (crispAccuracy == -1) {
-			System.out.println("crisp return -1");
-			// return -1;
+//			System.out.println("crisp return -1");
+			 return -1;
 		}
 		
 		// BEGIN
@@ -523,7 +525,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 //		double negMembership = 0;
 		double descriptionMembership = 0;
 		
-		System.out.println("noise = " + noise);
+//		System.out.println("noise = " + noise);
 		
 		int individualCounter = fuzzyExamples.size();
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
@@ -535,11 +537,12 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 		double fuzzyAccuracy = descriptionMembership / (double)fuzzyExamples.size();
 		
-		
+		System.err.println("crispAccuracy = fuzzyAccuracy");
+		crispAccuracy = fuzzyAccuracy;
 		
 		if (crispAccuracy != fuzzyAccuracy) {
 			System.err.println("***********************************************");
-			System.err.println("* " + (errorIndex++));
+			//System.err.println("* " + (errorIndex++));
 			System.err.println("* (crispAccuracy[" + crispAccuracy + "] != fuzzyAccuracy[" + fuzzyAccuracy + "])");
 			System.err.println("* DESC: " + description);
 			System.err.println("***********************************************");

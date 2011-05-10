@@ -48,10 +48,12 @@ import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 public class FuzzyDLLTest_noFuzzyTrains {
 	
 	String[] posEx = {
-			"http://www.example.com/fuzzyTrains.owl#east1"
+			"http://www.example.com/fuzzyTrains.owl#east1",
+			"http://www.example.com/fuzzyTrains.owl#east2"
 	};
 	String[] negEx = {
-			"http://www.example.com/fuzzyTrains.owl#west6"
+			"http://www.example.com/fuzzyTrains.owl#west6",
+			"http://www.example.com/fuzzyTrains.owl#west7"
 	};
 	
 	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
@@ -83,7 +85,7 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
 		// ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/fuzzyTrains_v1.0.owl"));
-		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/noFuzzyTrains_v1.2.owl"));
+		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/noFuzzyTrains_v1.3.owl"));
 		ks.init();
 
 		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
