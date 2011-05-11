@@ -66,9 +66,9 @@ public class FuzzyDLReasonerManager {
 		fuzzyFileParser = new FuzzyOwl2toFuzzyDL(ontologyFile, FUZZYOWL2FUZZYDLPARSEROUTPUT);
 		fuzzyFileParser.translateOwl2Ontology();
 
-		System.err.println("WARNING: you're using a particular fuzzy ontology");
-		parser = new Parser(new FileInputStream(CHANGING_JUST_HIERARCHI_PROBLEM));
-//		parser = new Parser(new FileInputStream(FUZZYOWL2FUZZYDLPARSEROUTPUT));
+//		System.err.println("WARNING: you're using a particular fuzzy ontology");
+//		parser = new Parser(new FileInputStream(CHANGING_JUST_HIERARCHI_PROBLEM));
+		parser = new Parser(new FileInputStream(FUZZYOWL2FUZZYDLPARSEROUTPUT));
 
 		parser.Start();
 		return parser.getKB();

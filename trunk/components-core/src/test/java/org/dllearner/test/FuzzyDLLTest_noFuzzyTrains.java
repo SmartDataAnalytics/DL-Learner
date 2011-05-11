@@ -118,8 +118,12 @@ public class FuzzyDLLTest_noFuzzyTrains {
 	}
 	
 	public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, ComponentInitException {
+		long start = System.currentTimeMillis();
+		
 		FuzzyDLLTest_noFuzzyTrains test = new FuzzyDLLTest_noFuzzyTrains();
 		test.learn();
+		
+		System.err.println("running time (s) = " + (System.currentTimeMillis() - start)/1000);
 	}
 	
 }

@@ -51,9 +51,9 @@ public class FuzzyDLLTest_Trains {
 			"http://www.example.com/fuzzyTrains.owl#west6",
 			"http://www.example.com/fuzzyTrains.owl#west7"
 	};
-	
-	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
 		
+	public Description learn() throws LearningProblemUnsupportedException, IOException, ComponentInitException {	
+				
 		//
 		// positive and negative examples
 		//
@@ -80,7 +80,7 @@ public class FuzzyDLLTest_Trains {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/noFuzzyTrains_v1.3.owl"));
+		ks.getConfigurator().setUrl(new URL("file:///Users/josue/Documents/PhD/AKSW/ontologies/fuzzyTrains/fuzzyTrains_v1.3.owl"));
 		ks.init();
 
 		//ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
@@ -113,8 +113,13 @@ public class FuzzyDLLTest_Trains {
 	}
 	
 	public static void main(String args[]) throws LearningProblemUnsupportedException, IOException, ComponentInitException {
+		long start = System.currentTimeMillis();
+
 		FuzzyDLLTest_Trains test = new FuzzyDLLTest_Trains();
 		test.learn();
+		
+		System.err.println("running time (s) = " + (System.currentTimeMillis() - start)/1000);
+
 	}
 	
 }

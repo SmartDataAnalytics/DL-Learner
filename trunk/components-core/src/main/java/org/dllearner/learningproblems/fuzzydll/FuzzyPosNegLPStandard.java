@@ -509,7 +509,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	 */
 	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
 		
-		System.out.println(errorIndex++);
+		// System.out.println(errorIndex++);
 
 		double crispAccuracy = crispAccuracy(description, noise);
 		// if I erase next line, fuzzy reasoning fails
@@ -532,10 +532,10 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		// TODO
 		// TODO
 		// TODO ¡¡¡sacar de aquí y metenerlo en la clase fuzzyExample/fuzzyIndividual o ..
-		double totalTruth = 0;
-		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
-			totalTruth += fuzzyExample.getBeliefDegree();
-		}
+//		double totalTruth = 0;
+//		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
+//			totalTruth += fuzzyExample.getBeliefDegree();
+//		}
 		// TODO
 		// TODO
 		// TODO
