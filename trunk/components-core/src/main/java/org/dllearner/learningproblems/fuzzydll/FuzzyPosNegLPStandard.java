@@ -515,7 +515,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		// if I erase next line, fuzzy reasoning fails
 		if (crispAccuracy == -1) {
 //			System.out.println("crisp return -1");
-			 return -1;
+			 // return -1;
 		}
 		
 		// BEGIN
@@ -527,18 +527,38 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 //		System.out.println("noise = " + noise);
 		
-		int individualCounter = fuzzyExamples.size();
+		
+		// TODO
+		// TODO
+		// TODO
+		// TODO ¡¡¡sacar de aquí y metenerlo en la clase fuzzyExample/fuzzyIndividual o ..
+		double totalTruth = 0;
+		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
+			totalTruth += fuzzyExample.getBeliefDegree();
+		}
+		// TODO
+		// TODO
+		// TODO
+		// TODO
+		
+		// int individualCounter = fuzzyExamples.size();
+		double individualCounter = totalTruth;
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
 			descriptionMembership += reasoner.hasTypeFuzzyMembership(description, fuzzyExample);
-			individualCounter--;
-			if ((descriptionMembership + individualCounter) / fuzzyExamples.size() < noise)
+			// individualCounter--;
+			if (individualCounter != 0) individualCounter--;
+			// before
+//			if ((descriptionMembership + individualCounter) / fuzzyExamples.size() < noise)
+//				return -1;
+			// after (to match the noise management of the crisp part)
+			if ((descriptionMembership + individualCounter) < ((1 - noise) * totalTruth))
 				return -1;
 		}
 		
 		double fuzzyAccuracy = descriptionMembership / (double)fuzzyExamples.size();
 		
-		System.err.println("crispAccuracy = fuzzyAccuracy");
-		crispAccuracy = fuzzyAccuracy;
+//		System.err.println("crispAccuracy = fuzzyAccuracy");
+//		crispAccuracy = fuzzyAccuracy;
 		
 		if (crispAccuracy != fuzzyAccuracy) {
 			System.err.println("***********************************************");
@@ -546,8 +566,8 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			System.err.println("* (crispAccuracy[" + crispAccuracy + "] != fuzzyAccuracy[" + fuzzyAccuracy + "])");
 			System.err.println("* DESC: " + description);
 			System.err.println("***********************************************");
-//			Scanner sc = new Scanner(System.in);
-//			sc.nextLine();
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 		}
 		
 		return fuzzyAccuracy;
