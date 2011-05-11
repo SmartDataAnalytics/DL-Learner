@@ -57,6 +57,7 @@ public abstract class FuzzyPosNegLP extends LearningProblem {
 	protected boolean useRetrievalForClassification = false;
 	protected UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
 	protected double percentPerLengthUnit = 0.05;
+	protected double totalTruth = 0;
 
 	/**
 	 * If instance checks are used for testing concepts (e.g. no retrieval), then
@@ -117,8 +118,12 @@ public abstract class FuzzyPosNegLP extends LearningProblem {
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		String name = entry.getOptionName();
 		// added by Josue
-		if (name.equals("fuzzyExamples"))
+		if (name.equals("fuzzyExamples")){
 			fuzzyExamples = CommonConfigMappings.getFuzzyIndividualSet((Set<FuzzyExample>) entry.getValue());
+			for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
+				totalTruth += fuzzyExample.getBeliefDegree();
+			}
+		}
 		// TODO delete positiveExamples & negativeExamples
 		else if (name.equals("positiveExamples"))
 			positiveExamples = CommonConfigMappings
