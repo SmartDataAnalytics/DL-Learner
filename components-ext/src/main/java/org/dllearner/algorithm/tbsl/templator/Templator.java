@@ -1,6 +1,5 @@
 package org.dllearner.algorithm.tbsl.templator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,6 +13,8 @@ import org.dllearner.algorithm.tbsl.ltag.parser.LTAGLexicon;
 import org.dllearner.algorithm.tbsl.ltag.parser.LTAG_Lexicon_Constructor;
 import org.dllearner.algorithm.tbsl.ltag.parser.Parser;
 import org.dllearner.algorithm.tbsl.ltag.parser.Preprocessor;
+import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.sem.drs.DRS;
 import org.dllearner.algorithm.tbsl.sem.drs.UDRS;
 import org.dllearner.algorithm.tbsl.sem.dudes.data.Dude;
@@ -25,7 +26,7 @@ public class Templator {
 	
 	String[] GRAMMAR_FILES = {"src/main/resources/tbsl/lexicon/english.lex"};
 	
-	POStagger tagger;
+	PartOfSpeechTagger tagger;
 	LTAGLexicon g;
 	LTAG_Lexicon_Constructor LTAG_Constructor = new LTAG_Lexicon_Constructor();
 	Parser p;
@@ -35,14 +36,7 @@ public class Templator {
 		
         g = LTAG_Constructor.construct(Arrays.asList(GRAMMAR_FILES));
 
-        tagger = null;
-		try {
-			tagger = new POStagger();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		}
+        tagger = new StanfordPartOfSpeechTagger();
 		
 	    p = new Parser();
 	    p.SHOW_GRAMMAR = true;
