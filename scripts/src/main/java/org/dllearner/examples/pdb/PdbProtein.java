@@ -6,18 +6,24 @@ public class PdbProtein {
 	private String chainID;
 	private String species;
 	
+	public PdbProtein() {
+		this("", "", "");
+	}
+	
 	public PdbProtein(String pdbID) {
-		this.pdbID = pdbID;
+		this(pdbID, "", "");
 	}
 	
 	public PdbProtein(String pdbID, String chainID) {
+		this(pdbID, chainID, "");
+	}
+	
+	public PdbProtein(String pdbID, String chainID, String species) {
 		this.pdbID = pdbID;
 		this.chainID = chainID;
+		this.species = species;
 	}
-	public PdbProtein() {
-		this.pdbID = "";
-		this.chainID = "";
-	}
+
 
 	public String getPdbID() {
 		return pdbID;
@@ -37,7 +43,4 @@ public class PdbProtein {
 	public void setSpecies(String species) {
 		this.species = species;
 	}
-	
-	
-
 }
