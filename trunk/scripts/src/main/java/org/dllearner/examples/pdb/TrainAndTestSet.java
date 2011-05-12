@@ -22,7 +22,9 @@ public class TrainAndTestSet {
 	
 	public TrainAndTestSet () {
 		String pdbID = "";
-		PdbProtein[] pdbProteins = {new PdbProtein(pdbID)};
+		String chainID = "";
+		String species = "";
+		PdbProtein[] pdbProteins = {new PdbProtein(pdbID, chainID, species)};
 		this.trainset = pdbProteins;
 	}
 	
@@ -33,6 +35,11 @@ public class TrainAndTestSet {
 	
 	public TrainAndTestSet (String pdbID, String chainID) {
 		PdbProtein[] pdbProteins = {new PdbProtein(pdbID, chainID)};
+		this.trainset = pdbProteins;
+	}
+	
+	public TrainAndTestSet (String pdbID, String chainID, String species) {
+		PdbProtein[] pdbProteins = {new PdbProtein(pdbID, chainID, species)};
 		this.trainset = pdbProteins;
 	}
 	
@@ -85,20 +92,22 @@ public class TrainAndTestSet {
 		try
 		{
 			LineNumberReader pdbproteins = new LineNumberReader(new FileReader(pdbIDlist));
-			ArrayList<String> lines = this.readInFile(pdbproteins); 
+			ArrayList<String> lines = this.readInFile(pdbproteins);
 			pdbproteins.close();
 			// get number of lines			
 			int linenr = lines.size();
+			System.out.println("File "+ pdbIDlist.getCanonicalPath() + " has " + linenr + " lines.");
 			PdbProtein[] proteins = new PdbProtein[linenr];
 			for (int i = 0; i < linenr; i++)
 			{
-				proteins[i].setPdbID(getpdbid(i, lines));
-				proteins[i].setChainID(getChainID(i, lines));
+				System.out.println("LINES element " + i + " contains " + lines.get(i));
+				proteins[i] = new PdbProtein(getPdbID(i, lines), getChainID(i, lines), getSpecies(i, lines));
 			}
 			this.trainset = proteins;
 		}
 		catch (IOException e)
 		{
+			System.err.println("File " + pdbIDlist.getAbsolutePath() + " could not be read in!");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -133,31 +142,53 @@ public class TrainAndTestSet {
 			while (setmap.containsKey(Integer.valueOf(lnr))) {
 				lnr = gen.nextInt(linenr);
 			}
-			set[i].setPdbID(this.getpdbid(lnr, lines));
+			set[i].setPdbID(this.getPdbID(lnr, lines));
 			setmap.put(Integer.valueOf(lnr), set[i].getPdbID());
 		}
 		return set;
 	}
 	
 	
-	private String getpdbid (int lineNumber, ArrayList<String> lines ) {
+	private String getPdbID (int lineNumber, ArrayList<String> lines ) {
 		// Initialize a LineNumberReader
 		String line =(String) lines.get(lineNumber);
-		String pdb_id = line.substring(0, 4);
-		return pdb_id;
+		String pdbID;
+		if ( line.length() >= 4 )
+		{
+			pdbID = line.substring(0, line.indexOf("."));
+		}
+		else
+		{
+			pdbID = "";
+		}
+		return pdbID;
 	}
 	
 	private String getChainID (int lineNumber, ArrayList<String> lines) {
 		String line =(String) lines.get(lineNumber);
 		String chainID;
-		if (line.length() > 4)
+		if (line.contains(".") )
 		{
-			chainID = line.substring(5, 7);
+			chainID = line.substring(line.indexOf(".") + 1, line.lastIndexOf("."));
 		}
 		else
 		{
 			chainID = "";
 		}
 		return chainID;
+	}
+	
+	private String getSpecies (int lineNumber, ArrayList<String> lines) {
+		String line =(String) lines.get(lineNumber);
+		String species;
+		if (line.length() > 6)
+		{
+			species = line.substring(line.lastIndexOf("."));
+		}
+		else
+		{
+			species = "";
+		}
+		return species;
 	}
 }
