@@ -99,7 +99,7 @@ public class HelixRDFCreator {
 	 * TODO: remove beginsAt, endsAt from model
 	 */
 	public static void main(String[] args) {
-		Boolean test = false;
+		Boolean test = true;
 		Boolean rdfConf = true;
 		Boolean arff = false;
 		/*
@@ -177,6 +177,8 @@ public class HelixRDFCreator {
 			System.out.println("chainID: " + trainSet.getTrainset()[i].getChainID());
 			trainmodel.removeAll();
 			trainmodel.add(getRdfModelForIds(trainSet.getTrainset()[i].getPdbID(), trainSet.getTrainset()[i].getChainID()));
+			
+			
 			
 			/* 
 			 * as we have sometimes to handle several amino acid chains we need the first
@@ -405,11 +407,14 @@ public class HelixRDFCreator {
 				"PREFIX pdb: <http://bio2rdf.org/pdb:> " +
 				"PREFIX dcterms: <http://purl.org/dc/terms/> " +
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+				"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
 	    		"CONSTRUCT { ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
 	    		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 . " +
 	    		" ?x5 <http://purl.org/dc/terms/isPartOf> ?x4 . " +
 	    		" ?x5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x6 ." +
-	    		" ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 . } " +
+	    		" ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 ." +
+	    		" ?xxx rdfs:label ?label .} " +
 	    		"WHERE { ?x1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:Helix> ." +
 	    		" ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
 	    		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 ." +
@@ -417,6 +422,7 @@ public class HelixRDFCreator {
 	    		" ?x4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:Polypeptide(L)> ." +
 	    		" ?x5 <http://purl.org/dc/terms/isPartOf> ?x4 ." +
 	    		" ?x5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x6 ." +
+	    		" ?xxx rdfs:label ?label FILTER (str(?xxx) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . " +
 	    		// with the Optional clause i get the information by which amino acid
 	    		// a amino acid is followed
 	    		" OPTIONAL { ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 . } .}";
@@ -427,11 +433,14 @@ public class HelixRDFCreator {
 				"PREFIX pdb: <http://bio2rdf.org/pdb:> " +
 				"PREFIX dcterms: <http://purl.org/dc/terms/> " +
 				"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-	    		"CONSTRUCT { ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
+				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+				"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
+				"CONSTRUCT { ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
 	    		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 . " +
 	    		" ?x5 <http://purl.org/dc/terms/isPartOf> ?x4 . " +
 	    		" ?x5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x6 ." +
-	    		" ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 . } " +
+	    		" ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 ." +
+	    		" ?xxx rdfs:label ?label .} " +
 	    		"WHERE { ?x1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://bio2rdf.org/pdb:Helix> ." +
 	    		" ?x1 <http://bio2rdf.org/pdb:beginsAt> ?x2 ." +
 	    		" ?x1 <http://bio2rdf.org/pdb:endsAt> ?x3 ." +
@@ -442,6 +451,7 @@ public class HelixRDFCreator {
 	    		" ?x5 <http://bio2rdf.org/pdb:hasChainPosition> ?x8 ." +
 	    		" ?x8 <http://purl.org/dc/terms/isPartOf> <http://bio2rdf.org/pdb:" + pdbID.toUpperCase() +
 	    		"/chain_" + chainID.toUpperCase() + "> ." +
+	    		" ?xxx rdfs:label ?label FILTER (str(?xxx) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . " +
 	    		// with the Optional clause i get the information by which amino acid
 	    		// a amino acid is followed
 	    		" OPTIONAL { ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 . } .}";
