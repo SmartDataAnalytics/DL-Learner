@@ -1,5 +1,7 @@
 package org.dllearner.examples.pdb;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
@@ -11,28 +13,39 @@ import java.util.Random;
 
 public class TrainAndTestSet {
 	
-	private String[] trainset;
-	private String[] testset;
-	private HashMap<Integer,String> setentries;
-	private ArrayList<String> pdbprotlines;
+	private PdbProtein[] trainset;
 	
-	public String[] getTrainset() {
+	public PdbProtein[] getTrainset() {
 		return trainset;
 	}
-
-	public String[] getTestset() {
-		return testset;
+	
+	
+	public TrainAndTestSet () {
+		String pdbID = "";
+		PdbProtein[] pdbProteins = {new PdbProtein(pdbID)};
+		this.trainset = pdbProteins;
 	}
 	
 	public TrainAndTestSet (String pdbID) {
-		String[] pdbIDs = {pdbID};
-		this.trainset = pdbIDs;
+		PdbProtein[] pdbProteins = {new PdbProtein(pdbID)};
+		this.trainset = pdbProteins;
+	}
+	
+	public TrainAndTestSet (String pdbID, String chainID) {
+		PdbProtein[] pdbProteins = {new PdbProtein(pdbID, chainID)};
+		this.trainset = pdbProteins;
 	}
 	
 	public TrainAndTestSet (String[] pdbIDs) {
-		this.trainset = pdbIDs;
+		PdbProtein pdbProt;
+		PdbProtein[] pdbProteins = new PdbProtein[pdbIDs.length];
+		for (int i = 0; i < pdbIDs.length; i++ )
+		{
+			pdbProt =  new PdbProtein(pdbIDs[i]);
+			pdbProteins[i] = pdbProt;
+		}
+		this.trainset = pdbProteins;
 	}
-
 
 	public TrainAndTestSet (int setsize) {
 		
@@ -41,14 +54,12 @@ public class TrainAndTestSet {
 		try {
 			pdbEntryType = new URL("ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt");
 			LineNumberReader pdbproteins = new LineNumberReader(new InputStreamReader(pdbEntryType.openStream()));
-		
-			// we calculate the number of lines in that file and
-			// read all lines into the global variable pdbprotlines 
-			int linenr = this.getNumberOfLines(pdbproteins);
+			// read all lines in lines			
+			ArrayList<String> lines = this.readInFile(pdbproteins); 
 			pdbproteins.close();
-
-		
-			// System.out.println("PDB Prot File has "+linenr+" lines." );
+			// get number of lines			
+			int linenr = lines.size();
+			System.out.println("PDB Prot File has "+linenr+" lines." );
 			
 			// handling of incorrect setsize values
 			if ((2*setsize) >= linenr) {
@@ -59,9 +70,7 @@ public class TrainAndTestSet {
 			}
 			
 			// lets create Train- and Testset
-			this.trainset = this.createSet(setsize, linenr);
-			this.testset = this.createSet(setsize, linenr);
-		
+			this.trainset = this.createSet(setsize, linenr, lines);		
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,77 +80,84 @@ public class TrainAndTestSet {
 		}
 	}
 	
-	// this method counts the number of lines in the read in file and
-	// fills pdbprotlines with content
-	private int getNumberOfLines (LineNumberReader lnr) {
-		try {
-			int count = 0;
-			ArrayList<String> arraylist = new ArrayList<String>();
-			String line;
-
-			
-			while ((line = lnr.readLine()) != null) {
-				arraylist.add(count, line);
-				count++;
+	
+	public TrainAndTestSet (File pdbIDlist) {
+		try
+		{
+			LineNumberReader pdbproteins = new LineNumberReader(new FileReader(pdbIDlist));
+			ArrayList<String> lines = this.readInFile(pdbproteins); 
+			pdbproteins.close();
+			// get number of lines			
+			int linenr = lines.size();
+			PdbProtein[] proteins = new PdbProtein[linenr];
+			for (int i = 0; i < linenr; i++)
+			{
+				proteins[i].setPdbID(getpdbid(i, lines));
+				proteins[i].setChainID(getChainID(i, lines));
 			}
-			this.pdbprotlines = arraylist;
-
-			return count;
+			this.trainset = proteins;
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private ArrayList<String> readInFile (LineNumberReader lnr) {
+		ArrayList<String> arraylist = new ArrayList<String>();
+		try {
+			String line;
+			while ((line = lnr.readLine()) != null) 
+			{
+				arraylist.add(line);
+			}
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return 0;
 		}
+		return arraylist;
 	}
-	
-/*	private void createArrayList(int linenumber){
-		try {
-			ArrayList<String> arraylist = new ArrayList<String>();
-			LineNumberReader lnr = new LineNumberReader(new FileReader(this.pdbproteins));
-			for (int i = 0; i < linenumber; i++) {
-				String line = lnr.readLine();
-				arraylist.add(i, line);
-				// System.out.println("Line "+ i +": "+ line);
-			}
-			this.pdbprotlines = arraylist;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-	*/
 	
 	//creates Sets of PDB IDs equal to setsize
-	private String [] createSet(int setsize, int linenr){
-		String [] set = new String [setsize];
-		if (this.setentries == null) {
-			this.setentries = new HashMap<Integer,String>(2*setsize);
-		}
-		HashMap<Integer,String> setmap = this.setentries;
+	private PdbProtein[] createSet(int setsize, int linenr, ArrayList<String> lines){
+		
+		PdbProtein[] set = new PdbProtein[setsize];
+		HashMap<Integer,String> setmap = new HashMap<Integer,String>(2*setsize);
+
 		Random gen = new Random();
 		for (int i = 0; i < setsize; i++) {
 			int lnr = gen.nextInt(linenr);
 			while (setmap.containsKey(Integer.valueOf(lnr))) {
 				lnr = gen.nextInt(linenr);
 			}
-			set[i] = this.getpdbid(lnr);
-			setmap.put(Integer.valueOf(lnr), set[i]);
+			set[i].setPdbID(this.getpdbid(lnr, lines));
+			setmap.put(Integer.valueOf(lnr), set[i].getPdbID());
 		}
-		this.setentries = setmap;
 		return set;
 	}
 	
 	
-	private String getpdbid (int lineNumber) {
+	private String getpdbid (int lineNumber, ArrayList<String> lines ) {
 		// Initialize a LineNumberReader
-		ArrayList<String> arraylist = pdbprotlines;
-		String line =(String) arraylist.get(lineNumber);
+		String line =(String) lines.get(lineNumber);
 		String pdb_id = line.substring(0, 4);
 		return pdb_id;
+	}
+	
+	private String getChainID (int lineNumber, ArrayList<String> lines) {
+		String line =(String) lines.get(lineNumber);
+		String chainID;
+		if (line.length() > 4)
+		{
+			chainID = line.substring(5, 7);
+		}
+		else
+		{
+			chainID = "";
+		}
+		return chainID;
 	}
 }
