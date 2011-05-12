@@ -527,20 +527,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 //		System.out.println("noise = " + noise);
 		
-		
-		// TODO
-		// TODO
-		// TODO
-		// TODO ¡¡¡sacar de aquí y metenerlo en la clase fuzzyExample/fuzzyIndividual o ..
-//		double totalTruth = 0;
-//		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
-//			totalTruth += fuzzyExample.getBeliefDegree();
-//		}
-		// TODO
-		// TODO
-		// TODO
-		// TODO
-		
 		// int individualCounter = fuzzyExamples.size();
 		double individualCounter = totalTruth;
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
