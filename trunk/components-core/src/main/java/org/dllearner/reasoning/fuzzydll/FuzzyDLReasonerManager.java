@@ -21,9 +21,9 @@ import fuzzydll.fuzzyowl2fuzzydlparser.*;
 
 public class FuzzyDLReasonerManager {
 
-	private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
-	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
-	private static String CONFIG_FILENAME = "/Users/josue/Documents/PhD/AKSW/fuzzySemanticTools/FuzzyDLMacOSX/FuzzyDL/CONFIG";
+	// private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "../examples/fuzzydll/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
+	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "../examples/fuzzydll/fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
+	private static String CONFIG_FILENAME = "../examples/fuzzydll/CONFIG";
 
 	private Solution queryResult;
 	private KnowledgeBase fuzzyKB;
@@ -32,7 +32,7 @@ public class FuzzyDLReasonerManager {
 
 	private FuzzyOwl2toFuzzyDL fuzzyFileParser;
 	private int auxCounter = 0;
-	private FileOutputStream errorFile;
+	// private FileOutputStream errorFile;
 
 	public FuzzyDLReasonerManager(String ontologyFile) throws Exception {
 		queryResult = null;
@@ -48,7 +48,7 @@ public class FuzzyDLReasonerManager {
 		
 		solveKB();
 		
-		  errorFile = new FileOutputStream("errorFile.txt");
+		  // errorFile = new FileOutputStream("errorFile.txt");
 	}
 
 	private void solveKB() {
@@ -94,17 +94,17 @@ public class FuzzyDLReasonerManager {
 					// System.exit(0);
 				}
 			} catch (Exception e) {
-				// e.printStackTrace();
-				try {
-					errorFile.write(fIndividual.toString().getBytes());
-					errorFile.write("\n".getBytes());
-					errorFile.write(fConcept.toString().getBytes());
-					errorFile.write("\n".getBytes());
-					errorFile.write(getStackTrace(e).getBytes());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				e.printStackTrace();
+//				try {
+//					errorFile.write(fIndividual.toString().getBytes());
+//					errorFile.write("\n".getBytes());
+//					errorFile.write(fConcept.toString().getBytes());
+//					errorFile.write("\n".getBytes());
+//					errorFile.write(getStackTrace(e).getBytes());
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
 //				Scanner sc = new Scanner(System.in);
 //				sc.nextLine();		
 			}
