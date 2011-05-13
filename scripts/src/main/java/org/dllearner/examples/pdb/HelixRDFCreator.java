@@ -276,7 +276,7 @@ public class HelixRDFCreator {
 				/*
 		    	 * load RDF file and perform learn algorithm for every .conf-file
 		    	 */
-				ComponentManager cm = ComponentManager.getInstance();
+				/*ComponentManager cm = ComponentManager.getInstance();
 				KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 				cm.applyConfigEntry(ks, "url","file://" + filename );
 				ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class);
@@ -305,6 +305,7 @@ public class HelixRDFCreator {
 		            Description d = start.getLearningAlgorithm().getCurrentlyBestDescription(); 	
 		            System.out.println(d.toKBSyntaxString());
 				}
+				*/
 			}
 			
 			if(wekaLearn)
