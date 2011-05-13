@@ -527,6 +527,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		
 //		System.out.println("noise = " + noise);
 		
+		// TODO in order the noise check to work ... is it necessary to have the examples ordered by its truthBelief?
 		// int individualCounter = fuzzyExamples.size();
 		double individualCounter = totalTruth;
 		for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
