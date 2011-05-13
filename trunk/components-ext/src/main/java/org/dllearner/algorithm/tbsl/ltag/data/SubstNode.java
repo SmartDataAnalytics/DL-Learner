@@ -163,6 +163,9 @@ public class SubstNode implements TreeNode {
 	public String getAnchor() {
 		return "";
 	}
+	public TreeNode setAnchor(String a) {
+		return this;
+	}
 
 	public String getIndex() {
 		return index;
@@ -196,6 +199,10 @@ public class SubstNode implements TreeNode {
 		} else {
 			return this.getParent().isGovernedBy(cat);
 		}
+	}
+
+	@Override
+	public void setAnchor(String old_anchor, String new_anchor) {		
 	}
 
 }

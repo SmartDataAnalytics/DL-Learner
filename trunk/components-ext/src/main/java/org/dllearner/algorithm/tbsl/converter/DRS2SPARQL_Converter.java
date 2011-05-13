@@ -156,6 +156,7 @@ public class DRS2SPARQL_Converter {
             // add the quantifier at last
             DiscourseReferent ref = complex.getReferent();
             String sref = ref.getValue();
+            String fresh;
             if (!isSilent()) {
                 System.out.print("|quantor:" + quant);
             }
@@ -181,13 +182,15 @@ public class DRS2SPARQL_Converter {
                 case SOME: //
                     break;
                 case THE_LEAST:
-                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT));
-                    query.addOrderBy(new SPARQL_Term(sref, SPARQL_OrderBy.ASC));
+                	fresh = "c"+createFresh();
+                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,true, new SPARQL_Term(fresh)));
+                    query.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.ASC));
                     query.setLimit(1);
                     break;
                 case THE_MOST:
-                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT));
-                    query.addOrderBy(new SPARQL_Term(sref, SPARQL_OrderBy.DESC));
+                	fresh = "c"+createFresh();
+                    query.addSelTerm(new SPARQL_Term(sref, SPARQL_Aggregate.COUNT,true, new SPARQL_Term(fresh)));
+                    query.addOrderBy(new SPARQL_Term(fresh, SPARQL_OrderBy.DESC));
                     query.setLimit(1);
                     break;
             }

@@ -25,6 +25,9 @@ import org.dllearner.algorithm.tbsl.templator.SlotBuilder;
 class GrammarFilter {
 
 	final static String[] NAMED_Strings = {"named", "called"};
+	// DISAM
+	static List<Integer> usedInts = new ArrayList<Integer>();
+	static ArrayList<String> doubles = new ArrayList<String>();
 	
 	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps) {
 		
@@ -66,10 +69,29 @@ class GrammarFilter {
 				if (candidates != null) {
 					foundCandidates = true;
 					coveredTokens.add(token);
+					
+					// DISAM 
+					String[] tokenParts = token.split(" ");
+					String[] newTokenParts = new String[tokenParts.length];
+					int fresh = createFresh();
+					for (int i = 0; i < tokenParts.length; i++) {
+						newTokenParts[i] = tokenParts[i] + fresh;
+					} //
+					
 					for (Pair<Integer,TreeNode> p : candidates) {
-						add(parseG, p.getSecond(), p.getFirst(), localID);
+						
+						// DISAM
+						TreeNode new_p_second = p.getSecond();
+						if (doubles.contains(token)) {	
+							for (int i = 0; i < tokenParts.length; i++) {
+								new_p_second.setAnchor(tokenParts[i],newTokenParts[i]);
+							} 
+						} //
+						
+						add(parseG, new_p_second, p.getFirst(), localID);
 						localID++;
 					}
+					doubles.add(token); // DISAM
 
 				} else if (named != null) {
 					
@@ -127,10 +149,27 @@ class GrammarFilter {
 								foundCandidates = true;
 								coveredTokens.add(token);
 								
+								// DISAM 
+								String[] newTokenParts = new String[tokenParts.length];
+								int fresh = createFresh();
+								for (int i = 0; i < tokenParts.length; i++) {
+									newTokenParts[i] = tokenParts[i] + fresh;
+								} //
+								
 								for (Pair<Integer, TreeNode> p : grammar.getAnchorToTrees().get(anchor)) {
-									add(parseG, p.getSecond(), p.getFirst(),localID);
+									
+									// DISAM
+									TreeNode new_p_second = p.getSecond();
+									if (doubles.contains(token)) {	
+										for (int i = 0; i < tokenParts.length; i++) {
+											new_p_second.setAnchor(tokenParts[i],newTokenParts[i]);
+										} 
+									} //
+									
+									add(parseG, new_p_second, p.getFirst(),localID);
 									localID++;
 								}
+								doubles.add(token); // DISAM
 							}
 						}
 					} 			
@@ -181,9 +220,14 @@ class GrammarFilter {
 		String[] newparts = newtaggedstring.trim().split(" ");
 		for (String s : newparts) {
 			if (s.contains("/")) {
-				buildSlotFor.add(new Pair<String,String>(s.trim().substring(0,s.indexOf("/")),s.trim().substring(s.indexOf("/")+1)));
+				String word = s.trim().substring(0,s.indexOf("/"));
+				if (doubles.contains(word)) {
+					word += createFresh();
+				}
+				buildSlotFor.add(new Pair<String,String>(word,s.trim().substring(s.indexOf("/")+1)));
+				doubles.add(word);
 			} else {
-				System.out.println("Oh no, " + s + " has no POS tag!"); // DEBUG
+				System.out.println("Oh no, " + s + " has no POS tag!");
 			}
 		}	
 		System.out.println("build slot for: " + buildSlotFor + "\n");
@@ -284,9 +328,17 @@ class GrammarFilter {
 				result.add(s.substring(0,s.indexOf("/")));
 		}
 		
-		System.out.println("Word list: " + result);
-		
 		return result;
+	}
+	
+	private static int createFresh() {
+		
+		int fresh = 0;
+		for (int i = 0; usedInts.contains(i); i++) {
+			fresh = i+1 ;
+		}
+		usedInts.add(fresh);
+		return fresh;
 	}
 
 }

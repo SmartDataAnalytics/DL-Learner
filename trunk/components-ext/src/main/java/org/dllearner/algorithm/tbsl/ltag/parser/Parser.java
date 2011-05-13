@@ -42,14 +42,6 @@ public class Parser {
 	 */
 	public List<DerivationTree> parse(String taggeduserinput, LTAGLexicon grammar) {
 
-		String inputNoTags = "";		
-		for (String s : taggeduserinput.split(" ")) {
-			inputNoTags += s.substring(0,s.indexOf("/")) + " ";
-		}
-		
-		this.input = ("# ".concat(inputNoTags.trim())).split(" ");
-		int n = this.input.length;
-
 		derivationTrees.clear();
 		derivedTrees.clear();
 		dudes.clear();
@@ -63,6 +55,15 @@ public class Parser {
 		 */
 		parseGrammar = GrammarFilter.filter(taggeduserinput,grammar,temporaryEntries);
 
+		String inputNoTags = "";		
+		for (String s : taggeduserinput.split(" ")) {
+			inputNoTags += s.substring(0,s.indexOf("/")) + " ";
+		}
+
+		this.input = ("# ".concat(inputNoTags.trim())).split(" ");
+		int n = this.input.length;
+		
+		
 		if (SHOW_GRAMMAR) {
 			System.out.println(parseGrammar);
 		}
@@ -79,6 +80,7 @@ public class Parser {
 			internalParse(parseGrammar.getDPInitTrees(), n);
 		}
 
+		System.out.println("Constructed " + derivationTrees.size() + " derivation trees.");
 		return derivationTrees;
 
 	}

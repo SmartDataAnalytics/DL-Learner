@@ -48,6 +48,7 @@ public class SlotBuilder {
 				else if (pos.equals("NPREP")) {
 					type = "PROPERTY";
 				}
+				
 				List<String> words = new ArrayList<String>();
 				words.add(token); 
 				if (!pos.equals("NNP") && !pos.equals("NNPS")) {
