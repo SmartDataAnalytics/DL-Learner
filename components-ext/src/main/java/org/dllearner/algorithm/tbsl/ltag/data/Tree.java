@@ -240,6 +240,11 @@ public class Tree implements TreeNode {
 		
 		return output;
 	}
+	public void setAnchor(String old_anchor,String new_anchor) {
+		for (TreeNode child : children) {
+			child.setAnchor(old_anchor,new_anchor);
+		}
+	}
 	
 	public String toString()
 	{

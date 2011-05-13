@@ -2,21 +2,17 @@ package org.dllearner.algorithm.tbsl.sparql;
 
 public class SPARQL_Term extends SPARQL_Value {
 	
-	SPARQL_OrderBy orderBy;
-	SPARQL_Aggregate aggregate;
+	SPARQL_OrderBy orderBy = SPARQL_OrderBy.NONE;
+	SPARQL_Aggregate aggregate = SPARQL_Aggregate.NONE;
 	SPARQL_Term as = null;
 	
 	public SPARQL_Term(String name) {
 		super(name);
 		this.name = name.replace("?","").replace("!","");
-		orderBy = SPARQL_OrderBy.NONE;
-		aggregate = SPARQL_Aggregate.NONE;
 	}
 	public SPARQL_Term(String name,boolean b) {
 		super(name);
 		this.name = name.replace("?","").replace("!","");
-		orderBy = SPARQL_OrderBy.NONE;
-		aggregate = SPARQL_Aggregate.NONE;
 		setIsVariable(b);
 	}
 	
@@ -34,6 +30,12 @@ public class SPARQL_Term extends SPARQL_Value {
 	public SPARQL_Term(String name, SPARQL_OrderBy orderBy) {
 		super(name);
 		this.orderBy = orderBy;
+	}
+	public SPARQL_Term(String name, SPARQL_OrderBy orderBy,boolean b,SPARQL_Term t) {
+		super(name);
+		this.orderBy = orderBy;
+		setIsVariable(b);
+		as = t;
 	}
 	
 	@Override
@@ -76,12 +78,14 @@ public class SPARQL_Term extends SPARQL_Value {
 			}
 		}
 		if (orderBy != SPARQL_OrderBy.NONE) {
+			String n;
+			if (as != null) { n = as.name; } else { n = name; }
 			if (orderBy == SPARQL_OrderBy.ASC)
-				return "ASC(?"+name.toLowerCase()+")";
+				return "ASC(?"+n.toLowerCase()+")";
 			else
-				return "DESC(?"+name.toLowerCase()+")";
+				return "DESC(?"+n.toLowerCase()+")";
 		}
-		if (isVariable()) {
+		if (isVariable() && !isString()) {
 			return "?"+name.toLowerCase();
 		}
 		else {

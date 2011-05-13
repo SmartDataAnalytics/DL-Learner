@@ -40,6 +40,7 @@ public interface TreeNode {
 	public void setAdjConstraint (boolean x);
 
 	public String getAnchor();
+	public void setAnchor(String old_anchor,String new_anchor);
 
 	public TreeNode clone();
 

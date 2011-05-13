@@ -164,6 +164,12 @@ public class TerminalNode implements TreeNode {
 		}
 		return getTerminal()+" ";
 	}
+	public TreeNode setAnchor(String a) {
+		if (!getTerminal().equals("")) {
+			setTerminal(a);
+		}
+		return this;
+	}
 
 	public void setTerminal(String terminal) {
 		this.terminal = terminal;
@@ -188,6 +194,13 @@ public class TerminalNode implements TreeNode {
 			return this.getParent();
 		} else {
 			return this.getParent().isGovernedBy(cat);
+		}
+	}
+
+	@Override
+	public void setAnchor(String old_anchor, String new_anchor) {
+		if (terminal.equals(old_anchor)) {
+			terminal = new_anchor;
 		}
 	}
 	
