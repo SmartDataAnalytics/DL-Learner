@@ -14,6 +14,10 @@
 			<id>Simmetrics</id>
 			<url>http://maven.mse.jhu.edu/m2repository/</url>
 		</repository>
+		<repository>
+			<id>Harvard Med</id>
+			<url>http://repo.open.med.harvard.edu/nexus/content/repositories/public/</url>
+		</repository>
 	</repositories>
 
 	<parent>
@@ -105,6 +109,11 @@
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-maxent</artifactId>
 			<version>3.0.1-incubating</version>
+		</dependency>
+		<dependency>
+			<groupId>com.aliasi</groupId>
+			<artifactId>lingpipe</artifactId>
+			<version>4.0.1</version>
 		</dependency>
 
 	</dependencies>
