@@ -1,4 +1,4 @@
-package org.dllearner.algorithm.tbsl.templator;
+package org.dllearner.algorithm.tbsl.nlp;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.annolab.tt4j.TokenHandler;
 import org.annolab.tt4j.TreeTaggerException;
 import org.annolab.tt4j.TreeTaggerWrapper;
 
-public class TreeTagger {
+public class TreeTagger implements PartOfSpeechTagger {
 
 	TreeTaggerWrapper<String> tt;
 	
@@ -18,7 +18,7 @@ public class TreeTagger {
 		tt.setModel("/home/christina/Software/TreeTagger/lib/english.par:iso8859-1");
 	}
 	
-	public void tagthis(String s) throws IOException, TreeTaggerException {
+	public String tag(String s) {
 		
 		List<String> input = Arrays.asList(s.split(" "));		
 		try {
@@ -30,9 +30,20 @@ public class TreeTagger {
 		     System.out.println("Tagged with TreeTagger:\n");
 		     tt.process(input);
 		     System.out.println(tt.getStatus());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TreeTaggerException e) {
+			e.printStackTrace();
 		}
 		 finally {
 		     tt.destroy();
-		 }
+		}
+		return "";
+	}
+
+	@Override
+	public List<String> tagTopK(String sentence) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
