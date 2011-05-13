@@ -18,4 +18,20 @@ public class FuzzyIndividual extends Individual{
 	public void setBeliefDegree(double beliefDegree) {
 		this.beliefDegree = beliefDegree;
 	}
+	
+	public int compareTo(FuzzyIndividual o) {
+		int d = Double.compare(beliefDegree, o.getBeliefDegree());
+		if (d == 0)
+			return super.compareTo(o);
+		else
+			return d;
+	}
+    
+	@Override
+	public boolean equals(Object o) {
+		if(o==null) {
+			return false;
+		}
+		return (compareTo((FuzzyIndividual)o)==0);
+	}
 }
