@@ -7,7 +7,7 @@ import org.annolab.tt4j.TreeTaggerException;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
-import org.dllearner.algorithm.tbsl.templator.TreeTagger;
+import org.dllearner.algorithm.tbsl.nlp.TreeTagger;
 
 public class POStest {
 
@@ -22,7 +22,7 @@ public class POStest {
 		System.out.println(tagged + "\n");
 	
 		TreeTagger tt = new TreeTagger(); 
-		tt.tagthis(sentence);
+		tt.tag(sentence);
 		
 		tagger = new ApachePartOfSpeechTagger();
 		startTime = System.currentTimeMillis();
