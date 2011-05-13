@@ -3,22 +3,26 @@ package org.dllearner.algorithm.tbsl;
 import java.io.IOException;
 import java.util.List;
 
+import org.annolab.tt4j.TreeTaggerException;
 import org.dllearner.algorithm.tbsl.nlp.ApachePartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.PartOfSpeechTagger;
 import org.dllearner.algorithm.tbsl.nlp.StanfordPartOfSpeechTagger;
+import org.dllearner.algorithm.tbsl.templator.TreeTagger;
 
 public class POStest {
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, TreeTaggerException {
 		
-		String sentence = "When did Nirvana record Nevermind?";
+		String sentence = "Which rivers does the Brooklyn Bridge cross";
 		
 		PartOfSpeechTagger tagger = new StanfordPartOfSpeechTagger();
 		long startTime = System.currentTimeMillis();
 		String tagged = tagger.tag(sentence);
 		System.out.format("Tagged sentence with Stanford tagger (%d ms):\n", System.currentTimeMillis()-startTime);
 		System.out.println(tagged + "\n");
-		
+	
+		TreeTagger tt = new TreeTagger(); 
+		tt.tagthis(sentence);
 		
 		tagger = new ApachePartOfSpeechTagger();
 		startTime = System.currentTimeMillis();

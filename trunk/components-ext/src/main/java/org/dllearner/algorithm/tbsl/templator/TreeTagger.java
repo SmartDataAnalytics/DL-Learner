@@ -27,6 +27,7 @@ public class TreeTagger {
 		             System.out.println(token+"/"+pos+"/"+lemma);
 		         }
 		     });
+		     System.out.println("Tagged with TreeTagger:\n");
 		     tt.process(input);
 		     System.out.println(tt.getStatus());
 		}
