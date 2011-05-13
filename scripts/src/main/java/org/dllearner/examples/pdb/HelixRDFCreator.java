@@ -31,6 +31,8 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -38,6 +40,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 import com.dumontierlab.pdb2rdf.model.PdbRdfModel;
 import com.dumontierlab.pdb2rdf.parser.PdbXmlParser;
@@ -178,7 +181,9 @@ public class HelixRDFCreator {
 			trainmodel.removeAll();
 			trainmodel.add(getRdfModelForIds(trainSet.getTrainset()[i].getPdbID(), trainSet.getTrainset()[i].getChainID()));
 			
+			System.out.println(getSpecies(trainmodel, trainSet.getTrainset()[i].getPdbID()));
 			
+						
 			
 			/* 
 			 * as we have sometimes to handle several amino acid chains we need the first
@@ -464,6 +469,28 @@ public class HelixRDFCreator {
     	qe.close();
     	return construct;
 	}
+	
+	private static String getSpecies( PdbRdfModel model, String pdbID) {
+		String queryString ;
+		queryString = 
+			"PREFIX pdb: <http://bio2rdf.org/pdb:> " +
+			"PREFIX dcterms: <http://purl.org/dc/terms/> " +
+			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+			"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
+			"SELECT *  " +
+    		"WHERE { ?s ?p ?o .}"; //FILTER (str(?xxx) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . }";
+		
+		System.out.println(queryString);
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		ResultSet results = qe.execSelect();
+		qe.close();
+		ResultSetFormatter.out (System.out, results, query); 
+    	return ResultSetFormatter.asText(results);
+	}
+		
+	
 
 	private static ResIterator getFirstAA( PdbRdfModel model) {
 		PdbRdfModel construct = new PdbRdfModel();
