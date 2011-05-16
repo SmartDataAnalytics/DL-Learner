@@ -31,6 +31,10 @@ class GrammarFilter {
 	
 	static ParseGrammar filter(String taggedinput,LTAGLexicon grammar,List<Integer> temps) {
 		
+		// DISAM: CLEAR 
+		usedInts = new ArrayList<Integer>();
+		doubles = new ArrayList<String>();
+		
 		SlotBuilder slotbuilder = new SlotBuilder();
 		
 		List<String> input = getWordList(taggedinput.trim());
@@ -81,7 +85,7 @@ class GrammarFilter {
 					for (Pair<Integer,TreeNode> p : candidates) {
 						
 						// DISAM
-						TreeNode new_p_second = p.getSecond();
+						TreeNode new_p_second = p.getSecond().clone();
 						if (doubles.contains(token)) {	
 							for (int i = 0; i < tokenParts.length; i++) {
 								new_p_second.setAnchor(tokenParts[i],newTokenParts[i]);

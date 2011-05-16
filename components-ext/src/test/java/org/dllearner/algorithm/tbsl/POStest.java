@@ -13,7 +13,7 @@ public class POStest {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException, TreeTaggerException {
 		
-		String sentence = "Which rivers does the Brooklyn Bridge cross";
+		String sentence = "Which rivers does the Brooklyn Bridge cross ?";
 		
 		PartOfSpeechTagger tagger = new StanfordPartOfSpeechTagger();
 		long startTime = System.currentTimeMillis();
