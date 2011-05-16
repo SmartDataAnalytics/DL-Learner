@@ -18,6 +18,10 @@
 			<id>Harvard Med</id>
 			<url>http://repo.open.med.harvard.edu/nexus/content/repositories/public/</url>
 		</repository>
+		<repository>
+			<id>Annolab</id>
+			<url>http://annolab.org/m2/releases/</url>
+		</repository>
 	</repositories>
 
 	<parent>
@@ -114,6 +118,11 @@
 			<groupId>com.aliasi</groupId>
 			<artifactId>lingpipe</artifactId>
 			<version>4.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.annolab.tt4j</groupId>
+			<artifactId>org.annolab.tt4j</artifactId>
+			<version>1.0.14</version>
 		</dependency>
 
 	</dependencies>
