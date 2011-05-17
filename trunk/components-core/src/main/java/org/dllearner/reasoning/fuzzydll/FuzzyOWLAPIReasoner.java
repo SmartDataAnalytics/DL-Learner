@@ -1137,7 +1137,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
 		OWLIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));		
 		
-		double fuzzyReasonerOutput = fuzzyReasoner.getFuzzyMembership(desc, ind, individual.getBeliefDegree());
+		double fuzzyReasonerOutput = fuzzyReasoner.getFuzzyMembership(desc, ind, individual.getTruthDegree());
 		
 //		System.out.println("- d: " + d);
 //		System.out.println("- i: " + i);
