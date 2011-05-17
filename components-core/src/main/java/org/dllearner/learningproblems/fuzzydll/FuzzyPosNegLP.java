@@ -121,7 +121,7 @@ public abstract class FuzzyPosNegLP extends LearningProblem {
 		if (name.equals("fuzzyExamples")){
 			fuzzyExamples = CommonConfigMappings.getFuzzyIndividualSet((Set<FuzzyExample>) entry.getValue());
 			for (FuzzyIndividual fuzzyExample : fuzzyExamples) {
-				totalTruth += fuzzyExample.getBeliefDegree();
+				totalTruth += fuzzyExample.getTruthDegree();
 			}
 		}
 		// TODO delete positiveExamples & negativeExamples

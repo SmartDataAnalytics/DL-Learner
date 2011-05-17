@@ -4,23 +4,23 @@ import org.dllearner.core.owl.Individual;
 
 public class FuzzyIndividual extends Individual{
 
-	private double beliefDegree;
+	private double truthDegree;
 	
 	public FuzzyIndividual(String name, double fuzzyDegree) {
 		super(name);
-		this.beliefDegree = fuzzyDegree;
+		this.truthDegree = fuzzyDegree;
 	}
 
-	public double getBeliefDegree() {
-		return beliefDegree;
+	public double getTruthDegree() {
+		return truthDegree;
 	}
 
-	public void setBeliefDegree(double beliefDegree) {
-		this.beliefDegree = beliefDegree;
+	public void setTruthDegree(double beliefDegree) {
+		this.truthDegree = beliefDegree;
 	}
 	
 	public int compareTo(FuzzyIndividual o) {
-		int d = Double.compare(beliefDegree, o.getBeliefDegree());
+		int d = Double.compare(truthDegree, o.getTruthDegree());
 		if (d == 0)
 			return super.compareTo(o);
 		else
