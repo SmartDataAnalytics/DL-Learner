@@ -1,0 +1,568 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://purl.org/dc/terms/"
+    xmlns:j.1="http://bio2rdf.org/pdb:"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A67">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A71"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A68"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A33">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A37"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A34"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Threonine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A7">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A11"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A8"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:AsparticAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A29">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A30"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A33"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A19">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Alanine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A20"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A23"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A47">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A51"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A48"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A53">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A54"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A57"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A71">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Alanine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A72"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A75"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A37">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Valine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A38"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A41"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A63">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A64"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A67"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A3">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tryptophan"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A4"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A7"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A62">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A63"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A66"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Valine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1/extraction/source/gene/organism">
+    <rdfs:label>Dioscoreophyllum cumminsii</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A90">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A91"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Proline"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A94"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A24">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A25"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Asparagine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A28"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A43">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A44"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A47"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A57">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A58"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A61"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A10">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A11"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Proline"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A14"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A80">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A81"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A84"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A20">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A24"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A21"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Valine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A14">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Asparagine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A15"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A18"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A76">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A80"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A77"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:AsparticAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A86">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A87"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A90"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A94">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Proline"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A32">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Leucine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A33"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A36"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A28">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glutamine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A29"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A32"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A66">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A70"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A67"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:AsparticAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A8">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A12"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A9"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A18">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Phenylalanine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A19"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A22"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A52">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A56"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A53"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A46">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A50"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A47"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A36">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A37"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A40"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A70">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A74"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A71"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A72">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A73"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A76"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:AsparticAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A61">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A62"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A65"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A4">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A8"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A5"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A11">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A12"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Phenylalanine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A15"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A42">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Methionine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A43"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A46"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A25">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A26"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A29"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A51">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A52"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A55"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A56">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A57"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A60"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A15">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A16"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Leucine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A19"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A77">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A81"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A78"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A21">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A22"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A25"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:AsparticAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A87">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A88"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Phenylalanine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A91"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A93">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Proline"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A94"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A35">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Asparagine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A36"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A39"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A65">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Serine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A66"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A69"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A39">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A40"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A43"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A9">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A10"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A13"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A83">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A87"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A84"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A49">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Asparagine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A50"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A53"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A73">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A74"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A77"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A5">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A9"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A6"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A40">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A41"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Proline"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A44"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A1">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A5"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A2"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A45">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Threonine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A46"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A49"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A55">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A59"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A56"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A17">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A21"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A18"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A88">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A89"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Asparagine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A92"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A41">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A42"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Cysteine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A45"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A59">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A60"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A63"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glutamine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A26">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A27"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A30"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A74">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A75"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Serine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A78"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A82">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A83"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A86"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A60">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Leucine"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A61"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A64"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A92">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A93"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Proline"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A50">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A51"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A54"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A78">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A79"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A82"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A12">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A13"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Threonine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A16"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A69">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A70"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A73"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Phenylalanine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A22">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A26"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A23"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A31">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A35"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A32"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Arginine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A64">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A65"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Alanine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A68"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A34">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A35"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A38"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Phenylalanine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A84">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A85"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A88"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Leucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A48">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A49"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A52"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A38">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A42"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A39"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A6">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A10"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A7"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Isoleucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A44">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A45"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A48"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A16">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A20"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A17"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A54">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A58"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A55"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Lysine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A2">
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A6"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A3"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A58">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A59"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A62"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Tyrosine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A81">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A82"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A85"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A75">
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A76"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A79"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A89">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A90"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A93"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A79">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A80"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Threonine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A83"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A85">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A86"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Leucine"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A89"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A23">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A24"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:GlutamicAcid"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A27"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A30">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A31"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A34"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A91">
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A92"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Valine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A13">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A14"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A17"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glutamine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A68">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A69"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A72"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Leucine"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A27">
+    <j.1:isImmediatelyBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A28"/>
+    <rdf:type rdf:resource="http://bio2rdf.org/pdb:Glycine"/>
+    <j.0:isPartOf rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalSubstance_1"/>
+    <j.1:isFourAminoAcidsBefore rdf:resource="http://bio2rdf.org/pdb:1MOL/chemicalComponent_A31"/>
+  </rdf:Description>
+</rdf:RDF>
