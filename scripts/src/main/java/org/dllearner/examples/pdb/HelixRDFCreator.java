@@ -31,8 +31,10 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
@@ -102,7 +104,7 @@ public class HelixRDFCreator {
 	 * TODO: remove beginsAt, endsAt from model
 	 */
 	public static void main(String[] args) {
-		Boolean test = true;
+		Boolean test = false;
 		Boolean rdfConf = true;
 		Boolean arff = false;
 		/*
@@ -111,10 +113,9 @@ public class HelixRDFCreator {
 		 */
 		Boolean save = true;
 		Boolean load = false;
-		File memory = new File(dataDir + "memory.txt");
+		String savePdbInfos = ".info";
 		Boolean dlLearn = false;
 		Boolean wekaLearn = false;
-		
 		
 		int dataSet = 1;
 		/*
@@ -132,7 +133,7 @@ public class HelixRDFCreator {
 		// data set 4
 		String plp399 = dataDir + "plp399.list";
 		File plp399List = new File(plp399);
-
+		
 		/*
 		 * data for test purpose
 		 */
@@ -144,21 +145,44 @@ public class HelixRDFCreator {
 		 */
 		PdbRdfModel trainmodel = new PdbRdfModel();
 		TrainAndTestSet trainSet = new TrainAndTestSet();
+		String pdbIdInfo = "";
+		String bt426Info = "";
+		String plp273Info = "";
+		String plp364Info = "";
+		String plp399Info = "";
 
 		if (test && !load )
 		{
 			trainSet = new TrainAndTestSet(pdbID, chainID);
+			pdbIdInfo = dataDir + pdbID + savePdbInfos;
 		}
 		
 		if ( !test && !load )
 		{
 			 switch (dataSet) {
-	            case 1:	trainSet = new TrainAndTestSet(bt426List);	break;
-	            case 2:	trainSet = new TrainAndTestSet(plp273List);	break;
-	            case 3:	trainSet = new TrainAndTestSet(plp364List);	break;
-	            case 4:	trainSet = new TrainAndTestSet(plp399List);	break;
+	            case 1:	
+	            	trainSet = new TrainAndTestSet(bt426List);
+	            	bt426Info = dataDir + bt426 + savePdbInfos;
+	            	break;
+	            case 2:
+	            	trainSet = new TrainAndTestSet(plp273List);
+	            	plp273Info = dataDir + plp273 + savePdbInfos;
+	            	break;
+	            case 3:
+	            	trainSet = new TrainAndTestSet(plp364List);
+	            	plp364Info = dataDir + plp364 + savePdbInfos;
+	            	break;
+	            case 4:
+	            	trainSet = new TrainAndTestSet(plp399List);
+	            	plp399Info = dataDir + plp399 + savePdbInfos;
+	            	break;
 	            }
 		}
+		File memory = new File(savePdbInfos);
+		File bt426InfoFile = new File(bt426Info);
+		File plp273InfoFile = new File(plp273Info);
+		File plp364InfoFile = new File(plp364Info);
+		File plp399InfoFile = new File(plp399Info);
 		
 		if(load && memory.canRead())
 		{
@@ -181,8 +205,8 @@ public class HelixRDFCreator {
 			trainmodel.removeAll();
 			trainmodel.add(getRdfModelForIds(trainSet.getTrainset()[i].getPdbID(), trainSet.getTrainset()[i].getChainID()));
 			
-			System.out.println(getSpecies(trainmodel, trainSet.getTrainset()[i].getPdbID()));
 			
+			trainSet.getTrainset()[i].setSpecies(getSpecies(trainmodel, trainSet.getTrainset()[i].getPdbID()));
 						
 			
 			/* 
@@ -234,6 +258,7 @@ public class HelixRDFCreator {
 			/*
 			 * remove all triples that contain information about begin and end of helices
 			 */
+			
 			Property ba = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "beginsAt");
 			trainmodel = removeStatementsWithPoperty(trainmodel, ba);
 			Property ea = ResourceFactory.createProperty("http://bio2rdf.org/pdb:", "endsAt");
@@ -463,7 +488,7 @@ public class HelixRDFCreator {
 	    		" OPTIONAL { ?x5 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x7 . } .}";
 		}
 
-		System.out.println(queryString);
+		//System.out.println(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
     	construct.add(qe.execConstruct()); 
@@ -479,16 +504,35 @@ public class HelixRDFCreator {
 			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 			"PREFIX fn: <http://www.w3.org/2005/xpath-functions#> " +
-			"SELECT *  " +
-    		"WHERE { ?s ?p ?o .}"; //FILTER (str(?xxx) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . }";
+			"SELECT ?species  " +
+    		"WHERE { ?x1 <http://purl.org/dc/terms/isPartOf> ?x4 ." +
+	    		" ?x1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x2 ." +
+	    		" ?x1 <http://bio2rdf.org/pdb:isImmediatelyBefore> ?x3 ." +
+				" ?x5 rdfs:label ?species FILTER (str(?x5) = fn:concat(str(?x4), '/extraction/source/gene/organism')) . }";
+
 		
-		System.out.println(queryString);
+		// System.out.println(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
-		ResultSet results = qe.execSelect();
-		qe.close();
-		ResultSetFormatter.out (System.out, results, query); 
-    	return ResultSetFormatter.asText(results);
+		String species = "";
+		try
+		{
+			ResultSet results = qe.execSelect() ;
+			for ( ; results.hasNext() ; )
+			{
+				/*
+				 * every entry in the ResultSet has the same value
+				 */
+				 QuerySolution soln = results.nextSolution() ;
+				 Literal l = soln.getLiteral("species") ;   // Get a result variable - must be a literal
+				 species = l.getString();
+			}
+		}
+		finally 
+		{
+			qe.close() ;
+		}
+		return species;
 	}
 		
 	
@@ -591,7 +635,7 @@ public class HelixRDFCreator {
 			"PREFIX x:<" + prop.getNameSpace() + "> " +
     		"CONSTRUCT { ?x1 x:" + prop.getLocalName()+ " ?x2 . } " +
     		"WHERE { ?x1 x:" + prop.getLocalName() + " ?x2 . }";
-		System.out.println(queryString);
+		//System.out.println(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
     	StmtIterator stmtiter = qe.execConstruct().listStatements(); 
@@ -609,7 +653,7 @@ public class HelixRDFCreator {
 			"PREFIX x:<" + res.getNameSpace() + "> " +
     		"CONSTRUCT { ?x1 ?x2 x:" + res.getLocalName() + " . } " +
     		"WHERE { ?x1 ?x2 x:" + res.getLocalName() + " . }";
-		System.out.println(queryString);
+		// System.out.println(queryString);
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qe = QueryExecutionFactory.create(query, model);
     	StmtIterator stmtiter = qe.execConstruct().listStatements(); 
