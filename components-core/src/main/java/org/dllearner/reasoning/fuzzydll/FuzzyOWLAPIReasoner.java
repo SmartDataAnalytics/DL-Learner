@@ -135,7 +135,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	
 	
-	//private String reasonerType = "pellet";
+	// private String reasonerType = "pellet";
 	private FuzzyOWLAPIReasonerConfigurator configurator;
 	@Override
 	public FuzzyOWLAPIReasonerConfigurator getConfigurator(){
@@ -174,7 +174,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 	
 	// references to OWL API ontologies
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
-	private FuzzyDLReasonerManager fuzzyReasoner;
+	// private FuzzyDLReasonerManager fuzzyReasoner;
 	private int reasonersComparationCounter = 0;
 	private int reasonersComparationDisparityCounter = 0;
 	
@@ -191,7 +191,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++, HermiT, OWLlink or Pellet, which means \"fact\", \"hermit\", \"owllink\" or \"pellet\"", "pellet", false, true);
-		type.setAllowedValues(new String[] {"fact", "hermit", "owllink", "pellet" });
+		type.setAllowedValues(new String[] {"fact", "hermit", "owllink", "pellet", "fuzzydl" });
 		
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
@@ -339,14 +339,18 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		} else if(configurator.getReasonerType().equals("hermit")){
 			// instantiate HermiT reasoner
 			reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
-		} else if(configurator.getReasonerType().equals("pellet")){
-			// instantiate Pellet reasoner
-			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
+		} else if(configurator.getReasonerType().equals("pellet")){		
 			
-			// change log level to WARN for Pellet, because otherwise log
-			// output will be very large
-			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
-			pelletLogger.setLevel(Level.WARN);
+		} else if(configurator.getReasonerType().equals("fuzzydl")){
+			// added by Josue
+			// create actual fuzzy reasoner and computes initial fuzzy memberships
+			// ontology and conf are passed so FuzzyDLReasonerManager can instanciate also a Pellet reasoner
+			try {
+				reasoner = new FuzzyDLReasonerManager(((OWLFile)sources.iterator().next()).getURL().toString(), ontology, conf);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			try {
 				OWLlinkHTTPXMLReasonerFactory factory = new OWLlinkHTTPXMLReasonerFactory();
@@ -374,14 +378,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 //		System.out.println(properties);
 //		System.out.println(individuals);
 
-		// added by Josue
-		// create actual fuzzy reasoner and computes initial fuzzy memberships
-		try {
-			fuzzyReasoner = new FuzzyDLReasonerManager(((OWLFile)sources.iterator().next()).getURL().toString());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		
 		// compute class hierarchy and types of individuals
 		// (done here to speed up later reasoner calls)
@@ -621,11 +618,8 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
 		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
 		
-		boolean crispReasonerOutput = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
-		
-		// System.out.println("ccccc->: " + crispReasonerOutput);
-		
-		return crispReasonerOutput; 
+		boolean crispReasonerOutput = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));		
+		return crispReasonerOutput;
 	}
 	
 	@Override
@@ -1137,7 +1131,7 @@ public class FuzzyOWLAPIReasoner extends ReasonerComponent {
 		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
 		OWLIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));		
 		
-		double fuzzyReasonerOutput = fuzzyReasoner.getFuzzyMembership(desc, ind, individual.getTruthDegree());
+		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(desc, ind, individual.getTruthDegree());
 		
 //		System.out.println("- d: " + d);
 //		System.out.println("- i: " + i);
