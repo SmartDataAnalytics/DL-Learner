@@ -91,6 +91,7 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		//ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.init();
+//		System.out.println(rc.getClassHierarchy());
 		
 		//FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
@@ -111,6 +112,8 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		fc.getConfigurator().setMaxExecutionTimeInSeconds(0);
 		fc.getConfigurator().setUseDoubleDatatypes(false);
 		fc.getConfigurator().setUseCardinalityRestrictions(false);
+		fc.getConfigurator().setWriteSearchTree(true);
+		fc.getConfigurator().setSearchTreeFile("log/searchTreeNonFuzzy.txt");
 		fc.init();
 		fc.start();		
 		
