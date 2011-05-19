@@ -80,13 +80,14 @@ public class FuzzyDLLTest_Trains {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v1.3.owl"));
+		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v1.4.owl"));
 		ks.init();
 
 //		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
-		ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
+		FuzzyOWLAPIReasoner rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
+		rc.getConfigurator().setReasonerType("fuzzydl");
 		rc.init();
-//		System.out.println(rc.getClassHierarchy());
+		System.out.println(rc.getClassHierarchy());
 		
 		FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		//PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);

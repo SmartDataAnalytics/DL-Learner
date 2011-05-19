@@ -8,18 +8,53 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
+import org.semanticweb.owlapi.reasoner.BufferingMode;
+import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
+import org.semanticweb.owlapi.reasoner.FreshEntitiesException;
+import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
+import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
+import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.Node;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
+import org.semanticweb.owlapi.reasoner.TimeOutException;
+import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.util.Version;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+
 import fuzzydl.*;
 import fuzzydl.exception.FuzzyOntologyException;
 import fuzzydl.milp.Solution;
 import fuzzydl.parser.*;
 import fuzzydll.fuzzyowl2fuzzydlparser.*;
 
-public class FuzzyDLReasonerManager {
+public class FuzzyDLReasonerManager implements OWLReasoner {
 
 	// private static final String CHANGING_JUST_HIERARCHI_PROBLEM = "../examples/fuzzydll/fuzzyOWL2fuzzyDLparserOutput_manual.fuzzyDL.txt";
 	private static final String FUZZYOWL2FUZZYDLPARSEROUTPUT = "../examples/fuzzydll/fuzzyOWL2fuzzyDLparserOutput.fuzzyDL.txt";
@@ -32,9 +67,13 @@ public class FuzzyDLReasonerManager {
 
 	private FuzzyOwl2toFuzzyDL fuzzyFileParser;
 	private int auxCounter = 0;
+	private PelletReasoner crispReasoner;
 	// private FileOutputStream errorFile;
 
-	public FuzzyDLReasonerManager(String ontologyFile) throws Exception {
+	public FuzzyDLReasonerManager(String ontologyFile, OWLOntology ontology, OWLReasonerConfiguration conf) throws Exception {
+		
+		startPellet(ontology, conf);
+		
 		queryResult = null;
 		parser = null;
 
@@ -49,6 +88,15 @@ public class FuzzyDLReasonerManager {
 		solveKB();
 		
 		  // errorFile = new FileOutputStream("errorFile.txt");
+	}
+
+	private void startPellet(OWLOntology ontology, OWLReasonerConfiguration conf) {
+		// instantiate Pellet reasoner
+		crispReasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
+		// change log level to WARN for Pellet, because otherwise log
+		// output will be very large
+		Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
+		pelletLogger.setLevel(Level.WARN);		
 	}
 
 	private void solveKB() {
@@ -125,4 +173,402 @@ public class FuzzyDLReasonerManager {
         sw.flush();
         return sw.toString();
     }
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		crispReasoner.dispose();
+	}
+
+	@Override
+	public void flush() {
+		
+		crispReasoner.flush();
+	}
+
+	@Override
+	public Node<OWLClass> getBottomClassNode() {
+		
+		return crispReasoner.getBottomClassNode();
+	}
+
+	@Override
+	public Node<OWLDataProperty> getBottomDataPropertyNode() {
+		
+		return crispReasoner.getBottomDataPropertyNode();
+	}
+
+	@Override
+	public Node<OWLObjectPropertyExpression> getBottomObjectPropertyNode() {
+		
+		return crispReasoner.getBottomObjectPropertyNode();
+	}
+
+	@Override
+	public BufferingMode getBufferingMode() {
+		
+		return crispReasoner.getBufferingMode();
+	}
+
+	@Override
+	public NodeSet<OWLClass> getDataPropertyDomains(OWLDataProperty arg0,
+			boolean arg1) throws InconsistentOntologyException,
+			FreshEntitiesException, ReasonerInterruptedException,
+			TimeOutException {
+		
+		return crispReasoner.getDataPropertyDomains(arg0, arg1);
+	}
+
+	@Override
+	public Set<OWLLiteral> getDataPropertyValues(OWLNamedIndividual arg0,
+			OWLDataProperty arg1) throws InconsistentOntologyException,
+			FreshEntitiesException, ReasonerInterruptedException,
+			TimeOutException {
+		
+		return crispReasoner.getDataPropertyValues(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLNamedIndividual> getDifferentIndividuals(
+			OWLNamedIndividual arg0) throws InconsistentOntologyException,
+			FreshEntitiesException, ReasonerInterruptedException,
+			TimeOutException {
+		
+		return crispReasoner.getDifferentIndividuals(arg0);
+	}
+
+	@Override
+	public NodeSet<OWLClass> getDisjointClasses(OWLClassExpression arg0)
+			throws ReasonerInterruptedException, TimeOutException,
+			FreshEntitiesException, InconsistentOntologyException {
+		
+		return crispReasoner.getDisjointClasses(arg0);
+	}
+
+	@Override
+	public NodeSet<OWLDataProperty> getDisjointDataProperties(
+			OWLDataPropertyExpression arg0)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getDisjointDataProperties(arg0);
+	}
+
+	@Override
+	public NodeSet<OWLObjectPropertyExpression> getDisjointObjectProperties(
+			OWLObjectPropertyExpression arg0)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getDisjointObjectProperties(arg0);
+	}
+
+	@Override
+	public Node<OWLClass> getEquivalentClasses(OWLClassExpression arg0)
+			throws InconsistentOntologyException,
+			ClassExpressionNotInProfileException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getEquivalentClasses(arg0);
+	}
+
+	@Override
+	public Node<OWLDataProperty> getEquivalentDataProperties(
+			OWLDataProperty arg0) throws InconsistentOntologyException,
+			FreshEntitiesException, ReasonerInterruptedException,
+			TimeOutException {
+		
+		return crispReasoner.getEquivalentDataProperties(arg0);
+	}
+
+	@Override
+	public Node<OWLObjectPropertyExpression> getEquivalentObjectProperties(
+			OWLObjectPropertyExpression arg0)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getEquivalentObjectProperties(arg0);
+	}
+
+	@Override
+	public FreshEntityPolicy getFreshEntityPolicy() {
+		
+		return crispReasoner.getFreshEntityPolicy();
+	}
+
+	@Override
+	public IndividualNodeSetPolicy getIndividualNodeSetPolicy() {
+		
+		return crispReasoner.getIndividualNodeSetPolicy();
+	}
+
+	@Override
+	public NodeSet<OWLNamedIndividual> getInstances(OWLClassExpression arg0,
+			boolean arg1) throws InconsistentOntologyException,
+			ClassExpressionNotInProfileException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getInstances(arg0, arg1);
+	}
+
+	@Override
+	public Node<OWLObjectPropertyExpression> getInverseObjectProperties(
+			OWLObjectPropertyExpression arg0)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getInverseObjectProperties(arg0);
+	}
+
+	@Override
+	public NodeSet<OWLClass> getObjectPropertyDomains(
+			OWLObjectPropertyExpression arg0, boolean arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getObjectPropertyDomains(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLClass> getObjectPropertyRanges(
+			OWLObjectPropertyExpression arg0, boolean arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getObjectPropertyRanges(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLNamedIndividual> getObjectPropertyValues(
+			OWLNamedIndividual arg0, OWLObjectPropertyExpression arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getObjectPropertyValues(arg0, arg1);
+	}
+
+	@Override
+	public Set<OWLAxiom> getPendingAxiomAdditions() {
+		
+		return crispReasoner.getPendingAxiomAdditions();
+	}
+
+	@Override
+	public Set<OWLAxiom> getPendingAxiomRemovals() {
+		
+		return crispReasoner.getPendingAxiomRemovals();
+	}
+
+	@Override
+	public List<OWLOntologyChange> getPendingChanges() {
+		
+		return crispReasoner.getPendingChanges();
+	}
+
+	@Override
+	public Set<InferenceType> getPrecomputableInferenceTypes() {
+		
+		return crispReasoner.getPrecomputableInferenceTypes();
+	}
+
+	@Override
+	public String getReasonerName() {
+		
+		return crispReasoner.getReasonerName();
+	}
+
+	@Override
+	public Version getReasonerVersion() {
+		
+		return crispReasoner.getReasonerVersion();
+	}
+
+	@Override
+	public OWLOntology getRootOntology() {
+		
+		return crispReasoner.getRootOntology();
+	}
+
+	@Override
+	public Node<OWLNamedIndividual> getSameIndividuals(OWLNamedIndividual arg0)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getSameIndividuals(arg0);
+	}
+
+	@Override
+	public NodeSet<OWLClass> getSubClasses(OWLClassExpression arg0, boolean arg1)
+			throws ReasonerInterruptedException, TimeOutException,
+			FreshEntitiesException, InconsistentOntologyException,
+			ClassExpressionNotInProfileException {
+		
+		return crispReasoner.getSubClasses(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLDataProperty> getSubDataProperties(OWLDataProperty arg0,
+			boolean arg1) throws InconsistentOntologyException,
+			FreshEntitiesException, ReasonerInterruptedException,
+			TimeOutException {
+		
+		return crispReasoner.getSubDataProperties(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLObjectPropertyExpression> getSubObjectProperties(
+			OWLObjectPropertyExpression arg0, boolean arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getSubObjectProperties(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLClass> getSuperClasses(OWLClassExpression arg0,
+			boolean arg1) throws InconsistentOntologyException,
+			ClassExpressionNotInProfileException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+//			System.out.println(arg0);
+//
+//			Query q1, q2;
+//			for(Concept concept : fuzzyKB.atomicConcepts.values()) {
+//				System.out.print(" - " + concept + " ");
+//				q1 = new MinSubsumesQuery(concept, OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(arg0), MinSubsumesQuery.LUKASIEWICZ);
+//				q2 = new MaxSubsumesQuery(concept, OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(arg0), MaxSubsumesQuery.LUKASIEWICZ);
+//				KnowledgeBase clonedFuzzyKB = fuzzyKB.clone();
+//				try {
+//					Solution queryResult1 = q1.solve(clonedFuzzyKB);
+//					Solution queryResult2 = q2.solve(clonedFuzzyKB);
+//					System.out.print(queryResult1 + " " + queryResult2);
+//					System.out.println();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+
+
+		
+		return crispReasoner.getSuperClasses(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLDataProperty> getSuperDataProperties(
+			OWLDataProperty arg0, boolean arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getSuperDataProperties(arg0, arg1);
+	}
+
+	@Override
+	public NodeSet<OWLObjectPropertyExpression> getSuperObjectProperties(
+			OWLObjectPropertyExpression arg0, boolean arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getSuperObjectProperties(arg0, arg1);
+	}
+
+	@Override
+	public long getTimeOut() {
+		
+		return crispReasoner.getTimeOut();
+	}
+
+	@Override
+	public Node<OWLClass> getTopClassNode() {
+		
+		return crispReasoner.getTopClassNode();
+	}
+
+	@Override
+	public Node<OWLDataProperty> getTopDataPropertyNode() {
+		
+		return crispReasoner.getTopDataPropertyNode();
+	}
+
+	@Override
+	public Node<OWLObjectPropertyExpression> getTopObjectPropertyNode() {
+		
+		return crispReasoner.getTopObjectPropertyNode();
+	}
+
+	@Override
+	public NodeSet<OWLClass> getTypes(OWLNamedIndividual arg0, boolean arg1)
+			throws InconsistentOntologyException, FreshEntitiesException,
+			ReasonerInterruptedException, TimeOutException {
+		
+		return crispReasoner.getTypes(arg0, arg1);
+	}
+
+	@Override
+	public Node<OWLClass> getUnsatisfiableClasses()
+			throws ReasonerInterruptedException, TimeOutException,
+			InconsistentOntologyException {
+		
+		return crispReasoner.getUnsatisfiableClasses();
+	}
+
+	@Override
+	public void interrupt() {
+		
+		crispReasoner.interrupt();
+	}
+
+	@Override
+	public boolean isConsistent() throws ReasonerInterruptedException,
+			TimeOutException {
+		
+		return crispReasoner.isConsistent();
+	}
+
+	@Override
+	public boolean isEntailed(OWLAxiom arg0)
+			throws ReasonerInterruptedException,
+			UnsupportedEntailmentTypeException, TimeOutException,
+			AxiomNotInProfileException, FreshEntitiesException,
+			InconsistentOntologyException {
+		
+		return crispReasoner.isEntailed(arg0);
+	}
+
+	@Override
+	public boolean isEntailed(Set<? extends OWLAxiom> arg0)
+			throws ReasonerInterruptedException,
+			UnsupportedEntailmentTypeException, TimeOutException,
+			AxiomNotInProfileException, FreshEntitiesException,
+			InconsistentOntologyException {
+		
+		return crispReasoner.isEntailed(arg0);
+	}
+
+	@Override
+	public boolean isEntailmentCheckingSupported(AxiomType<?> arg0) {
+		
+		return crispReasoner.isEntailmentCheckingSupported(arg0);
+	}
+
+	@Override
+	public boolean isPrecomputed(InferenceType arg0) {
+		
+		return crispReasoner.isPrecomputed(arg0);
+	}
+
+	@Override
+	public boolean isSatisfiable(OWLClassExpression arg0)
+			throws ReasonerInterruptedException, TimeOutException,
+			ClassExpressionNotInProfileException, FreshEntitiesException,
+			InconsistentOntologyException {
+		
+		return crispReasoner.isSatisfiable(arg0);
+	}
+
+	@Override
+	public void precomputeInferences(InferenceType... arg0)
+			throws ReasonerInterruptedException, TimeOutException,
+			InconsistentOntologyException {
+		crispReasoner.precomputeInferences(arg0);
+	}
 }

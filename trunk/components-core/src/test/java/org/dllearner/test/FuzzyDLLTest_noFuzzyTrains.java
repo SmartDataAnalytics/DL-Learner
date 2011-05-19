@@ -91,7 +91,7 @@ public class FuzzyDLLTest_noFuzzyTrains {
 		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		//ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.init();
-//		System.out.println(rc.getClassHierarchy());
+		System.out.println(rc.getClassHierarchy());
 		
 		//FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
