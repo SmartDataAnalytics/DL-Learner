@@ -83,9 +83,10 @@ public class FuzzyDLLTest_Trains {
 		ks.getConfigurator().setUrl(new URL("file", null, "../examples/fuzzydll/fuzzyTrains_v1.3.owl"));
 		ks.init();
 
-		//ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
+//		ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 		ReasonerComponent rc = cm.reasoner(FuzzyOWLAPIReasoner.class, ks);
 		rc.init();
+//		System.out.println(rc.getClassHierarchy());
 		
 		FuzzyPosNegLPStandard lp = cm.learningProblem(FuzzyPosNegLPStandard.class, rc);
 		//PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
@@ -106,6 +107,8 @@ public class FuzzyDLLTest_Trains {
 		fc.getConfigurator().setMaxExecutionTimeInSeconds(0);
 		fc.getConfigurator().setUseDoubleDatatypes(false);
 		fc.getConfigurator().setUseCardinalityRestrictions(false);
+		fc.getConfigurator().setWriteSearchTree(true);
+		fc.getConfigurator().setSearchTreeFile("log/searchTreeFuzzy.txt");
 		fc.init();
 		fc.start();		
 		
