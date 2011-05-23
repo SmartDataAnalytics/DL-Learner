@@ -8,10 +8,24 @@ import org.dllearner.autosparql.client.HistoryTokens;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Endpoint;
 import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
-import org.dllearner.autosparql.client.widget.StoredSPARQLQueriesPanel;
+import org.dllearner.autosparql.client.widget.AutoCompleteTextBox;
 
 import com.extjs.gxt.ui.client.Registry;
 import com.extjs.gxt.ui.client.Style.Orientation;
+import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
+import com.extjs.gxt.ui.client.data.BasePagingLoader;
+import com.extjs.gxt.ui.client.data.JsonReader;
+import com.extjs.gxt.ui.client.data.ListLoadResult;
+import com.extjs.gxt.ui.client.data.LoadEvent;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelType;
+import com.extjs.gxt.ui.client.data.PagingLoadConfig;
+import com.extjs.gxt.ui.client.data.PagingLoadResult;
+import com.extjs.gxt.ui.client.data.PagingLoader;
+import com.extjs.gxt.ui.client.data.ScriptTagProxy;
+import com.extjs.gxt.ui.client.event.EventType;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.mvc.AppEvent;
@@ -24,6 +38,9 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -96,8 +113,10 @@ public class HomeView extends View {
                 intro.add(new Image("logo-dl.png"), "#demo-intro-logo");
                 queryField = new TextField<String>();
                 queryField.setWidth(150);
-                queryField.setEmptyText("Enter your query");
+                queryField.setEmptyText("Enter your query");queryField.setValue("soccer clubs in Premier League");
                 intro.add(queryField, "#demo-selector-query");
+//                intro.add(createComboxBox(), "#demo-selector-query");
+//                intro.add(new AutoCompleteTextBox(), "#demo-selector-query");
                 intro.add(createEndpointSelector(), "#demo-selector-endpoints");
                 Hyperlink link = new Hyperlink("Learn Query", HistoryTokens.QUERY);
                link.addClickListener(new ClickListener() {
@@ -153,6 +172,7 @@ public class HomeView extends View {
                 SPARQLService.Util.getInstance().getSavedSPARQLQueries(new AsyncCallbackEx<List<StoredSPARQLQuery>>() {
 					@Override
 					public void onSuccess(List<StoredSPARQLQuery> result) {
+						System.out.println(result);
 						for(final StoredSPARQLQuery query : result){
 							Hyperlink link = new Hyperlink(query.getQuestion(), HistoryTokens.LOADQUERY);
 							link.addClickListener(new ClickListener() {
@@ -199,8 +219,56 @@ public class HomeView extends View {
                 
 	}
 	
+	private ComboBox<ModelData> createComboxBox(){
+		String url = "http://139.18.2.173:8080/apache-solr-3.1.0/dbpedia_resources/terms?terms.fl=label&terms.lower=soc&terms.prefix=soc&terms.lower.incl=false&wt=json";
+		ScriptTagProxy<PagingLoadResult<ModelData>> proxy = new ScriptTagProxy<PagingLoadResult<ModelData>>(
+		        url);
+
+		    ModelType type = new ModelType();
+		    type.setRoot("terms");
+		    type.addField("label");
+
+		    JsonReader<PagingLoadConfig> reader = new JsonReader<PagingLoadConfig>(type){
+		    	@Override
+		    	protected int getTotalCount(JSONObject root) {
+		    		System.out.println("ROOT: " + root);
+		    		return 10;
+		    	}
+		    	
+		    	@Override
+		    	public PagingLoadConfig read(Object loadConfig, Object data) {
+		    		System.out.println(data);// TODO Auto-generated method stub
+		    		return super.read(loadConfig, data);
+		    	}
+		    	
+		    };
+		    
+		    
+		    PagingLoader loader = new BasePagingLoader(proxy, reader);
+		    loader.addLoadListener(new LoadListener(){
+		    	@Override
+		    	public void loaderBeforeLoad(LoadEvent le) {
+		    		System.out.println("before load");
+		    		super.loaderBeforeLoad(le);
+		    	}
+		    	
+		    	
+		    });
+
+		    ListStore<ModelData> store = new ListStore<ModelData>(loader);
+
+		    ComboBox<ModelData> combo = new ComboBox<ModelData>();
+		    combo.setWidth(580);
+		    combo.setDisplayField("label");
+		    combo.setStore(store);
+		    combo.setHideTrigger(true);
+		    combo.setPageSize(10);
+		    return combo;
+	}
+	
 	private ComboBox<Endpoint> createEndpointSelector(){
 		final ListStore<Endpoint> endpoints = new ListStore<Endpoint>();  
+		final ComboBox<Endpoint> combo = new ComboBox<Endpoint>();
 		SPARQLService.Util.getInstance().getEndpoints(new AsyncCallback<List<Endpoint>>() {
 
 			@Override
@@ -211,12 +279,11 @@ public class HomeView extends View {
 			@Override
 			public void onSuccess(List<Endpoint> result) {
 				endpoints.add(result);
-				
+				combo.select(0);
 			}
 			
 		});
 	  
-	    final ComboBox<Endpoint> combo = new ComboBox<Endpoint>();  
 	    combo.setEditable(false);
 	    combo.setEmptyText("Select an endpoint...");  
 	    combo.setDisplayField("label");  
@@ -256,6 +323,5 @@ public class HomeView extends View {
 		}
 		 
 	}
-	
 
 }

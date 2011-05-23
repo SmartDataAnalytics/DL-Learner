@@ -1,19 +1,14 @@
-package org.dllearner.autosparql.client.view;
+package org.dllearner.autosparql.client.widget;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.dllearner.autosparql.client.AppEvents;
+import org.dllearner.autosparql.client.AsyncCallbackEx;
 import org.dllearner.autosparql.client.SPARQLService;
 import org.dllearner.autosparql.client.model.Example;
-import org.dllearner.autosparql.client.model.StoredSPARQLQuery;
-import org.dllearner.autosparql.client.widget.SPARQLQueryResultPanel;
 
-import com.extjs.gxt.ui.client.Registry;
-import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.PagingLoadConfig;
@@ -27,38 +22,21 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.mvc.AppEvent;
-import com.extjs.gxt.ui.client.mvc.Controller;
-import com.extjs.gxt.ui.client.mvc.Dispatcher;
-import com.extjs.gxt.ui.client.mvc.View;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.HtmlContainer;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.layout.RowData;
-import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.menu.CheckMenuItem;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RootPanel;
 
-public class LoadedQueryView  extends View {
-	
-	private LayoutContainer mainPanel;
-	
-	private HTML queryField;
+public class SPARQLQueryResultPanel extends ContentPanel{
 	
 	private PagingLoader<PagingLoadResult<ModelData>> loader;
 	
@@ -71,89 +49,29 @@ public class LoadedQueryView  extends View {
 	
 	private Button propertiesButton;
 	
-	private StoredSPARQLQuery storedQuery;
-	
-	private SPARQLQueryResultPanel resultPanel;
-
-	public LoadedQueryView(Controller controller) {
-		super(controller);
+	public SPARQLQueryResultPanel(boolean showHeader){
+		setHeaderVisible(showHeader);
+		initUI();
 	}
 	
-	@Override
-	protected void initialize() {
-		mainPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
-	    BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
-	    data.setMargins(new Margins(5, 5, 5, 0));
-	    
-	    queryField = new HTML();
-		mainPanel.add(queryField, new RowData(1, -1));
+	private void initUI(){
+		setLayout(new FitLayout());
 		
-		resultPanel = new SPARQLQueryResultPanel(true);//createResultPanel();
-		mainPanel.add(resultPanel, new RowData(1, 0.7));
-		
-		Button editButton = new Button("Edit");
-		editButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
-			@Override
-			public void componentSelected(ButtonEvent ce) {
-				AppEvent event = new AppEvent(AppEvents.EditQuery);
-				event.setData("STORED_QUERY", storedQuery);
-				Dispatcher.forwardEvent(event);
-				
-			}
-		});
-		mainPanel.add(editButton);
-	}
-
-	@Override
-	protected void handleEvent(AppEvent event) {
-		if (event.getType() == AppEvents.NavLoadedQuery) {
-	      LayoutContainer wrapper = (LayoutContainer) Registry.get(ApplicationView.CENTER_PANEL);
-	      wrapper.removeAll();
-	      wrapper.add(mainPanel);
-	      wrapper.layout();
-	      RootPanel.get().addStyleName("query_view");
-	      RootPanel.get().removeStyleName("home_view");
-	      storedQuery = ((StoredSPARQLQuery)Registry.get("query"));
-	      onLoadSPARQLQuery(storedQuery);
-		}
-		
-	}
-	
-	public String encodeHTML(String s) {
-		StringBuffer out = new StringBuffer();
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (c > 127 || c == '"' || c == '<' || c == '>') {
-				out.append("&#" + (int) c + ";");
-			} else {
-				out.append(c);
-			}
-		}
-		return out.toString();
-	}
-	
-	private Component createResultPanel(){
-		ContentPanel resultPanel = new ContentPanel();
-		resultPanel.setLayout(new FitLayout());
-		resultPanel.setHeading("Result");
+		setHeading("Result");
 		
 		ToolBar topToolbar = new ToolBar();
-		resultPanel.setTopComponent(topToolbar);
+		setTopComponent(topToolbar);
 		
 		propertiesButton = new SplitButton("Show more...", new SelectionListener<ButtonEvent>() {
 			
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		Menu menu = new Menu();
 		propertiesButton.setMenu(menu);
 		topToolbar.add(propertiesButton);
 		
-//		LayoutContainer gridPanel = new LayoutContainer(new RowLayout(Orientation.VERTICAL));
 		RpcProxy<PagingLoadResult<Example>> proxy = new RpcProxy<PagingLoadResult<Example>>() {
 
 			@Override
@@ -187,50 +105,23 @@ public class LoadedQueryView  extends View {
 		grid.setLoadMask(true);
 		grid.getView().setEmptyText("");
 
-		resultPanel.add(grid);
-		resultPanel.setBottomComponent(toolbar);
-		
-		return resultPanel;
+		add(grid);
+		setBottomComponent(toolbar);
 	}
 	
-	
-	private void onLoadSPARQLQuery(StoredSPARQLQuery query){
-		this.query = query.getQuery();
-		resultPanel.setQuery(this.query);
-		resultPanel.loadProperties();
-		resultPanel.refresh();
-//		SPARQLService.Util.getInstance().loadSPARQLQuery(query, new AsyncCallback<Void>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void onSuccess(Void result) {
-//				loadProperties();
-//				loader.load();
-//				
-//			}
-//		});
-		
-		
-		queryField.setHTML("<pre class=\"resultquery add-padding\"><code>" + encodeHTML(query.getQuery()) + "</code></pre>");
-//	    loader.load();
+	public void setQuery(String query){
+		this.query = query;
 	}
 	
-	private void loadProperties(){
-		SPARQLService.Util.getInstance().getProperties(query, new AsyncCallback<Map<String, String>>() {
+	public void refresh(){
+		loader.load();
+	}
+	
+	public void loadProperties(){
+		SPARQLService.Util.getInstance().getProperties(query, new AsyncCallbackEx<Map<String, String>>() {
 
 			@Override
-			public void onFailure(Throwable arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onSuccess(Map<String, String> properties) {System.out.println(properties);
+			public void onSuccess(Map<String, String> properties) {
 				createMenu(properties);
 			}
 		});
@@ -310,6 +201,5 @@ public class LoadedQueryView  extends View {
 		loader.load();
 		
 	}
-	
 
 }

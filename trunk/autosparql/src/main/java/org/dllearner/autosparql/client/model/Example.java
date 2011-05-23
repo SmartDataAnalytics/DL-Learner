@@ -25,24 +25,28 @@ public class Example extends BaseModel {
 	}
 	
 	public String getURI(){
-		return get("uri");
+		return (String)get("uri");
 	}
 	
 	public String getLabel(){
-		return get("label");
+		return (String)get("label");
 	}
 	
 	public String getImageURL(){
-		return get("imageURL");
+		return (String)get("imageURL");
 	}
 	
 	public String getComment(){
-		return get("comment");
+		return (String)get("comment");
 	}
 	
 	@Override
 	public String toString() {
 		return getURI();
+	}
+	
+	public ExampleSer toExampleSer(){
+		return new ExampleSer(getURI(), getLabel(), getImageURL(), getComment());
 	}
 
 }
