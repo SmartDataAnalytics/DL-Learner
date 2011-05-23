@@ -166,26 +166,30 @@ public class QueryView extends View {
 						}
 					});
 			
-			if(!interactiveMode){
-				showInteractivePanel();
-			}
-			interactivePanel.mask("Searching...");
-			SPARQLService.Util.getInstance().getSimilarExample(
-					examplesPanel.getPositiveExamplesURIs(),
-					examplesPanel.getNegativeExamplesUris(),
-					new AsyncCallbackEx<Example>() {
-
-						@Override
-						public void onSuccess(Example result) {
-							interactivePanel.unmask();
-							interactivePanel.setExample(result);
-//							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-//									examplesPanel.getNegativeExamplesUris());
-						}
-
-					});
+			
 		} else {
 //			onShowNextResourceRelatedToQuery();
+		}
+	}
+	
+	private void showSimilarExample(){
+		if(!interactiveMode){
+			showInteractivePanel();
+		}
+		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
+		interactivePanel.mask("Searching...");
+		SPARQLService.Util.getInstance().getSimilarExample(
+				examplesPanel.getPositiveExamplesURIs(),
+				examplesPanel.getNegativeExamplesUris(),
+				new AsyncCallbackEx<Example>() {
+
+					@Override
+					public void onSuccess(Example result) {
+						interactivePanel.unmask();
+						interactivePanel.setExample(result);
+					}
+
+				});
 		}
 	}
 	
@@ -203,23 +207,9 @@ public class QueryView extends View {
 	}
 	
 	private void refresh(){
-		if (!examplesPanel.getPositiveExamplesURIs().isEmpty()) {
-			interactivePanel.mask("Searching...");
-			SPARQLService.Util.getInstance().getSimilarExample(
-					examplesPanel.getPositiveExamplesURIs(),
-					examplesPanel.getNegativeExamplesUris(),
-					new AsyncCallbackEx<Example>() {
-
-						@Override
-						public void onSuccess(Example result) {
-							interactivePanel.unmask();
-							interactivePanel.setExample(result);
-							resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
-									examplesPanel.getNegativeExamplesUris());
-						}
-
-					});
-		}
+		showSimilarExample();
+		resultPanel.refresh(examplesPanel.getPositiveExamplesURIs(), 
+				examplesPanel.getNegativeExamplesUris());
 	}
 	
 	private void onLoadStoredSPARQLQuery(StoredSPARQLQuery query) {

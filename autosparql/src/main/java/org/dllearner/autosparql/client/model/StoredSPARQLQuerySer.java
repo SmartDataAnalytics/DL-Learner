@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoredSPARQLQuery implements Serializable{
+public class StoredSPARQLQuerySer implements Serializable{
 	
 	private static final long serialVersionUID = 8195456787955752936L;
 	
@@ -12,16 +12,16 @@ public class StoredSPARQLQuery implements Serializable{
 	private String query;
 	private String queryHTML;
 	private String endpoint;
-	private List<Example> posExamples;
-	private List<Example> negExamples;
-	private Example lastSuggestedExample;
+	private List<ExampleSer> posExamples;
+	private List<ExampleSer> negExamples;
+	private ExampleSer lastSuggestedExample;
 	
 	private int hitCount = 0;
 	
-	public StoredSPARQLQuery(){
+	public StoredSPARQLQuerySer(){
 	}
 	
-	public StoredSPARQLQuery(String question, String query, String queryHTML, String endpoint, List<Example> posExamples, List<Example> negExamples, Example lastSuggestedExample){
+	public StoredSPARQLQuerySer(String question, String query, String queryHTML, String endpoint, List<ExampleSer> posExamples, List<ExampleSer> negExamples, ExampleSer lastSuggestedExample){
 		this.question = question;
 		this.query = query;
 		this.endpoint = endpoint;
@@ -70,15 +70,15 @@ public class StoredSPARQLQuery implements Serializable{
 		this.endpoint = endpoint;
 	}
 	
-	public List<Example> getPositiveExamples() {
+	public List<ExampleSer> getPositiveExamples() {
 		return posExamples;
 	}
 
-	public List<Example> getNegativeExamples() {
+	public List<ExampleSer> getNegativeExamples() {
 		return negExamples;
 	}
 	
-	public Example getLastSuggestedExample() {
+	public ExampleSer getLastSuggestedExample() {
 		return lastSuggestedExample;
 	}
 
@@ -87,20 +87,20 @@ public class StoredSPARQLQuery implements Serializable{
 		return question + "@" + endpoint + ":\n" + query;
 	}
 	
-	public StoredSPARQLQuerySer toStoredSPARQLQuerySer(){
-		List<ExampleSer> posExamples = new ArrayList<ExampleSer>();
-		List<ExampleSer> negExamples = new ArrayList<ExampleSer>();
-		for(Example ex : this.posExamples){
-			posExamples.add(ex.toExampleSer());
+	public StoredSPARQLQuery toStoredSPARQLQuery(){
+		List<Example> posExamples = new ArrayList<Example>();
+		List<Example> negExamples = new ArrayList<Example>();
+		for(ExampleSer ex : this.posExamples){
+			posExamples.add(ex.toExample());
 		}
-		for(Example ex : this.negExamples){
-			negExamples.add(ex.toExampleSer());
+		for(ExampleSer ex : this.negExamples){
+			negExamples.add(ex.toExample());
 		}
-		ExampleSer lastSuggestedExample = null;
+		Example lastSuggestedExample = null;
 		if(this.lastSuggestedExample != null){
-			lastSuggestedExample = this.lastSuggestedExample.toExampleSer();
+			lastSuggestedExample = this.lastSuggestedExample.toExample();
 		}
-		return new StoredSPARQLQuerySer(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample);
+		return new StoredSPARQLQuery(question, query, queryHTML, endpoint, posExamples, negExamples, lastSuggestedExample);
 	}
 
 }

@@ -240,6 +240,7 @@ public class SPARQLServiceImpl extends RemoteServiceServlet implements SPARQLSer
 		try {
 			return store.getStoredSPARQLQueries();
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Error while getting stored SPARQL queries from server.", e);
 			throw new AutoSPARQLException(e);
 		}

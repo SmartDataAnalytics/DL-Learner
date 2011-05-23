@@ -413,6 +413,7 @@ public class AutoSPARQLSession {
 	public String getCurrentQuery() throws AutoSPARQLException {
 		try{
 			return exampleFinder.getCurrentQueryHTML();
+//			return exampleFinder.getCurrentQuery();
 		} catch (Exception e){
 			logger.error(e);
 			throw new AutoSPARQLException(e);
