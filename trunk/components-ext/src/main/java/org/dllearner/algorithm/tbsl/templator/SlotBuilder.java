@@ -1,5 +1,7 @@
 package org.dllearner.algorithm.tbsl.templator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,10 +60,11 @@ public class SlotBuilder {
 				String tokenfluent = token.replaceAll(" ","");
 				String slotX = "x/" + type + "/";
 				String slotP = "SLOT_" + tokenfluent + "/" + type + "/";
+				String slotC = "SLOT_" + tokenfluent + "/CLASS/"; 
 				for (Iterator<String> i = words.iterator(); i.hasNext();) {
 					String next = i.next().replaceAll(" ","_");
-					slotX += next; slotP += next;
-					if (i.hasNext()) { slotX += "^"; slotP += "^"; }
+					slotX += next; slotP += next; slotC += next;
+					if (i.hasNext()) { slotX += "^"; slotP += "^"; slotC += "^"; }
 				}
 				String treetoken = "N:'" + token.toLowerCase() + "'";
 				if (token.trim().contains(" ")) {
@@ -96,31 +99,21 @@ public class SlotBuilder {
 					result.add(dpEntry2);
 				}
 				else if (pos.equals("NPREP")) {
-					/* DP */
-					String[] dpEntry1a = {token,
+					String[] dpEntry1 = {token,
 							"(DP (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]>"};
-					String[] dpEntry1b = {token,
-							"(DP (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
-					String[] dpEntry2a = {token,
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]> ;; " + 
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotC + "," + "SLOT_of/PROPERTY/" + "]>"}; 
+					String[] dpEntry2 = {token,
 							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "]>"};
-					String[] dpEntry2b = {token,
-							"(DP DET[det] (NP " + treetoken + " DP[pobj]))",
-							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
-					String[] npEntry1 = {token,
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotP + "]> ;; " +
+							"<x,l1,<<e,t>,t>,[ l1:[ x | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>),(l3,x,det,e)],[l2=l1,l3=l1],[" + slotC + "," + "SLOT_of/PROPERTY/" + "]>"};
+					String[] npEntry = {token,
 							"(NP " + treetoken + " DP[pobj])",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]>"};
-					String[] npEntry2 = {token,
-							"(NP " + treetoken + " DP[pobj])",
-							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "," + "SLOT_of/PROPERTY/" + "]>"};
-					result.add(dpEntry1a);
-					result.add(dpEntry1b);
-					result.add(dpEntry2a);
-					result.add(dpEntry2b);
-					result.add(npEntry1);
-					result.add(npEntry2);
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(y,x) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotP + "]> ;; " +
+							"<x,l1,<e,t>,[ l1:[ | SLOT_" + tokenfluent + "(x), SLOT_of(x,y) ] ],[(l2,y,pobj,<<e,t>,t>)],[l2=l1],[" + slotC + "," + "SLOT_of/PROPERTY/" + "]>"};
+					result.add(dpEntry1);
+					result.add(dpEntry2);
+					result.add(npEntry);
 				}
 						
 			}
@@ -245,11 +238,41 @@ public class SlotBuilder {
 				}
 				/* COMPARATIVE */
 				else if (pos.equals("JJR")) {
-					// TODO polarity not given, reference value not determinable	
+					String pol = polarity(token);
+					String comp; 
+					if (pol.equals("POS")) {
+						comp = "greater";
+					} else { comp = "less"; }
+					
+					String[] compEntry1 = {token,
+							"(ADJ ADJ:'" + token.toLowerCase() + "' P:'than' DP[compobj])",
+							"<x,l1,<e,t>,[ l1:[ j,i | SLOT_" + token + "(x,j), SLOT_" + token + "(y,i), " + comp + "(j,i) ] ],[ (l2,y,compobj,<<e,t>,t>) ],[l1=l2],["+slot+"]>"};			
+					result.add(compEntry1);	
+					String[] compEntry2 = {token,
+							"(NP NP* (ADJ ADJ:'" + token.toLowerCase() + "' P:'than' DP[compobj]))",
+							"<x,l1,<e,t>,[ l1:[ j,i | SLOT_" + token + "(x,j), SLOT_" + token + "(y,i), " + comp + "(j,i) ] ],[ (l2,y,compobj,<<e,t>,t>) ],[l1=l2],["+slot+"]>"};			
+					result.add(compEntry2);
 				}
 				/* SUPERLATIVE */
 				else if (pos.equals("JJS")) {
-					// ditto
+					String pol = polarity(token);
+					String comp; 
+					if (pol.equals("POS")) {
+						comp = "maximum";
+					} else { comp = "minimum"; }
+					
+					String[] superEntry1 = {token,
+							"(DET DET:'the' ADJ:'" + token.toLowerCase() + "')",
+							"<x,l1,e,[ l1:[ x,j | SLOT_" + token + "(x,j), " + comp + "(j) ] ],[],[],["+slot+"]>"};			
+					result.add(superEntry1);	
+					String[] superEntry2 = {token,
+							"(DP (NP DET:'the' ADJ:'" + token.toLowerCase() + "'))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x,j | SLOT_" + token + "(x,j), " + comp + "(j) ] ],[],[],["+slot+"]>"};			
+					result.add(superEntry2);
+					String[] superEntry3 = {token,
+							"(DP (NP DET:'the' ADJ:'" + token.toLowerCase() + "' NP[noun]))",
+							"<x,l1,<<e,t>,t>,[ l1:[ x,j | SLOT_" + token + "(x,j), " + comp + "(j) ] ],[ (l2,x,noun,<e,t>) ],[l2=l1],["+slot+"]>"};			
+					result.add(superEntry3);
 				}
 			}
 			/* PREPOSITIONS */
@@ -274,6 +297,27 @@ public class SlotBuilder {
 		return false;
 	}
 	
+	private String polarity(String adj) {
+		
+		String polarity = "POS";
+		
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new FileReader("src/main/resources/tbsl/lexicon/adj_list.txt"));
+			String line;
+			while ((line = in.readLine()) != null ) {
+				if (line.contains(adj)) {
+					polarity = line.split(" ")[0];
+					break;
+				}
+			}
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return polarity;
+	}
 
 
 }

@@ -31,6 +31,7 @@ public class Templator {
 	LTAG_Lexicon_Constructor LTAG_Constructor = new LTAG_Lexicon_Constructor();
 	Parser p;
 	
+	boolean ONE_SCOPE_ONLY = true;
 	
 	public Templator() {
 		
@@ -67,45 +68,66 @@ public class Templator {
         }
         else {
         try {
-            for (TreeNode dtree : p.buildDerivedTrees(g)) {
-                if (!dtree.getAnchor().trim().equals(tagged.toLowerCase())) {
-                    System.err.println("[Templator.java] Anchors don't match the input. (Nevermind...)");
-                    break;
-                }
-            }
+        	p.buildDerivedTrees(g);
+//            for (TreeNode dtree : p.buildDerivedTrees(g)) {
+//                if (!dtree.getAnchor().trim().equals(tagged.toLowerCase())) {
+//                    System.err.println("[Templator.java] Anchors don't match the input. (Nevermind...)");
+//                    break;
+//                }
+//            }
         } catch (ParseException e) {
             System.err.println("[Templator.java] ParseException at '" + e.getMessage() + "'");
         }
         }
 
-        List<DRS> drses;
+        List<DRS> drses = new ArrayList<DRS>();
         Set<Template> templates = new HashSet<Template>();
         
         for (Dude dude : p.getDudes()) {
-//        	System.out.println("DUDE: " + dude); // DEBUG
+ //       	System.out.println("DUDE: " + dude); // DEBUG
             UDRS udrs = d2u.convert(dude);
             if (udrs != null) { 
-                drses = new ArrayList<DRS>();
-                drses.addAll(udrs.initResolve());
-                for (DRS drs : drses) {
-//                	System.out.println("DRS:  " + drs); // DEBUG
-                	List<Slot> slots = new ArrayList<Slot>();
-                	slots.addAll(dude.getSlots());
-//                	//DEBUG 
-//                	for (Slot sl : slots) {
-//                		System.out.println(sl);
-//                	}
-//                	//
-                    try {
-                        Template temp = d2s.convert(drs,slots);
-                        templates.add(temp);
-                    } catch (java.lang.ClassCastException e) {
-                        continue;
-                    }
+                for (DRS drs : udrs.initResolve()) {
+//                	System.out.println(drs); // DEBUG
+                	if (!drses.contains(drs)) {
+                		drses.add(drs);
+                		List<Slot> slots = new ArrayList<Slot>();
+                    	slots.addAll(dude.getSlots());
+//                    	//DEBUG 
+//                    	for (Slot sl : slots) {
+//                    		System.out.println(sl);
+//                    	}
+//                    	//
+                        try {
+                            Template temp = d2s.convert(drs,slots);
+                            templates.add(temp);
+                        } catch (java.lang.ClassCastException e) {
+                            continue;
+                        }
+                	}
+                	if (ONE_SCOPE_ONLY) { break; }
                 }
             }
         }
-
+                
+//                for (DRS drs : drses) {
+////                	System.out.println("DRS:  " + drs); // DEBUG
+//                	List<Slot> slots = new ArrayList<Slot>();
+//                	slots.addAll(dude.getSlots());
+////                	//DEBUG 
+////                	for (Slot sl : slots) {
+////                		System.out.println(sl);
+////                	}
+////                	//
+//                    try {
+//                        Template temp = d2s.convert(drs,slots);
+//                        templates.add(temp);
+//                    } catch (java.lang.ClassCastException e) {
+//                        continue;
+//                    }
+//                    if (ONE_SCOPE_ONLY) { break; }
+//                }
+ 
         if (clearAgain) {
         	p.clear(g,p.getTemps());
         }
