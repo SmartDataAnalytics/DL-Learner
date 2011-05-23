@@ -356,4 +356,70 @@ public class Query
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((conditions == null) ? 0 : conditions.hashCode());
+		result = prime * result + ((filter == null) ? 0 : filter.hashCode());
+		result = prime * result + limit;
+		result = prime * result + offset;
+		result = prime * result + ((orderBy == null) ? 0 : orderBy.hashCode());
+		result = prime * result
+				+ ((prefixes == null) ? 0 : prefixes.hashCode());
+		result = prime * result + ((qt == null) ? 0 : qt.hashCode());
+		result = prime * result
+				+ ((selTerms == null) ? 0 : selTerms.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Query other = (Query) obj;
+		if (conditions == null) {
+			if (other.conditions != null)
+				return false;
+		} else if (!conditions.equals(other.conditions))
+			return false;
+		if (filter == null) {
+			if (other.filter != null)
+				return false;
+		} else if (!filter.equals(other.filter))
+			return false;
+		if (limit != other.limit)
+			return false;
+		if (offset != other.offset)
+			return false;
+		if (orderBy == null) {
+			if (other.orderBy != null)
+				return false;
+		} else if (!orderBy.equals(other.orderBy))
+			return false;
+		if (prefixes == null) {
+			if (other.prefixes != null)
+				return false;
+		} else if (!prefixes.equals(other.prefixes))
+			return false;
+		if (qt == null) {
+			if (other.qt != null)
+				return false;
+		} else if (!qt.equals(other.qt))
+			return false;
+		if (selTerms == null) {
+			if (other.selTerms != null)
+				return false;
+		} else if (!selTerms.equals(other.selTerms))
+			return false;
+		return true;
+	}
+	
+	
+
 }

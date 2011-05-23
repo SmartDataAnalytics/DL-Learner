@@ -124,7 +124,6 @@ class GrammarFilter {
 					 */
 
 					try {
-
 						TreeNode tree = c.construct("NUM:'" + token + "'");
 
 						int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(token,tree), 
@@ -241,12 +240,16 @@ class GrammarFilter {
 		try {	
 				for (String[] entry : entries) {
 					String anchor = entry[0];
-					String treestring = entry[1];
-					String dude = entry[2];
+					String treestring = entry[1];					
+					List<String> dudeStrings = new ArrayList<String>();
+					for (String s : entry[2].trim().split(";;")) {
+						if (!s.equals("")) {
+							dudeStrings.add(s.trim());
+						}
+					}
 							
 					TreeNode tree = c.construct(treestring);
-					int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(anchor,tree), 
-							Collections.singletonList(dude));
+					int gid = grammar.addTree(grammar.size(), new Pair<String,TreeNode>(anchor,tree), dudeStrings);
 					add(parseG, tree, gid-1, localID); 
 					temps.add(gid-1);
 					localID++;
