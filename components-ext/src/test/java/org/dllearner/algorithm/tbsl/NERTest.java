@@ -12,7 +12,7 @@ public class NERTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String sentence = "When did Nirvana record Nevermind?";
+		String sentence = "Which software company produced World of Warcraft?";
 		
 		NER ner = new DBpediaSpotlightNER();
 		long startTime = System.currentTimeMillis();

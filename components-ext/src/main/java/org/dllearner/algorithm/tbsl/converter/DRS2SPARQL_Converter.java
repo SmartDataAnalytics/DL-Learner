@@ -45,6 +45,10 @@ public class DRS2SPARQL_Converter {
         template = new Template(new Query());
         usedInts = new ArrayList<Integer>();
     }
+    
+    public void setSlots(List<Slot> ls) {
+    	slots = ls;
+    }
 
     public boolean isSilent() {
         return silent;
@@ -302,7 +306,7 @@ public class DRS2SPARQL_Converter {
         return query;
     }
 
-    private void redundantEqualRenaming(DRS drs) {
+    public void redundantEqualRenaming(DRS drs) {
 
         Set<Simple_DRS_Condition> equalsConditions = new HashSet<Simple_DRS_Condition>();
         for (Simple_DRS_Condition c : drs.getAllSimpleConditions()) {
